@@ -176,7 +176,7 @@ class CalibreArchiveReader
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener) {
 
-        final ImportResults importResults = new ImportResults();
+        final ImportResults results = new ImportResults();
         final Book book = new Book();
 
         // The default Bookshelf to which all books will be added.
@@ -295,14 +295,14 @@ class CalibreArchiveReader
                         if (mForceUpdate || isImportNewer(context, mDb, book, databaseBookId)) {
                             mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                                       | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                            importResults.booksUpdated++;
+                            results.booksUpdated++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                                 Log.d(TAG, "calibreUuid=" + calibreUuid
                                            + "|databaseBookId=" + databaseBookId
                                            + "|update|" + book.getTitle());
                             }
                         } else {
-                            importResults.booksSkipped++;
+                            results.booksSkipped++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                                 Log.d(TAG, "calibreUuid=" + calibreUuid
                                            + "|databaseBookId=" + databaseBookId
@@ -314,7 +314,7 @@ class CalibreArchiveReader
                         // The book does NOT exist in our database
                         final long insId = mDb.insert(context, book,
                                                       DAO.BOOK_FLAG_IS_BATCH_OPERATION);
-                        importResults.booksCreated++;
+                        results.booksCreated++;
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                             Log.d(TAG, "calibreUuid=" + calibreUuid
                                        + "|insert=" + insId
@@ -324,7 +324,7 @@ class CalibreArchiveReader
                 } catch (@NonNull final DAO.DaoWriteException
                         | SQLiteDoneException
                         | IndexOutOfBoundsException e) {
-                    importResults.booksSkipped++;
+                    results.booksSkipped++;
                 }
 
                 final long now = System.currentTimeMillis();
@@ -332,9 +332,9 @@ class CalibreArchiveReader
                     && !progressListener.isCancelled()) {
                     final String msg = String.format(mProgressMessage,
                                                      mBooksString,
-                                                     importResults.booksCreated,
-                                                     importResults.booksUpdated,
-                                                     importResults.booksSkipped);
+                                                     results.booksCreated,
+                                                     results.booksUpdated,
+                                                     results.booksSkipped);
                     progressListener.publishProgressStep(delta, msg);
                     lastUpdate = now;
                     delta = 0;
@@ -348,7 +348,7 @@ class CalibreArchiveReader
             }
         }
 
-        return importResults;
+        return results;
     }
 
     private void handleAuthor(@NonNull final Book book,

@@ -26,7 +26,7 @@
     <string name="X_action_update">Updaten</string>
     <string name="X_btn_do_not_show_again">Niet meer laten zien</string>
     <string name="X_error_file_must_contain_column">Import bestand moet een kolom met de naam „%1$s” bevatten.</string>
-    <string name="progress_end_export_success">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” map.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
+    <string name="progress_end_export_success">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
     <string name="lbl_available">Beschikbaar</string>
     <string name="X_lbl_data_import_export">Back-up &amp; import</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
@@ -426,10 +426,10 @@
     <string name="progress_msg_connecting">Verbinden…</string>
     <string name="progress_msg_searching_editions">Zoeken naar uitgaven…</string>
     <string name="progress_msg_loading">Laden…</string>
-    <string name="progress_end_export_result_n_books_processed">%1$d boeken verwerkt</string>
-    <string name="progress_msg_n_covers_processed">%1$d boekomslagen verwerkt</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d boekomslagen verwerkt (%2$d/%3$d missend, %4$d overgeslagen)</string>
+    <string name="X_progress_msg_n_books_processed">%1$d boeken verwerkt</string>
+    <string name="X_progress_msg_n_covers_processed">%1$d boekomslagen verwerkt</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend)</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d boekomslagen verwerkt (%2$d/%3$d missend, %4$d overgeslagen)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d toegevoegd, %3$d bijgewerkt</string>
     <string name="progress_msg_optimizing">Databases optimaliseren…</string>
     <string name="progress_msg_please_wait">Even geduld…</string>
@@ -614,7 +614,6 @@
     <string name="warning_requires_site_and_id">Selecteer een website en voer een ID in.</string>
     <string name="warning_scanner_failed_to_start">De scanner kan niet worden gestart.</string>
     <string name="warning_scanner_retry_install">We raden je aan het opnieuw te proberen, maar als het blijft mislukken, installeer de scanner opnieuw of installeer een andere scanner.</string>
-    <string name="X_warning_select_an_existing_folder">Selecteer een bestaande map.</string>
     <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
     <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
     <string name="X_warning_already_in_list_series">Reeks staat al in de lijst</string>

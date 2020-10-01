@@ -418,10 +418,10 @@
     <string name="progress_msg_connecting">Łączę…</string>
     <string name="progress_msg_searching_editions">Szukanie wydań…</string>
     <string name="progress_msg_loading">Wczytuję…</string>
-    <string name="progress_end_export_result_n_books_processed">Książki przetworzonych %1$d</string>
-    <string name="progress_msg_n_covers_processed">Objętych przetworzonych %1$d</string>
-    <string name="progress_msg_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d/%3$d)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">Obejmuje przetworzonych %1$d (brak %2$d/%3$d, pominięto %4$d)</string>
+    <string name="X_progress_msg_n_books_processed">Książki przetworzonych %1$d</string>
+    <string name="X_progress_msg_n_covers_processed">Objętych przetworzonych %1$d</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing">Objętych przetworzonych\n%1$d (brak %2$d/%3$d)</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">Obejmuje przetworzonych %1$d (brak %2$d/%3$d, pominięto %4$d)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: Utworzono %2$d, zaktualizowano %3$d</string>
     <string name="progress_msg_optimizing">Optymalizacja bazy danych</string>
     <string name="progress_msg_please_wait">Zaczekaj…</string>
@@ -603,7 +603,6 @@
     <string name="warning_requires_site_and_id">Wybierz stronę internetową i wprowadź identyfikator.</string>
     <string name="warning_scanner_failed_to_start">Nie można uruchomić skanera.</string>
     <string name="warning_scanner_retry_install">Sugerujemy, aby spróbować ponownie, ale jeśli problem nadal występuje, zainstaluj ponownie skaner lub zainstaluj inny skaner.</string>
-    <string name="X_warning_select_an_existing_folder">Wybierz istniejący katalog.</string>
     <string name="warning_select_at_least_1_field">Wybierz przynajmniej jedno pole do zaktualizowania.</string>
     <string name="warning_select_at_least_1_group">Wybierz co najmniej jedną grupę.</string>
     <string name="X_warning_already_in_list_series">Seria (tom) jest na liście</string>

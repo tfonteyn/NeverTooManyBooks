@@ -190,8 +190,8 @@ public abstract class ArchiveWriterAbstractBase
 
             // closing a very large archive will take a while, so keep the progress dialog open
             progressListener.setIndeterminate(true);
-            progressListener
-                    .publishProgressStep(0, context.getString(R.string.progress_msg_please_wait));
+            progressListener.publishProgressStep(
+                    0, context.getString(R.string.progress_msg_please_wait));
             // reset; won't take effect until the next publish call.
             progressListener.setIndeterminate(null);
         }

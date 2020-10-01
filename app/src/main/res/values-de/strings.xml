@@ -424,10 +424,10 @@
     <string name="progress_msg_connecting">Verbindung wird hergestellt…</string>
     <string name="progress_msg_searching_editions">Suche Ausgaben…</string>
     <string name="progress_msg_loading">Wird geladen…</string>
-    <string name="progress_end_export_result_n_books_processed">%1$d Bücher verarbeitet</string>
-    <string name="progress_msg_n_covers_processed">%1$d Cover verarbeitet</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Cover verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
+    <string name="X_progress_msg_n_books_processed">%1$d Bücher verarbeitet</string>
+    <string name="X_progress_msg_n_covers_processed">%1$d Cover verarbeitet</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Cover verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>
     <string name="progress_msg_please_wait">Bitte warten…</string>
@@ -612,7 +612,6 @@
     <string name="warning_requires_site_and_id">Wählen Sie eine Website und geben Sie eine ID ein.</string>
     <string name="warning_scanner_failed_to_start">Der Scanner konnte nicht gestartet werden.</string>
     <string name="warning_scanner_retry_install">Wir empfehlen, dass Sie es zuerst erneut versuchen. Wenn dies jedoch weiterhin fehlschlägt, installieren Sie den Scanner erneut oder installieren Sie einen anderen Scanner.</string>
-    <string name="X_warning_select_an_existing_folder">Bitte wählen Sie einen vorhandenen Verzeichnis.</string>
     <string name="warning_select_at_least_1_field">Wählen Sie mindestens ein Feld zum Aktualisieren aus</string>
     <string name="warning_select_at_least_1_group">Wählen Sie mindestens eine Gruppe aus.</string>
     <string name="X_warning_already_in_list_series">Die Serie befindet sich bereits in der Liste</string>

@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * This is the About page, showing some info and giving (semi-hidden) access to debug options.
@@ -126,8 +127,8 @@ public class AboutActivity
                 .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_delete, (d, w) -> {
                     try (DAO db = new DAO(TAG)) {
-                        // URGENT: delete all files
                         if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
+                            AppDir.deleteAllContent(this);
                             setResult(RESULT_ALL_DATA_DESTROYED);
                         }
                     }

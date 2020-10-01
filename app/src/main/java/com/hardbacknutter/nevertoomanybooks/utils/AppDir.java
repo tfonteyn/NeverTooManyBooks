@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -154,6 +155,19 @@ public enum AppDir {
             Logger.error(context, TAG, e, "init failed");
             return context.getString(R.string.error_storage_not_writable);
         }
+    }
+
+    public static void deleteAllContent(@NonNull final Context context) {
+        //noinspection ConstantConditions
+        Arrays.stream(AppDir.Upgrades.get(context).listFiles()).forEach(File::delete);
+        //noinspection ConstantConditions
+        Arrays.stream(AppDir.Cache.get(context).listFiles()).forEach(File::delete);
+        //noinspection ConstantConditions
+        Arrays.stream(AppDir.Covers.get(context).listFiles()).forEach(File::delete);
+        //noinspection ConstantConditions
+        Arrays.stream(AppDir.Log.get(context).listFiles()).forEach(File::delete);
+
+        // we don't delete root...
     }
 
     /**

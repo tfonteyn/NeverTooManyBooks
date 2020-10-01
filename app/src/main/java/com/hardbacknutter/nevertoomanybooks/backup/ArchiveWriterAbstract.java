@@ -222,6 +222,8 @@ public abstract class ArchiveWriterAbstract
         int delta = 0;
         long lastUpdate = 0;
 
+        final String coverStr = context.getString(R.string.lbl_covers);
+
         for (String filename : mResults.getCoverFileNames()) {
             final File cover = AppDir.Covers.getFile(context, filename);
             // We're using jpg, png.. don't bother compressing.
@@ -232,8 +234,9 @@ public abstract class ArchiveWriterAbstract
             delta++;
             final long now = System.currentTimeMillis();
             if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                final String msg = context.getString(
-                        R.string.progress_msg_n_covers_processed, exported);
+                final String msg = context.getString(R.string.name_colon_value,
+                                                     coverStr,
+                                                     String.valueOf(exported));
                 progressListener.publishProgressStep(delta, msg);
                 lastUpdate = now;
                 delta = 0;

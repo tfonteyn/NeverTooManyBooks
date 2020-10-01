@@ -181,52 +181,44 @@ public class XmlExporter
         final boolean writePrefs = (mOptions & Options.PREFS) != 0;
 
         if (!progressListener.isCancelled() && writeStyles) {
-            progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_styles) + XML_SUFFIX);
+            progressListener.publishProgressStep(
+                    1, context.getString(R.string.lbl_styles) + XML_SUFFIX);
             writeStyles(context, writer);
             // an experiment, might become the v2 of the styles format
             //writeStyles2(context, writer, progressListener);
         }
 
         if (!progressListener.isCancelled() && writePrefs) {
-            progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_settings) + XML_SUFFIX);
+            progressListener.publishProgressStep(
+                    1, context.getString(R.string.lbl_settings) + XML_SUFFIX);
             writePreferences(context, writer);
         }
 
         if (!progressListener.isCancelled() && writeBooks) {
             // parsing will be faster if these go in the order done here.
-            progressListener
-                    .publishProgressStep(1,
-                                         context.getString(R.string.lbl_bookshelves_long)
-                                         + XML_SUFFIX);
+            progressListener.publishProgressStep(
+                    1, context.getString(R.string.lbl_bookshelves_long) + XML_SUFFIX);
             writeBookshelves(writer, progressListener);
 
-            progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_authors) + XML_SUFFIX);
+            progressListener.publishProgressStep(
+                    1, context.getString(R.string.lbl_authors) + XML_SUFFIX);
             writeAuthors(writer, progressListener);
 
-            progressListener
-                    .publishProgressStep(1,
-                                         context.getString(R.string.lbl_series_multiple)
-                                         + XML_SUFFIX);
+            progressListener.publishProgressStep(
+                    1, context.getString(R.string.lbl_series_multiple) + XML_SUFFIX);
             writeSeries(writer, progressListener);
 
-            progressListener
-                    .publishProgressStep(1,
-                                         context.getString(R.string.lbl_publishers) + XML_SUFFIX);
+            progressListener.publishProgressStep(
+                    1, context.getString(R.string.lbl_publishers) + XML_SUFFIX);
             writePublishers(writer, progressListener);
 
-            progressListener
-                    .publishProgressStep(1,
-                                         context.getString(R.string.lbl_table_of_content)
-                                         + XML_SUFFIX);
+            progressListener.publishProgressStep(
+                    1, context.getString(R.string.lbl_table_of_content) + XML_SUFFIX);
             writeToc(writer, progressListener);
 
-            progressListener
-                    .publishProgressStep(1, context.getString(R.string.lbl_books) + XML_SUFFIX);
-            writeBooks(context, writer, progressListener
-                      );
+            progressListener.publishProgressStep(
+                    1, context.getString(R.string.lbl_books) + XML_SUFFIX);
+            writeBooks(context, writer, progressListener);
         }
 
         return mResults;

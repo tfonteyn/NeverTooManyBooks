@@ -55,18 +55,11 @@ public class ExportResults
     };
     private static final String BULLET = "\n• ";
 
-    /** #books that did not have a front-cover [0] / back-cover [1]. */
-    @NonNull
-    private final int[] mCoversMissing;
-
     /** id's of books we exported. */
     private final List<Long> mBooksExported = new ArrayList<>();
 
     /** filenames of covers exported. */
     private final List<String> mCoversExported = new ArrayList<>();
-
-    /** #covers that were skipped. */
-    private int mCoversSkipped;
 
     /** #styles we exported. */
     public int styles;
@@ -74,7 +67,6 @@ public class ExportResults
     public int preferences;
 
     public ExportResults() {
-        mCoversMissing = new int[2];
     }
 
     /**
@@ -85,10 +77,6 @@ public class ExportResults
     private ExportResults(@NonNull final Parcel in) {
         in.readList(mBooksExported, getClass().getClassLoader());
         in.readStringList(mCoversExported);
-
-        mCoversSkipped = in.readInt();
-        //noinspection ConstantConditions
-        mCoversMissing = in.createIntArray();
 
         styles = in.readInt();
         preferences = in.readInt();
@@ -102,11 +90,6 @@ public class ExportResults
     public void add(@NonNull final ExportResults results) {
         mBooksExported.addAll(results.mBooksExported);
         mCoversExported.addAll(results.mCoversExported);
-
-        mCoversSkipped += results.mCoversSkipped;
-
-        mCoversMissing[0] += results.mCoversMissing[0];
-        mCoversMissing[1] += results.mCoversMissing[1];
 
         styles += results.styles;
         preferences += results.preferences;
@@ -133,17 +116,6 @@ public class ExportResults
         return mCoversExported;
     }
 
-
-    public void addSkippedCoverCount(final int coverCount) {
-        mCoversSkipped += coverCount;
-    }
-
-    public void addMissingCoverCount(final int[] coverCount) {
-        for (int i = 0; i < coverCount.length; i++) {
-            mCoversMissing[i] += coverCount[i];
-        }
-    }
-
     /**
      * Transform the result data into a user friendly report.
      *
@@ -156,28 +128,24 @@ public class ExportResults
         // Transform the result data into a user friendly report.
         final StringBuilder msg = new StringBuilder();
 
-        //TODO: RTL
-        // slightly misleading. The text currently says "processed" but it should say "exported".
         if (!mBooksExported.isEmpty()) {
             msg.append(BULLET)
-               .append(context.getString(R.string.progress_end_export_result_n_books_processed,
-                                         mBooksExported.size()));
+               .append(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_books),
+                                         String.valueOf(mBooksExported.size())));
         }
-        if (!mCoversExported.isEmpty()
-            || mCoversMissing[0] > 0
-            || mCoversMissing[1] > 0) {
+        if (!mCoversExported.isEmpty()) {
             msg.append(BULLET)
-               .append(context.getString(
-                       R.string.progress_msg_n_covers_processed_m_missing,
-                       mCoversExported.size(),
-                       mCoversMissing[0],
-                       mCoversMissing[1]));
+               .append(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_covers),
+                                         String.valueOf(mCoversExported.size())));
         }
 
         if (styles > 0) {
-            msg.append(BULLET).append(context.getString(R.string.name_colon_value,
-                                                        context.getString(R.string.lbl_styles),
-                                                        String.valueOf(styles)));
+            msg.append(BULLET)
+               .append(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_styles),
+                                         String.valueOf(styles)));
         }
         if (preferences > 0) {
             msg.append(BULLET).append(context.getString(R.string.lbl_settings));
@@ -203,9 +171,6 @@ public class ExportResults
         dest.writeList(mBooksExported);
         dest.writeStringList(mCoversExported);
 
-        dest.writeInt(mCoversSkipped);
-        dest.writeIntArray(mCoversMissing);
-
         dest.writeInt(styles);
         dest.writeInt(preferences);
     }
@@ -221,11 +186,6 @@ public class ExportResults
         return "Results{"
                + ", booksExported=" + mBooksExported
                + ", coversExported=" + mCoversExported
-
-               + ", coversSkipped=" + mCoversSkipped
-               + ", coversMissing[0]=" + mCoversMissing[0]
-               + ", coversMissing[1]=" + mCoversMissing[1]
-
                + ", styles=" + styles
                + ", preferences=" + preferences
                + '}';

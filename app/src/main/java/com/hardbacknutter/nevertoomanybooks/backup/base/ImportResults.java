@@ -69,6 +69,7 @@ public class ImportResults
     public final List<Integer> failedLinesNr = new ArrayList<>();
     /** Keeps track of failed import lines in a text file. */
     public final List<String> failedLinesMessage = new ArrayList<>();
+
     /** The total #books that were present in the import data. */
     public int booksProcessed;
     /** #books we created. */
@@ -77,6 +78,7 @@ public class ImportResults
     public int booksUpdated;
     /** #books we skipped. (yes, we could use failedLinesNr.size()) */
     public int booksSkipped;
+
     /** The total #covers that were present in the import data. */
     public int coversProcessed;
     /** #covers we created. */
@@ -85,6 +87,7 @@ public class ImportResults
     public int coversUpdated;
     /** #covers we skipped. */
     public int coversSkipped;
+
     /** #styles we imported. */
     public int styles;
     /** #preferences we imported. */

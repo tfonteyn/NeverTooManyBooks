@@ -421,10 +421,10 @@
     <string name="progress_msg_connecting">Conectando…</string>
     <string name="progress_msg_searching_editions">Buscando ediciones…</string>
     <string name="progress_msg_loading">Cargando…</string>
-    <string name="progress_end_export_result_n_books_processed">%1$d libros procesados</string>
-    <string name="progress_msg_n_covers_processed">%1$d portadas procesadas</string>
-    <string name="progress_msg_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
-    <string name="progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas (%2$d/%3$d faltantes, %4$d omitidas)</string>
+    <string name="X_progress_msg_n_books_processed">%1$d libros procesados</string>
+    <string name="X_progress_msg_n_covers_processed">%1$d portadas procesadas</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d portadas procesadas\n(%2$d/%3$d faltantes)</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d portadas procesadas (%2$d/%3$d faltantes, %4$d omitidas)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d creados, %3$d actualizados</string>
     <string name="progress_msg_optimizing">Optimizando bases de datos…</string>
     <string name="progress_msg_please_wait">Espera…</string>
@@ -609,7 +609,6 @@
     <string name="warning_requires_site_and_id">Seleccione un sitio web e ingrese una identificación.</string>
     <string name="warning_scanner_failed_to_start">El escáner no pudo iniciarse.</string>
     <string name="warning_scanner_retry_install">Sugerimos que vuelva a intentarlo primero, pero si sigue fallando, reinstale el escáner o instale otro escáner.</string>
-    <string name="X_warning_select_an_existing_folder">Por favor seleccione un directorio existente.</string>
     <string name="warning_select_at_least_1_field">Seleccione al menos un campo para actualizar.</string>
     <string name="warning_select_at_least_1_group">Seleccione al menos un grupo.</string>
     <string name="X_warning_already_in_list_series">Esa serie ya está en la lista</string>
