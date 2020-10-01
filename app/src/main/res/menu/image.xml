@@ -38,12 +38,12 @@
                 android:title="@string/menu_cover_replace_from_camera" />
 
             <item
-                android:id="@id/MENU_THUMB_ADD_FROM_GALLERY"
+                android:id="@id/MENU_THUMB_ADD_FROM_FILE_SYSTEM"
                 android:icon="@drawable/ic_photo_gallery"
                 android:title="@string/menu_cover_replace_from_gallery" />
 
             <item
-                android:id="@id/MENU_THUMB_ADD_ALT_EDITIONS"
+                android:id="@id/MENU_THUMB_ADD_FROM_ALT_EDITIONS"
                 android:icon="@drawable/ic_find_replace"
                 android:title="@string/menu_cover_replace_from_alt_editions" />
 
