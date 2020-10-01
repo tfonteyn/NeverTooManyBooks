@@ -103,7 +103,8 @@
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_import_invalid_archive">Seçilen dosya tanınmıyor.</string>
     <string name="error_please_connect_to_internet">Lütfen İnternet\'e bağlanın.</string>
-    <string name="error_network_timeout">Cevapsız. Tekrar deneyin.</string>
+    <string name="error_network_io">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
+    <string name="error_network_timeout">Sunucuya bağlanma işlemi zaman aşımına uğradı.</string>
     <string name="error_no_image_editor">Resim editörü bulunamadı</string>
     <string name="X_error_not_available">%1$s kullanılamıyor</string>
     <string name="error_search_failed_network">Lütfen Ayarlar\'ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
@@ -665,7 +666,7 @@
     <string name="statick">Statik</string>
     <string name="action_select">Seç</string>
     <string name="error_csv_line_to_long">Satır çok uzun (satır=%1$d, uzunluk=%2$d)</string>
-    <string name="clear_all_data">Tüm verileri sil</string>
+    <string name="action_clear_all_data">Tüm verileri sil</string>
     <string name="pt_line_spacing">Satır aralığı</string>
     <string name="confirm_clear_all_data">BU TÜM VERİLERİ KALDIRACAK!\n Önceki bir yedeklemeden geri yükleme dışında, BU GERİ ALINAMAZ!\n\n Devam etmek istediğine emin misin ?</string>
     <string name="confirm_continue">Devam etmek istediğine emin misin ?</string>

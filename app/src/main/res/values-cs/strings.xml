@@ -101,7 +101,8 @@
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="error_import_invalid_archive">Vybraný soubor není rozpoznán.</string>
     <string name="error_please_connect_to_internet">Připojte se prosím k internetu.</string>
-    <string name="error_network_timeout">Žádná odpověď, zkuste to prosím znovu</string>
+    <string name="error_network_io">Se serverem nelze komunikovat. Zkuste to později.</string>
+    <string name="error_network_timeout">Spojení se serverem vypršelo.</string>
     <string name="error_no_image_editor">Nebyl nalezen žádný editor obrázků</string>
     <string name="X_error_not_available">%1$s není k dispozici</string>
     <string name="error_search_failed_network">Otevřete Nastavení a zkontrolujte předvolby sítě a vyhledávacího webu.\nZkontrolujte také nastavení sítě v zařízení</string>
@@ -665,7 +666,7 @@
     <string name="statick">Statický</string>
     <string name="action_select">Vybrat</string>
     <string name="error_csv_line_to_long">Řádek je příliš dlouhý (řádek=%1$d, délka=%2$d)</string>
-    <string name="clear_all_data">Smažte všechna data</string>
+    <string name="action_clear_all_data">Smažte všechna data</string>
     <string name="pt_line_spacing">Řádkování</string>
     <string name="confirm_clear_all_data">TOTO ODSTRANÍ VŠECHNY ÚDAJE!\n S výjimkou obnovy z předchozí zálohy TO NELZE ZRUŠIT!\n\n Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_continue">Jste si jistý, že chcete pokračovat ?</string>

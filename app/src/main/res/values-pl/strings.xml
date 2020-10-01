@@ -101,7 +101,8 @@
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="error_import_invalid_archive">Wybrany plik nie został rozpoznany.</string>
     <string name="error_please_connect_to_internet">Połącz się z internetem.</string>
-    <string name="error_network_timeout">Brak odpowiedzi. Spróbuj ponownie.</string>
+    <string name="error_network_io">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
+    <string name="error_network_timeout">Zbyt długi czas oczekiwania na połączenie z serwerem.</string>
     <string name="error_no_image_editor">Nie znaleziono edytora zdjęć</string>
     <string name="X_error_not_available">%1$s jest niedostępny</string>
     <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia</string>
@@ -664,7 +665,7 @@
     <string name="statick">Statyczny</string>
     <string name="action_select">Wybierz</string>
     <string name="error_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
-    <string name="clear_all_data">Usuń wszystkie dane</string>
+    <string name="action_clear_all_data">Usuń wszystkie dane</string>
     <string name="pt_line_spacing">Odstępy między wierszami</string>
     <string name="confirm_clear_all_data">TO USUŃ WSZYSTKIE DANE!\n Z wyjątkiem przywracania z poprzedniej kopii zapasowej, TO NIE MOŻE BYĆ Cofnąć!\n\n Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>

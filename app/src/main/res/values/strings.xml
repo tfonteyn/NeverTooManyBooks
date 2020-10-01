@@ -114,7 +114,11 @@
     <string name="error_unknown">An unknown error occurred.</string>
     <!-- [VERIFIED] -->
     <string name="error_please_connect_to_internet">Please connect to the internet.</string>
-    <string name="error_network_timeout">No response, please try again.</string>
+
+    <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
+    <string name="error_network_io">Couldn\'t communicate with the server. Try again later.</string>
+    <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
+    <string name="error_network_timeout">The connection to the server timed out.</string>
 
     <string name="error_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
 
@@ -138,7 +142,7 @@
 
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
 
-    <string name="error_no_image_editor">No picture editor found.</string>
+    <string name="error_no_image_editor">No image editor found.</string>
 
     <!-- The user selected a file to import that was not recognised as a valid archive. -->
     <string name="error_import_invalid_archive">The file selected is not recognized.</string>
@@ -292,6 +296,8 @@
     <!-- ####################################################################################### -->
     <!-- ========== Messages for actions that need confirming first. ========== -->
     <!-- ####################################################################################### -->
+    <string name="confirm_continue">Are you sure you want to continue ?</string>
+
     <string name="confirm_unsaved_edits">You have unsaved changes, if you exit now they will be lost.</string>
     <string name="confirm_unsaved_edits2">You have unsaved changes. Are you sure you want to continue?</string>
 
@@ -323,6 +329,8 @@
 
     <string name="confirm_rebuild_fts">This will rebuild the search index data when the app is restarted. Are you sure you want to continue ?</string>
     <string name="confirm_rebuild_index">This will rebuild the indexes when the app is restarted. Are you sure you want to continue ?</string>
+
+    <string name="confirm_clear_all_data">THIS WILL REMOVE ALL DATA!\n Except by restoring from a previous backup, THIS CANNOT BE UNDONE!\n\n Are you sure you want to continue ?</string>
 
     <string name="confirm_registration_required">This feature requires registration with %1$s. Would you like to see more information?</string>
     <string name="confirm_registration_benefits">This feature benefits from registration with %1$s. Would you like to see more information, or disable this message?\n You can find this information at a later date under the “%2$s” section in the settings.</string>
@@ -1048,6 +1056,8 @@
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag me to reorder this list</string>
 
+    <string name="action_clear_all_data">Clear all data</string>
+
     <!-- ####################################################################################### -->
     <!-- == Hints for input fields.  == -->
     <!-- ####################################################################################### -->
@@ -1058,12 +1068,12 @@
 
     <!-- generic place holder text for fields which are NOT SET.
          The actual text is different from hint_empty_field in Translations.
-         Copy from androidx.preferences# not_set -->
+         [VERIFIED] Copy from androidx.preferences# not_set -->
     <string name="hint_not_set">(Not Set)</string>
 
     <!-- generic place holder text for EMPTY fields.
          The actual text is different from hint_not_set in Translations.
-         Copy from android-29#keyguard_accessibility_widget_empty_slot -->
+         [VERIFIED] Copy from android-29#keyguard_accessibility_widget_empty_slot -->
     <string name="hint_empty_field">(Not Set)</string>
 
     <!-- specific place holder text for Author rows.
@@ -1588,9 +1598,5 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-
-    <string name="clear_all_data">Clear all data</string>
-    <string name="confirm_clear_all_data">THIS WILL REMOVE ALL DATA!\n Except by restoring from a previous backup, THIS CANNOT BE UNDONE!\n\n Are you sure you want to continue ?</string>
-    <string name="confirm_continue">Are you sure you want to continue ?</string>
 
 </resources>

@@ -120,7 +120,7 @@ public class AboutActivity
         });
 
         mVb.debugClearDb.setOnClickListener(v -> new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.clear_all_data)
+                .setTitle(R.string.action_clear_all_data)
                 .setIcon(R.drawable.ic_delete)
                 .setMessage(R.string.confirm_clear_all_data)
                 .setNegativeButton(R.string.no, (d, w) -> d.dismiss())

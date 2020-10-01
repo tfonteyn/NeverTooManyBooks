@@ -103,7 +103,8 @@
     <string name="error_import_failed">Restauration échouée</string>
     <string name="error_import_invalid_archive">Le fichier sélectionné n\'est pas reconnu.</string>
     <string name="error_please_connect_to_internet">Connectez-vous à Internet.</string>
-    <string name="error_network_timeout">Pas de réponse, veuillez réessayer</string>
+    <string name="error_network_io">Impossible d\'établir une communication avec le serveur. Veuillez réessayer ultérieurement.</string>
+    <string name="error_network_timeout">Délai de connexion au serveur dépassé.</string>
     <string name="error_no_image_editor">Aucun éditeur d\'image trouvé</string>
     <string name="X_error_not_available">%1$s indisponible</string>
     <string name="error_search_failed_network">Ouvrez les paramètres et vérifiez les préférences de votre réseau et de votre site de recherche.\nVérifiez également les paramètres réseau de votre appareil</string>
@@ -672,7 +673,7 @@
     <string name="statick">Statique</string>
     <string name="action_select">Sélectionner</string>
     <string name="error_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
-    <string name="clear_all_data">Supprimer toutes les données</string>
+    <string name="action_clear_all_data">Supprimer toutes les données</string>
     <string name="pt_line_spacing">Interligne</string>
     <string name="confirm_clear_all_data">CELA SUPPRIMERA TOUTES LES DONNÉES!\n Sauf en restaurant à partir d\'une sauvegarde précédente, CECI NE PEUT PAS ÊTRE ANNULÉ!\n\n Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_continue">Es-tu sur de vouloir continuer ?</string>

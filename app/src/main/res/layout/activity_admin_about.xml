@@ -159,7 +159,7 @@
             style="@style/MenuButton"
             android:layout_width="0dp"
             android:backgroundTint="?attr/colorError"
-            android:text="@string/clear_all_data"
+            android:text="@string/action_clear_all_data"
             android:textColor="?attr/colorOnError"
             android:visibility="gone"
             app:icon="@drawable/ic_delete"

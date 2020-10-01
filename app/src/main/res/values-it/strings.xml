@@ -102,7 +102,8 @@
     <string name="error_import_failed">Importazione fallita.</string>
     <string name="error_import_invalid_archive">Il file selezionato non è riconosciuto.</string>
     <string name="error_please_connect_to_internet">Connettiti a Internet.</string>
-    <string name="error_network_timeout">Nessuna risposta, per favore riprova</string>
+    <string name="error_network_io">Comunicazione con il server non riuscita. Riprova più tardi.</string>
+    <string name="error_network_timeout">Tempo esaurito per la connessione al server.</string>
     <string name="error_no_image_editor">Nessun editor di immagini trovato</string>
     <string name="X_error_not_available">%1$s non disponibile</string>
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo</string>
@@ -668,7 +669,7 @@
     <string name="statick">Statico</string>
     <string name="action_select">Seleziona</string>
     <string name="error_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
-    <string name="clear_all_data">Elimina tutti i dati</string>
+    <string name="action_clear_all_data">Elimina tutti i dati</string>
     <string name="pt_line_spacing">Interlinea</string>
     <string name="confirm_clear_all_data">QUESTO RIMUOVERÀ TUTTI I DATI!\n Fatta eccezione per il ripristino da un backup precedente, QUESTO NON PU ESSERE ANNULLATO!\n\n Sei sicuro di voler continuare ?</string>
     <string name="confirm_continue">Sei sicuro di voler continuare ?</string>

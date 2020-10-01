@@ -104,7 +104,8 @@
     <string name="error_import_failed">Import gescheitert.</string>
     <string name="error_import_invalid_archive">Die ausgewählte Datei wird nicht erkannt.</string>
     <string name="error_please_connect_to_internet">Bitte stelle eine Verbindung zum Internet her.</string>
-    <string name="error_network_timeout">Keine Antwort, bitte versuchen Sie es erneut</string>
+    <string name="error_network_io">Kommunikation mit dem Server konnte nicht hergestellt werden. Bitte versuche es später noch einmal.</string>
+    <string name="error_network_timeout">Zeitüberschreitung bei Serververbindung.</string>
     <string name="error_no_image_editor">Kein Bildbearbeitungsprogramm gefunden</string>
     <string name="X_error_not_available">%1$s ist nicht verfügbar</string>
     <string name="error_search_failed_network">Öffnen Sie die Einstellungen und überprüfen Sie Ihre Netzwerk- und Site-Sucheinstellungen.\nÜberprüfen Sie auch die Netzwerkeinstellungen Ihres Geräts</string>
@@ -671,7 +672,7 @@
     <string name="statick">Statisch</string>
     <string name="action_select">Auswählen</string>
     <string name="error_csv_line_to_long">Zeile ist zu lang (Zeile=%1$d, Länge=%2$d)</string>
-    <string name="clear_all_data">Löschen Sie alle Daten</string>
+    <string name="action_clear_all_data">Löschen Sie alle Daten</string>
     <string name="pt_line_spacing">Zeilenabstand</string>
     <string name="confirm_clear_all_data">Dies wird alle Daten entfernen!\n Außer durch Wiederherstellen von einem vorherigen Backup kann dies nicht rückgängig gemacht werden!\n\n Sind Sie sicher, dass Sie fortfahren möchten ?</string>
     <string name="confirm_continue">Sind Sie sicher, dass Sie fortfahren möchten ?</string>

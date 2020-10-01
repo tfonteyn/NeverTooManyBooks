@@ -102,7 +102,8 @@
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_import_invalid_archive">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
     <string name="error_please_connect_to_internet">Συνδεθείτε στο διαδίκτυο.</string>
-    <string name="error_network_timeout">Δεν υπάρχει απάντηση, δοκιμάστε ξανά</string>
+    <string name="error_network_io">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
+    <string name="error_network_timeout">Το όριο χρόνου της σύνδεσης στον διακομιστή έληξε.</string>
     <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων</string>
     <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
     <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου. Ελέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας</string>
@@ -668,7 +669,7 @@
     <string name="statick">Στατικός</string>
     <string name="action_select">Επιλογή</string>
     <string name="error_csv_line_to_long">Η γραμμή είναι πολύ μεγάλη (σειρά=%1$d, μήκος=%2$d)</string>
-    <string name="clear_all_data">Διαγραφή όλων των δεδομένων</string>
+    <string name="action_clear_all_data">Διαγραφή όλων των δεδομένων</string>
     <string name="pt_line_spacing">Διάστιχο</string>
     <string name="confirm_clear_all_data">ΑΥΤΑ ΑΦΑΙΡΕΣΕΙ ΟΛΑ ΤΑ ΔΕΔΟΜΕΝΑ!\n Εκτός από την επαναφορά από ένα προηγούμενο αντίγραφο ασφαλείας, ΑΥΤΟ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΚΑΝΕΤΕ ΚΑΤΩ!\n\n Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>

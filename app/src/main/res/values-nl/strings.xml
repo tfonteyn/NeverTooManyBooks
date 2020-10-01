@@ -104,7 +104,8 @@
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_import_invalid_archive">Het geselecteerde bestand is niet herkend.</string>
     <string name="error_please_connect_to_internet">Maak verbinding met internet.</string>
-    <string name="error_network_timeout">Geen antwoord, probeer opnieuw</string>
+    <string name="error_network_io">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
+    <string name="error_network_timeout">Er is een time-out voor de serververbinding opgetreden.</string>
     <string name="error_no_image_editor">Geen foto-editor gevonden</string>
     <string name="X_error_not_available">%1$s is niet beschikbaar</string>
     <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren.\nControleer ook de netwerkinstellingen van uw apparaat</string>
@@ -180,7 +181,7 @@
     <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="info_site_authorization_successful">%1$s autorisatie gelukt</string>
     <string name="error_bad_scanner">Het lijkt er op dat de door jouw gebruikte barcode scanner applicatie niet compatibel is met &APP_NAME;.</string>
-    <string name="txt_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
+    <string name="txt_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="txt_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="txt_export_backup_all">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
     <string name="txt_import_option_all_books">Nieuwe boeken worden toegevoegd. Bestaande boeken worden bijgewerkt.</string>
@@ -669,7 +670,7 @@
     <string name="statick">Statisch</string>
     <string name="action_select">Selecteren</string>
     <string name="error_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
-    <string name="clear_all_data">Verwijder alle gegevens</string>
+    <string name="action_clear_all_data">Verwijder alle gegevens</string>
     <string name="pt_line_spacing">Regelafstand</string>
     <string name="confirm_clear_all_data">DIT ZAL ALLE GEGEVENS VERWIJDEREN!\n Behalve door te herstellen vanaf een vorige back-up, KAN DIT NIET ONGEDAAN WORDEN!\n\n Weet je zeker dat je door wilt gaan ?</string>
     <string name="confirm_continue">Weet je zeker dat je door wilt gaan ?</string>

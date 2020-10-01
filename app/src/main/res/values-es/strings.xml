@@ -103,7 +103,8 @@
     <string name="error_import_failed">La importación falló.</string>
     <string name="error_import_invalid_archive">El archivo seleccionado no se reconoce.</string>
     <string name="error_please_connect_to_internet">Debes conectarte a Internet.</string>
-    <string name="error_network_timeout">No hay respuesta, por favor intente de nuevo</string>
+    <string name="error_network_io">No se ha podido establecer comunicación con el servidor. Inténtalo de nuevo más tarde.</string>
+    <string name="error_network_timeout">Se ha agotado el tiempo de espera de conexión con el servidor.</string>
     <string name="error_no_image_editor">No se encontró editor de imágenes</string>
     <string name="X_error_not_available">%1$s no disponible</string>
     <string name="error_search_failed_network">Abra la Configuración y verifique su red y las preferencias de Buscar en el sitio.\nCompruebe también la configuración de red de su dispositivo</string>
@@ -668,7 +669,7 @@
     <string name="statick">Estático</string>
     <string name="action_select">Seleccionar</string>
     <string name="error_csv_line_to_long">La línea es demasiado larga (fila=%1$d, longitud=%2$d)</string>
-    <string name="clear_all_data">Borrar todos los datos</string>
+    <string name="action_clear_all_data">Borrar todos los datos</string>
     <string name="pt_line_spacing">Espaciado entre líneas</string>
     <string name="confirm_clear_all_data">¡ESTO ELIMINARÁ TODOS LOS DATOS!\n Excepto restaurando desde una copia de seguridad anterior, ¡ESTO NO SE PUEDE DESHACER!\n\n Estás seguro de que quieres continuar ?</string>
     <string name="confirm_continue">Estás seguro de que quieres continuar ?</string>
