@@ -32,7 +32,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Very simple Spinner accessor.
@@ -80,9 +80,7 @@ public class SpinnerAccessor
             list.add(context.getString(id));
         }
         mAdapter = new ArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);
-        if (mAdapter.getCount() == 0) {
-            throw new IllegalArgumentException(ErrorMsg.EMPTY_ARRAY_OR_LIST);
-        }
+        SanityCheck.requireValue(mAdapter.getCount(), "mAdapter.getCount()");
     }
 
     @Override
