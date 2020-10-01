@@ -75,7 +75,7 @@ public class EditBookPublicationFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
-        mBookViewModel.getPublisherList().observe(getViewLifecycleOwner(), publishers -> {
+        mBookViewModel.getPublishers().observe(getViewLifecycleOwner(), publishers -> {
             final Field<List<Publisher>, TextView> field = getField(R.id.publisher);
             field.getAccessor().setValue(publishers);
             field.validate();
@@ -122,7 +122,7 @@ public class EditBookPublicationFragment
               .setRelatedFields(R.id.lbl_color);
 
         fields.add(R.id.publisher, new TextViewAccessor<>(new CsvFormatter()),
-                   Book.BKEY_PUBLISHER_ARRAY, DBDefinitions.KEY_PUBLISHER_NAME)
+                   Book.BKEY_PUBLISHER_LIST, DBDefinitions.KEY_PUBLISHER_NAME)
               .setRelatedFields(R.id.lbl_publisher);
 
         fields.add(R.id.print_run, new EditTextAccessor<>(), DBDefinitions.KEY_PRINT_RUN)
