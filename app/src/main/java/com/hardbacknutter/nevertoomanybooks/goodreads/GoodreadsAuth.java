@@ -48,6 +48,7 @@ import oauth.signpost.http.HttpParameters;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AuthUserApiHandler;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
@@ -387,11 +388,9 @@ public class GoodreadsAuth {
         final String requestToken = prefs.getString(REQUEST_TOKEN, null);
         final String requestSecret = prefs.getString(REQUEST_SECRET, null);
 
-        // sanity check; the tokens are stored in #requestAuthorization
-        if (requestToken == null || requestToken.isEmpty()
-            || requestSecret == null || requestSecret.isEmpty()) {
-            throw new IllegalStateException("No request token found in preferences");
-        }
+        // The tokens are stored in #requestAuthorization
+        SanityCheck.requireValue(requestToken, "requestToken");
+        SanityCheck.requireValue(requestSecret, "requestSecret");
 
         // Update the consumer.
         mConsumer.setTokenWithSecret(requestToken, requestSecret);
