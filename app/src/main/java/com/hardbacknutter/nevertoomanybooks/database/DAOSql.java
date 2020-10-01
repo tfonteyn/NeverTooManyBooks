@@ -291,6 +291,10 @@ public class DAOSql {
         }
 
         /**
+         * General remark on the use of GLOB instead of 'strftime(format, date)':
+         * strftime() only works on full date(time) strings. i.e. 'YYYY-MM-DD*'
+         * for all other formats, it will fail to extract the fields.
+         *
          * Create a GLOB expression to get the 'year' from a text date field in a standard way.
          * <p>
          * Just look for 4 leading numbers. We don't care about anything else.
@@ -364,12 +368,16 @@ public class DAOSql {
             // Just look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
             // We don't care about anything else.
             return CASE
+                   // YYYY-MM-DD
                    + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",9,2)"
+                   // YYYY-M-DD
                    + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9][0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",8,2)"
+                   // YYYY-MM-D
                    + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",9,1)"
+                   // YYYY-M-D
                    + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",8,1)"
                    + " ELSE ''"
@@ -1249,7 +1257,7 @@ public class DAOSql {
         /**
          * Update a single {@link TocEntry} using a safe date construct.
          */
-        static String TOCENTRY =
+        static final String TOCENTRY =
                 UPDATE_ + TBL_TOC_ENTRIES.getName()
                 + _SET_ + KEY_TITLE + "=?"
                 + ',' + KEY_TITLE_OB + "=?"
