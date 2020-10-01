@@ -263,7 +263,8 @@ public class FileManager {
 
                     } else {
                         if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "keeping file=" + file.getName());
+                            Log.d(TAG, "keeping file=" + file.getName()
+                                       + "|exist=" + file.exists());
                         }
                     }
                 }
