@@ -326,7 +326,7 @@ public class AuthorWorksFragment
             } else {
                 // multiple books, open the list as a NEW ACTIVITY
                 final Intent intent = new Intent(getContext(), BooksOnBookshelf.class)
-                        .putExtra(Book.BKEY_BOOK_ID_ARRAY, bookIdList)
+                        .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
                         // Open the list expanded, as otherwise you end up with
                         // the author as a single line, and no books shown at all,
                         // which can be quite confusing to the user.
