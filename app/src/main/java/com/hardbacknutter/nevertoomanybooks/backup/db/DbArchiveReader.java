@@ -78,7 +78,7 @@ public class DbArchiveReader
                 throw new FileNotFoundException(mHelper.getUri().toString());
             }
 
-            File tmpDb = AppDir.Cache.getFile(context, System.currentTimeMillis() + ".db");
+            File tmpDb = AppDir.Cache.getFile(context, System.nanoTime() + ".db");
             tmpDb = FileUtils.copyInputStream(context, is, tmpDb);
             if (tmpDb != null) {
                 mSQLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
