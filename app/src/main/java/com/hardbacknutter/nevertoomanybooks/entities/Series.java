@@ -408,6 +408,9 @@ public class Series
                                     @NonNull final DAO db,
                                     final boolean lookupLocale,
                                     @NonNull final Locale bookLocale) {
+        if (list.isEmpty()) {
+            return false;
+        }
 
         boolean listModified = false;
 
