@@ -34,13 +34,12 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -148,7 +147,7 @@ public class CoverBrowserViewModel
         if (mBaseIsbn == null) {
             mBaseIsbn = args.getString(DBDefinitions.KEY_ISBN);
             mCIdx = args.getInt(BKEY_FILE_INDEX);
-            Objects.requireNonNull(mBaseIsbn, ErrorMsg.NULL_ISBN);
+            SanityCheck.requireValue(mBaseIsbn, "mBaseIsbn");
             // optional
             List<Site> sites = args.getParcelableArrayList(Site.Type.Covers.getBundleKey());
             if (sites == null) {
