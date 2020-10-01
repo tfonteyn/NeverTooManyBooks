@@ -69,13 +69,13 @@ class KbNlBookHandler
     @Override
     public void endDocument() {
         if (!mAuthors.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_ARRAY, mAuthors);
+            mBookData.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
         if (!mSeries.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_SERIES_ARRAY, mSeries);
+            mBookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, mSeries);
         }
         if (!mPublishers.isEmpty()) {
-            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_ARRAY, mPublishers);
+            mBookData.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
         // As kb.nl is dutch, and there is no 'language' field,
         // we're going to assume that all books are in Dutch.
