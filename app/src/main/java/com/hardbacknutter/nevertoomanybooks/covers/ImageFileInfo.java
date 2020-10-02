@@ -50,23 +50,23 @@ public class ImageFileInfo
     };
 
     @NonNull
-    public final String isbn;
+    private final String mIsbn;
     @Nullable
-    public final Size size;
+    private final Size mSize;
     @Nullable
-    public final String fileSpec;
+    private final String mFileSpec;
 
     @SearchSites.EngineId
-    public final int engineId;
+    private final int mEngineId;
 
     /**
      * Constructor. No file.
      */
     ImageFileInfo(@NonNull final String isbn) {
-        this.isbn = isbn;
-        this.fileSpec = null;
-        this.size = null;
-        this.engineId = 0;
+        mIsbn = isbn;
+        mFileSpec = null;
+        mSize = null;
+        mEngineId = 0;
     }
 
     /**
@@ -76,10 +76,10 @@ public class ImageFileInfo
                   @Nullable final String fileSpec,
                   @Nullable final Size size,
                   @SearchSites.EngineId final int engineId) {
-        this.isbn = isbn;
-        this.fileSpec = fileSpec;
-        this.size = size;
-        this.engineId = engineId;
+        mIsbn = isbn;
+        mFileSpec = fileSpec;
+        mSize = size;
+        mEngineId = engineId;
     }
 
     /**
@@ -89,32 +89,51 @@ public class ImageFileInfo
      */
     private ImageFileInfo(@NonNull final Parcel in) {
         //noinspection ConstantConditions
-        isbn = in.readString();
-        fileSpec = in.readString();
-        engineId = in.readInt();
+        mIsbn = in.readString();
+        mFileSpec = in.readString();
+        mEngineId = in.readInt();
 
         int sizeOrdinal = in.readInt();
         if (sizeOrdinal >= 0) {
-            size = Size.values()[sizeOrdinal];
+            mSize = Size.values()[sizeOrdinal];
         } else {
-            size = null;
+            mSize = null;
         }
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeString(isbn);
-        dest.writeString(fileSpec);
-        dest.writeInt(engineId);
+        dest.writeString(mIsbn);
+        dest.writeString(mFileSpec);
+        dest.writeInt(mEngineId);
 
-        dest.writeInt(size != null ? size.ordinal() : -1);
+        dest.writeInt(mSize != null ? mSize.ordinal() : -1);
+    }
+
+    @NonNull
+    public String getIsbn() {
+        return mIsbn;
+    }
+
+    @Nullable
+    public Size getSize() {
+        return mSize;
+    }
+
+    @SearchSites.EngineId
+    int getEngineId() {
+        return mEngineId;
+    }
+
+    boolean hasFileSpec() {
+        return mFileSpec != null;
     }
 
     @Nullable
     public File getFile() {
-        if (fileSpec != null && !fileSpec.isEmpty()) {
-            return new File(fileSpec);
+        if (mFileSpec != null && !mFileSpec.isEmpty()) {
+            return new File(mFileSpec);
         }
         return null;
     }
@@ -128,11 +147,11 @@ public class ImageFileInfo
     @Override
     public String toString() {
         return "ImageFileInfo{"
-               + "isbn=`" + isbn + '`'
-               + ", size=" + size
-               + ", engineId=" + engineId
-               + ", fileSpec=`" + (fileSpec == null ? "" :
-                                   fileSpec.substring(fileSpec.lastIndexOf('/'))) + '`'
+               + "isbn=`" + mIsbn + '`'
+               + ", size=" + mSize
+               + ", engineId=" + mEngineId
+               + ", fileSpec=`" + (mFileSpec == null ? "" :
+                                   mFileSpec.substring(mFileSpec.lastIndexOf('/'))) + '`'
                + '}';
     }
 
