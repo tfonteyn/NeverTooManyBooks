@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -123,7 +124,7 @@ public class CropImageActivity
         }
 
         final Bundle args = getIntent().getExtras();
-        Objects.requireNonNull(args);
+        Objects.requireNonNull(args, ErrorMsg.NULL_EXTRAS);
 
         final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE));
         final Uri uri = Uri.fromFile(new File(srcPath));
