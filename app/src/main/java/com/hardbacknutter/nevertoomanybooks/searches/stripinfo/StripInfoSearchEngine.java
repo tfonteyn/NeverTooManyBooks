@@ -387,7 +387,7 @@ public class StripInfoSearchEngine
 
             } catch (@NonNull final Exception e) {
                 if (BuildConfig.DEBUG) {
-                    Logger.d(TAG, "row=" + row, e);
+                    Logger.d(TAG, e, "row=" + row);
                 }
             }
         }

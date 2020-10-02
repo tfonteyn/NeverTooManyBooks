@@ -210,10 +210,9 @@ public class SynchronizedDb {
         try {
             final long id = mSqlDb.insert(table, nullColumnHack, cv);
             if (id == -1) {
-                Logger.warnWithStackTrace(App.getAppContext(), TAG,
-                                          "Insert failed"
-                                          + "|table=" + table
-                                          + "|cv=" + cv);
+                Logger.error(App.getAppContext(), TAG, new Throwable(), "Insert failed"
+                                                                        + "|table=" + table
+                                                                        + "|cv=" + cv);
             }
             return id;
         } finally {

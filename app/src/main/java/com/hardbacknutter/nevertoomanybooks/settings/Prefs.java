@@ -197,8 +197,8 @@ public final class Prefs {
                 //noinspection unchecked
                 ed.putStringSet(entry.getKey(), (Set<String>) entry.getValue());
             } else {
-                Logger.warnWithStackTrace(context, TAG, "Unknown type",
-                                          entry.getValue().getClass().getCanonicalName());
+                Logger.error(context, TAG, new Throwable(), "Unknown type",
+                             entry.getValue().getClass().getCanonicalName());
             }
         }
         ed.apply();

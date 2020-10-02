@@ -92,7 +92,7 @@ public final class FileUtils {
                 file.delete();
             } catch (@NonNull final /* SecurityException */ RuntimeException e) {
                 if (BuildConfig.DEBUG /* always */) {
-                    Logger.e(TAG, "delete|file=" + file, e);
+                    Logger.e(TAG, e, "delete|file=" + file);
                 }
             }
         }
@@ -158,7 +158,8 @@ public final class FileUtils {
         if (is == null) {
             return null;
         }
-        final File tmpFile = AppDir.Cache.getFile(context, System.nanoTime() + "_stream.jpg");
+
+        final File tmpFile = AppDir.Cache.getFile(context, System.nanoTime() + ".jpg");
         try (OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file

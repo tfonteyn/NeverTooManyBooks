@@ -290,9 +290,8 @@ public class EditBookPublisherListDialogFragment
             mListAdapter.notifyDataSetChanged();
 
         } else {
-            Logger.warnWithStackTrace(getContext(), TAG, "Could not update",
-                                      "original=" + original,
-                                      "modified=" + modified);
+            Logger.error(getContext(), TAG, new Throwable(), "Could not update",
+                         "original=" + original, "modified=" + modified);
             StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
     }

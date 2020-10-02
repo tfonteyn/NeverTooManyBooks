@@ -523,14 +523,17 @@ public abstract class BasePreferenceFragment
                 } else {
                     // This re-surfaces sometimes after a careless dev. change.
                     //noinspection ConstantConditions
-                    Logger.warnWithStackTrace(
-                            getContext(), TAG,
-                            "MultiSelectListPreference:"
-                            + "\n s=" + s
-                            + "\n key=" + msp.getKey()
-                            + "\n entries=" + TextUtils.join(",", msp.getEntries())
-                            + "\n entryValues=" + TextUtils.join(",", msp.getEntryValues())
-                            + "\n values=" + msp.getValues());
+                    Logger.error(getContext(), TAG, new Throwable(), "MultiSelectListPreference:"
+                                                                     + "\n s=" + s
+                                                                     + "\n key=" + msp.getKey()
+                                                                     + "\n entries=" + TextUtils
+                                                                             .join(",",
+                                                                                   msp.getEntries())
+                                                                     + "\n entryValues=" + TextUtils
+                                                                             .join(",",
+                                                                                   msp.getEntryValues())
+                                                                     + "\n values=" + msp
+                                                                             .getValues());
                 }
 
             }

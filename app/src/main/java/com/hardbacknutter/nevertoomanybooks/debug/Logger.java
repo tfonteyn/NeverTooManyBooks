@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  * <p>
  * The second check on DEBUG build in this class is only to catch the lack-of in other places.
  * <p>
- * <ul>{@link #error}, {@link #warn} and {@link #warnWithStackTrace} will write to
+ * <ul>{@link #error} and {@link #warn} will write to
  *      <li>the log file when NOT in debug/junit mode</li>
  *      <li>redirect to the below {@link #e} and {@link #w} methods otherwise</li>
  * </ul>
@@ -89,6 +89,8 @@ public final class Logger {
 
     /**
      * ERROR message. Send to the logfile (always) and the console (when in DEBUG mode).
+     * <p>
+     * Use sparingly, writing to the log is expensive.
      *
      * @param context Current context
      * @param tag     log tag
@@ -108,31 +110,7 @@ public final class Logger {
         writeToLog(context, tag, ERROR, msg, e);
 
         if (BuildConfig.DEBUG /* always */) {
-            e(tag, msg, e);
-        }
-    }
-
-    /**
-     * WARN message with a generated StackTrace.
-     * Send to the logfile (always) and the console (when in DEBUG mode).
-     * <p>
-     * Use sparingly, writing to the log is expensive.
-     * <p>
-     * Use when an error or unusual result should be noted, but will not affect the flow of the app.
-     *
-     * @param context Current context
-     * @param tag     log tag
-     * @param params  to concat
-     */
-    public static void warnWithStackTrace(@NonNull final Context context,
-                                          @NonNull final String tag,
-                                          @NonNull final Object... params) {
-        final Throwable e = new Throwable();
-        final String msg = concat(params);
-        writeToLog(context, tag, WARN, msg, e);
-
-        if (BuildConfig.DEBUG /* always */) {
-            w(tag, msg, e);
+            e(tag, e, msg);
         }
     }
 
@@ -262,7 +240,7 @@ public final class Logger {
             }
             d(tag, method, buf.toString("UTF-8"));
         } catch (@NonNull final IOException e) {
-            d(tag, "dumping failed: ", e);
+            d(tag, e, "dumping failed: ");
         }
     }
 
@@ -359,7 +337,9 @@ public final class Logger {
                          @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
             if (isJUnitTest) {
-                System.out.println("isJUnitTest|DEBUG|" + tag + "|" + method + "|" + msg);
+                System.out.println("isJUnitTest|DEBUG|" + tag
+                                   + "|" + method
+                                   + "|" + msg);
             } else {
                 Log.d(tag, method + "|" + msg);
             }
@@ -368,11 +348,31 @@ public final class Logger {
 
     /** JUnit aware wrapper for {@link Log#d}. */
     public static void d(@NonNull final String tag,
-                         @NonNull final String msg,
-                         @Nullable final Throwable e) {
+                         @NonNull final String method,
+                         @NonNull final Throwable e,
+                         @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
             if (isJUnitTest) {
-                System.out.println("isJUnitTest|DEBUG|" + tag + "|" + msg
+                System.out.println("isJUnitTest|DEBUG|" + tag
+                                   + "|" + method
+                                   + "|" + msg
+                                   + "|" + e.getMessage()
+                                   + "\n" + getStackTraceString(e));
+            } else {
+                Log.d(tag, method + "|" + msg, e);
+            }
+        }
+    }
+
+    /** JUnit aware wrapper for {@link Log#d}. */
+    public static void d(@NonNull final String tag,
+                         @NonNull final Throwable e,
+                         @NonNull final String msg) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isJUnitTest) {
+                System.out.println("isJUnitTest|DEBUG|" + tag
+                                   + "|" + msg
+                                   + "|" + e.getMessage()
                                    + "\n" + getStackTraceString(e));
             } else {
                 Log.d(tag, msg, e);
@@ -382,8 +382,8 @@ public final class Logger {
 
     /** JUnit aware wrapper for {@link Log#e}. */
     public static void e(@NonNull final String tag,
-                         @NonNull final String msg,
-                         @Nullable final Throwable e) {
+                         @Nullable final Throwable e,
+                         @NonNull final String msg) {
         if (BuildConfig.DEBUG /* always */) {
             if (isJUnitTest) {
                 System.out.println("isJUnitTest|ERROR|" + tag + "|" + msg
@@ -402,20 +402,6 @@ public final class Logger {
                 System.out.println("isJUnitTest|WARN|" + tag + "|" + msg);
             } else {
                 Log.w(tag, msg);
-            }
-        }
-    }
-
-    /** JUnit aware wrapper for {@link Log#w}. */
-    public static void w(@NonNull final String tag,
-                         @NonNull final String msg,
-                         @Nullable final Throwable e) {
-        if (BuildConfig.DEBUG /* always */) {
-            if (isJUnitTest) {
-                System.out.println("isJUnitTest|WARN|" + tag + "|" + msg
-                                   + "\n" + getStackTraceString(e));
-            } else {
-                Log.w(tag, msg, e);
             }
         }
     }
