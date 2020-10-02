@@ -42,8 +42,8 @@ public class ImageLoader
 
     @NonNull
     private final WeakReference<ImageView> mImageView;
-    protected final int mMaxWidth;
-    protected final int mMaxHeight;
+    final int mMaxWidth;
+    final int mMaxHeight;
 
     @NonNull
     private final File mFile;
