@@ -32,6 +32,8 @@
     <!-- Cover browser single/large preview image. -->
     <item name="TASK_ID_PREVIEW_IMAGE" type="id" />
 
+    <item name="TASK_ID_IMAGE_TRANSFORMATION" type="id" />
+
     <item name="TASK_ID_UPDATE_FIELDS" type="id" />
 
     <!-- Specific ISFDB task used in the 'edit book TOC' fragment. -->
