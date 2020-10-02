@@ -92,6 +92,13 @@ public class EntityStatus {
         }
     }
 
+    /**
+     * The flow is normally: ReadOnly -> Writeable -> Dirty -> Saved.
+     * An 'undo' from WriteAble/Dirty back to 'ReadOnly' is fully supported.
+     * <p>
+     * The {@link #Saved} stage is not really needed, but serves are a clear distinction between a
+     * 'before' and 'after' being edited.
+     */
     public enum Stage {
         /** Initial state. */
         ReadOnly,
