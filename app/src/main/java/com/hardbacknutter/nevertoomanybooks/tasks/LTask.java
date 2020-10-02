@@ -87,10 +87,13 @@ public abstract class LTask<Result>
     }
 
 
+    /**
+     * Final, override {@link #doWork(Context)} instead.
+     */
     @Nullable
     @Override
     @WorkerThread
-    protected Result doInBackground(@Nullable final Void... voids) {
+    protected final Result doInBackground(@Nullable final Void... voids) {
         final Context context = AppLocale.getInstance().apply(App.getTaskContext());
         return doWork(context);
     }
