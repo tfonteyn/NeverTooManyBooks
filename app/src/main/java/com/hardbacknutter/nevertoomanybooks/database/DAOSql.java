@@ -46,7 +46,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_BL_TOP_OFFSET;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_BL_TOP_POS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_BL_TOP_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
@@ -703,7 +702,6 @@ public class DAOSql {
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_NAME)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_POS)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_OFFSET)
-                + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_ROW_ID)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dotAs(KEY_UUID)
                 + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
@@ -858,7 +856,6 @@ public class DAOSql {
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_NAME)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_POS)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_OFFSET)
-                + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_ROW_ID)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_FK_STYLE)
                 + ',' + TBL_BOOKLIST_STYLES.dotAs(KEY_UUID)
 

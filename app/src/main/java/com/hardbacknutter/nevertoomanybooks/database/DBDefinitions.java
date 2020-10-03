@@ -162,10 +162,6 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOKSHELF_BL_TOP_POS;
     /** Saved booklist adapter top row offset from view top. */
     public static final Domain DOM_BOOKSHELF_BL_TOP_OFFSET;
-    /** Saved booklist adapter rowId of current top row. */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
-    public static final Domain DOM_BOOKSHELF_BL_TOP_ROW_ID;
 
     /** {@link #TBL_AUTHORS}. */
     public static final Domain DOM_AUTHOR_FAMILY_NAME;
@@ -432,9 +428,6 @@ public final class DBDefinitions {
     public static final String KEY_BOOKSHELF_NAME = "bookshelf";
     public static final String KEY_BOOKSHELF_BL_TOP_POS = "bl_top_pos";
     public static final String KEY_BOOKSHELF_BL_TOP_OFFSET = "bl_top_offset";
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated
-    public static final String KEY_BOOKSHELF_BL_TOP_ROW_ID = "bl_top_row";
     /** Alias. */
     public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
 
@@ -693,12 +686,6 @@ public final class DBDefinitions {
 
         DOM_BOOKSHELF_BL_TOP_OFFSET =
                 new Domain.Builder(KEY_BOOKSHELF_BL_TOP_OFFSET, ColumnInfo.TYPE_INTEGER)
-                        .notNull()
-                        .withDefault(0)
-                        .build();
-
-        DOM_BOOKSHELF_BL_TOP_ROW_ID =
-                new Domain.Builder(KEY_BOOKSHELF_BL_TOP_ROW_ID, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .withDefault(0)
                         .build();
@@ -1169,8 +1156,7 @@ public final class DBDefinitions {
                                  DOM_FK_STYLE,
                                  DOM_BOOKSHELF_NAME,
                                  DOM_BOOKSHELF_BL_TOP_POS,
-                                 DOM_BOOKSHELF_BL_TOP_OFFSET,
-                                 DOM_BOOKSHELF_BL_TOP_ROW_ID)
+                                 DOM_BOOKSHELF_BL_TOP_OFFSET)
                      .setPrimaryKey(DOM_PK_ID)
                      .addReference(TBL_BOOKLIST_STYLES, DOM_FK_STYLE)
                      .addIndex(KEY_BOOKSHELF_NAME, true, DOM_BOOKSHELF_NAME);
