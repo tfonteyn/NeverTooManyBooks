@@ -72,7 +72,7 @@ final class UpgradeDatabase {
                                        @Nullable final String... toRemove) {
 
         final String dstTableName = "recreating";
-        TableDefinition dstTable = new TableDefinition(source);
+        final TableDefinition dstTable = new TableDefinition(source);
         dstTable.setName(dstTableName);
         dstTable.create(db, withConstraints)
                 .createIndices(db);
@@ -105,7 +105,7 @@ final class UpgradeDatabase {
         // Get the source info
         final TableInfo sourceTable = new TableInfo(db, source);
         // Build the column list
-        StringJoiner columns = new StringJoiner(",");
+        final StringJoiner columns = new StringJoiner(",");
         for (ColumnInfo ci : sourceTable.getColumns()) {
             boolean isNeeded = true;
             if (toRemove != null) {
