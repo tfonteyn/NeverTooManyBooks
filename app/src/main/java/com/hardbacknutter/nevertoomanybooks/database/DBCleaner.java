@@ -438,10 +438,6 @@ public class DBCleaner {
 
         // remove orphan rows
         bookBookshelf(dryRun);
-
-
-        //TODO: books table: search for invalid UUIDs, check if there is a file, rename/remove...
-        // in particular if the UUID is surrounded with '' or ""
     }
 
     /**

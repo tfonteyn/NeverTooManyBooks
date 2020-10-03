@@ -113,7 +113,7 @@ public class TableDefinition {
      * Copy constructor.
      * <p>
      * TODO: verify the way foreign key CHILDREN references are copied.
-     * Every thing works fine, but I *think* it's not correct. (like removing old references?)
+     * Everything works fine, but I *think* it's not correct. (like removing old references?)
      *
      * @param from object to copy
      */

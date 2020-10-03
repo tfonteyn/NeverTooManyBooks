@@ -1226,7 +1226,6 @@ public class Book
                     } catch (@NonNull final IOException e) {
                         Logger.error(context, TAG, e,
                                      "setCover|bookId=" + getId() + "|cIdx=" + cIdx);
-                        //FIXME: we should delete the orphaned images....
                         return null;
                     }
                 }
@@ -1301,7 +1300,6 @@ public class Book
                     } catch (@NonNull final IOException e) {
                         Logger.error(context, TAG, e,
                                      "storeCovers|bookId=" + getId() + "|cIdx=" + cIdx);
-                        //FIXME: we should delete the orphaned images....
                         return false;
                     }
                 }

@@ -619,7 +619,6 @@ public class UpdateFieldsModel
                 } catch (@NonNull final IOException e) {
                     Logger.error(context, TAG, e,
                                  "processSearchResultsCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
-                    //FIXME: we should delete the orphaned images....
                 }
             }
             bookData.remove(Book.BKEY_TMP_FILE_SPEC[cIdx]);
