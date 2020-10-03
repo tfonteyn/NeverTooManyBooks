@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -146,29 +147,22 @@ public class TableDefinition {
     }
 
     /**
-     * Given a list of table, create the database (tables + indexes).
+     * Given a list of tables, create the database (tables + indexes).
      * Constraints and references will be active.
+     * <p>
+     * This method is only called during
+     * {@link android.database.sqlite.SQLiteOpenHelper#onCreate(SQLiteDatabase)}
      *
      * @param db     SQLiteDatabase
      * @param tables Table list
      */
-    public static void createTables(@NonNull final SQLiteDatabase db,
-                                    @NonNull final TableDefinition... tables) {
+    public static void onCreate(@NonNull final SQLiteDatabase db,
+                                @NonNull final TableDefinition... tables) {
         for (TableDefinition table : tables) {
-            table.create(db);
-        }
-    }
-
-    /**
-     * Create this table and it's indexes.
-     * Constraints and references will be active.
-     *
-     * @param db SQLiteDatabase
-     */
-    private void create(@NonNull final SQLiteDatabase db) {
-        db.execSQL(def(mName, true, true, false));
-        for (IndexDefinition index : mIndexes) {
-            index.create(db);
+            db.execSQL(table.def(table.mName, true, true, false));
+            for (IndexDefinition index : table.mIndexes) {
+                index.onCreate(db);
+            }
         }
     }
 
@@ -188,25 +182,21 @@ public class TableDefinition {
     }
 
     /**
-     * Create this table. Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
+     * Create all registered indexes for this table.
      *
-     * @param db                  Database Access
-     * @param withConstraints     Indicates if fields should have constraints applied
-     * @param withTableReferences Indicate if table should have constraints applied
-     *
-     * @return TableDefinition (for chaining)
+     * @param db Database Access
      */
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public TableDefinition create(@NonNull final SynchronizedDb db,
-                                  final boolean withConstraints,
-                                  final boolean withTableReferences) {
-        db.execSQL(def(mName, withConstraints, withTableReferences, false));
-        return this;
+    public void createIndices(@NonNull final SynchronizedDb db) {
+        for (IndexDefinition index : mIndexes) {
+            index.create(db);
+        }
     }
 
     /**
-     * Syntax sugar; meant for recreating temporary tables.
+     * Syntax sugar; meant for recreating {@link TableType#Temporary} tables.
+     *
+     * If the table has no references to it, this method can also
+     * be used on {@link TableType#Standard}.
      * <p>
      * Drop this table (if it exists) and (re)create it including its indexes.
      *
@@ -220,16 +210,6 @@ public class TableDefinition {
             db.drop(mName);
         }
         db.execSQL(def(mName, withConstraints, true, false));
-
-        createIndices(db);
-    }
-
-    /**
-     * Create all registered indexes for this table.
-     *
-     * @param db Database Access
-     */
-    public void createIndices(@NonNull final SynchronizedDb db) {
         for (IndexDefinition index : mIndexes) {
             index.create(db);
         }
@@ -810,17 +790,13 @@ public class TableDefinition {
 
         // add the columns
         boolean hasPrimaryKey = false;
-        boolean first = true;
+        final StringJoiner columns = new StringJoiner(",");
         for (Domain domain : mDomains) {
-            if (first) {
-                first = false;
-            } else {
-                sql.append(',');
-            }
-            sql.append(domain.def(withConstraints));
+            columns.add(domain.def(withConstraints));
             // remember if we added a primary key column.
             hasPrimaryKey = hasPrimaryKey || domain.isPrimaryKey();
         }
+        sql.append(columns);
 
         // add the primary key if not already added / needed.
         if (!hasPrimaryKey && !mPrimaryKey.isEmpty()) {

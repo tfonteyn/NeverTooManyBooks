@@ -93,10 +93,13 @@ class IndexDefinition {
 
     /**
      * Create the index.
+     * <p>
+     * This method is only called during
+     * {@link android.database.sqlite.SQLiteOpenHelper#onCreate(SQLiteDatabase)}
      *
      * @param db SQLiteDatabase
      */
-    public void create(@NonNull final SQLiteDatabase db) {
+    public void onCreate(@NonNull final SQLiteDatabase db) {
         db.execSQL(def());
     }
 

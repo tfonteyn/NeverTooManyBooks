@@ -494,7 +494,7 @@ public final class CoversDAO
 
         @Override
         public void onCreate(@NonNull final SQLiteDatabase db) {
-            TableDefinition.createTables(db, TBL_IMAGE);
+            TableDefinition.onCreate(db, TBL_IMAGE);
         }
 
         @Override

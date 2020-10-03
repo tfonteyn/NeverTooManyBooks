@@ -549,42 +549,46 @@ public final class DBHelper
 
     @Override
     public void onConfigure(@NonNull final SQLiteDatabase db) {
-        // Turn ON foreign key support so that CASCADE etc. works.
-        // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
-        db.setForeignKeyConstraintsEnabled(true);
-
         // Turn OFF recursive triggers;
         db.execSQL("PRAGMA recursive_triggers = OFF");
 
-        // for debug
-        //sSyncedDb.execSQL("PRAGMA temp_store = FILE");
+        // DO NOT ENABLE FOREIGN KEY CONSTRAINTS HERE. Enable them in onOpen instead.
+        // WE NEED THIS TO BE false (default) TO ALLOW onUpgrade TO MAKE SCHEMA CHANGES
+        // db.setForeignKeyConstraintsEnabled(true);
     }
 
+    /**
+     * <strong>REMINDER: foreign key constraints are DISABLED here</strong>
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
+
+
         final Context context = AppLocale.getInstance().apply(App.getAppContext());
 
         final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
-        TableDefinition.createTables(db,
-                                     // app tables
-                                     TBL_BOOKLIST_STYLES,
-                                     // basic user data tables
-                                     TBL_BOOKSHELF,
-                                     TBL_AUTHORS,
-                                     TBL_SERIES,
-                                     TBL_PUBLISHERS,
-                                     TBL_BOOKS,
-                                     TBL_TOC_ENTRIES,
-                                     // link tables
-                                     TBL_BOOK_TOC_ENTRIES,
-                                     TBL_BOOK_AUTHOR,
-                                     TBL_BOOK_BOOKSHELF,
-                                     TBL_BOOK_SERIES,
-                                     TBL_BOOK_PUBLISHER,
-                                     TBL_BOOK_LOANEE,
-                                     // permanent booklist management tables
-                                     TBL_BOOK_LIST_NODE_STATE);
+        TableDefinition.onCreate(db,
+                                 // app tables
+                                 TBL_BOOKLIST_STYLES,
+                                 // basic user data tables
+                                 TBL_BOOKSHELF,
+                                 TBL_AUTHORS,
+                                 TBL_SERIES,
+                                 TBL_PUBLISHERS,
+                                 TBL_BOOKS,
+                                 TBL_TOC_ENTRIES,
+                                 // link tables
+                                 TBL_BOOK_TOC_ENTRIES,
+                                 TBL_BOOK_AUTHOR,
+                                 TBL_BOOK_BOOKSHELF,
+                                 TBL_BOOK_SERIES,
+                                 TBL_BOOK_PUBLISHER,
+                                 TBL_BOOK_LOANEE,
+                                 // permanent booklist management tables
+                                 TBL_BOOK_LIST_NODE_STATE);
 
         // insert the builtin styles so foreign key rules are possible.
         prepareStylesTable(db);
@@ -597,7 +601,11 @@ public final class DBHelper
         createTriggers(syncedDb);
     }
 
-
+    /**
+     * <strong>REMINDER: foreign key constraints are DISABLED here</strong>
+     * <p>
+     * {@inheritDoc}
+     */
     @Override
     public void onUpgrade(@NonNull final SQLiteDatabase db,
                           final int oldVersion,
@@ -610,6 +618,7 @@ public final class DBHelper
             startup.onProgress(R.string.progress_msg_upgrading);
         }
 
+        // take a backup before modifying the database
         if (oldVersion != newVersion) {
             final String backup = DB_UPGRADE_FILE_PREFIX + "-" + oldVersion + '-' + newVersion;
             try {
@@ -634,33 +643,26 @@ public final class DBHelper
 
         final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
-        int curVersion = oldVersion;
-
-        if (curVersion < newVersion && curVersion == 1) {
-            curVersion = 2;
+        if (oldVersion < 2) {
             TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_COLOR);
         }
-        if (curVersion < newVersion && curVersion == 2) {
-            curVersion = 3;
+        if (oldVersion < 3) {
             TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_CONDITION);
             TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER);
         }
-        if (curVersion < newVersion && curVersion == 3) {
-            curVersion = 4;
+        if (oldVersion < 4) {
             // bug fix: this was modifying the books last update-date each time a bookshelf
             // changed its current style.
             syncedDb.execSQL("DROP TRIGGER IF EXISTS after_update_onbookshelf");
         }
-        if (curVersion < newVersion && curVersion == 4) {
-            curVersion = 5;
+        if (oldVersion < 5) {
             // changed column names; just scrap the old data
-            TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
+            syncedDb.drop(TBL_BOOK_LIST_NODE_STATE.getName());
+            TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
         }
-        if (curVersion < newVersion && curVersion == 5) {
-            curVersion = 6;
+        if (oldVersion < 6) {
             TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_POS);
             TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET);
-            TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_ROW_ID);
 
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
@@ -673,9 +675,7 @@ public final class DBHelper
                              .remove("compat.booklist.mode")
                              .apply();
         }
-
-        if (curVersion < newVersion && curVersion == 6) {
-            curVersion = 7;
+        if (oldVersion < 7) {
             TBL_PUBLISHERS.create(syncedDb, true);
             TBL_BOOK_PUBLISHER.create(syncedDb, true);
 
@@ -717,9 +717,7 @@ public final class DBHelper
 
             StartupViewModel.scheduleFtsRebuild(context, true);
         }
-
-        if (curVersion < newVersion && curVersion == 7) {
-            curVersion = 8;
+        if (oldVersion < 8) {
             // pref key name changes
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             final Set<String> all = prefs.getAll().keySet();
@@ -735,30 +733,27 @@ public final class DBHelper
 
             TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_LAST_DODO_NL);
         }
-
-        if (curVersion < newVersion && curVersion == 8) {
-            curVersion = 9;
+        if (oldVersion < 9) {
             TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_CALIBRE);
         }
-
-        if (curVersion < newVersion && curVersion == 9) {
-            curVersion = 10;
+        if (oldVersion < 10) {
             // added visibility column; just scrap the old data
-            TBL_BOOK_LIST_NODE_STATE.recreate(syncedDb, true);
+            syncedDb.drop(TBL_BOOK_LIST_NODE_STATE.getName());
+            TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
             // moved to FTS4
             StartupViewModel.scheduleFtsRebuild(context, true);
         }
-
-        if (curVersion < newVersion && curVersion == 10) {
-            //noinspection UnusedAssignment
-            curVersion = 11;
-
+        if (oldVersion < 11) {
+            // remove the obsolete "bl_top_row" from TBL_BOOKSHELF
+            UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_BOOKSHELF, true,
+                                                   "bl_top_row");
             StartupViewModel.scheduleMaintenance(context, true);
         }
 
-        // TODO: if at a future time we make a change that requires to copy/reload the books table,
+        //TODO: if at a future time we make a change that requires to copy/reload the books table,
         // we should at the same time change DOM_UTC_LAST_SYNC_DATE_GOODREADS
         // See note in the DBDefinitions class.
+
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_your_engine_external_id);
@@ -774,6 +769,10 @@ public final class DBHelper
         if (sIsCollationCaseSensitive == null) {
             sIsCollationCaseSensitive = collationIsCaseSensitive(db);
         }
+
+        // Turn ON foreign key support so that CASCADE etc. works.
+        // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
+        db.setForeignKeyConstraintsEnabled(true);
     }
 
     /**

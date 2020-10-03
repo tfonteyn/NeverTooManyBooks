@@ -25,8 +25,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Locale;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -42,46 +44,44 @@ final class UpgradeDatabase {
     }
 
     /**
-     * Renames the original table, recreates it, and loads the data into the new table.
-     *
-     * @param db              Database Access
-     * @param tableName       the table
-     * @param createStatement sql to recreate the table
-     * @param toRemove        (optional) List of fields to be removed from the source table
-     */
-    private static void recreateAndReloadTable(@NonNull final SynchronizedDb db,
-                                               @NonNull final String tableName,
-                                               @NonNull final String createStatement,
-                                               @NonNull final String... toRemove) {
-        final String tempName = "recreate_tmp";
-        db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempName);
-        db.execSQL(createStatement);
-        // This handles re-ordered fields etc.
-        copyTableSafely(db, tempName, tableName, toRemove);
-        db.execSQL("DROP TABLE " + tempName);
-    }
-
-    /**
      * Rename the given table, recreate it, load the data into the new table, drop the old table.
      *
+     * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
+     * SQLite - making_other_kinds_of_table_schema_changes</a>
+     * <p>
+     * The 12 steps in summary:
+     * <ol>
+     *  <li>If foreign key constraints are enabled, disable them using PRAGMA foreign_keys=OFF.</li>
+     *  <li>Create new table</li>
+     *  <li>Copy data</li>
+     *  <li>Drop old table</li>
+     *  <li>Rename new into old</li>
+     *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
+     * </ol>
+     *
      * @param db              Database Access
-     * @param table           the table
+     * @param source          the table
      * @param withConstraints Indicates if fields should have constraints applied
      * @param toRemove        (optional) List of fields to be removed from the source table
      */
     static void recreateAndReloadTable(@NonNull final SynchronizedDb db,
-                                       @NonNull final TableDefinition table,
+                                       @SuppressWarnings("SameParameterValue")
+                                       @NonNull final TableDefinition source,
+                                       @SuppressWarnings("SameParameterValue")
                                        final boolean withConstraints,
-                                       @NonNull final String... toRemove) {
-        final String tableName = table.getName();
-        final String tempSource = "source_tmp";
-        db.execSQL("ALTER TABLE " + tableName + " RENAME TO " + tempSource);
+                                       @Nullable final String... toRemove) {
 
-        table.create(db, withConstraints)
-             .createIndices(db);
+        final String dstTableName = "recreating";
+        TableDefinition dstTable = new TableDefinition(source);
+        dstTable.setName(dstTableName);
+        dstTable.create(db, withConstraints)
+                .createIndices(db);
+
         // This handles re-ordered fields etc.
-        copyTableSafely(db, tempSource, tableName, toRemove);
-        db.execSQL("DROP TABLE " + tempSource);
+        copyTableSafely(db, source.getName(), dstTableName, toRemove);
+
+        db.execSQL("DROP TABLE " + source.getName());
+        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + source.getName());
     }
 
     /**
@@ -95,35 +95,32 @@ final class UpgradeDatabase {
      * @param source      from table
      * @param destination to table
      * @param toRemove    (optional) List of fields to be removed from the source table
-     *                    (skipped in copy)
      */
     private static void copyTableSafely(@NonNull final SynchronizedDb db,
                                         @SuppressWarnings("SameParameterValue")
                                         @NonNull final String source,
+                                        @SuppressWarnings("SameParameterValue")
                                         @NonNull final String destination,
-                                        @NonNull final String... toRemove) {
+                                        @Nullable final String... toRemove) {
         // Get the source info
         final TableInfo sourceTable = new TableInfo(db, source);
         // Build the column list
-        final StringBuilder columns = new StringBuilder();
-        boolean first = true;
+        StringJoiner columns = new StringJoiner(",");
         for (ColumnInfo ci : sourceTable.getColumns()) {
             boolean isNeeded = true;
-            for (String s : toRemove) {
-                if (s.equalsIgnoreCase(ci.name)) {
-                    isNeeded = false;
-                    break;
+            if (toRemove != null) {
+                for (String s : toRemove) {
+                    if (s.equalsIgnoreCase(ci.name)) {
+                        isNeeded = false;
+                        break;
+                    }
                 }
             }
             if (isNeeded) {
-                if (first) {
-                    first = false;
-                } else {
-                    columns.append(',');
-                }
-                columns.append(ci.name);
+                columns.add(ci.name);
             }
         }
+
         final String colList = columns.toString();
         final String sql = "INSERT INTO " + destination + '(' + colList + ") SELECT "
                            + colList + " FROM " + source;
