@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
@@ -64,8 +63,8 @@ public final class DEBUG_SWITCHES {
     /** track the flow & values on startActivityForResult & onActivityResult. */
     public static final boolean ON_ACTIVITY_RESULT = false;
 
-    /** {@link CoverBrowserDialogFragment}. */
-    public static final boolean COVER_BROWSER = false;
+    /** all things related to cover image handling. */
+    public static final boolean COVERS = false;
 
     /** all things XML related. */
     public static final boolean XML = false;

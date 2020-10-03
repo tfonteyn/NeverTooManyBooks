@@ -35,8 +35,8 @@ import androidx.exifinterface.media.ExifInterface;
 import java.io.File;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
@@ -91,13 +91,13 @@ public class TransFormTaskViewModel
         if (bitmap != null) {
             int angle = calculateRotationAngle();
             if (angle != 0) {
-                bitmap = rotate(bitmap, angle);
+                bitmap = rotate(context, bitmap, angle);
             }
         }
 
         // Write out to the destination file
         if (bitmap != null) {
-            if (BuildConfig.DEBUG /* always */) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "saving bitmap to destination="
                            + mTransformation.getDestFile());
             }
@@ -119,16 +119,18 @@ public class TransFormTaskViewModel
     /**
      * Rotate the given bitmap.
      *
-     * @param source bitmap to rotate
-     * @param angle  rotate by the specified amount
+     * @param context Current context
+     * @param source  bitmap to rotate
+     * @param angle   rotate by the specified amount
      *
      * @return the rotated bitmap OR the source bitmap if the rotation fails for any reason.
      */
     @NonNull
     @WorkerThread
-    private Bitmap rotate(@NonNull final Bitmap source,
+    private Bitmap rotate(@NonNull final Context context,
+                          @NonNull final Bitmap source,
                           final int angle) {
-        if (BuildConfig.DEBUG /* always */) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Log.d(TAG, "rotate angle=" + angle);
         }
         try {
@@ -144,7 +146,7 @@ public class TransFormTaskViewModel
             }
         } catch (@NonNull final OutOfMemoryError e) {
             // this is likely to fail if we're out of memory, but let's try at least
-            Logger.error(App.getTaskContext(), TAG, e);
+            Logger.error(context, TAG, e);
         }
 
         return source;
@@ -160,7 +162,7 @@ public class TransFormTaskViewModel
             final int exifAngle = getExifAngle();
             final int angle = mTransformation.getSurfaceRotation() - exifAngle;
 
-            if (BuildConfig.DEBUG /* always */) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "exif=" + exifAngle
                            + "|mSurfaceRotation=" + mTransformation.getSurfaceRotation()
                            + "|angle=" + angle

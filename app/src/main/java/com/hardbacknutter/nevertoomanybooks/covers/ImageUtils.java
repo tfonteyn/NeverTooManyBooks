@@ -43,6 +43,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
@@ -327,7 +328,7 @@ public final class ImageUtils {
         } catch (@NonNull final IOException e) {
             FileUtils.delete(file);
 
-            if (BuildConfig.DEBUG /* always */) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Logger.d(TAG, "saveImage", "|e=" + e.getLocalizedMessage());
 
                 // When running as a JUnit test, the file.renameTo done during the

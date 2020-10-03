@@ -134,7 +134,7 @@ public class CoverBrowserViewModel
         cancelAllTasks();
 
         if (mFileManager != null) {
-            mFileManager.purge(mSelectedFileAbsolutePath);
+            mFileManager.purge();
         }
     }
 
@@ -317,7 +317,7 @@ public class CoverBrowserViewModel
             mSelectedImageTask.cancel(true);
         }
         mSelectedImageTask = new FetchImageTask(R.id.TASK_ID_PREVIEW_IMAGE,
-                                                imageFileInfo.isbn, mCIdx,
+                                                imageFileInfo.getIsbn(), mCIdx,
                                                 mFileManager, mTaskListener,
                                                 ImageFileInfo.Size.LARGE_FIRST);
 

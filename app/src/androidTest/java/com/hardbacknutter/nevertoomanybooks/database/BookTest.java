@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.database;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Environment;
 
 import androidx.annotation.NonNull;
@@ -44,9 +45,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.Constants.COVER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -64,24 +67,24 @@ public class BookTest {
     private static final String NEED_A_CACHE_DIRECTORY = "Need a cache directory";
     private static final String EXT_JPG = ".jpg";
 
-    private final Bookshelf[] bookshelf = new Bookshelf[5];
-    private final long[] bookshelfId = new long[5];
-    private final ArrayList<Bookshelf> bookshelfList = new ArrayList<>();
+    private final Bookshelf[] mBookshelf = new Bookshelf[5];
+    private final long[] mBookshelfId = new long[5];
+    private final ArrayList<Bookshelf> mBookshelfList = new ArrayList<>();
 
-    private final Author[] author = new Author[5];
-    private final long[] authorId = new long[5];
-    private final ArrayList<Author> authorList = new ArrayList<>();
+    private final Author[] mAuthor = new Author[5];
+    private final long[] mAuthorId = new long[5];
+    private final ArrayList<Author> mAuthorList = new ArrayList<>();
 
-    private final Publisher[] publisher = new Publisher[5];
-    private final long[] publisherId = new long[5];
-    private final ArrayList<Publisher> publisherList = new ArrayList<>();
+    private final Publisher[] mPublisher = new Publisher[5];
+    private final long[] mPublisherId = new long[5];
+    private final ArrayList<Publisher> mPublisherList = new ArrayList<>();
 
-    private final TocEntry[] tocEntry = new TocEntry[5];
-    private final long[] tocEntryId = new long[5];
-    private final ArrayList<TocEntry> tocEntryList = new ArrayList<>();
+    private final TocEntry[] mTocEntry = new TocEntry[5];
+    private final long[] mTocEntryId = new long[5];
+    private final ArrayList<TocEntry> mTocEntryList = new ArrayList<>();
 
-    private final Book[] book = new Book[5];
-    private final long[] bookId = new long[5];
+    private final Book[] mBook = new Book[5];
+    private final long[] mBookId = new long[5];
 
     private final String[] mOriginalImageFileName = new String[2];
     private final long[] mOriginalImageSize = new long[2];
@@ -98,10 +101,10 @@ public class BookTest {
     public void setup()
             throws IOException {
 
-        bookshelfList.clear();
-        authorList.clear();
-        publisherList.clear();
-        tocEntryList.clear();
+        mBookshelfList.clear();
+        mAuthorList.clear();
+        mPublisherList.clear();
+        mTocEntryList.clear();
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (DAO db = new DAO(context, "setup")) {
@@ -110,20 +113,36 @@ public class BookTest {
             Constants.deleteBooks(db);
             Constants.deleteAuthors(db);
             Constants.deletePublishers(db);
+
+            mBookshelf[0] = Bookshelf.getBookshelf(context, db, Bookshelf.DEFAULT);
+            mBookshelfList.clear();
+            mBookshelfList.add(mBookshelf[0]);
+
+            mAuthor[0] = Author.from(AuthorFullName(0));
+            mAuthor[1] = Author.from(AuthorFullName(1));
+
+            // insert author[0] but do NOT insert author[1]
+            mAuthorId[0] = db.insert(context, mAuthor[0]);
+            mAuthorList.clear();
+            mAuthorList.add(mAuthor[0]);
+
+            mPublisher[0] = Publisher.from(Constants.PUBLISHER + "0");
+            mPublisher[1] = Publisher.from(Constants.PUBLISHER + "1");
+
+            // insert publisher[0] but do NOT publisher author[1]
+            mPublisherId[0] = db.insert(context, mPublisher[0], Locale.getDefault());
+            mPublisherList.clear();
+            mPublisherList.add(mPublisher[0]);
         }
 
-        final File[] files = initPicturesDirectory(context);
-
         initCacheDirectory(context);
-
+        final File[] files = initPicturesDirectory(context);
         prepareCover(files, 0);
         prepareCover(files, 1);
 
-        author[0] = Author.from(AuthorFullName(0));
-        author[1] = Author.from(AuthorFullName(1));
-
-        publisher[0] = Publisher.from(Constants.PUBLISHER + "0");
-        publisher[1] = Publisher.from(Constants.PUBLISHER + "1");
+        assertTrue(mBookshelf[0].getId() > 0);
+        assertTrue(mAuthor[0].getId() > 0);
+        assertTrue(mPublisher[0].getId() > 0);
     }
 
     /**
@@ -192,138 +211,74 @@ public class BookTest {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (DAO db = new DAO(context, "book")) {
 
-            bookshelf[0] = Bookshelf.getBookshelf(context, db, Bookshelf.DEFAULT);
-            bookshelfList.clear();
-            bookshelfList.add(bookshelf[0]);
-
-            // insert author[0] but do NOT insert author[1]
-            authorId[0] = db.insert(context, author[0]);
-            authorList.clear();
-            authorList.add(author[0]);
-
-            // insert publisher[0] but do NOT publisher author[1]
-            publisherId[0] = db.insert(context, publisher[0], Locale.getDefault());
-            publisherList.clear();
-            publisherList.add(publisher[0]);
-
-            book[0] = new Book();
-            book[0].setStage(EntityStatus.Stage.WriteAble);
-            book[0].putString(KEY_TITLE, Constants.BOOK_TITLE + "0");
-            book[0].setStage(EntityStatus.Stage.Dirty);
-
-            book[0].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
-            book[0].putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
-            book[0].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
-
-            book[0].setCover(context, db, 0, AppDir.Cache.getFile(context, Constants.COVER[0]));
-
-            assertEquals(mExternalCacheDir.getAbsolutePath() + File.separatorChar
-                         + Constants.COVER[0], book[0].getString(Book.BKEY_TMP_FILE_SPEC[0]));
-
-            /*
-             * insert the book
-             */
-            assertEquals(EntityStatus.Stage.Dirty, book[0].getStage());
-            bookId[0] = db.insert(context, book[0], 0);
-            book[0].setStage(EntityStatus.Stage.Saved);
-
-            assertTrue(bookId[0] > 0);
-            assertEquals(book[0].getId(), bookId[0]);
-            assertTrue(author[0].getId() > 0);
-            assertTrue(publisher[0].getId() > 0);
+            mBook[0] = prepareBook(context, db);
+            mBookId[0] = mBook[0].getId();
 
             /*
              * test the inserted book
              */
-            Book retrieved;
+            Book book = new Book();
+            book.load(mBookId[0], db);
+            assertEquals(mBookId[0], book.getId());
+            checkBookAfterInitialInsert(context, book);
+
+            ArrayList<Author> authors;
             String uuid;
             ArrayList<Bookshelf> bookshelves;
-            ArrayList<Author> authors;
             ArrayList<Publisher> publishers;
             File cover;
             File[] cachedFiles;
 
-            retrieved = new Book();
-            retrieved.load(bookId[0], db);
-            assertEquals(bookId[0], retrieved.getId());
-
-            assertEquals(EntityStatus.Stage.ReadOnly, retrieved.getStage());
-
-            uuid = retrieved.getString(DBDefinitions.KEY_BOOK_UUID);
-
-            assertEquals(BOOK_TITLE + "0", retrieved.getString(KEY_TITLE));
-            bookshelves = retrieved.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
-            assertEquals(1, bookshelves.size());
-            assertEquals(bookshelf[0], bookshelves.get(0));
-            authors = retrieved.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-            assertEquals(1, authors.size());
-            assertEquals(author[0], authors.get(0));
-            publishers = retrieved.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
-            assertEquals(1, publishers.size());
-            assertEquals(publisher[0], publishers.get(0));
-
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[1]));
-
-            cover = retrieved.getUuidCoverFile(context, 0);
-            assertNotNull(cover);
-            assertEquals(mOriginalImageSize[0], cover.length());
-            assertEquals(uuid + EXT_JPG, cover.getName());
-
-            cachedFiles = mExternalCacheDir.listFiles(mJpgFilter);
-            assertNotNull(cachedFiles);
-            // 1: because "0.jpg" should be gone, but "1.jpg" will still be there
-            assertEquals(1, cachedFiles.length);
-
             /*
              * update the stored book
              */
-            retrieved.setStage(EntityStatus.Stage.WriteAble);
-            retrieved.putString(KEY_TITLE, BOOK_TITLE + "0_upd");
-            retrieved.setStage(EntityStatus.Stage.Dirty);
+            book.setStage(EntityStatus.Stage.WriteAble);
+            book.putString(KEY_TITLE, BOOK_TITLE + "0_upd");
+            book.setStage(EntityStatus.Stage.Dirty);
 
-            authors = retrieved.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-            authors.add(author[1]);
+            authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            authors.add(mAuthor[1]);
 
-            retrieved.setCover(context, db, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
+            book.setCover(context, db, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
 
-            assertEquals(mExternalCacheDir.getAbsolutePath() + File.separatorChar
-                         + Constants.COVER[1], retrieved.getString(Book.BKEY_TMP_FILE_SPEC[1]));
+            assertEquals(mExternalCacheDir.getAbsolutePath()
+                         + File.separatorChar + Constants.COVER[1],
+                         book.getString(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            assertEquals(EntityStatus.Stage.Dirty, retrieved.getStage());
-            db.update(context, retrieved, 0);
-            retrieved.setStage(EntityStatus.Stage.Saved);
+            assertEquals(EntityStatus.Stage.Dirty, book.getStage());
+            db.update(context, book, 0);
+            book.setStage(EntityStatus.Stage.Saved);
 
             /*
              * test the updated book
              */
-            retrieved = new Book();
-            retrieved.load(bookId[0], db);
-            assertEquals(bookId[0], retrieved.getId());
+            book = new Book();
+            book.load(mBookId[0], db);
+            assertEquals(mBookId[0], book.getId());
 
-            uuid = retrieved.getString(DBDefinitions.KEY_BOOK_UUID);
+            uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
-            assertEquals(BOOK_TITLE + "0_upd", retrieved.getString(KEY_TITLE));
-            bookshelves = retrieved.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+            assertEquals(BOOK_TITLE + "0_upd", book.getString(KEY_TITLE));
+            bookshelves = book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
             assertEquals(1, bookshelves.size());
-            assertEquals(bookshelf[0], bookshelves.get(0));
-            authors = retrieved.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            assertEquals(mBookshelf[0], bookshelves.get(0));
+            authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             assertEquals(2, authors.size());
-            assertEquals(author[0], authors.get(0));
-            assertEquals(author[1], authors.get(1));
-            publishers = retrieved.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+            assertEquals(mAuthor[0], authors.get(0));
+            assertEquals(mAuthor[1], authors.get(1));
+            publishers = book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
             assertEquals(1, publishers.size());
-            assertEquals(publisher[0], publishers.get(0));
+            assertEquals(mPublisher[0], publishers.get(0));
 
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            cover = retrieved.getUuidCoverFile(context, 0);
+            cover = book.getCoverFile(context, 0);
             assertNotNull(cover);
             assertEquals(mOriginalImageSize[0], cover.length());
             assertEquals(uuid + EXT_JPG, cover.getName());
 
-            cover = retrieved.getUuidCoverFile(context, 1);
+            cover = book.getCoverFile(context, 1);
             assertNotNull(cover);
             assertEquals(mOriginalImageSize[1], cover.length());
             assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
@@ -337,29 +292,29 @@ public class BookTest {
             /*
              * Delete the second cover of the read-only book
              */
-            retrieved = new Book();
-            retrieved.load(bookId[0], db);
-            assertEquals(bookId[0], retrieved.getId());
+            book = new Book();
+            book.load(mBookId[0], db);
+            assertEquals(mBookId[0], book.getId());
 
-            uuid = retrieved.getString(DBDefinitions.KEY_BOOK_UUID);
+            uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
             // sanity check the cover is really there
             cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
             assertTrue(cover.exists());
 
-            retrieved.setCover(context, db, 1, null);
+            book.setCover(context, db, 1, null);
 
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
             // setCover(.. null) should have deleted the file
             cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
             assertFalse(cover.exists());
 
-            cover = retrieved.getUuidCoverFile(context, 1);
+            cover = book.getCoverFile(context, 1);
             assertNull(cover);
 
             /*
@@ -369,18 +324,108 @@ public class BookTest {
             assertNotNull(files);
             prepareCover(files, 1);
 
-            retrieved.setCover(context, db, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
+            book.setCover(context, db, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
 
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[0]));
-            assertFalse(retrieved.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+            assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
             cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
             assertTrue(cover.exists());
 
-            cover = retrieved.getUuidCoverFile(context, 1);
+            cover = book.getCoverFile(context, 1);
             assertNotNull(cover);
             assertEquals(uuid + "_1" + EXT_JPG, cover.getName());
             assertTrue(cover.exists());
         }
+    }
+
+    @Test
+    public void bookViewModelReadOnly()
+            throws DAO.DaoWriteException {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        try (DAO db = new DAO(context, "bookViewModel-prep")) {
+            mBook[0] = prepareBook(context, db);
+            mBookId[0] = mBook[0].getId();
+        }
+
+        final BookViewModel vm = new BookViewModel();
+        final Bundle args = new Bundle();
+        args.putLong(DBDefinitions.KEY_PK_ID, mBookId[0]);
+        try {
+            vm.init(context, args, false);
+            Book retrieved = vm.getBook();
+            assertEquals(mBookId[0], retrieved.getId());
+            checkBookAfterInitialInsert(context, retrieved);
+
+        } finally {
+            vm.onCleared();
+        }
+    }
+
+    /*
+     * Create and insert a book.
+     */
+    private Book prepareBook(@NonNull final Context context,
+                             @NonNull final DAO db)
+            throws DAO.DaoWriteException {
+
+        final Book book = new Book();
+        book.setStage(EntityStatus.Stage.WriteAble);
+        book.putString(KEY_TITLE, Constants.BOOK_TITLE + "0");
+        book.setStage(EntityStatus.Stage.Dirty);
+
+        book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, mBookshelfList);
+        book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthorList);
+        book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublisherList);
+
+        book.setCover(context, db, 0, AppDir.Cache.getFile(context, Constants.COVER[0]));
+
+        assertEquals(mExternalCacheDir.getAbsolutePath()
+                     + File.separatorChar + Constants.COVER[0],
+                     book.getString(Book.BKEY_TMP_FILE_SPEC[0]));
+
+        assertEquals(EntityStatus.Stage.Dirty, book.getStage());
+        final long bookId = db.insert(context, book, 0);
+        book.setStage(EntityStatus.Stage.Saved);
+
+        assertTrue(bookId > 0);
+        assertEquals(book.getId(), bookId);
+
+        return book;
+    }
+
+    private void checkBookAfterInitialInsert(@NonNull final Context context,
+                                             final Book book) {
+        assertEquals(EntityStatus.Stage.ReadOnly, book.getStage());
+
+        String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+        assertFalse(uuid.isEmpty());
+        assertEquals(BOOK_TITLE + "0", book.getString(KEY_TITLE));
+
+        ArrayList<Bookshelf> bookshelves = book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+        assertEquals(1, bookshelves.size());
+        assertEquals(mBookshelf[0], bookshelves.get(0));
+
+        ArrayList<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        assertEquals(1, authors.size());
+        assertEquals(mAuthor[0], authors.get(0));
+
+        ArrayList<Publisher> publishers = book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        assertEquals(1, publishers.size());
+        assertEquals(mPublisher[0], publishers.get(0));
+
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
+        assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
+
+        File cover = book.getCoverFile(context, 0);
+        assertNotNull(cover);
+        assertEquals(mOriginalImageSize[0], cover.length());
+        assertEquals(uuid + EXT_JPG, cover.getName());
+
+        File[] cachedFiles = mExternalCacheDir.listFiles(mJpgFilter);
+        assertNotNull(cachedFiles);
+        // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
+        assertEquals(1, cachedFiles.length);
+        assertEquals(COVER[1], cachedFiles[0].getName());
     }
 }

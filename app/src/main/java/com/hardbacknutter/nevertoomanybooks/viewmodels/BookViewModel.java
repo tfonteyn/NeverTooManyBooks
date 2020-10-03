@@ -26,6 +26,7 @@ import android.os.Bundle;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 
@@ -86,14 +87,16 @@ public class BookViewModel
     private final Collection<String> mFragmentsWithUnfinishedEdits = new HashSet<>();
     /** Database Access. */
     private DAO mDb;
+
     /**
      * The Book this model represents. The only time this can be {@code null}
      * is when this model is just initialized, or when the Book was deleted.
      */
     private Book mBook;
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Override
-    protected void onCleared() {
+    public void onCleared() {
         if (mDb != null) {
             mDb.close();
         }
@@ -291,9 +294,9 @@ public class BookViewModel
     }
 
     @Nullable
-    public File getUuidCoverFile(@NonNull final Context context,
-                                 @IntRange(from = 0, to = 1) final int cIdx) {
-        return mBook.getUuidCoverFile(context, cIdx);
+    public File getCoverFile(@NonNull final Context context,
+                             @IntRange(from = 0, to = 1) final int cIdx) {
+        return mBook.getCoverFile(context, cIdx);
     }
 
     @NonNull
@@ -303,11 +306,6 @@ public class BookViewModel
         return mBook.createTempCoverFile(context, cIdx);
     }
 
-    @Nullable
-    public File getTempCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
-        return mBook.getTempCoverFile(cIdx);
-    }
-
     /**
      * Update the book cover with the given file.
      *
@@ -315,11 +313,12 @@ public class BookViewModel
      * @param cIdx    0..n image index
      * @param file    cover file or {@code null} to delete the cover
      *
-     * @return {@code false} on any failure
+     * @return the File after processing
      */
-    public boolean setCover(@NonNull final Context context,
-                            @IntRange(from = 0, to = 1) final int cIdx,
-                            @Nullable final File file) {
+    @Nullable
+    public File setCover(@NonNull final Context context,
+                         @IntRange(from = 0, to = 1) final int cIdx,
+                         @Nullable final File file) {
         return mBook.setCover(context, mDb, cIdx, file);
     }
 
@@ -331,6 +330,7 @@ public class BookViewModel
      *
      * @return {@code false} on any failure
      */
+    @SuppressWarnings("UnusedReturnValue")
     public boolean deleteBook(@NonNull final Context context) {
         if (mDb.delete(context, mBook)) {
             putResultData(BKEY_BOOK_DELETED, true);
@@ -433,19 +433,6 @@ public class BookViewModel
 
     public void pruneAuthors(@NonNull final Context context) {
         mBook.pruneAuthors(context, mDb, true);
-
-        // No authors ? Fallback to a potential failed search result
-        // which would contain whatever the user searched for.
-        final ArrayList<Author> authors = mBook.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-        if (authors.isEmpty()) {
-            final String searchText = mBook.getString(
-                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-            if (!searchText.isEmpty()) {
-                authors.add(Author.from(searchText));
-                mBook.remove(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-                mBook.setStage(EntityStatus.Stage.Dirty);
-            }
-        }
     }
 
     public void pruneSeries(@NonNull final Context context) {

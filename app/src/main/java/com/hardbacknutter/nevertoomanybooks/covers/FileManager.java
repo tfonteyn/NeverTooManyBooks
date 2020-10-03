@@ -28,11 +28,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -133,22 +133,14 @@ public class FileManager {
             imageFileInfo = mFiles.get(isbn);
             if (imageFileInfo != null) {
                 // Does it have an actual file ?
-                if (imageFileInfo.fileSpec == null) {
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
-                        Log.d(TAG, "search|PRESENT|NO FILE"
-                                   + "|imageFileInfo=" + imageFileInfo);
-                    }
-                    // a previous search failed, there simply is NO file
-                    return imageFileInfo;
-
-                } else {
+                if (imageFileInfo.hasFileSpec()) {
                     // There is a file and it is good (as determined at download time)
                     // But is the size we have suitable ? (null check to satisfy lint)
                     // Bigger files are always better (we hope)...
-                    if (imageFileInfo.size != null
-                        && imageFileInfo.size.compareTo(size) >= 0) {
+                    if (imageFileInfo.getSize() != null
+                        && imageFileInfo.getSize().compareTo(size) >= 0) {
 
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                             Log.d(TAG, "search|PRESENT|SUCCESS"
                                        + "|imageFileInfo=" + imageFileInfo);
                         }
@@ -158,10 +150,18 @@ public class FileManager {
                     }
 
                     // else drop through and search for it.
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                         Log.d(TAG, "search|PRESENT|TO SMALL"
                                    + "|imageFileInfo=" + imageFileInfo);
                     }
+                } else {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                        Log.d(TAG, "search|PRESENT|NO FILE"
+                                   + "|imageFileInfo=" + imageFileInfo);
+                    }
+                    // a previous search failed, there simply is NO file
+                    return imageFileInfo;
+
                 }
             }
 
@@ -179,7 +179,7 @@ public class FileManager {
                     if (searchEngine instanceof SearchEngine.CoverByIsbn
                         && searchEngine.isAvailable()) {
 
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                             Log.d(TAG, "search|SEARCHING"
                                        + "|searchEngine=" + searchEngine.getName()
                                        + "|isbn=" + isbn
@@ -197,7 +197,7 @@ public class FileManager {
                                                               searchEngine.getId());
                             mFiles.put(isbn, imageFileInfo);
 
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|SUCCESS"
                                            + "|searchEngine=" + searchEngine.getName()
                                            + "|imageFileInfo=" + imageFileInfo);
@@ -206,7 +206,7 @@ public class FileManager {
                             return imageFileInfo;
 
                         } else {
-                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+                            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|NO FILE"
                                            + "|searchEngine=" + searchEngine.getName()
                                            + "|isbn=" + isbn
@@ -232,7 +232,7 @@ public class FileManager {
             // loop for next size
         }
 
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Log.d(TAG, "search|FAILED"
                        + "|isbn=" + isbn);
         }
@@ -244,32 +244,17 @@ public class FileManager {
         return imageFileInfo;
     }
 
-
     /**
-     * Clean up all files except the given file.
-     *
-     * @param keepAbsolutePath the file to keep.
+     * Clean up all files we handled in this class.
      */
-    public void purge(@Nullable final String keepAbsolutePath) {
-        for (ImageFileInfo imageFileInfo : mFiles.values()) {
-            if (imageFileInfo != null) {
-                final File file = imageFileInfo.getFile();
-                if (file != null) {
-                    if (!file.getAbsolutePath().equals(keepAbsolutePath)) {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "purging file=" + file.getName());
-                        }
-                        FileUtils.delete(file);
+    public void purge() {
+        mFiles.values()
+              .stream()
+              .filter(Objects::nonNull)
+              .map(ImageFileInfo::getFile)
+              .filter(Objects::nonNull)
+              .forEach(FileUtils::delete);
 
-                    } else {
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "keeping file=" + file.getName()
-                                       + "|exist=" + file.exists());
-                        }
-                    }
-                }
-            }
-        }
         // not strictly needed, but future-proof
         mFiles.clear();
     }

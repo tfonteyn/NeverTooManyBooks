@@ -25,7 +25,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -59,6 +58,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
@@ -178,7 +178,7 @@ public class CoverHandler {
 
         // Allow zooming by clicking on the image;
         mCoverView.setOnClickListener(v -> {
-            final File uuidCoverFile = mBookViewModel.getUuidCoverFile(mContext, mCIdx);
+            final File uuidCoverFile = mBookViewModel.getCoverFile(mContext, mCIdx);
             if (uuidCoverFile != null) {
                 ZoomedImageDialogFragment
                         .newInstance(uuidCoverFile)
@@ -206,14 +206,19 @@ public class CoverHandler {
         mTransFormTaskViewModel = new ViewModelProvider(fragment)
                 .get(String.valueOf(cIdx), TransFormTaskViewModel.class);
         mTransFormTaskViewModel.onFinished().observe(mFragment.getViewLifecycleOwner(), event -> {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                Log.d(TAG, "mTransFormTaskViewModel.onFinished()"
+                           + "|event=" + event);
+            }
             showProgress(false);
             if (event.isNewEvent()) {
-                onAfterTransform(event.bitmap, event.file, event.returnCode);
+                Objects.requireNonNull(event.result, ErrorMsg.NULL_TASK_RESULTS);
+                onAfterTransform(event.result);
             }
         });
 
         // finally load the image.
-        final File uuidCoverFile = mBookViewModel.getUuidCoverFile(mContext, mCIdx);
+        final File uuidCoverFile = mBookViewModel.getCoverFile(mContext, mCIdx);
         if (uuidCoverFile != null) {
             new ImageLoader(mCoverView, uuidCoverFile, mMaxWidth, mMaxHeight, null)
                     .execute();
@@ -232,7 +237,7 @@ public class CoverHandler {
         new MenuInflater(mContext).inflate(R.menu.image, menu);
 
         final String title;
-        final File uuidCoverFile = mBookViewModel.getUuidCoverFile(mContext, mCIdx);
+        final File uuidCoverFile = mBookViewModel.getCoverFile(mContext, mCIdx);
         if (uuidCoverFile != null) {
             if (BuildConfig.DEBUG /* always */) {
                 // show the size of the image in the title bar
@@ -390,9 +395,9 @@ public class CoverHandler {
         }
 
         showProgress(true);
-        new TransFormTask(srcFile, mTransFormTaskViewModel)
-                .setRotate(angle)
-                .execute();
+        mTransFormTaskViewModel.startTask(
+                new TransFormTaskViewModel.Transformation(srcFile)
+                        .setRotate(angle));
     }
 
     /**
@@ -511,9 +516,9 @@ public class CoverHandler {
 
                         if (file != null) {
                             showProgress(true);
-                            new TransFormTask(file, mTransFormTaskViewModel)
-                                    .setScale(true)
-                                    .execute();
+                            mTransFormTaskViewModel.startTask(
+                                    new TransFormTaskViewModel.Transformation(file)
+                                            .setScale(true));
                             return true;
                         }
                     }
@@ -540,14 +545,15 @@ public class CoverHandler {
 
                         showProgress(true);
                         //noinspection ConstantConditions
-                        new TransFormTask(srcFile, mTransFormTaskViewModel)
-                                .setScale(true)
-                                // we'll try to guess a rotation angle
-                                .setWindowManager(mFragment.getActivity().getWindowManager())
-                                // or apply an explicit angle
-                                .setRotate(angle)
-                                .setReturnCode(action)
-                                .execute();
+                        mTransFormTaskViewModel.startTask(
+                                new TransFormTaskViewModel.Transformation(srcFile)
+                                        .setScale(true)
+                                        // we'll try to guess a rotation angle
+                                        .setWindowManager(
+                                                mFragment.getActivity().getWindowManager())
+                                        // or apply an explicit angle
+                                        .setRotate(angle)
+                                        .setReturnCode(action));
                         return true;
                     }
                 }
@@ -559,9 +565,9 @@ public class CoverHandler {
                 if (resultCode == Activity.RESULT_OK) {
                     final File file = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
                     showProgress(true);
-                    new TransFormTask(file, mTransFormTaskViewModel)
-                            .setScale(true)
-                            .execute();
+                    mTransFormTaskViewModel.startTask(
+                            new TransFormTaskViewModel.Transformation(file)
+                                    .setScale(true));
                     return true;
                 }
                 // remove any orphaned file
@@ -573,37 +579,45 @@ public class CoverHandler {
         }
     }
 
-
-    private void onAfterTransform(@Nullable final Bitmap bitmap,
-                                  @NonNull final File file,
-                                  @NextAction final int returnCode) {
+    private void onAfterTransform(@NonNull final TransFormTaskViewModel.TransformedData result) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            Log.d(TAG, "onAfterTransform"
+                       + "|returnCode=" + result.getReturnCode()
+                       + "|bitmap=" + result.getBitmap()
+                       + "|file=" + result.getFile().getAbsolutePath());
+        }
 
         // The bitmap != null decides if the operation was successful.
-        if (bitmap != null) {
+        if (result.getBitmap() != null) {
             // sanity check: if the bitmap was good, the file will be good.
-            Objects.requireNonNull(file, "file");
+            Objects.requireNonNull(result.getFile(), "file");
 
-            switch (returnCode) {
+            switch (result.getReturnCode()) {
                 case ACTION_CROP:
-                    startCropper(file);
+                    startCropper(result.getFile());
                     break;
 
                 case ACTION_EDIT:
-                    startEditor(file);
+                    startEditor(result.getFile());
                     break;
 
                 case ACTION_DONE:
                 default:
-                    mBookViewModel.setCover(mContext, mCIdx, file);
-                    ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight, bitmap, 0);
-                    mCoverView.setBackground(null);
+                    mBookViewModel.setCover(mContext, mCIdx, result.getFile());
+                    // must use a post to force the View to update.
+                    mCoverView.post(() -> {
+                        ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight,
+                                                result.getBitmap(), 0);
+                        mCoverView.setBackground(null);
+                    });
                     break;
             }
 
         } else {
             // transformation failed
             mBookViewModel.setCover(mContext, mCIdx, null);
-            setPlaceholder(file);
+            // must use a post to force the View to update.
+            mCoverView.post(() -> setPlaceholder(result.getFile()));
         }
     }
 
@@ -620,18 +634,19 @@ public class CoverHandler {
         }
         SanityCheck.requireValue(fileSpec, "fileSpec");
 
-        final File srcFile = new File(fileSpec);
+        File srcFile = new File(fileSpec);
         if (srcFile.exists()) {
-            mBookViewModel.setCover(mContext, cIdx, srcFile);
-
-            new ImageLoader(mCoverView, srcFile, mMaxWidth, mMaxHeight, null)
-                    .execute();
-            mCoverView.setBackground(null);
-
-        } else {
-            mBookViewModel.setCover(mContext, cIdx, null);
-            setPlaceholder();
+            srcFile = mBookViewModel.setCover(mContext, cIdx, srcFile);
+            if (srcFile != null) {
+                new ImageLoader(mCoverView, srcFile, mMaxWidth, mMaxHeight, null)
+                        .execute();
+                mCoverView.setBackground(null);
+                return;
+            }
         }
+
+        mBookViewModel.setCover(mContext, cIdx, null);
+        setPlaceholder();
     }
 
 

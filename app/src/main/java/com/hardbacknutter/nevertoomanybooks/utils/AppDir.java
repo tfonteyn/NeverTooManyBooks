@@ -157,17 +157,37 @@ public enum AppDir {
         }
     }
 
+    /**
+     * Delete <strong>ALL</strong> files in our private directories.
+     *
+     * @param context Current context
+     */
     public static void deleteAllContent(@NonNull final Context context) {
-        //noinspection ConstantConditions
-        Arrays.stream(AppDir.Upgrades.get(context).listFiles()).forEach(File::delete);
-        //noinspection ConstantConditions
-        Arrays.stream(AppDir.Cache.get(context).listFiles()).forEach(File::delete);
-        //noinspection ConstantConditions
-        Arrays.stream(AppDir.Covers.get(context).listFiles()).forEach(File::delete);
-        //noinspection ConstantConditions
-        Arrays.stream(AppDir.Log.get(context).listFiles()).forEach(File::delete);
 
-        // we don't delete root...
+        File[] files;
+
+        files = AppDir.Upgrades.get(context).listFiles();
+        if (files != null) {
+            //noinspection ResultOfMethodCallIgnored
+            Arrays.stream(files).forEach(File::delete);
+        }
+        files = AppDir.Cache.get(context).listFiles();
+        if (files != null) {
+            //noinspection ResultOfMethodCallIgnored
+            Arrays.stream(files).forEach(File::delete);
+        }
+        files = AppDir.Covers.get(context).listFiles();
+        if (files != null) {
+            //noinspection ResultOfMethodCallIgnored
+            Arrays.stream(files).forEach(File::delete);
+        }
+        files = AppDir.Log.get(context).listFiles();
+        if (files != null) {
+            //noinspection ResultOfMethodCallIgnored
+            Arrays.stream(files).forEach(File::delete);
+        }
+
+        // we don't delete root, there are no files there
     }
 
     /**
@@ -248,21 +268,6 @@ public enum AppDir {
     }
 
     /**
-     * Get a file with a random/temporary name in this directory.
-     *
-     * @param context Current context
-     *
-     * @return Directory (File) object
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available
-     */
-    @NonNull
-    public File getFile(@NonNull final Context context)
-            throws ExternalStorageException {
-        return new File(get(context), System.nanoTime() + ".tmp");
-    }
-
-    /**
      * Get the space free in this directory.
      *
      * @param context Current context
@@ -293,10 +298,9 @@ public enum AppDir {
      *
      * @throws ExternalStorageException if the Shared Storage media is not available
      */
-    private long purge(@NonNull final Context context,
-                       final boolean reallyDelete,
-                       @SuppressWarnings("SameParameterValue")
-                       @Nullable final FileFilter filter)
+    public long purge(@NonNull final Context context,
+                      final boolean reallyDelete,
+                      @Nullable final FileFilter filter)
             throws ExternalStorageException {
 
         final List<File> files = collectFiles(get(context), filter);

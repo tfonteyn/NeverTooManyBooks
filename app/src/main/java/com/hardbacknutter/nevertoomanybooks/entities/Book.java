@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
@@ -60,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
  * Represents the underlying data for a book.
@@ -1052,10 +1054,66 @@ public class Book
                 });
     }
 
+
+    /**
+     * Get the current cover file for this book.
+     *
+     * @param context Current context
+     * @param cIdx    0..n image index
+     *
+     * @return a guaranteed existing File, or {@code null}
+     */
+    @Nullable
+    public File getCoverFile(@NonNull final Context context,
+                             @IntRange(from = 0, to = 1) final int cIdx) {
+
+        File coverFile = null;
+
+        if (contains(BKEY_TMP_FILE_SPEC[cIdx])) {
+            // we have a previously set temporary cover, but it could be ""
+            final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
+            if (!fileSpec.isEmpty()) {
+                coverFile = new File(fileSpec);
+                if (!coverFile.exists()) {
+                    coverFile = null;
+                }
+            }
+        } else {
+            // Get the permanent, UUID based, cover file for this book.
+            final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+            if (!uuid.isEmpty()) {
+                final String name;
+                if (cIdx > 0) {
+                    name = uuid + "_" + cIdx;
+                } else {
+                    name = uuid + "";
+                }
+
+                final File coverDir = AppDir.Covers.get(context);
+                // should be / try jpg first
+                coverFile = new File(coverDir, name + ".jpg");
+                if (!coverFile.exists()) {
+                    // no cover, try for a png
+                    coverFile = new File(coverDir, name + ".png");
+                    if (!coverFile.exists()) {
+                        coverFile = null;
+                    }
+                }
+            }
+        }
+
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            Logger.d(TAG, new Throwable("getCoverFile"),
+                     "cIdx=" + cIdx
+                     + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath()));
+        }
+        return coverFile;
+    }
+
     /**
      * Create a temporary cover file for this book.
      * If there is a permanent cover, we get a <strong>copy of that one</strong>.
-     * If there is no cover, we get a new temporary file.
+     * If there is no cover, we get a new File object with a temporary name.
      * <p>
      * Location: {@link AppDir#Cache}
      *
@@ -1072,76 +1130,23 @@ public class Book
             throws IOException {
 
         // the temp file we'll return
-        final File coverFile = AppDir.Cache.getFile(context);
+        // do NOT set BKEY_TMP_FILE_SPEC in this method.
+        final File coverFile = AppDir.Cache.getFile(context, System.nanoTime() + ".jpg");
 
-        final File uuidFile = getUuidCoverFile(context, cIdx);
+        final File uuidFile = getCoverFile(context, cIdx);
         if (uuidFile != null && uuidFile.exists()) {
             // We have a permanent file, copy it into the temp location
             FileUtils.copy(uuidFile, coverFile);
         }
 
-        // do NOT set BKEY_TMP_FILE_SPEC here
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            Logger.d(TAG, new Throwable("createTempCoverFile"),
+                     "cIdx=" + cIdx
+                     + "|exists=" + coverFile.exists()
+                     + "|file=" + coverFile.getAbsolutePath());
+        }
         return coverFile;
     }
-
-    /**
-     * Get the temporary file from {@link #BKEY_TMP_FILE_SPEC} (if present).
-     *
-     * @param cIdx 0..n image index
-     *
-     * @return the File, or {@code null} on any failure
-     */
-    @Nullable
-    public File getTempCoverFile(@IntRange(from = 0, to = 1) final int cIdx) {
-        final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
-        if (!fileSpec.isEmpty()) {
-            final File coverFile = new File(fileSpec);
-            if (coverFile.exists()) {
-                return coverFile;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Get the permanent, UUID based, cover file for this book.
-     * If there is no cover, we get a place holder file.
-     * <p>
-     * Location: {@link AppDir#Covers}
-     *
-     * @param context Current context
-     * @param cIdx    0..n image index
-     *
-     * @return a guaranteed existing File, or {@code null}
-     */
-    @Nullable
-    public File getUuidCoverFile(@NonNull final Context context,
-                                 @IntRange(from = 0, to = 1) final int cIdx) {
-        final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
-        if (!uuid.isEmpty()) {
-            final String name;
-            if (cIdx > 0) {
-                name = uuid + "_" + cIdx;
-            } else {
-                name = uuid + "";
-            }
-
-            final File coverDir = AppDir.Covers.get(context);
-
-            final File jpg = new File(coverDir, name + ".jpg");
-            if (jpg.exists()) {
-                return jpg;
-            }
-            // could be a png
-            final File png = new File(coverDir, name + ".png");
-            if (png.exists()) {
-                return png;
-            }
-        }
-        return null;
-    }
-
 
     /**
      * Update the book cover with the given file.
@@ -1151,12 +1156,13 @@ public class Book
      * @param cIdx    0..n image index
      * @param file    cover file or {@code null} to delete the cover
      *
-     * @return {@code false} on any failure
+     * @return the File after processing (either original, or a renamed/moved file)
      */
-    public boolean setCover(@NonNull final Context context,
-                            @NonNull final DAO db,
-                            @IntRange(from = 0, to = 1) final int cIdx,
-                            @Nullable final File file) {
+    @Nullable
+    public File setCover(@NonNull final Context context,
+                         @NonNull final DAO db,
+                         @IntRange(from = 0, to = 1) final int cIdx,
+                         @Nullable final File file) {
 
         if (mStatus.getStage() == EntityStatus.Stage.WriteAble
             || mStatus.getStage() == EntityStatus.Stage.Dirty) {
@@ -1169,17 +1175,17 @@ public class Book
             }
 
             if (file != null) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "setCover", "editing|cIdx=" + cIdx
-                                              + "|file=" + file.getAbsolutePath());
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                    Logger.d(TAG, new Throwable("setCover"),
+                             "editing|cIdx=" + cIdx + "|file=" + file.getAbsolutePath());
                 }
                 // #storeCovers will do the actual storing
                 putString(BKEY_TMP_FILE_SPEC[cIdx], file.getAbsolutePath());
 
             } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "setCover", "editing|cIdx=" + cIdx
-                                              + "|deleting");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                    Logger.d(TAG, new Throwable("setCover"),
+                             "editing|cIdx=" + cIdx + "|deleting");
                 }
                 // explicitly set to "" to let #storeCovers do the delete
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
@@ -1187,41 +1193,48 @@ public class Book
 
             mStatus.setStage(EntityStatus.Stage.Dirty);
 
+            // just return the incoming file, it has not been changed or renamed
+            return file;
+
         } else {
             // we're in read-only mode
             final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
             SanityCheck.requireValue(uuid, "uuid");
 
+            // the file to return from this method, after the incoming file has been processed
+            File destination = file;
+
             if (file != null) {
                 if (file.getName().startsWith(uuid)) {
                     // No further action needed as we have the cover "in-place"
                     // ... not actually sure when this would be the case; keep an eye on logs
-                    if (BuildConfig.DEBUG /* always */) {
-                        Logger.d(TAG, "setCover", "readOnly|cIdx=" + cIdx
-                                                  + "|uuid, in-place");
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                        Logger.d(TAG, new Throwable("setCover"),
+                                 "readOnly|cIdx=" + cIdx + "|uuid, in-place");
                     }
                 } else {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Logger.d(TAG, "setCover", "readOnly|cIdx=" + cIdx
-                                                  + "|will rename=" + file.getAbsolutePath());
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                        Logger.d(TAG, new Throwable("setCover"),
+                                 "readOnly|cIdx=" + cIdx + "|will rename="
+                                 + file.getAbsolutePath());
                     }
 
                     // Rename the temp file to the uuid permanent file name
-                    final File destination = getUuidCoverFileOrNew(context, uuid, cIdx);
+                    destination = getUuidCoverFileOrNew(context, uuid, cIdx);
                     try {
                         FileUtils.rename(file, destination);
                     } catch (@NonNull final IOException e) {
                         Logger.error(context, TAG, e,
                                      "setCover|bookId=" + getId() + "|cIdx=" + cIdx);
                         //FIXME: we should delete the orphaned images....
-                        return false;
+                        return null;
                     }
                 }
 
             } else {
-                if (BuildConfig.DEBUG /* always */) {
-                    Logger.d(TAG, "setCover", "readOnly|cIdx=" + cIdx
-                                              + "|deleting");
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+                    Logger.d(TAG, new Throwable("setCover")
+                            , "readOnly|cIdx=" + cIdx + "|deleting");
                 }
 
                 FileUtils.delete(getUuidCoverFile(context, uuid, cIdx));
@@ -1232,11 +1245,10 @@ public class Book
             }
 
             db.touchBook(this);
+
+            return destination;
         }
-
-        return true;
     }
-
 
     /**
      * Called during {@link DAO#insert(Context, Book, int)}
@@ -1267,7 +1279,7 @@ public class Book
             if (contains(BKEY_TMP_FILE_SPEC[cIdx])) {
                 final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
 
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Logger.d(TAG, "storeCovers",
                              "BKEY_TMP_FILE_SPEC[" + cIdx + "]=`" + fileSpec + '`');
                 }
@@ -1297,7 +1309,7 @@ public class Book
                 remove(BKEY_TMP_FILE_SPEC[cIdx]);
             } else {
                 // If the key is NOT present, we don't need to do anything!
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Logger.d(TAG, "storeCovers",
                              "BKEY_TMP_FILE_SPEC[" + cIdx + "]=<not present>");
                 }
@@ -1306,6 +1318,7 @@ public class Book
 
         return true;
     }
+
 
     /**
      * Creates a chooser with matched apps for sharing some text.
@@ -1364,10 +1377,12 @@ public class Book
                                     context.getString(R.string.menu_share_this));
     }
 
+    /** Used exclusively during display / populating the Views when loading the book. */
     public void lockStatus() {
         mStatus.lock();
     }
 
+    /** Used exclusively during display / populating the Views when loading the book. */
     public void unlockStatus() {
         mStatus.unlock();
     }
@@ -1379,6 +1394,18 @@ public class Book
         if (!authors.isEmpty()) {
             if (Author.pruneList(authors, context, db, lookupLocale, getLocale(context))) {
                 mStatus.setStage(EntityStatus.Stage.Dirty);
+            }
+        }
+
+        // No authors ? Fallback to a potential failed search result
+        // which would contain whatever the user searched for.
+        if (authors.isEmpty()) {
+            final String searchText = getString(
+                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+            if (!searchText.isEmpty()) {
+                authors.add(Author.from(searchText));
+                remove(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+                setStage(EntityStatus.Stage.Dirty);
             }
         }
     }

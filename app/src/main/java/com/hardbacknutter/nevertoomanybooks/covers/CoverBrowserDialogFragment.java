@@ -172,7 +172,7 @@ public class CoverBrowserDialogFragment
 
         // When the preview image is clicked, send the fileSpec back to the caller and terminate.
         mVb.preview.setOnClickListener(v -> {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "preview.onClick|filePath=" + mModel.getSelectedFileAbsPath());
             }
 
@@ -267,9 +267,9 @@ public class CoverBrowserDialogFragment
 
         final int editionIndex;
         if (imageFileInfo != null) {
-            editionIndex = mModel.getEditions().indexOf(imageFileInfo.isbn);
+            editionIndex = mModel.getEditions().indexOf(imageFileInfo.getIsbn());
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "setGalleryImage"
                            + "|editionIndex=" + editionIndex
                            + "|" + imageFileInfo);
@@ -312,7 +312,7 @@ public class CoverBrowserDialogFragment
         final File file = imageFileInfo.getFile();
         // sanity check
         if (file != null) {
-            if (ImageFileInfo.Size.Large.equals(imageFileInfo.size)) {
+            if (ImageFileInfo.Size.Large.equals(imageFileInfo.getSize())) {
                 // the gallery image IS a valid large image, so just display it
                 setSelectedImage(imageFileInfo);
 
@@ -455,7 +455,7 @@ public class CoverBrowserDialogFragment
             final String isbn = mModel.getEditions().get(position);
             final ImageFileInfo imageFileInfo = mModel.getFileInfo(isbn);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVER_BROWSER) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "onBindViewHolder"
                            + "|position=" + position
                            + "|imageFileInfo=" + imageFileInfo);
@@ -482,7 +482,7 @@ public class CoverBrowserDialogFragment
 
                     //noinspection ConstantConditions
                     holder.siteView.setText(
-                            SearchEngineRegistry.getByEngineId(imageFileInfo.engineId)
+                            SearchEngineRegistry.getByEngineId(imageFileInfo.getEngineId())
                                                 .getNameResId());
 
                 } else {
