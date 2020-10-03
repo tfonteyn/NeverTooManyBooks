@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -136,5 +137,13 @@ public class BookSearchActivity
         final ResultDataModel resultData = new ViewModelProvider(this).get(ResultDataModel.class);
         setResult(Activity.RESULT_OK, resultData.getResultIntent());
         super.onBackPressed();
+    }
+
+    @Override
+    protected void onDestroy() {
+        // This is a good time to cleanup the cache.
+        // Out of precaution we only trash jpg files
+        AppDir.Cache.purge(App.getTaskContext(), true, file -> file.getName().endsWith(".jpg"));
+        super.onDestroy();
     }
 }
