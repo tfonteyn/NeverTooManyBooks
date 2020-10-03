@@ -108,6 +108,7 @@ public class DataManager
         mRawData = rawData;
     }
 
+
     /**
      * Erase everything in this instance.
      */
@@ -119,6 +120,38 @@ public class DataManager
         mCrossValidators.clear();
         mValidationExceptions.clear();
     }
+
+    /**
+     * Get the set of keys.
+     *
+     * @return a new set
+     */
+    @NonNull
+    @Override
+    public Set<String> keySet() {
+        return new HashSet<>(mRawData.keySet());
+    }
+
+    /**
+     * Remove the specified key from this collection.
+     *
+     * @param key Key of data object to remove.
+     */
+    public void remove(@NonNull final String key) {
+        mRawData.remove(key);
+    }
+
+    /**
+     * Check if the underlying data contains the specified key.
+     *
+     * @param key Key of data object
+     *
+     * @return {@code true} if the underlying data contains the specified key.
+     */
+    public boolean contains(@NonNull final String key) {
+        return mRawData.containsKey(key);
+    }
+
 
     /**
      * Store all passed values in our collection (with type checking).
@@ -249,16 +282,6 @@ public class DataManager
         return mRawData.get(key);
     }
 
-    /**
-     * Check if the underlying data contains the specified key.
-     *
-     * @param key Key of data object
-     *
-     * @return {@code true} if the underlying data contains the specified key.
-     */
-    public boolean contains(@NonNull final String key) {
-        return mRawData.containsKey(key);
-    }
 
     /**
      * Get a boolean value.
@@ -283,112 +306,6 @@ public class DataManager
     public void putBoolean(@NonNull final String key,
                            final boolean value) {
         mRawData.putBoolean(key, value);
-    }
-
-    public boolean isBitSet(@NonNull final String key,
-                            final int bit) {
-        return (ParseUtils.toLong(mRawData.get(key)) & bit) != 0;
-    }
-
-    public void setBit(@NonNull final String key,
-                       final int bit,
-                       final boolean checked) {
-
-        long bits = ParseUtils.toLong(mRawData.get(key));
-
-        if (checked) {
-            // set the bit
-            bits |= bit;
-        } else {
-            // or reset the bit
-            bits &= ~bit;
-        }
-
-        mRawData.putLong(key, bits);
-    }
-
-    /**
-     * Get a Money value.
-     *
-     * @param key Key of data object
-     *
-     * @return a Money value.
-     *
-     * @throws NumberFormatException if the source was not compatible.
-     */
-    @Nullable
-    private Money getMoney(@NonNull final String key)
-            throws NumberFormatException {
-        if (mRawData.containsKey(key)) {
-            return new Money(getDouble(key),
-                             getString(key + DBDefinitions.SUFFIX_KEY_CURRENCY));
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Store a Money value.
-     *
-     * @param key   Key of data object
-     * @param money to store
-     */
-    private void putMoney(@NonNull final String key,
-                          @NonNull final Money money) {
-        mRawData.putDouble(key, money.doubleValue());
-        if (money.getCurrency() != null) {
-            mRawData.putString(key + DBDefinitions.SUFFIX_KEY_CURRENCY, money.getCurrency());
-        }
-    }
-
-    /**
-     * Get a double value.
-     *
-     * @param key Key of data object
-     *
-     * @return a double value.
-     *
-     * @throws NumberFormatException if the source was not compatible.
-     */
-    public double getDouble(@NonNull final String key)
-            throws NumberFormatException {
-        return ParseUtils.toDouble(mRawData.get(key), null);
-    }
-
-    /**
-     * Store a double value.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    public void putDouble(@NonNull final String key,
-                          final double value) {
-        mRawData.putDouble(key, value);
-    }
-
-    /**
-     * Get a float value.
-     *
-     * @param key Key of data object
-     *
-     * @return a float value.
-     *
-     * @throws NumberFormatException if the source was not compatible.
-     */
-    public float getFloat(@NonNull final String key)
-            throws NumberFormatException {
-        return ParseUtils.toFloat(mRawData.get(key), null);
-    }
-
-    /**
-     * Store a float value.
-     *
-     * @param key   Key of data object
-     * @param value to store
-     */
-    public void putFloat(@NonNull final String key,
-                         final float value) {
-        mRawData.putFloat(key, value);
     }
 
     /**
@@ -444,6 +361,56 @@ public class DataManager
     }
 
     /**
+     * Get a double value.
+     *
+     * @param key Key of data object
+     *
+     * @return a double value.
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public double getDouble(@NonNull final String key)
+            throws NumberFormatException {
+        return ParseUtils.toDouble(mRawData.get(key), null);
+    }
+
+    /**
+     * Store a double value.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putDouble(@NonNull final String key,
+                          final double value) {
+        mRawData.putDouble(key, value);
+    }
+
+    /**
+     * Get a float value.
+     *
+     * @param key Key of data object
+     *
+     * @return a float value.
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    public float getFloat(@NonNull final String key)
+            throws NumberFormatException {
+        return ParseUtils.toFloat(mRawData.get(key), null);
+    }
+
+    /**
+     * Store a float value.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     */
+    public void putFloat(@NonNull final String key,
+                         final float value) {
+        mRawData.putFloat(key, value);
+    }
+
+    /**
      * Get a String value. Non-String values will be cast using toString().
      *
      * @param key Key of data object
@@ -473,16 +440,86 @@ public class DataManager
     }
 
     /**
-     * Store a {@code null} value.
+     * Check if a bit or combination of bits is set on the existing value
+     * (uses {@code 0} if not present yet) for the given key.
+     * <p>
+     * Uses a {@code long} for storage.
      *
-     * @param key Key of data object
+     * @param key  Key of data object
+     * @param bits to check
+     *
+     * @return {@code true} if the bit is set
      */
-    protected void putNull(@NonNull final String key) {
-        mRawData.putString(key, null);
+    public boolean isBitSet(@NonNull final String key,
+                            final int bits) {
+        return (ParseUtils.toLong(mRawData.get(key)) & bits) != 0;
     }
 
     /**
-     * Get the Parcelable ArrayList from the collection.
+     * Set a bit or combination of bits on the existing value
+     * (uses {@code 0} if not present yet) for the given key.
+     * <p>
+     * Uses a {@code long} for storage.
+     *
+     * @param key     Key of data object
+     * @param bits    to set to the 'checked' value
+     * @param checked value to set
+     */
+    public void setBit(@NonNull final String key,
+                       final int bits,
+                       final boolean checked) {
+
+        long value = ParseUtils.toLong(mRawData.get(key));
+
+        if (checked) {
+            // set the bit
+            value |= bits;
+        } else {
+            // or reset the bit
+            value &= ~bits;
+        }
+
+        mRawData.putLong(key, value);
+    }
+
+    /**
+     * Get a {@link Money} value.
+     *
+     * @param key Key of data object
+     *
+     * @return value
+     *
+     * @throws NumberFormatException if the source was not compatible.
+     */
+    @SuppressWarnings("WeakerAccess")
+    @Nullable
+    public Money getMoney(@NonNull final String key)
+            throws NumberFormatException {
+        if (mRawData.containsKey(key)) {
+            return new Money(getDouble(key),
+                             getString(key + DBDefinitions.SUFFIX_KEY_CURRENCY));
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Store a {@link Money} value.
+     *
+     * @param key   Key of data object
+     * @param money to store
+     */
+    @SuppressWarnings("WeakerAccess")
+    public void putMoney(@NonNull final String key,
+                         @NonNull final Money money) {
+        mRawData.putDouble(key, money.doubleValue());
+        if (money.getCurrency() != null) {
+            mRawData.putString(key + DBDefinitions.SUFFIX_KEY_CURRENCY, money.getCurrency());
+        }
+    }
+
+    /**
+     * Get a {@link Parcelable} {@link ArrayList} from the collection.
      *
      * @param key Key of data object
      * @param <T> type of objects in the list
@@ -502,7 +539,7 @@ public class DataManager
     }
 
     /**
-     * Set the Parcelable ArrayList in the collection.
+     * Set a {@link Parcelable} {@link ArrayList} in the collection.
      *
      * @param key   Key of data object
      * @param value to store
@@ -514,7 +551,7 @@ public class DataManager
     }
 
     /**
-     * Get the serializable object from the collection.
+     * Get a {@link Serializable} object from the collection.
      *
      * @param key Key of data object
      * @param <T> type of objects in the list
@@ -529,7 +566,7 @@ public class DataManager
     }
 
     /**
-     * Set the serializable object in the collection.
+     * Set a {@link Serializable} object in the collection.
      *
      * @param key   Key of data object
      * @param value to store
@@ -543,20 +580,16 @@ public class DataManager
         mRawData.putSerializable(key, value);
     }
 
-    @NonNull
-    @Override
-    public Set<String> keySet() {
-        return new HashSet<>(mRawData.keySet());
+    /**
+     * Store a {@code null} value.
+     *
+     * @param key Key of data object
+     */
+    @SuppressWarnings("WeakerAccess")
+    public void putNull(@NonNull final String key) {
+        mRawData.putString(key, null);
     }
 
-    /**
-     * Remove the specified key from this collection.
-     *
-     * @param key Key of data object to remove.
-     */
-    public void remove(@NonNull final String key) {
-        mRawData.remove(key);
-    }
 
     /**
      * Add a validator for the specified key.
@@ -599,8 +632,8 @@ public class DataManager
         mValidationExceptions.clear();
 
         for (Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
+            final String key = entry.getKey();
             try {
-                final String key = entry.getKey();
                 entry.getValue().validate(context, this, key,
                                           Objects.requireNonNull(mValidatorErrorIdMap.get(key)));
             } catch (@NonNull final ValidatorException e) {
