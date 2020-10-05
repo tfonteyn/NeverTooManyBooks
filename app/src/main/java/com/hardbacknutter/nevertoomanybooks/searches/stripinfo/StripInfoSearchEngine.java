@@ -653,7 +653,7 @@ public class StripInfoSearchEngine
                                     } else {
                                         author = Author.createUnknownAuthor(mAppContext);
                                     }
-                                    TocEntry tocEntry = new TocEntry(author, title, "");
+                                    TocEntry tocEntry = new TocEntry(author, title, null);
                                     toc.add(tocEntry);
                                 }
                             }
