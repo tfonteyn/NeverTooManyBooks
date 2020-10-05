@@ -130,14 +130,14 @@ public class Domain
     private Domain(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mName = in.readString();
-        mIsPrimaryKey = in.readInt() == 1;
         //noinspection ConstantConditions
         mType = in.readString();
-        mIsNotNull = in.readInt() == 1;
+        mIsPrimaryKey = in.readByte() != 0;
+        mIsNotNull = in.readByte() != 0;
         mDefaultClause = in.readString();
         mReferences = in.readString();
-        mIsCollationLocalized = in.readInt() == 1;
-        mIsPrePreparedOrderBy = in.readInt() == 1;
+        mIsCollationLocalized = in.readByte() != 0;
+        mIsPrePreparedOrderBy = in.readByte() != 0;
 
         mIsNotBlank = mDefaultClause != null && !"''".equals(mDefaultClause);
     }
@@ -146,13 +146,13 @@ public class Domain
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeString(mName);
-        dest.writeInt(mIsPrimaryKey ? 1 : 0);
         dest.writeString(mType);
-        dest.writeInt(mIsNotNull ? 1 : 0);
+        dest.writeByte((byte) (mIsPrimaryKey ? 1 : 0));
+        dest.writeByte((byte) (mIsNotNull ? 1 : 0));
         dest.writeString(mDefaultClause);
         dest.writeString(mReferences);
-        dest.writeInt(mIsCollationLocalized ? 1 : 0);
-        dest.writeInt(mIsPrePreparedOrderBy ? 1 : 0);
+        dest.writeByte((byte) (mIsCollationLocalized ? 1 : 0));
+        dest.writeByte((byte) (mIsPrePreparedOrderBy ? 1 : 0));
     }
 
     /**
