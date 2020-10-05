@@ -34,7 +34,9 @@ public abstract class IntStringFilter
         implements Filter<Integer> {
 
     static final Integer P_NOT_USED = -1;
+    @NonNull
     final TableDefinition mTable;
+    @NonNull
     final String mDomainKey;
     @StringRes
     private final int mLabelId;
