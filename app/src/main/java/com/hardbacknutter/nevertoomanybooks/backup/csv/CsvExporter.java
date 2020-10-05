@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -199,8 +199,6 @@ public class CsvExporter
         int delta = 0;
         long lastUpdate = 0;
 
-        final Book book = new Book();
-
         final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
         try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
@@ -209,7 +207,7 @@ public class CsvExporter
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                book.load(cursor, mDb);
+                final Book book = Book.from(cursor, mDb);
                 final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
                 String title = book.getString(DBDefinitions.KEY_TITLE);
@@ -320,7 +318,7 @@ public class CsvExporter
 
                 if (mCollectCoverFilenames) {
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        final File cover = Book.getUuidCoverFile(context, uuid, cIdx);
+                        final File cover = book.getUuidCoverFile(context, cIdx);
                         if (cover != null && cover.exists()) {
                             mResults.addCover(cover.getName());
                         }

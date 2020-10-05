@@ -231,7 +231,7 @@ class CalibreArchiveReader
                     colSeriesName = source.getColumnIndex("series_title");
                 }
 
-                book.clear();
+                book.clearData();
 
                 // We're not keeping the Calibre id other than for lookups during import
                 final int calibreId = source.getInt(colId);

@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
@@ -222,6 +222,7 @@ public class CsvImporter
 
         // reused during the loop
         final Book book = new Book();
+
         // first line in import must be the column names
         final String[] csvColumnNames = parse(context, 0, importedList.get(0), true);
 
@@ -294,7 +295,7 @@ public class CsvImporter
                     final String[] csvDataRow = parse(context, row, importedList.get(row),
                                                       fullEscaping);
                     // clear book (avoiding construction another object)
-                    book.clear();
+                    book.clearData();
                     // Read all columns of the current row into the Bundle.
                     // Note that some of them require further processing before being valid.
                     // Throws IndexOutOfBoundsException if the number of fields does

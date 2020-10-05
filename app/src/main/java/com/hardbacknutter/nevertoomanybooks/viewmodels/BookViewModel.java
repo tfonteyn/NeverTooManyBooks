@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -119,34 +119,37 @@ public class BookViewModel
             mDb = new DAO(TAG);
 
             if (args != null) {
-                // 1. Do we have a bundle?
+                // 1. Do we have a bundle? e.g. after an internet search
                 final Bundle bookData = args.getBundle(Book.BKEY_DATA_BUNDLE);
                 if (bookData != null) {
-                    // if we have a populated bundle, e.g. after an internet search, use that.
                     mBook = Book.from(bookData);
-                    // a new book is always dirty
-                    mBook.setStage(EntityStatus.Stage.Dirty);
+                    // has unsaved data, hence 'Dirty'
+                    mBook.setStage(EntityStage.Stage.Dirty);
+                    mBook.addValidators();
+                    mBook.ensureBookshelf(context, mDb);
 
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
-                    loadBook(args.getLong(DBDefinitions.KEY_PK_ID, 0));
+                    long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+                    if (bookId > 0) {
+                        mBook = Book.from(bookId, mDb);
+                    } else {
+                        mBook = new Book();
+                    }
+                    if (isEditMode) {
+                        // has unchanged data, hence 'WriteAble'
+                        mBook.setStage(EntityStage.Stage.WriteAble);
+                        mBook.addValidators();
+                    }
                 }
 
             } else {
                 // 3. No args, we want an empty new book (e.g. user wants to add one manually).
                 mBook = new Book();
-            }
-
-            if (mBook.isNew()) {
-                mBook.ensureBookshelf(context, mDb);
-            }
-
-            if (isEditMode) {
-                // Set this model in <strong>EDIT MODE</strong>.
-                // This cannot be undone during an edit session.
-                mBook.setStage(EntityStatus.Stage.WriteAble);
-                // Add the DATA validators (not field validators) to the book.
+                // has no data, hence 'WriteAble'
+                mBook.setStage(EntityStage.Stage.WriteAble);
                 mBook.addValidators();
+                mBook.ensureBookshelf(context, mDb);
             }
         }
     }
@@ -204,15 +207,14 @@ public class BookViewModel
     }
 
     public void loadBook(final long bookId) {
-        mBook = new Book();
-        if (bookId > 0) {
-            // for an existing book, load the data
-            mBook.load(bookId, mDb);
-        }
+        mBook = Book.from(bookId, mDb);
     }
 
+    /**
+     * Using the current id, reload *all* other data for this book.
+     */
     public void reload() {
-        mBook.reload(mDb);
+        mBook.load(mBook.getId(), mDb);
     }
 
     /**
@@ -358,10 +360,9 @@ public class BookViewModel
             mDb.update(context, mBook, 0);
             putResultData(BKEY_BOOK_MODIFIED, true);
         }
+        mBook.setStage(EntityStage.Stage.Saved);
 
         putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
-
-        mBook.setStage(EntityStatus.Stage.Saved);
     }
 
 
@@ -445,17 +446,17 @@ public class BookViewModel
 
 
     @NonNull
-    public MutableLiveData<ArrayList<Author>> getAuthors() {
+    public MutableLiveData<ArrayList<Author>> onAuthorList() {
         return mAuthorList;
     }
 
     @NonNull
-    public MutableLiveData<ArrayList<Series>> getSeries() {
+    public MutableLiveData<ArrayList<Series>> onSeriesList() {
         return mSeriesList;
     }
 
     @NonNull
-    public MutableLiveData<ArrayList<Publisher>> getPublishers() {
+    public MutableLiveData<ArrayList<Publisher>> onPublisherList() {
         return mPublisherList;
     }
 

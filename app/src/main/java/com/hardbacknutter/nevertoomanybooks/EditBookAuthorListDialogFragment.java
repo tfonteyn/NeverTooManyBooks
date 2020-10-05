@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
@@ -89,7 +89,7 @@ public class EditBookAuthorListDialogFragment
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookViewModel.getBook().setStage(EntityStatus.Stage.Dirty);
+                    mBookViewModel.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
     /** View Binding. */

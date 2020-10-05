@@ -46,7 +46,7 @@ import java.util.regex.Matcher;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -312,10 +312,10 @@ public class ImportGrTask
             }
 
             if (found) {
-                final Book book = new Book();
+
                 // Loop over all the books we found
                 while (cursor.moveToNext()) {
-                    book.load(cursor, db);
+                    final Book book = Book.from(cursor, db);
 
                     if (shouldUpdate(context, book, review)) {
                         // Update the book using the Goodreads data.

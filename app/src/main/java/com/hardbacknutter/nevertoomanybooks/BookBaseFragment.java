@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -102,7 +102,7 @@ public abstract class BookBaseFragment
             new Fields.AfterChangeListener() {
                 @Override
                 public void afterFieldChange(@IdRes final int fieldId) {
-                    mBookViewModel.getBook().setStage(EntityStatus.Stage.Dirty);
+                    mBookViewModel.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
 
@@ -227,7 +227,7 @@ public abstract class BookBaseFragment
      * <p>
      * Loads the data while preserving the isDirty() status.
      * Normally called from the base {@link #onResume},
-     * but can explicitly be called after {@link Book#reload}.
+     * but can explicitly be called after {@link BookViewModel#reload}.
      * <p>
      * This is final; Inheritors should implement {@link #onPopulateViews}.
      */
@@ -239,10 +239,10 @@ public abstract class BookBaseFragment
         fields.setParentView(getView());
 
         fields.setAfterChangeListener(null);
-        mBookViewModel.getBook().lockStatus();
+        mBookViewModel.getBook().lockStage();
         // make it so!
         onPopulateViews(fields, book);
-        mBookViewModel.getBook().unlockStatus();
+        mBookViewModel.getBook().unlockStage();
         fields.setAfterChangeListener(mAfterChangeListener);
 
         // All views should now have proper visibility set, so fix their focus order.
@@ -386,7 +386,7 @@ public abstract class BookBaseFragment
                     Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
 
                     final long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
-                    if (newId != 0) {
+                    if (newId > 0) {
                         // replace current book with the updated one,
                         // ENHANCE: merge if in edit mode.
                         mBookViewModel.loadBook(newId);

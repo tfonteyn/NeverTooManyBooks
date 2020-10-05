@@ -75,7 +75,7 @@ public class EditBookPublicationFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
-        mBookViewModel.getPublishers().observe(getViewLifecycleOwner(), publishers -> {
+        mBookViewModel.onPublisherList().observe(getViewLifecycleOwner(), publishers -> {
             final Field<List<Publisher>, TextView> field = getField(R.id.publisher);
             field.getAccessor().setValue(publishers);
             field.validate();

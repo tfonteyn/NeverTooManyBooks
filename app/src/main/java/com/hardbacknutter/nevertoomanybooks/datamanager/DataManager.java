@@ -110,11 +110,16 @@ public class DataManager
 
 
     /**
-     * Erase everything in this instance.
+     * Clear all data in this instance.
      */
-    public void clear() {
+    public void clearData() {
         mRawData.clear();
+    }
 
+    /**
+     * Clear all Validator related data in this instance.
+     */
+    public void clearValidators() {
         mValidatorsMap.clear();
         mValidatorErrorIdMap.clear();
         mCrossValidators.clear();
@@ -539,11 +544,33 @@ public class DataManager
     }
 
     /**
-     * Set a {@link Parcelable} {@link ArrayList} in the collection.
+     * <strong>Copy</strong> the content of the given list into the
+     * {@link Parcelable} {@link ArrayList} in the collection.
+     * i.e. any code which got a reference to the internal list earlier
+     * will see the updated content.
      *
      * @param key   Key of data object
      * @param value to store
      * @param <T>   type of objects in the list
+     *
+     * @see #putParcelableArrayList(String, ArrayList)
+     */
+    @SuppressWarnings("TypeMayBeWeakened")
+    public <T extends Parcelable> void putListContent(@NonNull final String key,
+                                                      @NonNull final ArrayList<T> value) {
+        final ArrayList<T> currentList = getParcelableArrayList(key);
+        currentList.clear();
+        currentList.addAll(value);
+    }
+
+    /**
+     * Store a {@link Parcelable} {@link ArrayList} in the collection.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     * @param <T>   type of objects in the list
+     *
+     * @see #putListContent(String, ArrayList)
      */
     public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
                                                               @NonNull final ArrayList<T> value) {
@@ -566,7 +593,7 @@ public class DataManager
     }
 
     /**
-     * Set a {@link Serializable} object in the collection.
+     * Store a {@link Serializable} object in the collection.
      *
      * @param key   Key of data object
      * @param value to store

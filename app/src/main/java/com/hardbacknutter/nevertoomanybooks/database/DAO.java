@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -3750,8 +3750,7 @@ public class DAO
             // and we want to replace a1 with a2, we cannot simply do a mass update.
             final Author destination = getAuthor(destId);
             for (long bookId : getBookIdsByAuthor(source.getId())) {
-                final Book book = new Book();
-                book.load(bookId, this);
+                final Book book = Book.from(bookId, this);
 
                 final Collection<Author> fromBook =
                         book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
@@ -3803,8 +3802,7 @@ public class DAO
             // see #merge(Context, Author, long)
             final Series destination = getSeries(destId);
             for (long bookId : getBookIdsBySeries(source.getId())) {
-                final Book book = new Book();
-                book.load(bookId, this);
+                final Book book = Book.from(bookId, this);
 
                 final Collection<Series> fromBook =
                         book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
@@ -3852,8 +3850,7 @@ public class DAO
             // see #merge(Context, Author, long)
             final Publisher destination = getPublisher(destId);
             for (long bookId : getBookIdsByPublisher(source.getId())) {
-                final Book book = new Book();
-                book.load(bookId, this);
+                final Book book = Book.from(bookId, this);
 
                 final Collection<Publisher> fromBook =
                         book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

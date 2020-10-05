@@ -49,9 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -249,7 +250,7 @@ public class XmlExporter
                              @NonNull final Writer writer)
             throws IOException {
         final Collection<BooklistStyle> styles =
-                BooklistStyle.StyleDAO.getStyles(context, mDb).values();
+                StyleDAO.getStyles(context, mDb).values();
         if (!styles.isEmpty()) {
             toXml(writer, new StylesWriter(context, styles));
         }
@@ -270,7 +271,7 @@ public class XmlExporter
                               @NonNull final ProgressListener progressListener)
             throws IOException {
         final Collection<BooklistStyle> styles =
-                BooklistStyle.StyleDAO.getStyles(context, mDb).values();
+                StyleDAO.getStyles(context, mDb).values();
         if (styles.isEmpty()) {
             return;
         }
@@ -546,7 +547,7 @@ public class XmlExporter
         int delta = 0;
         long lastUpdate = 0;
 
-        final Book book = new Book();
+
 
         final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
@@ -558,7 +559,7 @@ public class XmlExporter
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                book.load(cursor, mDb);
+                final Book book = Book.from(cursor, mDb);
                 final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
                 String title = book.getString(DBDefinitions.KEY_TITLE);
@@ -737,7 +738,7 @@ public class XmlExporter
 
                 if (mCollectCoverFilenames) {
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
-                        final File cover = Book.getUuidCoverFile(context, uuid, cIdx);
+                        final File cover = book.getUuidCoverFile(context, cIdx);
                         if (cover != null && cover.exists()) {
                             mResults.addCover(cover.getName());
                         }

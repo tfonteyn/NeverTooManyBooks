@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
@@ -158,8 +157,8 @@ public class Book
     public static final String BKEY_DATA_BUNDLE = TAG + ":plainBundle";
     /** Used to transform Java-ISO to SQL-ISO datetime format. */
     private static final Pattern T = Pattern.compile("T");
-    /** the status of the book entity. */
-    private final EntityStatus mStatus = new EntityStatus();
+    /** the stage of the book entity. */
+    private final EntityStage mStage = new EntityStage();
 
     /**
      * Constructor.
@@ -169,12 +168,45 @@ public class Book
 
     /**
      * Constructor for Mock tests. Loads the bundle <strong>without</strong> type checks.
+     * As this is for testing, the stage will not be set.
      *
      * @param rawData raw data bundle to use for the Book
      */
     @VisibleForTesting
     public Book(@NonNull final Bundle rawData) {
         super(rawData);
+    }
+
+    /**
+     * Constructor. Load the book details from the database.
+     *
+     * @param bookId of book (may be 0 for new, in which case we do nothing)
+     * @param db     Database Access
+     *
+     * @return new instance
+     */
+    public static Book from(final long bookId,
+                            @NonNull final DAO db) {
+        final Book book = new Book();
+        book.load(bookId, db);
+        return book;
+    }
+
+    /**
+     * Constructor. Load the book details from the cursor.
+     *
+     * @param bookCursor an already positioned Cursor to read from
+     * @param db         to load linked array data from
+     *
+     * @return new instance
+     */
+    public static Book from(@NonNull final Cursor bookCursor,
+                            @NonNull final DAO db) {
+        final Book book = new Book();
+        final int idCol = bookCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
+        final long bookId = bookCursor.getLong(idCol);
+        book.load(bookId, bookCursor, db);
+        return book;
     }
 
     /**
@@ -193,11 +225,6 @@ public class Book
     /**
      * return the cover for the given uuid. We'll attempt to find a jpg or a png.
      * <strong>If no file found, a jpg place holder is returned.</strong>
-     * <p>
-     * Keep in mind that internally we always use PNG compression (except for the cache).
-     * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
-     * <p>
-     * The index only gets appended to the name if it's > 0.
      *
      * @param context Current context
      * @param uuid    UUID of the book
@@ -206,48 +233,7 @@ public class Book
      * @return The File object for existing files, or a new jpg placeholder.
      *
      * @throws ExternalStorageException if the Shared Storage media is not available
-     * @see #getUuidCoverFile(Context, String, int)
-     */
-    @NonNull
-    public static File getUuidCoverFileOrNew(@NonNull final Context context,
-                                             @NonNull final String uuid,
-                                             @IntRange(from = 0, to = 1) final int cIdx)
-            throws ExternalStorageException {
-        final File coverDir = AppDir.Covers.get(context);
-
-        final String name;
-        if (cIdx > 0) {
-            name = uuid + "_" + cIdx;
-        } else {
-            name = uuid + "";
-        }
-
-        final File jpg = new File(coverDir, name + ".jpg");
-        if (jpg.exists()) {
-            return jpg;
-        }
-        // could be a png
-        final File png = new File(coverDir, name + ".png");
-        if (png.exists()) {
-            return png;
-        }
-
-        // we need a new file, return a placeholder with the jpg extension
-        return jpg;
-    }
-
-    /**
-     * return the cover for the given uuid. We'll attempt to find a jpg or a png.
-     * <strong>If no file found, a jpg place holder is returned.</strong>
-     *
-     * @param context Current context
-     * @param uuid    UUID of the book
-     * @param cIdx    0..n image index
-     *
-     * @return The File object for existing files, or a new jpg placeholder.
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available
-     * @see #getUuidCoverFileOrNew(Context, String, int)
+     * @see #getUuidCoverFileOrNew(Context, int)
      */
     @Nullable
     public static File getUuidCoverFile(@NonNull final Context context,
@@ -276,56 +262,21 @@ public class Book
         return null;
     }
 
-    @NonNull
-    public EntityStatus.Stage getStage() {
-        return mStatus.getStage();
-    }
-
-    public void setStage(@NonNull final EntityStatus.Stage stage) {
-        mStatus.setStage(stage);
-    }
-
-    /**
-     * Using the current id, reload *all* other data for this book.
-     *
-     * @param db Database Access
-     */
-    public void reload(@NonNull final DAO db) {
-        load(getId(), db);
-    }
-
     /**
      * Load the book details from the database.
      *
-     * @param bookId of book (may be 0 for new, in which case we do nothing)
+     * @param bookId of book must be != 0
      * @param db     Database Access
      */
-    public void load(final long bookId,
+    public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final DAO db) {
-        if (bookId != 0) {
-            try (Cursor bookCursor = db.fetchBookById(bookId)) {
-                if (bookCursor.moveToFirst()) {
-                    load(bookId, bookCursor, db);
-                }
+        SanityCheck.requireValue(bookId, "bookId");
+
+        try (Cursor bookCursor = db.fetchBookById(bookId)) {
+            if (bookCursor.moveToFirst()) {
+                load(bookId, bookCursor, db);
             }
         }
-    }
-
-    /**
-     * Load the book details from the database.
-     * The current book data is cleared before loading.
-     *
-     * @param bookCursor an already positioned Cursor to read from
-     * @param db         to load linked array data from
-     */
-    public void load(@NonNull final Cursor bookCursor,
-                     @NonNull final DAO db) {
-        final int idCol = bookCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
-        final long id = bookCursor.getLong(idCol);
-        if (id <= 0) {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + id);
-        }
-        load(id, bookCursor, db);
     }
 
     /**
@@ -339,7 +290,9 @@ public class Book
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final Cursor bookCursor,
                      @NonNull final DAO db) {
-        clear();
+        SanityCheck.requireValue(bookId, "bookId");
+
+        clearData();
         putAll(bookCursor);
         // load lists (or init with empty lists)
         putParcelableArrayList(BKEY_BOOKSHELF_LIST, db.getBookshelvesByBookId(bookId));
@@ -348,7 +301,6 @@ public class Book
         putParcelableArrayList(BKEY_PUBLISHER_LIST, db.getPublishersByBookId(bookId));
         putParcelableArrayList(BKEY_TOC_LIST, db.getTocEntryByBookId(bookId));
     }
-
 
     /**
      * Duplicate a book by putting APPLICABLE (not simply all of them) fields
@@ -462,6 +414,70 @@ public class Book
                            getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
 
         return bookData;
+    }
+
+    @NonNull
+    public EntityStage.Stage getStage() {
+        return mStage.getStage();
+    }
+
+    public void setStage(@NonNull final EntityStage.Stage stage) {
+        mStage.setStage(stage);
+    }
+
+    /**
+     * return the cover for the given uuid. We'll attempt to find a jpg or a png.
+     * <strong>If no file found, a jpg place holder is returned.</strong>
+     * <p>
+     * Keep in mind that internally we always use PNG compression (except for the cache).
+     * So a jpg named file can be a png encoded file. (But we don't need to care about that.)
+     * <p>
+     * The index only gets appended to the name if it's > 0.
+     *
+     * @param context Current context
+     * @param cIdx    0..n image index
+     *
+     * @return The File object for existing files, or a new jpg placeholder.
+     *
+     * @throws ExternalStorageException if the Shared Storage media is not available
+     * @see #getUuidCoverFile(Context, int)
+     */
+    @NonNull
+    public File getUuidCoverFileOrNew(@NonNull final Context context,
+                                      @IntRange(from = 0, to = 1) final int cIdx)
+            throws ExternalStorageException {
+        final File coverDir = AppDir.Covers.get(context);
+
+        final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+
+        final String name;
+        if (cIdx > 0) {
+            name = uuid + "_" + cIdx;
+        } else {
+            name = uuid + "";
+        }
+
+        final File jpg = new File(coverDir, name + ".jpg");
+        if (jpg.exists()) {
+            return jpg;
+        }
+        // could be a png
+        final File png = new File(coverDir, name + ".png");
+        if (png.exists()) {
+            return png;
+        }
+
+        // we need a new file, return a placeholder with the jpg extension
+        return jpg;
+    }
+
+    @Nullable
+    public File getUuidCoverFile(@NonNull final Context context,
+                                 @IntRange(from = 0, to = 1) final int cIdx)
+            throws ExternalStorageException {
+
+        final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+        return getUuidCoverFile(context, uuid, cIdx);
     }
 
     @Override
@@ -1164,8 +1180,8 @@ public class Book
                          @IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file) {
 
-        if (mStatus.getStage() == EntityStatus.Stage.WriteAble
-            || mStatus.getStage() == EntityStatus.Stage.Dirty) {
+        if (mStage.getStage() == EntityStage.Stage.WriteAble
+            || mStage.getStage() == EntityStage.Stage.Dirty) {
             // We're editing, use BKEY_TMP_FILE_SPEC storage.
 
             // remove any previous temporary file for the given index
@@ -1191,7 +1207,7 @@ public class Book
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
             }
 
-            mStatus.setStage(EntityStatus.Stage.Dirty);
+            mStage.setStage(EntityStage.Stage.Dirty);
 
             // just return the incoming file, it has not been changed or renamed
             return file;
@@ -1220,7 +1236,7 @@ public class Book
                     }
 
                     // Rename the temp file to the uuid permanent file name
-                    destination = getUuidCoverFileOrNew(context, uuid, cIdx);
+                    destination = getUuidCoverFileOrNew(context, cIdx);
                     try {
                         FileUtils.rename(file, destination);
                     } catch (@NonNull final IOException e) {
@@ -1236,7 +1252,7 @@ public class Book
                             , "readOnly|cIdx=" + cIdx + "|deleting");
                 }
 
-                FileUtils.delete(getUuidCoverFile(context, uuid, cIdx));
+                FileUtils.delete(getUuidCoverFile(context, cIdx));
                 if (ImageUtils.isImageCachingEnabled(context)) {
                     // We delete *all* files related to this book from the cache.
                     CoversDAO.delete(context, uuid);
@@ -1263,13 +1279,6 @@ public class Book
         final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
 
         if (BuildConfig.DEBUG /* always */) {
-            // sanity checks; this method is only to be used while WriteAble/Dirty
-            if ((mStatus.getStage() != EntityStatus.Stage.WriteAble)
-                && (mStatus.getStage() != EntityStatus.Stage.Dirty)) {
-                throw new IllegalStateException("Not in WriteAble/Dirty stage; current stage="
-                                                + mStatus.getStage());
-            }
-
             // the UUID should always be valid here
             SanityCheck.requireValue(uuid, "uuid");
         }
@@ -1285,7 +1294,7 @@ public class Book
 
                 if (fileSpec.isEmpty()) {
                     // An empty fileSpec indicates we need to delete the cover
-                    FileUtils.delete(getUuidCoverFile(context, uuid, cIdx));
+                    FileUtils.delete(getUuidCoverFile(context, cIdx));
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
                     if (ImageUtils.isImageCachingEnabled(context)) {
@@ -1294,7 +1303,7 @@ public class Book
                 } else {
                     // Rename the temp file to the uuid permanent file name
                     final File file = new File(fileSpec);
-                    final File destination = getUuidCoverFileOrNew(context, uuid, cIdx);
+                    final File destination = getUuidCoverFileOrNew(context, cIdx);
                     try {
                         FileUtils.rename(file, destination);
                     } catch (@NonNull final IOException e) {
@@ -1376,13 +1385,13 @@ public class Book
     }
 
     /** Used exclusively during display / populating the Views when loading the book. */
-    public void lockStatus() {
-        mStatus.lock();
+    public void lockStage() {
+        mStage.lock();
     }
 
     /** Used exclusively during display / populating the Views when loading the book. */
-    public void unlockStatus() {
-        mStatus.unlock();
+    public void unlockStage() {
+        mStage.unlock();
     }
 
     public void pruneAuthors(@NonNull final Context context,
@@ -1391,7 +1400,7 @@ public class Book
         final ArrayList<Author> authors = getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         if (!authors.isEmpty()) {
             if (Author.pruneList(authors, context, db, lookupLocale, getLocale(context))) {
-                mStatus.setStage(EntityStatus.Stage.Dirty);
+                mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
 
@@ -1403,7 +1412,7 @@ public class Book
             if (!searchText.isEmpty()) {
                 authors.add(Author.from(searchText));
                 remove(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-                setStage(EntityStatus.Stage.Dirty);
+                mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }
@@ -1414,7 +1423,7 @@ public class Book
         final ArrayList<Series> series = getParcelableArrayList(Book.BKEY_SERIES_LIST);
         if (!series.isEmpty()) {
             if (Series.pruneList(series, context, db, lookupLocale, getLocale(context))) {
-                mStatus.setStage(EntityStatus.Stage.Dirty);
+                mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }
@@ -1425,7 +1434,7 @@ public class Book
         final ArrayList<Publisher> publishers = getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         if (!publishers.isEmpty()) {
             if (Publisher.pruneList(publishers, context, db, lookupLocale, getLocale(context))) {
-                mStatus.setStage(EntityStatus.Stage.Dirty);
+                mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }

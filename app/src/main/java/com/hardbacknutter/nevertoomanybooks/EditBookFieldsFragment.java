@@ -137,13 +137,13 @@ public class EditBookFieldsFragment
             mVb.coverImage1.setVisibility(View.GONE);
         }
 
-        mBookViewModel.getAuthors().observe(getViewLifecycleOwner(), authors -> {
+        mBookViewModel.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
             final Field<List<Author>, TextView> field = getField(R.id.author);
             field.getAccessor().setValue(authors);
             field.validate();
         });
 
-        mBookViewModel.getSeries().observe(getViewLifecycleOwner(), series -> {
+        mBookViewModel.onSeriesList().observe(getViewLifecycleOwner(), series -> {
             final Field<List<Series>, TextView> field = getField(R.id.series_title);
             field.getAccessor().setValue(series);
             field.validate();

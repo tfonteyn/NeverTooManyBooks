@@ -30,7 +30,7 @@ import org.junit.Before;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
@@ -114,11 +114,11 @@ public abstract class BaseSetup {
 
 
             book[0] = new Book();
-            book[0].setStage(EntityStatus.Stage.WriteAble);
+            book[0].setStage(EntityStage.Stage.WriteAble);
             bookshelfList.clear();
             bookshelfList.add(bookshelf[0]);
             book[0].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
-            book[0].setStage(EntityStatus.Stage.Dirty);
+            book[0].setStage(EntityStage.Stage.Dirty);
 
             book[0].putString(KEY_TITLE, BOOK_TITLE + "0");
             book[0].putString(DBDefinitions.KEY_LANGUAGE, "eng");
@@ -130,14 +130,14 @@ public abstract class BaseSetup {
             publisherList.add(publisher[0]);
             book[0].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[0] = db.insert(context, book[0], 0);
-            book[0].setStage(EntityStatus.Stage.Saved);
+            book[0].setStage(EntityStage.Stage.Saved);
 
             book[1] = new Book();
-            book[1].setStage(EntityStatus.Stage.WriteAble);
+            book[1].setStage(EntityStage.Stage.WriteAble);
             bookshelfList.clear();
             bookshelfList.add(bookshelf[0]);
             book[1].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
-            book[1].setStage(EntityStatus.Stage.Dirty);
+            book[1].setStage(EntityStage.Stage.Dirty);
             book[1].putString(KEY_TITLE, BOOK_TITLE + "1");
             book[1].putString(DBDefinitions.KEY_LANGUAGE, "ger");
             authorList.clear();
@@ -147,14 +147,14 @@ public abstract class BaseSetup {
             publisherList.add(publisher[1]);
             book[1].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[1] = db.insert(context, book[1], 0);
-            book[1].setStage(EntityStatus.Stage.Saved);
+            book[1].setStage(EntityStage.Stage.Saved);
 
             book[2] = new Book();
-            book[2].setStage(EntityStatus.Stage.WriteAble);
+            book[2].setStage(EntityStage.Stage.WriteAble);
             bookshelfList.clear();
             bookshelfList.add(bookshelf[0]);
             book[2].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
-            book[2].setStage(EntityStatus.Stage.Dirty);
+            book[2].setStage(EntityStage.Stage.Dirty);
             book[2].putString(KEY_TITLE, BOOK_TITLE + "2");
             book[2].putString(DBDefinitions.KEY_LANGUAGE, "eng");
             authorList.clear();
@@ -164,14 +164,14 @@ public abstract class BaseSetup {
             publisherList.add(publisher[2]);
             book[2].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[2] = db.insert(context, book[2], 0);
-            book[2].setStage(EntityStatus.Stage.Saved);
+            book[2].setStage(EntityStage.Stage.Saved);
 
             book[3] = new Book();
-            book[3].setStage(EntityStatus.Stage.WriteAble);
+            book[3].setStage(EntityStage.Stage.WriteAble);
             bookshelfList.clear();
             bookshelfList.add(bookshelf[0]);
             book[3].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
-            book[3].setStage(EntityStatus.Stage.Dirty);
+            book[3].setStage(EntityStage.Stage.Dirty);
             book[3].putString(KEY_TITLE, BOOK_TITLE + "3");
             book[3].putString(DBDefinitions.KEY_LANGUAGE, "eng");
             authorList.clear();
@@ -182,14 +182,14 @@ public abstract class BaseSetup {
             publisherList.add(publisher[1]);
             book[3].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[3] = db.insert(context, book[3], 0);
-            book[3].setStage(EntityStatus.Stage.Saved);
+            book[3].setStage(EntityStage.Stage.Saved);
 
             book[4] = new Book();
-            book[4].setStage(EntityStatus.Stage.WriteAble);
+            book[4].setStage(EntityStage.Stage.WriteAble);
             bookshelfList.clear();
             bookshelfList.add(bookshelf[0]);
             book[4].putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
-            book[4].setStage(EntityStatus.Stage.Dirty);
+            book[4].setStage(EntityStage.Stage.Dirty);
             book[4].putString(KEY_TITLE, BOOK_TITLE + "4");
             book[4].putString(DBDefinitions.KEY_LANGUAGE, "eng");
             authorList.clear();
@@ -211,7 +211,7 @@ public abstract class BaseSetup {
             tocList.add(tocEntry[3]);
             book[4].putParcelableArrayList(Book.BKEY_TOC_LIST, tocList);
             bookId[4] = db.insert(context, book[4], 0);
-            book[4].setStage(EntityStatus.Stage.Saved);
+            book[4].setStage(EntityStage.Stage.Saved);
         }
     }
 }

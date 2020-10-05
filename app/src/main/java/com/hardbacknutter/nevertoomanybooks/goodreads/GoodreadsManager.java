@@ -218,7 +218,7 @@ public class GoodreadsManager {
         // See if the book already has a Goodreads id and if it is valid.
         try {
             grBookId = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
-            if (grBookId != 0) {
+            if (grBookId > 0) {
                 // Get the book details to make sure we have a valid book ID
                 final boolean[] fetchThumbnails = {false, false};
                 grBookData = getBookById(grBookId, fetchThumbnails, new Bundle());
@@ -244,7 +244,7 @@ public class GoodreadsManager {
             grBookId = grBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
 
             // If we got an ID, save it against the book
-            if (grBookId != 0) {
+            if (grBookId > 0) {
                 db.setGoodreadsBookId(bookId, grBookId);
             } else {
                 // Still nothing... Give up.
@@ -254,6 +254,7 @@ public class GoodreadsManager {
 
         // We found a Goodreads book.
         // Get the review id if we have the book details. For new books, it will not be present.
+        //noinspection ConstantConditions
         long reviewId = grBookData.getLong(ShowBookApiHandler.SiteField.REVIEW_ID);
 
         // Lists of shelf names and our best guess at the Goodreads canonical name

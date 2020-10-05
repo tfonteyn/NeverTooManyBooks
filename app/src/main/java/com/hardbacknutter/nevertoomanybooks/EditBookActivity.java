@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -189,7 +189,7 @@ public class EditBookActivity
 
         // 2. If we're at the top level, check if the book was changed.
         if (backStackEntryCount == 0
-            && mBookViewModel.getBook().getStage() == EntityStatus.Stage.Dirty) {
+            && mBookViewModel.getBook().getStage() == EntityStage.Stage.Dirty) {
 
             StandardDialogs.unsavedEdits(this,
                                          () -> prepareSave(true),

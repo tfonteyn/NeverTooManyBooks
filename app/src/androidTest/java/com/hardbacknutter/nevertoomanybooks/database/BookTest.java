@@ -40,7 +40,7 @@ import org.junit.Test;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -217,8 +217,7 @@ public class BookTest {
             /*
              * test the inserted book
              */
-            Book book = new Book();
-            book.load(mBookId[0], db);
+            Book book = Book.from(mBookId[0], db);
             assertEquals(mBookId[0], book.getId());
             checkBookAfterInitialInsert(context, book);
 
@@ -232,9 +231,9 @@ public class BookTest {
             /*
              * update the stored book
              */
-            book.setStage(EntityStatus.Stage.WriteAble);
+            book.setStage(EntityStage.Stage.WriteAble);
             book.putString(KEY_TITLE, BOOK_TITLE + "0_upd");
-            book.setStage(EntityStatus.Stage.Dirty);
+            book.setStage(EntityStage.Stage.Dirty);
 
             authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             authors.add(mAuthor[1]);
@@ -245,15 +244,14 @@ public class BookTest {
                          + File.separatorChar + Constants.COVER[1],
                          book.getString(Book.BKEY_TMP_FILE_SPEC[1]));
 
-            assertEquals(EntityStatus.Stage.Dirty, book.getStage());
+            assertEquals(EntityStage.Stage.Dirty, book.getStage());
             db.update(context, book, 0);
-            book.setStage(EntityStatus.Stage.Saved);
+            book.setStage(EntityStage.Stage.Saved);
 
             /*
              * test the updated book
              */
-            book = new Book();
-            book.load(mBookId[0], db);
+            book = Book.from(mBookId[0], db);
             assertEquals(mBookId[0], book.getId());
 
             uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
@@ -292,8 +290,7 @@ public class BookTest {
             /*
              * Delete the second cover of the read-only book
              */
-            book = new Book();
-            book.load(mBookId[0], db);
+            book = Book.from(mBookId[0], db);
             assertEquals(mBookId[0], book.getId());
 
             uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
@@ -370,9 +367,9 @@ public class BookTest {
             throws DAO.DaoWriteException {
 
         final Book book = new Book();
-        book.setStage(EntityStatus.Stage.WriteAble);
+        book.setStage(EntityStage.Stage.WriteAble);
         book.putString(KEY_TITLE, Constants.BOOK_TITLE + "0");
-        book.setStage(EntityStatus.Stage.Dirty);
+        book.setStage(EntityStage.Stage.Dirty);
 
         book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, mBookshelfList);
         book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthorList);
@@ -384,9 +381,9 @@ public class BookTest {
                      + File.separatorChar + Constants.COVER[0],
                      book.getString(Book.BKEY_TMP_FILE_SPEC[0]));
 
-        assertEquals(EntityStatus.Stage.Dirty, book.getStage());
+        assertEquals(EntityStage.Stage.Dirty, book.getStage());
         final long bookId = db.insert(context, book, 0);
-        book.setStage(EntityStatus.Stage.Saved);
+        book.setStage(EntityStage.Stage.Saved);
 
         assertTrue(bookId > 0);
         assertEquals(book.getId(), bookId);
@@ -396,7 +393,7 @@ public class BookTest {
 
     private void checkBookAfterInitialInsert(@NonNull final Context context,
                                              final Book book) {
-        assertEquals(EntityStatus.Stage.ReadOnly, book.getStage());
+        assertEquals(EntityStage.Stage.ReadOnly, book.getStage());
 
         String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
         assertFalse(uuid.isEmpty());

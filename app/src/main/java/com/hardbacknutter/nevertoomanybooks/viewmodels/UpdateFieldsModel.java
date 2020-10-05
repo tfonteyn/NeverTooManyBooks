@@ -591,12 +591,11 @@ public class UpdateFieldsModel
                                                 @NonNull final Bundle bookData,
                                                 @NonNull final FieldUsage usage,
                                                 @IntRange(from = 0, to = 1) final int cIdx) {
-        final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
         boolean copyThumb = false;
         // check if we already have an image, and what we should do with the new image
         switch (usage.getUsage()) {
             case CopyIfBlank:
-                final File file = Book.getUuidCoverFile(context, uuid, cIdx);
+                final File file = mCurrentBook.getUuidCoverFile(context, cIdx);
                 copyThumb = file == null || file.length() == 0;
                 break;
 
@@ -613,10 +612,11 @@ public class UpdateFieldsModel
             final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
             if (fileSpec != null) {
                 final File downloadedFile = new File(fileSpec);
-                final File destination = Book.getUuidCoverFileOrNew(context, uuid, cIdx);
+                final File destination = mCurrentBook.getUuidCoverFileOrNew(context, cIdx);
                 try {
                     FileUtils.rename(downloadedFile, destination);
                 } catch (@NonNull final IOException e) {
+                    final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
                     Logger.error(context, TAG, e,
                                  "processSearchResultsCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
                 }
@@ -748,8 +748,7 @@ public class UpdateFieldsModel
                                   @NonNull final FieldUsage usage,
                                   @IntRange(from = 0, to = 1) final int cIdx) {
         // - If it's a thumbnail, then see if it's missing or empty.
-        final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
-        final File file = Book.getUuidCoverFile(context, uuid, cIdx);
+        final File file = mCurrentBook.getUuidCoverFile(context, cIdx);
         if (file == null || file.length() == 0) {
             fieldUsages.put(usage.fieldId, usage);
         }

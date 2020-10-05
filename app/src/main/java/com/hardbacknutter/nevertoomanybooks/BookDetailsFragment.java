@@ -431,7 +431,7 @@ public class BookDetailsFragment
                         mBookViewModel.putResultData(data);
 
                         long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
-                        if (id != 0) {
+                        if (id > 0) {
                             mBookViewModel.loadBook(id);
                         }
                     }
@@ -591,10 +591,9 @@ public class BookDetailsFragment
         mVb.toc.setVisibility(View.GONE);
         mVb.btnShowToc.setChecked(false);
 
-        final ArrayList<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
+        final List<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
 
         if (!tocList.isEmpty()) {
-
             final Context context = getContext();
 
             for (TocEntry tocEntry : tocList) {

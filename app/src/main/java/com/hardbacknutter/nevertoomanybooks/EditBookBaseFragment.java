@@ -54,7 +54,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
@@ -182,7 +182,7 @@ public abstract class EditBookBaseFragment
     @CallSuper
     public void onPause() {
         // Avoid saving a 2nd time after the user has initiated saving.
-        if (!(mBookViewModel.getBook().getStage() == EntityStatus.Stage.Saved)) {
+        if (!(mBookViewModel.getBook().getStage() == EntityStage.Stage.Saved)) {
             onSaveFields(mBookViewModel.getBook());
 
             mBookViewModel.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());

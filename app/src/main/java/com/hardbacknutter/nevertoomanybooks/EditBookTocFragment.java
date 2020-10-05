@@ -66,7 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditTocEntryDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.EntityStatus;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
@@ -108,17 +108,17 @@ public class EditBookTocFragment
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookViewModel.getBook().setStage(EntityStatus.Stage.Dirty);
+                    mBookViewModel.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
-    /** the rows. */
-    private final ArrayList<TocEntry> mList = new ArrayList<>();
     /**
      * ISFDB editions of a book(isbn).
      * We'll try them one by one if the user asks for a re-try.
      */
     @NonNull
     private final List<Edition> mIsfdbEditions = new ArrayList<>();
+    /** the rows. */
+    private ArrayList<TocEntry> mList;
     /** View Binding. */
     private FragmentEditBookTocBinding mVb;
     /** The adapter for the list. */
@@ -238,6 +238,8 @@ public class EditBookTocFragment
         mVb.tocList.addItemDecoration(
                 new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.tocList.setHasFixedSize(true);
+
+        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_TOC_LIST);
         mListAdapter = new TocListEditAdapter(getContext(), mList,
                                               vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
@@ -287,11 +289,6 @@ public class EditBookTocFragment
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
-        // Populate the list view with the book content table.
-        mList.clear();
-        mList.addAll(book.getParcelableArrayList(Book.BKEY_TOC_LIST));
-        mListAdapter.notifyDataSetChanged();
-
         populateTocBits(book);
 
         // hide unwanted fields
@@ -308,10 +305,6 @@ public class EditBookTocFragment
                     mVb.cbxIsAnthology.isChecked());
         book.setBit(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_AUTHORS,
                     mVb.cbxMultipleAuthors.isChecked());
-
-        // The toc list is not a 'real' field. Hence the need to store it manually here.
-        // It requires no special validation.
-        book.putParcelableArrayList(Book.BKEY_TOC_LIST, mList);
     }
 
     @Override
@@ -571,11 +564,11 @@ public class EditBookTocFragment
             final Book book = mBookViewModel.getBook();
 
             // update the book with Series information that was gathered from the TOC
-            final List<Series> series = message.result
-                    .getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            final List<Series> series =
+                    message.result.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             if (series != null && !series.isEmpty()) {
-                final ArrayList<Series> inBook = book
-                        .getParcelableArrayList(Book.BKEY_SERIES_LIST);
+                final ArrayList<Series> inBook =
+                        book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
                 // add, weeding out duplicates
                 for (Series s : series) {
                     if (!inBook.contains(s)) {

@@ -24,7 +24,7 @@ import androidx.annotation.NonNull;
 /**
  * State engine for the status of an entity.
  */
-public class EntityStatus {
+public class EntityStage {
 
     private static final String ERROR_CURRENT_STAGE = "Current mStage=";
     private Stage mStage = Stage.ReadOnly;

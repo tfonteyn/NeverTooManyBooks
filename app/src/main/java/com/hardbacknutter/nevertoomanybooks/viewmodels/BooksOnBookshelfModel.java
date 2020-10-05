@@ -48,7 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -370,7 +372,7 @@ public class BooksOnBookshelfModel
     public void onStyleChanged(@NonNull final Context context,
                                @NonNull final BooklistStyle style) {
 
-        BooklistStyle.StyleDAO.updateOrInsert(mDb, style);
+        StyleDAO.updateOrInsert(mDb, style);
         onStyleChanged(context, style.getUuid());
     }
 
@@ -606,9 +608,7 @@ public class BooksOnBookshelfModel
     public Book getBook(@NonNull final DataHolder rowData) {
         final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
         if (bookId > 0) {
-            final Book book = new Book();
-            book.load(bookId, mDb);
-            return book;
+            return Book.from(bookId, mDb);
         }
         return null;
     }
@@ -744,11 +744,11 @@ public class BooksOnBookshelfModel
             }
 
             // Add the conditional domains; style level.
-            final BooklistStyle.ListScreenBookFields bookFields = style
+            final ListScreenBookFields bookFields = style
                     .getListScreenBookFields();
 
             if (bookFields.isShowField(context, prefs,
-                                       BooklistStyle.ListScreenBookFields.pk_bookshelves)) {
+                                       ListScreenBookFields.PK_BOOKSHELVES)) {
                 // This collects a CSV list of the bookshelves the book is on.
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
@@ -758,7 +758,7 @@ public class BooksOnBookshelfModel
             // we fetch ONLY the primary author
 
             if (bookFields.isShowField(context, prefs,
-                                       BooklistStyle.ListScreenBookFields.pk_author)) {
+                                       ListScreenBookFields.PK_AUTHOR)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_AUTHOR_FORMATTED, DAOSql.SqlColumns
                         .getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
@@ -775,7 +775,7 @@ public class BooksOnBookshelfModel
             //  }
 
             if (bookFields.isShowField(context, prefs,
-                                       BooklistStyle.ListScreenBookFields.pk_publisher)) {
+                                       ListScreenBookFields.PK_PUBLISHER)) {
                 // Collect a CSV list of the publishers of the book
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_PUBLISHER_NAME_CSV,
@@ -783,28 +783,28 @@ public class BooksOnBookshelfModel
             }
 
             if (bookFields.isShowField(context, prefs,
-                                       BooklistStyle.ListScreenBookFields.pk_pub_date)) {
+                                       ListScreenBookFields.PK_PUB_DATE)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_DATE_PUBLISHED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED)));
             }
 
             if (bookFields.isShowField(context, prefs,
-                                       BooklistStyle.ListScreenBookFields.pk_format)) {
+                                       ListScreenBookFields.PK_FORMAT)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_FORMAT,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT)));
             }
 
             if (bookFields.isShowField(context, prefs,
-                                       BooklistStyle.ListScreenBookFields.pk_location)) {
+                                       ListScreenBookFields.PK_LOCATION)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_LOCATION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
             }
 
             if (bookFields.isShowField(context, prefs,
-                                       BooklistStyle.ListScreenBookFields.pk_rating)) {
+                                       ListScreenBookFields.PK_RATING)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_RATING,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_RATING)));
