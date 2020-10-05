@@ -261,7 +261,7 @@ public class BooklistGroup
             mStylePrefs = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
         }
 
-        mIsUserDefinedStyle = in.readInt() != 0;
+        mIsUserDefinedStyle = in.readByte() != 0;
         mAccumulatedDomains = new ArrayList<>();
         in.readList(mAccumulatedDomains, getClass().getClassLoader());
     }
@@ -470,7 +470,7 @@ public class BooklistGroup
                               final int flags) {
         dest.writeInt(mId);
         dest.writeString(mUuid);
-        dest.writeInt(mIsUserDefinedStyle ? 1 : 0);
+        dest.writeByte((byte) (mIsUserDefinedStyle ? 1 : 0));
         dest.writeList(mAccumulatedDomains);
         // now the prefs for this class (none on this level for now)
     }
@@ -610,8 +610,8 @@ public class BooklistGroup
             initPrefs();
             mAllAuthors.set(in);
 
-            mShowAuthorWithGivenNameFirst = in.readInt() != 0;
-            mSortAuthorByGivenNameFirst = in.readInt() != 0;
+            mShowAuthorWithGivenNameFirst = in.readByte() != 0;
+            mSortAuthorByGivenNameFirst = in.readByte() != 0;
             mDisplayDomain = createDisplayDomain();
             mSortedDomain = createSortDomain();
         }
@@ -679,8 +679,8 @@ public class BooklistGroup
             super.writeToParcel(dest, flags);
             mAllAuthors.writeToParcel(dest);
 
-            dest.writeInt(mShowAuthorWithGivenNameFirst ? 1 : 0);
-            dest.writeInt(mSortAuthorByGivenNameFirst ? 1 : 0);
+            dest.writeByte((byte) (mShowAuthorWithGivenNameFirst ? 1 : 0));
+            dest.writeByte((byte) (mSortAuthorByGivenNameFirst ? 1 : 0));
         }
 
         void initPrefs() {
