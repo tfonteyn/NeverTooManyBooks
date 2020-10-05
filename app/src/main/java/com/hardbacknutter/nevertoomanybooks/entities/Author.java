@@ -289,8 +289,24 @@ public class Author
         mFamilyName = in.readString();
         //noinspection ConstantConditions
         mGivenNames = in.readString();
-        mIsComplete = in.readInt() != 0;
+        mIsComplete = in.readByte() != 0;
         mType = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mFamilyName);
+        dest.writeString(mGivenNames);
+        dest.writeByte((byte) (mIsComplete ? 1 : 0));
+        dest.writeInt(mType);
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @NonNull
@@ -653,22 +669,6 @@ public class Author
                         @NonNull final String givenNames) {
         mFamilyName = familyName;
         mGivenNames = givenNames;
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mFamilyName);
-        dest.writeString(mGivenNames);
-        dest.writeInt(mIsComplete ? 1 : 0);
-        dest.writeInt(mType);
     }
 
     /**
