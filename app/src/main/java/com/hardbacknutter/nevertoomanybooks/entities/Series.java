@@ -223,7 +223,7 @@ public class Series
         mId = in.readLong();
         //noinspection ConstantConditions
         mTitle = in.readString();
-        mIsComplete = in.readInt() != 0;
+        mIsComplete = in.readByte() != 0;
         //noinspection ConstantConditions
         mNumber = in.readString();
     }
@@ -484,6 +484,21 @@ public class Series
         return listModified;
     }
 
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mTitle);
+        dest.writeByte((byte) (mIsComplete ? 1 : 0));
+        dest.writeString(mNumber);
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     /**
      * Get the 'complete' status of the Series.
      *
@@ -500,21 +515,6 @@ public class Series
      */
     public void setComplete(final boolean isComplete) {
         mIsComplete = isComplete;
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mTitle);
-        dest.writeInt(mIsComplete ? 1 : 0);
-        dest.writeString(mNumber);
     }
 
     /**
