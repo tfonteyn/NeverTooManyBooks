@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.entities;
+package com.hardbacknutter.nevertoomanybooks.parcelling;
 
 
 import android.os.Parcel;
@@ -26,6 +26,8 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+
 import static org.junit.Assert.assertEquals;
 
 
@@ -33,7 +35,8 @@ import static org.junit.Assert.assertEquals;
 public class AuthorTest {
 
     /**
-     * Not really an important test; just an exercise in creating an "androidTest".
+     * Reminder: The base test {@code assertEquals(pAuthor, author)}
+     * is testing {@link Author#equals(Object)} only.
      */
     @Test
     public void parcelling() {
@@ -43,6 +46,8 @@ public class AuthorTest {
         author.writeToParcel(parcel, author.describeContents());
         parcel.setDataPosition(0);
         Author pAuthor = Author.CREATOR.createFromParcel(parcel);
+
+        assertEquals(pAuthor, author);
 
         assertEquals(pAuthor.getId(), author.getId());
         assertEquals(pAuthor.getFamilyName(), author.getFamilyName());
