@@ -313,11 +313,13 @@ public class DAOSql {
             if (toLocal) {
                 fieldSpec = localDateTimeExpression(fieldSpec);
             }
-            return "(CASE"
+            return CASE
+                   // YYYY
                    + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",1,4)"
+                   // invalid
                    + " ELSE ''"
-                   + " END)";
+                   + _END;
         }
 
         /**
@@ -338,10 +340,13 @@ public class DAOSql {
                 fieldSpec = localDateTimeExpression(fieldSpec);
             }
             return CASE
+                   // YYYY-MM
                    + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",6,2)"
+                   // YYYY-M
                    + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",6,1)"
+                   // invalid
                    + " ELSE ''"
                    + _END;
         }
@@ -379,6 +384,7 @@ public class DAOSql {
                    // YYYY-M-D
                    + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'"
                    + " THEN SUBSTR(" + fieldSpec + ",8,1)"
+                   // invalid
                    + " ELSE ''"
                    + _END;
         }
