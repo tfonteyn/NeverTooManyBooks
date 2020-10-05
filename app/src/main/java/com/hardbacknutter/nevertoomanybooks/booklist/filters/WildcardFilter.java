@@ -49,9 +49,11 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 public class WildcardFilter
         implements Filter<String> {
 
+    @NonNull
     private final TableDefinition mTable;
+    @NonNull
     private final String mDomainKey;
-
+    @NonNull
     private final String mCriteria;
 
     /**
