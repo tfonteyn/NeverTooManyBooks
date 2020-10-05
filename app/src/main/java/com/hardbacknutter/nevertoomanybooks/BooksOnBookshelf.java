@@ -67,9 +67,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
@@ -1213,7 +1214,7 @@ public class BooksOnBookshelf
 
                         // if we got an id back, make any rebuild re-position to it.
                         long bookId = extras.getLong(DBDefinitions.KEY_PK_ID, 0);
-                        if (bookId != 0) {
+                        if (bookId > 0) {
                             mModel.setDesiredCentralBookId(bookId);
                         }
                     }
@@ -1282,7 +1283,7 @@ public class BooksOnBookshelf
                         if (options != 0) {
                             if ((options & Options.STYLES) != 0) {
                                 // Force a refresh of the list of all user styles.
-                                BooklistStyle.StyleDAO.clearCache();
+                                StyleDAO.clearCache();
                             }
                             if ((options & Options.PREFS) != 0) {
                                 // Refresh the preferred bookshelf. This also refreshes its style.
@@ -1300,7 +1301,7 @@ public class BooksOnBookshelf
             // from BaseActivity Nav Panel
             case RequestCode.NAV_PANEL_ABOUT:
                 if (resultCode == AboutActivity.RESULT_ALL_DATA_DESTROYED) {
-                    BooklistStyle.StyleDAO.clearCache();
+                    StyleDAO.clearCache();
                     mModel.reloadSelectedBookshelf(this);
                     mModel.setForceRebuildInOnResume(true);
                 }

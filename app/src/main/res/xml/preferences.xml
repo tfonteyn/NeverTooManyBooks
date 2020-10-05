@@ -196,7 +196,7 @@
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.AdvancedPreferenceFragment"
             android:icon="@drawable/ic_settings"
             android:key="psk_advanced_options"
-            android:title="@string/lbl_advanced_options"
+            android:title="@string/pt_maintenance"
             />
     </PreferenceCategory>
 </PreferenceScreen>

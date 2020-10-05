@@ -39,7 +39,11 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -70,18 +74,18 @@ public class StyleFragment
 
         // Cover on LIST
         final Preference thumbScale = findPreference(
-                BooklistStyle.ListScreenBookFields.pk_cover_scale);
+                ListScreenBookFields.PK_COVER_SCALE);
         if (thumbScale != null) {
-            thumbScale.setDependency(BooklistStyle.ListScreenBookFields.pk_covers);
+            thumbScale.setDependency(ListScreenBookFields.PK_COVERS);
         }
 
         // Covers on DETAIL screen
         // Setting cover 0 to false -> disable cover 1; also see onSharedPreferenceChanged
         final Preference cover = findPreference(
-                BooklistStyle.DetailScreenBookFields.pk_cover[1]);
+                DetailScreenBookFields.PK_COVER[1]);
         if (cover != null) {
             cover.setDependency(
-                    BooklistStyle.DetailScreenBookFields.pk_cover[0]);
+                    DetailScreenBookFields.PK_COVER[0]);
         }
 
         if (savedInstanceState == null) {
@@ -97,7 +101,7 @@ public class StyleFragment
         Preference preference;
 
         // the 'groups' in use.
-        preference = findPreference(BooklistStyle.Groups.pk_style_groups);
+        preference = findPreference(Groups.PK_STYLE_GROUPS);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 Intent intent = new Intent(getContext(), StyleGroupsActivity.class)
@@ -116,7 +120,7 @@ public class StyleFragment
         // Use the global style to get the groups.
         //noinspection ConstantConditions
         final BooklistStyle style = new BooklistStyle(getContext());
-        final BooklistStyle.Groups styleGroups = mStyle.getGroups();
+        final Groups styleGroups = mStyle.getGroups();
 
         for (BooklistGroup group : BooklistGroup.getAllGroups(getContext(), style)) {
             group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
@@ -136,11 +140,11 @@ public class StyleFragment
 
         // Covers on DETAIL screen
         // Setting cover 0 to false -> set cover 1 to false as well
-        if (BooklistStyle.DetailScreenBookFields.pk_cover[0].equals(key)
+        if (DetailScreenBookFields.PK_COVER[0].equals(key)
             && !preferences.getBoolean(key, false)) {
             final SwitchPreference cover =
                     findPreference(
-                            BooklistStyle.DetailScreenBookFields.pk_cover[1]);
+                            DetailScreenBookFields.PK_COVER[1]);
             //noinspection ConstantConditions
             cover.setChecked(false);
         }
@@ -157,17 +161,17 @@ public class StyleFragment
     protected void updateSummary(@NonNull final String key) {
 
         switch (key) {
-            case BooklistStyle.TextStyle.pk_scale_font: {
+            case TextScale.PK_TEXT_SCALE: {
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    preference.setSummary(mStyle.getTextStyle()
+                    preference.setSummary(mStyle.getTextScale()
                                                 .getFontScaleSummaryText(getContext()));
                 }
                 break;
             }
 
-            case BooklistStyle.ListScreenBookFields.pk_cover_scale: {
+            case ListScreenBookFields.PK_COVER_SCALE: {
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
@@ -177,7 +181,7 @@ public class StyleFragment
                 break;
             }
 
-            case BooklistStyle.pk_levels_expansion: {
+            case BooklistStyle.PK_LEVELS_EXPANSION: {
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     preference.setMax(mStyle.getGroups().size());
@@ -187,7 +191,7 @@ public class StyleFragment
                 break;
             }
 
-            case BooklistStyle.Groups.pk_style_groups: {
+            case Groups.PK_STYLE_GROUPS: {
                 // the 'groups' in use.
                 final Preference preference = findPreference(key);
                 if (preference != null) {
@@ -197,7 +201,7 @@ public class StyleFragment
                 break;
             }
 
-            case BooklistStyle.ListScreenBookFields.pk_covers:
+            case ListScreenBookFields.PK_COVERS:
             case PSK_STYLE_SHOW_DETAILS: {
                 // the 'extra' fields in use.
                 final Preference preference = findPreference(PSK_STYLE_SHOW_DETAILS);

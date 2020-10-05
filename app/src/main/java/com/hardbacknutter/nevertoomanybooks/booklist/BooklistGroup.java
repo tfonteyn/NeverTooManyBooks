@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -206,6 +207,8 @@ public class BooklistGroup
     static final int GROUP_KEY_MAX = 31;
     /** Flag: is the style user-defined. */
     final boolean mIsUserDefinedStyle;
+    @NonNull
+    final SharedPreferences mStylePrefs;
     /** The UUID for the style. Needed to reconstruct the {@link #mStylePrefs} after parcelling. */
     @NonNull
     private final String mUuid;
@@ -215,8 +218,6 @@ public class BooklistGroup
     /** The underlying group key object. */
     @NonNull
     private final GroupKey mGroupKey;
-    @NonNull
-    final SharedPreferences mStylePrefs;
     /**
      * The domains represented by this group.
      * Set at runtime by builder based on current group <strong>and its outer groups</strong>
@@ -479,7 +480,7 @@ public class BooklistGroup
     public String toString() {
         return "BooklistGroup{"
                + "mUuid=`'`" + mUuid + '`'
-               + ", style=" + mStylePrefs.getString(BooklistStyle.pk_name, "????")
+               + ", style=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
                + ", mIsUserDefinedStyle=" + mIsUserDefinedStyle
                + ", mId=" + mId
                + ", mGroupKey=" + mGroupKey
@@ -531,7 +532,7 @@ public class BooklistGroup
              DATE_ACQUIRED_DAY
             })
     @Retention(RetentionPolicy.SOURCE)
-    @interface Id {
+    public @interface Id {
 
     }
 
@@ -622,7 +623,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Authors.
          */
-        static boolean showBooksUnderEachDefault(@NonNull final Context context) {
+        public static boolean showBooksUnderEachDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
                     .getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
@@ -635,7 +636,7 @@ public class BooklistGroup
          *
          * @return the type of author we consider the primary author
          */
-        static int getPrimaryTypeGlobalDefault(@NonNull final Context context) {
+        public static int getPrimaryTypeGlobalDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
                     .getInt(PK_PRIMARY_TYPE, Author.TYPE_UNKNOWN);
@@ -720,7 +721,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Authors.
          */
-        boolean showBooksUnderEach(@NonNull final Context context) {
+        public boolean showBooksUnderEach(@NonNull final Context context) {
             return mAllAuthors.isTrue(context);
         }
 
@@ -732,7 +733,7 @@ public class BooklistGroup
          * @return the type of author we consider the primary author
          */
         @Author.Type
-        int getPrimaryType(@NonNull final Context context) {
+        public int getPrimaryType(@NonNull final Context context) {
             return mPrimaryType.getValue(context);
         }
 
@@ -818,7 +819,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Series.
          */
-        static boolean showBooksUnderEachDefault(@NonNull final Context context) {
+        public static boolean showBooksUnderEachDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
                     .getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
@@ -876,7 +877,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Series.
          */
-        boolean showBooksUnderEach(@NonNull final Context context) {
+        public boolean showBooksUnderEach(@NonNull final Context context) {
             return mAllSeries.isTrue(context);
         }
 
@@ -958,7 +959,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Publishers.
          */
-        static boolean showBooksUnderEachDefault(@NonNull final Context context) {
+        public static boolean showBooksUnderEachDefault(@NonNull final Context context) {
             return PreferenceManager
                     .getDefaultSharedPreferences(context)
                     .getBoolean(PK_SHOW_BOOKS_UNDER_EACH,
@@ -1018,7 +1019,7 @@ public class BooklistGroup
          *
          * @return {@code true} if we want to show a book under each of its Publishers.
          */
-        boolean showBooksUnderEach(@NonNull final Context context) {
+        public boolean showBooksUnderEach(@NonNull final Context context) {
             return mAllPublishers.isTrue(context);
         }
 

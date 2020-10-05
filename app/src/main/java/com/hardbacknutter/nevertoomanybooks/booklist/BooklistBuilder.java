@@ -36,6 +36,8 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -610,7 +612,7 @@ final class BooklistBuilder {
         // Text of join statement
         final StringBuilder sql = new StringBuilder();
 
-        final BooklistStyle.Groups styleGroups = mStyle.getGroups();
+        final Groups styleGroups = mStyle.getGroups();
 
         // If there is a bookshelf specified (either as group or as a filter),
         // start the join there.

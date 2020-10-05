@@ -65,13 +65,15 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCollectionBase;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.PreferredStylesMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -958,11 +960,11 @@ public class XmlImporter
             }
             // add to the menu of preferred styles if needed.
             if (mStyle.isPreferred(mContext)) {
-                BooklistStyle.MenuOrder.addPreferredStyle(mContext, mStyle);
+                PreferredStylesMenu.add(mContext, mStyle);
             }
 
             // the prefs are written on the fly, but we still need the db entry saved.
-            BooklistStyle.StyleDAO.updateOrInsert(mDb, mStyle);
+            StyleDAO.updateOrInsert(mDb, mStyle);
 
             mStylesRead++;
         }

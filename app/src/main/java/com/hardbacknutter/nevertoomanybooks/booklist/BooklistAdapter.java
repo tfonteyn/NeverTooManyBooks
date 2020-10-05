@@ -61,6 +61,9 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoaderWithCacheWrite;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -385,12 +388,12 @@ public class BooklistAdapter
         }
 
         final Context context = parent.getContext();
-        final BooklistStyle.TextStyle textStyle = mStyle.getTextStyle();
+        final TextScale textScale = mStyle.getTextScale();
         // Scale text/padding (recursively) if required
-        if (!textStyle.isDefaultScale(context)) {
+        if (!textScale.isDefaultScale(context)) {
             scaleTextViews(view,
-                           textStyle.getFontSizeInSpUnits(context),
-                           textStyle.getPaddingFactor(context));
+                           textScale.getFontSizeInSpUnits(context),
+                           textScale.getPaddingFactor(context));
         }
         return view;
     }
@@ -782,35 +785,35 @@ public class BooklistAdapter
             lending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
             series = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
 
-            final BooklistStyle.ListScreenBookFields bookFields = style
+            final ListScreenBookFields bookFields = style
                     .getListScreenBookFields();
 
             cover = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_covers);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_COVERS);
 
             author = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_author);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_AUTHOR);
 
             publisher = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_publisher);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_PUBLISHER);
 
             pubDate = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_pub_date);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_PUB_DATE);
 
             isbn = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_isbn);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_ISBN);
 
             format = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_format);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_FORMAT);
 
             location = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_location);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_LOCATION);
 
             rating = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_rating);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_RATING);
 
             bookshelf = bookFields
-                    .isShowField(context, prefs, BooklistStyle.ListScreenBookFields.pk_bookshelves);
+                    .isShowField(context, prefs, ListScreenBookFields.PK_BOOKSHELVES);
         }
 
         /**
@@ -1033,13 +1036,13 @@ public class BooklistAdapter
          */
         private void onZoomCover(@NonNull final View coverView) {
             final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
-            final File image = Book.getUuidCoverFile(coverView.getContext(), uuid, 0);
-            if (image != null && image.exists()) {
+            final File file = Book.getUuidCoverFile(coverView.getContext(), uuid, 0);
+            if (file != null && file.exists()) {
                 final FragmentManager fm =
                         ((FragmentActivity) coverView.getContext()).getSupportFragmentManager();
 
                 ZoomedImageDialogFragment
-                        .newInstance(image)
+                        .newInstance(file)
                         .show(fm, ZoomedImageDialogFragment.TAG);
             }
         }

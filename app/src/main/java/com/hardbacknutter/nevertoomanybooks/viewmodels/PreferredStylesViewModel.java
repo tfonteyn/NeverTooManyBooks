@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.PreferredStylesMenu;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
@@ -124,10 +126,10 @@ public class PreferredStylesViewModel
         // Always save a new style to the database first!
         if (style.getId() == 0) {
             // this will also update the style in the list of user styles.
-            BooklistStyle.StyleDAO.updateOrInsert(mDb, style);
+            StyleDAO.updateOrInsert(mDb, style);
         } else {
             // (only) update the style in the list of user styles.
-            BooklistStyle.StyleDAO.update(style);
+            StyleDAO.update(style);
         }
 
         // Now (re)organise the list of styles.
@@ -189,13 +191,13 @@ public class PreferredStylesViewModel
     public void deleteStyle(@NonNull final Context context,
                             @NonNull final BooklistStyle style) {
         mIsDirty = true;
-        BooklistStyle.StyleDAO.delete(context, mDb, style);
+        StyleDAO.delete(context, mDb, style);
         mList.remove(style);
     }
 
     public void saveMenuOrder(@NonNull final Context context) {
         mIsDirty = true;
-        BooklistStyle.MenuOrder.save(context, mList);
+        PreferredStylesMenu.save(context, mList);
     }
 
     public void purgeBLNS(final long id) {

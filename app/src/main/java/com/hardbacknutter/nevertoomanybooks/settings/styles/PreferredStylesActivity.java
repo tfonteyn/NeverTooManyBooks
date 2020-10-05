@@ -48,7 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
@@ -193,7 +194,7 @@ public class PreferredStylesActivity
                     } else {
                         // the style was not modified, discard it if this was a cloned (new) style
                         if (style != null && style.getId() == 0) {
-                            BooklistStyle.StyleDAO.discard(this, style);
+                            StyleDAO.discard(this, style);
                         }
                     }
                 }

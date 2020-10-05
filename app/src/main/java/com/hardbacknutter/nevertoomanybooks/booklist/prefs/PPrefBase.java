@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 
 /**
  * Base class for a generic Preference stored as a {@code String}.
@@ -129,7 +129,7 @@ public abstract class PPrefBase<T>
     @NonNull
     public String toString() {
         return "mKey=" + mKey
-               + ", style=" + mStylePrefs.getString(BooklistStyle.pk_name, "????")
+               + ", style=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
                + ", type=" + mDefaultValue.getClass().getSimpleName()
                + ", mDefaultValue=`" + mDefaultValue + '`'
                + ", mIsPersistent=" + mIsPersistent

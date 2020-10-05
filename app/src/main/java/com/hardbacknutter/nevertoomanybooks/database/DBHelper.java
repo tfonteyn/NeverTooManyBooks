@@ -44,7 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Builtin;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -281,9 +282,9 @@ public final class DBHelper
                 // 1==true
                 + ") VALUES(?,1,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = BooklistStyle.Builtin.MAX_ID; id < 0; id++) {
+            for (int id = Builtin.MAX_ID; id < 0; id++) {
                 stmt.bindLong(1, id);
-                stmt.bindString(2, BooklistStyle.Builtin.getUuidById(-id));
+                stmt.bindString(2, Builtin.getUuidById(-id));
 
                 // oops... after inserting '-1' our debug logging will claim that insert failed.
                 if (BuildConfig.DEBUG /* always */) {

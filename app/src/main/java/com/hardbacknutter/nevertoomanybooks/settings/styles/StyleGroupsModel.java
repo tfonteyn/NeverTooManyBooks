@@ -32,8 +32,9 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
 import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public class StyleGroupsModel
@@ -56,7 +57,7 @@ public class StyleGroupsModel
             mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
             Objects.requireNonNull(mStyle, ErrorMsg.NULL_STYLE);
 
-            final BooklistStyle.Groups styleGroups = mStyle.getGroups();
+            final Groups styleGroups = mStyle.getGroups();
 
             // Build an array list with the groups from the style
             mList = new ArrayList<>(styleGroups.size());
@@ -91,7 +92,7 @@ public class StyleGroupsModel
     void updateStyle(@NonNull final Context context) {
         final Map<String, PPref> allPreferences = mStyle.getPreferences(true);
 
-        final BooklistStyle.Groups styleGroups = mStyle.getGroups();
+        final Groups styleGroups = mStyle.getGroups();
 
         // Loop through all groups
         for (GroupWrapper wrapper : mList) {
