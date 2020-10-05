@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
@@ -487,8 +488,8 @@ public class Book
 
     @NonNull
     @Override
-    public String getFirstPublication() {
-        return getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+    public PartialDate getFirstPublicationDate() {
+        return new PartialDate(getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
     }
 
     /**
@@ -897,30 +898,27 @@ public class Book
     void preprocessDates() {
         final List<Domain> domains = DBDefinitions.TBL_BOOKS.getDomains();
 
+        // Partial/Full Date strings
         domains.stream()
                .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATE))
                .map(Domain::getName)
                .filter(this::contains)
                .forEach(key -> {
                    final String date = getString(key);
-                   // This is very crude... we simply check for the 11th char being 'T' or space
-                   // "yyyy?mm?ddT" or "yyyy?mm?dd "
+                   // This is very crude... we simply truncate to 10 characters maximum
+                   // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date
                    if (date.length() > 10) {
-                       final char timeDiv = date.charAt(10);
-                       // this check is just a sanity check; we could just truncate regardless
-                       if (timeDiv == ' ' || timeDiv == 'T') {
-                           // truncate to first 10 char
-                           putString(key, date.substring(0, 11));
-                           if (BuildConfig.DEBUG /* always */) {
-                               Logger.d(TAG, "preprocessDates",
-                                        "key=" + key
-                                        + "|in=`" + date + '`'
-                                        + "|out=`" + getString(key) + '`');
-                           }
+                       putString(key, date.substring(0, 11));
+                       if (BuildConfig.DEBUG /* always */) {
+                           Logger.d(TAG, "preprocessDates",
+                                    "key=" + key
+                                    + "|in=`" + date + '`'
+                                    + "|out=`" + getString(key) + '`');
                        }
                    }
                });
 
+        // Full UTC based DateTime strings
         domains.stream()
                .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_DATETIME))
                .map(Domain::getName)
@@ -928,6 +926,7 @@ public class Book
                .forEach(key -> {
                    final String date = getString(key);
                    // Again, very crude logic... we simply check for the 11th char being a 'T'
+                   // and if so, replace it with a space
                    if (date.length() > 10 && date.charAt(10) == 'T') {
                        putString(key, T.matcher(date).replaceFirst(" "));
                        if (BuildConfig.DEBUG /* always */) {

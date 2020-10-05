@@ -91,6 +91,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
@@ -617,14 +618,13 @@ public class BookDetailsFragment
                     });
                 }
 
-                final String date = tocEntry.getFirstPublication();
-                // "< 4" covers empty and illegal dates
-                if (date.length() < 4) {
+                final PartialDate date = tocEntry.getFirstPublicationDate();
+                if (date.isEmpty()) {
                     rowVb.year.setVisibility(View.GONE);
                 } else {
                     rowVb.year.setVisibility(View.VISIBLE);
                     // show full date string (if available)
-                    rowVb.year.setText(context.getString(R.string.brackets, date));
+                    rowVb.year.setText(context.getString(R.string.brackets, date.getIsoString()));
                 }
                 mVb.toc.addView(rowVb.getRoot());
             }

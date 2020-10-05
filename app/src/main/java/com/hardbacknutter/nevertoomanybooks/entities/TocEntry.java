@@ -38,6 +38,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * Represent a single title within an TOC(Anthology).
@@ -77,7 +78,7 @@ public class TocEntry
     @NonNull
     private String mTitle;
     @NonNull
-    private String mFirstPublicationDate;
+    private PartialDate mFirstPublicationDate;
     @Nullable
     private List<Pair<Long, String>> mBookTitles;
 
@@ -87,37 +88,37 @@ public class TocEntry
     /**
      * Constructor.
      *
-     * @param author          Author of title
-     * @param title           Title
-     * @param publicationDate year of first publication
+     * @param author               Author of title
+     * @param title                Title
+     * @param firstPublicationDate year of first publication
      */
     public TocEntry(@NonNull final Author author,
                     @NonNull final String title,
-                    @Nullable final String publicationDate) {
+                    @Nullable final String firstPublicationDate) {
         mAuthor = author;
         mTitle = title.trim();
-        mFirstPublicationDate = publicationDate != null ? publicationDate : "";
+        mFirstPublicationDate = new PartialDate(firstPublicationDate);
         mBookCount = 1;
     }
 
     /**
      * Constructor.
      *
-     * @param id              row id
-     * @param author          Author of title
-     * @param title           Title
-     * @param publicationDate year of first publication
-     * @param bookCount       number of books this TocEntry appears in
+     * @param id                   row id
+     * @param author               Author of title
+     * @param title                Title
+     * @param firstPublicationDate year of first publication
+     * @param bookCount            number of books this TocEntry appears in
      */
     public TocEntry(final long id,
                     @NonNull final Author author,
                     @NonNull final String title,
-                    @Nullable final String publicationDate,
+                    @Nullable final String firstPublicationDate,
                     final int bookCount) {
         mId = id;
         mAuthor = author;
         mTitle = title.trim();
-        mFirstPublicationDate = publicationDate != null ? publicationDate : "";
+        mFirstPublicationDate = new PartialDate(firstPublicationDate);
         mBookCount = bookCount;
     }
 
@@ -133,7 +134,7 @@ public class TocEntry
         //noinspection ConstantConditions
         mTitle = in.readString();
         //noinspection ConstantConditions
-        mFirstPublicationDate = in.readString();
+        mFirstPublicationDate = in.readParcelable(getClass().getClassLoader());
 
         mBookCount = in.readInt();
     }
@@ -185,10 +186,10 @@ public class TocEntry
                 hashCodesMap.put(hashCode, tocEntry);
 
             } else {
-                final String pubYear = tocEntry.getFirstPublication().trim();
+                final PartialDate firstPublicationDate = tocEntry.getFirstPublicationDate();
 
                 // See if we can purge either one.
-                if (pubYear.isEmpty()) {
+                if (firstPublicationDate.isEmpty()) {
                     // Always delete TocEntry with empty pubYear
                     // if an equal or more specific one exists
                     it.remove();
@@ -198,7 +199,7 @@ public class TocEntry
                     // See if the previous one also has a pubYear
                     final TocEntry previous = hashCodesMap.get(hashCode);
                     if (previous != null) {
-                        if (previous.getFirstPublication().trim().isEmpty()) {
+                        if (previous.getFirstPublicationDate().isEmpty()) {
                             // It doesn't. Keep the current.
                             // Update our map (replacing the previous one)
                             hashCodesMap.put(hashCode, tocEntry);
@@ -208,9 +209,7 @@ public class TocEntry
 
                         } else {
                             // Both have numbers. See if they are the same.
-                            if (pubYear.toLowerCase(locale)
-                                       .equals(previous.getFirstPublication().trim()
-                                                       .toLowerCase(locale))) {
+                            if (firstPublicationDate.equals(previous.getFirstPublicationDate())) {
                                 // Same exact TocEntry, delete this one, keep the previous one.
                                 it.remove();
                                 listModified = true;
@@ -285,7 +284,7 @@ public class TocEntry
         dest.writeLong(mId);
         dest.writeParcelable(mAuthor, flags);
         dest.writeString(mTitle);
-        dest.writeString(mFirstPublicationDate);
+        dest.writeParcelable(mFirstPublicationDate, flags);
         dest.writeInt(mBookCount);
     }
 
@@ -294,13 +293,13 @@ public class TocEntry
         return mId;
     }
 
+    public void setId(final long id) {
+        mId = id;
+    }
+
     @Override
     public char getType() {
         return AuthorWork.TYPE_TOC;
-    }
-
-    public void setId(final long id) {
-        mId = id;
     }
 
     @NonNull
@@ -349,13 +348,18 @@ public class TocEntry
         return mBookTitles;
     }
 
+    @Override
     @NonNull
-    public String getFirstPublication() {
+    public PartialDate getFirstPublicationDate() {
         return mFirstPublicationDate;
     }
 
-    public void setFirstPublication(@NonNull final String publicationDate) {
-        mFirstPublicationDate = publicationDate;
+    public void setFirstPublicationDate(@NonNull final CharSequence dateStr) {
+        mFirstPublicationDate.setDate(dateStr);
+    }
+
+    public void setFirstPublicationDate(@NonNull final PartialDate firstPublicationDate) {
+        mFirstPublicationDate = firstPublicationDate;
     }
 
     /**

@@ -75,6 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -839,12 +840,14 @@ public class EditBookTocFragment
             holder.titleView.setText(item.getTitle());
             holder.authorView.setText(item.getPrimaryAuthor().getLabel(getContext()));
 
-            final String year = item.getFirstPublication();
-            if (year.isEmpty()) {
+            final PartialDate date = item.getFirstPublicationDate();
+            if (date.isEmpty()) {
                 holder.firstPublicationView.setVisibility(View.GONE);
             } else {
                 holder.firstPublicationView.setVisibility(View.VISIBLE);
-                holder.firstPublicationView.setText(getString(R.string.brackets, year));
+                // cut the date to just the year.
+                holder.firstPublicationView.setText(getString(R.string.brackets,
+                                                              String.valueOf(date.getYearValue())));
             }
         }
 

@@ -223,7 +223,7 @@ public class IsfdbSearchEngine
     private String mTitle;
     /** with some luck we'll get these as well. */
     @Nullable
-    private String mFirstPublication;
+    private String mFirstPublicationYear;
     /** The ISBN we searched for. Not guaranteed to be identical to the book we find. */
     private String mIsbn;
 
@@ -805,14 +805,14 @@ public class IsfdbSearchEngine
         if (toc.size() == 1) {
             // if the content table has only one entry,
             // then this will have the first publication year for sure
-            tmpString = digits(toc.get(0).getFirstPublication(), false);
+            tmpString = digits(toc.get(0).getFirstPublicationDate().getIsoString(), false);
             if (!tmpString.isEmpty()) {
                 bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, tmpString);
             }
         } else if (toc.size() > 1) {
             // we gamble and take what we found in the TOC
-            if (mFirstPublication != null) {
-                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublication);
+            if (mFirstPublicationYear != null) {
+                bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublicationYear);
             }
         }
 
@@ -996,9 +996,9 @@ public class IsfdbSearchEngine
             final String year = matcher.find() ? matcher.group(2) : "";
             // see if we can use it as the first publication year for the book.
             // i.e. if this entry has the same title as the book title
-            if ((mFirstPublication == null || mFirstPublication.isEmpty())
+            if ((mFirstPublicationYear == null || mFirstPublicationYear.isEmpty())
                 && title.equalsIgnoreCase(mTitle)) {
-                mFirstPublication = digits(year, false);
+                mFirstPublicationYear = digits(year, false);
             }
 
             final TocEntry tocEntry = new TocEntry(author, title, year);

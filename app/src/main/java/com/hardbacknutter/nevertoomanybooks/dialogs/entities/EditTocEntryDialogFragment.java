@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
@@ -72,7 +73,7 @@ public class EditTocEntryDialogFragment
     /** Current edit. */
     private String mTitle;
     /** Current edit. */
-    private String mFirstPublication;
+    private PartialDate mFirstPublicationDate;
     /** Current edit. */
     private String mAuthorName;
 
@@ -127,13 +128,13 @@ public class EditTocEntryDialogFragment
 
         if (savedInstanceState == null) {
             mTitle = mTocEntry.getTitle();
-            mFirstPublication = mTocEntry.getFirstPublication();
+            mFirstPublicationDate = mTocEntry.getFirstPublicationDate();
             //noinspection ConstantConditions
             mAuthorName = mTocEntry.getPrimaryAuthor().getLabel(getContext());
         } else {
             mTitle = savedInstanceState.getString(DBDefinitions.KEY_TITLE);
-            mFirstPublication = savedInstanceState
-                    .getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+            mFirstPublicationDate = savedInstanceState
+                    .getParcelable(DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
             mAuthorName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
 
             mHasMultipleAuthors = args.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS, false);
@@ -150,7 +151,7 @@ public class EditTocEntryDialogFragment
         mVb.toolbar.setSubtitle(mBookTitle);
 
         mVb.title.setText(mTitle);
-        mVb.firstPublication.setText(mFirstPublication);
+        mVb.firstPublication.setText(String.valueOf(mFirstPublicationDate.getYearValue()));
 
         updateMultiAuthor(mHasMultipleAuthors);
         mVb.cbxMultipleAuthors.setOnCheckedChangeListener(
@@ -200,14 +201,14 @@ public class EditTocEntryDialogFragment
         // anything actually changed ?
         //noinspection ConstantConditions
         if (mTocEntry.getTitle().equals(mTitle)
-            && mTocEntry.getFirstPublication().equals(mFirstPublication)
+            && mTocEntry.getFirstPublicationDate().equals(mFirstPublicationDate)
             && mTocEntry.getPrimaryAuthor().getLabel(getContext()).equals(mAuthorName)) {
             return true;
         }
 
         // store changes
         mTocEntry.setTitle(mTitle);
-        mTocEntry.setFirstPublication(mFirstPublication);
+        mTocEntry.setFirstPublicationDate(mFirstPublicationDate);
         if (mHasMultipleAuthors) {
             mTocEntry.setPrimaryAuthor(Author.from(mAuthorName));
         }
@@ -227,7 +228,7 @@ public class EditTocEntryDialogFragment
         //noinspection ConstantConditions
         mTitle = mVb.title.getText().toString().trim();
         //noinspection ConstantConditions
-        mFirstPublication = mVb.firstPublication.getText().toString().trim();
+        mFirstPublicationDate = new PartialDate(mVb.firstPublication.getText().toString().trim());
         if (mHasMultipleAuthors) {
             mAuthorName = mVb.author.getText().toString().trim();
         }
@@ -237,7 +238,7 @@ public class EditTocEntryDialogFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putString(DBDefinitions.KEY_TITLE, mTitle);
-        outState.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublication);
+        outState.putParcelable(DBDefinitions.KEY_DATE_FIRST_PUBLICATION, mFirstPublicationDate);
         outState.putString(DBDefinitions.KEY_AUTHOR_FORMATTED, mAuthorName);
         outState.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
     }

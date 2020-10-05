@@ -33,11 +33,6 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.lang.ref.WeakReference;
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
-import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -49,7 +44,6 @@ import java.util.MissingResourceException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * Manage the custom Locale our app can run in, independently from the system Locale.
@@ -459,54 +453,6 @@ public class AppLocale {
         }
 
         return locale;
-    }
-
-    /**
-     * Pretty format a (potentially partial) ISO date.
-     * <ul>
-     * <li>Partial dates YYYY and YYYY-MM get special treatment.</li>
-     * <li>Full dates use system formatting, using the specified locale.</li>
-     * <li>Invalid data is returned as-is.</li>
-     * </ul>
-     *
-     * @param isoDateStr ISO formatted date.
-     *
-     * @return human readable date string.
-     */
-    @NonNull
-    public String toPrettyDate(@NonNull final Context context,
-                               @NonNull final String isoDateStr) {
-        final int len = isoDateStr.length();
-
-        // YYYY-MM
-        if (len == 7) {
-            try {
-                final int mm = Integer.parseInt(isoDateStr.substring(5));
-                return Month.of(mm).getDisplayName(TextStyle.SHORT, getUserLocale(context))
-                       + ' ' + isoDateStr.substring(0, 4);
-            } catch (@NonNull final NumberFormatException ignore) {
-                // ignore
-            }
-            return isoDateStr;
-        }
-
-        // YYYY, or some sort of invalid format.
-        if (len < 10) {
-            return isoDateStr;
-        }
-
-        // Hack: published on first of January ? Disregard this... and only display the year.
-        if ("-01-01".equals(isoDateStr.substring(4, 10))) {
-            return isoDateStr.substring(0, 4);
-        }
-
-        // YYYY-MM-DD (i.e. len => 10)
-        final LocalDateTime date = DateParser.getInstance(context).parse(isoDateStr);
-        if (date != null) {
-            return date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-                                                .withLocale(getUserLocale(context)));
-        }
-        return isoDateStr;
     }
 
     public interface OnLocaleChangedListener {

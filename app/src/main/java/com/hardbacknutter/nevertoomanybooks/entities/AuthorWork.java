@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * Abstracts/shield a {@link Book} / {@link TocEntry} for use in a list
@@ -64,7 +65,7 @@ public interface AuthorWork {
     String getLabel(@NonNull Context context);
 
     @NonNull
-    String getFirstPublication();
+    PartialDate getFirstPublicationDate();
 
     @Nullable
     Author getPrimaryAuthor();

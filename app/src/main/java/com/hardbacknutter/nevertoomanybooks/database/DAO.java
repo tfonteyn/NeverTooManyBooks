@@ -1871,7 +1871,7 @@ public class DAO
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.TOCENTRY)) {
             stmt.bindString(1, tocEntry.getTitle());
             stmt.bindString(2, encodeOrderByColumn(obTitle, tocLocale));
-            stmt.bindString(3, tocEntry.getFirstPublication());
+            stmt.bindString(3, tocEntry.getFirstPublicationDate().getIsoString());
             stmt.bindLong(4, tocEntry.getId());
             return 0 < stmt.executeUpdateDelete();
         }
@@ -1902,7 +1902,7 @@ public class DAO
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
             stmt.bindString(2, tocEntry.getTitle());
             stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
-            stmt.bindString(4, tocEntry.getFirstPublication());
+            stmt.bindString(4, tocEntry.getFirstPublicationDate().getIsoString());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 tocEntry.setId(iId);

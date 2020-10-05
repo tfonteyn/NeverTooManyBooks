@@ -47,7 +47,6 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -79,7 +78,7 @@ public abstract class EditBookBaseFragment
     private static final String RK_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
     /** Dialog listener (strong reference). */
     private final PartialDatePickerDialogFragment.OnResultListener mPartialDatePickerListener =
-            this::onPartialDateSet;
+            (fieldId, date) -> onDateSet(fieldId, date.getIsoString());
     /** Dialog listener (strong reference). */
     private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener =
             this::onDateSet;
@@ -348,36 +347,6 @@ public abstract class EditBookBaseFragment
         }
     }
 
-    private void onPartialDateSet(@IdRes final int fieldId,
-                                  @Nullable final Integer year,
-                                  @Nullable final Integer month,
-                                  @Nullable final Integer day) {
-        String date;
-        if (year == null || year == 0) {
-            date = "";
-        } else {
-            date = String.format(Locale.ENGLISH, "%04d", year);
-
-            if (month != null && month > 0) {
-                String mm = Integer.toString(month);
-                if (mm.length() == 1) {
-                    mm = '0' + mm;
-                }
-                date += '-' + mm;
-
-                if (day != null && day > 0) {
-                    String dd = Integer.toString(day);
-                    if (dd.length() == 1) {
-                        dd = '0' + dd;
-                    }
-                    date += '-' + dd;
-                }
-            }
-        }
-
-        onDateSet(fieldId, date);
-    }
-
     private void onDateSet(@NonNull final int[] fieldIds,
                            @NonNull final long[] selections) {
 
@@ -393,10 +362,10 @@ public abstract class EditBookBaseFragment
     }
 
     private void onDateSet(@IdRes final int fieldId,
-                           @NonNull final String value) {
+                           @NonNull final String dateStr) {
 
         final Field<String, TextView> field = getField(fieldId);
-        field.getAccessor().setValue(value);
+        field.getAccessor().setValue(dateStr);
         field.onChanged(true);
 
         if (fieldId == R.id.read_end) {

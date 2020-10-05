@@ -129,7 +129,7 @@ class IsfdbBookHandlerTest
         // just check one.
         final TocEntry entry = toc.get(3);
         assertEquals("Into Your Tent I'll Creep", entry.getTitle());
-        assertEquals("1957", entry.getFirstPublication());
+        assertEquals(1957, entry.getFirstPublicationDate().getYearValue());
         // don't do this, the first pub date is read as a year-string only.
         //assertEquals("1957-01-01", entry.getFirstPublication());
         assertEquals("Russell", entry.getPrimaryAuthor().getFamilyName());
@@ -186,7 +186,7 @@ class IsfdbBookHandlerTest
         assertEquals(1, toc.size());
         TocEntry entry = toc.get(0);
         assertEquals("Mort", entry.getTitle());
-        assertEquals("1987", entry.getFirstPublication());
+        assertEquals(1987, entry.getFirstPublicationDate().getYearValue());
         assertEquals("Pratchett", entry.getPrimaryAuthor().getFamilyName());
         assertEquals("Terry", entry.getPrimaryAuthor().getGivenNames());
     }
@@ -242,12 +242,12 @@ class IsfdbBookHandlerTest
         assertEquals(2, toc.size());
         TocEntry entry = toc.get(0);
         assertEquals("The Shepherd's Crown", entry.getTitle());
-        assertEquals("2015", entry.getFirstPublication());
+        assertEquals(2015, entry.getFirstPublicationDate().getYearValue());
         assertEquals("Pratchett", entry.getPrimaryAuthor().getFamilyName());
         assertEquals("Terry", entry.getPrimaryAuthor().getGivenNames());
         entry = toc.get(1);
         assertEquals("Afterword (The Shepherd's Crown)", entry.getTitle());
-        assertEquals("2015", entry.getFirstPublication());
+        assertEquals(2015, entry.getFirstPublicationDate().getYearValue());
         assertEquals("Wilkins", entry.getPrimaryAuthor().getFamilyName());
         assertEquals("Rob", entry.getPrimaryAuthor().getGivenNames());
     }

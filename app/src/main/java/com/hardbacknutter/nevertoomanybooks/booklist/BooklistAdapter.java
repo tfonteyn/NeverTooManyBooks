@@ -79,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -1172,8 +1173,8 @@ public class BooklistAdapter
 
             final String date;
             if (mInUse.pubDate) {
-                date = AppLocale.getInstance().toPrettyDate(
-                        itemView.getContext(), rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+                final String dateStr = rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED);
+                date = new PartialDate(dateStr).toPrettyDate(mAdapter.getUserLocale(), dateStr);
             } else {
                 date = null;
             }

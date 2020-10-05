@@ -25,14 +25,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * FieldFormatter for 'date' fields.
@@ -46,8 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
  *     <li>with a {@link TextAccessor}: the value is stored in the accessor,<br>
  *         This is meant to be used with a {@link PartialDatePickerDialogFragment}.</li>
  *     <li>with an {@link EditTextAccessor}: the value will be extracted from the View.<br>
- *         This is meant to be used as a free-entry field (i.e. the user types in the date).<br>
- *         A partial date consisting of Month+Year, will always get a day==1 added.</li>
+ *         This is meant to be used as a free-entry field (i.e. the user types in the date).</li>
  * </ol>
  */
 public class DateFieldFormatter
@@ -65,28 +63,17 @@ public class DateFieldFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            return AppLocale.getInstance().toPrettyDate(context, rawValue);
+            final Locale locale = AppLocale.getInstance().getUserLocale(context);
+            return new PartialDate(rawValue).toPrettyDate(locale, rawValue);
         }
     }
 
     /**
-     * Extract as an ISO date.
+     * Extract as an ISO date (full or partial)
      */
     @Override
     @NonNull
     public String extract(@NonNull final TextView view) {
-        final String text = view.getText().toString().trim();
-        // extract a year-only string as-is. As we're using controlled input,
-        // this will always be a 4-digit valid year.
-        if (text.length() == 4) {
-            return text;
-        }
-
-        // FIXME:a partial date consisting of Month+Year, will always get a day==1 added.
-        final LocalDateTime date = DateParser.getInstance(view.getContext()).parse(text);
-        if (date != null) {
-            return date.format(DateTimeFormatter.ISO_LOCAL_DATE);
-        }
-        return text;
+        return new PartialDate(view.getText().toString().trim()).getIsoString();
     }
 }

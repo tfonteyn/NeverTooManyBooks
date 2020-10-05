@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
@@ -85,6 +86,7 @@ public class PartialDatePickerDialogFragment
     private String mRequestKey;
     @IdRes
     private int mFieldId;
+
     /** Currently displayed; {@code 0} if empty/invalid. */
     private int mYear;
     /**
@@ -455,22 +457,19 @@ public class PartialDatePickerDialogFragment
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onResult(result.getInt(FIELD_ID),
-                     result.getInt(YEAR),
-                     result.getInt(MONTH),
-                     result.getInt(DAY));
+
+            onResult(result.getInt(FIELD_ID), new PartialDate(result.getInt(YEAR),
+                                                              result.getInt(MONTH),
+                                                              result.getInt(DAY)));
         }
 
         /**
          * Callback handler with the user's selection.
          *
-         * @param year  4 digit year, or {@code 0} for none
-         * @param month 1..12 based, or {@code 0} for none
-         * @param day   1..31 based, or {@code 0} for none
+         * @param fieldId this destination field id
+         * @param date    the picked date
          */
         void onResult(@IdRes int fieldId,
-                      int year,
-                      int month,
-                      int day);
+                      @NonNull PartialDate date);
     }
 }

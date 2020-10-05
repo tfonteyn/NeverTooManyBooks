@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -448,14 +449,14 @@ public class AuthorWorksFragment
             }
             // optional
             if (holder.firstPublicationView != null) {
-                final String date = work.getFirstPublication();
-                // "< 4" covers empty and illegal dates
-                if (date.length() < 4) {
+                final PartialDate date = work.getFirstPublicationDate();
+                if (date.isEmpty()) {
                     holder.firstPublicationView.setVisibility(View.GONE);
                 } else {
                     // screen space is at a premium here, and books can have 'yyyy-mm-dd' dates,
-                    // so cut the date to just the year.
-                    final String fp = context.getString(R.string.brackets, date.substring(0, 4));
+                    // cut the date to just the year.
+                    final String fp = context.getString(R.string.brackets,
+                                                        String.valueOf(date.getYearValue()));
                     holder.firstPublicationView.setText(fp);
                     holder.firstPublicationView.setVisibility(View.VISIBLE);
                 }

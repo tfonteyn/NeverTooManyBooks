@@ -91,7 +91,7 @@ public class TocEntryCoder
                 return new TocEntry(author, title, matcher.group(1));
             }
         }
-        return new TocEntry(author, title, "");
+        return new TocEntry(author, title, null);
     }
 
     @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
@@ -100,10 +100,10 @@ public class TocEntryCoder
     public String encode(@NonNull final TocEntry tocEntry) {
         String result = escape(tocEntry.getTitle(), escapeChars);
 
-        if (!tocEntry.getFirstPublication().isEmpty()) {
+        if (!tocEntry.getFirstPublicationDate().isEmpty()) {
             // start with a space for readability
             // the surrounding () are NOT escaped as they are part of the format.
-            result += " (" + tocEntry.getFirstPublication() + ')';
+            result += " (" + tocEntry.getFirstPublicationDate().getIsoString() + ')';
         }
 
         return result

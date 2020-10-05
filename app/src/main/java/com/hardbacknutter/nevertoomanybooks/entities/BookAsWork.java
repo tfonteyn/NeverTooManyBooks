@@ -28,6 +28,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * Fakes a Book with just enough information to implement an {@link AuthorWork}.
@@ -43,26 +44,26 @@ public class BookAsWork
     @NonNull
     private final String mTitle;
     @NonNull
-    private final String mFirstPublicationDate;
+    private final PartialDate mFirstPublicationDate;
     /** Row ID. */
     private long mId;
 
     /**
      * Constructor.
      *
-     * @param id              row id
-     * @param author          Author of title
-     * @param title           Title
-     * @param publicationDate year of first publication
+     * @param id                   row id
+     * @param author               Author of title
+     * @param title                Title
+     * @param firstPublicationDate first publication
      */
     public BookAsWork(final long id,
                       @NonNull final Author author,
                       @NonNull final String title,
-                      @Nullable final String publicationDate) {
+                      @Nullable final String firstPublicationDate) {
         mId = id;
         mAuthor = author;
         mTitle = title;
-        mFirstPublicationDate = publicationDate != null ? publicationDate : "";
+        mFirstPublicationDate = new PartialDate(firstPublicationDate);
     }
 
     @Override
@@ -95,7 +96,7 @@ public class BookAsWork
 
     @NonNull
     @Override
-    public String getFirstPublication() {
+    public PartialDate getFirstPublicationDate() {
         return mFirstPublicationDate;
     }
 
