@@ -126,7 +126,21 @@ public class Site
         engineId = in.readInt();
         //noinspection ConstantConditions
         mType = in.readParcelable(Type.class.getClassLoader());
-        mEnabled = in.readInt() != 0;
+        mEnabled = in.readByte() != 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(engineId);
+        dest.writeParcelable(mType, flags);
+        dest.writeByte((byte) (mEnabled ? 1 : 0));
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     /**
@@ -279,19 +293,7 @@ public class Site
         editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
 
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(engineId);
-        dest.writeParcelable(mType, flags);
-        dest.writeInt(mEnabled ? 1 : 0);
-    }
 
     @Override
     @NonNull
