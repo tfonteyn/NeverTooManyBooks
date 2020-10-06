@@ -61,6 +61,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
@@ -958,6 +959,7 @@ public class BooklistAdapter
                    final int coverMaxWidth,
                    final int coverMaxHeight) {
             super(itemView);
+
             final Context context = itemView.getContext();
 
             mAdapter = adapter;
@@ -1022,11 +1024,6 @@ public class BooklistAdapter
                 set.setVerticalBias(mDbgRowIdView.getId(), 1.0f);
 
                 set.applyTo(parentLayout);
-
-                // mDbgRowIdView = itemView.findViewById(R.id.dbg_pos);
-                // if (mDbgRowIdView != null) {
-                //     mDbgRowIdView.setVisibility(View.VISIBLE);
-                // }
             }
         }
 
@@ -1179,7 +1176,6 @@ public class BooklistAdapter
                 date = null;
             }
 
-
             if (name != null && !name.isEmpty() && date != null && !date.isEmpty()) {
                 // Combine Publisher and date
                 return String.format(mX_bracket_Y_bracket, name, date);
@@ -1266,6 +1262,10 @@ public class BooklistAdapter
     static class RatingHolder
             extends RowViewHolder {
 
+        /**
+         * Key of the related data column.
+         * It's ok to store this as it's intrinsically linked with the ViewType.
+         */
         @NonNull
         final String mKey;
         @NonNull
@@ -1303,12 +1303,14 @@ public class BooklistAdapter
         /*** Default resource id for the View to populate. */
         @IdRes
         static final int mTextViewId = R.id.name;
+
         /**
          * The group this holder represents.
          * It's ok to store this as it's intrinsically linked with the ViewType.
          */
         @BooklistGroup.Id
         final int mGroupKeyId;
+
         /**
          * Key of the related data column.
          * It's ok to store this as it's intrinsically linked with the ViewType.
@@ -1348,13 +1350,8 @@ public class BooklistAdapter
             // Debugger help: color the row according to state
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
                 final int rowId = rowData.getInt(DBDefinitions.KEY_PK_ID);
-
                 final BooklistCursor cursor = (BooklistCursor) mAdapter.getCursor();
-                if (cursor.getBooklist().isNodeExpanded(rowId)) {
-                    itemView.setBackgroundColor(Color.GREEN);
-                } else {
-                    itemView.setBackgroundColor(Color.TRANSPARENT);
-                }
+                itemView.setBackgroundColor(cursor.getDbgRowColor(rowId));
             }
         }
 

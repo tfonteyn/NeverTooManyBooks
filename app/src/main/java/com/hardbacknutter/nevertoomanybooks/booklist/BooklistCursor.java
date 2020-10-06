@@ -21,9 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.database.AbstractCursor;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.util.SparseArray;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -116,14 +118,24 @@ public class BooklistCursor
     }
 
     /**
+     * Get a ColorInt for the given row.
+     * Green: expanded
+     * Transparent: collapsed.
+     * <p>
      * Only exposed for debug purposes.
      *
-     * @return Booklist used to build this cursor
+     * @param rowId to check
+     *
+     * @return color
      */
-    @NonNull
-    Booklist getBooklist() {
+    @ColorInt
+    int getDbgRowColor(final int rowId) {
         if (BuildConfig.DEBUG /* always */) {
-            return mBooklist;
+            if (mBooklist.isNodeExpanded(rowId)) {
+                return Color.GREEN;
+            } else {
+                return Color.TRANSPARENT;
+            }
         }
         throw new IllegalStateException("Not in debug");
     }
