@@ -69,6 +69,8 @@ public class AboutActivity
     private int mDebugClicks;
     private boolean mSqLiteAllowUpdates;
 
+    private String mVersionText;
+
     @Override
     protected void onSetContentView() {
         mVb = ActivityAdminAboutBinding.inflate(getLayoutInflater());
@@ -86,11 +88,12 @@ public class AboutActivity
                 versionCode = info.getLongVersionCode();
             } else {
                 versionCode = info.versionCode;
-            }
-            final String version = info.versionName
-                                   + " (" + versionCode + '/' + DBHelper.DATABASE_VERSION + ')';
 
-            mVb.version.setText(version);
+            }
+            mVersionText = info.versionName
+                           + " (" + versionCode + '/' + DBHelper.DATABASE_VERSION + ')';
+
+            mVb.version.setText(mVersionText);
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
             // ignore
         }
@@ -103,6 +106,9 @@ public class AboutActivity
             if (mDebugClicks >= DEBUG_CLICKS) {
                 // show the entire group
                 mVb.debugGroup.setVisibility(View.VISIBLE);
+                // show the build date
+                mVb.version.setText(getString(R.string.a_bracket_b_bracket,
+                                              mVersionText, BuildConfig.TIMESTAMP));
             }
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {
                 ((MaterialButton) (mVb.debugSqShell)).setIconResource(R.drawable.ic_warning);

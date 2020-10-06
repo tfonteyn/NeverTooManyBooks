@@ -18,6 +18,10 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 apply plugin: 'com.android.application'
 
 /*
@@ -125,6 +129,10 @@ android {
             buildConfigField('String', 'GOODREADS_PRIVATE_KEY', '""')
         }
 
+        // Add the build date
+        buildConfigField('String', 'TIMESTAMP',
+                '"' + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + '"')
+
         // 2020-03-27. Started getting "APIs Temporarily disabled" on LIBRARY_THING
         // searches and "Temporarily down on images.
         // Last checked: 2020-05-21
@@ -156,12 +164,14 @@ android {
         }
         beta {
             initWith release
-            versionNameSuffix "beta_" + new Date().format('yyyy-MM-dd')
-
-
+            versionNameSuffix 'beta'
         }
         debug {
-            versionNameSuffix new Date().format('yyyy-MM-dd_HH:mm')
+            versionNameSuffix 'debug'
+
+            // Add the build date with the time
+            buildConfigField('String', 'TIMESTAMP',
+                    '"' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
         }
     }
 
