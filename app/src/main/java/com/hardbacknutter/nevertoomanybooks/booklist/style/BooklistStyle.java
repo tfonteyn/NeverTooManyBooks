@@ -43,7 +43,10 @@ import java.util.UUID;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.AuthorBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.PublisherBooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
@@ -918,7 +921,7 @@ public class BooklistStyle
 
 
     /**
-     * Wrapper that gets the preference from {@link BooklistGroup.SeriesBooklistGroup}
+     * Wrapper that gets the preference from {@link SeriesBooklistGroup}
      * if we have it this group, or from the global default if not.
      *
      * @param context Current context
@@ -926,18 +929,18 @@ public class BooklistStyle
      * @return {@code true} if we want to show a book under each of its Series.
      */
     public boolean isShowBooksUnderEachSeries(@NonNull final Context context) {
-        final BooklistGroup.SeriesBooklistGroup group = (BooklistGroup.SeriesBooklistGroup)
+        final SeriesBooklistGroup group = (SeriesBooklistGroup)
                 (mGroups.getGroupById(BooklistGroup.SERIES));
         if (group != null) {
             return group.showBooksUnderEach(context);
         } else {
             // return the global default.
-            return BooklistGroup.SeriesBooklistGroup.showBooksUnderEachDefault(context);
+            return SeriesBooklistGroup.showBooksUnderEachDefault(context);
         }
     }
 
     /**
-     * Wrapper that gets the preference from {@link BooklistGroup.PublisherBooklistGroup}
+     * Wrapper that gets the preference from {@link PublisherBooklistGroup}
      * if we have it this group, or from the global default if not.
      *
      * @param context Current context
@@ -945,18 +948,18 @@ public class BooklistStyle
      * @return {@code true} if we want to show a book under each of its Publishers.
      */
     public boolean isShowBooksUnderEachPublisher(@NonNull final Context context) {
-        final BooklistGroup.PublisherBooklistGroup group = (BooklistGroup.PublisherBooklistGroup)
+        final PublisherBooklistGroup group = (PublisherBooklistGroup)
                 (mGroups.getGroupById(BooklistGroup.PUBLISHER));
         if (group != null) {
             return group.showBooksUnderEach(context);
         } else {
             // return the global default.
-            return BooklistGroup.PublisherBooklistGroup.showBooksUnderEachDefault(context);
+            return PublisherBooklistGroup.showBooksUnderEachDefault(context);
         }
     }
 
     /**
-     * Wrapper that gets the preference from {@link BooklistGroup.AuthorBooklistGroup}
+     * Wrapper that gets the preference from {@link AuthorBooklistGroup}
      * if we have it this group, or from the global default if not.
      *
      * @param context Current context
@@ -964,13 +967,13 @@ public class BooklistStyle
      * @return {@code true} if we want to show a book under each of its Authors
      */
     public boolean isShowBooksUnderEachAuthor(@NonNull final Context context) {
-        final BooklistGroup.AuthorBooklistGroup group = (BooklistGroup.AuthorBooklistGroup)
+        final AuthorBooklistGroup group = (AuthorBooklistGroup)
                 (mGroups.getGroupById(BooklistGroup.AUTHOR));
         if (group != null) {
             return group.showBooksUnderEach(context);
         } else {
             // return the global default.
-            return BooklistGroup.AuthorBooklistGroup.showBooksUnderEachDefault(context);
+            return AuthorBooklistGroup.showBooksUnderEachDefault(context);
         }
     }
 
@@ -998,20 +1001,20 @@ public class BooklistStyle
 
     /**
      * Wrapper that gets the getPrimaryType flag from the
-     * {@link BooklistGroup.AuthorBooklistGroup} if we have it, or from the global default.
+     * {@link AuthorBooklistGroup} if we have it, or from the global default.
      *
      * @param context Current context
      *
      * @return the type of author we consider the primary author
      */
     public int getPrimaryAuthorType(@NonNull final Context context) {
-        final BooklistGroup.AuthorBooklistGroup group = (BooklistGroup.AuthorBooklistGroup)
+        final AuthorBooklistGroup group = (AuthorBooklistGroup)
                 (mGroups.getGroupById(BooklistGroup.AUTHOR));
         if (group != null) {
             return group.getPrimaryType(context);
         } else {
             // return the global default.
-            return BooklistGroup.AuthorBooklistGroup.getPrimaryTypeGlobalDefault(context);
+            return AuthorBooklistGroup.getPrimaryTypeGlobalDefault(context);
         }
     }
 
