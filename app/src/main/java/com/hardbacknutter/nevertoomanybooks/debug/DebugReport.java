@@ -153,7 +153,9 @@ public final class DebugReport {
             if (Build.VERSION.SDK_INT >= 28) {
                 message.append(info.getLongVersionCode());
             } else {
-                message.append(info.versionCode);
+                message.append(info.versionCode)
+                       .append(", ")
+                       .append(BuildConfig.TIMESTAMP);
             }
             message.append(")\n");
 
