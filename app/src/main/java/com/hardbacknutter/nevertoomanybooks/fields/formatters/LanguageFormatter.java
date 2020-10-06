@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
@@ -39,6 +38,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  */
 public class LanguageFormatter
         implements EditFieldFormatter<String> {
+
+    @NonNull
+    private final Locale mLocale;
+
+    /**
+     * Constructor.
+     *
+     * @param locale to use
+     */
+    public LanguageFormatter(@NonNull final Locale locale) {
+        mLocale = locale;
+    }
 
     @NonNull
     @Override
@@ -59,9 +70,7 @@ public class LanguageFormatter
     @NonNull
     @Override
     public String extract(@NonNull final TextView view) {
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(view.getContext());
         final String text = view.getText().toString().trim();
-        return Languages
-                .getInstance().getISO3FromDisplayName(view.getContext(), userLocale, text);
+        return Languages.getInstance().getISO3FromDisplayName(view.getContext(), mLocale, text);
     }
 }

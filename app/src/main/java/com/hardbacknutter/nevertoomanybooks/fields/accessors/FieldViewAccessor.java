@@ -84,15 +84,6 @@ public interface FieldViewAccessor<T, V extends View> {
     }
 
     /**
-     * Set the formatter to use for this field.
-     *
-     * @param formatter to use
-     */
-    default void setFormatter(@NonNull FieldFormatter<T> formatter) {
-        throw new IllegalStateException("Formatter not supported");
-    }
-
-    /**
      * Get the value from the view associated with the Field and return it as an Object.
      * <p>
      * If the view is available, return the current value.

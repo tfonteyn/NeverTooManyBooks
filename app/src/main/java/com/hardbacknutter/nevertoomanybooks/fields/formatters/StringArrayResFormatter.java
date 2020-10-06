@@ -26,6 +26,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
+ * Uses a String from a String resource arrays as output based on an index value.
+ *
+ * <ul>
+ *      <li>Multiple fields: <strong>no</strong></li>
+ * </ul>
+ * <p>
  * Why Long? See Sqlite docs... storage class INTEGER.
  * TLDR: we always get a long from the database even if the column stores an int.
  */

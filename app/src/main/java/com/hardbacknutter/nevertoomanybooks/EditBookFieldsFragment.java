@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
@@ -61,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatte
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -212,6 +215,11 @@ public class EditBookFieldsFragment
 
         final String nonBlankRequired = getString(R.string.vldt_non_blank_required);
 
+        final Context context = getContext();
+
+        //noinspection ConstantConditions
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Short, true, false)),
                    Book.BKEY_AUTHOR_LIST, DBDefinitions.KEY_FK_AUTHOR)
@@ -235,7 +243,7 @@ public class EditBookFieldsFragment
         fields.add(R.id.isbn, new EditTextAccessor<>(), DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
-        fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(), true),
+        fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(userLocale), true),
                    DBDefinitions.KEY_LANGUAGE)
               .setRelatedFields(R.id.lbl_language)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));

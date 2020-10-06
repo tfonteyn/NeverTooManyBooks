@@ -66,8 +66,11 @@ public class EditTextAccessor<T>
     /** Log tag. */
     private static final String TAG = "EditTextAccessor";
 
+    /** Reformat only every 0.5 seconds: this is good enough and easier on the user. */
+    private static final int REFORMAT_DELAY_MS = 500;
+
     /** Enable or disable the formatting text watcher. */
-    private boolean mEnableReformat;
+    private final boolean mEnableReformat;
 
     private boolean mOnChangeCalled;
 
@@ -77,7 +80,8 @@ public class EditTextAccessor<T>
      * Constructor.
      */
     public EditTextAccessor() {
-        super();
+        super(null);
+        mEnableReformat = false;
     }
 
     /**
@@ -89,7 +93,7 @@ public class EditTextAccessor<T>
     public EditTextAccessor(@NonNull final FieldFormatter<T> formatter,
                             final boolean enableReformat) {
         super(formatter);
-        mEnableReformat = enableReformat;
+        mEnableReformat = enableReformat && formatter instanceof EditFieldFormatter;
     }
 
     @Override
@@ -185,7 +189,7 @@ public class EditTextAccessor<T>
      * TextWatcher for TextView fields.
      *
      * <ol>
-     *      <li>Re-formats if needed/allowed</li>
+     *      <li>Re-formats if allowed and needed</li>
      *      <li>clears any previous error</li>
      *      <li>propagate the fact that the field changed</li>
      * </ol>
@@ -194,28 +198,20 @@ public class EditTextAccessor<T>
      */
     @Override
     public void afterTextChanged(@NonNull final Editable editable) {
-        long interval = System.currentTimeMillis() - mLastChange;
+        // reformat if allowed and needed
+        if (mEnableReformat && System.currentTimeMillis() - mLastChange > REFORMAT_DELAY_MS) {
+            // the view will never be null here.
+            final TextView view = getView();
+            //noinspection ConstantConditions
+            final T value = ((EditFieldFormatter<T>) mFormatter).extract(view);
+            final String formatted = mFormatter.format(view.getContext(), value);
 
-        // reformat every 0.5 seconds is good enough and easier on the user.
-        if (interval > 500) {
-            // reformat if allowed and needed.
-            if (mEnableReformat
-                && mFormatter != null
-                && mFormatter instanceof EditFieldFormatter) {
-
-                // the view will never be null here.
-                final TextView view = getView();
-                //noinspection ConstantConditions
-                final T value = ((EditFieldFormatter<T>) mFormatter).extract(view);
-                final String formatted = mFormatter.format(view.getContext(), value);
-
-                // if the new text *can* be formatted and is different
-                if (!editable.toString().trim().equalsIgnoreCase(formatted)) {
-                    view.removeTextChangedListener(this);
-                    // replace the coded value with the formatted value.
-                    editable.replace(0, editable.length(), formatted);
-                    view.addTextChangedListener(this);
-                }
+            // if the new text *can* be formatted and is different
+            if (!editable.toString().trim().equalsIgnoreCase(formatted)) {
+                view.removeTextChangedListener(this);
+                // replace the coded value with the formatted value.
+                editable.replace(0, editable.length(), formatted);
+                view.addTextChangedListener(this);
             }
         }
 

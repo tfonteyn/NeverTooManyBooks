@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,6 +32,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookPublicationBinding;
@@ -44,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public class EditBookPublicationFragment
         extends EditBookBaseFragment {
@@ -112,6 +116,15 @@ public class EditBookPublicationFragment
     @Override
     protected void onInitFields(@NonNull final Fields fields) {
 
+        final Context context = getContext();
+
+        //noinspection ConstantConditions
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+
+        // These FieldFormatter's can be shared between multiple fields.
+        final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
+
+
         fields.add(R.id.pages, new EditTextAccessor<>(), DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
@@ -128,11 +141,11 @@ public class EditBookPublicationFragment
         fields.add(R.id.print_run, new EditTextAccessor<>(), DBDefinitions.KEY_PRINT_RUN)
               .setRelatedFields(R.id.lbl_print_run);
 
-        fields.add(R.id.date_published, new TextViewAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_DATE_PUBLISHED)
               .setTextInputLayout(R.id.lbl_date_published);
 
-        fields.add(R.id.first_publication, new TextViewAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.first_publication, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
               .setTextInputLayout(R.id.lbl_first_publication);
 

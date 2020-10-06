@@ -67,7 +67,7 @@ public class TextViewAccessor<T>
      * Constructor.
      */
     public TextViewAccessor() {
-        super();
+        super(null);
     }
 
     /**
@@ -75,7 +75,7 @@ public class TextViewAccessor<T>
      *
      * @param formatter to use
      */
-    public TextViewAccessor(@Nullable final FieldFormatter<T> formatter) {
+    public TextViewAccessor(@NonNull final FieldFormatter<T> formatter) {
         super(formatter);
     }
 

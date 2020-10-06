@@ -279,12 +279,11 @@ public class BookDetailsFragment
 
         //noinspection ConstantConditions
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-
         // These FieldFormatter's can be shared between multiple fields.
-        final FieldFormatter<String> dateFormatter = new DateFieldFormatter();
+        final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
         final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true);
         final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
-        final FieldFormatter<String> languageFormatter = new LanguageFormatter();
+        final FieldFormatter<String> languageFormatter = new LanguageFormatter(userLocale);
 
         // book fields
         fields.add(R.id.title, new TextViewAccessor<>(), DBDefinitions.KEY_TITLE);

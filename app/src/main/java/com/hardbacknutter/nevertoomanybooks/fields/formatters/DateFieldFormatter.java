@@ -30,7 +30,6 @@ import java.util.Locale;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextAccessor;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -51,6 +50,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 public class DateFieldFormatter
         implements EditFieldFormatter<String> {
 
+    @NonNull
+    private final Locale mLocale;
+
+    /**
+     * Constructor.
+     *
+     * @param locale to use
+     */
+    public DateFieldFormatter(@NonNull final Locale locale) {
+        mLocale = locale;
+    }
+
     /**
      * Display as a human-friendly date, local timezone.
      * <p>
@@ -63,8 +74,7 @@ public class DateFieldFormatter
         if (rawValue == null || rawValue.isEmpty()) {
             return "";
         } else {
-            final Locale locale = AppLocale.getInstance().getUserLocale(context);
-            return new PartialDate(rawValue).toPrettyDate(locale, rawValue);
+            return new PartialDate(rawValue).toPrettyDate(mLocale, rawValue);
         }
     }
 

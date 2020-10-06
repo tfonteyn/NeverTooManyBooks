@@ -54,8 +54,6 @@ public class MoneyFormatter
     /**
      * Constructor.
      *
-     * <em>Dev note:</em> we pass the locale so we can mock it.
-     *
      * @param locale to use
      */
     public MoneyFormatter(@NonNull final Locale locale) {

@@ -43,15 +43,8 @@ public abstract class TextAccessor<T, V extends TextView>
 
     /**
      * Constructor.
-     */
-    TextAccessor() {
-        mFormatter = null;
-    }
-
-    /**
-     * Constructor.
      *
-     * @param formatter to use
+     * @param formatter (optional) formatter to use
      */
     TextAccessor(@Nullable final FieldFormatter<T> formatter) {
         mFormatter = formatter;
@@ -64,7 +57,7 @@ public abstract class TextAccessor<T, V extends TextView>
 
     @Override
     public void setValue(@NonNull final DataManager source) {
-        Object obj = source.get(mField.getKey());
+        final Object obj = source.get(mField.getKey());
         if (obj != null) {
             //noinspection unchecked
             setValue((T) obj);

@@ -29,9 +29,10 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 /**
- * FieldFormatter for 'html' fields.
+ * FieldFormatter for HTML fields.
  * <ul>
- *      <li>Multiple fields: <strong>yes</strong> as long as 'html' has the same value...</li>
+ *      <li>Multiple fields: <strong>yes</strong> with the caveat that 'enableLinks'
+ *      is the same value</li>
  * </ul>
  *
  * @param <T> type of Field value.

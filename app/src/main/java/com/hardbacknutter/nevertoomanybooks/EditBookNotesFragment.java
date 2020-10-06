@@ -34,6 +34,7 @@ import androidx.preference.PreferenceManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -48,6 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DoubleNumberFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public class EditBookNotesFragment
         extends EditBookBaseFragment {
@@ -99,6 +102,12 @@ public class EditBookNotesFragment
 
         final Context context = getContext();
 
+        //noinspection ConstantConditions
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+
+        // These FieldFormatter's can be shared between multiple fields.
+        final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
+
         fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
         fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED);
 
@@ -116,7 +125,6 @@ public class EditBookNotesFragment
               .setRelatedFields(R.id.lbl_price_paid,
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
-        //noinspection ConstantConditions
         fields.add(R.id.condition,
                    new MaterialSpinnerAccessor(context, R.array.conditions_book),
                    DBDefinitions.KEY_BOOK_CONDITION)
@@ -134,16 +142,16 @@ public class EditBookNotesFragment
                    DBDefinitions.KEY_EDITION_BITMASK)
               .setRelatedFields(R.id.lbl_edition);
 
-        fields.add(R.id.date_acquired, new TextViewAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.date_acquired, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_DATE_ACQUIRED)
               .setTextInputLayout(R.id.lbl_date_acquired);
 
-        fields.add(R.id.read_start, new TextViewAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.read_start, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_READ_START)
               .setTextInputLayout(R.id.lbl_read_start)
               .setFieldValidator(this::validateReadStartAndEndFields);
 
-        fields.add(R.id.read_end, new TextViewAccessor<>(new DateFieldFormatter()),
+        fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_READ_END)
               .setTextInputLayout(R.id.lbl_read_end)
               .setFieldValidator(this::validateReadStartAndEndFields);
