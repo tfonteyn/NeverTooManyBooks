@@ -28,6 +28,7 @@ import androidx.annotation.VisibleForTesting;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
@@ -82,10 +83,6 @@ public class DateParser
             "MMM yyyy",
             "MMMM yyyy",
             };
-
-    /** Singleton. */
-    private static DateParser sInstance;
-
     /**
      * Variant of DateTimeFormatter.ISO_DATE_TIME using a space instead of the normal 'T'
      * '2011-12-03 10:15:30',
@@ -94,7 +91,8 @@ public class DateParser
      */
     @SuppressWarnings("WeakerAccess")
     public static DateTimeFormatter SQLITE_ISO_DATE_TIME;
-
+    /** Singleton. */
+    private static DateParser sInstance;
     /** List of patterns we'll use to parse dates. */
     private final Collection<DateTimeFormatter> TEXT_PARSERS = new ArrayList<>();
     private final Collection<DateTimeFormatter> NUMERICAL_PARSERS = new ArrayList<>();
@@ -290,7 +288,7 @@ public class DateParser
      * @return Resulting date if parsed, otherwise {@code null}
      */
     @Nullable
-    public LocalDateTime parseISO(@Nullable final String dateStr) {
+    public LocalDateTime parseISO(@Nullable final CharSequence dateStr) {
         if (dateStr == null) {
             return null;
         }
@@ -301,43 +299,27 @@ public class DateParser
             return null;
         }
 
-        // Check the fixed patterns first. This has proven to be easier/faster than
-        // trying to use DateTimeFormatter for date-strings without a time part.
-        switch (len) {
-            case 4:
-                // yyyy
-                try {
+        // Check the partial patterns first.
+        try {
+            switch (len) {
+                case 4:
+                    // yyyy
                     return Year.parse(dateStr).atDay(1).atStartOfDay();
-//            } catch (@NonNull final DateTimeParseException ignore) {
-                } catch (@NonNull final RuntimeException ignore) {
-                    // ignore and try the next one
-                }
-                break;
 
-            // yyyy-MM
-            case 7:
-                try {
-                    final Year year = Year.parse(dateStr.substring(0, 4));
-                    final int mont = Integer.parseInt(dateStr.substring(5, 7));
-                    return year.atMonth(mont).atDay(1).atStartOfDay();
-//            } catch (@NonNull final DateTimeParseException ignore) {
-                } catch (@NonNull final RuntimeException ignore) {
-                    // ignore and try the next one
-                }
-                break;
+                case 7:
+                    // yyyy-MM
+                    return YearMonth.parse(dateStr).atDay(1).atStartOfDay();
 
-            // yyyy-MM-dd
-            case 10:
-                try {
+                case 10:
+                    // yyyy-MM-dd
                     return LocalDate.parse(dateStr).atStartOfDay();
-//            } catch (@NonNull final DateTimeParseException ignore) {
-                } catch (@NonNull final RuntimeException ignore) {
-                    // ignore and try the next one
-                }
-                break;
 
-            default:
-                break;
+                default:
+                    break;
+            }
+            // } catch (@NonNull final DateTimeParseException ignore) {
+        } catch (@NonNull final RuntimeException ignore) {
+            // ignore
         }
 
         // try full date+time strings

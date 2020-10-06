@@ -135,51 +135,33 @@ public class PartialDate
 
     private void parse(@Nullable final CharSequence dateStr) {
         if (dateStr != null) {
-            switch (dateStr.length()) {
-                case 4:
+            final int len = dateStr.length();
+            try {
+                if (len == 4) {
                     // yyyy
-                    try {
-                        mLocalDate = Year.parse(dateStr).atMonth(1).atDay(1);
-                        mYearSet = true;
-                        mMonthSet = false;
-                        mDaySet = false;
-                        return;
-//            } catch (@NonNull final DateTimeParseException ignore) {
-                    } catch (@NonNull final RuntimeException ignore) {
-                        // ignore
-                    }
-                    break;
-
-                // yyyy-MM
-                case 7:
-                    try {
-                        mLocalDate = YearMonth.parse(dateStr).atDay(1);
-                        mYearSet = true;
-                        mMonthSet = true;
-                        mDaySet = false;
-                        return;
-//            } catch (@NonNull final DateTimeParseException ignore) {
-                    } catch (@NonNull final RuntimeException ignore) {
-                        // ignore
-                    }
-                    break;
-
-                // yyyy-MM-dd
-                case 10:
-                    try {
-                        mLocalDate = LocalDate.parse(dateStr);
-                        mYearSet = true;
-                        mMonthSet = true;
-                        mDaySet = true;
-                        return;
-//            } catch (@NonNull final DateTimeParseException ignore) {
-                    } catch (@NonNull final RuntimeException ignore) {
-                        // ignore
-                    }
-                    break;
-
-                default:
-                    break;
+                    mLocalDate = Year.parse(dateStr).atDay(1);
+                    mYearSet = true;
+                    mMonthSet = false;
+                    mDaySet = false;
+                    return;
+                } else if (len == 7) {
+                    // yyyy-MM
+                    mLocalDate = YearMonth.parse(dateStr).atDay(1);
+                    mYearSet = true;
+                    mMonthSet = true;
+                    mDaySet = false;
+                    return;
+                } else if (len >= 10) {
+                    // yyyy-MM-dd[...]
+                    mLocalDate = LocalDate.parse(dateStr.subSequence(0, 11));
+                    mYearSet = true;
+                    mMonthSet = true;
+                    mDaySet = true;
+                    return;
+                }
+                // } catch (@NonNull final DateTimeParseException ignore) {
+            } catch (@NonNull final RuntimeException ignore) {
+                // ignore
             }
         }
 
