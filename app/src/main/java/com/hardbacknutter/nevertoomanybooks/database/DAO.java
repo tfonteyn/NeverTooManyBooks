@@ -69,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -87,6 +86,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME_OB;
@@ -444,8 +444,7 @@ public class DAO
      */
     public void endTransaction(@Nullable final SyncLock txLock) {
         // it's cleaner to have the null detection here
-        Objects.requireNonNull(txLock);
-        mSyncedDb.endTransaction(txLock);
+        mSyncedDb.endTransaction(Objects.requireNonNull(txLock));
     }
 
     /**
@@ -529,8 +528,8 @@ public class DAO
 
             // set the new id/uuid on the Book itself
             book.putLong(KEY_PK_ID, newBookId);
-            // always lookup the UUID (even if we inserted with a uuid... to protect against
-            // future changes)
+            // always lookup the UUID
+            // (even if we inserted with a uuid... to protect against future changes)
             final String uuid = getBookUuid(newBookId);
             SanityCheck.requireValue(uuid, "uuid");
             book.putString(KEY_BOOK_UUID, uuid);
@@ -614,12 +613,15 @@ public class DAO
                                          new String[]{String.valueOf(book.getId())});
 
             if (success) {
+                // always lookup the UUID
+                final String uuid = getBookUuid(book.getId());
+                SanityCheck.requireValue(uuid, "uuid");
+                book.putString(KEY_BOOK_UUID, uuid);
+
                 insertBookLinks(context, book, flags);
                 ftsUpdate(context, book.getId());
 
                 if (!book.storeCovers(context)) {
-                    book.putLong(KEY_PK_ID, 0);
-                    book.remove(KEY_BOOK_UUID);
                     throw new DAO.DaoWriteException(ERROR_STORING_COVERS + this);
                 }
 
@@ -2346,7 +2348,7 @@ public class DAO
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      *
-     * @throws IllegalArgumentException if the list is empty
+     * @throws SanityCheck.MissingValueException if the list is empty
      */
     @NonNull
     public TypedCursor fetchBooks(@NonNull final List<Long> idList) {
@@ -2426,7 +2428,7 @@ public class DAO
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      *
-     * @throws IllegalArgumentException if the list is empty
+     * @throws SanityCheck.MissingValueException if the list is empty
      */
     @NonNull
     public TypedCursor fetchBooksByIsbnList(@NonNull final List<String> isbnList) {
@@ -2562,7 +2564,7 @@ public class DAO
                         key);
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + key);
+                throw new UnexpectedValueException(key);
         }
     }
 
@@ -3453,8 +3455,8 @@ public class DAO
         try (Cursor cursor = mSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-
-                switch (rowData.getString(KEY_TOC_TYPE).charAt(0)) {
+                final char type = rowData.getString(KEY_TOC_TYPE).charAt(0);
+                switch (type) {
                     case AuthorWork.TYPE_TOC:
                         list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
                                               author,
@@ -3472,7 +3474,7 @@ public class DAO
                         break;
 
                     default:
-                        throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE);
+                        throw new UnexpectedValueException(type);
                 }
             }
         }
