@@ -41,6 +41,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
@@ -239,15 +240,46 @@ public abstract class BaseDialogFragment
         super.onDismiss(dialog);
     }
 
+    /**
+     * Show an error on the passed text field. Automatically remove it after a delay.
+     *
+     * @param til     the text field
+     * @param errorId to show
+     */
     protected void showError(@NonNull final TextInputLayout til,
                              @SuppressWarnings("SameParameterValue") @StringRes final int errorId) {
         showError(til, getString(errorId));
     }
 
+    /**
+     * Show an error on the passed text field. Automatically remove it after a delay.
+     *
+     * @param til   the text field
+     * @param error to show
+     */
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
         til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
+    }
+
+    /**
+     * Show an error message, and finish the Activity after a delay.
+     * <p>
+     * Not sure if this approach is a really good solution, but it will have to do for now.
+     *
+     * @param body     (optional) view to make invisible
+     * @param stringId message id to show
+     */
+    protected void finishActivityWithErrorMessage(@Nullable final View body,
+                                                  @StringRes final int stringId) {
+        if (body != null) {
+            body.setVisibility(View.INVISIBLE);
+        }
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), stringId, Snackbar.LENGTH_LONG).show();
+        //noinspection ConstantConditions
+        getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
     }
 
     /**
