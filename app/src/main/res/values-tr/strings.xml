@@ -222,7 +222,7 @@
     <string name="lbl_author_type_translator">Çevirmen</string>
     <string name="lbl_author_type_writer">yazar</string>
     <string name="lbl_authors">Yazarlar</string>
-    <string name="lbl_backup">Yedekle</string>
+    <string name="lbl_backup">Yedek kopya</string>
     <string name="lbl_barcode">Barkod</string>
     <string name="lbl_book">Kitap</string>
     <string name="lbl_books">Kitaplar</string>
@@ -669,5 +669,8 @@
     <string name="pt_line_spacing">Satır aralığı</string>
     <string name="confirm_clear_all_data">BU TÜM VERİLERİ KALDIRACAK!\n Önceki bir yedeklemeden geri yükleme dışında, BU GERİ ALINAMAZ!\n\n Devam etmek istediğine emin misin ?</string>
     <string name="confirm_continue">Devam etmek istediğine emin misin ?</string>
+    <string name="lbl_backup_and_export">Yedekleme ve Dışa Aktarma</string>
+    <string name="lbl_export">İhracat</string>
+    <string name="lbl_database">Veri tabanı</string>
 
 </resources>

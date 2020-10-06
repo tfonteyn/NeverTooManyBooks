@@ -219,7 +219,7 @@
     <string name="lbl_author_type_translator">Tłumacz</string>
     <string name="lbl_author_type_writer">pisarz</string>
     <string name="lbl_authors">Autorski</string>
-    <string name="lbl_backup">Kopia</string>
+    <string name="lbl_backup">Kopia zapasowa</string>
     <string name="lbl_barcode">kod kreskowy</string>
     <string name="lbl_book">Książka</string>
     <string name="lbl_books">Książki</string>
@@ -668,4 +668,7 @@
     <string name="pt_line_spacing">Odstępy między wierszami</string>
     <string name="confirm_clear_all_data">TO USUŃ WSZYSTKIE DANE!\n Z wyjątkiem przywracania z poprzedniej kopii zapasowej, TO NIE MOŻE BYĆ Cofnąć!\n\n Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>
+    <string name="lbl_backup_and_export">Kopia zapasowa i eksport</string>
+    <string name="lbl_export">Eksport</string>
+    <string name="lbl_database">Baza danych</string>
 </resources>

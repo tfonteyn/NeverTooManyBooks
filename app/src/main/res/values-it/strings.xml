@@ -672,5 +672,8 @@
     <string name="pt_line_spacing">Interlinea</string>
     <string name="confirm_clear_all_data">QUESTO RIMUOVERÀ TUTTI I DATI!\n Fatta eccezione per il ripristino da un backup precedente, QUESTO NON PU ESSERE ANNULLATO!\n\n Sei sicuro di voler continuare ?</string>
     <string name="confirm_continue">Sei sicuro di voler continuare ?</string>
+    <string name="lbl_backup_and_export">Backup ed esportazione</string>
+    <string name="lbl_export">Esportare</string>
+    <string name="lbl_database">Banca dati</string>
 
 </resources>

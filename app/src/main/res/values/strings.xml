@@ -858,12 +858,14 @@
     <!-- Dialog title. -->
     <string name="warning_search_failed">Searching for the book failed.</string>
 
-    <!-- Dialog title - import quick-options. -->
-    <string name="lbl_import">Import</string>
     <!-- Dialog title - import full-options. -->
     <string name="lbl_import_options">Select what will be imported.</string>
-    <!-- Dialog title - export quick-options. -->
+
+    <string name="lbl_import">Import</string>
+    <string name="lbl_export">Export</string>
     <string name="lbl_backup">Backup</string>
+    <string name="lbl_backup_and_export">Backup &amp; Export</string>
+
     <!-- Dialog title - export full-options. -->
     <string name="lbl_export_options">Select what will be exported to the archive.</string>
 

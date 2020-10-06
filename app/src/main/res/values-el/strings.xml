@@ -672,5 +672,8 @@
     <string name="pt_line_spacing">Διάστιχο</string>
     <string name="confirm_clear_all_data">ΑΥΤΑ ΑΦΑΙΡΕΣΕΙ ΟΛΑ ΤΑ ΔΕΔΟΜΕΝΑ!\n Εκτός από την επαναφορά από ένα προηγούμενο αντίγραφο ασφαλείας, ΑΥΤΟ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΚΑΝΕΤΕ ΚΑΤΩ!\n\n Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
+    <string name="lbl_backup_and_export">Δημιουργία αντιγράφων ασφαλείας και εξαγωγή</string>
+    <string name="lbl_export">Εξαγωγή</string>
+    <string name="lbl_database">Βάση δεδομένων</string>
 
 </resources>

@@ -222,7 +222,7 @@
     <string name="lbl_author_type_translator">Traductor</string>
     <string name="lbl_author_type_writer">escritor</string>
     <string name="lbl_authors">Autores</string>
-    <string name="lbl_backup">Copia</string>
+    <string name="lbl_backup">Copia de seguridad</string>
     <string name="lbl_barcode">Código de barras</string>
     <string name="lbl_book">Libro</string>
     <string name="lbl_books">Libros</string>
@@ -672,5 +672,8 @@
     <string name="pt_line_spacing">Espaciado entre líneas</string>
     <string name="confirm_clear_all_data">¡ESTO ELIMINARÁ TODOS LOS DATOS!\n Excepto restaurando desde una copia de seguridad anterior, ¡ESTO NO SE PUEDE DESHACER!\n\n Estás seguro de que quieres continuar ?</string>
     <string name="confirm_continue">Estás seguro de que quieres continuar ?</string>
+    <string name="lbl_backup_and_export">Copia de seguridad y exportación</string>
+    <string name="lbl_export">Exportar</string>
+    <string name="lbl_database">Base de datos</string>
 
 </resources>

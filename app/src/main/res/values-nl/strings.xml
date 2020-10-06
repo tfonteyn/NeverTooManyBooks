@@ -673,5 +673,8 @@
     <string name="pt_line_spacing">Regelafstand</string>
     <string name="confirm_clear_all_data">DIT ZAL ALLE GEGEVENS VERWIJDEREN!\n Behalve door te herstellen vanaf een vorige back-up, KAN DIT NIET ONGEDAAN WORDEN!\n\n Weet je zeker dat je door wilt gaan ?</string>
     <string name="confirm_continue">Weet je zeker dat je door wilt gaan ?</string>
+    <string name="lbl_backup_and_export">Back-up en export</string>
+    <string name="lbl_export">Exporteren</string>
+    <string name="lbl_database">Database</string>
 
 </resources>

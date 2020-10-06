@@ -676,5 +676,8 @@
     <string name="pt_line_spacing">Interligne</string>
     <string name="confirm_clear_all_data">CELA SUPPRIMERA TOUTES LES DONNÉES!\n Sauf en restaurant à partir d\'une sauvegarde précédente, CECI NE PEUT PAS ÊTRE ANNULÉ!\n\n Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_continue">Es-tu sur de vouloir continuer ?</string>
+    <string name="lbl_backup_and_export">Sauvegarde et exportation</string>
+    <string name="lbl_export">Exportation</string>
+    <string name="lbl_database">Base de données</string>
 
 </resources>

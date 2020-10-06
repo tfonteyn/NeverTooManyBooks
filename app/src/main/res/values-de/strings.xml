@@ -675,4 +675,7 @@
     <string name="pt_line_spacing">Zeilenabstand</string>
     <string name="confirm_clear_all_data">Dies wird alle Daten entfernen!\n Außer durch Wiederherstellen von einem vorherigen Backup kann dies nicht rückgängig gemacht werden!\n\n Sind Sie sicher, dass Sie fortfahren möchten ?</string>
     <string name="confirm_continue">Sind Sie sicher, dass Sie fortfahren möchten ?</string>
+    <string name="lbl_backup_and_export">Sichern &amp; Exportieren</string>
+    <string name="lbl_export">Export</string>
+    <string name="lbl_database">Datenbank</string>
 </resources>

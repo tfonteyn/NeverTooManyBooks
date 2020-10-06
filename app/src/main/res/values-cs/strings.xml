@@ -669,5 +669,8 @@
     <string name="pt_line_spacing">Řádkování</string>
     <string name="confirm_clear_all_data">TOTO ODSTRANÍ VŠECHNY ÚDAJE!\n S výjimkou obnovy z předchozí zálohy TO NELZE ZRUŠIT!\n\n Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
+    <string name="lbl_backup_and_export">Zálohování a export</string>
+    <string name="lbl_export">Vývozní</string>
+    <string name="lbl_database">Databáze</string>
 
 </resources>

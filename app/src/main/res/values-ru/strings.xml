@@ -668,5 +668,8 @@
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="confirm_clear_all_data">ЭТО УДАЛЯЕТ ВСЕ ДАННЫЕ!\n ЭТО НЕ МОЖЕТ БЫТЬ ОТМЕНЕНО, кроме восстановления из предыдущей резервной копии!\n\n Вы уверены что хотите продолжить ?</string>
     <string name="confirm_continue">Вы уверены что хотите продолжить ?</string>
+    <string name="lbl_backup_and_export">Резервное копирование и экспорт</string>
+    <string name="lbl_export">Экспорт</string>
+    <string name="lbl_database">База данных</string>
 
 </resources>
