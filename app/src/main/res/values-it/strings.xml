@@ -93,29 +93,29 @@
     <string name="error_authorization_failed">Autorizzazione fallita</string>
     <string name="error_auto_toc_population_failed">Inserimento titoli in automatico fallito</string>
     <string name="error_backup_failed">Backup fallito</string>
-    <string name="error_cannot_import">Il file selezionato non può essere importato.</string>
-    <string name="error_csv_column_is_blank">La colonna %1$s è vuota alla riga %2$d</string>
+    <string name="error_import_file_not_supported">Il file selezionato non può essere importato.</string>
+    <string name="error_import_csv_column_is_blank">La colonna %1$s è vuota alla riga %2$d</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>
     <string name="error_google_play_store_missing">Google Play Store non è installato</string>
     <string name="error_if_the_problem_persists">Se il problema persiste, contattare l\'assistenza tramite l\'opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
-    <string name="error_import_csv_file_must_contain_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
+    <string name="error_import_csv_missing_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="error_import_failed">Importazione fallita.</string>
-    <string name="error_import_invalid_archive">Il file selezionato non è riconosciuto.</string>
-    <string name="error_please_connect_to_internet">Connettiti a Internet.</string>
+    <string name="error_import_file_not_recognized">Il file selezionato non è riconosciuto.</string>
+    <string name="error_network_please_connect">Connettiti a Internet.</string>
     <string name="error_network_io">Comunicazione con il server non riuscita. Riprova più tardi.</string>
     <string name="error_network_timeout">Tempo esaurito per la connessione al server.</string>
     <string name="error_no_image_editor">Nessun editor di immagini trovato</string>
     <string name="X_error_not_available">%1$s non disponibile</string>
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo</string>
     <string name="error_search_x_failed_y">Ricerca su %1$s non riuscita: %2$s</string>
-    <string name="error_site_access_failed">Si è verificato un problema di rete durante l\'accesso a %1$s. Verifica se il sito Web è attivo e se il problema persiste, contatta l\'assistenza.</string>
+    <string name="error_network_site_access_failed">Si è verificato un problema di rete durante l\'accesso a %1$s. Verifica se il sito Web è attivo e se il problema persiste, contatta l\'assistenza.</string>
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>
     <string name="error_site_authorization_failed">Errore durante l\'autorizzazione di %1$s.</string>
     <string name="error_storage_no_space_left">Spazio disponibile insufficiente</string>
     <string name="error_storage_not_accessible">Archiviazione non accessibile: %1$s</string>
     <string name="error_storage_not_readable">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
-    <string name="error_unexpected_error">Si è verificato un errore inatteso, per favore invia i dettagli all\'Assistenza usando l\'opzione «Amministratore» nel menu principale</string>
+    <string name="error_unknown_long">Si è verificato un errore inatteso, per favore invia i dettagli all\'Assistenza usando l\'opzione «Amministratore» nel menu principale</string>
     <string name="error_unknown">Si è verificato un errore non identificato</string>
     <string name="fab_add_book_by_barcode_scan">Acquisisci codice a barre</string>
     <string name="fab_add_book_by_internet_search">Cerca in Internet</string>
@@ -624,7 +624,7 @@
     <string name="vldt_non_blank_required">È richiesto un valore</string>
     <string name="confirm_rebuild_fts">I dati dell\'indice di ricerca verranno ricostruiti al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
     <string name="confirm_rebuild_index">Gli indici verranno ricostruiti al riavvio dell\'app. Sei sicuro di voler continuare ?</string>
-    <string name="error_site_has_problems">Il sito Web ha problemi.</string>
+    <string name="error_network_site_has_problems">Il sito Web ha problemi.</string>
     <string name="hint_empty_day">(Giorno non impostato)</string>
     <string name="hint_empty_year">(Anno non impostato)</string>
     <string name="lbl_all_bookshelves">Tutte le biblioteche</string>
@@ -667,7 +667,7 @@
     <string name="dynamic">Dinamico</string>
     <string name="statick">Statico</string>
     <string name="action_select">Seleziona</string>
-    <string name="error_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
+    <string name="error_import_csv_line_to_long">La riga è troppo lunga (riga=%1$d, lunghezza=%2$d)</string>
     <string name="action_clear_all_data">Elimina tutti i dati</string>
     <string name="pt_line_spacing">Interlinea</string>
     <string name="confirm_clear_all_data">QUESTO RIMUOVERÀ TUTTI I DATI!\n Fatta eccezione per il ripristino da un backup precedente, QUESTO NON PU ESSERE ANNULLATO!\n\n Sei sicuro di voler continuare ?</string>

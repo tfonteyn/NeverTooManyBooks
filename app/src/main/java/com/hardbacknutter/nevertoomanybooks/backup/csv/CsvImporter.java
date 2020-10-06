@@ -307,7 +307,8 @@ public class CsvImporter
                     // check we have a title
                     if (book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
                         final String msg = context.getString(
-                                R.string.error_csv_column_is_blank, DBDefinitions.KEY_TITLE, row);
+                                R.string.error_import_csv_column_is_blank, DBDefinitions.KEY_TITLE,
+                                row);
                         throw new ImportException(msg);
                     }
 
@@ -972,7 +973,7 @@ public class CsvImporter
             // StackOverflowError has been seen when the StringBuilder overflows.
             // The stack at the time was 1040kb. Not reproduced as yet.
             Log.e(TAG, "line.length=" + line.length() + "\n" + line, e);
-            throw new ImportException(context.getString(R.string.error_csv_line_to_long,
+            throw new ImportException(context.getString(R.string.error_import_csv_line_to_long,
                                                         row, line.length()), e);
         }
     }
@@ -995,7 +996,7 @@ public class CsvImporter
             }
         }
 
-        final String msg = context.getString(R.string.error_import_csv_file_must_contain_columns_x,
+        final String msg = context.getString(R.string.error_import_csv_missing_columns_x,
                                              TextUtils.join(",", names));
         throw new ImportException(msg);
     }

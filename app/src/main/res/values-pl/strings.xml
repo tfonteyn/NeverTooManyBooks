@@ -92,29 +92,29 @@
     <string name="error_authorization_failed">Autoryzacja nie powiodła się</string>
     <string name="error_auto_toc_population_failed">Automatyczne obsadzanie pozycji antologii nie powiodło się</string>
     <string name="error_backup_failed">Kopia zapasowa nie powiodła się</string>
-    <string name="error_cannot_import">Wybranego pliku nie można zaimportować.</string>
-    <string name="error_csv_column_is_blank">Pole %1$s jest puste w linii %2$d</string>
+    <string name="error_import_file_not_supported">Wybranego pliku nie można zaimportować.</string>
+    <string name="error_import_csv_column_is_blank">Pole %1$s jest puste w linii %2$d</string>
     <string name="error_email_failed">E-mail nie mógł zostać wysłany.</string>
     <string name="error_google_play_store_missing">Google Play Store nie jest zainstalowany</string>
     <string name="error_if_the_problem_persists">Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną za pomocą opcji „%1$s” u dołu strony ustawień.</string>
-    <string name="error_import_csv_file_must_contain_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
+    <string name="error_import_csv_missing_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
-    <string name="error_import_invalid_archive">Wybrany plik nie został rozpoznany.</string>
-    <string name="error_please_connect_to_internet">Połącz się z internetem.</string>
+    <string name="error_import_file_not_recognized">Wybrany plik nie został rozpoznany.</string>
+    <string name="error_network_please_connect">Połącz się z internetem.</string>
     <string name="error_network_io">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
     <string name="error_network_timeout">Zbyt długi czas oczekiwania na połączenie z serwerem.</string>
     <string name="error_no_image_editor">Nie znaleziono edytora zdjęć</string>
     <string name="X_error_not_available">%1$s jest niedostępny</string>
     <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia</string>
     <string name="error_search_x_failed_y">Wyszukiwanie w %1$s nie powiodło się: %2$s</string>
-    <string name="error_site_access_failed">Wystąpił problem z siecią podczas uzyskiwania dostępu do %1$s. Sprawdź, czy witryna jest uruchomiona, a jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.</string>
+    <string name="error_network_site_access_failed">Wystąpił problem z siecią podczas uzyskiwania dostępu do %1$s. Sprawdź, czy witryna jest uruchomiona, a jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną.</string>
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
     <string name="error_site_authorization_failed">Autoryzacja %1$s spowodowała błąd.</string>
     <string name="error_storage_no_space_left">Niewystarczająca pamięć dostępna</string>
     <string name="error_storage_not_accessible">Pamięć niedostępna: %1$s</string>
     <string name="error_storage_not_readable">Sprawdź, czy pamięć jest dostępna.</string>
     <string name="error_storage_not_writable">Sprawdź, czy pamięć jest zapisywalna i czy ma wystarczającą ilość miejsca.</string>
-    <string name="error_unexpected_error">Wystąpił nieoczekiwany błąd, wyślij szczegóły do pomocy poprzez stronę „Administracja” z menu głównego.</string>
+    <string name="error_unknown_long">Wystąpił nieoczekiwany błąd, wyślij szczegóły do pomocy poprzez stronę „Administracja” z menu głównego.</string>
     <string name="error_unknown">Wystąpił nieznany błąd</string>
     <string name="fab_add_book_by_barcode_scan">Skanowanie kodów kreskowych</string>
     <string name="fab_add_book_by_internet_search">Szukaj w Internecie</string>
@@ -619,7 +619,7 @@
     <string name="vldt_non_blank_required">Oczekiwana wartość niepusta</string>
     <string name="confirm_rebuild_fts">Dane indeksu wyszukiwania zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_rebuild_index">Indeksy zostaną odbudowane po ponownym uruchomieniu aplikacji. Jesteś pewien, że chcesz kontynuować ?</string>
-    <string name="error_site_has_problems">Witryna ma problemy.</string>
+    <string name="error_network_site_has_problems">Witryna ma problemy.</string>
     <string name="hint_empty_day">(Nie ustawiono dnia)</string>
     <string name="hint_empty_year">(Rok nieustawiony)</string>
     <string name="lbl_all_bookshelves">Wszystkie półki na książki</string>
@@ -663,7 +663,7 @@
     <string name="dynamic">Dynamiczny</string>
     <string name="statick">Statyczny</string>
     <string name="action_select">Wybierz</string>
-    <string name="error_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Linia jest za długa (wiersz=%1$d, długość=%2$d)</string>
     <string name="action_clear_all_data">Usuń wszystkie dane</string>
     <string name="pt_line_spacing">Odstępy między wierszami</string>
     <string name="confirm_clear_all_data">TO USUŃ WSZYSTKIE DANE!\n Z wyjątkiem przywracania z poprzedniej kopii zapasowej, TO NIE MOŻE BYĆ Cofnąć!\n\n Jesteś pewien, że chcesz kontynuować ?</string>

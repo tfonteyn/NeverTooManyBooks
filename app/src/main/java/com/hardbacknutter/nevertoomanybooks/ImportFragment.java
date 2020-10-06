@@ -213,7 +213,7 @@ public class ImportFragment
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_error)
-                    .setMessage(R.string.error_cannot_import)
+                    .setMessage(R.string.error_import_file_not_supported)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();

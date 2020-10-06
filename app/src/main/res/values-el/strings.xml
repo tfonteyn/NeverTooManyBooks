@@ -93,29 +93,29 @@
     <string name="error_authorization_failed">Η εξουσιοδότηση απέτυχε</string>
     <string name="error_auto_toc_population_failed">Η αυτόματη συμπλήρωση τίτλων απέτυχε</string>
     <string name="error_backup_failed">Αντίγραφο απέτυχε</string>
-    <string name="error_cannot_import">Δεν είναι δυνατή η εισαγωγή του επιλεγμένου αρχείου.</string>
-    <string name="error_csv_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$d</string>
+    <string name="error_import_file_not_supported">Δεν είναι δυνατή η εισαγωγή του επιλεγμένου αρχείου.</string>
+    <string name="error_import_csv_column_is_blank">Η στήλη %1$s είναι κενή στη σειρά %2$d</string>
     <string name="error_email_failed">Αποτυχία αποστολής του μηνύματος ηλεκτρονικού ταχυδρομείου.</string>
     <string name="error_google_play_store_missing">Το Google Play Store δεν είναι εγκατεστημένο</string>
     <string name="error_if_the_problem_persists">Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη μέσω της επιλογής «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
-    <string name="error_import_csv_file_must_contain_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
+    <string name="error_import_csv_missing_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
-    <string name="error_import_invalid_archive">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
-    <string name="error_please_connect_to_internet">Συνδεθείτε στο διαδίκτυο.</string>
+    <string name="error_import_file_not_recognized">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
+    <string name="error_network_please_connect">Συνδεθείτε στο διαδίκτυο.</string>
     <string name="error_network_io">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
     <string name="error_network_timeout">Το όριο χρόνου της σύνδεσης στον διακομιστή έληξε.</string>
     <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων</string>
     <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
     <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου. Ελέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας</string>
     <string name="error_search_x_failed_y">Η αναζήτηση στο %1$s απέτυχε: %2$s</string>
-    <string name="error_site_access_failed">Παρουσιάστηκε πρόβλημα δικτύου κατά την πρόσβαση στο %1$s. Ελέγξτε εάν ο ιστότοπος είναι ανεβασμένος και εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη.</string>
+    <string name="error_network_site_access_failed">Παρουσιάστηκε πρόβλημα δικτύου κατά την πρόσβαση στο %1$s. Ελέγξτε εάν ο ιστότοπος είναι ανεβασμένος και εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη.</string>
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
     <string name="error_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
     <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης</string>
     <string name="error_storage_not_accessible">Δεν είναι δυνατή η αποθήκευση: %1$s</string>
     <string name="error_storage_not_readable">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
     <string name="error_storage_not_writable">Ελέγξτε ότι η αποθήκευση είναι εγγράψιμη και έχει αρκετό χώρο.</string>
-    <string name="error_unexpected_error">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής «Διαχειριστής» από το κεντρικό μενού.</string>
+    <string name="error_unknown_long">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής «Διαχειριστής» από το κεντρικό μενού.</string>
     <string name="error_unknown">Ένα άγνωστο σφάλμα συνέβη.</string>
     <string name="fab_add_book_by_barcode_scan">Σκανάρισμα Barcode</string>
     <string name="fab_add_book_by_internet_search">Αναζήτηση στο Internet</string>
@@ -624,7 +624,7 @@
     <string name="vldt_non_blank_required">Απαιτείται μη κενή τιμή</string>
     <string name="confirm_rebuild_fts">Τα δεδομένα του ευρετηρίου αναζήτησης θα ξαναφτιάξουν κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="confirm_rebuild_index">Τα ευρετήρια θα ξαναχτίζονται κατά την επανεκκίνηση της εφαρμογής. Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
-    <string name="error_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
+    <string name="error_network_site_has_problems">Ο ιστότοπος έχει προβλήματα.</string>
     <string name="hint_empty_day">(Ημέρα δεν έχει οριστεί)</string>
     <string name="hint_empty_year">(Το έτος δεν έχει οριστεί)</string>
     <string name="lbl_all_bookshelves">Όλα τα ράφια</string>
@@ -667,7 +667,7 @@
     <string name="dynamic">Δυναμικός</string>
     <string name="statick">Στατικός</string>
     <string name="action_select">Επιλογή</string>
-    <string name="error_csv_line_to_long">Η γραμμή είναι πολύ μεγάλη (σειρά=%1$d, μήκος=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Η γραμμή είναι πολύ μεγάλη (σειρά=%1$d, μήκος=%2$d)</string>
     <string name="action_clear_all_data">Διαγραφή όλων των δεδομένων</string>
     <string name="pt_line_spacing">Διάστιχο</string>
     <string name="confirm_clear_all_data">ΑΥΤΑ ΑΦΑΙΡΕΣΕΙ ΟΛΑ ΤΑ ΔΕΔΟΜΕΝΑ!\n Εκτός από την επαναφορά από ένα προηγούμενο αντίγραφο ασφαλείας, ΑΥΤΟ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΚΑΝΕΤΕ ΚΑΤΩ!\n\n Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>

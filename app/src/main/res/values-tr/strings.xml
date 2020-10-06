@@ -94,29 +94,29 @@
     <string name="error_authorization_failed">Yetkilendirme başarısız oldu</string>
     <string name="error_auto_toc_population_failed">Kitap adlarının kendiliğinden doldurulması başarısız oldu</string>
     <string name="error_backup_failed">Yedekleme başarısız!</string>
-    <string name="error_cannot_import">Seçilen dosya içe aktarılamaz.</string>
-    <string name="error_csv_column_is_blank">Sütun %1$s %2$d numaralı satırda boş</string>
+    <string name="error_import_file_not_supported">Seçilen dosya içe aktarılamaz.</string>
+    <string name="error_import_csv_column_is_blank">Sütun %1$s %2$d numaralı satırda boş</string>
     <string name="error_email_failed">E-posta gönderilemedi.</string>
     <string name="error_google_play_store_missing">Google Play Store yüklü değil</string>
     <string name="error_if_the_problem_persists">Sorun devam ederse, ayarlar sayfasının altındaki “%1$s” seçeneğiyle desteğe başvurun.</string>
-    <string name="error_import_csv_file_must_contain_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
+    <string name="error_import_csv_missing_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
-    <string name="error_import_invalid_archive">Seçilen dosya tanınmıyor.</string>
-    <string name="error_please_connect_to_internet">Lütfen İnternet\'e bağlanın.</string>
+    <string name="error_import_file_not_recognized">Seçilen dosya tanınmıyor.</string>
+    <string name="error_network_please_connect">Lütfen İnternet\'e bağlanın.</string>
     <string name="error_network_io">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
     <string name="error_network_timeout">Sunucuya bağlanma işlemi zaman aşımına uğradı.</string>
     <string name="error_no_image_editor">Resim editörü bulunamadı</string>
     <string name="X_error_not_available">%1$s kullanılamıyor</string>
     <string name="error_search_failed_network">Lütfen Ayarlar\'ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
     <string name="error_search_x_failed_y">%1$s\'de arama başarısız oldu: %2$s</string>
-    <string name="error_site_access_failed">%1$s\'e erişilirken bir ağ sorunu oluştu. Lütfen web sitesinin açık olup olmadığını kontrol edin ve sorun devam ederse lütfen destek ile iletişime geçin.</string>
+    <string name="error_network_site_access_failed">%1$s\'e erişilirken bir ağ sorunu oluştu. Lütfen web sitesinin açık olup olmadığını kontrol edin ve sorun devam ederse lütfen destek ile iletişime geçin.</string>
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
     <string name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu</string>
     <string name="error_storage_no_space_left">Mevcut depolama yetersiz</string>
     <string name="error_storage_not_accessible">Depolama erişilebilir değil: %1$s</string>
     <string name="error_storage_not_readable">Lütfen depolamanın erişilebilir olduğunu kontrol edin.</string>
     <string name="error_storage_not_writable">Lütfen deponun yazılabilir olduğunu ve yeterli alana sahip olduğunu kontrol edin.</string>
-    <string name="error_unexpected_error">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki “Ayarlar” seçeneğinden bize gönderin</string>
+    <string name="error_unknown_long">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki “Ayarlar” seçeneğinden bize gönderin</string>
     <string name="error_unknown">Bilinmeyen bir hata oluştu</string>
     <string name="fab_add_book_by_barcode_scan">Barkod tara</string>
     <string name="fab_add_book_by_internet_search">Genelağ\'da ara</string>
@@ -622,7 +622,7 @@
     <string name="vldt_non_blank_required">boş olmayan bir değer gerekli</string>
     <string name="confirm_rebuild_index">Uygulama yeniden başlatıldığında dizinler yeniden oluşturulur. Devam etmek istediğine emin misin ?</string>
     <string name="confirm_rebuild_fts">Uygulama yeniden başlatıldığında arama dizini verileri yeniden oluşturulur. Devam etmek istediğine emin misin ?</string>
-    <string name="error_site_has_problems">Web sitesinde sorunlar var.</string>
+    <string name="error_network_site_has_problems">Web sitesinde sorunlar var.</string>
     <string name="hint_empty_day">(Gün ayarlanmadı)</string>
     <string name="hint_empty_year">(Yıl ayarlanmadı)</string>
     <string name="lbl_all_bookshelves">Tüm raflardan</string>
@@ -664,7 +664,7 @@
     <string name="dynamic">Dinamik</string>
     <string name="statick">Statik</string>
     <string name="action_select">Seç</string>
-    <string name="error_csv_line_to_long">Satır çok uzun (satır=%1$d, uzunluk=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Satır çok uzun (satır=%1$d, uzunluk=%2$d)</string>
     <string name="action_clear_all_data">Tüm verileri sil</string>
     <string name="pt_line_spacing">Satır aralığı</string>
     <string name="confirm_clear_all_data">BU TÜM VERİLERİ KALDIRACAK!\n Önceki bir yedeklemeden geri yükleme dışında, BU GERİ ALINAMAZ!\n\n Devam etmek istediğine emin misin ?</string>

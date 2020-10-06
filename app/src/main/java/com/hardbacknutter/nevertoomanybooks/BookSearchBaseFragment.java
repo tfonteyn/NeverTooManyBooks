@@ -100,7 +100,7 @@ public abstract class BookSearchBaseFragment
 
         // Warn the user, but don't abort.
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            Snackbar.make(view, R.string.error_please_connect_to_internet,
+            Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
     }
@@ -242,7 +242,7 @@ public abstract class BookSearchBaseFragment
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.error_please_connect_to_internet,
+            Snackbar.make(getView(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
             return;
         }

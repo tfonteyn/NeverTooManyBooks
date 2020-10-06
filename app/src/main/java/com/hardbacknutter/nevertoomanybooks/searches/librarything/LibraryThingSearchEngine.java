@@ -356,7 +356,8 @@ public class LibraryThingSearchEngine
             // but other than that it does not seem possible to get full details.
             if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
                 // 2020-03-27. Started getting "APIs Temporarily disabled"
-                throw new IOException(mAppContext.getString(R.string.error_site_has_problems));
+                throw new IOException(
+                        mAppContext.getString(R.string.error_network_site_has_problems));
             }
 
             if (BuildConfig.DEBUG /* always */) {

@@ -90,7 +90,7 @@ public class GrStatus {
             // the task was cancelled before it started.
             return context.getString(R.string.warning_task_cancelled);
         } else {
-            return context.getString(R.string.error_unexpected_error)
+            return context.getString(R.string.error_unknown_long)
                    + ' ' + exception.getLocalizedMessage();
         }
     }
@@ -139,13 +139,13 @@ public class GrStatus {
                 return context.getString(R.string.warning_book_not_found);
 
             case FAILED_NETWORK_UNAVAILABLE:
-                return context.getString(R.string.error_please_connect_to_internet);
+                return context.getString(R.string.error_network_please_connect);
             case FAILED_IO_EXCEPTION:
-                return context.getString(R.string.error_site_access_failed,
+                return context.getString(R.string.error_network_site_access_failed,
                                          context.getString(R.string.site_goodreads));
             case FAILED_UNEXPECTED_EXCEPTION:
             default:
-                return context.getString(R.string.error_unexpected_error);
+                return context.getString(R.string.error_unknown_long);
 
         }
     }

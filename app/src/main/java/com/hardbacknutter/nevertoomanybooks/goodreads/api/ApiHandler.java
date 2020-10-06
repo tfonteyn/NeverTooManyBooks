@@ -248,8 +248,9 @@ public abstract class ApiHandler {
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 request.disconnect();
-                throw new Http404Exception(mAppContext.getString(R.string.error_site_access_failed),
-                                           request.getURL());
+                throw new Http404Exception(
+                        mAppContext.getString(R.string.error_network_site_access_failed),
+                        request.getURL());
 
             default:
                 request.disconnect();
@@ -338,8 +339,9 @@ public abstract class ApiHandler {
 
             case HttpURLConnection.HTTP_NOT_FOUND:
                 request.disconnect();
-                throw new Http404Exception(mAppContext.getString(R.string.error_site_access_failed),
-                                           request.getURL());
+                throw new Http404Exception(
+                        mAppContext.getString(R.string.error_network_site_access_failed),
+                        request.getURL());
 
             default:
                 request.disconnect();

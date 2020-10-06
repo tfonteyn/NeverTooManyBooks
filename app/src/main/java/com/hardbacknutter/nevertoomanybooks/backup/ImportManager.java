@@ -106,7 +106,7 @@ public class ImportManager
         String msg = null;
 
         if (e instanceof InvalidArchiveException) {
-            msg = context.getString(R.string.error_import_invalid_archive);
+            msg = context.getString(R.string.error_import_file_not_supported);
 
         } else if (e instanceof ImportException) {
             msg = e.getLocalizedMessage();
@@ -119,7 +119,7 @@ public class ImportManager
 
         // generic unknown message
         if (msg == null || msg.isEmpty()) {
-            msg = context.getString(R.string.error_unexpected_error);
+            msg = context.getString(R.string.error_unknown_long);
         }
 
         return msg;

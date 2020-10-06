@@ -135,7 +135,7 @@ public final class NetworkUtils {
 
         if (!isNetworkAvailable(context)) {
             throw new NetworkUnavailableException(
-                    context.getString(R.string.error_please_connect_to_internet));
+                    context.getString(R.string.error_network_please_connect));
         }
 
         final String url = urlStr.toLowerCase(Locale.ROOT);

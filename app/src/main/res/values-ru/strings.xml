@@ -92,29 +92,29 @@
     <string name="error_authorization_failed">Авторизация не удалась</string>
     <string name="error_auto_toc_population_failed">Автоматическое заполнение названий не удалось</string>
     <string name="error_backup_failed">Резервное копирование не удалось</string>
-    <string name="error_cannot_import">Выбранный файл не может быть импортирован.</string>
-    <string name="error_csv_column_is_blank">Столбец %1$s в строке %2$d пуст</string>
+    <string name="error_import_file_not_supported">Выбранный файл не может быть импортирован.</string>
+    <string name="error_import_csv_column_is_blank">Столбец %1$s в строке %2$d пуст</string>
     <string name="error_email_failed">Не удалось отправить электронное письмо.</string>
     <string name="error_google_play_store_missing">Google Play Store не установлен</string>
     <string name="error_if_the_problem_persists">Если проблема не устранена, обратитесь в службу поддержки через опцию «%1$s» внизу страницы настроек.</string>
-    <string name="error_import_csv_file_must_contain_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
+    <string name="error_import_csv_missing_columns_x">Файл должен содержать столбец с одним из следующих имён: %1$s</string>
     <string name="error_import_failed">Импорт не удался.</string>
-    <string name="error_import_invalid_archive">Выбранный файл не распознан.</string>
-    <string name="error_please_connect_to_internet">Подключитесь к Интернету.</string>
+    <string name="error_import_file_not_recognized">Выбранный файл не распознан.</string>
+    <string name="error_network_please_connect">Подключитесь к Интернету.</string>
     <string name="error_network_io">Не удалось подключиться к серверу. Повторите попытку позже.</string>
     <string name="error_network_timeout">Время ожидания соединения с сервером истекло.</string>
     <string name="error_no_image_editor">Редактор изображений не найден</string>
     <string name="X_error_not_available">%1$s недоступен</string>
     <string name="error_search_failed_network">Пожалуйста, откройте «Настройки» и проверьте настройки сети и поиска на сайте.\nТакже проверьте настройки сети вашего устройства</string>
     <string name="error_search_x_failed_y">Поиск по %1$s не удался: %2$s</string>
-    <string name="error_site_access_failed">При доступе к %1$s возникла проблема с сетью. Пожалуйста, проверьте, работает ли веб-сайт, и если проблема не устранена, обратитесь в службу поддержки.</string>
+    <string name="error_network_site_access_failed">При доступе к %1$s возникла проблема с сетью. Пожалуйста, проверьте, работает ли веб-сайт, и если проблема не устранена, обратитесь в службу поддержки.</string>
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
     <string name="error_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
     <string name="error_storage_no_space_left">Недостаточно места</string>
     <string name="error_storage_not_accessible">Хранение недоступно: %1$s</string>
     <string name="error_storage_not_readable">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
-    <string name="error_unexpected_error">Случилась неожиданная ошибка, пожалуйста, отошлите детали в поддержку, используя меню «Настройки» из Главного меню</string>
+    <string name="error_unknown_long">Случилась неожиданная ошибка, пожалуйста, отошлите детали в поддержку, используя меню «Настройки» из Главного меню</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
     <string name="fab_add_book_by_barcode_scan">Сканировать штрих-код</string>
     <string name="fab_add_book_by_internet_search">Поиск в Интернете</string>
@@ -619,7 +619,7 @@
     <string name="vldt_non_blank_required">Требуется не пустое значение</string>
     <string name="confirm_rebuild_fts">Данные поискового индекса будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
     <string name="confirm_rebuild_index">Индексы будут перестроены при перезапуске приложения. Вы уверены что хотите продолжить ?</string>
-    <string name="error_site_has_problems">На сайте есть проблемы.</string>
+    <string name="error_network_site_has_problems">На сайте есть проблемы.</string>
     <string name="hint_empty_day">(День не назначен)</string>
     <string name="hint_empty_year">(Год не указан)</string>
     <string name="lbl_all_bookshelves">Все книжные полки</string>
@@ -663,7 +663,7 @@
     <string name="statick">статический</string>
     <string name="action_validate">проверять</string>
     <string name="action_select">Выбрать</string>
-    <string name="error_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Строка слишком длинная (строка=%1$d, длина=%2$d)</string>
     <string name="action_clear_all_data">Удалить все данные</string>
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="confirm_clear_all_data">ЭТО УДАЛЯЕТ ВСЕ ДАННЫЕ!\n ЭТО НЕ МОЖЕТ БЫТЬ ОТМЕНЕНО, кроме восстановления из предыдущей резервной копии!\n\n Вы уверены что хотите продолжить ?</string>

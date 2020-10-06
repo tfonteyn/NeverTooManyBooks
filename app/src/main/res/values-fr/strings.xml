@@ -94,29 +94,29 @@
     <string name="error_authorization_failed">L\'autorisation à échouée</string>
     <string name="error_auto_toc_population_failed">La recherche automatique des titres a échoué.</string>
     <string name="error_backup_failed">Sauvegarde échouée</string>
-    <string name="error_cannot_import">Le fichier sélectionné ne peut pas être importé.</string>
-    <string name="error_csv_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
+    <string name="error_import_file_not_supported">Le fichier sélectionné ne peut pas être importé.</string>
+    <string name="error_import_csv_column_is_blank">La colonne %1$s est vide à la ligne %2$d</string>
     <string name="error_email_failed">L\'envoi de l\'e-mail a échoué.</string>
     <string name="error_google_play_store_missing">Google Play Store n\'est pas installé</string>
     <string name="error_if_the_problem_persists">Si le problème persiste, contactez le support technique via l\'option «%1$s» en bas de la page de paramètres.</string>
-    <string name="error_import_csv_file_must_contain_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
+    <string name="error_import_csv_missing_columns_x">Le fichier doit contenir au moins une des colonnes suivantes : %1$s</string>
     <string name="error_import_failed">Restauration échouée</string>
-    <string name="error_import_invalid_archive">Le fichier sélectionné n\'est pas reconnu.</string>
-    <string name="error_please_connect_to_internet">Connectez-vous à Internet.</string>
+    <string name="error_import_file_not_recognized">Le fichier sélectionné n\'est pas reconnu.</string>
+    <string name="error_network_please_connect">Connectez-vous à Internet.</string>
     <string name="error_network_io">Impossible d\'établir une communication avec le serveur. Veuillez réessayer ultérieurement.</string>
     <string name="error_network_timeout">Délai de connexion au serveur dépassé.</string>
     <string name="error_no_image_editor">Aucun éditeur d\'image trouvé</string>
     <string name="X_error_not_available">%1$s indisponible</string>
     <string name="error_search_failed_network">Ouvrez les paramètres et vérifiez les préférences de votre réseau et de votre site de recherche.\nVérifiez également les paramètres réseau de votre appareil</string>
     <string name="error_search_x_failed_y">Échec de la recherche sur %1$s : %2$s</string>
-    <string name="error_site_access_failed">Un problème de réseau s\'est produit lors de l\'accès à %1$s. Veuillez vérifier si le site Web fonctionne et si le problème persiste, veuillez contacter le support.</string>
+    <string name="error_network_site_access_failed">Un problème de réseau s\'est produit lors de l\'accès à %1$s. Veuillez vérifier si le site Web fonctionne et si le problème persiste, veuillez contacter le support.</string>
     <string name="error_site_authentication_failed">L\'authentification %1$s a échoué</string>
     <string name="error_site_authorization_failed">Autorisation %1$s en erreur.</string>
     <string name="error_storage_no_space_left">Stockage insuffisant disponible</string>
     <string name="error_storage_not_accessible">Stockage non accessible: %1$s</string>
     <string name="error_storage_not_readable">Veuillez vérifier que le stockage est accessible.</string>
     <string name="error_storage_not_writable">Veuillez vérifier que le stockage est accessible en écriture et qu\'il dispose d\'un espace suffisant.</string>
-    <string name="error_unexpected_error">Une erreur inattendue s\'est produite. Merci d\'envoyer les détails au support par l\'option «Admin» du menu principal.</string>
+    <string name="error_unknown_long">Une erreur inattendue s\'est produite. Merci d\'envoyer les détails au support par l\'option «Admin» du menu principal.</string>
     <string name="error_unknown">Une erreur inconnue s\'est produite</string>
     <string name="fab_add_book_by_barcode_scan">Scanner le code barre</string>
     <string name="fab_add_book_by_internet_search">Chercher sur Internet</string>
@@ -628,7 +628,7 @@
     <string name="vldt_non_blank_required">Valeur non vide attendue</string>
     <string name="confirm_rebuild_fts">Les données de l\'index de recherche seront reconstruites au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
     <string name="confirm_rebuild_index">Les index seront reconstruits au redémarrage de l\'application. Es-tu sur de vouloir continuer ?</string>
-    <string name="error_site_has_problems">Le site Web a des problèmes.</string>
+    <string name="error_network_site_has_problems">Le site Web a des problèmes.</string>
     <string name="hint_empty_day">(Jour non défini)</string>
     <string name="hint_empty_year">(Année non définie)</string>
     <string name="lbl_all_bookshelves">Toutes les bibliothèques</string>
@@ -671,7 +671,7 @@
     <string name="dynamic">Dynamique</string>
     <string name="statick">Statique</string>
     <string name="action_select">Sélectionner</string>
-    <string name="error_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
+    <string name="error_import_csv_line_to_long">La ligne est trop longue (ligne=%1$d, longueur=%2$d)</string>
     <string name="action_clear_all_data">Supprimer toutes les données</string>
     <string name="pt_line_spacing">Interligne</string>
     <string name="confirm_clear_all_data">CELA SUPPRIMERA TOUTES LES DONNÉES!\n Sauf en restaurant à partir d\'une sauvegarde précédente, CECI NE PEUT PAS ÊTRE ANNULÉ!\n\n Es-tu sur de vouloir continuer ?</string>

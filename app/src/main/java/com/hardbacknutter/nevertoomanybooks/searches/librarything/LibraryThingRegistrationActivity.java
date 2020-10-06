@@ -64,7 +64,7 @@ public class LibraryThingRegistrationActivity
         mValidateKeyTask = new ViewModelProvider(this).get(ValidateKeyTask.class);
         mValidateKeyTask.onFailure().observe(this, message -> {
             if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), getString(R.string.error_site_access_failed,
+                Snackbar.make(mVb.getRoot(), getString(R.string.error_network_site_access_failed,
                                                        getString(R.string.site_library_thing)),
                               Snackbar.LENGTH_LONG).show();
             }
@@ -79,7 +79,7 @@ public class LibraryThingRegistrationActivity
             if (message.isNewEvent()) {
                 final String msg = message.result != null
                                    ? getString(message.result)
-                                   : getString(R.string.error_site_access_failed,
+                                   : getString(R.string.error_network_site_access_failed,
                                                getString(R.string.site_library_thing));
                 Snackbar.make(mVb.getRoot(), msg, Snackbar.LENGTH_LONG).show();
             }

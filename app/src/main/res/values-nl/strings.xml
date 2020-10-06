@@ -95,29 +95,29 @@
     <string name="error_authorization_failed">Autorisatie mislukt</string>
     <string name="error_auto_toc_population_failed">Automatisch titels invullen mislukt</string>
     <string name="error_backup_failed">Back-up mislukt</string>
-    <string name="error_cannot_import">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
-    <string name="error_csv_column_is_blank">Kolom %1$s is leeg op lijn %2$d</string>
+    <string name="error_import_file_not_supported">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
+    <string name="error_import_csv_column_is_blank">Kolom %1$s is leeg op lijn %2$d</string>
     <string name="error_email_failed">Het verzenden van de e-mail is mislukt.</string>
     <string name="error_google_play_store_missing">Google Play Store is niet geïnstalleerd</string>
     <string name="error_if_the_problem_persists">Als het probleem zich blijft voordoen, neem contact op met de ondersteuning via de „%1$s”-optie onderaan de instellingenpagina.</string>
-    <string name="error_import_csv_file_must_contain_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
+    <string name="error_import_csv_missing_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
     <string name="error_import_failed">Import mislukt.</string>
-    <string name="error_import_invalid_archive">Het geselecteerde bestand is niet herkend.</string>
-    <string name="error_please_connect_to_internet">Maak verbinding met internet.</string>
+    <string name="error_import_file_not_recognized">Het geselecteerde bestand is niet herkend.</string>
+    <string name="error_network_please_connect">Maak verbinding met internet.</string>
     <string name="error_network_io">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
     <string name="error_network_timeout">Er is een time-out voor de serververbinding opgetreden.</string>
     <string name="error_no_image_editor">Geen foto-editor gevonden</string>
     <string name="X_error_not_available">%1$s is niet beschikbaar</string>
     <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren.\nControleer ook de netwerkinstellingen van uw apparaat</string>
     <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
-    <string name="error_site_access_failed">Er was een netwerkprobleem terwijl je probeerde toegang te krijgen tot %1$s. Controleer of de website in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning.</string>
+    <string name="error_network_site_access_failed">Er was een netwerkprobleem terwijl je probeerde toegang te krijgen tot %1$s. Controleer of de website in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning.</string>
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
     <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar</string>
     <string name="error_storage_not_accessible">Opslag niet toegankelijk: %1$s</string>
     <string name="error_storage_not_readable">Controleer aub of opslag toegankelijk is.</string>
     <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
-    <string name="error_unexpected_error">Er is een onverwachte fout opgetreden. Zend ons aub de details via de „Admin” optie in het hoofdmenu.</string>
+    <string name="error_unknown_long">Er is een onverwachte fout opgetreden. Zend ons aub de details via de „Admin” optie in het hoofdmenu.</string>
     <string name="error_unknown">Er is een onbekende fout opgetreden</string>
     <string name="fab_add_book_by_barcode_scan">Scan barcode</string>
     <string name="fab_add_book_by_internet_search">Internet doorzoeken</string>
@@ -630,7 +630,7 @@
     <string name="vldt_non_blank_required">Veld mag niet leeg zijn</string>
     <string name="confirm_rebuild_fts">De zoekindexgegevens worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
     <string name="confirm_rebuild_index">De indexen worden opnieuw opgebouwd wanneer de app opnieuw wordt opgestart. Weet je zeker dat je door wilt gaan ?</string>
-    <string name="error_site_has_problems">De website heeft problemen.</string>
+    <string name="error_network_site_has_problems">De website heeft problemen.</string>
     <string name="lbl_all_bookshelves">Alle boekenplanken</string>
     <string name="btn_more_ellipsis">Meer…</string>
     <string name="lbl_toc_multiple_authors">Meerdere auteurs</string>
@@ -668,7 +668,7 @@
     <string name="dynamic">Dynamisch</string>
     <string name="statick">Statisch</string>
     <string name="action_select">Selecteren</string>
-    <string name="error_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
+    <string name="error_import_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
     <string name="action_clear_all_data">Verwijder alle gegevens</string>
     <string name="pt_line_spacing">Regelafstand</string>
     <string name="confirm_clear_all_data">DIT ZAL ALLE GEGEVENS VERWIJDEREN!\n Behalve door te herstellen vanaf een vorige back-up, KAN DIT NIET ONGEDAAN WORDEN!\n\n Weet je zeker dat je door wilt gaan ?</string>

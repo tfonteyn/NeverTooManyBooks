@@ -108,53 +108,24 @@
     <!-- ========== General error messages ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="error_unexpected_error">An unexpected error has occurred, please send the details to support via the “Admin” page from the main menu.</string>
     <string name="error_if_the_problem_persists">If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
 
-    <string name="error_unknown">An unknown error occurred.</string>
-    <!-- [VERIFIED] -->
-    <string name="error_please_connect_to_internet">Please connect to the internet.</string>
 
+    <string name="error_unknown">An unknown error occurred.</string>
+    <string name="error_unknown_long">An unexpected error has occurred, please send the details to support via the “Admin” page from the main menu.</string>
+
+
+    <!-- [VERIFIED] -->
+    <string name="error_network_please_connect">Please connect to the internet.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
     <string name="error_network_io">Couldn\'t communicate with the server. Try again later.</string>
     <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
     <string name="error_network_timeout">The connection to the server timed out.</string>
-
-    <string name="error_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
-
-    <string name="error_email_failed">Failed to send the email.</string>
-    <string name="error_google_play_store_missing">Google Play Store is not installed.</string>
-
-
+    <string name="error_network_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
     <!-- A website did respond to a request, but the response was not valid.
          We report to the user that the site is not working as expected. -->
-    <string name="error_site_has_problems">The website is not working as expected.</string>
+    <string name="error_network_site_has_problems">The website is not working as expected.</string>
 
-    <!-- A search on a specific website failed, with the specified reason.
-         param 1: site name; param 2: message
-      -->
-    <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s.</string>
-
-    <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
-
-    <string name="error_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
-    <string name="error_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
-
-    <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
-
-    <string name="error_no_image_editor">No image editor found.</string>
-
-    <!-- The user selected a file to import that was not recognised as a valid archive. -->
-    <string name="error_import_invalid_archive">The file selected is not recognized.</string>
-    <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
-    <string name="error_cannot_import">The selected file cannot be imported.</string>
-
-    <!-- generic backup failure -->
-    <string name="error_backup_failed">Backup Failed.</string>
-    <!-- generic import failure -->
-    <string name="error_import_failed">Import failed.</string>
-    <!-- Displayed when a CSV import fails -->
-    <string name="error_import_csv_file_must_contain_columns_x">File must contain a column with one of the following names: %1$s</string>
 
     <!-- Displayed when any read operation from Shared Storage fails -->
     <string name="error_storage_not_readable">Please check that storage is accessible.</string>
@@ -165,7 +136,34 @@
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->
     <string name="error_storage_no_space_left">Insufficient storage available.</string>
 
+
+    <!-- generic backup failure -->
+    <string name="error_backup_failed">Backup Failed.</string>
+    <!-- generic import failure -->
+    <string name="error_import_failed">Import failed.</string>
+    <!-- The user selected a file to import that was not recognised as a valid archive. -->
+    <string name="error_import_file_not_recognized">The file selected is not recognized.</string>
+    <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
+    <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
+    <!-- Displayed when a CSV import fails -->
+    <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
+    <string name="error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
+    <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
+
+
+    <!-- A search on a specific website failed, with the specified reason.
+         param 1: site name; param 2: message
+      -->
+    <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s.</string>
+
+    <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
+
+
+    <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
+    <string name="error_no_image_editor">No image editor found.</string>
     <string name="error_bad_scanner">It looks like your existing barcode scanner app is not compatible with &APP_NAME;.</string>
+    <string name="error_email_failed">Failed to send the email.</string>
+    <string name="error_google_play_store_missing">Google Play Store is not installed.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
@@ -188,6 +186,7 @@
 
     <!-- Explanatory note associated with import options not available with older archives. -->
     <string name="warning_import_old_archive">This option is not supported for older archive versions.</string>
+
 
     <string name="warning_book_not_found">Unable to find the specified book.</string>
 
@@ -1465,7 +1464,12 @@
     <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_xml">XML export (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
-    <string name="lbl_archive_format_xml_info">All data in XML format. XML is export only, no import.</string>
+    <string name="lbl_archive_format_xml_info">All data in XML format.\nXML is for export only, no import.</string>
+
+    <!-- Text in a spinner dropdown. Must be fairly short. -->
+    <string name="lbl_archive_type_db">Database export (%1$s)</string>
+    <!-- Explanatory note for 'lbl_archive_type_xml' -->
+    <string name="lbl_archive_format_db_info">The full database (no covers).\nThis is for export only, no import.</string>
 
     <!-- 'export books' option. -->
     <string name="lbl_export_option_books_since_last_full_backup">
@@ -1584,5 +1588,8 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+
+
+    <string name="lbl_database">Database</string>
 
 </resources>

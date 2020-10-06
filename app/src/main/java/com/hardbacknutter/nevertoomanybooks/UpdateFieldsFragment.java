@@ -154,7 +154,7 @@ public class UpdateFieldsFragment
         // Warn the user, but don't abort.
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            Snackbar.make(mVb.getRoot(), R.string.error_please_connect_to_internet,
+            Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
     }
@@ -286,7 +286,7 @@ public class UpdateFieldsFragment
 
         //noinspection ConstantConditions
         if (!NetworkUtils.isNetworkAvailable(getContext())) {
-            Snackbar.make(mVb.getRoot(), R.string.error_please_connect_to_internet,
+            Snackbar.make(mVb.getRoot(), R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
             return;
         }
@@ -359,7 +359,7 @@ public class UpdateFieldsFragment
             msg = message.result.getLocalizedMessage();
         }
         if (msg == null) {
-            msg = getString(R.string.error_unexpected_error);
+            msg = getString(R.string.error_unknown_long);
         }
 
         //noinspection ConstantConditions
