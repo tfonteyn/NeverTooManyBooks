@@ -392,7 +392,7 @@ public class ExportManager
             // parcel to the epoch
             dest.writeLong(mFromUtcDateTime.toInstant(ZoneOffset.UTC).toEpochMilli());
         } else {
-            dest.writeInt(0);
+            dest.writeLong(0);
         }
         dest.writeParcelable(mUri, flags);
         dest.writeParcelable(mResults, flags);
