@@ -62,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
@@ -197,7 +196,7 @@ public class SearchCoordinator
         @Override
         public void onFinished(@NonNull final FinishedMessage<Bundle> message) {
             // sanity check
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             synchronized (mSearchResults) {
                 mSearchResults.put(message.taskId, message.result);
             }
@@ -682,7 +681,7 @@ public class SearchCoordinator
                 && mTitleSearchText.isEmpty()
                 && mIsbnSearchText.isEmpty()
                 && (mExternalIdSearchText == null || mExternalIdSearchText.size() == 0)) {
-                throw new IllegalArgumentException("empty criteria");
+                throw new SanityCheck.MissingValueException("empty criteria");
             }
         }
 

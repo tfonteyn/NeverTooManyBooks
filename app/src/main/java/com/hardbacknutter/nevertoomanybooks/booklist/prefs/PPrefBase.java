@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 public abstract class PPrefBase<T>
         implements PPref<T> {
 
+    static final String NULL_NON_PERSISTED_VALUE = "NonPersistedValue";
     /**
      * The SharedPreferences references for the BooklistStyle this preference belongs to.
      * This can be the global SharedPreferences if this is the global/default BooklistStyle.

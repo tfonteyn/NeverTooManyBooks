@@ -128,7 +128,7 @@ public class WrappedMaterialDatePicker<S>
             OnResultListener.sendResult(mPicker, mRequestKey, mFieldIds, start, end);
 
         } else {
-            throw new IllegalStateException(selection.toString());
+            throw new IllegalArgumentException(selection.toString());
         }
     }
 

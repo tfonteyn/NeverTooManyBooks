@@ -30,6 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 public class FinishedMessage<Result>
         implements LiveDataEvent {
 
+    public static final String MISSING_TASK_RESULTS = "message.result";
+
     /** {@link LiveDataEvent}. */
     private boolean mHasBeenHandled;
 

@@ -31,7 +31,6 @@ import java.util.LinkedHashSet;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -54,18 +53,16 @@ public class SearchEditionsTask
     /**
      * Start the task.
      *
-     * @param isbnStr to search for, <strong>must</strong> be valid.
+     * @param validIsbn to search for, <strong>must</strong> be valid.
      */
     @UiThread
-    public void startTask(@NonNull final String isbnStr) {
+    public void startTask(@NonNull final String validIsbn) {
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
-            if (!ISBN.isValidIsbn(isbnStr)) {
-                throw new IllegalStateException(ErrorMsg.INVALID_ISBN);
-            }
+            ISBN.requireValidIsbn(validIsbn);
         }
 
-        mIsbn = isbnStr;
+        mIsbn = validIsbn;
 
         execute(R.id.TASK_ID_SEARCH_EDITIONS);
     }

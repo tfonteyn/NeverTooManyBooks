@@ -61,9 +61,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLoc
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
@@ -107,7 +107,7 @@ public class Booklist
     private static final String _ORDER_BY_ = " ORDER BY ";
 
     /** Log tag. */
-    private static final String TAG = "Booklist";
+    public static final String TAG = "Booklist";
     /**
      * Counter for Booklist ID's. Only increment.
      * Used to create unique table names etc... see {@link #mInstanceId}.
@@ -368,7 +368,7 @@ public class Booklist
                     break;
 
                 default:
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + mRebuildState);
+                    throw new UnexpectedValueException(mRebuildState);
             }
 
             mSyncedDb.setTransactionSuccessful();
@@ -699,7 +699,7 @@ public class Booklist
                 findAndSetListPosition(node);
                 return node;
             } else {
-                throw new IllegalStateException("rowId not found: " + rowId);
+                throw new IllegalArgumentException("rowId not found: " + rowId);
             }
         }
     }

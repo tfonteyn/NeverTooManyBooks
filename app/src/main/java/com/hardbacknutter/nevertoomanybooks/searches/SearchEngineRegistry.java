@@ -174,8 +174,8 @@ public final class SearchEngineRegistry {
          */
         public Config(@NonNull final Class<? extends SearchEngine> searchEngineClass) {
             mClass = searchEngineClass;
-            mSEConfig = Objects.requireNonNull(searchEngineClass.getAnnotation(
-                    SearchEngine.Configuration.class));
+            mSEConfig = Objects.requireNonNull(
+                    searchEngineClass.getAnnotation(SearchEngine.Configuration.class));
 
             if ("en".equals(mSEConfig.lang()) && mSEConfig.country().isEmpty()) {
                 // be lenient...

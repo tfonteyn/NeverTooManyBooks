@@ -42,7 +42,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -72,8 +71,8 @@ public class StyleGroupsActivity
         super.onCreate(savedInstanceState);
 
         mModel = new ViewModelProvider(this).get(StyleGroupsModel.class);
-        Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS);
-        mModel.init(this, getIntent().getExtras());
+        mModel.init(this, Objects.requireNonNull(getIntent().getExtras(),
+                                                 "getIntent().getExtras()"));
 
         // The View for the list.
         final RecyclerView listView = findViewById(R.id.groupList);

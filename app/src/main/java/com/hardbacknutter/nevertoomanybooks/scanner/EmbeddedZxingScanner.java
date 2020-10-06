@@ -34,7 +34,6 @@ import com.google.zxing.integration.android.IntentResult;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * This object will start the embedded Zxing compatible scanner and extract the data
@@ -66,7 +65,7 @@ public final class EmbeddedZxingScanner
     @Override
     public String getBarcode(@NonNull final Context context,
                              @Nullable final Intent data) {
-        Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+        Objects.requireNonNull(data, "data");
         // resultCode: we wouldn't be here unless it was RESULT_OK
         IntentResult result = IntentIntegrator.parseActivityResult(Activity.RESULT_OK, data);
 

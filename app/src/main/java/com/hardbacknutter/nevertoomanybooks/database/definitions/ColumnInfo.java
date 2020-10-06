@@ -28,8 +28,8 @@ import androidx.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Column info support. This is useful for auto-building queries from maps that have
@@ -194,7 +194,7 @@ public class ColumnInfo {
                 default:
                     // note that "" (empty) type is treated as TEXT.
                     // But we really should not allow our columns to be defined without a type.
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + columnType);
+                    throw new UnexpectedValueException(columnType);
             }
         }
     }

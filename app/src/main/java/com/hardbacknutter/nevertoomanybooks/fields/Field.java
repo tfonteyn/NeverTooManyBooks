@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 
@@ -197,8 +196,7 @@ public class Field<T, V extends View> {
                               final boolean hideEmptyFields,
                               final boolean keepHiddenFieldsHidden) {
 
-        final View view = mFieldViewAccessor.getView();
-        Objects.requireNonNull(view);
+        final View view = Objects.requireNonNull(mFieldViewAccessor.getView());
 
         if ((view instanceof ImageView)
             || (view.getVisibility() == View.GONE && keepHiddenFieldsHidden)) {
@@ -229,8 +227,7 @@ public class Field<T, V extends View> {
      */
     public void setVisibility(@NonNull final View parent,
                               final int visibility) {
-        final View view = mFieldViewAccessor.getView();
-        Objects.requireNonNull(view);
+        final View view = Objects.requireNonNull(mFieldViewAccessor.getView());
         view.setVisibility(visibility);
         setRelatedFieldsVisibility(parent, visibility);
     }
@@ -348,7 +345,7 @@ public class Field<T, V extends View> {
                 if (mAfterFieldChangeListener != null) {
                     // The REFERENT being dead is however not fine, so log this in debug.
                     // flw: this message should never be seen!
-                    Log.w(TAG, "onChanged|" + ErrorMsg.LISTENER_WAS_DEAD);
+                    Log.w(TAG, "onChanged|mAfterFieldChangeListener was dead");
                 }
             }
         }

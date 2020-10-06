@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Based on the pic2shop client code at github, this object will start pic2shop and
@@ -85,7 +84,7 @@ public class Pic2ShopScanner
     @Nullable
     public String getBarcode(@NonNull final Context context,
                              @Nullable final Intent data) {
-        Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+        Objects.requireNonNull(data, "data");
 
         String barcode = data.getStringExtra(BARCODE);
         // only for Pro:

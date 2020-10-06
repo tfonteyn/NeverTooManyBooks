@@ -34,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -123,8 +122,7 @@ public class EditTocEntryDialogFragment
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
         mBookId = args.getLong(BKEY_BOOK_ID);
-        mTocEntry = args.getParcelable(BKEY_TOC_ENTRY);
-        Objects.requireNonNull(mTocEntry, ErrorMsg.NULL_TOC_ENTRY);
+        mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), "BKEY_TOC_ENTRY");
 
         if (savedInstanceState == null) {
             mTitle = mTocEntry.getTitle();

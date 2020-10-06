@@ -31,12 +31,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -120,7 +120,7 @@ public class DbArchiveReader
             }
         }
 
-        throw new InvalidArchiveException(ErrorMsg.IMPORT_NOT_SUPPORTED);
+        throw new InvalidArchiveException(ArchiveContainer.IMPORT_NOT_SUPPORTED);
     }
 
     @NonNull
@@ -138,7 +138,7 @@ public class DbArchiveReader
             }
         }
 
-        throw new InvalidArchiveException(ErrorMsg.IMPORT_NOT_SUPPORTED);
+        throw new InvalidArchiveException(ArchiveContainer.IMPORT_NOT_SUPPORTED);
     }
 
     @Override

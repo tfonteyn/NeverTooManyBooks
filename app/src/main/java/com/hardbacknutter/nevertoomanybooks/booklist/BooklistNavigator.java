@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Provide a simple interface to move around from book to book in the {@link Booklist} table.
@@ -173,7 +173,7 @@ public class BooklistNavigator
                 return movePrev();
         }
 
-        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + direction);
+        throw new UnexpectedValueException(String.valueOf(direction));
     }
 
     /**

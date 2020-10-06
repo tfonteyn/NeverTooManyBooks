@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -123,10 +122,11 @@ public class CropImageActivity
             }
         }
 
-        final Bundle args = getIntent().getExtras();
-        Objects.requireNonNull(args, ErrorMsg.NULL_EXTRAS);
+        final Bundle args = Objects.requireNonNull(getIntent().getExtras(),
+                                                   "getIntent().getExtras()");
 
-        final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE));
+        final String srcPath = Objects.requireNonNull(args.getString(BKEY_SOURCE),
+                                                      "srcPath");
         final Uri uri = Uri.fromFile(new File(srcPath));
 
         Bitmap bitmap = null;
@@ -139,7 +139,8 @@ public class CropImageActivity
         }
 
         if (bitmap != null) {
-            final String dstPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION));
+            final String dstPath = Objects.requireNonNull(args.getString(BKEY_DESTINATION),
+                                                          "dstPath");
             mDestinationUri = Uri.fromFile(new File(dstPath));
 
             mVb.coverImage0.initCropView(bitmap);

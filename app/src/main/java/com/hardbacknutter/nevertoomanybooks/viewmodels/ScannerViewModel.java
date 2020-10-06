@@ -91,7 +91,7 @@ public class ScannerViewModel
         extends ViewModel {
 
     /** Log tag. */
-    private static final String TAG = "ScannerViewModel";
+    public static final String TAG = "ScannerViewModel";
 
     /** wait for the scanner; milliseconds. */
     private static final long SCANNER_WAIT = 1_000;

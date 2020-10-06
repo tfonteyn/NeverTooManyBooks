@@ -276,7 +276,7 @@ public enum AppDir {
      */
     public long getFreeSpace(@NonNull final Context context) {
         try {
-            StatFs stat = new StatFs(get(context).getPath());
+            final StatFs stat = new StatFs(get(context).getPath());
             return stat.getAvailableBlocksLong() * stat.getBlockSizeLong();
 
         } catch (@NonNull final IllegalArgumentException | ExternalStorageException e) {

@@ -49,7 +49,6 @@ import org.jsoup.select.Elements;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -61,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -497,7 +497,7 @@ public class StripInfoSearchEngine
                 }
                 break;
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + cIdx);
+                throw new UnexpectedValueException(cIdx);
         }
 
         final ArrayList<String> imageList = new ArrayList<>();
@@ -550,7 +550,7 @@ public class StripInfoSearchEngine
                 coverElement = document.selectFirst("a.belowImage");
                 break;
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + cIdx);
+                throw new UnexpectedValueException(cIdx);
         }
 
         final ArrayList<String> imageList = new ArrayList<>();

@@ -163,7 +163,7 @@ public class BooklistNode {
     }
 
     public int getListPosition() {
-        return Objects.requireNonNull(mListPosition);
+        return Objects.requireNonNull(mListPosition, "mListPosition");
     }
 
     void setListPosition(final int listPosition) {

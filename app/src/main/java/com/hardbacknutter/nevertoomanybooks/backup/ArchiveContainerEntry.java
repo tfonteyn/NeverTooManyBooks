@@ -24,9 +24,9 @@ import androidx.annotation.NonNull;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Supported archive entry types.
@@ -167,7 +167,7 @@ public enum ArchiveContainerEntry {
             case LegacyBooklistStyles:
             case Unknown:
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + name());
+                throw new UnexpectedValueException(name());
         }
     }
 }

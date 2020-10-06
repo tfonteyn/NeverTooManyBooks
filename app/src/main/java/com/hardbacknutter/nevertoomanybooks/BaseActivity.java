@@ -54,7 +54,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
@@ -489,7 +488,7 @@ public abstract class BaseActivity
                 }
 
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     if (data.getBooleanExtra(BKEY_PREF_CHANGE_REQUIRES_RECREATE, false)) {
                         sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
                     }

@@ -143,7 +143,8 @@ public abstract class BaseDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         @NonNull
-        final Toolbar toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar));
+        final Toolbar toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar),
+                                                       "R.id.toolbar");
         toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
         MenuHandler.prepareMenuSelectButton(toolbar.getMenu(), this::onToolbarMenuItemClick);

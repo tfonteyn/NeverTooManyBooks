@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
@@ -162,8 +161,10 @@ public class CoverBrowserDialogFragment
         mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
 
         // LayoutManager is set in the layout xml
-        final LinearLayoutManager galleryLM = (LinearLayoutManager) mVb.gallery.getLayoutManager();
-        Objects.requireNonNull(galleryLM, ErrorMsg.NULL_LAYOUT_MANAGER);
+        final LinearLayoutManager galleryLM = Objects.requireNonNull(
+                (LinearLayoutManager) mVb.gallery.getLayoutManager(),
+                "Missing LinearLayoutManager");
+
         //noinspection ConstantConditions
         mVb.gallery.addItemDecoration(
                 new DividerItemDecoration(getContext(), galleryLM.getOrientation()));
@@ -234,7 +235,7 @@ public class CoverBrowserDialogFragment
      * @param message the result of {@link SearchEditionsTask}
      */
     private void showGallery(@NonNull final FinishedMessage<Collection<String>> message) {
-        Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
+        Objects.requireNonNull(mGalleryAdapter, "mGalleryAdapter");
 
         if (message.isNewEvent()) {
             if (message.result == null || message.result.isEmpty()) {
@@ -263,7 +264,7 @@ public class CoverBrowserDialogFragment
      * @param imageFileInfo to display
      */
     private void setGalleryImage(@Nullable final ImageFileInfo imageFileInfo) {
-        Objects.requireNonNull(mGalleryAdapter, ErrorMsg.NULL_GALLERY_ADAPTER);
+        Objects.requireNonNull(mGalleryAdapter, "mGalleryAdapter");
 
         final int editionIndex;
         if (imageFileInfo != null) {

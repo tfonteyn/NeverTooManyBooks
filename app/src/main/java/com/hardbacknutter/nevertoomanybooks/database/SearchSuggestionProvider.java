@@ -29,7 +29,7 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class SearchSuggestionProvider
         extends ContentProvider {
@@ -112,7 +112,7 @@ public class SearchSuggestionProvider
             }
         }
 
-        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + uri);
+        throw new UnexpectedValueException(String.valueOf(uri));
     }
 
     @Nullable

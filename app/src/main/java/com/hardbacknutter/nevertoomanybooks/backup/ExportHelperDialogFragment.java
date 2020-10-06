@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class ExportHelperDialogFragment
         extends OptionsDialogBase<ExportManager> {
@@ -210,7 +210,7 @@ public class ExportHelperDialogFragment
                         break;
 
                     default:
-                        throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + position);
+                        throw new UnexpectedValueException(position);
                 }
             }
 

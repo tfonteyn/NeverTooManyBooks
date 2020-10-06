@@ -23,8 +23,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Collection;
+import java.util.Map;
 
 public class SanityCheck {
+
 
     @SuppressWarnings("UnusedReturnValue")
     public static long requireValue(final long value,
@@ -55,13 +57,20 @@ public class SanityCheck {
         return s;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
+    @NonNull
+    public static <T extends Map<?, ?>> T requireValue(@Nullable final T s,
+                                                       @Nullable final String message) {
+        if (s == null || s.isEmpty()) {
+            throw new MissingValueException(message);
+        }
+        return s;
+    }
+
     public static class MissingValueException
             extends NullPointerException {
 
-        private static final long serialVersionUID = 902891333141380801L;
-
-        MissingValueException() {
-        }
+        private static final long serialVersionUID = 4418513924924222373L;
 
         public MissingValueException(@Nullable final String s) {
             super(s);

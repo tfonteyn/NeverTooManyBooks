@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -117,7 +116,8 @@ public class PreferredStylesActivity
         }
 
         mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        mModel.init(this, Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS));
+        mModel.init(this, Objects.requireNonNull(getIntent().getExtras(),
+                                                 "getIntent().getExtras()"));
 
         mListView = findViewById(R.id.stylesList);
         mListView.addItemDecoration(new DividerItemDecoration(this, RecyclerView.VERTICAL));
@@ -171,7 +171,7 @@ public class PreferredStylesActivity
         switch (requestCode) {
             case RequestCode.EDIT_STYLE: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     // We get the ACTUAL style back.
                     // This style might be new (id==0) or already existing (id!=0).
                     @Nullable

@@ -27,7 +27,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.googlebooks.GoogleBooksSearchEngine;
@@ -39,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySear
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Manages the setup of {@link SearchEngine}'s.
@@ -240,7 +240,7 @@ public final class SearchSites {
             }
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + type);
+                throw new UnexpectedValueException(String.valueOf(type));
         }
     }
 

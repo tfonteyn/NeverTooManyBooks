@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.PreferredStylesMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public class PreferredStylesViewModel
         extends ViewModel {
@@ -74,8 +73,8 @@ public class PreferredStylesViewModel
             mDb = new DAO(TAG);
             mList = new ArrayList<>(BooklistStyle.getStyles(context, mDb, true).values());
 
-            mInitialStyleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
-            Objects.requireNonNull(mInitialStyleUuid, ErrorMsg.NULL_STYLE);
+            mInitialStyleUuid = Objects.requireNonNull(
+                    args.getString(BooklistStyle.BKEY_STYLE_UUID), "mInitialStyleUuid");
         }
     }
 

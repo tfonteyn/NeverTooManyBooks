@@ -30,6 +30,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
@@ -106,9 +107,8 @@ public class TableInfo {
                 allColumns.put(col.name.toLowerCase(mSystemLocale), col);
             }
         }
-        if (allColumns.isEmpty()) {
-            throw new IllegalStateException("Unable to get column details");
-        }
+
+        SanityCheck.requireValue(allColumns, "Unable to get column details");
         return allColumns;
     }
 

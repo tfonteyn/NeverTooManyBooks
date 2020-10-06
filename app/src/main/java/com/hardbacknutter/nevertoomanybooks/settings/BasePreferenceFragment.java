@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
@@ -414,7 +413,7 @@ public abstract class BasePreferenceFragment
 
             case REQ_PICK_FILE_FOR_EXPORT_DATABASE:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     final Uri uri = data.getData();
                     if (uri != null) {
                         @StringRes

@@ -191,8 +191,7 @@ public class ImportHelperDialogFragment
 
         public void init(@NonNull final Context context,
                          @NonNull final Bundle args) {
-            mHelper = args.getParcelable(BKEY_OPTIONS);
-            Objects.requireNonNull(mHelper);
+            mHelper = Objects.requireNonNull(args.getParcelable(BKEY_OPTIONS), "mHelper");
             try {
                 mInfo = mHelper.getInfo(context);
             } catch (@NonNull final IOException | InvalidArchiveException e) {

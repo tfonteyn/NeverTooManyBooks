@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 import static com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDBHelper.KEY_EVENT;
@@ -221,10 +222,7 @@ class QueueDAO
      */
     void enqueueTask(@NonNull final TQTask task,
                      @NonNull final String queueName) {
-        final long queueId = getQueueId(queueName);
-        if (queueId == 0) {
-            throw new IllegalArgumentException("Queue '" + queueName + "' does not exist");
-        }
+        final long queueId = SanityCheck.requireValue(getQueueId(queueName), queueName);
 
         final ContentValues cv = new ContentValues();
         cv.put(KEY_TASK, SerializationUtils.serializeObject(task));

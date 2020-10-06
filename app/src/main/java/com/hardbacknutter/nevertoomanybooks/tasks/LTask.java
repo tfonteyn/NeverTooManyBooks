@@ -33,7 +33,6 @@ import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -48,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 public abstract class LTask<Result>
         extends AsyncTask<Void, ProgressMessage, Result>
         implements Canceller {
+
+    private static final String LISTENER_WAS_DEAD = "Listener was dead";
 
     /** Log tag. */
     private static final String TAG = "LTask";
@@ -116,7 +117,7 @@ public abstract class LTask<Result>
             mTaskListener.get().onProgress(values[0]);
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "onProgressUpdate|" + ErrorMsg.LISTENER_WAS_DEAD);
+                Log.d(TAG, "onProgressUpdate|" + LISTENER_WAS_DEAD);
             }
         }
     }
@@ -136,7 +137,7 @@ public abstract class LTask<Result>
             mTaskListener.get().onCancelled(new FinishedMessage<>(mTaskId, result));
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "onCancelled|" + ErrorMsg.LISTENER_WAS_DEAD);
+                Log.d(TAG, "onCancelled|" + LISTENER_WAS_DEAD);
             }
         }
     }
@@ -152,7 +153,7 @@ public abstract class LTask<Result>
             }
         } else {
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "onPostExecute|" + ErrorMsg.LISTENER_WAS_DEAD);
+                Log.d(TAG, "onPostExecute|" + LISTENER_WAS_DEAD);
             }
         }
     }

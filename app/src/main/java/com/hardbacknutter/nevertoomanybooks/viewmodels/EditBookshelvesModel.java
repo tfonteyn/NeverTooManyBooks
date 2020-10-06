@@ -104,7 +104,7 @@ public class EditBookshelvesModel
 
     @NonNull
     public Bookshelf getBookshelf(final int position) {
-        return Objects.requireNonNull(mList.get(position));
+        return Objects.requireNonNull(mList.get(position), String.valueOf(position));
     }
 
     public int getSelectedPosition() {

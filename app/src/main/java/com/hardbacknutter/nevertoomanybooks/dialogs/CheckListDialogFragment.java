@@ -111,12 +111,12 @@ public class CheckListDialogFragment
                                       getString(R.string.action_edit));
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
-        mAllItems = args.getParcelableArrayList(BKEY_ALL);
-        Objects.requireNonNull(mAllItems, "mAllItems");
+        mAllItems = Objects.requireNonNull(args.getParcelableArrayList(BKEY_ALL),
+                                           "mAllItems");
 
         args = savedInstanceState != null ? savedInstanceState : args;
-        mSelectedItems = args.getParcelableArrayList(BKEY_SELECTED);
-        Objects.requireNonNull(mSelectedItems, "mSelectedItems");
+        mSelectedItems = Objects.requireNonNull(args.getParcelableArrayList(BKEY_SELECTED),
+                                                "mSelectedItems");
     }
 
     @NonNull

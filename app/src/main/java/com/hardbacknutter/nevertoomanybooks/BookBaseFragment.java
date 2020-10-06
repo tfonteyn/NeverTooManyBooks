@@ -48,7 +48,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -202,7 +201,7 @@ public abstract class BookBaseFragment
 
     private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
                 //noinspection ConstantConditions
                 mGrAuthTask.prompt(getContext());
@@ -383,7 +382,7 @@ public abstract class BookBaseFragment
         switch (requestCode) {
             case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
 
                     final long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
                     if (newId > 0) {

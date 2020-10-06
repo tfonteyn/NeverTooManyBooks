@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookField
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
@@ -240,11 +239,12 @@ public class StyleFragment
         switch (requestCode) {
             case RequestCode.EDIT_STYLE_GROUPS:
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     // replace the current style with the edited copy;
                     // do NOT save to the database yet/here
-                    mStyle = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
-                    Objects.requireNonNull(mStyle, ErrorMsg.NULL_STYLE);
+                    mStyle = Objects.requireNonNull(
+                            data.getParcelableExtra(BooklistStyle.BKEY_STYLE),
+                            "BKEY_STYLE");
 
                     mResultData.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
                     mResultData.putResultData(BooklistStyle.BKEY_STYLE, mStyle);

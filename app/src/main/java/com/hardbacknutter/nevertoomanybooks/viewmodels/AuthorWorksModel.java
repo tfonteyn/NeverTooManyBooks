@@ -35,13 +35,13 @@ import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class AuthorWorksModel
         extends ViewModel {
@@ -84,7 +84,7 @@ public class AuthorWorksModel
             final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             SanityCheck.requireValue(authorId, "authorId");
 
-            mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId));
+            mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId), String.valueOf(authorId));
 
             final long bookshelfId = args.getLong(DBDefinitions.KEY_FK_BOOKSHELF,
                                                   Bookshelf.ALL_BOOKS);
@@ -151,7 +151,7 @@ public class AuthorWorksModel
             success = mDb.deleteBook(context, work.getId());
 
         } else {
-            throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + work);
+            throw new UnexpectedValueException(String.valueOf(work));
         }
 
         if (success) {

@@ -48,9 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
@@ -269,7 +270,7 @@ final class BooklistBuilder {
                 break;
 
             default:
-                throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + mRebuildState);
+                throw new UnexpectedValueException(mRebuildState);
         }
 
         mSqlForInitialInsert =
@@ -293,9 +294,7 @@ final class BooklistBuilder {
     @NonNull
     TableDefinition build(final SynchronizedDb syncedDb) {
         if (BuildConfig.DEBUG /* always */) {
-            if (mSqlForInitialInsert == null) {
-                throw new IllegalStateException("preBuild() must be called first");
-            }
+            SanityCheck.requireValue(mSqlForInitialInsert, "preBuild() must be called first");
 
             if (!syncedDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
@@ -539,8 +538,10 @@ final class BooklistBuilder {
      */
     private void addGroup(@NonNull final BooklistGroup group) {
         // dev sanity check
-        if (group.getId() == BooklistGroup.BOOK) {
-            throw new IllegalArgumentException("Cannot group by Book");
+        if (BuildConfig.DEBUG /* always */) {
+            if (group.getId() == BooklistGroup.BOOK) {
+                throw new IllegalArgumentException("Cannot group by Book");
+            }
         }
 
         // Do this in 3 steps, allowing groups to override their parent (if any) group

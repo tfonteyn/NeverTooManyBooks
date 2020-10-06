@@ -59,7 +59,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -132,12 +131,12 @@ public class EditBookTocFragment
     private Integer mEditPosition;
     /** Listen for the results of the entry edit-dialog. */
     private final BookChangedListener mOnBookChangedListener = (bookId, fieldChanges, data) -> {
-        Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+        Objects.requireNonNull(data, "data");
 
         if ((fieldChanges & BookChangedListener.TOC_ENTRY) != 0) {
-            final TocEntry tocEntry = data
-                    .getParcelable(EditTocEntryDialogFragment.BKEY_TOC_ENTRY);
-            Objects.requireNonNull(tocEntry, ErrorMsg.NULL_TOC_ENTRY);
+            final TocEntry tocEntry = Objects.requireNonNull(
+                    data.getParcelable(EditTocEntryDialogFragment.BKEY_TOC_ENTRY),
+                    "BKEY_TOC_ENTRY");
             final boolean multipleAuthors = data
                     .getBoolean(EditTocEntryDialogFragment.BKEY_HAS_MULTIPLE_AUTHORS);
 
@@ -667,8 +666,8 @@ public class EditBookTocFragment
 
             final Bundle args = requireArguments();
             mRequestKey = args.getString(BKEY_REQUEST_KEY);
-            mTocEntries = args.getParcelableArrayList(Book.BKEY_TOC_LIST);
-            Objects.requireNonNull(mTocEntries, ErrorMsg.NULL_TOC_ENTRY);
+            mTocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
+                                                 "BKEY_TOC_LIST");
 
             mTocBitMask = args.getLong(DBDefinitions.KEY_TOC_BITMASK);
             mHasOtherEditions = args.getBoolean(BKEY_HAS_OTHER_EDITIONS, false);

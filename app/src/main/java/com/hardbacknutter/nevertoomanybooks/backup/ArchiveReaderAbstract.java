@@ -124,8 +124,8 @@ public abstract class ArchiveReaderAbstract
 
         try {
             // get the archive info; the helper will read it from the concrete archive.
-            final ArchiveInfo info = mHelper.getInfo(context);
-            Objects.requireNonNull(info);
+            final ArchiveInfo info = Objects.requireNonNull(mHelper.getInfo(context),
+                                                            "info");
             estimatedSteps += info.getBookCount();
             if (readCovers) {
                 if (info.hasCoverCount()) {

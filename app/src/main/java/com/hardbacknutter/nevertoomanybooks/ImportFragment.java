@@ -48,11 +48,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 public class ImportFragment
@@ -134,7 +134,7 @@ public class ImportFragment
             case RequestCode.IMPORT_PICK_URI: {
                 // The user selected a file to import from. Next step asks for the options.
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     final Uri uri = data.getData();
                     if (uri != null) {
                         importShowOptions(uri);
@@ -257,12 +257,12 @@ public class ImportFragment
                             .newInstance(RK_IMPORT_HELPER, helper)
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
                 } else {
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + container);
+                    throw new UnexpectedValueException(String.valueOf(container));
                 }
                 break;
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + container);
+                throw new UnexpectedValueException(String.valueOf(container));
         }
     }
 
@@ -270,8 +270,7 @@ public class ImportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            // sanity check
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_error)
@@ -308,8 +307,7 @@ public class ImportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            // sanity check
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             onImportFinished(R.string.progress_end_import_complete, message.result);
         }
     }

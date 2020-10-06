@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -69,6 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -212,7 +212,7 @@ public class CoverHandler {
             }
             showProgress(false);
             if (event.isNewEvent()) {
-                Objects.requireNonNull(event.result, ErrorMsg.NULL_TASK_RESULTS);
+                Objects.requireNonNull(event.result, FinishedMessage.MISSING_TASK_RESULTS);
                 onAfterTransform(event.result);
             }
         });
@@ -500,7 +500,7 @@ public class CoverHandler {
             case RequestCode.ACTION_GET_CONTENT:
             case RequestCode.CROP_IMAGE: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     final Uri uri = data.getData();
                     if (uri != null) {
                         File file = null;

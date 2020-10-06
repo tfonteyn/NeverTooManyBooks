@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -105,6 +104,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActiv
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -582,7 +582,7 @@ public class BooksOnBookshelf
                 break;
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + view);
+                throw new UnexpectedValueException(String.valueOf(view));
         }
     }
 
@@ -1236,7 +1236,7 @@ public class BooksOnBookshelf
 
             case RequestCode.NAV_PANEL_MANAGE_STYLES: {
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     // we get the UUID for the selected style back.
                     final String styleUuid = data.getStringExtra(BooklistStyle.BKEY_STYLE_UUID);
                     if (styleUuid != null) {
@@ -1254,7 +1254,7 @@ public class BooksOnBookshelf
                 // We get here from the StylePickerDialogFragment (i.e. the style menu)
                 // when the user choose to EDIT a style.
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     // We get the ACTUAL style back.
                     // This style might be new (id==0) or already existing (id!=0).
                     @Nullable
@@ -1697,7 +1697,7 @@ public class BooksOnBookshelf
     private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
                 mGrAuthTask.prompt(this);
             } else {
@@ -1737,7 +1737,7 @@ public class BooksOnBookshelf
                     break;
 
                 default:
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "id=" + taskId);
+                    throw new UnexpectedValueException("id=" + taskId);
             }
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
@@ -1752,7 +1752,7 @@ public class BooksOnBookshelf
                 break;
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "taskId=" + taskId);
+                throw new UnexpectedValueException("taskId=" + taskId);
         }
         return dialog;
     }

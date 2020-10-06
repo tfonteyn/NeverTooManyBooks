@@ -35,12 +35,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -194,7 +196,7 @@ public class TableDefinition {
 
     /**
      * Syntax sugar; meant for recreating {@link TableType#Temporary} tables.
-     *
+     * <p>
      * If the table has no references to it, this method can also
      * be used on {@link TableType#Standard}.
      * <p>
@@ -660,11 +662,9 @@ public class TableDefinition {
             fk = mParents.get(to);
         }
 
-        if (fk == null) {
-            // Don't use Objects.requireNonNull() ... message is evaluated before null test.
-            throw new IllegalStateException("No foreign key between `" + mName
-                                            + "` and `" + to.getName() + '`');
-        }
+        // note the use of a Supplier
+        Objects.requireNonNull(fk, () ->
+                "No foreign key between `" + mName + "` and `" + to.getName() + '`');
 
         return fk.getPredicate();
     }
@@ -769,7 +769,7 @@ public class TableDefinition {
     @NonNull
     private String def(@NonNull final String name,
                        final boolean withConstraints,
-                       final boolean withTableReferences,
+                       @SuppressWarnings("SameParameterValue") final boolean withTableReferences,
                        @SuppressWarnings("SameParameterValue") final boolean ifNotExists) {
 
         final StringBuilder sql = new StringBuilder("CREATE")
@@ -950,9 +950,7 @@ public class TableDefinition {
             } else {
                 final List<Domain> pk = mParent.getPrimaryKey();
                 if (BuildConfig.DEBUG /* always */) {
-                    if (pk.isEmpty()) {
-                        throw new IllegalStateException("no primary key on table: " + mParent);
-                    }
+                    SanityCheck.requireValue(pk, "no primary key on table: " + mParent);
                 }
                 final StringBuilder sql = new StringBuilder();
                 for (int i = 0; i < pk.size(); i++) {

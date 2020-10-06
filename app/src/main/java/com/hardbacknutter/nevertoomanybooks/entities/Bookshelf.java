@@ -58,6 +58,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 public class Bookshelf
         implements Parcelable, Entity {
 
+    /** Log tag. */
+    public static final String TAG = "Bookshelf";
+
     /** {@link Parcelable}. */
     public static final Creator<Bookshelf> CREATOR = new Creator<Bookshelf>() {
         @Override
@@ -301,7 +304,7 @@ public class Bookshelf
      * @param db      Database Access
      * @param style   to set; must already exist (id != 0)
      *
-     * @throws IllegalArgumentException if the style is 'new' (id==0)
+     * @throws SanityCheck.MissingValueException if the style is 'new' (id==0)
      */
     public void setStyle(@NonNull final Context context,
                          @NonNull final DAO db,

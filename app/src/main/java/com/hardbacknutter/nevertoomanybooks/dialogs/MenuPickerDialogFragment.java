@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Show context menu on a view.
@@ -339,8 +338,8 @@ public class MenuPickerDialogFragment
         @Nullable
         Drawable getIcon(@NonNull final Context context) {
             if (mIcon == null && mIconId != 0) {
-                mIcon = context.getDrawable(mIconId);
-                Objects.requireNonNull(mIcon, ErrorMsg.NULL_DRAWABLE);
+                mIcon = Objects.requireNonNull(context.getDrawable(mIconId),
+                                               String.valueOf(mIconId));
             }
             return mIcon;
         }
@@ -356,8 +355,7 @@ public class MenuPickerDialogFragment
 
         @NonNull
         List<Pick> getSubMenu() {
-            Objects.requireNonNull(mSubMenu, "mSubMenu");
-            return mSubMenu;
+            return Objects.requireNonNull(mSubMenu, "mSubMenu");
         }
 
         @Override

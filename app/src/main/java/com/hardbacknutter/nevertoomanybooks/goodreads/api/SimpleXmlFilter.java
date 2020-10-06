@@ -438,8 +438,7 @@ public class SimpleXmlFilter {
 
         @NonNull
         Bundle popBundle() {
-            Objects.requireNonNull(mLocalBundle, "Bundle not pushed!");
-            Bundle b = mLocalBundle;
+            final Bundle b = Objects.requireNonNull(mLocalBundle, "Bundle not pushed!");
             mLocalBundle = null;
             return b;
         }

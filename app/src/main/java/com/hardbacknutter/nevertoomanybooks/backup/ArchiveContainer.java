@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Archive formats (partially) supported.
@@ -52,6 +52,8 @@ public enum ArchiveContainer {
 
     /** The archive we tried to read from was not identified. */
     Unknown;
+
+    public static final String IMPORT_NOT_SUPPORTED = "Type not supported here";
 
     /**
      * Constructor. Determine which type the input file is.
@@ -141,7 +143,7 @@ public enum ArchiveContainer {
 
             case Unknown:
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + name());
+                throw new UnexpectedValueException(name());
         }
     }
 }

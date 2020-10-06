@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -278,7 +277,7 @@ public class BooksOnBookshelfModel
      * @return the position that reflects the current bookshelf.
      */
     public int getSelectedBookshelfSpinnerPosition(@NonNull final Context context) {
-        Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
+        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
 
         final List<Bookshelf> bookshelfList = getBookshelfList();
         // Not strictly needed, but guard against future changes
@@ -316,7 +315,7 @@ public class BooksOnBookshelfModel
 
     @NonNull
     public Bookshelf getSelectedBookshelf() {
-        Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
+        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
         return mBookshelf;
     }
 
@@ -359,7 +358,7 @@ public class BooksOnBookshelfModel
      */
     @NonNull
     public BooklistStyle getCurrentStyle(@NonNull final Context context) {
-        Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
+        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
         return mBookshelf.getStyle(context, mDb);
     }
 
@@ -385,7 +384,7 @@ public class BooksOnBookshelfModel
      */
     public void onStyleChanged(@NonNull final Context context,
                                @NonNull final String uuid) {
-        Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
+        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
 
         // Always validate first
         final BooklistStyle style = BooklistStyle.getStyleOrDefault(context, mDb, uuid);
@@ -411,7 +410,7 @@ public class BooksOnBookshelfModel
                                  final int position,
                                  final int topViewOffset) {
         if (mListHasBeenLoaded) {
-            Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
+            Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
             mBookshelf.setTopListPosition(context, mDb, position, topViewOffset);
         }
     }
@@ -498,7 +497,7 @@ public class BooksOnBookshelfModel
             return null;
         }
 
-        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        Objects.requireNonNull(mBooklist, Booklist.TAG);
         final long bookId = mDesiredCentralBookId;
         mDesiredCentralBookId = 0;
 
@@ -519,26 +518,26 @@ public class BooksOnBookshelfModel
     public BooklistNode setNode(final long nodeRowId,
                                 @BooklistNode.NextState final int nextState,
                                 final int relativeChildLevel) {
-        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        Objects.requireNonNull(mBooklist, Booklist.TAG);
         return mBooklist.setNode(nodeRowId, nextState, relativeChildLevel);
     }
 
     public void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                final boolean expand) {
-        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        Objects.requireNonNull(mBooklist, Booklist.TAG);
         mBooklist.setAllNodes(topLevel, expand);
     }
 
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
-        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        Objects.requireNonNull(mBooklist, Booklist.TAG);
         return mBooklist.getCurrentBookIdList();
     }
 
     @Nullable
     public BooklistNode getNextBookWithoutCover(@NonNull final Context context,
                                                 final long rowId) {
-        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        Objects.requireNonNull(mBooklist, Booklist.TAG);
         return mBooklist.getNextBookWithoutCover(context, rowId);
     }
 
@@ -679,7 +678,7 @@ public class BooksOnBookshelfModel
 
     @NonNull
     public String getBooklistTableName() {
-        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        Objects.requireNonNull(mBooklist, Booklist.TAG);
         return mBooklist.getListTableName();
     }
 
@@ -699,7 +698,7 @@ public class BooksOnBookshelfModel
     @Override
     @WorkerThread
     protected List<BooklistNode> doWork(@NonNull final Context context) {
-        Objects.requireNonNull(mBookshelf, ErrorMsg.NULL_BOOKSHELF);
+        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
 
         Thread.currentThread().setName(TAG);
 
@@ -884,7 +883,7 @@ public class BooksOnBookshelfModel
      */
     @NonNull
     public BooklistCursor getNewListCursor() {
-        Objects.requireNonNull(mBooklist, ErrorMsg.NULL_BOOK_LIST);
+        Objects.requireNonNull(mBooklist, Booklist.TAG);
         return mBooklist.getNewListCursor();
     }
 

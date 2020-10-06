@@ -49,11 +49,11 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.validators.LongValidator
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.NonBlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.OrValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.ValidatorException;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Class to manage a set of related data.
@@ -210,8 +210,7 @@ public class DataManager
                     break;
 
                 default:
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
-                                                       + cursor.getType(i));
+                    throw new UnexpectedValueException(cursor.getType(i));
             }
         }
     }
@@ -222,7 +221,7 @@ public class DataManager
      * @param key   Key of data object
      * @param value to store
      *
-     * @throws IllegalArgumentException for unsupported types.
+     * @throws UnexpectedValueException for unsupported types.
      */
     public void put(@NonNull final String key,
                     @Nullable final Object value) {
@@ -257,8 +256,7 @@ public class DataManager
             putNull(key);
 
         } else {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
-                                               + "put|key=`" + key + "`|value=" + value);
+            throw new UnexpectedValueException("put|key=`" + key + "`|value=" + value);
         }
     }
 
@@ -661,8 +659,9 @@ public class DataManager
         for (Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
             final String key = entry.getKey();
             try {
-                entry.getValue().validate(context, this, key,
-                                          Objects.requireNonNull(mValidatorErrorIdMap.get(key)));
+                entry.getValue()
+                     .validate(context, this, key,
+                               Objects.requireNonNull(mValidatorErrorIdMap.get(key), key));
             } catch (@NonNull final ValidatorException e) {
                 mValidationExceptions.add(e);
                 isOk = false;

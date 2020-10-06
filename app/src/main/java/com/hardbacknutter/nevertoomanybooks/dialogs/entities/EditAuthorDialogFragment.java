@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -108,8 +107,8 @@ public class EditAuthorDialogFragment
 
         final Bundle args = requireArguments();
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
-        mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
-        Objects.requireNonNull(mAuthor, ErrorMsg.NULL_AUTHOR);
+        mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR),
+                                         "KEY_FK_AUTHOR");
 
         if (savedInstanceState == null) {
             mFamilyName = mAuthor.getFamilyName();

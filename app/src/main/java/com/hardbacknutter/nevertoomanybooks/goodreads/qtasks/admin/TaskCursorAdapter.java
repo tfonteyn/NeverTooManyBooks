@@ -30,7 +30,6 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.BaseTQTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.LegacyTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQCursorAdapter;
@@ -58,8 +57,8 @@ public class TaskCursorAdapter
     @Override
     @NonNull
     public TQTaskCursorRow getItem(final int position) {
-        final Cursor cursor = (Cursor) super.getItem(position);
-        Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
+        final Cursor cursor = Objects.requireNonNull((Cursor) super.getItem(position),
+                                                     String.valueOf(position));
         return new TQTaskCursorRow(cursor);
     }
 

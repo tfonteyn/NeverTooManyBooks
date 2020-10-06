@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBaseFragment;
@@ -106,8 +105,8 @@ public class StylePickerDialogFragment
 
         final Bundle args = requireArguments();
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
-        mCurrentStyleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
-        Objects.requireNonNull(mCurrentStyleUuid, ErrorMsg.NULL_STYLE);
+        mCurrentStyleUuid = Objects.requireNonNull(args.getString(BooklistStyle.BKEY_STYLE_UUID),
+                                                   "BKEY_STYLE_UUID");
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
     }
 

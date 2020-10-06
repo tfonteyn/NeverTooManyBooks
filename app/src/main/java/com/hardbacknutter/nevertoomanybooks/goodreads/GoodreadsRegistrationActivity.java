@@ -35,7 +35,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsRegisterBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -114,7 +113,7 @@ public class GoodreadsRegistrationActivity
 
     private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
                 mGrAuthTask.prompt(this);
             } else {

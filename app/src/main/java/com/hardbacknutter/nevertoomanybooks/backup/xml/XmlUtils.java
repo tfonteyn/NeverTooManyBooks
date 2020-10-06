@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Minimalist builder for XML tags and attributes.
@@ -197,8 +197,7 @@ final class XmlUtils {
                                Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
 
         } else {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
-                                               + value.getClass().getCanonicalName());
+            throw new UnexpectedValueException(value.getClass().getCanonicalName());
         }
     }
 

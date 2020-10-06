@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveExportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -131,7 +130,7 @@ public class ExportFragment
             case RequestCode.EXPORT_PICK_URI: {
                 // The user selected a file to backup to. Next step starts the export task.
                 if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, ErrorMsg.NULL_INTENT_DATA);
+                    Objects.requireNonNull(data, "data");
                     final Uri uri = data.getData();
                     if (uri != null) {
                         mArchiveExportTask.startExport(uri);
@@ -223,8 +222,7 @@ public class ExportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            // sanity check
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_EXCEPTION);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_error)
@@ -256,8 +254,7 @@ public class ExportFragment
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            // sanity check
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
 
             //noinspection ConstantConditions
             final MaterialAlertDialogBuilder dialogBuilder =

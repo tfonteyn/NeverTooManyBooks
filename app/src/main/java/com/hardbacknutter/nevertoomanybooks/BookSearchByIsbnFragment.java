@@ -43,7 +43,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
@@ -183,7 +182,7 @@ public class BookSearchByIsbnFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         switch (item.getItemId()) {
             case R.id.MENU_SCAN_BARCODE: {
-                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 return true;
             }
@@ -221,7 +220,7 @@ public class BookSearchByIsbnFragment
         super.onSearchCancelled();
 
         if (mInScanMode) {
-            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+            Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
             mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         }
     }
@@ -241,13 +240,13 @@ public class BookSearchByIsbnFragment
                 super.onActivityResult(requestCode, resultCode, data);
                 // go scan next book until the user cancels scanning.
                 if (mInScanMode) {
-                    Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                    Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                     mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 }
                 break;
             }
             case RequestCode.SCAN_BARCODE: {
-                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
                     if (BuildConfig.DEBUG) {
@@ -283,13 +282,13 @@ public class BookSearchByIsbnFragment
                     // init the scanner if it was changed.
                     if (data.getBooleanExtra(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED,
                                              false)) {
-                        Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                        Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                         mScannerModel.resetScanner();
                     }
                 }
 
                 if (mInScanMode) {
-                    Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                    Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                     mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                 }
                 break;
@@ -297,7 +296,7 @@ public class BookSearchByIsbnFragment
             case RequestCode.UPDATE_GOOGLE_PLAY_SERVICES: {
                 if (mInScanMode) {
                     if (resultCode == Activity.RESULT_OK) {
-                        Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                        Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                         // go scan next book until the user cancels scanning.
                         mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                     } else {
@@ -332,7 +331,7 @@ public class BookSearchByIsbnFragment
         // not a valid code ?
         if (!code.isValid(strictIsbn)) {
             if (mInScanMode) {
-                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 //noinspection ConstantConditions
                 mScannerModel.onInvalidBeep(getContext());
             }
@@ -340,7 +339,7 @@ public class BookSearchByIsbnFragment
             showError(mVb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code, userEntry));
 
             if (mInScanMode) {
-                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
             }
             return;
@@ -350,7 +349,7 @@ public class BookSearchByIsbnFragment
         mCoordinator.setIsbnSearchText(code.asText());
 
         if (strictIsbn && mInScanMode) {
-            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+            Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
             //noinspection ConstantConditions
             mScannerModel.onValidBeep(getContext());
         }
@@ -373,7 +372,7 @@ public class BookSearchByIsbnFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> {
                         onClearPreviousSearchCriteria();
                         if (mInScanMode) {
-                            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                            Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                             mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
                         }
                     })

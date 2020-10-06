@@ -58,7 +58,6 @@ import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryWithAuthorBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -123,8 +122,8 @@ public class BookDetailsFragment
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
             if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-                String loanee = data.getString(DBDefinitions.KEY_LOANEE);
-                Objects.requireNonNull(loanee, ErrorMsg.NULL_INTENT_DATA);
+                final String loanee = Objects.requireNonNull(
+                        data.getString(DBDefinitions.KEY_LOANEE), "loanee");
                 // the db was already updated, just update the book to avoid a reload.
                 mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
                 populateLendToField(loanee);
@@ -260,7 +259,7 @@ public class BookDetailsFragment
 
     private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
                 //noinspection ConstantConditions
                 mGrAuthTask.prompt(getContext());

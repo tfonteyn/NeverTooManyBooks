@@ -48,7 +48,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -153,7 +152,7 @@ public class EditBookFieldsFragment
         });
 
         mVb.btnScan.setOnClickListener(v -> {
-            Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+            Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
             mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
         });
 
@@ -359,7 +358,7 @@ public class EditBookFieldsFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case RequestCode.SCAN_BARCODE: {
-                Objects.requireNonNull(mScannerModel, ErrorMsg.NULL_SCANNER_MODEL);
+                Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
                     if (BuildConfig.DEBUG) {

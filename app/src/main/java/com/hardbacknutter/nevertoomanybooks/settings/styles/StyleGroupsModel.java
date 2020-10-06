@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 public class StyleGroupsModel
         extends ViewModel {
@@ -54,8 +53,8 @@ public class StyleGroupsModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (mStyle == null) {
-            mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
-            Objects.requireNonNull(mStyle, ErrorMsg.NULL_STYLE);
+            mStyle = Objects.requireNonNull(args.getParcelable(BooklistStyle.BKEY_STYLE),
+                                            "BKEY_STYLE");
 
             final Groups styleGroups = mStyle.getGroups();
 
@@ -76,12 +75,12 @@ public class StyleGroupsModel
 
     @NonNull
     public BooklistStyle getStyle() {
-        return Objects.requireNonNull(mStyle);
+        return Objects.requireNonNull(mStyle, "mStyle");
     }
 
     @NonNull
     public ArrayList<GroupWrapper> getList() {
-        return Objects.requireNonNull(mList);
+        return Objects.requireNonNull(mList, "mList");
     }
 
     /**

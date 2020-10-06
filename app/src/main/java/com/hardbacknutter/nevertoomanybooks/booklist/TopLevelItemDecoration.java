@@ -31,9 +31,8 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Arrays;
 import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Stripped down copy of {@link DividerItemDecoration} which only draws the decorator
@@ -55,7 +54,7 @@ public class TopLevelItemDecoration
      */
     public TopLevelItemDecoration(@NonNull final Context context) {
         final TypedArray ta = context.getTheme().obtainStyledAttributes(ATTRS);
-        mDivider = Objects.requireNonNull(ta.getDrawable(0), ErrorMsg.NULL_DRAWABLE);
+        mDivider = Objects.requireNonNull(ta.getDrawable(0), Arrays.toString(ATTRS));
         ta.recycle();
     }
 

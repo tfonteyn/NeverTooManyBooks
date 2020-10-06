@@ -53,7 +53,7 @@ public class ArchiveExportTask
 
     @NonNull
     public String getDefaultUriName(@NonNull final Context context) {
-        Objects.requireNonNull(mHelper);
+        Objects.requireNonNull(mHelper, "mHelper");
         return Exporter.getNamePrefix(context) + mHelper.getArchiveContainer().getFileExt();
     }
 
@@ -64,7 +64,7 @@ public class ArchiveExportTask
      * @param uri to write to
      */
     public void startExport(@NonNull final Uri uri) {
-        Objects.requireNonNull(mHelper);
+        Objects.requireNonNull(mHelper, "mHelper");
         mHelper.setUri(uri);
         execute(R.id.TASK_ID_EXPORT);
     }

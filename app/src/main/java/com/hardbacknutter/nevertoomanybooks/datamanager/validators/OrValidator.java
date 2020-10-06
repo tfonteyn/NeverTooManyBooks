@@ -65,7 +65,6 @@ public class OrValidator
             }
         }
         // satisfy lint / paranoia; it should NEVER be null
-        Objects.requireNonNull(lastException);
-        throw lastException;
+        throw Objects.requireNonNull(lastException);
     }
 }

@@ -965,7 +965,7 @@ public class XmlExporter
         @Override
         @NonNull
         public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(mBundle.get(key));
+            return Objects.requireNonNull(mBundle.get(key), key);
         }
     }
 
@@ -1043,7 +1043,7 @@ public class XmlExporter
         @Override
         @NonNull
         public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(mMap.get(key));
+            return Objects.requireNonNull(mMap.get(key), key);
         }
     }
 
@@ -1131,7 +1131,7 @@ public class XmlExporter
         @NonNull
         @Override
         public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(currentStylePPrefs.get(key)).getValue(mContext);
+            return Objects.requireNonNull(currentStylePPrefs.get(key), key).getValue(mContext);
         }
     }
 }

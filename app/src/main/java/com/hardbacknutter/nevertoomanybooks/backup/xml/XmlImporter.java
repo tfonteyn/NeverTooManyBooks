@@ -75,11 +75,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.PreferredStylesMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -541,8 +542,7 @@ public class XmlImporter
                                  break;
 
                              default:
-                                 throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
-                                                                    + mTag.type);
+                                 throw new UnexpectedValueException(mTag.type);
                          }
 
                      } catch (@NonNull final NumberFormatException e) {
@@ -604,17 +604,17 @@ public class XmlImporter
 
         default void putFloat(@NonNull final K key,
                               final float value) {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "Float, key=" + key);
+            throw new UnexpectedValueException("Float, key=" + key);
         }
 
         default void putLong(@NonNull final K key,
                              final long value) {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "Long, key=" + key);
+            throw new UnexpectedValueException("Long, key=" + key);
         }
 
         default void putDouble(@NonNull final K key,
                                final double value) {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "Double, key=" + key);
+            throw new UnexpectedValueException("Double, key=" + key);
         }
 
         /**
@@ -623,7 +623,7 @@ public class XmlImporter
          */
         default void putStringSet(@NonNull final K key,
                                   @NonNull final Collection<String> value) {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + "StringSet, key=" + key);
+            throw new UnexpectedValueException("StringSet, key=" + key);
         }
 
         /**
@@ -632,14 +632,12 @@ public class XmlImporter
          */
         default void putStringList(@NonNull final K key,
                                    @NonNull final Collection<String> value) {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
-                                               + "StringList, key=" + key);
+            throw new UnexpectedValueException("StringList, key=" + key);
         }
 
         default void putSerializable(@NonNull final K key,
                                      @NonNull final Serializable value) {
-            throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE
-                                               + "Serializable, key=" + key);
+            throw new UnexpectedValueException("Serializable, key=" + key);
         }
     }
 
@@ -932,9 +930,8 @@ public class XmlImporter
         @Override
         public void startElement(final int version,
                                  @NonNull final TagInfo tag) {
-            if (tag.name.isEmpty()) {
-                throw new IllegalArgumentException();
-            }
+            SanityCheck.requireValue(tag.name, "tag.name");
+
             // create a new Style object. This will not have any groups assigned to it...
             mStyle = new BooklistStyle(mContext, tag.id, tag.name);
             //... and hence, the Style Preferences won't have any group Preferences either.

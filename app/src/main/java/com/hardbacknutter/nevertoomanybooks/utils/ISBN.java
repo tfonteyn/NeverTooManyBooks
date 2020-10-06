@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  */
 public class ISBN {
 
+    private static final String ERROR_INVALID_ISBN = "isbn must be valid";
 
     public static final int VALIDITY_NONE = 0;
     public static final int VALIDITY_LOOSE = 1;
@@ -337,6 +338,19 @@ public class ISBN {
             return false;
         }
         return new ISBN(isbnStr, true).isValid(true);
+    }
+
+    /**
+     * Check the validity of an ISBN string.
+     *
+     * @param isbnStr to check
+     *
+     * @throws IllegalStateException if invalid
+     */
+    public static void requireValidIsbn(@Nullable final String isbnStr) {
+        if (!isValidIsbn(isbnStr)) {
+            throw new IllegalStateException(ERROR_INVALID_ISBN);
+        }
     }
 
     /**

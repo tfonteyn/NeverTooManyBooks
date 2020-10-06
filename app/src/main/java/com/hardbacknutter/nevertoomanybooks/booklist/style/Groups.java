@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
@@ -110,17 +111,13 @@ public class Groups
      *
      * @return group
      *
-     * @throws IllegalArgumentException on bug
+     * @throws NullPointerException on bug
      */
     @NonNull
     public BooklistGroup getGroupByIdOrCrash(final int id) {
-        final BooklistGroup group = mGroupMap.get(id);
-        if (group == null) {
-            // Don't use a Objects.requireNonNull() ... message is evaluated before null test.
-            throw new IllegalArgumentException(
-                    "Group was NULL: id=" + id + ", " + this.toString());
-        }
-        return group;
+        // note the use of a Supplier
+        return Objects.requireNonNull(mGroupMap.get(id), ()
+                -> "Group was NULL: id=" + id + ", " + this.toString());
     }
 
     /**

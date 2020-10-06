@@ -45,7 +45,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -148,8 +147,7 @@ public abstract class BookSearchBaseFragment
     private void onSearchFinished(@NonNull final FinishedMessage<Bundle> message) {
         closeProgressDialog();
 
-        // sanity check
-        Objects.requireNonNull(message.result, ErrorMsg.NULL_TASK_RESULTS);
+        Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
 
         final String searchErrors = message.result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
         if (searchErrors != null) {

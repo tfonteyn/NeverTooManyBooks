@@ -65,7 +65,6 @@ public final class Options {
      */
     public static final int IS_SYNC = 1 << 16;
 
-
     /** DEBUG. */
     public static String toString(final int options) {
         final StringJoiner sj = new StringJoiner(",", "Options{", "}");

@@ -111,8 +111,7 @@ public final class QueueManager {
     @NonNull
     public static QueueManager getInstance() {
         // do not lazy initialize here. We want the QueueManager running at startup.
-        Objects.requireNonNull(sInstance, "create was not called?");
-        return sInstance;
+        return Objects.requireNonNull(sInstance, "create was not called?");
     }
 
     public void registerTaskListener(@NonNull final OnChangeListener listener) {

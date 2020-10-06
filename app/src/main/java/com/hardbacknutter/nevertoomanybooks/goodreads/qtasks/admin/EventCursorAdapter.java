@@ -31,7 +31,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.LegacyEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQCursorAdapter;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQEventCursorRow;
@@ -64,8 +63,8 @@ public class EventCursorAdapter
     @Override
     @NonNull
     public TQEventCursorRow getItem(final int position) {
-        final Cursor cursor = (Cursor) super.getItem(position);
-        Objects.requireNonNull(cursor, ErrorMsg.NULL_CURSOR);
+        final Cursor cursor = Objects.requireNonNull((Cursor) super.getItem(position),
+                                                     String.valueOf(position));
         return new TQEventCursorRow(cursor);
     }
 

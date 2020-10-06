@@ -44,7 +44,6 @@ import java.util.zip.CRC32;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -189,14 +188,14 @@ public final class FileUtils {
 
         final DocumentFile destinationFile = destDir.createFile(mimeType, file.getName());
         if (destinationFile == null) {
-            throw new IOException(ErrorMsg.NULL_OUTPUT_STREAM);
+            throw new IOException("Could not create file=" + file.getName());
         }
 
         final Uri destinationUri = destinationFile.getUri();
         try (InputStream is = new FileInputStream(file);
              OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
             if (os == null) {
-                throw new IOException(ErrorMsg.NULL_OUTPUT_STREAM);
+                throw new IOException("Could not resolve uri=" + destinationUri);
             }
             copy(is, os);
         }

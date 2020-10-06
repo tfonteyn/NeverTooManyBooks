@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -425,8 +424,8 @@ public class EditBookSeriesListDialogFragment
 
             final Bundle args = requireArguments();
             mRequestKey = args.getString(BKEY_REQUEST_KEY);
-            mSeries = args.getParcelable(DBDefinitions.KEY_FK_SERIES);
-            Objects.requireNonNull(mSeries, ErrorMsg.NULL_SERIES);
+            mSeries = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_SERIES),
+                                             "KEY_FK_SERIES");
 
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 

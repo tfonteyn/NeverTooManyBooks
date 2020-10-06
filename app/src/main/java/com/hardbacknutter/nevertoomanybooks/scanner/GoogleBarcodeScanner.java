@@ -112,7 +112,7 @@ public class GoogleBarcodeScanner
     @Override
     public String getBarcode(@NonNull final Context context,
                              @Nullable final Intent data) {
-        Objects.requireNonNull(mCameraHelper);
+        Objects.requireNonNull(mCameraHelper, "mCameraHelper");
         final File file = mCameraHelper.getFile(context);
         if (file != null) {
             final Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());

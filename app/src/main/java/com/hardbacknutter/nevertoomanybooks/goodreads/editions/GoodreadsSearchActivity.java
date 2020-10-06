@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsSearchBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
@@ -108,7 +107,8 @@ public class GoodreadsSearchActivity
                            getString(R.string.site_goodreads)));
 
         mGrSearchTask = new ViewModelProvider(this).get(GrSearchTask.class);
-        mGrSearchTask.init(Objects.requireNonNull(getIntent().getExtras(), ErrorMsg.NULL_EXTRAS),
+        mGrSearchTask.init(Objects.requireNonNull(getIntent().getExtras(),
+                                                  "getIntent().getExtras()"),
                            savedInstanceState);
         mGrSearchTask.onProgressUpdate().observe(this, message -> {
             if (message.text != null) {

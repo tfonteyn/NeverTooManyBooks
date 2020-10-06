@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -455,8 +454,8 @@ public class EditBookAuthorListDialogFragment
 
             final Bundle args = requireArguments();
             mRequestKey = args.getString(BKEY_REQUEST_KEY);
-            mAuthor = args.getParcelable(DBDefinitions.KEY_FK_AUTHOR);
-            Objects.requireNonNull(mAuthor, ErrorMsg.NULL_AUTHOR);
+            mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR),
+                                             "KEY_FK_AUTHOR");
 
             mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
 
@@ -468,8 +467,8 @@ public class EditBookAuthorListDialogFragment
             } else {
                 mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-                mIsComplete = savedInstanceState
-                        .getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, false);
+                mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+                                                            false);
                 mType = savedInstanceState.getInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             }
         }

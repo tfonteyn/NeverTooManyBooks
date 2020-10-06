@@ -48,8 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -187,8 +187,7 @@ public class ExportManager
      */
     @NonNull
     public Uri getUri() {
-        Objects.requireNonNull(mUri, ErrorMsg.NULL_URI);
-        return mUri;
+        return Objects.requireNonNull(mUri, "uri");
     }
 
     public void setUri(@NonNull final Uri uri) {
@@ -225,10 +224,8 @@ public class ExportManager
             throws InvalidArchiveException, IOException {
 
         // Validate the settings before going ahead.
-        if ((mOptions & MASK) == 0) {
-            throw new IllegalStateException(ErrorMsg.OPTIONS_NOT_SET);
-        }
-        Objects.requireNonNull(mUri, ErrorMsg.NULL_URI);
+        SanityCheck.requireValue(mOptions & MASK, "mOptions");
+        Objects.requireNonNull(mUri, "uri");
 
         if ((mOptions & Options.IS_SYNC) != 0) {
             mFromUtcDateTime = getLastFullBackupDate(context);
@@ -248,7 +245,7 @@ public class ExportManager
 
             case SqLiteDb:
             case Unknown:
-                throw new InvalidArchiveException(ErrorMsg.EXPORT_NOT_SUPPORTED);
+                throw new InvalidArchiveException(String.valueOf(getArchiveContainer()));
 
             case Zip:
             default:
@@ -273,8 +270,7 @@ public class ExportManager
 
     @NonNull
     public ExportResults getResults() {
-        Objects.requireNonNull(mResults);
-        return mResults;
+        return Objects.requireNonNull(mResults, "mResults");
     }
 
     public void setResults(@NonNull final ExportResults results) {

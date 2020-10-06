@@ -30,12 +30,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -92,7 +92,7 @@ public class BookSearchActivity
                 return;
 
             default:
-                throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + tag);
+                throw new UnexpectedValueException(tag);
         }
     }
 

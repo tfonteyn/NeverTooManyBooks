@@ -108,7 +108,7 @@ public class SearchOrderFragment
 
         //noinspection ConstantConditions
         mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
-        mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE));
+        mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), "BKEY_TYPE");
         mSiteList = mModel.getList(mType);
 
         //noinspection ConstantConditions

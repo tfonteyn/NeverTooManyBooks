@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
 public class ImportManager
@@ -213,9 +213,7 @@ public class ImportManager
             throws InvalidArchiveException, IOException {
 
         // Validate the settings before going ahead.
-        if ((mOptions & MASK) == 0) {
-            throw new IllegalStateException(ErrorMsg.OPTIONS_NOT_SET);
-        }
+        SanityCheck.requireValue(mOptions & MASK, "mOptions");
 
         final ArchiveReader reader;
         switch (getContainer(context)) {
@@ -235,14 +233,14 @@ public class ImportManager
                 if (BuildConfig.IMPORT_CALIBRE) {
                     reader = new DbArchiveReader(context, this);
                 } else {
-                    throw new InvalidArchiveException(ErrorMsg.IMPORT_NOT_SUPPORTED);
+                    throw new InvalidArchiveException(ArchiveContainer.IMPORT_NOT_SUPPORTED);
                 }
                 break;
 
             case Xml:
             case Unknown:
             default:
-                throw new InvalidArchiveException(ErrorMsg.IMPORT_NOT_SUPPORTED);
+                throw new InvalidArchiveException(ArchiveContainer.IMPORT_NOT_SUPPORTED);
         }
 
         reader.validate(context);
@@ -251,8 +249,7 @@ public class ImportManager
 
     @NonNull
     public ImportResults getResults() {
-        Objects.requireNonNull(mResults);
-        return mResults;
+        return Objects.requireNonNull(mResults, "mResults");
     }
 
     public void setResults(@NonNull final ImportResults results) {

@@ -54,9 +54,8 @@ public abstract class SearchEngineBase
     public SearchEngineBase(@NonNull final Context appContext) {
         mAppContext = appContext;
 
-        final SearchEngine.Configuration se = getClass().getAnnotation(
-                SearchEngine.Configuration.class);
-        Objects.requireNonNull(se);
+        final SearchEngine.Configuration se = Objects.requireNonNull(
+                getClass().getAnnotation(SearchEngine.Configuration.class));
         mId = se.id();
     }
 

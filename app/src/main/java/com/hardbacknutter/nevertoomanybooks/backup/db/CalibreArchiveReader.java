@@ -35,6 +35,7 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -168,7 +168,7 @@ class CalibreArchiveReader
             throws InvalidArchiveException {
         // Older versions might work, but no testing was done so we reject them.
         if (mCalibreDb.getVersion() < 23) {
-            throw new InvalidArchiveException(ErrorMsg.IMPORT_NOT_SUPPORTED);
+            throw new InvalidArchiveException(ArchiveContainer.IMPORT_NOT_SUPPORTED);
         }
     }
 

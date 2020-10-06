@@ -49,7 +49,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -62,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -303,7 +303,7 @@ public class AuthorWorksFragment
                         mResultData.putResultData(BookViewModel.BKEY_BOOK_DELETED, true);
                     });
         } else {
-            throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + work);
+            throw new UnexpectedValueException(String.valueOf(work));
         }
     }
 
@@ -348,7 +348,7 @@ public class AuthorWorksFragment
             startActivity(intent);
 
         } else {
-            throw new IllegalStateException(ErrorMsg.UNEXPECTED_VALUE + work);
+            throw new UnexpectedValueException(String.valueOf(work));
         }
     }
 
@@ -416,7 +416,7 @@ public class AuthorWorksFragment
                     itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
                     break;
                 default:
-                    throw new IllegalArgumentException(ErrorMsg.UNEXPECTED_VALUE + viewType);
+                    throw new UnexpectedValueException(viewType);
             }
 
             final Holder holder = new Holder(itemView);
@@ -443,8 +443,8 @@ public class AuthorWorksFragment
 
             // optional
             if (holder.authorView != null) {
-                final Author author = work.getPrimaryAuthor();
-                Objects.requireNonNull(author, ErrorMsg.NULL_AUTHOR);
+                final Author author = Objects.requireNonNull(work.getPrimaryAuthor(),
+                                                             "work.getPrimaryAuthor()");
                 holder.authorView.setText(author.getLabel(context));
             }
             // optional

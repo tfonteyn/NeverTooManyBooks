@@ -27,7 +27,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -75,9 +74,7 @@ class FetchImageTask
 
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
-            if (!ISBN.isValidIsbn(validIsbn)) {
-                throw new IllegalStateException(ErrorMsg.INVALID_ISBN);
-            }
+            ISBN.requireValidIsbn(validIsbn);
         }
 
         mIsbn = validIsbn;

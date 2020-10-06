@@ -177,7 +177,7 @@ public class SearchTask
     @Override
     protected void onPreExecute() {
         // sanity check
-        Objects.requireNonNull(mBy);
+        Objects.requireNonNull(mBy, "mBy");
     }
 
     @NonNull
@@ -224,8 +224,8 @@ public class SearchTask
 
                 default:
                     // we should never get here...
-                    throw new IllegalStateException("SearchEngine " + mSearchEngine.getName()
-                                                    + " does not implement By=" + mBy);
+                    throw new IllegalArgumentException("SearchEngine " + mSearchEngine.getName()
+                                                       + " does not implement By=" + mBy);
             }
 
             return bookData;

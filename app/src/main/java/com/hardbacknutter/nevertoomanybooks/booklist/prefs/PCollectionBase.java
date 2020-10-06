@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.debug.ErrorMsg;
 
 /**
  * Base for a Collection (List, Set,...) of elements (Integer, String, ...)
@@ -101,7 +100,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             }
             ed.apply();
         } else {
-            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            Objects.requireNonNull(mNonPersistedValue, PPrefBase.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.clear();
             if (value != null) {
                 mNonPersistedValue.addAll(value);
@@ -113,7 +112,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
         if (mIsPersistent) {
             mStylePrefs.edit().remove(getKey()).apply();
         } else {
-            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            Objects.requireNonNull(mNonPersistedValue, PPrefBase.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.clear();
         }
     }
@@ -129,7 +128,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             add(ed, mStylePrefs.getString(getKey(), null), element);
             ed.apply();
         } else {
-            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            Objects.requireNonNull(mNonPersistedValue, PPrefBase.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.add(element);
         }
     }
@@ -182,7 +181,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
                 ed.apply();
             }
         } else {
-            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            Objects.requireNonNull(mNonPersistedValue, PPrefBase.NULL_NON_PERSISTED_VALUE);
             mNonPersistedValue.remove(element);
         }
     }
@@ -194,7 +193,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             // is ok anyhow.
             dest.writeList(new ArrayList<>(getValue(App.getAppContext())));
         } else {
-            Objects.requireNonNull(mNonPersistedValue, ErrorMsg.NULL_NON_PERSISTED_VALUE);
+            Objects.requireNonNull(mNonPersistedValue, PPrefBase.NULL_NON_PERSISTED_VALUE);
             // builtin ? write the in-memory value to the parcel
             // do NOT use 'get' as that would return the default if the actual value is not set.
             dest.writeList(new ArrayList<>(mNonPersistedValue));
