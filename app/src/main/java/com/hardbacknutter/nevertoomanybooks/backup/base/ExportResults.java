@@ -66,6 +66,9 @@ public class ExportResults
     /** #preferences we exported. */
     public int preferences;
 
+    /** whether we exported the actual database. */
+    public boolean database;
+
     public ExportResults() {
     }
 
@@ -80,6 +83,7 @@ public class ExportResults
 
         styles = in.readInt();
         preferences = in.readInt();
+        database = in.readByte() != 0;
     }
 
     /**
@@ -150,10 +154,12 @@ public class ExportResults
         if (preferences > 0) {
             msg.append(BULLET).append(context.getString(R.string.lbl_settings));
         }
-
+        if (database) {
+            msg.append(BULLET).append(context.getString(R.string.lbl_database));
+        }
 
         // The below works, but we cannot get the folder name for the file.
-        // Disabling for now. We'd need to change the descriptive string not to include the folder.
+        // FIXME: We need to change the descriptive string not to include the folder.
         if (uriInfo != null && uriInfo.first != null && uriInfo.second != null) {
             msg.append("\n\n")
                .append(context.getString(R.string.progress_end_export_success,
@@ -173,6 +179,7 @@ public class ExportResults
 
         dest.writeInt(styles);
         dest.writeInt(preferences);
+        dest.writeByte((byte) (database ? 1 : 0));
     }
 
     @Override
@@ -188,6 +195,7 @@ public class ExportResults
                + ", coversExported=" + mCoversExported
                + ", styles=" + styles
                + ", preferences=" + preferences
+               + ", database=" + database
                + '}';
     }
 }

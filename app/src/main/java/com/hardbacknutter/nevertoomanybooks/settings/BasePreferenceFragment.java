@@ -23,14 +23,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
@@ -44,11 +42,7 @@ import androidx.preference.PreferenceScreen;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -57,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -85,8 +78,6 @@ public abstract class BasePreferenceFragment
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
-
-    private static final int REQ_PICK_FILE_FOR_EXPORT_DATABASE = 1;
 
     protected ResultDataModel mResultData;
     @Nullable
@@ -282,24 +273,6 @@ public abstract class BasePreferenceFragment
                 return true;
             });
         }
-
-        preference = findPreference("psk_export_database");
-        if (preference != null) {
-            // Export database - Mainly meant for debug or external processing.
-            preference.setOnPreferenceClickListener(p -> {
-                final String name =
-                        getString(R.string.app_name)
-                        + '-' + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-                        + ".ntmb.db";
-
-                final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                        .addCategory(Intent.CATEGORY_OPENABLE)
-                        .setType("*/*")
-                        .putExtra(Intent.EXTRA_TITLE, name);
-                startActivityForResult(intent, REQ_PICK_FILE_FOR_EXPORT_DATABASE);
-                return true;
-            });
-        }
     }
 
     @Override
@@ -404,32 +377,11 @@ public abstract class BasePreferenceFragment
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             case RequestCode.PREFERRED_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mResultData.putResultData(data);
-                }
-                break;
-
-            case REQ_PICK_FILE_FOR_EXPORT_DATABASE:
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, "data");
-                    final Uri uri = data.getData();
-                    if (uri != null) {
-                        @StringRes
-                        int msgId;
-                        try {
-                            final Context context = getContext();
-                            //noinspection ConstantConditions
-                            FileUtils.copy(context, DBHelper.getDatabasePath(context), uri);
-                            msgId = R.string.progress_end_backup_success;
-                        } catch (@NonNull final IOException e) {
-                            Logger.error(getContext(), TAG, e);
-                            msgId = R.string.error_backup_failed;
-                        }
-                        //noinspection ConstantConditions
-                        Snackbar.make(getView(), msgId, Snackbar.LENGTH_LONG).show();
-                    }
                 }
                 break;
 
@@ -522,17 +474,13 @@ public abstract class BasePreferenceFragment
                 } else {
                     // This re-surfaces sometimes after a careless dev. change.
                     //noinspection ConstantConditions
-                    Logger.error(getContext(), TAG, new Throwable(), "MultiSelectListPreference:"
-                                                                     + "\n s=" + s
-                                                                     + "\n key=" + msp.getKey()
-                                                                     + "\n entries=" + TextUtils
-                                                                             .join(",",
-                                                                                   msp.getEntries())
-                                                                     + "\n entryValues=" + TextUtils
-                                                                             .join(",",
-                                                                                   msp.getEntryValues())
-                                                                     + "\n values=" + msp
-                                                                             .getValues());
+                    Logger.error(getContext(), TAG, new Throwable(),
+                                 "MultiSelectListPreference:"
+                                 + "\n s=" + s
+                                 + "\n key=" + msp.getKey()
+                                 + "\n entries=" + TextUtils.join(",", msp.getEntries())
+                                 + "\n entryValues=" + TextUtils.join(",", msp.getEntryValues())
+                                 + "\n values=" + msp.getValues());
                 }
 
             }

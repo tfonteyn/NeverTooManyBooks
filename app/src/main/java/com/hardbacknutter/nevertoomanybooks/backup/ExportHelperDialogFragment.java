@@ -86,7 +86,6 @@ public class ExportHelperDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         mVb = DialogExportOptionsBinding.bind(view);
 
         setupOptions();
@@ -146,6 +145,7 @@ public class ExportHelperDialogFragment
         list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Tar.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_csv, ArchiveContainer.CsvBooks.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_db, ArchiveContainer.SqLiteDb.getFileExt()));
 
         //noinspection ConstantConditions
         final ArrayAdapter<String> archiveFormatAdapter =
@@ -200,6 +200,18 @@ public class ExportHelperDialogFragment
                     case 3:
                         helper.setArchiveContainer(ArchiveContainer.Xml);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
+
+                        mVb.cbxBooks.setChecked(true);
+                        mVb.cbxBooks.setEnabled(false);
+                        mVb.cbxCovers.setChecked(false);
+                        mVb.cbxCovers.setEnabled(false);
+                        mVb.cbxPrefsAndStyles.setChecked(true);
+                        mVb.cbxPrefsAndStyles.setEnabled(false);
+                        break;
+
+                    case 4:
+                        helper.setArchiveContainer(ArchiveContainer.SqLiteDb);
+                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);

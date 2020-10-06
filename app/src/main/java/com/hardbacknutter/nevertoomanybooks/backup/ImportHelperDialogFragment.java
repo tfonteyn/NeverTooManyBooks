@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,6 +28,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -88,12 +90,21 @@ public class ImportHelperDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mVb = DialogImportOptionsBinding.bind(view);
 
         mModel = new ViewModelProvider(this).get(ImportHelperViewModel.class);
-        //noinspection ConstantConditions
-        mModel.init(getContext(), requireArguments());
+        try {
+            //noinspection ConstantConditions
+            mModel.init(getContext(), requireArguments());
 
-        mVb = DialogImportOptionsBinding.bind(view);
+        } catch (@NonNull final InvalidArchiveException e) {
+            finishActivityWithErrorMessage(mVb.bodyFrame, R.string.error_import_file_not_supported);
+            return;
+
+        } catch (@NonNull final IOException e) {
+            finishActivityWithErrorMessage(mVb.bodyFrame, R.string.error_import_failed);
+            return;
+        }
 
         mIsBooksOnly = mModel.isBooksOnlyContainer(getContext());
 
@@ -189,16 +200,20 @@ public class ImportHelperDialogFragment
         @Nullable
         private ArchiveInfo mInfo;
 
+        /**
+         * Pseudo constructor.
+         *
+         * @param context Current context
+         * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+         *
+         * @throws InvalidArchiveException on failure to recognise a supported archive
+         * @throws IOException             on other failures
+         */
         public void init(@NonNull final Context context,
-                         @NonNull final Bundle args) {
+                         @NonNull final Bundle args)
+                throws InvalidArchiveException, IOException {
             mHelper = Objects.requireNonNull(args.getParcelable(BKEY_OPTIONS), "mHelper");
-            try {
-                mInfo = mHelper.getInfo(context);
-            } catch (@NonNull final IOException | InvalidArchiveException e) {
-                // We should never get here, as the archive being valid should have been
-                // checked before creating the dialog.
-                throw new IllegalStateException(e);
-            }
+            mInfo = mHelper.getInfo(context);
         }
 
         @NonNull

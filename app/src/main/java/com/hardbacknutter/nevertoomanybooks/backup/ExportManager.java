@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
@@ -151,7 +152,7 @@ public class ExportManager
 
         // generic unknown message
         if (msg == null || msg.isEmpty()) {
-            msg = context.getString(R.string.error_unexpected_error);
+            msg = context.getString(R.string.error_unknown_long);
         }
 
         return msg;
@@ -244,6 +245,8 @@ public class ExportManager
                 return new TarArchiveWriter(context, this);
 
             case SqLiteDb:
+                return new DbArchiveWriter(this);
+
             case Unknown:
                 throw new InvalidArchiveException(String.valueOf(getArchiveContainer()));
 
