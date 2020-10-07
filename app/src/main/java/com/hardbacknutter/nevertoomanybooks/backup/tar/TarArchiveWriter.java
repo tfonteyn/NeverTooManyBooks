@@ -45,7 +45,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 /**
  * Implementation of TAR-specific writer functions.
  * Uses the default format of {@link ArchiveWriterAbstract}
+ *
+ * @deprecated we should remove writing to a tar archive (but keep support for reading)
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
+@Deprecated
 public class TarArchiveWriter
         extends ArchiveWriterAbstract
         implements ArchiveWriter.SupportsCovers {
