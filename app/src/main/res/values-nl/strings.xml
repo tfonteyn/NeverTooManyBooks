@@ -33,7 +33,7 @@
     <string name="X_action_swap">Wisselen</string>
     <string name="X_tip_booklist_global_properties">Je kan dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. Je kan de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
     <string name="X_use_default_setting">Standaardinstellingen gebruiken</string>
-    <string name="X_warning_cover_corrupt">Omslagafbeelding is niet geldig</string>
+    <string name="X_warning_cover_corrupt">Afbeelding is corrupt.</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
@@ -83,7 +83,7 @@
     <string name="confirm_merge_authors">De auteur die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_merge_series">De reeks die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_merge_publishers">De uitgever die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
-    <string name="confirm_overwrite_thumbnail">Dit zal de geselecteerde velden zoals getoond bijwerken, maar miniaturen kunnen desgewenst voor alle boeken worden gedownload.\n\nWil je alle miniaturen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen.</string>
+    <string name="confirm_overwrite_cover">Dit zal de geselecteerde velden zoals getoond bijwerken, maar afbeeldingen kunnen desgewenst voor alle boeken worden gedownload.\n\nWil je alle afbeeldingen overschrijven? Waarschuwing: dit kan een lange tijd in beslag nemen.</string>
     <string name="confirm_unsaved_edits">Je hebt niet opgeslagen veranderingen. Als je nu afsluit gaan die verloren.</string>
     <string name="confirm_unsaved_edits2">De gemaakte veranderingen zijn niet opgeslagen. Wil je toch doorgaan?</string>
     <string name="debug_body">Beschrijf in het kort de problemen die je hebt ondervonden.</string>
@@ -183,7 +183,7 @@
     <string name="error_bad_scanner">Het lijkt er op dat de door jouw gebruikte barcode scanner applicatie niet compatibel is met &APP_NAME;.</string>
     <string name="txt_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="txt_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
-    <string name="txt_export_backup_all">Alle boeken, omslagafbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
+    <string name="txt_export_backup_all">Alle boeken, afbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
     <string name="txt_import_option_all_books">Nieuwe boeken worden toegevoegd. Bestaande boeken worden bijgewerkt.</string>
     <string name="txt_import_option_new_and_changed_books">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
     <string name="txt_install_scanner_recommendation">Wij kunnen de Zxing barcode scanner application aanbevelen. Als deze al is geïnstalleerd raden we aan deze te deïnstalleren en daarna weer opnieuw te installeren.</string>
@@ -192,8 +192,8 @@
     <string name="confirm_registration_required">Deze functie vereist registratie bij %1$s. Wil je meer informatie zien?</string>
     <string name="txt_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
     <string name="txt_share_book_im_reading">Ik lees %1$s %2$s door %3$s %4$s</string>
-    <string name="txt_tap_on_image_to_select">Tik op de grote afbeelding om deze te selecteren</string>
-    <string name="txt_tap_on_thumb">Tik op een miniatuur voor vergroting</string>
+    <string name="txt_tap_on_image_to_select">Tik op de grotere afbeelding om deze te selecteren.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Tik op een miniatuur om een grotere afbeelding weer te geven.</string>
     <string name="txt_waiting_for_scanner">Wachten op scanner / camera</string>
     <string name="isfdb_menu_populate_toc">Automatisch titels invullen (alleen ISFDB)</string>
     <string name="isfdb_warning_limited_to">(alleen ondersteund door de ISFDB-website)</string>
@@ -212,7 +212,8 @@
     <string name="lbl_archive_type_backup">Backup kopie (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Volledig back-up- / herstelarchief</string>
     <string name="lbl_archive_type_xml">XML-export (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Alle gegevens in XML formaat. XML is enkel export, geen import.</string>
+    <string name="lbl_archive_format_xml_info">Alle gegevens in XML formaat.</string>
+    <string name="lbl_archive_is_export_only">Dit is alleen voor het exporteren van gegevens; importeren wordt niet ondersteund.</string>
     <string name="lbl_author">Auteur</string>
     <string name="lbl_author_type">Auteur type</string>
     <string name="lbl_author_type_artist">illustraties</string>
@@ -244,9 +245,11 @@
     <string name="lbl_condition_reading_copy">Lees exemplaar</string>
     <string name="lbl_condition_very_good">Zeer goed</string>
     <string name="lbl_copy_database">Exporteer Database</string>
-    <string name="lbl_cover">Omslag</string>
-    <string name="lbl_covers_long">Omslagafbeeldingen</string>
+    <string name="lbl_cover_front">Voorkaft</string>
+    <string name="lbl_cover_back">Achterkaft</string>
+    <string name="lbl_cover_long">Omslagafbeelding</string>
     <string name="lbl_covers">Omslagen</string>
+    <string name="lbl_covers_long">Omslagafbeeldingen</string>
     <string name="lbl_credentials">Inloggegevens van gebruiker</string>
     <string name="lbl_currency">Munt</string>
     <string name="lbl_date_acquired">Datum verworven</string>
@@ -334,7 +337,7 @@
     <string name="legacy_record">Verouderd record #%1$d</string>
     <string name="list_and">en</string>
     <string name="list_element">• %s</string>
-    <string name="lt_info">Deze applicatie wordt verbeterd door het gebruik van LibraryThing als informatiebron voor boeken en alternatieve omslagafbeeldingen. Om deze functies te kunnen gebruiken moet je bij LibraryThing (gratis) registreren en om een ontwikkelaarssleutel vragen (ook gratis).</string>
+    <string name="lt_info">Deze applicatie wordt verbeterd door het gebruik van LibraryThing als informatiebron voor boeken en alternatieve afbeeldingen. Om deze functies te kunnen gebruiken moet je bij LibraryThing (gratis) registreren en om een ontwikkelaarssleutel vragen (ook gratis).</string>
     <string name="lt_key_is_correct">Uw LibraryThing ontwikkelaarssleutel is geldig.</string>
     <string name="lt_key_is_incorrect">Uw LibraryThing ontwikkelaarssleutel was niet juist, of er kon geen verbinding worden gemaakt met het netwerk ter verificatie.</string>
     <string name="lt_lbl_key">Zodra je de sleutel hebt kan je die hieronder invullen om zo gebruik te maken van de extra gegevensbron.</string>
@@ -400,7 +403,7 @@
     <string name="pe_bob_list_rebuild_state_preferred">Gebruik voorkeur instelling</string>
     <string name="pe_bob_list_rebuild_state_preserve">Huidige status behouden</string>
     <string name="pe_thumbnails_cache_resized_each_time">Herschaal elke keer als ze nodig zijn (gebruikt minder opslagruimte, scrollen zal langzamer gaan)</string>
-    <string name="pe_thumbnails_cache_resized_stored">Cache herschaalde miniaturen (gebruikt meer opslagruimte, scrollen van de lijst gaat sneller)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Cache herschaalde afbeeldingen (gebruikt meer opslagruimte, scrollen van de lijst gaat sneller)</string>
     <string name="pe_cropper_layer_type_hardware">Hardware</string>
     <string name="pe_cropper_layer_type_software">Software</string>
     <string name="pe_ui_theme_dark">Donker</string>
@@ -416,7 +419,7 @@
     <string name="pg_image_cache">Afbeeldingencache</string>
     <string name="X_pg_internet_search">Internet Zoekopdrachten</string>
     <string name="pg_style_groups">Groeperingen</string>
-    <string name="lbl_thumbnails">Miniaturen</string>
+    <string name="X_lbl_thumbnails">Miniaturen</string>
     <string name="pg_ui">Gebruikersinterface</string>
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="progress_end_backup_success">Back-up gelukt</string>
@@ -427,9 +430,9 @@
     <string name="progress_msg_searching_editions">Zoeken naar uitgaven…</string>
     <string name="progress_msg_loading">Laden…</string>
     <string name="X_progress_msg_n_books_processed">%1$d boeken verwerkt</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d boekomslagen verwerkt</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d boekomslagen verwerkt\n(%2$d/%3$d missend)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d boekomslagen verwerkt (%2$d/%3$d missend, %4$d overgeslagen)</string>
+    <string name="X_progress_msg_n_covers_processed">%1$d afbeeldingen verwerkt</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d afbeeldingen verwerkt\n(%2$d/%3$d missend)</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d afbeeldingen verwerkt (%2$d/%3$d missend, %4$d overgeslagen)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d toegevoegd, %3$d bijgewerkt</string>
     <string name="progress_msg_optimizing">Databases optimaliseren…</string>
     <string name="progress_msg_please_wait">Even geduld…</string>
@@ -449,8 +452,8 @@
     <string name="pt_bob_header">Details in de koptekst</string>
     <string name="pt_bob_list_rebuild_state">Boekenlijst opstart status</string>
     <string name="pt_bob_list_state_expansion_level">Standaard boekenlijst niveau</string>
-    <string name="pt_bob_thumbnails_scale">Miniaturen grootte in lijsten</string>
-    <string name="pt_bob_thumbnails_show">Toon Miniaturen</string>
+    <string name="pt_bob_cover_scale">Afbeelding grootte in lijsten</string>
+    <string name="pt_bob_cover_show">Toon afbeeldingen</string>
     <string name="pt_camera_next_action">Actie na het nemen van een foto</string>
     <string name="pt_collect_series_info_from_toc">Verzamel reeks-informatie van de inhouds tabel</string>
     <string name="pt_maintenance">Onderhoud</string>
@@ -473,7 +476,7 @@
     <string name="pt_sort_title_reordered">Sorteer titels op</string>
     <string name="pt_cropper_layer_type">Bijsnijden „Layer Type”</string>
     <string name="pt_cropper_layer_type_summary">Gebruik de aanbevolen optie, tenzij de applicatie problemen geeft tijdens het bijsnijden van een afbeelding. Gebruik „Software” voor veiliger maar trager, of forceer „Hardware” voor sneller, maar misschien minder stabiel.</string>
-    <string name="pt_thumbnails_cache_resized">Cache herschaalde miniaturen</string>
+    <string name="pt_thumbnails_cache_resized">Cache herschaalde afbeeldingen</string>
     <string name="pt_cropper_frame_is_whole_image">Standaard kader voor bijsnijden is hele afbeelding</string>
     <string name="pt_thumbnails_rotate_auto">Roteer afbeeldingen</string>
     <string name="pt_ui_language">Taal</string>
@@ -536,8 +539,8 @@
     <string name="tip_background_task_events">Vanaf hier kan je de gebeurtenissen zien die zijn geassocieerd met op de achtergrond lopende taken. Tikken op een gebeurtenis laat je een aantal acties uitvoeren die samenhangen met die gebeurtenis.</string>
     <string name="tip_background_tasks">Vanaf deze plaats kan je de lopende taken zien en eveneens vorige taken die met fouten of ander vermeldingswaardige gebeurtenissen zijn beëindigd. Tikken op een taak laat je de bijbehorende gebeurtenissen zien en ook de taak laten verwijderen (samen met de gerelateerde gebeurtenissen).</string>
     <string name="tip_book_list">Tikken op een boek zal de details van het boek tonen, lang drukken op een titel in de lijst geeft verdere opties.</string>
-    <string name="tip_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste barcode aan de achterkant van de omslag vinden. Vul anders de gegevens handmatig in.</string>
-    <string name="tip_book_search_by_text">Toevoegen van boeken via ISBN is veel preciezer dan toevoegen via auteur en titel en verdient meestal de voorkeur. De juiste barcode kan je meestal vinden aan de achterkant van de boekomslag.</string>
+    <string name="tip_book_not_found">Het gescande boek is niet gevonden. Je kan de juiste barcode meestal aan de achterkant van het boek vinden. Vul anders de gegevens handmatig in.</string>
+    <string name="tip_book_search_by_text">Toevoegen van boeken via ISBN is veel preciezer dan toevoegen via auteur en titel en verdient meestal de voorkeur. De juiste barcode kan je meestal vinden op de achterkant van het boek.</string>
     <string name="tip_booklist_style_groups">Je kan dit scherm gebruiken om de hiërarchie van koppen voor een specifieke stijl van een boekenlijst te wijzigen. Een vinkje geeft aan dat de kop in de lijst wordt weergegeven, verwijder het vinkje om het te verbergen en vice versa. Je kan de hiërarchie opnieuw rangschikken door het pictogram uiterst rechts van elke rij omhoog of omlaag te slepen.</string>
     <string name="tip_booklist_style_menu">Dit menu laat je de lijststijl selecteren.\n\n Je kan het menu ook aanpassen of je eigen lijststijl aanmaken door te tikken op „Aanpassen” onderaan de lijst.</string>
     <string name="tip_booklist_style_properties">Je kan dit scherm gebruiken om de kenmerken van een specifieke stijl van de boekenlijst in te stellen. Je kan de naam wijzigen, de groeperingen bewerken om de hiërarchie te wijzigen en een aantal andere voorkeuren aanpassen om een stijl te bouwen die je nuttig acht. Het is ook mogelijk om filters te gebruiken om de selectie van boeken te wijzigen die in de lijst worden weergegeven. bijv. om alleen boeken op te halen die je nog niet hebt gelezen en meer.</string>
@@ -553,7 +556,6 @@
     <string name="info_authorized_needed">Toegang autoriseren</string>
     <string name="lbl_backing_up">Aan \'t Back-uppen…</string>
     <string name="lbl_clone_style">Stijl klonen</string>
-    <string name="lbl_cover_long">Omslag miniatuur</string>
     <string name="X_lbl_delete_book">Boek verwijderen</string>
     <string name="X_lbl_delete_series">Verwijderen reeks</string>
     <string name="X_lbl_delete_toc_entry">Titel verwijderen</string>
@@ -647,7 +649,7 @@
     <string name="X_warning_image_processing_failed">Afbeelding kan niet worden verwerkt.</string>
     <string name="pt_edit_book_isbn_checks">ISBN geldigheidscontroles</string>
     <string name="lbl_table_of_content_entry">Vermelding in de inhoudsopgave</string>
-    <string name="lbl_next_book_without_cover">Ga naar het volgende boek zonder omslag</string>
+    <string name="lbl_next_book_without_cover">Ga naar het volgende boek zonder afbeelding</string>
     <string name="info_filter_edition">Selecteer 0 of meer opties en tik op „OK” om ze toe te passen, of tik op „Alle boeken” om ze allemaal te negeren.</string>
     <string name="notification_channel_warn">Waarschuwing</string>
     <string name="warning_already_in_list">Al in de lijst!</string>
@@ -658,7 +660,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Toon boeken met meerdere uitgevers.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">alleen onder hun primaire uitgever.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">onder elke uitgever.</string>
-    <string name="image">Afbeelding</string>
+    <string name="lbl_image">Afbeelding</string>
     <string name="lbl_author_type_narrator">Verteller</string>
     <string name="unknown">Onbekend</string>
     <string name="action_not_now">Niet nu</string>
@@ -676,5 +678,8 @@
     <string name="lbl_backup_and_export">Back-up en export</string>
     <string name="lbl_export">Exporteren</string>
     <string name="lbl_database">Database</string>
+    <string name="lbl_archive_import_supported">Importeren wordt ondersteund.</string>
+    <string name="lbl_archive_format_db_info">De SQLite-database.</string>
+    <string name="lbl_archive_type_db">Databasebestand (%1$s)</string>
 
 </resources>

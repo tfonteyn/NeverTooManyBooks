@@ -35,7 +35,7 @@
     <string name="X_action_swap">Tauschen</string>
     <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
     <string name="X_use_default_setting">Standardeinstellungen verwenden</string>
-    <string name="X_warning_cover_corrupt">Das Cover ist unbrauchbar</string>
+    <string name="X_warning_cover_corrupt">Das Bild ist unbrauchbar.</string>
     <string name="X_warning_required_field_x">%1$s darf nicht leer sein</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Ihr Kommentar (darf auch leer bleiben):</string>
@@ -83,7 +83,7 @@
     <string name="confirm_merge_authors">Der Autor, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_merge_series">Die Serie, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_merge_publishers">Der Verlag, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
-    <string name="confirm_overwrite_thumbnail">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Cover-Bilder können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Cover-Bilder überschrieben werden? Warnung, die Aktualisierung kann lange dauern.</string>
+    <string name="confirm_overwrite_cover">Die ausgewählten Felder werden wie gezeigt aktualisiert. Die Buchumschläge können optional für ALLE Bücher heruntergeladen werden.\n\nSollen alle bestehenden Buchumschläge überschrieben werden? Warnung, die Aktualisierung kann lange dauern.</string>
     <string name="confirm_unsaved_edits">Einige Änderungen wurden noch nicht gespeichert. Beim Beenden gehen diese Änderungen verloren.</string>
     <string name="confirm_unsaved_edits2">Es bestehen nicht gespeicherte Änderungen. Sind Sie sicher, dass sie fortfahren wollen?</string>
     <string name="debug_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
@@ -181,7 +181,7 @@
         kompatible.</string>
     <string name="txt_cleanup_files">Die Dateien belegen %1$s Speicherplatz auf der SD-Karte. Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten, ziehen Sie bitte in Betracht, den „%2$s“ Knopf zuerst zu benutzen.</string>
     <string name="txt_displaying_n_books_in_m_entries">%1$d Bücher in %2$d Einträgen werden angezeigt</string>
-    <string name="txt_export_backup_all">Alle Bücher, Cover, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>
+    <string name="txt_export_backup_all">Alle Bücher, Buchumschläge, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>
     <string name="txt_import_option_all_books">Neue Bücher werden hinzugefügt. Vorhandene Bücher werden aktualisiert.</string>
     <string name="txt_import_option_new_and_changed_books">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
     <string name="txt_install_scanner_recommendation">Wir empfehlen, die App „Zxing Barcode Scanner“ zu installieren. Falls sie bereits installiert ist, empfehlen wir eine Deinstalltion und erneute Installation.</string>
@@ -190,8 +190,8 @@
     <string name="confirm_registration_required">Diese Funktion erfordert eine Registrierung bei %1$s. Möchten Sie weitere Informationen sehen?</string>
     <string name="txt_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
     <string name="txt_share_book_im_reading">Ich lese „%1$s“ %2$s von %3$s %4$s</string>
-    <string name="txt_tap_on_image_to_select">Tippen Sie auf das große Bild, um es auszuwählen</string>
-    <string name="txt_tap_on_thumb">Klicke auf ein Cover-Bild, um ein größeres Bild angezeigt zu bekommen</string>
+    <string name="txt_tap_on_image_to_select">Tippen Sie auf das größere Bild, um es auszuwählen.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Tippen Sie auf eine Vorschaubild, um ein größeres Bild anzuzeigen.</string>
     <string name="txt_waiting_for_scanner">Warten auf Scanner / Kamera</string>
     <string name="isfdb_menu_populate_toc">Automatisches Ausfüllen der Anthologie-Titel (nur ISFDB)</string>
     <string name="isfdb_warning_limited_to">(wird nur von der ISFDB-Website unterstützt)</string>
@@ -210,7 +210,8 @@
     <string name="lbl_archive_type_backup">Sicherheitskopie (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Vollständiges Backup / Restore-Archiv</string>
     <string name="lbl_archive_type_xml">XML-Export (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Alle Daten im XML-Format. XML ist nur Export, kein Import.</string>
+    <string name="lbl_archive_format_xml_info">Alle Daten im XML-Format.</string>
+    <string name="lbl_archive_is_export_only">Dies dient nur zum Exportieren von Daten. Der Import wird nicht unterstützt.</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Autorentyp</string>
     <string name="lbl_author_type_artist">Abbildungen</string>
@@ -218,7 +219,7 @@
     <string name="lbl_author_type_contributor">Mitarbeiter</string>
     <string name="lbl_author_type_cover_artist">Titelbild</string>
     <string name="lbl_author_type_cover_colorist">Titelbild Farbe</string>
-    <string name="lbl_author_type_cover_inking">Buchumschlag Inkting</string>
+    <string name="lbl_author_type_cover_inking">Titelbild Inkting</string>
     <string name="lbl_author_type_editor">Editor</string>
     <string name="lbl_author_type_inking">Tinte</string>
     <string name="lbl_author_type_intro">Einführung etc.</string>
@@ -242,9 +243,11 @@
     <string name="lbl_condition_reading_copy">Kopie lesen</string>
     <string name="lbl_condition_very_good">Sehr gut</string>
     <string name="lbl_copy_database">Datenbank exportieren</string>
-    <string name="lbl_cover">Buchumschlag</string>
-    <string name="lbl_covers_long">Cover-Bilder</string>
+    <string name="lbl_cover_front">Buchvorderseite</string>
+    <string name="lbl_cover_back">Buchrückseite</string>
+    <string name="lbl_cover_long">Buchumschlag</string>
     <string name="lbl_covers">Buchumschläge</string>
+    <string name="lbl_covers_long">Buchumschlagillustrationen</string>
     <string name="lbl_credentials">Nutzeranmeldedaten</string>
     <string name="lbl_currency">Devisen</string>
     <string name="lbl_date_acquired">Datum erworben</string>
@@ -332,7 +335,7 @@
     <string name="legacy_record">Veralteter Datensatz #%1$d</string>
     <string name="list_and">und</string>
     <string name="list_element">• %s</string>
-    <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Cover. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
+    <string name="lt_info">Diese App nutzt LibraryThing als Quelle für Buchinformationen und alternative Buchumschläge. Um diese Funktionalitäten nutzen zu können, müssen Sie sich bei LibraryThing registrieren (kostenlos) und einen Entwicklerschlüssel anfordern (ebenfalls kostenlos).</string>
     <string name="lt_key_is_correct">Ihr LibraryThing-Entwicklerschlüssel ist gültig.</string>
     <string name="lt_key_is_incorrect">Der eingegebene LibraryThing-Entwicklerschlüssel war falsch, oder es konnte keine Netzwerkverbindung zur Verifizierung hergestellt werden.</string>
     <string name="lt_lbl_key">Nachdem Sie einen Entwicklerschlüssel erhalten haben, geben Sie diesen unten ein.</string>
@@ -398,7 +401,7 @@
     <string name="pe_bob_list_rebuild_state_preferred">Verwende bevorzugten Status</string>
     <string name="pe_bob_list_rebuild_state_preserve">Darstellung beibehalten</string>
     <string name="pe_thumbnails_cache_resized_each_time">Größe bei Bedarf ändern (geringerer Speicherverbrauch, langsamerer Bildlauf)</string>
-    <string name="pe_thumbnails_cache_resized_stored">Cover-Bilder zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Buchumschläge zwischenspeichern (höherer Speicherverbrauch, schnellerer Bildlauf)</string>
     <string name="pe_cropper_layer_type_hardware">Hardware</string>
     <string name="pe_cropper_layer_type_software">Software</string>
     <string name="pe_ui_theme_dark">Dunkel</string>
@@ -414,7 +417,7 @@
     <string name="pg_image_cache">Bilder-Cache</string>
     <string name="X_pg_internet_search">Websuchen</string>
     <string name="pg_style_groups">Gruppierung</string>
-    <string name="lbl_thumbnails">Umschlagbilder</string>
+    <string name="X_lbl_thumbnails">Vorschaubilder</string>
     <string name="pg_ui">Benutzeroberfläche</string>
     <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
@@ -425,9 +428,9 @@
     <string name="progress_msg_searching_editions">Suche Ausgaben…</string>
     <string name="progress_msg_loading">Wird geladen…</string>
     <string name="X_progress_msg_n_books_processed">%1$d Bücher verarbeitet</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d Cover verarbeitet</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d Cover verarbeitet\n(%2$d/%3$d fehlen)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Cover verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
+    <string name="X_progress_msg_n_covers_processed">%1$d Buchumschläge verarbeitet</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d Buchumschläge verarbeitet\n(%2$d/%3$d fehlen)</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d Buchumschläge verarbeitet (%2$d/%3$d fehlen, %4$d übersprungen)</string>
     <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d erzeugt, %3$d aktualisiert</string>
     <string name="progress_msg_optimizing">Datenbanken werden optimiert…</string>
     <string name="progress_msg_please_wait">Bitte warten…</string>
@@ -447,8 +450,8 @@
     <string name="pt_bob_header">Zusammenfassung in der Kopfzeile</string>
     <string name="pt_bob_list_rebuild_state">Startstatus der Buchliste</string>
     <string name="pt_bob_list_state_expansion_level">Standard-Buchlistenebene</string>
-    <string name="pt_bob_thumbnails_scale">Bildgröße in Listen</string>
-    <string name="pt_bob_thumbnails_show">Cover-Bilder anzeigen</string>
+    <string name="pt_bob_cover_scale">Buchumschläge Größe in listen</string>
+    <string name="pt_bob_cover_show">Buchumschläge anzeigen</string>
     <string name="pt_camera_next_action">Aktion nach dem Aufnehmen eines Fotos</string>
     <string name="pt_collect_series_info_from_toc">Sammeln Sie Serieninformationen aus dem Inhaltsverzeichnis</string>
     <string name="pt_maintenance">Instandhaltung</string>
@@ -471,7 +474,7 @@
     <string name="pt_sort_title_reordered">Titel sortieren nach</string>
     <string name="pt_cropper_layer_type">Zuschneiden „Layer Type“</string>
     <string name="pt_cropper_layer_type_summary">Behalten Sie diese Einstellung bei „Standardeinstellung“ bei, es sei denn, Sie stürzen beim Beschneiden von Bildern ab. Probieren Sie „Software“ aus, um sicherer, aber langsamer zu sein, oder erzwingen Sie „Hardware“ für weniger Sicherheit, aber schneller.</string>
-    <string name="pt_thumbnails_cache_resized">Größe der Cover-Bilder ändern zwischenspeichern</string>
+    <string name="pt_thumbnails_cache_resized">Größe der Buchumschläge zwischenspeichern</string>
     <string name="pt_cropper_frame_is_whole_image">Standardbeschnitt besteht aus dem gesamten Bild</string>
     <string name="pt_thumbnails_rotate_auto">Bilder drehen</string>
     <string name="pt_ui_language">Sprache</string>
@@ -534,8 +537,8 @@
     <string name="tip_background_task_events">Sie können hier die mit einer Hintergrundaufgabe verbundenen Ereignisse sehen. Nach dem Klick auf ein Ereignis können Sie eine Vielzahl von Aktionen durchführen, die für dieses Ereignis passen.</string>
     <string name="tip_background_tasks">Sie können hier die jetzt laufenden Aufgaben und erledigte, mit Fehlern oder anderen Ereignissen beendete Aufgaben sehen. Nach dem Klick auf eine Aufgabe können Sie die mit dieser Aufgabe verbundenen Ereignisse sehen und die Aufgabe mit den verbundenen Ereignissen löschen.</string>
     <string name="tip_book_list">Tippen Sie auf ein Buch, um dessen Details zu sehen. Ein langer Druck auf einen Listeneintrag zeigt weitere Optionen.</string>
-    <string name="tip_book_not_found">Das gescannte Buch wurde nicht gefunden. Manchmal befindet sich der korrekte Barcode auf der Rückseite des Covers. Geben Sie ansonsten die Daten manuell ein.</string>
-    <string name="tip_book_search_by_text">Das Hinzufügen der Bücher per ISBN ist genauer als das Hinzufügen per Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachten Sie, dass der korrekte Barcode manchmal auf der Rückseite des Covers zu finden ist.</string>
+    <string name="tip_book_not_found">Das gescannte Buch wurde nicht gefunden. Manchmal befindet sich der korrekte Barcode auf der Rückseite des Buchumschläge. Geben Sie ansonsten die Daten manuell ein.</string>
+    <string name="tip_book_search_by_text">Das Hinzufügen der Bücher per ISBN ist genauer als das Hinzufügen per Autor und Titel und sollte im Allgemeinen bevorzugt werden. Bitte beachten Sie, dass der korrekte Barcode manchmal auf der Rückseite des Buchumschläge zu finden ist.</string>
     <string name="tip_booklist_style_groups">In diesem Bildschirm können Sie die Hierarchie der Überschriften für einen bestimmten Buchlistenstil ändern. Ein Häkchen zeigt an, dass die Überschrift in der Liste angezeigt wird. Deaktivieren Sie dieses Kontrollkästchen, um sie auszublenden, und umgekehrt. Sie können die Hierarchie neu anordnen, indem Sie das Symbol ganz rechts in jeder Zeile nach oben oder unten ziehen.</string>
     <string name="tip_booklist_style_menu">Hier können Sie den Stil der Liste wählen.\n\nSie können auch dieses Menü anpassen und Ihre eigenen Stile erzeugen. Klicken Sie dafür auf „Anpassen“ am Ende der Liste.</string>
     <string name="tip_booklist_style_properties">In diesem Bildschirm können Sie die Merkmale eines bestimmten Buchlistenstils festlegen. Sie können den Namen ändern, die Gruppierungen bearbeiten, um die Hierarchie zu ändern, und verschiedene andere Einstellungen anpassen, um einen für Sie nützlichen Stil zu erstellen. Sie können auch Filter verwenden, um die Auswahl der Bücher zu ändern, die in der Liste angezeigt werden. z.B. um nur Bücher abzurufen, die Sie noch nicht gelesen haben und mehr.</string>
@@ -551,7 +554,6 @@
     <string name="info_authorized_needed">Zugriff autorisieren</string>
     <string name="lbl_backing_up">Sichere…</string>
     <string name="lbl_clone_style">Stil klonen</string>
-    <string name="lbl_cover_long">Cover-Bild</string>
     <string name="X_lbl_delete_book">Buch löschen</string>
     <string name="X_lbl_delete_series">Serie löschen</string>
     <string name="X_lbl_delete_toc_entry">Titel löschen</string>
@@ -647,7 +649,7 @@
     <string name="X_warning_image_processing_failed">Bild konnte nicht verarbeitet werden.</string>
     <string name="pt_edit_book_isbn_checks">ISBN-Gültigkeitsprüfungen</string>
     <string name="lbl_table_of_content_entry">Eintrag im Inhaltsverzeichnis</string>
-    <string name="lbl_next_book_without_cover">Springe zum nächsten Buch ohne Cover</string>
+    <string name="lbl_next_book_without_cover">Springe zum nächsten Buch ohne Buchumschläge</string>
     <string name="book_color_support_color">Zweifarbig</string>
     <string name="info_filter_edition">Wählen Sie 0 oder mehr Optionen aus und tippen Sie auf „OK“, um sie anzuwenden, oder tippen Sie auf „Alle Bücher“, um alle zu ignorieren.</string>
     <string name="notification_channel_warn">Warnung</string>
@@ -659,7 +661,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Bücher mit mehreren Verlagen anzeigen.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">nur unter ihrem Hauptverleger.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">unter jedem Verlag.</string>
-    <string name="image">Bild</string>
+    <string name="lbl_image">Bild</string>
     <string name="lbl_author_type_narrator">Erzähler</string>
     <string name="unknown">Unbekannt</string>
     <string name="action_not_now">Jetzt nicht</string>
@@ -678,4 +680,7 @@
     <string name="lbl_backup_and_export">Sichern &amp; Exportieren</string>
     <string name="lbl_export">Export</string>
     <string name="lbl_database">Datenbank</string>
+    <string name="lbl_archive_import_supported">Der Import wird unterstützt.</string>
+    <string name="lbl_archive_format_db_info">Die SQLite-Datenbank.</string>
+    <string name="lbl_archive_type_db">Datenbankdatei (%1$s)</string>
 </resources>

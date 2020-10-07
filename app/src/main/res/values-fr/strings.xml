@@ -35,7 +35,7 @@
     <string name="X_action_swap">Échanger</string>
     <string name="X_tip_booklist_global_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d\'affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
     <string name="X_use_default_setting">Utiliser les paramètres par défaut</string>
-    <string name="X_warning_cover_corrupt">Couverture corrompue</string>
+    <string name="X_warning_cover_corrupt">Couverture corrompue.</string>
     <string name="X_warning_required_field_x">%1$s ne doit pas être vide</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Votre commentaire (ou laisser vide) :</string>
@@ -82,7 +82,7 @@
     <string name="confirm_merge_authors">L\'auteur que vous renommez existe déjà. Voulez-vous les fusionner?</string>
     <string name="confirm_merge_series">L\'éditeur que vous renommez existe déjà. Voulez-vous les fusionner?</string>
     <string name="confirm_merge_publishers">La bibliothèque que vous renommez existe déjà. Voulez-vous les fusionner?</string>
-    <string name="confirm_overwrite_thumbnail">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les vignettes peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les vignettes existantes ? Attention, cela peut prendre du temps.</string>
+    <string name="confirm_overwrite_cover">Les champs sélectionnés vont être mis à jour tels que montré ; en option, les couvertures peuvent être téléchargées pour tous les livres.\n\nVoulez-vous remplacer toutes les couvertures existantes ? Attention, cela peut prendre du temps.</string>
     <string name="confirm_unsaved_edits">Des modifications ne sont pas sauvées, si vous quittez maintenant elles seront perdues.</string>
     <string name="confirm_unsaved_edits2">Des modifications n\'ont pas été sauvegardées. Voulez-vous vraiment continuer ?</string>
     <string name="debug_body">Merci de prendre le temps de décrire brièvement le problème que vous rencontrez.</string>
@@ -190,8 +190,8 @@
     <string name="confirm_registration_required">Cette fonctionnalité nécessite une inscription avec %1$s. Souhaitez-vous avoir plus d\'informations?</string>
     <string name="txt_select_fields_to_update">Les champs sélectionnés vont être mis à jour à partir d\'Internet. Les champs non sélectionnés ne seront pas modifiés.</string>
     <string name="txt_share_book_im_reading">Je lis «%1$s» %2$s par %3$s %4$s</string>
-    <string name="txt_tap_on_image_to_select">Appuyez sur la grande photo pour la sélectionner</string>
-    <string name="txt_tap_on_thumb">Cliquez sur une vignette pour afficher une image plus grande</string>
+    <string name="txt_tap_on_image_to_select">Appuyez sur l\'image plus grande pour la sélectionner.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Appuyez sur une miniature pour afficher une image plus grande.</string>
     <string name="txt_waiting_for_scanner">En attente de scanner / caméra</string>
     <string name="isfdb_menu_populate_toc">Renseigner les titres automatiquement (expérimental)</string>
     <string name="isfdb_warning_limited_to">(uniquement pris en charge par le site ISFDB)</string>
@@ -210,7 +210,8 @@
     <string name="lbl_archive_type_backup">Copie de sauvegarde (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Archive de sauvegarde / restauration complète</string>
     <string name="lbl_archive_type_xml">Exportation XML (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Toutes les données au format XML. XML est uniquement exportable, pas d\'importation.</string>
+    <string name="lbl_archive_format_xml_info">Toutes les données au format XML.</string>
+    <string name="lbl_archive_is_export_only">Ceci est uniquement pour l\'exportation de données; l\'importation n\'est pas prise en charge.</string>
     <string name="lbl_author">Auteur</string>
     <string name="lbl_author_type">Type d\'auteur</string>
     <string name="lbl_author_type_artist">dessins</string>
@@ -242,9 +243,11 @@
     <string name="lbl_condition_reading_copy">Copie de lecture</string>
     <string name="lbl_condition_very_good">Très bien</string>
     <string name="lbl_copy_database">Exporter la base de données</string>
-    <string name="lbl_cover">Couverture</string>
-    <string name="lbl_covers_long">Images de couverture</string>
+    <string name="lbl_cover_front">Couverture</string>
+    <string name="lbl_cover_back">Couverture arrière</string>
+    <string name="lbl_cover_long">Image de couverture</string>
     <string name="lbl_covers">Couvertures</string>
+    <string name="lbl_covers_long">Images de couverture</string>
     <string name="lbl_credentials">Identifiants de l\'utilisateur</string>
     <string name="lbl_currency">Devise</string>
     <string name="lbl_date_acquired">Date d\'acquisition</string>
@@ -398,7 +401,7 @@
     <string name="pe_bob_list_rebuild_state_preferred">Utiliser l\'état préféré</string>
     <string name="pe_bob_list_rebuild_state_preserve">Préserver l\'état actuel</string>
     <string name="pe_thumbnails_cache_resized_each_time">Redimensionner à chaque fois que nécessaire (moins d\'espace nécessaire, défilement des listes plus lent)</string>
-    <string name="pe_thumbnails_cache_resized_stored">Mettre les miniatures en cache (plus d\'espace nécessaire, défilement des listes plus rapide)</string>
+    <string name="pe_thumbnails_cache_resized_stored">Mettre les couvertures en cache (plus d\'espace nécessaire, défilement des listes plus rapide)</string>
     <string name="pe_cropper_layer_type_hardware">Matériel</string>
     <string name="pe_cropper_layer_type_software">Logiciel</string>
     <string name="pe_ui_theme_dark">Noir</string>
@@ -414,7 +417,7 @@
     <string name="pg_image_cache">Cache d\'images</string>
     <string name="X_pg_internet_search">Recherches sur le web</string>
     <string name="pg_style_groups">Groupes</string>
-    <string name="lbl_thumbnails">Miniatures</string>
+    <string name="X_lbl_thumbnails">Miniatures</string>
     <string name="pg_ui">Interface utilisateur</string>
     <string name="pg_ui_field_visibility">Gérer la visibilité des champs</string>
     <string name="progress_end_backup_success">Sauvegarde réussie</string>
@@ -447,8 +450,8 @@
     <string name="pt_bob_header">Détails du résumé dans l\'en-tête</string>
     <string name="pt_bob_list_rebuild_state">Etat de démarrage de la liste de lecture</string>
     <string name="pt_bob_list_state_expansion_level">Liste de livres d\'expansion par défaut</string>
-    <string name="pt_bob_thumbnails_scale">Taille de l\'image dans les listes</string>
-    <string name="pt_bob_thumbnails_show">Montrer les miniatures</string>
+    <string name="pt_bob_cover_scale">Taille de couverture dans les listes</string>
+    <string name="pt_bob_cover_show">Montrer les couvertures</string>
     <string name="pt_camera_next_action">Action après avoir pris une photo</string>
     <string name="pt_collect_series_info_from_toc">Recueillir des informations sur la série de la table des matières</string>
     <string name="pt_maintenance">Entretien</string>
@@ -471,7 +474,7 @@
     <string name="pt_sort_title_reordered">Trier les titres par</string>
     <string name="pt_cropper_layer_type">Recadrage «Layer Type»</string>
     <string name="pt_cropper_layer_type_summary">Laissez ce paramètre sur la valeur par défaut, sauf si vous rencontrez des problèmes lors du recadrage des images. Essayez «Logiciel» pour plus sûr mais plus lentement, ou forcez «Matériel» pour moins sûr, mais plus rapide.</string>
-    <string name="pt_thumbnails_cache_resized">Mettre les miniatures en cache</string>
+    <string name="pt_thumbnails_cache_resized">Mettre les couvertures en cache</string>
     <string name="pt_cropper_frame_is_whole_image">Le cadre par défaut de l\'image à recadrer sera l\'image complète</string>
     <string name="pt_thumbnails_rotate_auto">Faire pivoter les images</string>
     <string name="pt_ui_language">Langue</string>
@@ -551,7 +554,6 @@
     <string name="info_authorized_needed">Autoriser l\'accès</string>
     <string name="lbl_backing_up">Sauvegarde de…</string>
     <string name="lbl_clone_style">Cloner le style</string>
-    <string name="lbl_cover_long">Vignette de couverture</string>
     <string name="X_lbl_delete_book">Supprimer un livre</string>
     <string name="X_lbl_delete_series">Supprimer la série</string>
     <string name="X_lbl_delete_toc_entry">Supprimer le titre</string>
@@ -660,7 +662,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Afficher des livres avec plusieurs éditeurs.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">sous leur éditeur principal uniquement.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">sous chaque éditeur.</string>
-    <string name="image">Image</string>
+    <string name="lbl_image">Image</string>
     <string name="lbl_author_type_narrator">Narrateur</string>
     <string name="unknown">Inconnu</string>
     <string name="action_not_now">Pas maintenant</string>
@@ -679,5 +681,8 @@
     <string name="lbl_backup_and_export">Sauvegarde et exportation</string>
     <string name="lbl_export">Exportation</string>
     <string name="lbl_database">Base de données</string>
+    <string name="lbl_archive_import_supported">L\'importation est prise en charge.</string>
+    <string name="lbl_archive_format_db_info">La base de données SQLite.</string>
+    <string name="lbl_archive_type_db">Fichier de base de données (%1$s)</string>
 
 </resources>

@@ -248,8 +248,8 @@
     </string>
 
     <string name="txt_share_book_im_reading">I\'m reading “%1$s” %2$s by %3$s %4$s</string>
-    <string name="txt_tap_on_thumb">Tap on a thumbnail to display a larger image</string>
-    <string name="txt_tap_on_image_to_select">Tap on the larger image to select</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Tap on a thumbnail to display a larger image.</string>
+    <string name="txt_tap_on_image_to_select">Tap on the larger image to select it.</string>
 
     <string name="txt_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
 
@@ -312,7 +312,7 @@
     <string name="confirm_merge_publishers">The publisher you are modifying already exists. Would you like to merge them?</string>
 
     <string name="confirm_duplicate_book_message">The book you are trying to add already exists in the database, are you sure you want to add another copy?</string>
-    <string name="confirm_overwrite_thumbnail">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
+    <string name="confirm_overwrite_cover">This will update the selected fields as shown, but images can optionally be downloaded for ALL books.\n\nDo you want to overwrite all existing images? Warning, this may take a long time.</string>
 
     <!-- param 1: previous and param 2: new name, each time as a single string.
          param 3: the text on the button for making a global change. e.g. "All books" -->
@@ -795,9 +795,9 @@
 
     <!-- Preference Category: thumbnails -->
     <!-- SwitchPreference - Show thumbnail image for each book -->
-    <string name="pt_bob_thumbnails_show">Show Thumbnails</string>
+    <string name="pt_bob_cover_show">Show covers</string>
     <!-- ListPreference - Scale thumbnails in the list view. -->
-    <string name="pt_bob_thumbnails_scale">Thumbnails size in lists</string>
+    <string name="pt_bob_cover_scale">Cover size in lists</string>
 
     <!-- Preference Category: author -->
     <!-- SwitchPreference - Display Authors by family (default) or given name. -->
@@ -1315,20 +1315,19 @@
     <string name="lbl_all_bookshelves">All bookshelves</string>
 
     <!-- Single book cover - Short label. -->
-    <string name="lbl_cover">Cover</string>
+    <string name="lbl_cover_front">Cover</string>
+    <!-- Single book back/second cover. -->
+    <string name="lbl_cover_back">Back cover</string>
     <!-- Single book cover - Long label. -->
-    <string name="lbl_cover_long">Book Cover</string>
+    <string name="lbl_cover_long">Cover image</string>
+
     <!-- Multiple book covers. Short label. -->
     <string name="lbl_covers">Covers</string>
     <!-- Multiple book covers. Long label. -->
     <string name="lbl_covers_long">Cover images</string>
-    <!-- Preference Category -->
-    <string name="lbl_thumbnails">Thumbnails</string>
-    <!-- Single book back/second cover. -->
-    <string name="lbl_cover_back">Back cover</string>
 
     <!-- [VERIFIED] -->
-    <string name="image">Image</string>
+    <string name="lbl_image">Image</string>
 
     <!-- number of pages; this is a field-label. -->
     <string name="lbl_pages">Pages</string>
@@ -1453,6 +1452,9 @@
     <!-- Label for the spinner where the user selects the format of the export file/archive. -->
     <string name="lbl_archive_format">Format</string>
 
+    <string name="lbl_archive_import_supported">Importing is supported.</string>
+    <string name="lbl_archive_is_export_only">This is only for exporting data; importing is not supported.</string>
+
     <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_backup">Backup (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
@@ -1466,17 +1468,15 @@
     <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_xml">XML export (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
-    <string name="lbl_archive_format_xml_info">All data in XML format.\nXML is for export only, no import.</string>
+    <string name="lbl_archive_format_xml_info">All data in XML format.</string>
 
     <!-- Text in a spinner dropdown. Must be fairly short. -->
-    <string name="lbl_archive_type_db">Database export (%1$s)</string>
+    <string name="lbl_archive_type_db">Database file (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
-    <string name="lbl_archive_format_db_info">The full database (no covers).\nThis is for export only, no import.</string>
+    <string name="lbl_archive_format_db_info">The SQLite database.</string>
 
     <!-- 'export books' option. -->
-    <string name="lbl_export_option_books_since_last_full_backup">
-        Books added or updated since last full backup.
-    </string>
+    <string name="lbl_export_option_books_since_last_full_backup">Books added or updated since last full backup.</string>
     <!-- 'import' option -->
     <string name="lbl_import_option_new_and_changed_books">New and updated books</string>
 
@@ -1558,7 +1558,7 @@
     <string name="X_error_not_available">%1$s is not available.</string>
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
 
-    <string name="X_warning_cover_corrupt">Cover is corrupt</string>
+    <string name="X_warning_cover_corrupt">Cover is corrupt.</string>
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
     <string name="X_warning_already_in_list_author">Author is already in the list</string>
     <string name="X_warning_already_in_list_series">Series is already in the list</string>
@@ -1574,6 +1574,7 @@
     <!-- Preference Category -->
     <string name="X_pg_general">General</string>
     <string name="X_pg_internet_search">Web Searches</string>
+    <string name="X_lbl_thumbnails">Thumbnails</string>
 
     <string name="X_anthology_titles">Anthology Titles</string>
     <!-- [VERIFIED] -->
