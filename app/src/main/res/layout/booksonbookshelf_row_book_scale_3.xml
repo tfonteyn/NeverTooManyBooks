@@ -43,7 +43,7 @@
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
-            android:contentDescription="@string/lbl_cover"
+            android:contentDescription="@string/lbl_cover_front"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:layout_height="@dimen/tools_cover_scale_3_height"

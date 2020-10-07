@@ -37,7 +37,7 @@
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
-            android:contentDescription="@string/lbl_cover"
+            android:contentDescription="@string/lbl_cover_front"
             android:focusable="true"
             app:layout_constraintEnd_toStartOf="@id/coverImage1"
             app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +50,7 @@
         <ImageView
             android:id="@+id/coverImage1"
             style="@style/CoverImage"
-            android:contentDescription="@string/lbl_cover"
+            android:contentDescription="@string/lbl_cover_front"
             android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/coverImage0"

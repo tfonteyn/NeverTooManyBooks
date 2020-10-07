@@ -34,7 +34,6 @@
     <string name="X_action_swap">Değiştirmek</string>
     <string name="X_tip_booklist_global_properties">Tüm kitap listesi stillerinin varsayılan özelliklerini ayarlamak için bu ekranı kullanabilirsiniz. Çoğu özellik bireysel stiller tarafından geçersiz kılınabilir, ancak varsayılan değerler burada tanımlanır. Listelerin başlangıçta nasıl görüntüleneceğini değiştirebilir ve mümkün olduğunda tüm stillerinize uygulanacak çeşitli diğer tercihleri ayarlayabilirsiniz.</string>
     <string name="X_use_default_setting">Varsayılan ayarları kullan</string>
-    <string name="X_warning_cover_corrupt">Kapak hasarlı</string>
     <string name="X_warning_required_field_x">%1$s boş olamaz</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Yorumlarınız (isteğe bağlı):</string>
@@ -56,7 +55,7 @@
     <string name="action_add">Ekle</string>
     <string name="X_action_exit">Çıkış</string>
     <string name="action_merge">Birleşmek</string>
-    <string name="action_new">Yeni</string>
+    <string name="X_action_new">Yeni</string>
     <string name="action_save">Kaydet</string>
     <string name="X_btn_continue_edit">Düzenlemeyi sürdür</string>
     <string name="X_btn_customize">Kişiselleştir…</string>
@@ -82,7 +81,7 @@
     <string name="confirm_merge_authors">Yeniden adlandırılan yazar zaten var. Onları birleştirmek ister misiniz?</string>
     <string name="confirm_merge_series">Yeniden adlandırılan seri zaten var. Onları birleştirmek ister misiniz?</string>
     <string name="confirm_merge_publishers">Yeniden adlandırılan yayıncı zaten var. Onları birleştirmek ister misiniz?</string>
-    <string name="confirm_overwrite_thumbnail">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
+    <string name="confirm_overwrite_cover">Bu işlem seçili alanları gösterildiği biçimde güncelleyecektir, ancak küçük resimler seçime bağlı olarak tüm kitaplar için de indirilebilir.\n\nVar olan tüm küçük resimlerin üzerine yazmak istiyor musunuz? Bu işlem uzun sürebilir. </string>
     <string name="confirm_unsaved_edits">Saklanmamış değişiklikler var, şimdi çıkarsanız hepsi silinecektir.</string>
     <string name="confirm_unsaved_edits2">Kaydedilmemiş değişiklikleriniz var. Sürdürmek istediğinizden emin misiniz?</string>
     <string name="debug_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
@@ -187,8 +186,8 @@
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
     <string name="txt_select_fields_to_update">Seçilen alanlar İnternet\'ten güncellenecektir. Seçilmeyen alanlar değiştirilmeden kalacaktır.</string>
     <string name="txt_share_book_im_reading">“%1$s” %2$s yazısını %3$s %4$s okuyorum</string>
-    <string name="txt_tap_on_image_to_select">Seçmek için büyük resmin üzerine dokunun</string>
-    <string name="txt_tap_on_thumb">Daha büyük görüntülemek için küçük resme dokunun</string>
+    <string name="txt_tap_on_image_to_select">Seçmek için daha büyük resme dokunun.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Daha büyük bir görüntü görüntülemek için bir küçük resme dokunun.</string>
     <string name="txt_waiting_for_scanner">Tarayıcı / kamera bekleniyor</string>
     <string name="isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
     <string name="isfdb_warning_limited_to">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
@@ -207,7 +206,8 @@
     <string name="lbl_archive_type_backup">Yedek kopya (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Tam Yedekleme / Geri Yükleme arşivi</string>
     <string name="lbl_archive_type_xml">XML dışa aktarma (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Tüm veriler XML formatında. Yalnızca XML dışa aktarma, içe aktarma yok.</string>
+    <string name="lbl_archive_format_xml_info">Tüm veriler XML formatında.</string>
+    <string name="lbl_archive_is_export_only">Bu yalnızca verileri dışa aktarmak içindir; içe aktarma desteklenmez.</string>
     <string name="lbl_author">Yazar</string>
     <string name="lbl_author_type">Yazar tipi</string>
     <string name="lbl_author_type_artist">çizimler</string>
@@ -239,9 +239,13 @@
     <string name="lbl_condition_reading_copy">Kopya okunuyor</string>
     <string name="lbl_condition_very_good">Çok iyi</string>
     <string name="lbl_copy_database">Veritabanını Ver</string>
-    <string name="lbl_cover">Kapak</string>
+
+    <string name="lbl_cover_front">Kitap kapağı</string>
+    <string name="lbl_cover_back">Kitap arka kapağı</string>
+    <string name="lbl_cover_long">Kitap kapağı</string>
     <string name="lbl_covers_long">Kapak görselleri</string>
-    <string name="lbl_covers">Kapaklar</string>
+    <string name="lbl_covers">kapakları</string>
+
     <string name="lbl_credentials">Kullanıcı kimlik bilgileri</string>
     <string name="lbl_currency">Para birimi</string>
     <string name="lbl_date_acquired">Alınan Tarih</string>
@@ -411,7 +415,7 @@
     <string name="pg_image_cache">Görüntüler önbelleği</string>
     <string name="X_pg_internet_search">Web aramaları</string>
     <string name="pg_style_groups">Öbeklemeler</string>
-    <string name="lbl_thumbnails">Ufak resimler</string>
+    <string name="X_lbl_thumbnails">Ufak resimler</string>
     <string name="pg_ui">Kullanıcı arayüzü</string>
     <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="progress_end_backup_success">Yedekleme başarılı!</string>
@@ -444,8 +448,8 @@
     <string name="pt_bob_header">Başlık özet ayrıntıları</string>
     <string name="pt_bob_list_rebuild_state">Kitap listesi başlangıç durumu</string>
     <string name="pt_bob_list_state_expansion_level">Varsayılan Kitap listesi genişletme</string>
-    <string name="pt_bob_thumbnails_scale">Listelerdeki görüntü boyutu</string>
-    <string name="pt_bob_thumbnails_show">Ufak resimleri göster</string>
+    <string name="pt_bob_cover_scale">Listelerdeki görüntü boyutu</string>
+    <string name="pt_bob_cover_show">Ufak resimleri göster</string>
     <string name="pt_camera_next_action">Fotoğraf çektikten sonraki eylem</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_maintenance">Bakım</string>
@@ -545,7 +549,6 @@
     <string name="info_authorized_needed">Erişime izin ver</string>
     <string name="lbl_backing_up">Yedekleniyor…</string>
     <string name="lbl_clone_style">Biçemi çoğalt</string>
-    <string name="lbl_cover_long">Kapak resmi</string>
     <string name="X_lbl_delete_book">Kitap sil</string>
     <string name="X_lbl_delete_series">Serileri sil</string>
     <string name="X_lbl_delete_toc_entry">Başlığı sil</string>
@@ -654,7 +657,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Birden çok yayıncının bulunduğu kitapları gösterin.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">yalnızca birincil yayıncıları altında.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">her yayıncının altında.</string>
-    <string name="image">Resim</string>
+    <string name="lbl_image">Resim</string>
     <string name="lbl_author_type_narrator">Dış ses</string>
     <string name="unknown">Bilinmiyor</string>
     <string name="action_not_now">Şimdi değil</string>
@@ -672,5 +675,8 @@
     <string name="lbl_backup_and_export">Yedekleme ve Dışa Aktarma</string>
     <string name="lbl_export">İhracat</string>
     <string name="lbl_database">Veri tabanı</string>
+    <string name="lbl_archive_import_supported">İçe aktarma desteklenmektedir.</string>
+    <string name="lbl_archive_format_db_info">SQLite veritabanı.</string>
+    <string name="lbl_archive_type_db">Veritabanı dosyası (%1$s)</string>
 
 </resources>

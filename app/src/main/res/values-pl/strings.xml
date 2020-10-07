@@ -34,7 +34,6 @@
     <string name="X_action_swap">Wymieniać</string>
     <string name="X_tip_booklist_global_properties">Możesz użyć tego ekranu, aby ustawić domyślną charakterystykę wszystkich stylów listy książek. Większość właściwości może być nadpisana przez poszczególne style, ale tutaj są zdefiniowane wartości domyślne. Możesz zmienić sposób wyświetlania list przy starcie i dostosować różne inne preferencje, które będą stosowane do wszystkich twoich stylów, jeśli to możliwe. Możesz także edytować menu stylów i same style.</string>
     <string name="X_use_default_setting">Użyj ustawień domyślnych</string>
-    <string name="X_warning_cover_corrupt">Okładka jest uszkodzona</string>
     <string name="X_warning_required_field_x">%1$s nie może być pusty</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Twoje komentarze (lub po prostu pozostaw puste):</string>
@@ -55,7 +54,7 @@
     <string name="action_add">Dodaj</string>
     <string name="X_action_exit">Wyjście</string>
     <string name="action_merge">Łączyć</string>
-    <string name="action_new">Nowy</string>
+    <string name="X_action_new">Nowy</string>
     <string name="action_save">Zapisz</string>
     <string name="X_btn_continue_edit">Kontynuuj edycję</string>
     <string name="X_btn_customize">Dostosuj…</string>
@@ -80,7 +79,7 @@
     <string name="confirm_merge_authors">Autor o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
     <string name="confirm_merge_series">Seria o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
     <string name="confirm_merge_publishers">Wydawca o zmienionej nazwie już istnieje.. Czy chcesz je połączyć?</string>
-    <string name="confirm_overwrite_thumbnail">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.\n\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu…</string>
+    <string name="confirm_overwrite_cover">Wybrane pola zostaną zaktualizowane, natomiast okładki mogą by opcjonalnie pobrane dla wszystkich książek.\n\nCzy chcesz zastąpić wszystkie istniejące okładki? Uwaga - może to zająć sporo czasu…</string>
     <string name="confirm_unsaved_edits">Masz niezapisane zmiany, jeśli wyjdziesz teraz, zostaną utracone.</string>
     <string name="confirm_unsaved_edits2">Nie zapisałeś zmian. Czy na pewno chcesz kontynuować?</string>
     <string name="debug_body">Poświęć chwilę na krótki opis problemu, z którym się zetknąłeś.</string>
@@ -184,8 +183,8 @@
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
     <string name="txt_select_fields_to_update">Wybrane pola będą zaktualizowane wg danych z sieci. Pozostałe nie zostaną zmienione.</string>
     <string name="txt_share_book_im_reading">Czytam „%1$s” %2$s przez %3$s %4$s</string>
-    <string name="txt_tap_on_image_to_select">Stuknij w większy obraz, aby go wybrać</string>
-    <string name="txt_tap_on_thumb">Kliknij na obrazku by go powiększyć</string>
+    <string name="txt_tap_on_image_to_select">Dotknij większego obrazu, aby go wybrać.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Dotknij miniatury, aby wyświetlić większy obraz.</string>
     <string name="txt_waiting_for_scanner">Oczekiwanie na skaner / aparat</string>
     <string name="isfdb_menu_populate_toc">Automatycznie obsadź pozycje antologii(EKSPERYMENTALNIE)</string>
     <string name="isfdb_warning_limited_to">(obsługiwane tylko przez stronę internetową ISFDB)</string>
@@ -204,7 +203,8 @@
     <string name="lbl_archive_type_backup">Kopia zapasowa (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Pełne archiwum kopii zapasowej / przywracania</string>
     <string name="lbl_archive_type_xml">Eksport XML (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Wszystkie dane w formacie XML. XML jest tylko eksportem, bez importu.</string>
+    <string name="lbl_archive_format_xml_info">Wszystkie dane w formacie XML.</string>
+    <string name="lbl_archive_is_export_only">Dotyczy to tylko eksportowania danych; import nie jest obsługiwany.</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Rodzaj autora</string>
     <string name="lbl_author_type_artist">ilustracje</string>
@@ -236,9 +236,12 @@
     <string name="lbl_condition_reading_copy">Czytanie kopii</string>
     <string name="lbl_condition_very_good">Bardzo dobre</string>
     <string name="lbl_copy_database">Eksportuj bazę danych</string>
-    <string name="lbl_cover">Okładka</string>
-    <string name="lbl_covers_long">Obrazy okładkowe</string>
-    <string name="lbl_covers">Okładka</string>
+    <string name="lbl_cover_front">Okładka</string>
+    <string name="lbl_cover_back">Tylna okładka</string>
+    <string name="lbl_cover_long">Okładka</string>
+    <string name="lbl_covers_long">Okładki książek</string>
+    <string name="lbl_covers">Okładki</string>
+
     <string name="lbl_credentials">Dane logowania użytkownika</string>
     <string name="lbl_currency">Waluta</string>
     <string name="lbl_date_acquired">Data nabycia</string>
@@ -408,7 +411,7 @@
     <string name="pg_image_cache">Pamięć podręczna zdjęć</string>
     <string name="X_pg_internet_search">Wyszukiwania w Internecie</string>
     <string name="pg_style_groups">Grupowanie</string>
-    <string name="lbl_thumbnails">Miniatury</string>
+    <string name="X_lbl_thumbnails">Miniatury</string>
     <string name="pg_ui">Interfejs użytkownika</string>
     <string name="pg_ui_field_visibility">Dostosuj widoczność pól</string>
     <string name="progress_end_backup_success">Kopia zapasowa wykonana</string>
@@ -441,8 +444,8 @@
     <string name="pt_bob_header">Szczegóły podsumowujące w nagłówku</string>
     <string name="pt_bob_list_rebuild_state">Stan uruchamiania listy książek</string>
     <string name="pt_bob_list_state_expansion_level">Domyślne rozszerzenie listy książek</string>
-    <string name="pt_bob_thumbnails_scale">Rozmiar obrazu na listach</string>
-    <string name="pt_bob_thumbnails_show">Pokaż miniaturki</string>
+    <string name="pt_bob_cover_scale">Rozmiar obrazu na listach</string>
+    <string name="pt_bob_cover_show">Pokaż miniaturki</string>
     <string name="pt_camera_next_action">Działanie po zrobieniu zdjęcia</string>
     <string name="pt_collect_series_info_from_toc">Zbierz informacje o serii z spisu treści</string>
     <string name="pt_maintenance">Konserwacja</string>
@@ -542,7 +545,6 @@
     <string name="info_authorized_needed">Autoryzuj dostęp</string>
     <string name="lbl_backing_up">Tworzenie kopii zapasowej…</string>
     <string name="lbl_clone_style">Duplikat stylu</string>
-    <string name="lbl_cover_long">Okładka</string>
     <string name="X_lbl_delete_book">Usuń książkę</string>
     <string name="X_lbl_delete_series">Usuń serię</string>
     <string name="X_lbl_delete_toc_entry">Usuń tytuł</string>
@@ -652,7 +654,7 @@
     <string name="pv_bob_books_under_multiple_primary_publisher_only">tylko u głównego wydawcy.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">pod każdym wydawcą.</string>
     <string name="book_format_paperback_large">Miękki / duży</string>
-    <string name="image">Obraz</string>
+    <string name="lbl_image">Obraz</string>
     <string name="lbl_author_type_narrator">Narrator</string>
     <string name="unknown">Brak informacji</string>
     <string name="action_not_now">Nie teraz</string>
@@ -671,4 +673,7 @@
     <string name="lbl_backup_and_export">Kopia zapasowa i eksport</string>
     <string name="lbl_export">Eksport</string>
     <string name="lbl_database">Baza danych</string>
+    <string name="lbl_archive_import_supported">Importowanie jest obsługiwane.</string>
+    <string name="lbl_archive_format_db_info">Baza danych SQLite.</string>
+    <string name="lbl_archive_type_db">Plik bazy danych (%1$s)</string>
 </resources>

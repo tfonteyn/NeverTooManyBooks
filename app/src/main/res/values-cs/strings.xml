@@ -34,7 +34,6 @@
     <string name="X_action_swap">Vyměnit</string>
     <string name="X_tip_booklist_global_properties">Na této obrazovce můžete nastavit výchozí charakteristiky všech stylů seznamu knih. Většina vlastností může být potlačena jednotlivými styly, ale zde jsou definovány výchozí hodnoty. Můžete změnit způsob zobrazení seznamů při spuštění a upravit řadu dalších preferencí, které budou použity na všechny vaše styly, pokud to bude možné.</string>
     <string name="X_use_default_setting">Použít výchozí nastavení</string>
-    <string name="X_warning_cover_corrupt">Obálka je poškozena</string>
     <string name="X_warning_required_field_x">%1$s nemůže být prázdné</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Váš komentář (nepovinné):</string>
@@ -49,13 +48,13 @@
     <string name="book_format_ebook">ebook</string>
     <string name="book_format_hardcover">Tvrdý obal</string>
     <string name="book_format_paperback">Brožovaná kniha</string>
-    <string name="book_format_softcover">Softcover</string>
+    <string name="book_format_softcover">Měkká vazba</string>
     <string name="bookshelf_all_books">Všechny knihy</string>
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="action_add">Přidat</string>
     <string name="X_action_exit">Přestat</string>
     <string name="action_merge">Spojit</string>
-    <string name="action_new">Nový</string>
+    <string name="X_action_new">Nový</string>
     <string name="action_save">Uložit</string>
     <string name="X_btn_continue_edit">Pokračovat v úpravách</string>
     <string name="X_btn_customize">Přizpůsobit…</string>
@@ -80,7 +79,7 @@
     <string name="confirm_merge_authors">Autor, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_publishers">Vydavatel, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
-    <string name="confirm_overwrite_thumbnail">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
+    <string name="confirm_overwrite_cover">Toto aktualizuje pouze vybraná pole, ale náhledy budou staženy pro VŠECHNY knihy.\n\nChcete přepsat všechny existující náhledy? Pozor, může to chvíli trvat…</string>
     <string name="confirm_unsaved_edits">Máte neuložené změny, pokud nyní ukončíte, budou ztraceny.</string>
     <string name="confirm_unsaved_edits2">Změny nejsou uloženy. Určitě si přejete pokračovat?</string>
     <string name="debug_body">Věnujte prosím čas přesnému popisu problému, se kterým máte zkušenost.</string>
@@ -185,8 +184,8 @@
     <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s. Chtěli byste vidět více informací?</string>
     <string name="txt_select_fields_to_update">Vybraná pole budou aktualizována automaticky z internetu. Nevybraná pole zůstanou beze změny.</string>
     <string name="txt_share_book_im_reading">Čtu „%1$s“ %2$s o %3$s %4$s</string>
-    <string name="txt_tap_on_image_to_select">Klikněte na velký obrázek a vyberte jej</string>
-    <string name="txt_tap_on_thumb">Pro zobrazení většího obrázku klikněte na náhled</string>
+    <string name="txt_tap_on_image_to_select">Klepnutím na větší obrázek jej vyberte.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Pro zobrazení většího obrázku klikněte na náhled</string>
     <string name="txt_waiting_for_scanner">Čekání na skener / fotoaparát</string>
     <string name="isfdb_menu_populate_toc">Automaticky naplnit tituly (EXPERIMENTÁLNÍ FUNKCE)</string>
     <string name="isfdb_warning_limited_to">(podporuje pouze webová stránka ISFDB)</string>
@@ -205,7 +204,8 @@
     <string name="lbl_archive_type_backup">Záložní kopie (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Úplný archiv zálohy / obnovy</string>
     <string name="lbl_archive_type_xml">Export XML (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Všechna data ve formátu XML. XML je pouze export, bez importu.</string>
+    <string name="lbl_archive_format_xml_info">Všechna data ve formátu XML.</string>
+    <string name="lbl_archive_is_export_only">Toto je pouze pro export dat; import není podporován.</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Typ autora</string>
     <string name="lbl_author_type_artist">ilustrace</string>
@@ -220,7 +220,7 @@
     <string name="lbl_author_type_translator">Překladatel</string>
     <string name="lbl_author_type_writer">spisovatel</string>
     <string name="lbl_authors">Autoři</string>
-    <string name="lbl_backup">Zálohovat</string>
+    <string name="lbl_backup">Záloha</string>
     <string name="lbl_barcode">čárový kód</string>
     <string name="lbl_book">Kniha</string>
     <string name="lbl_books">Knihy</string>
@@ -237,9 +237,11 @@
     <string name="lbl_condition_reading_copy">Čtení kopie</string>
     <string name="lbl_condition_very_good">Velmi dobře</string>
     <string name="lbl_copy_database">Zkopírujte databázi</string>
-    <string name="lbl_cover">Přebal</string>
-    <string name="lbl_covers_long">Obrázky na obálce</string>
-    <string name="lbl_covers">Přebal</string>
+    <string name="lbl_cover_front">Obal knihy</string>
+    <string name="lbl_cover_back">Zadní obálka knihy</string>
+    <string name="lbl_cover_long">Obal knihy</string>
+    <string name="lbl_covers_long">Obálky na knihy</string>
+    <string name="lbl_covers">Obálky na knihy</string>
     <string name="lbl_credentials">Identifikační údaje uživatele</string>
     <string name="lbl_currency">Měna</string>
     <string name="lbl_date_acquired">Datum Nabytí</string>
@@ -409,7 +411,7 @@
     <string name="pg_image_cache">Obrázky mezipaměti</string>
     <string name="X_pg_internet_search">Vyhledávání na webu</string>
     <string name="pg_style_groups">Seskupení</string>
-    <string name="lbl_thumbnails">Náhledy</string>
+    <string name="X_lbl_thumbnails">Náhledy</string>
     <string name="pg_ui">Uživatelské rozhraní</string>
     <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
     <string name="progress_end_backup_success">Zálohování úspěšně dokončeno</string>
@@ -442,8 +444,8 @@
     <string name="pt_bob_header">Souhrnné údaje v záhlaví</string>
     <string name="pt_bob_list_rebuild_state">Stav spuštění seznamu knih</string>
     <string name="pt_bob_list_state_expansion_level">Výchozí seznam rozšiřujících knih</string>
-    <string name="pt_bob_thumbnails_scale">Velikost miniatur v seznamech</string>
-    <string name="pt_bob_thumbnails_show">Zobrazit náhledy</string>
+    <string name="pt_bob_cover_scale">Velikost miniatur v seznamech</string>
+    <string name="pt_bob_cover_show">Zobrazit náhledy</string>
     <string name="pt_camera_next_action">Akce po pořízení snímku</string>
     <string name="pt_collect_series_info_from_toc">Sbírejte informace o sériích z obsahu</string>
     <string name="pt_maintenance">Údržba</string>
@@ -543,7 +545,6 @@
     <string name="info_authorized_needed">Autorizovat přístup</string>
     <string name="lbl_backing_up">Zálohování…</string>
     <string name="lbl_clone_style">Klonovat styl</string>
-    <string name="lbl_cover_long">Náhled obálky</string>
     <string name="X_lbl_delete_book">Smazat knihu</string>
     <string name="X_lbl_delete_series">Smazat série</string>
     <string name="X_lbl_delete_toc_entry">Smazat název</string>
@@ -653,7 +654,7 @@
     <string name="pv_bob_books_under_multiple_primary_publisher_only">pouze pod jejich primárním vydavatelem.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">pod každým vydavatelem.</string>
     <string name="book_format_paperback_large">Velká brožovaná vazba</string>
-    <string name="image">Obrázek</string>
+    <string name="lbl_image">Obrázek</string>
     <string name="lbl_author_type_narrator">Vypravěč</string>
     <string name="unknown">Neznámé</string>
     <string name="action_not_now">Teď ne</string>
@@ -672,5 +673,8 @@
     <string name="lbl_backup_and_export">Zálohování a export</string>
     <string name="lbl_export">Vývozní</string>
     <string name="lbl_database">Databáze</string>
+    <string name="lbl_archive_import_supported">Import je podporován.</string>
+    <string name="lbl_archive_format_db_info">Databáze SQLite.</string>
+    <string name="lbl_archive_type_db">Soubor databáze (%1$s)</string>
 
 </resources>

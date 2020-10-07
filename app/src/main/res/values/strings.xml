@@ -749,8 +749,6 @@
          Allow the user to lookup books using such an ID, and manually modify them. -->
     <string name="pt_allow_edit_external_id">Allow editing website book id</string>
 
-    <string name="pt_enable_fast_scroller_overlay">Scrolling information overlay.</string>
-
     <string name="pt_primary_author_type">Primary author type</string>
     <string name="pt_maintenance">Maintenance</string>
 
@@ -850,7 +848,7 @@
     <!-- Dialog title. -->
     <string name="lbl_select_style">Select Style</string>
     <!-- Dialog title. -->
-    <string name="lbl_duplicate_book">Duplicate Book</string>
+    <string name="lbl_duplicate_book">Copy this book</string>
     <!-- Dialog title. -->
     <string name="lbl_import_book_data">Import Books</string>
     <!-- Dialog title. -->
@@ -863,6 +861,7 @@
 
     <string name="lbl_import">Import</string>
     <string name="lbl_export">Export</string>
+
     <string name="lbl_backup">Backup</string>
     <string name="lbl_backup_and_export">Backup &amp; Export</string>
 
@@ -984,7 +983,6 @@
 
     <!-- [VERIFIED] generic action buttons/menus -->
     <string name="action_add">Add</string>
-    <string name="action_new">New</string>
     <!-- [VERIFIED] -->
     <string name="action_edit">Edit</string>
     <!-- [VERIFIED] -->
@@ -1017,6 +1015,11 @@
     <string name="action_reset_to_default">Reset to default</string>
     <!-- [VERIFIED] -->
     <string name="action_clear_credentials">Clear credentials</string>
+    <!-- [VERIFIED] -->
+    <string name="btn_learn_more">Learn more</string>
+    <!-- [VERIFIED] -->
+    <string name="btn_email">Email</string>
+
 
     <string name="action_validate">Validate</string>
 
@@ -1035,12 +1038,11 @@
 
     <!-- generic response button texts -->
     <string name="btn_disable_message">Disable Message</string>
-    <!-- [VERIFIED] -->
-    <string name="btn_learn_more">Learn more</string>
+
     <string name="btn_this_book">This Book</string>
 
-    <!-- [VERIFIED] -->
-    <string name="btn_email">Email</string>
+
+    <string name="X_action_new">New</string>
 
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag me to reorder this list</string>
@@ -1474,6 +1476,7 @@
     <string name="lbl_archive_type_db">Database file (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_format_db_info">The SQLite database.</string>
+    <string name="lbl_database">Database</string>
 
     <!-- 'export books' option. -->
     <string name="lbl_export_option_books_since_last_full_backup">Books added or updated since last full backup.</string>
@@ -1558,7 +1561,6 @@
     <string name="X_error_not_available">%1$s is not available.</string>
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
 
-    <string name="X_warning_cover_corrupt">Cover is corrupt.</string>
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
     <string name="X_warning_already_in_list_author">Author is already in the list</string>
     <string name="X_warning_already_in_list_series">Series is already in the list</string>
@@ -1592,7 +1594,6 @@
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
-
-    <string name="lbl_database">Database</string>
+    <string name="pt_enable_fast_scroller_overlay">Scrolling information overlay.</string>
 
 </resources>

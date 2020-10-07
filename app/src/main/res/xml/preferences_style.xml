@@ -84,7 +84,7 @@
             android:key="style.booklist.show.thumbnails"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/pt_bob_thumbnails_show"
+            android:title="@string/pt_bob_cover_show"
             />
 
         <!-- default BooklistStyle.IMAGE_SCALE_3_MEDIUM == 3 -->
@@ -93,7 +93,7 @@
             android:icon="@drawable/ic_photo_size_select_large"
             android:key="style.booklist.scale.thumbnails"
             android:max="6"
-            android:title="@string/pt_bob_thumbnails_scale"
+            android:title="@string/pt_bob_cover_scale"
             app:min="1"
             />
 
@@ -127,7 +127,7 @@
             android:key="style.details.show.thumbnail.0"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_cover"
+            android:title="@string/lbl_cover_front"
             />
 
         <SwitchPreference

@@ -34,7 +34,6 @@
     <string name="X_action_swap">Scambiare</string>
     <string name="X_tip_booklist_global_properties">È possibile utilizzare questa schermata per impostare le caratteristiche predefinite di tutti gli stili dell\'elenco libri. La maggior parte delle proprietà può essere sovrascritta dai singoli stili, ma i valori predefiniti sono definiti qui. Puoi cambiare la modalità di visualizzazione degli elenchi all\'avvio e regolare una varietà di altre preferenze che verranno applicate a tutti i tuoi stili quando possibile.</string>
     <string name="X_use_default_setting">Utilizza le impostazioni predefinite</string>
-    <string name="X_warning_cover_corrupt">Copertina danneggiata</string>
     <string name="X_warning_required_field_x">%1$s deve contenere un valore</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">I tuoi commenti (o lascia in bianco):</string>
@@ -56,7 +55,7 @@
     <string name="action_add">Aggiungi</string>
     <string name="X_action_exit">Esci</string>
     <string name="action_merge">Unire</string>
-    <string name="action_new">Nuovo</string>
+    <string name="X_action_new">Nuovo</string>
     <string name="action_save">Salva</string>
     <string name="X_btn_continue_edit">Annulla</string>
     <string name="X_btn_customize">Personalizza…</string>
@@ -81,7 +80,7 @@
     <string name="confirm_merge_authors">L\'autore che stai rinominando esiste già. Ti piacerebbe unirli?</string>
     <string name="confirm_merge_series">La serie che stai rinominando esiste già. Ti piacerebbe unirli?</string>
     <string name="confirm_merge_publishers">L\'editore che stai rinominando esiste già. Ti piacerebbe unirli?</string>
-    <string name="confirm_overwrite_thumbnail">Verranno aggiornati i campi selezionati come indicato, ma opzionalmente è possibile aggiornare anche le miniature di TUTTI i libri.\n\nVuoi sovrascrivere tutte le miniature esistenti? Attenzione, potrebbero occorrere diversi minuti. </string>
+    <string name="confirm_overwrite_cover">Verranno aggiornati i campi selezionati come indicato, ma opzionalmente è possibile aggiornare anche le miniature di TUTTI i libri.\n\nVuoi sovrascrivere tutte le miniature esistenti? Attenzione, potrebbero occorrere diversi minuti. </string>
     <string name="confirm_unsaved_edits">Vi sono modifiche non salvate, se esci adesso saranno perse.</string>
     <string name="confirm_unsaved_edits2">Non hai salvato le modifiche. Vuoi continuare comunque?</string>
     <string name="debug_body">Prenditi qualche secondo per descrivere brevemente il problema riscontrato.</string>
@@ -186,8 +185,8 @@
     <string name="confirm_registration_required">Questa funzione richiede la registrazione con %1$s. Vuoi vedere maggiori informazioni?</string>
     <string name="txt_select_fields_to_update">I campi selezionati verranno aggiornato da Internet. Gli altri rimarranno invariati.</string>
     <string name="txt_share_book_im_reading">Sto leggendo «%1$s» %2$s di %3$s %4$s</string>
-    <string name="txt_tap_on_image_to_select">Tocca l\'immagine grande per selezionare</string>
-    <string name="txt_tap_on_thumb">Clicca sulla miniatura per visualizzare l\'immagine ingrandita</string>
+    <string name="txt_tap_on_image_to_select">Tocca l\'immagine più grande per selezionarla.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Toccare una miniatura per visualizzare un\'immagine più grande.</string>
     <string name="txt_waiting_for_scanner">In attesa di scanner / fotocamera</string>
     <string name="isfdb_menu_populate_toc">Inserisci titoli automaticamente (SPERIMENTALE)</string>
     <string name="isfdb_warning_limited_to">(supportato solo dal sito Web ISFDB)</string>
@@ -206,7 +205,8 @@
     <string name="lbl_archive_type_backup">Copia di backup (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Archivio completo di backup / ripristino</string>
     <string name="lbl_archive_type_xml">Esportazione XML (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Tutti i dati in formato XML. XML è solo esportazione, non importa.</string>
+    <string name="lbl_archive_format_xml_info">Tutti i dati in formato XML.</string>
+    <string name="lbl_archive_is_export_only">Questo è solo per l\'esportazione dei dati; l\'importazione non è supportata.</string>
     <string name="lbl_author">Autore</string>
     <string name="lbl_author_type">Tipo di autore</string>
     <string name="lbl_author_type_artist">illustrazioni</string>
@@ -238,7 +238,8 @@
     <string name="lbl_condition_reading_copy">Lettura copia</string>
     <string name="lbl_condition_very_good">Molto buona</string>
     <string name="lbl_copy_database">Copia Archivio (per supporto tecnico)</string>
-    <string name="lbl_cover">Copertina</string>
+    <string name="lbl_cover_front">Copertina</string>
+    <string name="lbl_cover_back">Copertina posteriore</string>
     <string name="lbl_covers_long">Immagini delle copertine</string>
     <string name="lbl_covers">Copertine</string>
     <string name="lbl_credentials">Credenziali utente</string>
@@ -410,7 +411,7 @@
     <string name="pg_image_cache">Cache di immagini</string>
     <string name="X_pg_internet_search">Ricerche sul web</string>
     <string name="pg_style_groups">Raggruppamenti</string>
-    <string name="lbl_thumbnails">Miniature</string>
+    <string name="X_lbl_thumbnails">Miniature</string>
     <string name="pg_ui">Interfaccia Utente</string>
     <string name="pg_ui_field_visibility">Gestisci visibilità campi</string>
     <string name="progress_end_backup_success">Backup completato</string>
@@ -443,8 +444,8 @@
     <string name="pt_bob_header">Riassunto dettagli nel titolo</string>
     <string name="pt_bob_list_rebuild_state">Stato di avvio dell\'elenco libri</string>
     <string name="pt_bob_list_state_expansion_level">Espansione elenco libri predefinito</string>
-    <string name="pt_bob_thumbnails_scale">Dimensione miniature in elenchi</string>
-    <string name="pt_bob_thumbnails_show">Mostra miniature</string>
+    <string name="pt_bob_cover_scale">Dimensione miniature in elenchi</string>
+    <string name="pt_bob_cover_show">Mostra miniature</string>
     <string name="pt_camera_next_action">Azione dopo aver scattato una foto</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="pt_maintenance">Συντήρηση</string>
@@ -547,7 +548,7 @@
     <string name="info_authorized_needed">Autorizza accesso</string>
     <string name="lbl_backing_up">Creazione backup in corso…</string>
     <string name="lbl_clone_style">Duplica stile</string>
-    <string name="lbl_cover_long">Miniatura copertina</string>
+    <string name="lbl_cover_long">Immagine di copertina</string>
     <string name="X_lbl_delete_book">Cancella libro</string>
     <string name="X_lbl_delete_series">Cancella serie</string>
     <string name="X_lbl_delete_toc_entry">Elimina il titolo</string>
@@ -656,7 +657,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Mostra libri con più editori.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">solo con il loro editore principale.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">sotto ciascun editore.</string>
-    <string name="image">Immagine</string>
+    <string name="lbl_image">Immagine</string>
     <string name="lbl_author_type_narrator">Narratore</string>
     <string name="unknown">Sconosciuto</string>
     <string name="action_not_now">Non ora</string>
@@ -675,5 +676,8 @@
     <string name="lbl_backup_and_export">Backup ed esportazione</string>
     <string name="lbl_export">Esportare</string>
     <string name="lbl_database">Banca dati</string>
+    <string name="lbl_archive_import_supported">L\'importazione è supportata.</string>
+    <string name="lbl_archive_format_db_info">Il database SQLite.</string>
+    <string name="lbl_archive_type_db">File di database (%1$s)</string>
 
 </resources>

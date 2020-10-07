@@ -158,7 +158,7 @@ public class UpdateFieldsModel
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addCoverField(prefs, R.string.lbl_cover, 0);
+        addCoverField(prefs, R.string.lbl_cover_front, 0);
         addCoverField(prefs, R.string.lbl_cover_back, 1);
 
         addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
@@ -360,7 +360,7 @@ public class UpdateFieldsModel
                         DBDefinitions.KEY_PRICE_LISTED_CURRENCY, R.string.lbl_currency);
 
         addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".0",
-                        Book.BKEY_TMP_FILE_SPEC[0], R.string.lbl_cover);
+                        Book.BKEY_TMP_FILE_SPEC[0], R.string.lbl_cover_front);
         addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".1",
                         Book.BKEY_TMP_FILE_SPEC[1], R.string.lbl_cover_back);
 

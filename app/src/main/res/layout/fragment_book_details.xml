@@ -103,7 +103,7 @@
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
-            android:contentDescription="@string/lbl_cover"
+            android:contentDescription="@string/lbl_cover_front"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:layout_height="@dimen/cover_details_0_height"
@@ -126,7 +126,7 @@
         <ImageView
             android:id="@+id/coverImage1"
             style="@style/CoverImage"
-            android:contentDescription="@string/lbl_cover"
+            android:contentDescription="@string/lbl_cover_front"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/coverImage0"
             tools:layout_height="@dimen/cover_details_1_height"

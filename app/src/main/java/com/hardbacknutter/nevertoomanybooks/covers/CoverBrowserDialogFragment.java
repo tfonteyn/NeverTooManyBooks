@@ -250,7 +250,7 @@ public class CoverBrowserDialogFragment
             mGalleryAdapter.notifyDataSetChanged();
 
             // Show help message
-            mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
+            mVb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
         }
     }
 
@@ -355,7 +355,7 @@ public class CoverBrowserDialogFragment
 
         Snackbar.make(mVb.preview, R.string.warning_image_not_found,
                       Snackbar.LENGTH_LONG).show();
-        mVb.statusMessage.setText(R.string.txt_tap_on_thumb);
+        mVb.statusMessage.setText(R.string.txt_tap_on_thumbnail_to_zoom);
 
     }
 

@@ -34,7 +34,6 @@
     <string name="X_action_swap">Intercambiar</string>
     <string name="X_tip_booklist_global_properties">Puede usar esta pantalla para configurar las características predeterminadas de todos los estilos de listas de libros. La mayoría de las propiedades pueden ser reemplazadas por estilos individuales, pero los valores predeterminados se definen aquí. Puede cambiar la forma en que se muestran las listas al inicio y ajustar una variedad de otras preferencias que se aplicarán a todos sus estilos cuando sea posible.</string>
     <string name="X_use_default_setting">Usar configuración predeterminada</string>
-    <string name="X_warning_cover_corrupt">La imagen de portada está dañada</string>
     <string name="X_warning_required_field_x">%1$s no puede ser blanco</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Sus comentarios (puede dejarlos en blanco):</string>
@@ -57,7 +56,7 @@
     <string name="action_add">Añadir</string>
     <string name="X_action_exit">Salir</string>
     <string name="action_merge">Unir</string>
-    <string name="action_new">Nuevo</string>
+    <string name="X_action_new">Nuevo</string>
     <string name="action_save">Guardar</string>
     <string name="X_btn_continue_edit">Continuar editando</string>
     <string name="X_btn_customize">Configurar…</string>
@@ -82,7 +81,7 @@
     <string name="confirm_merge_authors">El autor al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="confirm_merge_series">Las series al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
     <string name="confirm_merge_publishers">El editor al que está renombrando ya existe. ¿Te gustaría fusionarlos?</string>
-    <string name="confirm_overwrite_thumbnail">Los campos seleccionados se actualizarán tal y como se muestra, pero las imágenes de portadas se pueden descargar, si lo desea, para TODOS los libros.\n\n¿Desea sobreescribir todas las portadas existentes? ¡Atención!, esto puede requerir un tiempo considerable.</string>
+    <string name="confirm_overwrite_cover">Los campos seleccionados se actualizarán tal y como se muestra, pero las imágenes de portadas se pueden descargar, si lo desea, para TODOS los libros.\n\n¿Desea sobreescribir todas las portadas existentes? ¡Atención!, esto puede requerir un tiempo considerable.</string>
     <string name="confirm_unsaved_edits">Hay cambios que no se han guardado. Si sale ahora, se perderán.</string>
     <string name="confirm_unsaved_edits2">No ha guardado los cambios. ¿Está seguro de que desea continuar?</string>
     <string name="debug_body">Por favor, explique brevemente el problema experimentado.</string>
@@ -187,8 +186,8 @@
     <string name="confirm_registration_required">Esta función requiere registro con %1$s. ¿Te gustaría ver más información?</string>
     <string name="txt_select_fields_to_update">Los campos seleccionados se actualizarán con datos de internet. Los campos no marcados no se modificarán.</string>
     <string name="txt_share_book_im_reading">Estoy leyendo «%1$s» %2$s por %3$s %4$s</string>
-    <string name="txt_tap_on_image_to_select">Toque la imagen grande para seleccionar</string>
-    <string name="txt_tap_on_thumb">Pinche sobre una portada para ver una imagen de mayor tamaño</string>
+    <string name="txt_tap_on_image_to_select">Toque la imagen más grande para seleccionarla.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Toque una miniatura para mostrar una imagen más grande.</string>
     <string name="txt_waiting_for_scanner">Esperando escáner / cámara</string>
     <string name="isfdb_menu_populate_toc">Actualización automática de títulos (EXPERIMENTAL)</string>
     <string name="isfdb_warning_limited_to">(Solo soportado por el sitio web de la ISFDB.)</string>
@@ -207,7 +206,8 @@
     <string name="lbl_archive_type_backup">Copia de respaldo (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Copia de seguridad completa / Restaurar archivo</string>
     <string name="lbl_archive_type_xml">Exportación XML (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Todos los datos en formato XML. XML es solo de exportación, no de importación.</string>
+    <string name="lbl_archive_format_xml_info">Todos los datos en formato XML.</string>
+    <string name="lbl_archive_is_export_only">Esto es solo para exportar datos; no se admite la importación.</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Tipo de autor</string>
     <string name="lbl_author_type_artist">ilustraciones</string>
@@ -239,9 +239,12 @@
     <string name="lbl_condition_reading_copy">Copia de lectura</string>
     <string name="lbl_condition_very_good">Muy bueno</string>
     <string name="lbl_copy_database">Exportar base de datos</string>
-    <string name="lbl_cover">Portada</string>
+    <string name="lbl_cover_front">Portada</string>
+    <string name="lbl_cover_back">Contraportada</string>
+    <string name="lbl_cover_long">Portada</string>
     <string name="lbl_covers_long">Portadas</string>
     <string name="lbl_covers">Portadas</string>
+
     <string name="lbl_credentials">Credenciales de usuario</string>
     <string name="lbl_currency">Moneda</string>
     <string name="lbl_date_acquired">Fecha de adquisición</string>
@@ -411,7 +414,7 @@
     <string name="pg_image_cache">Caché de imágenes</string>
     <string name="X_pg_internet_search">Búsquedas web</string>
     <string name="pg_style_groups">Grupos</string>
-    <string name="lbl_thumbnails">Miniaturas</string>
+    <string name="X_lbl_thumbnails">Miniaturas</string>
     <string name="pg_ui">Interfaz de usuario</string>
     <string name="pg_ui_field_visibility">Visibilidad de campos</string>
     <string name="progress_end_backup_success">Copia de seguridad correcta</string>
@@ -444,8 +447,8 @@
     <string name="pt_bob_header">Resumen en la cabecera</string>
     <string name="pt_bob_list_rebuild_state">Estado de inicio de la lista de libros</string>
     <string name="pt_bob_list_state_expansion_level">Expansión predeterminada de la lista de libros</string>
-    <string name="pt_bob_thumbnails_scale">Tamaño de la imagen en listas.</string>
-    <string name="pt_bob_thumbnails_show">Mostrar miniaturas</string>
+    <string name="pt_bob_cover_scale">Tamaño de la imagen en listas.</string>
+    <string name="pt_bob_cover_show">Mostrar miniaturas</string>
     <string name="pt_camera_next_action">Acción después de tomar una foto</string>
     <string name="pt_collect_series_info_from_toc">Recopilar información de la serie de TOC</string>
     <string name="pt_maintenance">Mantenimiento</string>
@@ -548,7 +551,6 @@
     <string name="info_authorized_needed">Autorizar acceso</string>
     <string name="lbl_backing_up">Copiando…</string>
     <string name="lbl_clone_style">Duplicar estilo</string>
-    <string name="lbl_cover_long">Portada</string>
     <string name="X_lbl_delete_book">Eliminar libro</string>
     <string name="X_lbl_delete_series">Eliminar serie</string>
     <string name="X_lbl_delete_toc_entry">Borrar el titulo</string>
@@ -656,7 +658,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Mostrar libros con varias editoriales.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">solo bajo su editor principal.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">debajo de cada editor.</string>
-    <string name="image">Imagen</string>
+    <string name="lbl_image">Imagen</string>
     <string name="lbl_author_type_narrator">Narrador</string>
     <string name="unknown">Desconocido</string>
     <string name="action_not_now">Ahora no</string>
@@ -675,5 +677,8 @@
     <string name="lbl_backup_and_export">Copia de seguridad y exportación</string>
     <string name="lbl_export">Exportar</string>
     <string name="lbl_database">Base de datos</string>
+    <string name="lbl_archive_import_supported">Se admite la importación.</string>
+    <string name="lbl_archive_format_db_info">La base de datos SQLite.</string>
+    <string name="lbl_archive_type_db">Archivo de base de datos (%1$s)</string>
 
 </resources>

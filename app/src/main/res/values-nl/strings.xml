@@ -33,7 +33,6 @@
     <string name="X_action_swap">Wisselen</string>
     <string name="X_tip_booklist_global_properties">Je kan dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. Je kan de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
     <string name="X_use_default_setting">Standaardinstellingen gebruiken</string>
-    <string name="X_warning_cover_corrupt">Afbeelding is corrupt.</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Uw commentaar (of laat dit leeg):</string>
@@ -57,7 +56,7 @@
     <string name="action_add">Toevoegen</string>
     <string name="X_action_exit">Afsluiten</string>
     <string name="action_merge">Samenvoegen</string>
-    <string name="action_new">Nieuw</string>
+    <string name="X_action_new">Nieuw</string>
     <string name="action_save">Opslaan</string>
     <string name="X_btn_continue_edit">Doorgaan met bewerken</string>
     <string name="X_btn_customize">Aanpassen…</string>

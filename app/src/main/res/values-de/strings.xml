@@ -35,7 +35,6 @@
     <string name="X_action_swap">Tauschen</string>
     <string name="X_tip_booklist_global_properties">In diesem Bildschirm können Sie die Standardeigenschaften aller Buchlistenstile festlegen. Die meisten Eigenschaften können von einzelnen Stilen überschrieben werden, aber die Standardwerte werden hier definiert. Sie können ändern, wie Listen beim Start angezeigt werden, und eine Reihe anderer Einstellungen vornehmen, die nach Möglichkeit auf alle Ihre Stile angewendet werden.</string>
     <string name="X_use_default_setting">Standardeinstellungen verwenden</string>
-    <string name="X_warning_cover_corrupt">Das Bild ist unbrauchbar.</string>
     <string name="X_warning_required_field_x">%1$s darf nicht leer sein</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Ihr Kommentar (darf auch leer bleiben):</string>
@@ -58,7 +57,7 @@
     <string name="action_add">Hinzufügen</string>
     <string name="X_action_exit">Beenden</string>
     <string name="action_merge">Vereinigen</string>
-    <string name="action_new">Neu</string>
+    <string name="X_action_new">Neu</string>
     <string name="action_save">Speichern</string>
     <string name="X_btn_continue_edit">Bearbeiten fortsetzen</string>
     <string name="X_btn_customize">Anpassen…</string>
@@ -558,7 +557,7 @@
     <string name="X_lbl_delete_series">Serie löschen</string>
     <string name="X_lbl_delete_toc_entry">Titel löschen</string>
     <string name="lbl_details_have_changed">Details wurden geändert</string>
-    <string name="lbl_duplicate_book">Buch vervielfältigen</string>
+    <string name="lbl_duplicate_book">Duplizieren Sie das Buch</string>
     <string name="X_lbl_edit_author">Autor bearbeiten</string>
     <string name="X_lbl_edit_bookshelf">Bücherregal bearbeiten</string>
     <string name="X_lbl_edit_series">Serie bearbeiten</string>

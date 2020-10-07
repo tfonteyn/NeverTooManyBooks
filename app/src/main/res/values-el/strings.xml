@@ -34,7 +34,6 @@
     <string name="X_action_swap">ανταλλάσσω</string>
     <string name="X_tip_booklist_global_properties">Μπορείτε να χρησιμοποιήσετε αυτήν την οθόνη για να ορίσετε τα προεπιλεγμένα χαρακτηριστικά όλων των μορφών λίστας βιβλίων. Οι περισσότερες ιδιότητες μπορούν να αντικατασταθούν από μεμονωμένα στυλ, αλλά οι προεπιλεγμένες τιμές ορίζονται εδώ. Μπορείτε να αλλάξετε τον τρόπο εμφάνισης των λιστών κατά την εκκίνηση και να προσαρμόσετε διάφορες άλλες προτιμήσεις που θα εφαρμοστούν σε όλα τα στυλ σας, όταν είναι δυνατόν.</string>
     <string name="X_use_default_setting">Χρήση προεπιλεγμένων ρυθμίσεων</string>
-    <string name="X_warning_cover_corrupt">Το εξώφυλλο είναι κατεστραμμένο</string>
     <string name="X_warning_required_field_x">%1$s δεν πρέπει να είναι κενό</string>
     <string name="a_bracket_b_bracket">%1$s (%2$s)</string>
     <string name="acra_resDialogCommentPrompt">Τα σχόλιά σας (ή αφήστε το κενό):</string>
@@ -56,7 +55,7 @@
     <string name="action_add">Προσθήκη</string>
     <string name="X_action_exit">Έξοδος</string>
     <string name="action_merge">Συγχώνευση</string>
-    <string name="action_new">Νέος</string>
+    <string name="X_action_new">Νέος</string>
     <string name="action_save">Αποθήκευση</string>
     <string name="X_btn_continue_edit">Συνέχεια Επεξεργασίας</string>
     <string name="X_btn_customize">Προσαρμογή…</string>
@@ -81,7 +80,7 @@
     <string name="confirm_merge_authors">Ο συντάκτης που θέλετε να μετονομάσετε υπάρχει ήδη. Θέλετε να τα συγχωνεύσετε;</string>
     <string name="confirm_merge_series">Η σειρά που θέλετε να μετονομάσετε υπάρχει ήδη. Θέλετε να τα συγχωνεύσετε;</string>
     <string name="confirm_merge_publishers">Ο εκδότης που θέλετε να μετονομάσετε υπάρχει ήδη. Θέλετε να τα συγχωνεύσετε;</string>
-    <string name="confirm_overwrite_thumbnail">Τα επιλεγμένα πεδία θα ενημερωθούν όπως φαίνεται, αλλά οι Μικρογραφίες μπορούν να κατέβουν προαιρετικά για ΌΛΑ τα βιβλία.\n\nΘέλετε να αντικαταστήσετε όλες τις υπάρχουσες μικρογραφίες; Προσοχή, θα χρειαστεί πολύς χρόνος. </string>
+    <string name="confirm_overwrite_cover">Τα επιλεγμένα πεδία θα ενημερωθούν όπως φαίνεται, αλλά οι Μικρογραφίες μπορούν να κατέβουν προαιρετικά για ΌΛΑ τα βιβλία.\n\nΘέλετε να αντικαταστήσετε όλες τις υπάρχουσες μικρογραφίες; Προσοχή, θα χρειαστεί πολύς χρόνος. </string>
     <string name="confirm_unsaved_edits">Υπάρχουν αλλαγές που δεν έχουν αποθηκευτεί, αν γίνει έξοδος τώρα θα χαθούν.</string>
     <string name="confirm_unsaved_edits2">Υπάρχουν μη αποθηκευμένες αλλαγές. Σίγουρα επιθυμέιτε να συνεχίσετε;</string>
     <string name="debug_body">Παρακαλούμε περιγράψτε συνοπτικά το πρόβλημα που αντιμετωπίζετε.</string>
@@ -186,8 +185,8 @@
     <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες;</string>
     <string name="txt_select_fields_to_update">Τα επιλεγμένα πεδία θα ενημερωθούν από το διαδίκτυο. Τα μη επιλεγμένα θα μείνουν ως έχει.</string>
     <string name="txt_share_book_im_reading">Διαβάζω «%1$s» %2$s από %3$s %4$s</string>
-    <string name="txt_tap_on_image_to_select">Πατήστε τη μεγάλη εικόνα για να επιλέξετε</string>
-    <string name="txt_tap_on_thumb">Πατήστε σε μια μικρογραφία για να εμφανιστεί μεγαλύτερη εικόνα.</string>
+    <string name="txt_tap_on_image_to_select">Πατήστε στη μεγαλύτερη εικόνα για να την επιλέξετε.</string>
+    <string name="txt_tap_on_thumbnail_to_zoom">Κάντε κλικ στη μικρογραφία για να δείτε μια μεγαλύτερη εικόνα.</string>
     <string name="txt_waiting_for_scanner">Αναμονή για σαρωτή / κάμερα</string>
     <string name="isfdb_menu_populate_toc">Αυτόματη συμπλήρωση τίτλων (ΠΕΙΡΑΜΑΤΙΚΟ)</string>
     <string name="isfdb_warning_limited_to">(υποστηρίζεται μόνο από την τοποθεσία ISFDB)</string>
@@ -206,7 +205,8 @@
     <string name="lbl_archive_type_backup">Αντίγραφο ασφαλείας (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
     <string name="lbl_archive_type_xml">Εξαγωγή XML (%1$s)</string>
-    <string name="lbl_archive_format_xml_info">Όλα τα δεδομένα σε μορφή XML. Η XML είναι μόνο εξαγωγή, χωρίς εισαγωγή.</string>
+    <string name="lbl_archive_format_xml_info">Όλα τα δεδομένα σε μορφή XML.</string>
+    <string name="lbl_archive_is_export_only">Αυτό προορίζεται μόνο για εξαγωγή δεδομένων. η εισαγωγή δεν υποστηρίζεται.</string>
     <string name="lbl_author">Συγγραφέας</string>
     <string name="lbl_author_type">Τύπος συγγραφέα</string>
     <string name="lbl_author_type_artist">εικονογραφήσεις</string>
@@ -238,9 +238,13 @@
     <string name="lbl_condition_reading_copy">Ανάγνωση αντιγράφου</string>
     <string name="lbl_condition_very_good">Πολύ καλά</string>
     <string name="lbl_copy_database">Εξαγωγή βάσης δεδομένων</string>
-    <string name="lbl_cover">Κάλυμμα</string>
+    <string name="lbl_cover_front">εξώφυλλο βιβλίου</string>
+    <string name="lbl_cover_back">κάλυμμα πίσω βιβλίου</string>
+    <string name="lbl_cover_long">εξώφυλλο βιβλίου</string>
+
     <string name="lbl_covers_long">Εικόνες εξωφύλλων</string>
     <string name="lbl_covers">Καλύπτει</string>
+
     <string name="lbl_credentials">Διαπιστευτήρια χρήστη</string>
     <string name="lbl_currency">Νομίσματα</string>
     <string name="lbl_date_acquired">Ημερομηνία που αποκτήθηκαν</string>
@@ -410,7 +414,7 @@
     <string name="pg_image_cache">Cache εικόνας</string>
     <string name="X_pg_internet_search">αναζητήσεις στο διαδίκτυο</string>
     <string name="pg_style_groups">Ομαδοποιήσεις</string>
-    <string name="lbl_thumbnails">Μικρογραφίες</string>
+    <string name="X_lbl_thumbnails">Μικρογραφίες</string>
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
@@ -443,8 +447,8 @@
     <string name="pt_bob_header">Λεπτομέρειες περίληψης στην επικεφαλίδα</string>
     <string name="pt_bob_list_rebuild_state">Κατάσταση εκκίνησης βιβλιοθήκης</string>
     <string name="pt_bob_list_state_expansion_level">Προεπιλογή επέκτασης λίστας</string>
-    <string name="pt_bob_thumbnails_scale">Μικρογραφεί μέγεθος σε λίστες</string>
-    <string name="pt_bob_thumbnails_show">Εμφάνιση μικρογραφιών</string>
+    <string name="pt_bob_cover_scale">Μικρογραφεί μέγεθος σε λίστες</string>
+    <string name="pt_bob_cover_show">Εμφάνιση μικρογραφιών</string>
     <string name="pt_camera_next_action">Ενέργεια μετά τη λήψη μιας φωτογραφίας</string>
     <string name="pt_collect_series_info_from_toc">Συλλέξτε τις πληροφορίες σειράς από τον πίνακα περιεχομένων</string>
     <string name="pt_maintenance">Συντήρηση</string>
@@ -547,7 +551,6 @@
     <string name="info_authorized_needed">Έγκριση Πρόσβασης</string>
     <string name="lbl_backing_up">Δημιουργείται Αντίγραφο Ασφαλείας…</string>
     <string name="lbl_clone_style">Αντιγραφή στυλ</string>
-    <string name="lbl_cover_long">Μικρογραφία Εξωφύλλου</string>
     <string name="X_lbl_delete_book">Διαγραφή Βιβλίου</string>
     <string name="X_lbl_delete_series">Διαγραφή Σειράς</string>
     <string name="X_lbl_delete_toc_entry">Διαγράψτε τον τίτλο</string>
@@ -656,7 +659,7 @@
     <string name="pt_bob_books_under_multiple_publisher">Εμφάνιση βιβλίων με πολλούς εκδότες.</string>
     <string name="pv_bob_books_under_multiple_primary_publisher_only">μόνο στον κύριο εκδότη τους.</string>
     <string name="pv_bob_books_under_multiple_each_publisher">κάτω από κάθε εκδότη.</string>
-    <string name="image">Εικόνα</string>
+    <string name="lbl_image">Εικόνα</string>
     <string name="lbl_author_type_narrator">Αφηγητής</string>
     <string name="unknown">Άγνωστο</string>
     <string name="action_not_now">Όχι τώρα</string>
@@ -675,5 +678,8 @@
     <string name="lbl_backup_and_export">Δημιουργία αντιγράφων ασφαλείας και εξαγωγή</string>
     <string name="lbl_export">Εξαγωγή</string>
     <string name="lbl_database">Βάση δεδομένων</string>
+    <string name="lbl_archive_import_supported">Η εισαγωγή υποστηρίζεται.</string>
+    <string name="lbl_archive_format_db_info">Η βάση δεδομένων SQLite.</string>
+    <string name="lbl_archive_type_db">Αρχείο βάσης δεδομένων (%1$s)</string>
 
 </resources>

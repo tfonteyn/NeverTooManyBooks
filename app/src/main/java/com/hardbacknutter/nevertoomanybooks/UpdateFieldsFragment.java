@@ -297,7 +297,7 @@ public class UpdateFieldsFragment
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.menu_update_fields)
-                    .setMessage(R.string.confirm_overwrite_thumbnail)
+                    .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setNegativeButton(R.string.lbl_field_usage_copy_if_blank, (d, w) -> {
                         mUpdateFieldsModel

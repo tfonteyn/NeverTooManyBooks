@@ -43,7 +43,7 @@
             android:key="fields.visibility.thumbnail.0"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
-            android:title="@string/lbl_cover" />
+            android:title="@string/lbl_cover_front" />
 
         <SwitchPreference
             android:defaultValue="true"
