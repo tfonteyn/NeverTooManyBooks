@@ -149,6 +149,12 @@ public class ExportHelperDialogFragment
         list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_db, ArchiveContainer.SqLiteDb.getFileExt()));
 
+        // The default selection is index 0, ZIP format.
+        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+        mVb.archiveFormatInfoLong.setText("");
+        getToolbarConfirmButton().setText(R.string.lbl_backup);
+
+
         //noinspection ConstantConditions
         final ArrayAdapter<String> archiveFormatAdapter =
                 new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
@@ -169,6 +175,7 @@ public class ExportHelperDialogFragment
                     case 0: {
                         helper.setArchiveContainer(ArchiveContainer.Zip);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                        mVb.archiveFormatInfoLong.setText("");
                         getToolbarConfirmButton().setText(R.string.lbl_backup);
 
                         mVb.cbxBooks.setChecked(true);
@@ -186,6 +193,7 @@ public class ExportHelperDialogFragment
                     case 1: {
                         helper.setArchiveContainer(ArchiveContainer.Tar);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                        mVb.archiveFormatInfoLong.setText("");
                         getToolbarConfirmButton().setText(R.string.lbl_backup);
 
                         mVb.cbxBooks.setChecked(true);
@@ -203,6 +211,7 @@ public class ExportHelperDialogFragment
                     case 2: {
                         helper.setArchiveContainer(ArchiveContainer.CsvBooks);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
+                        mVb.archiveFormatInfoLong.setText("");
                         getToolbarConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);
@@ -220,6 +229,7 @@ public class ExportHelperDialogFragment
                     case 3: {
                         helper.setArchiveContainer(ArchiveContainer.Xml);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
+                        mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
                         getToolbarConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);
@@ -237,6 +247,7 @@ public class ExportHelperDialogFragment
                     case 4: {
                         helper.setArchiveContainer(ArchiveContainer.SqLiteDb);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
+                        mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
                         getToolbarConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);

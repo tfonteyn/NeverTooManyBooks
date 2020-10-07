@@ -175,6 +175,15 @@
                     tools:text="@string/lbl_archive_format_xml_info"
                     />
 
+                <TextView
+                    android:id="@+id/archive_format_info_long"
+                    style="@style/Text.Body.Small"
+                    app:layout_constraintStart_toStartOf="@id/archive_format"
+                    app:layout_constraintTop_toBottomOf="@id/archive_format_info"
+                    tools:ignore="SelectableText"
+                    tools:text="@string/lbl_archive_format_xml_info"
+                    />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <include
