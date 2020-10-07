@@ -44,11 +44,13 @@ public class ExportHelperDialogFragment
         extends OptionsDialogBase<ExportManager> {
 
     /** Log tag. */
-    public static final String TAG = "ExportHelperDialogFragment";
+    public static final String TAG = "ExportHelperDialogFrag";
 
     private ExportHelperViewModel mModel;
     /** View Binding. */
     private DialogExportOptionsBinding mVb;
+    /** prevent first-time {@link AdapterView.OnItemSelectedListener#onItemSelected} call. */
+    private boolean mArchiveFormatIsSet;
 
     /**
      * No-arg constructor for OS use.
@@ -158,69 +160,97 @@ public class ExportHelperDialogFragment
                                        @NonNull final View view,
                                        final int position,
                                        final long id) {
+                if (!mArchiveFormatIsSet) {
+                    mArchiveFormatIsSet = true;
+                    return;
+                }
+
                 switch (position) {
-                    case 0:
+                    case 0: {
                         helper.setArchiveContainer(ArchiveContainer.Zip);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                        getToolbarConfirmButton().setText(R.string.lbl_backup);
 
-                        mVb.cbxBooks.setChecked(helper.isOptionSet(Options.BOOKS));
+                        mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
-                        mVb.cbxCovers.setChecked(helper.isOptionSet(Options.COVERS));
+                        mVb.rbBooksGroup.setEnabled(true);
+                        mVb.rbBooksSinceLastBackup.setChecked(true);
+
+                        mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
-                        mVb.cbxPrefsAndStyles.setChecked(
-                                helper.isOptionSet(Options.PREFS | Options.STYLES));
+
+                        mVb.cbxPrefsAndStyles.setChecked(true);
                         mVb.cbxPrefsAndStyles.setEnabled(true);
                         break;
-
-                    case 1:
+                    }
+                    case 1: {
                         helper.setArchiveContainer(ArchiveContainer.Tar);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                        getToolbarConfirmButton().setText(R.string.lbl_backup);
 
-                        mVb.cbxBooks.setChecked(helper.isOptionSet(Options.BOOKS));
+                        mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
-                        mVb.cbxCovers.setChecked(helper.isOptionSet(Options.COVERS));
+                        mVb.rbBooksGroup.setEnabled(true);
+                        mVb.rbBooksSinceLastBackup.setChecked(true);
+
+                        mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
-                        mVb.cbxPrefsAndStyles.setChecked(
-                                helper.isOptionSet(Options.PREFS | Options.STYLES));
+
+                        mVb.cbxPrefsAndStyles.setChecked(true);
                         mVb.cbxPrefsAndStyles.setEnabled(true);
                         break;
-
-                    case 2:
+                    }
+                    case 2: {
                         helper.setArchiveContainer(ArchiveContainer.CsvBooks);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
+                        getToolbarConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
+                        mVb.rbBooksGroup.setEnabled(true);
+                        mVb.rbBooksSinceLastBackup.setChecked(true);
+
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
+
                         mVb.cbxPrefsAndStyles.setChecked(false);
                         mVb.cbxPrefsAndStyles.setEnabled(false);
                         break;
-
-                    case 3:
+                    }
+                    case 3: {
                         helper.setArchiveContainer(ArchiveContainer.Xml);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
+                        getToolbarConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
+                        mVb.rbBooksGroup.setEnabled(true);
+                        mVb.rbBooksAll.setChecked(true);
+
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
-                        mVb.cbxPrefsAndStyles.setChecked(true);
-                        mVb.cbxPrefsAndStyles.setEnabled(false);
-                        break;
 
-                    case 4:
+                        mVb.cbxPrefsAndStyles.setChecked(false);
+                        mVb.cbxPrefsAndStyles.setEnabled(true);
+                        break;
+                    }
+                    case 4: {
                         helper.setArchiveContainer(ArchiveContainer.SqLiteDb);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
+                        getToolbarConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
+                        mVb.rbBooksGroup.setEnabled(false);
+                        mVb.rbBooksAll.setChecked(true);
+
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
+
                         mVb.cbxPrefsAndStyles.setChecked(false);
                         mVb.cbxPrefsAndStyles.setEnabled(false);
                         break;
-
+                    }
                     default:
                         throw new UnexpectedValueException(position);
                 }
@@ -239,6 +269,9 @@ public class ExportHelperDialogFragment
         /** export configuration. */
         private ExportManager mHelper;
 
+        /**
+         * Pseudo constructor.
+         */
         public void init() {
             if (mHelper == null) {
                 mHelper = new ExportManager(Options.ENTITIES);
