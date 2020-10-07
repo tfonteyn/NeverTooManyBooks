@@ -221,13 +221,6 @@ public class BooksOnBookshelf
                                            final long id) {
                     if (userInteraction) {
                         userInteraction = false;
-                        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
-                            Log.d(TAG, "OnItemSelectedListener|onItemSelected"
-                                       + "|position=" + position
-                                       + "|id=" + id
-                                       + "|view=" + view);
-                        }
-
                         if (view == null) {
                             return;
                         }
