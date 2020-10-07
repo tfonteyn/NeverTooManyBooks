@@ -33,11 +33,11 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.snackbar.Snackbar;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityLibrarythingRegisterBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
+import com.hardbacknutter.nevertoomanybooks.widgets.ToolbarMenuActionButton;
 
 /**
  * Contains details about LibraryThing links and how to register for a developer key.
@@ -109,7 +109,9 @@ public class LibraryThingRegistrationActivity
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_validate, menu);
-        MenuHandler.prepareMenuSelectButton(menu, this::onOptionsItemSelected);
+        final ToolbarMenuActionButton button =
+                new ToolbarMenuActionButton(menu, R.id.MENU_ACTION_CONFIRM, R.id.btn_confirm);
+        button.setOnClickListener(this::onOptionsItemSelected);
         return super.onCreateOptionsMenu(menu);
     }
 

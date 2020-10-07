@@ -29,7 +29,6 @@ import android.net.Uri;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
-import android.widget.Button;
 import android.widget.SearchView;
 
 import androidx.annotation.IdRes;
@@ -45,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
-public final class MenuHandler {
+final class MenuHandler {
 
     private MenuHandler() {
     }
@@ -175,25 +174,6 @@ public final class MenuHandler {
             final SearchableInfo si = searchManager.getSearchableInfo(
                     new ComponentName(activity, BooksOnBookshelf.class.getName()));
             searchView.setSearchableInfo(si);
-        }
-    }
-
-    /**
-     * Setup a menu using a Button as an action-view for the generic confirmation action.
-     *
-     * @param menu              to modify
-     * @param itemClickListener to hook up
-     */
-    public static void prepareMenuSelectButton(
-            @NonNull final Menu menu,
-            @NonNull final MenuItem.OnMenuItemClickListener itemClickListener) {
-        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-        if (menuItem != null) {
-            final Button btn = menuItem.getActionView().findViewById(R.id.btn_confirm);
-            if (btn != null) {
-                btn.setText(menuItem.getTitle());
-                btn.setOnClickListener(v -> itemClickListener.onMenuItemClick(menuItem));
-            }
         }
     }
 }

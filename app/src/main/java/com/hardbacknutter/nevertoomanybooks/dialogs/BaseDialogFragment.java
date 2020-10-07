@@ -47,9 +47,9 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.MenuHandler;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.ToolbarMenuActionButton;
 
 /**
  * Provides fullscreen or floating dialog support.
@@ -67,6 +67,10 @@ public abstract class BaseDialogFragment
     private boolean mFullscreen;
 
     private int mFloatingDialogWidth;
+
+    /** Menu ActionView:R.id.MENU_ACTION_CONFIRM, Button: R.id.btn_confirm. */
+    @Nullable
+    private ToolbarMenuActionButton mToolbarConfirmButton;
 
     /**
      * Constructor.
@@ -148,7 +152,9 @@ public abstract class BaseDialogFragment
                                                        "R.id.toolbar");
         toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
-        MenuHandler.prepareMenuSelectButton(toolbar.getMenu(), this::onToolbarMenuItemClick);
+        mToolbarConfirmButton =
+                new ToolbarMenuActionButton(toolbar, R.id.MENU_ACTION_CONFIRM, R.id.btn_confirm);
+        mToolbarConfirmButton.setOnClickListener(this::onToolbarMenuItemClick);
 
         @Nullable
         final View buttonPanel = view.findViewById(R.id.buttonPanel);
@@ -226,6 +232,11 @@ public abstract class BaseDialogFragment
     @SuppressWarnings("UnusedReturnValue")
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         return false;
+    }
+
+    @NonNull
+    public ToolbarMenuActionButton getToolbarConfirmButton() {
+        return Objects.requireNonNull(mToolbarConfirmButton, "mToolbarConfirmButton");
     }
 
     @Override

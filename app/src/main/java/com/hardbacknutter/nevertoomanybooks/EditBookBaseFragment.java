@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
+import com.hardbacknutter.nevertoomanybooks.widgets.ToolbarMenuActionButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
 
 public abstract class EditBookBaseFragment
@@ -134,7 +135,10 @@ public abstract class EditBookBaseFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_save, menu);
-        MenuHandler.prepareMenuSelectButton(menu, this::onOptionsItemSelected);
+        final ToolbarMenuActionButton button =
+                new ToolbarMenuActionButton(menu, R.id.MENU_ACTION_CONFIRM, R.id.btn_confirm);
+        button.setOnClickListener(this::onOptionsItemSelected);
+
         super.onCreateOptionsMenu(menu, inflater);
     }
 
