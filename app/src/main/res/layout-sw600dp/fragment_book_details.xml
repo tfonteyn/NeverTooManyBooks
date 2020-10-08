@@ -67,7 +67,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="coverImage0,coverImage1,publication_section"
+            app:constraint_referenced_ids="coverImage0,coverImage1,bookshelves"
             />
 
         <RatingBar
@@ -104,7 +104,6 @@
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover_front"
-            app:layout_constraintEnd_toStartOf="@id/coverImage1"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title"
             tools:layout_height="@dimen/cover_details_0_height"
@@ -128,8 +127,8 @@
             android:id="@+id/coverImage1"
             style="@style/CoverImage"
             android:contentDescription="@string/lbl_cover_front"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/coverImage0"
             tools:layout_height="@dimen/cover_details_1_height"
             tools:layout_width="@dimen/cover_details_1_width"
             tools:src="@sample/covers"
@@ -147,7 +146,6 @@
             tools:background="@drawable/outline_rounded"
             tools:src="@drawable/ic_add_a_photo"
         -->
-
 
         <TextView
             android:id="@+id/author"
@@ -313,8 +311,8 @@
             android:id="@+id/lbl_genre"
             style="@style/Field.Label"
             android:text="@string/lbl_genre"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_top_section"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/publication_section"
             />
 
         <TextView
@@ -330,7 +328,7 @@
             android:id="@+id/lbl_series"
             style="@style/Field.Label"
             android:text="@string/lbl_series"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/genre"
             />
 
@@ -349,7 +347,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/series_title"
             >
 
@@ -417,7 +415,7 @@
         <com.google.android.material.chip.ChipGroup
             android:id="@+id/edition"
             style="@style/Field.ChipGroup"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/toc_section"
             >
             <!-- chips will be added here dynamically -->
@@ -427,7 +425,7 @@
             android:id="@+id/lbl_bookshelves"
             style="@style/Field.Label"
             android:text="@string/lbl_bookshelves_long"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/edition"
             />
 
@@ -446,7 +444,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/border2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/bookshelves"
             >
 
@@ -471,7 +469,7 @@
             <!-- note that the views used to set constraints are the data views.
               The labels are baseline'd to them.
               This is due to font size of the labels being smaller than the data.
-              iow: the data fields form the vertical chain.
+              i.o.w.: the data fields form the vertical chain.
              -->
 
             <TextView

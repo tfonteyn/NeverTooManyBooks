@@ -34,21 +34,31 @@
         <item name="android:textIsSelectable">true</item>
     </style>
 
-    <!-- Field labels. -->
+    <!-- Field labels.
+        Set app:layout_constraintStart_toStartOf="parent"
+        -->
     <style name="Field.Label">
         <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin</item>
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
     </style>
 
-    <!-- 'medium' detail field; for example Series title, ... -->
+    <style name="Field.ChipGroup">
+        <item name="android:layout_marginStart">@dimen/field_margin</item>
+        <item name="chipSpacingVertical">@dimen/ro_vert_chip_spacing</item>
+    </style>
+
+    <!-- 'medium' detail field; for example Series title, ...
+        Set app:layout_constraintStart_toStartOf="@id/thisFieldsLabel"
+        -->
     <style name="Field.Generic">
-        <item name="android:layout_marginStart">@dimen/indent_field</item>
+        <item name="android:layout_marginStart">@dimen/field_margin</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <style name="Field.Generic.Inline">
-        <item name="layout_goneMarginStart">@dimen/indent_field</item>
-        <item name="android:layout_marginStart">@dimen/indent_field_inline</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="layout_goneMarginStart">@dimen/field_margin</item>
     </style>
 
     <!-- 'minor' detail field; for example format, isbn,... -->
@@ -82,6 +92,7 @@
 
     <!-- Book personal notes. -->
     <style name="Field.Notes">
+        <item name="android:layout_marginStart">@dimen/field_margin</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
