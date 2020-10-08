@@ -71,7 +71,7 @@ public class SeriesListFormatter
                                    .map(series -> series.getLabel(context))
                                    .collect(Collectors.joining("; "));
                 } else {
-                    return HtmlUtils.asList(context, rawValue, series ->
+                    return HtmlUtils.asList(rawValue, series ->
                             series.getLabel(context));
                 }
 

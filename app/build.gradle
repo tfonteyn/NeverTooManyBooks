@@ -91,17 +91,16 @@ android {
     // https://issuetracker.google.com/issues/162838995
     compileSdkVersion 29
 
-    // another site: https://gs.statcounter.com/
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2020-09-08 world wide:
-    // 10.0     29.04
-    // 9.0      57.23
-    // 8.1      68.43
-    // 8.0      74.98
-    // 7.0      80.53
-    // 6.0      88.40
+    // 2020-10-08 world wide:
+    // 10.0     33.29
+    // 9.0      59.38
+    // 8.1      70.34
+    // 8.0      76.51
+    // 7.1      79.19
+    // 7.0      84.36
 
-    //  2020-04-11.: from Android Studio 'new project' page
+    // Android Studio 'new project' page (has not been updated since at least 2020-04-11)
     //  A       API     %
     // 10       29       8.2
     //  9       28      39.5
@@ -109,13 +108,11 @@ android {
     //  8       26      60.8
     //  7.1     25      66.2
     //  7       24      73.7
-    //  6       23      84.9‬
-    //
-    // The scanner library for pre-24 API is no longer updated.
-    //
+
     defaultConfig {
         applicationId 'com.hardbacknutter.nevertoomanybooks'
-        minSdkVersion 23
+        // see NOTES.txt
+        minSdkVersion 24
         // show-stopper bug preventing to use API 30:
         // https://issuetracker.google.com/issues/162838995
         targetSdkVersion 29
@@ -265,11 +262,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.13.1'
 
     // Embedded ZXing: https://github.com/journeyapps/zxing-android-embedded
-    // supporting API <24
-    implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
-    implementation 'com.google.zxing:core:3.3.0'
-    // supporting API 24+
-    //implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
+    implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
 
     testImplementation 'org.json:json:20200518'
 

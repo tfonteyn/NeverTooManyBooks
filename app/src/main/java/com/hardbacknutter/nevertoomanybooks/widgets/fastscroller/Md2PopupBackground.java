@@ -171,10 +171,10 @@ class Md2PopupBackground
 
     @Override
     public void getOutline(@NonNull final Outline outline) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !mPath.isConvex()) {
-            // The outline path must be convex before Q, but we may run into floating point error
-            // caused by calculation involving sqrt(2) or OEM implementation difference, so in this
-            // case we just omit the shadow instead of crashing.
+        if (Build.VERSION.SDK_INT < 29 && !mPath.isConvex()) {
+            // The outline path must be convex before Q (==29), but we may run into floating
+            // point error caused by calculation involving sqrt(2) or OEM implementation
+            // difference, so in this case we just omit the shadow instead of crashing.
             super.getOutline(outline);
             return;
         }

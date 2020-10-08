@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.content.Context;
-import android.os.Build;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -33,8 +31,6 @@ import androidx.annotation.NonNull;
 import java.util.Collection;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import com.hardbacknutter.nevertoomanybooks.R;
 
 public final class HtmlUtils {
 
@@ -62,14 +58,8 @@ public final class HtmlUtils {
      */
     @NonNull
     public static Spannable linkify(@NonNull final String html) {
-        // Get the spannable HTML
-        final Spanned text;
-        if (Build.VERSION.SDK_INT >= 24) {
-            // single linefeed between things like LI elements.
-            text = Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT);
-        } else {
-            text = Html.fromHtml(html);
-        }
+        // Get the spannable HTML; single linefeed between things like LI elements.
+        final Spanned text = Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT);
 
         // Save the span details for later restoration
         final URLSpan[] currentSpans = text.getSpans(0, text.length(), URLSpan.class);
@@ -88,10 +78,7 @@ public final class HtmlUtils {
 
     /**
      * Construct a multi-line list using html.
-     * <p>
-     * Uses html list element on SDK 24 and up; uses br and bullet character on 23.
      *
-     * @param context    Current context
      * @param collection collection
      * @param formatter  to use on each element,
      * @param <E>        type of elements
@@ -99,25 +86,16 @@ public final class HtmlUtils {
      * @return formatted list, can be empty, but never {@code null}.
      */
     @NonNull
-    public static <E> String asList(@NonNull final Context context,
-                                    @NonNull final Collection<E> collection,
+    public static <E> String asList(@NonNull final Collection<E> collection,
                                     @NonNull final Function<E, String> formatter) {
         // sanity check
         if (collection.isEmpty()) {
             return "";
         }
 
-        if (Build.VERSION.SDK_INT >= 24) {
-            return collection.stream()
-                             .map(formatter)
-                             .map(s -> "<li>" + s + "</li>")
-                             .collect(Collectors.joining("", "<ul>", "</ul>"));
-
-        } else {
-            return collection.stream()
-                             .map(formatter)
-                             .map(s -> context.getString(R.string.list_element, s))
-                             .collect(Collectors.joining("<br>"));
-        }
+        return collection.stream()
+                         .map(formatter)
+                         .map(s -> "<li>" + s + "</li>")
+                         .collect(Collectors.joining("", "<ul>", "</ul>"));
     }
 }

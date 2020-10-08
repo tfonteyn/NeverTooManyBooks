@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -116,13 +115,7 @@ public final class StyleDAO {
 
         S_USER_STYLES.remove(style.getUuid());
         db.delete(style);
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            context.deleteSharedPreferences(style.getUuid());
-        } else {
-            context.getSharedPreferences(style.getUuid(), Context.MODE_PRIVATE)
-                   .edit().clear().apply();
-        }
+        context.deleteSharedPreferences(style.getUuid());
     }
 
     public static void discard(@NonNull final Context context,
@@ -131,12 +124,7 @@ public final class StyleDAO {
         if (style.getId() != 0) {
             throw new IllegalArgumentException("Can only discard a new style");
         }
-        if (Build.VERSION.SDK_INT >= 24) {
-            context.deleteSharedPreferences(style.getUuid());
-        } else {
-            context.getSharedPreferences(style.getUuid(), Context.MODE_PRIVATE)
-                   .edit().clear().apply();
-        }
+        context.deleteSharedPreferences(style.getUuid());
     }
 
     /**

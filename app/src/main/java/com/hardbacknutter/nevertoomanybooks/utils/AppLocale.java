@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -175,39 +174,19 @@ public class AppLocale {
             }
         }
 
-        if (Build.VERSION.SDK_INT >= 24) {
-            return Resources.getSystem().getConfiguration().getLocales().get(0);
-        } else {
-            //noinspection deprecation
-            return Resources.getSystem().getConfiguration().locale;
-        }
+        return Resources.getSystem().getConfiguration().getLocales().get(0);
     }
 
     /**
      * Return the user preferred Locale.
-     * <p>
-     * When running a JUnit test, this method will always use the API 24 getLocales().get(0).
      *
      * @param context Current context
      *
      * @return Locale
      */
-    @SuppressLint("NewApi")
     @NonNull
     public Locale getUserLocale(@NonNull final Context context) {
-        // While running JUnit tests, we're always mocking the getLocales().get(0) call.
-        if (BuildConfig.DEBUG /* always */) {
-            if (Logger.isJUnitTest) {
-                return context.getResources().getConfiguration().getLocales().get(0);
-            }
-        }
-
-        if (Build.VERSION.SDK_INT >= 24) {
-            return context.getResources().getConfiguration().getLocales().get(0);
-        } else {
-            //noinspection deprecation
-            return context.getResources().getConfiguration().locale;
-        }
+        return context.getResources().getConfiguration().getLocales().get(0);
     }
 
     /**

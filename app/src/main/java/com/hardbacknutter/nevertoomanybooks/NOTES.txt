@@ -1,3 +1,16 @@
+Supported Android versions:
+
+* v1.1.2 runs on Android 6.0 (API 23)
+
+* v1.2.0 requires Android 7.0 (API 24)
+Recent code changes using classes from the "coreLibraryDesugaring" functionality,
+and "minSdkVersion 23" led to startup crashes on devices with API 23.
+The same configuration works fine on devices with API 24.
+The reason seems related to https://developer.android.com/studio/build/multidex.html
+Not fixing.
+
+----------------------------------------------------------------------------------------------------
+
 ENHANCE: usage "profile": comics versus fiction books versus non-fiction books.
  * optimize all search engines
  * optimize visible fields.
@@ -12,6 +25,7 @@ TODO: task-queue - minimalistic traditional database backed 'MessageQueue' like 
     Hardcoded defaults clean up dead tasks after 7 days.
     WorkManager sounds like a good replacement.
 
+----------------------------------------------------------------------------------------------------
 
 Issues checked: 834 down to 677 (inc)
 
@@ -35,6 +49,8 @@ ENHANCE: https://github.com/eleybourn/Book-Catalogue/issues/806 - same as 723
 ==> SearchCoordinator.search when isbn not provided, will run a search until it finds an isbn,
     and then redo the search WITH the isbn
 ==> so this is why we only ever get ONE result back.
+
+----------------------------------------------------------------------------------------------------
 
 Implemented:
 https://github.com/eleybourn/Book-Catalogue/issues/834 - 820..834: all screen orientation change issues

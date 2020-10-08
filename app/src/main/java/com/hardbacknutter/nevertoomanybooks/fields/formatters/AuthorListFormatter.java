@@ -69,7 +69,7 @@ public class AuthorListFormatter
                     return rawValue.stream().map(element -> element.getExtLabel(context))
                                    .collect(Collectors.joining("; "));
                 } else {
-                    return HtmlUtils.asList(context, rawValue, author ->
+                    return HtmlUtils.asList(rawValue, author ->
                             author.getExtLabel(context));
                 }
 
@@ -78,7 +78,7 @@ public class AuthorListFormatter
                     return rawValue.stream().map(element -> element.getLabel(context))
                                    .collect(Collectors.joining("; "));
                 } else {
-                    return HtmlUtils.asList(context, rawValue, author ->
+                    return HtmlUtils.asList(rawValue, author ->
                             author.getLabel(context));
                 }
 
