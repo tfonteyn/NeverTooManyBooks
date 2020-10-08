@@ -28,14 +28,7 @@
     android:minHeight="?attr/listPreferredItemHeightSmall"
     >
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/indent_fields"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="@dimen/icon_button_width"
-        />
-
+    <!-- "invisible" by default (NOT 'gone' as we want the space allocated) -->
     <ImageButton
         android:id="@+id/cbx_multiple_books"
         android:layout_width="wrap_content"
@@ -43,7 +36,7 @@
         android:backgroundTint="@android:color/transparent"
         android:contentDescription="@string/tip_authors_works_multiple_books"
         android:src="@drawable/ic_library_books"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -55,7 +48,7 @@
         android:id="@+id/title"
         style="@style/Field.BookTitle"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/indent_fields"
+        app:layout_constraintStart_toEndOf="@id/cbx_multiple_books"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"
         tools:text="@sample/data.json/book/title"
