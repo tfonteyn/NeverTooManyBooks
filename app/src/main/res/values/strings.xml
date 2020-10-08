@@ -613,11 +613,11 @@
     <string name="gr_tq_failed">Failed</string>
     <string name="gr_tq_queued">Queued</string>
     <string name="gr_tq_show_events_ellipsis">Show events…</string>
-    <string name="gr_tq_retry_x_of_y_next_at_z">Retry %1$d of %2$d next at %3$s</string>
+    <string name="gr_tq_retry_x_of_y_next_at_z" tools:ignore="PluralsCandidate">Retry %1$d of %2$d next at %3$s</string>
     <string name="gr_tq_occurred_at">(occurred at %1$s)</string>
     <string name="gr_tq_last_error_e">Last Error: %1$s</string>
     <string name="gr_tq_generic_task_info">Task ID %1$d, Queued at %2$s</string>
-    <string name="gr_tq_events_recorded">(%1$d events recorded)</string>
+    <string name="gr_tq_events_recorded" tools:ignore="PluralsCandidate">(%1$d events recorded)</string>
 
     <!-- ####################################################################################### -->
     <!-- == Global preference settings - TODO: prune duplicate strings == -->
@@ -1334,7 +1334,7 @@
     <!-- number of pages; this is a field-label. -->
     <string name="lbl_pages">Pages</string>
     <!-- number of pages; this is formatted text. -->
-    <string name="txt_x_pages">%1$d pages</string>
+    <string name="txt_x_pages" tools:ignore="PluralsCandidate">%1$d pages</string>
 
     <string name="lbl_currency">Currency</string>
     <string name="lbl_price_listed">List Price</string>
@@ -1567,11 +1567,11 @@
     <string name="X_warning_image_processing_failed">Image could not be processed.</string>
 
 
-    <string name="X_progress_msg_x_created_y_updated">%1$s: %2$d created, %3$d updated</string>
-    <string name="X_progress_msg_n_books_processed">%1$d books processed</string>
-    <string name="X_progress_msg_n_covers_processed">%1$d covers processed</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing">%1$d covers processed\n(%2$d/%3$d missing)</string>
-    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)</string>
+    <string name="X_progress_msg_x_created_y_updated" tools:ignore="PluralsCandidate">%1$s: %2$d created, %3$d updated</string>
+    <string name="X_progress_msg_n_books_processed" tools:ignore="PluralsCandidate">%1$d books processed</string>
+    <string name="X_progress_msg_n_covers_processed" tools:ignore="PluralsCandidate">%1$d covers processed</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing" tools:ignore="PluralsCandidate">%1$d covers processed\n(%2$d/%3$d missing)</string>
+    <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped" tools:ignore="PluralsCandidate">%1$d covers processed\n(%2$d/%3$d missing, %4$d skipped)</string>
 
     <!-- Preference Category -->
     <string name="X_pg_general">General</string>
