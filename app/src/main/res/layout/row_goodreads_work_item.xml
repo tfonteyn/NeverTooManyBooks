@@ -42,7 +42,7 @@
     <TextView
         android:id="@+id/title"
         style="@style/Field.BookTitle"
-        android:layout_marginStart="@dimen/indent_field"
+        android:layout_marginStart="@dimen/field_margin"
         app:layout_constraintStart_toEndOf="@id/coverImage0"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SelectableText"

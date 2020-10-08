@@ -139,11 +139,12 @@
     <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
     <dimen name="indent_radio_button">16dp</dimen>
 
-    <!-- Start margin applied to a field. Used for individual fields, or with a Guideline for a group of fields. -->
-    <dimen name="indent_field">8dp</dimen>
-    <dimen name="indent_field_large">16dp</dimen>
+    <!-- Start margin (and optional end) applied to a field.
+        Used for individual fields, or with a Guideline for a group of fields. -->
+    <dimen name="field_margin">8dp</dimen>
+    <dimen name="field_margin_large">16dp</dimen>
     <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->
-    <dimen name="indent_field_inline">12dp</dimen>
+    <dimen name="field_margin_inline">12dp</dimen>
 
     <!-- Margin applied around all TextInputLayout fields. -->
     <dimen name="envelope_edit_text_margin">2dp</dimen>
