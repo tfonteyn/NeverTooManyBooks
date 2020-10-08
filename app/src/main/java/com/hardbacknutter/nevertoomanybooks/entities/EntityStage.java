@@ -74,7 +74,9 @@ public class EntityStage {
                 break;
 
             case Dirty:
-                if (mStage == Stage.WriteAble || mStage == Stage.Dirty) {
+                if (mStage == Stage.ReadOnly
+                    || mStage == Stage.WriteAble
+                    || mStage == Stage.Dirty) {
                     mStage = Stage.Dirty;
                 } else {
                     throw new IllegalStateException(ERROR_CURRENT_STAGE + mStage);
