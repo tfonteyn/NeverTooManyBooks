@@ -21,8 +21,8 @@
 
 <!-- Generic  7.0" (600 x 1024) - 160dpi - sw600 -->
 <resources>
-    <dimen name="cover_details_0_height">500dp</dimen>
-    <dimen name="cover_details_0_width">320dp</dimen>
+    <dimen name="cover_details_0_height">400dp</dimen>
+    <dimen name="cover_details_0_width">256dp</dimen>
     <dimen name="cover_details_1_height">300dp</dimen>
     <dimen name="cover_details_1_width">192dp</dimen>
 
