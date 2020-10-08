@@ -19,25 +19,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!--
-    4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
-    port: w320dp h509dp
-    land: w533dp h296dp
--->
 <resources>
-    <!-- com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java
-         FULLSCREEN.
-    -->
-    <bool name="floating_dialogs_enabled">false</bool>
-    <!-- not active, as FULLSCREEN -->
-    <dimen name="floating_dialogs_min_width">300dp</dimen>
-    <dimen name="floating_dialogs_min_width_cover_browser">300dp</dimen>
-
-    <!--
-        Copy of "material:abc_alert_dialog_button_bar_height" which is used as minHeight for a button.
-        This is a work around for what seems to be a bug where the buttons end up with a 0-height
-        when their height is set to WRAP_CONTENT.
-        Instead we set the button height to this value.
-    -->
-    <dimen name="floating_dialogs_dialog_button_bar_height">48dp</dimen>
+    <!-- Copy of "material:abc_alert_dialog_button_bar_height" -->
+    <dimen name="floating_dialogs_dialog_button_bar_height">54dip</dimen>
 </resources>
