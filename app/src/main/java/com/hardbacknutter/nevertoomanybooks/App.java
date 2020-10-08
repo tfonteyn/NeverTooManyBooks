@@ -62,7 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
                 ReportField.PHONE_MODEL,
                 ReportField.BRAND,
                 ReportField.PRODUCT,
-                ReportField.DEVICE_FEATURES,
+                // Overkill: ReportField.DEVICE_FEATURES,
                 ReportField.DISPLAY,
                 ReportField.ANDROID_VERSION,
                 ReportField.BUILD,
