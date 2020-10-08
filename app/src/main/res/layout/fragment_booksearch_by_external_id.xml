@@ -29,18 +29,11 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/screenBorder"
         >
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/indent_fields"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/indent2"
-            />
 
         <TextView
             android:id="@+id/lbl_site"
@@ -70,7 +63,8 @@
             android:layout_height="wrap_content"
             android:text="@string/site_amazon"
             android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             tools:visibility="visible"
             />
@@ -80,7 +74,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_goodreads"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_amazon"
             />
 
@@ -89,7 +84,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_isfdb"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_goodreads"
             />
 
@@ -101,7 +97,8 @@
             android:layout_height="wrap_content"
             android:text="@string/site_library_thing"
             android:visibility="gone"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_isfdb"
             tools:visibility="visible"
             />
@@ -111,7 +108,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_open_library"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_library_thing"
             />
 
@@ -120,7 +118,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_stripinfo_be"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_open_library"
             />
 
@@ -129,7 +128,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_lastdodo_nl"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_strip_info_be"
             />
 
@@ -137,9 +137,9 @@
             android:id="@+id/lbl_external_id"
             style="@style/Envelope.EditText"
             android:hint="@string/lbl_site_book_id"
+            android:layout_width="300dp"
             android:padding="@dimen/border2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_last_dodo_nl"
             >
 

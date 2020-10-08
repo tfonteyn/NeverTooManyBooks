@@ -30,18 +30,11 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/screenBorder"
         >
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/indent_fields"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="@dimen/indent2"
-            />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/indent_column2"
@@ -82,11 +75,11 @@
 
         <RadioButton
             android:id="@+id/site_goodreads"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_goodreads"
-            app:layout_constraintEnd_toStartOf="@id/indent_column2"
-            app:layout_constraintStart_toStartOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             />
 
@@ -94,23 +87,23 @@
             hence disabling this one -->
         <RadioButton
             android:id="@+id/site_library_thing"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_library_thing"
+            android:layout_marginStart="@dimen/field_margin"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/indent_column2"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_amazon"
             tools:visibility="visible"
             />
 
         <RadioButton
             android:id="@+id/site_open_library"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_open_library"
-            app:layout_constraintEnd_toStartOf="@id/indent_column2"
-            app:layout_constraintStart_toEndOf="@id/indent_fields"
+            android:layout_marginStart="@dimen/field_margin"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_library_thing"
             />
 
@@ -118,11 +111,11 @@
         <!-- Amazon search is disabled. For books the user can/should use the isbn search.-->
         <RadioButton
             android:id="@+id/site_amazon"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_amazon"
+            android:layout_marginStart="@dimen/field_margin"
             android:visibility="gone"
-            app:layout_constraintEnd_toStartOf="@id/indent_column3"
             app:layout_constraintStart_toEndOf="@id/indent_column2"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             tools:visibility="visible"
@@ -130,10 +123,10 @@
 
         <RadioButton
             android:id="@+id/site_isfdb"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_isfdb"
-            app:layout_constraintEnd_toStartOf="@id/indent_column3"
+            android:layout_marginStart="@dimen/field_margin"
             app:layout_constraintStart_toEndOf="@id/indent_column2"
             app:layout_constraintTop_toBottomOf="@id/site_amazon"
             />
@@ -141,20 +134,20 @@
 
         <RadioButton
             android:id="@+id/site_strip_info_be"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_stripinfo_be"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/field_margin"
             app:layout_constraintStart_toEndOf="@id/indent_column3"
             app:layout_constraintTop_toBottomOf="@id/lbl_site"
             />
 
         <RadioButton
             android:id="@+id/site_last_dodo_nl"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/site_lastdodo_nl"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="@dimen/field_margin"
             app:layout_constraintStart_toEndOf="@id/indent_column3"
             app:layout_constraintTop_toBottomOf="@id/site_strip_info_be"
             />
@@ -170,12 +163,10 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_external_id"
             style="@style/Envelope.EditText"
-            android:layout_width="0dp"
+            android:layout_width="300dp"
             android:hint="@string/lbl_site_book_id"
             android:padding="@dimen/border2"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btn_search"
-            app:layout_constraintStart_toStartOf="@id/indent_fields"
             app:layout_constraintTop_toBottomOf="@id/barrier_bottom"
             >
 
@@ -201,7 +192,6 @@
             app:icon="@drawable/ic_search"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_external_id"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/lbl_external_id"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
