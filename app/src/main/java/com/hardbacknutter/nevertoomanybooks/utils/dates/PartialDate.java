@@ -77,11 +77,11 @@ public class PartialDate
     /**
      * Constructor.
      *
-     * @param year  1..999_999_999 based, or {@code 0} for none
+     * @param year  1..999_999_999 based, or {@code 0} for none (dev: inlined from Year.MAX_VALUE)
      * @param month 1..12 based, or {@code 0} for none
      * @param day   1..31 based, or {@code 0} for none
      */
-    public PartialDate(@IntRange(from = 0, to = Year.MAX_VALUE) final int year,
+    public PartialDate(@IntRange(from = 0, to = 999_999_999) final int year,
                        @IntRange(from = 0, to = 12) final int month,
                        @IntRange(from = 0, to = 31) final int day) {
         if (year < 1) {
