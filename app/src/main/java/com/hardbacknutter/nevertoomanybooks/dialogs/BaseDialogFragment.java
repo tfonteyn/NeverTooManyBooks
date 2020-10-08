@@ -49,7 +49,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
-import com.hardbacknutter.nevertoomanybooks.widgets.ToolbarMenuActionButton;
 
 /**
  * Provides fullscreen or floating dialog support.
@@ -68,9 +67,8 @@ public abstract class BaseDialogFragment
 
     private int mFloatingDialogWidth;
 
-    /** Menu ActionView:R.id.MENU_ACTION_CONFIRM, Button: R.id.btn_confirm. */
     @Nullable
-    private ToolbarMenuActionButton mToolbarConfirmButton;
+    private Button mOkButton;
 
     /**
      * Constructor.
@@ -152,61 +150,79 @@ public abstract class BaseDialogFragment
                                                        "R.id.toolbar");
         toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
         toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
-        mToolbarConfirmButton =
-                new ToolbarMenuActionButton(toolbar, R.id.MENU_ACTION_CONFIRM, R.id.btn_confirm);
-        mToolbarConfirmButton.setOnClickListener(this::onToolbarMenuItemClick);
 
+        // Show or hide the button panel depending on the dialog being fullscreen or not.
         @Nullable
         final View buttonPanel = view.findViewById(R.id.buttonPanel);
         if (buttonPanel != null) {
             buttonPanel.setVisibility(mFullscreen ? View.GONE : View.VISIBLE);
         }
 
-        if (!mFullscreen) {
+        if (mFullscreen) {
+            // Hook-up the toolbar 'confirm' button with the menu title
+            // and the default menu listener.
+            final MenuItem menuItem = toolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+            if (menuItem != null) {
+                // the ok-button is a button inside the action view of the toolbar menu item
+                mOkButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
+                if (mOkButton != null) {
+                    mOkButton.setText(menuItem.getTitle());
+                    mOkButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem));
+                }
+            }
+
+        } else {
+
+            if (buttonPanel != null) {
+                // Toolbar confirmation menu item is mapped to the ok button.
+                // The menu item is hidden.
+                final MenuItem menuItem = toolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+                if (menuItem != null) {
+                    menuItem.setVisible(false);
+                    // the ok-button is a simple button on the button panel.
+                    mOkButton = buttonPanel.findViewById(R.id.btn_ok);
+                    if (mOkButton != null) {
+                        mOkButton.setVisibility(View.VISIBLE);
+                        mOkButton.setText(menuItem.getTitle());
+                        mOkButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem));
+                    }
+                }
+
+                // Toolbar navigation icon is mapped to the cancel button. Both are visible.
+                final Button cancelBtn = buttonPanel.findViewById(R.id.btn_cancel);
+                if (cancelBtn != null) {
+                    // If the toolbar nav button has a description,
+                    // use it for the 'cancel' button text.
+                    final CharSequence cancelText = toolbar.getNavigationContentDescription();
+                    if (cancelText != null) {
+                        cancelBtn.setText(cancelText);
+                    }
+                    cancelBtn.setOnClickListener(this::onToolbarNavigationClick);
+                }
+            }
+
             // if the parent class has not set the width, use the default.
             if (mFloatingDialogWidth == 0) {
                 setFloatingDialogWidth(R.dimen.floating_dialogs_min_width);
             }
 
-            // Always add actionBarSize (56dp) to the frame to compensate for the toolbar.
-            // When there is no buttonbar, we'll also add dialogPreferredPadding (see below)
-            //noinspection ConstantConditions
-            int bottomMargin = AttrUtils.getDimen(getContext(), R.attr.actionBarSize);
+            // adjust the overall width as calculated before
+            view.getLayoutParams().width = mFloatingDialogWidth;
 
+            // Add actionBarSize (56dp) to the body frame to compensate for the toolbar.
+            final int bottomMargin;
             if (buttonPanel != null) {
-                // Toolbar navigation is mapped to the cancel button. Both are visible.
-                final Button cancelBtn = buttonPanel.findViewById(R.id.btn_cancel);
-                cancelBtn.setOnClickListener(this::onToolbarNavigationClick);
-                // If the toolbar nav button has a description, use it for the 'cancel' button text.
-                final CharSequence cancelText = toolbar.getNavigationContentDescription();
-                if (cancelText != null) {
-                    cancelBtn.setText(cancelText);
-                }
-
-                // Toolbar confirmation menu item is mapped to the ok button.
-                // The menu item is removed.
-                final Button okBtn = buttonPanel.findViewById(R.id.btn_ok);
-                final MenuItem actionConfirm = toolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-                if (actionConfirm != null) {
-                    actionConfirm.setVisible(false);
-                    okBtn.setVisibility(View.VISIBLE);
-                    // always update the 'ok' button text.
-                    okBtn.setText(actionConfirm.getTitle());
-                    okBtn.setOnClickListener(v -> onToolbarMenuItemClick(actionConfirm));
-                } else {
-                    okBtn.setVisibility(View.GONE);
-                }
+                //noinspection ConstantConditions
+                bottomMargin = AttrUtils.getDimen(getContext(), R.attr.actionBarSize);
             } else {
-                // If there is no button bar, add a padding (24dp) to the dialog bottom.
-                bottomMargin += AttrUtils.getDimen(getContext(), R.attr.dialogPreferredPadding);
+                //noinspection ConstantConditions
+                bottomMargin = AttrUtils.getDimen(getContext(), R.attr.actionBarSize)
+                               // There is no button bar, add an extra padding (24dp)
+                               + AttrUtils.getDimen(getContext(), R.attr.dialogPreferredPadding);
             }
 
-            // adjust the overall width as calculated before
-            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
-            lp.width = mFloatingDialogWidth;
-            // and adjust the bottom margin of the body_frame
-            final View bodyFrame = view.findViewById(R.id.body_frame);
-            lp = (ViewGroup.MarginLayoutParams) bodyFrame.getLayoutParams();
+            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                    view.findViewById(R.id.body_frame).getLayoutParams();
             lp.setMargins(0, 0, 0, bottomMargin);
         }
     }
@@ -235,8 +251,8 @@ public abstract class BaseDialogFragment
     }
 
     @NonNull
-    public ToolbarMenuActionButton getToolbarConfirmButton() {
-        return Objects.requireNonNull(mToolbarConfirmButton, "mToolbarConfirmButton");
+    public Button requireConfirmButton() {
+        return Objects.requireNonNull(mOkButton, "mConfirmButton");
     }
 
     @Override

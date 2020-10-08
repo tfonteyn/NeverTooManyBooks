@@ -152,7 +152,7 @@ public class ExportHelperDialogFragment
         // The default selection is index 0, ZIP format.
         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
         mVb.archiveFormatInfoLong.setText("");
-        getToolbarConfirmButton().setText(R.string.lbl_backup);
+        requireConfirmButton().setText(R.string.lbl_backup);
 
 
         //noinspection ConstantConditions
@@ -176,7 +176,7 @@ public class ExportHelperDialogFragment
                         helper.setArchiveContainer(ArchiveContainer.Zip);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                         mVb.archiveFormatInfoLong.setText("");
-                        getToolbarConfirmButton().setText(R.string.lbl_backup);
+                        requireConfirmButton().setText(R.string.lbl_backup);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
@@ -194,7 +194,7 @@ public class ExportHelperDialogFragment
                         helper.setArchiveContainer(ArchiveContainer.Tar);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                         mVb.archiveFormatInfoLong.setText("");
-                        getToolbarConfirmButton().setText(R.string.lbl_backup);
+                        requireConfirmButton().setText(R.string.lbl_backup);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
@@ -212,7 +212,7 @@ public class ExportHelperDialogFragment
                         helper.setArchiveContainer(ArchiveContainer.CsvBooks);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
                         mVb.archiveFormatInfoLong.setText("");
-                        getToolbarConfirmButton().setText(R.string.lbl_export);
+                        requireConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
@@ -230,7 +230,7 @@ public class ExportHelperDialogFragment
                         helper.setArchiveContainer(ArchiveContainer.Xml);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
                         mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
-                        getToolbarConfirmButton().setText(R.string.lbl_export);
+                        requireConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
@@ -248,7 +248,7 @@ public class ExportHelperDialogFragment
                         helper.setArchiveContainer(ArchiveContainer.SqLiteDb);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
                         mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
-                        getToolbarConfirmButton().setText(R.string.lbl_export);
+                        requireConfirmButton().setText(R.string.lbl_export);
 
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);

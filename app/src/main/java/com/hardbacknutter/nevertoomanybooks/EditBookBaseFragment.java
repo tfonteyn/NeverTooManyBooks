@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -59,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.ToolbarMenuActionButton;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
 
 public abstract class EditBookBaseFragment
@@ -135,9 +135,11 @@ public abstract class EditBookBaseFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_save, menu);
-        final ToolbarMenuActionButton button =
-                new ToolbarMenuActionButton(menu, R.id.MENU_ACTION_CONFIRM, R.id.btn_confirm);
-        button.setOnClickListener(this::onOptionsItemSelected);
+
+        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+        button.setText(menuItem.getTitle());
+        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
 
         super.onCreateOptionsMenu(menu, inflater);
     }
