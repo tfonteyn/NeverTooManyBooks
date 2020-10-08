@@ -197,7 +197,8 @@ final class XmlUtils {
                                Base64.encodeToString(convertToBytes(value), Base64.DEFAULT));
 
         } else {
-            throw new UnexpectedValueException(value.getClass().getCanonicalName());
+            throw new UnexpectedValueException(
+                    String.valueOf(value.getClass().getCanonicalName()));
         }
     }
 
