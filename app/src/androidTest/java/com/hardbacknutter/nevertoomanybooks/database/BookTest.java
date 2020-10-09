@@ -200,7 +200,7 @@ public class BookTest {
      *     <li>Retrieve it by id and test.</li>
      *     <li>update the retrieved book, change title, add author, add back cover</li>
      *     <li>Retrieve it by id and test.</li>
-     *     <li>Delete the back cover while the book is ReadOnly</li>
+     *     <li>Delete the back cover while the book is {@link EntityStage.Stage#Clean}</li>
      *
      * </ol>
      */
@@ -246,7 +246,7 @@ public class BookTest {
 
             assertEquals(EntityStage.Stage.Dirty, book.getStage());
             db.update(context, book, 0);
-            book.setStage(EntityStage.Stage.Saved);
+            book.setStage(EntityStage.Stage.Clean);
 
             /*
              * test the updated book
@@ -383,7 +383,7 @@ public class BookTest {
 
         assertEquals(EntityStage.Stage.Dirty, book.getStage());
         final long bookId = db.insert(context, book, 0);
-        book.setStage(EntityStage.Stage.Saved);
+        book.setStage(EntityStage.Stage.Clean);
 
         assertTrue(bookId > 0);
         assertEquals(book.getId(), bookId);
@@ -393,7 +393,7 @@ public class BookTest {
 
     private void checkBookAfterInitialInsert(@NonNull final Context context,
                                              final Book book) {
-        assertEquals(EntityStage.Stage.ReadOnly, book.getStage());
+        assertEquals(EntityStage.Stage.Clean, book.getStage());
 
         String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
         assertFalse(uuid.isEmpty());

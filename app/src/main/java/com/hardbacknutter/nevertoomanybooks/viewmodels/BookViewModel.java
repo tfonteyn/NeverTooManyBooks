@@ -360,7 +360,7 @@ public class BookViewModel
             mDb.update(context, mBook, 0);
             putResultData(BKEY_BOOK_MODIFIED, true);
         }
-        mBook.setStage(EntityStage.Stage.Saved);
+        mBook.setStage(EntityStage.Stage.Clean);
 
         putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
     }

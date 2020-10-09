@@ -174,20 +174,10 @@ public abstract class EditBookBaseFragment
         super.onResume();
     }
 
-    /**
-     * Trigger the Fragment to save its Fields to the Book.
-     * <p>
-     * This is always done, even when the user 'cancel's the edit.
-     * The latter will result in a "are you sure" where they can 'cancel the cancel'
-     * and continue with all data present.
-     *
-     * <br><br>{@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onPause() {
-        // Avoid saving a 2nd time after the user has initiated saving.
-        if (!(mBookViewModel.getBook().getStage() == EntityStage.Stage.Saved)) {
+        if (mBookViewModel.getBook().getStage() == EntityStage.Stage.Dirty) {
             onSaveFields(mBookViewModel.getBook());
 
             mBookViewModel.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());

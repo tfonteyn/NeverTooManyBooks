@@ -26,8 +26,9 @@ import androidx.annotation.NonNull;
  */
 public class EntityStage {
 
-    private static final String ERROR_CURRENT_STAGE = "Current mStage=";
-    private Stage mStage = Stage.ReadOnly;
+    @NonNull
+    private Stage mStage = Stage.Clean;
+
     private boolean mLocked;
 
     void lock() {
@@ -55,60 +56,15 @@ public class EntityStage {
         if (mLocked) {
             return;
         }
-
-        switch (stage) {
-            case ReadOnly:
-                if (mStage == Stage.ReadOnly || mStage == Stage.Saved) {
-                    mStage = Stage.ReadOnly;
-                } else {
-                    throw new IllegalStateException(ERROR_CURRENT_STAGE + mStage);
-                }
-                break;
-
-            case WriteAble:
-                if (mStage == Stage.ReadOnly || mStage == Stage.Dirty) {
-                    mStage = Stage.WriteAble;
-                } else {
-                    throw new IllegalStateException(ERROR_CURRENT_STAGE + mStage);
-                }
-                break;
-
-            case Dirty:
-                if (mStage == Stage.ReadOnly
-                    || mStage == Stage.WriteAble
-                    || mStage == Stage.Dirty) {
-                    mStage = Stage.Dirty;
-                } else {
-                    throw new IllegalStateException(ERROR_CURRENT_STAGE + mStage);
-                }
-
-                break;
-
-            case Saved:
-                if (mStage == Stage.Dirty) {
-                    mStage = Stage.Saved;
-                } else {
-                    throw new IllegalStateException(ERROR_CURRENT_STAGE + mStage);
-                }
-                break;
-        }
+        mStage = stage;
     }
 
-    /**
-     * The flow is normally: ReadOnly -> Writeable -> Dirty -> Saved.
-     * An 'undo' from WriteAble/Dirty back to 'ReadOnly' is fully supported.
-     * <p>
-     * The {@link #Saved} stage is not really needed, but serves are a clear distinction between a
-     * 'before' and 'after' being edited.
-     */
     public enum Stage {
-        /** Initial state. */
-        ReadOnly,
+        /** The entity <strong>is not</strong> modified. */
+        Clean,
         /** The entity <strong>can</strong> be modified, but that has not been done yet. */
         WriteAble,
         /** The entity <strong>has</strong> been modified. */
         Dirty,
-        /** The modifications have been saved. */
-        Saved
     }
 }
