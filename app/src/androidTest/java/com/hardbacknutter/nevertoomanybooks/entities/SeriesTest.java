@@ -17,15 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.parcelling;
+package com.hardbacknutter.nevertoomanybooks.entities;
 
 import android.os.Parcel;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
-
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 import static org.junit.Assert.assertEquals;
 

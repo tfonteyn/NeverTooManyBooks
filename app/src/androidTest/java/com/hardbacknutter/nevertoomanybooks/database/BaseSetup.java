@@ -130,7 +130,7 @@ public abstract class BaseSetup {
             publisherList.add(publisher[0]);
             book[0].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[0] = db.insert(context, book[0], 0);
-            book[0].setStage(EntityStage.Stage.Saved);
+            book[0].setStage(EntityStage.Stage.Clean);
 
             book[1] = new Book();
             book[1].setStage(EntityStage.Stage.WriteAble);
@@ -147,7 +147,7 @@ public abstract class BaseSetup {
             publisherList.add(publisher[1]);
             book[1].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[1] = db.insert(context, book[1], 0);
-            book[1].setStage(EntityStage.Stage.Saved);
+            book[1].setStage(EntityStage.Stage.Clean);
 
             book[2] = new Book();
             book[2].setStage(EntityStage.Stage.WriteAble);
@@ -164,7 +164,7 @@ public abstract class BaseSetup {
             publisherList.add(publisher[2]);
             book[2].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[2] = db.insert(context, book[2], 0);
-            book[2].setStage(EntityStage.Stage.Saved);
+            book[2].setStage(EntityStage.Stage.Clean);
 
             book[3] = new Book();
             book[3].setStage(EntityStage.Stage.WriteAble);
@@ -182,7 +182,7 @@ public abstract class BaseSetup {
             publisherList.add(publisher[1]);
             book[3].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
             bookId[3] = db.insert(context, book[3], 0);
-            book[3].setStage(EntityStage.Stage.Saved);
+            book[3].setStage(EntityStage.Stage.Clean);
 
             book[4] = new Book();
             book[4].setStage(EntityStage.Stage.WriteAble);
@@ -211,7 +211,7 @@ public abstract class BaseSetup {
             tocList.add(tocEntry[3]);
             book[4].putParcelableArrayList(Book.BKEY_TOC_LIST, tocList);
             bookId[4] = db.insert(context, book[4], 0);
-            book[4].setStage(EntityStage.Stage.Saved);
+            book[4].setStage(EntityStage.Stage.Clean);
         }
     }
 }

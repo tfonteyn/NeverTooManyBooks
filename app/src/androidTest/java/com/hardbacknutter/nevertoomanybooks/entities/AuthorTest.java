@@ -17,7 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.parcelling;
+package com.hardbacknutter.nevertoomanybooks.entities;
+
 
 import android.os.Parcel;
 
@@ -25,25 +26,31 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-
 import static org.junit.Assert.assertEquals;
 
-@SmallTest
-public class PublisherTest {
 
+@SmallTest
+public class AuthorTest {
+
+    /**
+     * Reminder: The base test {@code assertEquals(pAuthor, author)}
+     * is testing {@link Author#equals(Object)} only.
+     */
     @Test
     public void parcelling() {
-        final Publisher publisher = Publisher.from("Random House");
+        final Author author = Author.from("Isaac Asimov");
 
         final Parcel parcel = Parcel.obtain();
-        publisher.writeToParcel(parcel, publisher.describeContents());
+        author.writeToParcel(parcel, author.describeContents());
         parcel.setDataPosition(0);
-        Publisher pPublisher = Publisher.CREATOR.createFromParcel(parcel);
+        Author pAuthor = Author.CREATOR.createFromParcel(parcel);
 
-        assertEquals(pPublisher, publisher);
+        assertEquals(pAuthor, author);
 
-        assertEquals(pPublisher.getId(), publisher.getId());
-        assertEquals(pPublisher.getTitle(), publisher.getTitle());
+        assertEquals(pAuthor.getId(), author.getId());
+        assertEquals(pAuthor.getFamilyName(), author.getFamilyName());
+        assertEquals(pAuthor.getGivenNames(), author.getGivenNames());
+        assertEquals(pAuthor.isComplete(), author.isComplete());
+        assertEquals(pAuthor.getType(), author.getType());
     }
 }
