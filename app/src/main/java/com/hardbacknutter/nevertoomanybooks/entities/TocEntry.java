@@ -354,10 +354,6 @@ public class TocEntry
         return mFirstPublicationDate;
     }
 
-    public void setFirstPublicationDate(@NonNull final CharSequence dateStr) {
-        mFirstPublicationDate.setDate(dateStr);
-    }
-
     public void setFirstPublicationDate(@NonNull final PartialDate firstPublicationDate) {
         mFirstPublicationDate = firstPublicationDate;
     }
