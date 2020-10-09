@@ -62,7 +62,6 @@
     <string name="action_clear_credentials">Cancella credenziali</string>
     <string name="btn_disable_message">Disattiva messaggio</string>
     <string name="btn_email">Invia email</string>
-    <string name="X_btn_loan_returned">Restituito</string>
     <string name="btn_options">Opzioni</string>
     <string name="action_reset">Reimposta</string>
     <string name="btn_scan_barcode">Scansione codice a barre</string>
@@ -277,8 +276,8 @@
     <string name="lbl_language">Lingua</string>
     <string name="lbl_lend_book_to_colon">Prestare questo libro a:</string>
     <string name="lbl_lending">Prestito</string>
-    <string name="lbl_loaned">Prestato</string>
-    <string name="lbl_loaned_to_name">Prestato a %1$s</string>
+    <string name="lbl_lend_out">Prestato</string>
+    <string name="lbl_lend_out_to_name">Prestato a %1$s</string>
     <string name="lbl_location">Locazione</string>
     <string name="lbl_location_long">Locazione del libro</string>
     <string name="lbl_month">Mese</string>
@@ -361,8 +360,8 @@
     <string name="lbl_level_collapse">Comprimi tutto</string>
     <string name="lbl_level_expand">Espandi tutto</string>
     <string name="lbl_level_reset">Livello di espansione preferito</string>
-    <string name="menu_loan_lend_book">Presta libro…</string>
-    <string name="menu_loan_return_book">Il libro preso in prestito è tornato</string>
+    <string name="menu_lend_out_book">Presta libro…</string>
+    <string name="menu_lend_return_book">Il libro preso in prestito è tornato</string>
     <string name="menu_rebuild_fts">Ricrea FTS</string>
     <string name="menu_rebuild_index">Ricostruisci indice</string>
     <string name="lbl_local_search">Ricerca locale avanzata</string>
@@ -384,8 +383,8 @@
     <string name="notification_channel_info">Informazione</string>
     <string name="pe_bob_filter_anthology_no">Tutti tranne antologie</string>
     <string name="pe_bob_filter_anthology_yes">Antologie</string>
-    <string name="pe_bob_filter_loaned_no">Libri disponibili</string>
-    <string name="pe_bob_filter_loaned_yes">Libri in prestito</string>
+    <string name="pe_bob_filter_lend_out_no">Libri disponibili</string>
+    <string name="pe_bob_filter_lend_out_yes">Libri in prestito</string>
     <string name="pe_bob_filter_read_no">Libri non letti</string>
     <string name="pe_bob_filter_read_yes">Libri letti</string>
     <string name="pe_bob_filter_signed_no">Libri non firmati</string>
@@ -506,7 +505,7 @@
     <string name="style_builtin_format">Formato</string>
     <string name="style_builtin_genre">Genere</string>
     <string name="style_builtin_language">Lingua</string>
-    <string name="style_builtin_loaned">Prestato</string>
+    <string name="style_builtin_lending">Prestato</string>
     <string name="style_builtin_location">Locazione</string>
     <string name="style_builtin_publication_date">Data di pubblicazione</string>
     <string name="style_builtin_rating">Valutazione</string>

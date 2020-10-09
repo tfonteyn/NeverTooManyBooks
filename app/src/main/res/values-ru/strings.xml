@@ -61,7 +61,6 @@
     <string name="action_clear_credentials">Очистить учетные данные</string>
     <string name="btn_disable_message">Отключить сообщение</string>
     <string name="btn_email">Написать письмо</string>
-    <string name="X_btn_loan_returned">Возвращена</string>
     <string name="btn_options">опции</string>
     <string name="action_reset">Сбросить</string>
     <string name="btn_scan_barcode">Сканирование штрих-кода</string>
@@ -275,8 +274,8 @@
     <string name="lbl_language">Язык</string>
     <string name="lbl_lend_book_to_colon">Одолжите эту книгу:</string>
     <string name="lbl_lending">кредитование</string>
-    <string name="lbl_loaned">Одолжено</string>
-    <string name="lbl_loaned_to_name">Дана вдолг: %1$s</string>
+    <string name="lbl_lend_out">Одолжено</string>
+    <string name="lbl_lend_out_to_name">Дана вдолг: %1$s</string>
     <string name="lbl_location">Местоположение</string>
     <string name="lbl_location_long">Местоположение книги</string>
     <string name="lbl_month">Месяц</string>
@@ -359,8 +358,8 @@
     <string name="lbl_level_collapse">Свернуть всё</string>
     <string name="lbl_level_expand">Развернуть всё</string>
     <string name="lbl_level_reset">Предпочтительный уровень расширения</string>
-    <string name="menu_loan_lend_book">Одолжить книгу…</string>
-    <string name="menu_loan_return_book">Заимствованная книга возвращается</string>
+    <string name="menu_lend_out_book">Одолжить книгу…</string>
+    <string name="menu_lend_return_book">Заимствованная книга возвращается</string>
     <string name="menu_rebuild_fts">Переобрать FTS</string>
     <string name="menu_rebuild_index">Перестроить индекс</string>
     <string name="lbl_local_search">Расширенный локальный поиск</string>
@@ -382,8 +381,8 @@
     <string name="notification_channel_info">Информация</string>
     <string name="pe_bob_filter_anthology_no">Все, кроме антологий</string>
     <string name="pe_bob_filter_anthology_yes">Антологии</string>
-    <string name="pe_bob_filter_loaned_no">Книги доступны</string>
-    <string name="pe_bob_filter_loaned_yes">Книги в долг</string>
+    <string name="pe_bob_filter_lend_out_no">Книги доступны</string>
+    <string name="pe_bob_filter_lend_out_yes">Книги в долг</string>
     <string name="pe_bob_filter_read_no">Книги непрочитанные</string>
     <string name="pe_bob_filter_read_yes">Книги читают</string>
     <string name="pe_bob_filter_signed_no">Книги без подписи</string>
@@ -501,7 +500,7 @@
     <string name="style_builtin_format">Формат</string>
     <string name="style_builtin_genre">Имя жанра</string>
     <string name="style_builtin_language">Язык</string>
-    <string name="style_builtin_loaned">Заимствована</string>
+    <string name="style_builtin_lending">Заимствована</string>
     <string name="style_builtin_location">Местоположение</string>
     <string name="style_builtin_publication_date">Дата публикации</string>
     <string name="style_builtin_rating">Оценка</string>

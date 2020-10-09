@@ -513,7 +513,7 @@ public class BooklistAdapter
                     return text;
                 }
             }
-            case BooklistGroup.ON_LOAN: {
+            case BooklistGroup.LENDING: {
                 if (text == null || text.isEmpty()) {
                     return context.getString(R.string.lbl_available);
                 } else {
@@ -914,8 +914,8 @@ public class BooklistAdapter
         private final ImageView mSignedIconView;
         /** The "1th edition" icon. */
         private final ImageView mEditionIconView;
-        /** The "on loan" icon. */
-        private final ImageView mOnLoanIconView;
+        /** The "lend out" icon. */
+        private final ImageView mLendOutIconView;
         /** View that stores the related book field. */
         private final ImageView mCoverView;
         /** View that stores the Series number when it is a short piece of text. */
@@ -978,7 +978,7 @@ public class BooklistAdapter
             mReadIconView = itemView.findViewById(R.id.icon_read);
             mSignedIconView = itemView.findViewById(R.id.icon_signed);
             mEditionIconView = itemView.findViewById(R.id.icon_first_edition);
-            mOnLoanIconView = itemView.findViewById(R.id.icon_on_loan);
+            mLendOutIconView = itemView.findViewById(R.id.icon_lend_out);
 
             mSeriesNumView = itemView.findViewById(R.id.series_num);
             mSeriesNumLongView = itemView.findViewById(R.id.series_num_long);
@@ -1087,7 +1087,7 @@ public class BooklistAdapter
 
             if (mInUse.lending) {
                 final boolean isSet = !rowData.getBoolean(DBDefinitions.KEY_LOANEE_AS_BOOLEAN);
-                mOnLoanIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
+                mLendOutIconView.setVisibility(isSet ? View.VISIBLE : View.GONE);
             }
 
             if (mInUse.cover) {

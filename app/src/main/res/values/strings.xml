@@ -23,6 +23,9 @@
     Reference sites:
     https://www.abbreviations.com/
 
+     Some linguists, especially in British English, believe that "loan" should only be used as a noun,
+      while the correct verb is only "lend."
+
 
     ENTITY:
     Define entities that can be used inside of other string (not possible with standard Android
@@ -767,8 +770,8 @@
     <string name="pe_bob_filter_signed_no">Books Unsigned</string>
     <string name="pe_bob_filter_anthology_yes">Anthologies</string>
     <string name="pe_bob_filter_anthology_no">All but Anthologies</string>
-    <string name="pe_bob_filter_loaned_yes">Books on loan</string>
-    <string name="pe_bob_filter_loaned_no">Books available</string>
+    <string name="pe_bob_filter_lend_out_yes">Books lend out</string>
+    <string name="pe_bob_filter_lend_out_no">Books available</string>
     <string name="pe_bob_filter_isbn_yes">With ISBN</string>
     <string name="pe_bob_filter_isbn_no">Without ISBN</string>
 
@@ -947,9 +950,9 @@
     <!-- Book context/options menu option: set the current book as 'unread' ('to read')-->
     <string name="menu_set_unread">Set as unread</string>
     <!-- Book context/options menu option: lend out the current book. -->
-    <string name="menu_loan_lend_book">Lend Book to…</string>
+    <string name="menu_lend_out_book">Lend out to…</string>
     <!-- Book context/options menu option: the current book was returned. -->
-    <string name="menu_loan_return_book">Lend book is returned</string>
+    <string name="menu_lend_return_book">Lend book is returned</string>
     <!-- [VERIFIED] Book context/options menu option: bring up the Android generic share chooser -->
     <string name="menu_share_this">Share</string>
     <!-- Book context/options Update Fields from internet for a single book -->
@@ -1129,7 +1132,7 @@
     <string name="style_builtin_genre">Genre</string>
     <!-- [VERIFIED] -->
     <string name="style_builtin_language">Language</string>
-    <string name="style_builtin_loaned">Lending</string>
+    <string name="style_builtin_lending">Lending</string>
     <!-- [VERIFIED] -->
     <string name="style_builtin_location">Location</string>
     <string name="style_builtin_publication_date">Pub. Date</string>
@@ -1414,8 +1417,8 @@
     <!-- a header, with a text field below where the user can type in a name -->
     <string name="lbl_lend_book_to_colon">Lend this book to:</string>
     <!-- a one line label, with the name of the person appended -->
-    <string name="lbl_loaned_to_name">On Loan to %1$s</string>
-    <string name="lbl_loaned">On Loan</string>
+    <string name="lbl_lend_out_to_name">Lend out to %1$s</string>
+    <string name="lbl_lend_out">Lend out</string>
     <!-- [VERIFIED] -->
     <string name="lbl_available">Available</string>
 
@@ -1534,8 +1537,6 @@
     <string name="X_btn_do_not_show_again">Do not show again</string>
     <!-- when warned you have unsaved edits -->
     <string name="X_btn_continue_edit">Continue Editing</string>
-    <!-- Button text, to 'return' a lend book -->
-    <string name="X_btn_loan_returned">Returned</string>
 
     <string name="X_lbl_delete_book">Delete Book</string>
     <string name="X_lbl_delete_series">Delete Series</string>

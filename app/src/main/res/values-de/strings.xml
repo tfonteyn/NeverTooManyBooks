@@ -64,7 +64,6 @@
     <string name="action_clear_credentials">Anmeldedaten löschen</string>
     <string name="btn_disable_message">Meldung deaktivieren</string>
     <string name="btn_email">E-Mail senden</string>
-    <string name="X_btn_loan_returned">Zurückgegeben</string>
     <string name="btn_options">Optionen</string>
     <string name="action_reset">Zurücksetzen</string>
     <string name="btn_scan_barcode">Barcode scannen</string>
@@ -282,8 +281,8 @@
     <string name="lbl_language">Sprache</string>
     <string name="lbl_lend_book_to_colon">Verleihe dieses Buch an:</string>
     <string name="lbl_lending">Ausleihen</string>
-    <string name="lbl_loaned">Verliehen</string>
-    <string name="lbl_loaned_to_name">Leihgabe an %1$s</string>
+    <string name="lbl_lend_out">Verliehen</string>
+    <string name="lbl_lend_out_to_name">Leihgabe an %1$s</string>
     <string name="lbl_location">Standort</string>
     <string name="lbl_location_long">Standort des Buches</string>
     <string name="lbl_month">Monat</string>
@@ -366,8 +365,8 @@
     <string name="lbl_level_collapse">Alles minimieren</string>
     <string name="lbl_level_expand">Alles ausklappen</string>
     <string name="lbl_level_reset">Bevorzugte Ausbaustufe</string>
-    <string name="menu_loan_lend_book">Buch verleihen…</string>
-    <string name="menu_loan_return_book">Geliehenes Buch ist zurück</string>
+    <string name="menu_lend_out_book">Buch verleihen…</string>
+    <string name="menu_lend_return_book">Geliehenes Buch ist zurück</string>
     <string name="menu_rebuild_fts">FTS neu aufbauen</string>
     <string name="menu_rebuild_index">Index neu erstellen</string>
     <string name="lbl_local_search">Erweiterte lokale Suche</string>
@@ -389,8 +388,8 @@
     <string name="notification_channel_info">Information</string>
     <string name="pe_bob_filter_anthology_no">Alle außer Anthologien</string>
     <string name="pe_bob_filter_anthology_yes">Anthologien</string>
-    <string name="pe_bob_filter_loaned_no">Bücher zur Verfügung</string>
-    <string name="pe_bob_filter_loaned_yes">Bücher ausgeliehen</string>
+    <string name="pe_bob_filter_lend_out_no">Bücher zur Verfügung</string>
+    <string name="pe_bob_filter_lend_out_yes">Bücher ausgeliehen</string>
     <string name="pe_bob_filter_read_no">Bücher ungelesen</string>
     <string name="pe_bob_filter_read_yes">Bücher gelesen</string>
     <string name="pe_bob_filter_signed_no">Bücher unsigniert</string>
@@ -511,7 +510,7 @@
     <string name="style_builtin_format">Buchformat</string>
     <string name="style_builtin_genre">Genre</string>
     <string name="style_builtin_language">Sprache</string>
-    <string name="style_builtin_loaned">Verliehen</string>
+    <string name="style_builtin_lending">Verliehen</string>
     <string name="style_builtin_location">Standort</string>
     <string name="style_builtin_publication_date">Datum der Veröffentlichung</string>
     <string name="style_builtin_rating">Bewertung</string>

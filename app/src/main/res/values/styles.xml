@@ -103,8 +103,8 @@
         <item name="android:background">@drawable/outline_rounded</item>
     </style>
 
-    <!-- On loan to X. -->
-    <style name="Field.OnLoanBar">
+    <!-- Lend out to X. -->
+    <style name="Field.LendOutToBar">
         <item name="android:paddingStart">@dimen/indent2</item>
         <item name="android:paddingEnd">@dimen/indent2</item>
         <item name="android:background">?attr/colorOnSurface</item>
@@ -394,8 +394,8 @@
     </style>
 
     <!-- ImageView. Indicator a book has been lend out. -->
-    <style name="Flag.OnLoan">
-        <item name="android:contentDescription">@string/lbl_loaned</item>
+    <style name="Flag.LendOut">
+        <item name="android:contentDescription">@string/lbl_lend_out</item>
         <item name="android:src">@drawable/ic_do_not_disturb</item>
         <item name="android:tint">?attr/colorError</item>
     </style>

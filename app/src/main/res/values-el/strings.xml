@@ -62,7 +62,6 @@
     <string name="action_clear_credentials">Διαγραφή διαπιστευτηρίων</string>
     <string name="btn_disable_message">Απενεργοποίηση μηνυμάτων</string>
     <string name="btn_email">Ηλεκτρονικό ταχυδρομείο</string>
-    <string name="X_btn_loan_returned">Έχει επιστραφεί</string>
     <string name="btn_options">Επιλογές</string>
     <string name="action_reset">Επαναφορά</string>
     <string name="btn_scan_barcode">Σάρωση γραμμωτού κώδικα</string>
@@ -280,8 +279,8 @@
     <string name="lbl_language">Γλώσσα</string>
     <string name="lbl_lend_book_to_colon">Δανείστε αυτό το βιβλίο:</string>
     <string name="lbl_lending">Δανεισμός</string>
-    <string name="lbl_loaned">Δανεισμένο</string>
-    <string name="lbl_loaned_to_name">Δανεισμένο σε %1$s</string>
+    <string name="lbl_lend_out">Δανεισμένο</string>
+    <string name="lbl_lend_out_to_name">Δανεισμένο σε %1$s</string>
     <string name="lbl_location">Τοποθεσία</string>
     <string name="lbl_location_long">Τοποθεσία του βιβλίου</string>
     <string name="lbl_month">Μήνας</string>
@@ -364,8 +363,8 @@
     <string name="lbl_level_collapse">Απόκρυψη Όλων</string>
     <string name="lbl_level_expand">Επέκταση Όλων</string>
     <string name="lbl_level_reset">Προτιμώμενο επίπεδο επέκτασης</string>
-    <string name="menu_loan_lend_book">Δανεισμός βιβλίου…</string>
-    <string name="menu_loan_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
+    <string name="menu_lend_out_book">Δανεισμός βιβλίου…</string>
+    <string name="menu_lend_return_book">Το δανεισμένο βιβλίο είναι πίσω</string>
     <string name="menu_rebuild_fts">Ανακατασκευή FTS</string>
     <string name="menu_rebuild_index">Αναδημιουργία ευρετηρίου</string>
     <string name="lbl_local_search">Προηγμένη τοπική αναζήτηση</string>
@@ -387,8 +386,8 @@
     <string name="notification_channel_info">Πληροφορίες</string>
     <string name="pe_bob_filter_anthology_no">Όλοι εκτός από Ανθολογίες</string>
     <string name="pe_bob_filter_anthology_yes">Ανθολογίες</string>
-    <string name="pe_bob_filter_loaned_no">Βιβλία διαθέσιμα</string>
-    <string name="pe_bob_filter_loaned_yes">Βιβλία δανείου</string>
+    <string name="pe_bob_filter_lend_out_no">Βιβλία διαθέσιμα</string>
+    <string name="pe_bob_filter_lend_out_yes">Βιβλία δανείου</string>
     <string name="pe_bob_filter_read_no">Βιβλία μη αναγνωσμένα</string>
     <string name="pe_bob_filter_read_yes">Τα βιβλία διαβάζουν</string>
     <string name="pe_bob_filter_signed_no">Βιβλία χωρίς υπογραφή</string>
@@ -509,7 +508,7 @@
     <string name="style_builtin_format">Μορφή</string>
     <string name="style_builtin_genre">Όνομα Κατηγορίας</string>
     <string name="style_builtin_language">Γλώσσα</string>
-    <string name="style_builtin_loaned">Δανεισμένα</string>
+    <string name="style_builtin_lending">Δανεισμένα</string>
     <string name="style_builtin_location">Τοποθεσία</string>
     <string name="style_builtin_publication_date">Ημερομηνία έκδοσης</string>
     <string name="style_builtin_rating">Βαθμολογία</string>

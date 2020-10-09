@@ -272,8 +272,8 @@ public final class Builtin {
         style = new BooklistStyle(context,
                                   LENDING_ID,
                                   LENDING_UUID,
-                                  R.string.style_builtin_loaned,
-                                  BooklistGroup.ON_LOAN,
+                                  R.string.style_builtin_lending,
+                                  BooklistGroup.LENDING,
                                   BooklistGroup.AUTHOR,
                                   BooklistGroup.SERIES);
         S_BUILTIN_STYLES.put(style.getUuid(), style);

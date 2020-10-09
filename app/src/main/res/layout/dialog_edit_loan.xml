@@ -58,7 +58,7 @@
                 >
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/lbl_loaned_to"
+                    android:id="@+id/lbl_lend_out_to"
                     style="@style/Envelope.AutoCompleteTextView"
                     android:layout_width="match_parent"
                     android:hint="@string/lbl_name"
@@ -73,7 +73,7 @@
                         android:layout_width="match_parent"
                         android:imeOptions="actionDone"
                         tools:ignore="LabelFor"
-                        tools:text="@sample/data.json/loaned_out_to/name"
+                        tools:text="@sample/data.json/lend_out_to/name"
                         />
 
                 </com.google.android.material.textfield.TextInputLayout>

@@ -81,8 +81,8 @@
     {"name": "Date Acquired"},
     {"name": "Genre"}
   ],
-  "loaned_out_to": [
-    {"full": "Loaned out to Alvin", "name": "Alvin"}
+  "lend_out_to": [
+    {"full": "Lend out to Alvin", "name": "Alvin"}
   ],
   "context_menu": [
     {"name": "Cut"},

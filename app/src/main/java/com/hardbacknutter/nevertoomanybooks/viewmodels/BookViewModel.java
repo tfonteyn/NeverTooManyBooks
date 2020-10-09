@@ -276,7 +276,7 @@ public class BookViewModel
         mBook.remove(DBDefinitions.KEY_LOANEE);
         mDb.setLoanee(mBook, null, true);
 
-        // don't do this for now, BoB does not display the loan field.
+        // don't do this for now, BoB does not display the loanee field.
         //mResultData.putExtra(UniqueId.BKEY_BOOK_MODIFIED,true);
     }
 

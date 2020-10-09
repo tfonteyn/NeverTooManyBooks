@@ -563,7 +563,7 @@ public class BookDetailsFragment
      */
     private void populateLendToField(@Nullable final String loanee) {
         if (loanee != null && !loanee.isEmpty()) {
-            mVb.lendTo.setText(getString(R.string.lbl_loaned_to_name, loanee));
+            mVb.lendTo.setText(getString(R.string.lbl_lend_out_to_name, loanee));
             mVb.lendTo.setVisibility(View.VISIBLE);
             mVb.lendTo.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
                 /** TODO: convert to MenuPicker context menu.... if I can be bothered. */
@@ -576,7 +576,7 @@ public class BookDetailsFragment
                     Resources r = getResources();
                     menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
                              r.getInteger(R.integer.MENU_ORDER_LENDING),
-                             R.string.menu_loan_return_book);
+                             R.string.menu_lend_return_book);
                 }
             });
         } else {

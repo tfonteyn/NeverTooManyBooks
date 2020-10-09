@@ -236,10 +236,10 @@
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->
-    <string-array name="pe_bob_filter_loaned">
+    <string-array name="pe_bob_filter_lending">
         <item>@string/bookshelf_all_books</item>
-        <item>@string/pe_bob_filter_loaned_yes</item>
-        <item>@string/pe_bob_filter_loaned_no</item>
+        <item>@string/pe_bob_filter_lend_out_yes</item>
+        <item>@string/pe_bob_filter_lend_out_no</item>
     </string-array>
 
     <!-- ListPreference - Booklist Filter -->

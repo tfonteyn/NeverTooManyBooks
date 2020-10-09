@@ -162,7 +162,7 @@ public class BooklistGroup
     public static final int GENRE = 3;
     public static final int PUBLISHER = 4;
     public static final int READ_STATUS = 5;
-    public static final int ON_LOAN = 6;
+    public static final int LENDING = 6;
     public static final int DATE_PUBLISHED_YEAR = 7;
     public static final int DATE_PUBLISHED_MONTH = 8;
     public static final int BOOK_TITLE_LETTER = 9;
@@ -486,7 +486,7 @@ public class BooklistGroup
              BOOKSHELF,
              READ_STATUS,
 
-             ON_LOAN,
+             LENDING,
 
              BOOK_TITLE_LETTER,
              SERIES_TITLE_LETTER,
@@ -747,8 +747,8 @@ public class BooklistGroup
                 }
 
                 // the others here below are custom key domains
-                case ON_LOAN: {
-                    return new GroupKey(R.string.lbl_loaned, "l",
+                case LENDING: {
+                    return new GroupKey(R.string.lbl_lend_out, "l",
                                         DOM_LOANEE, DAOSql.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
                                         VirtualDomain.SORT_ASC);
                 }

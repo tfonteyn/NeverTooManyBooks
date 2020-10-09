@@ -53,11 +53,11 @@
 
         <ListPreference
             android:defaultValue="-1"
-            android:entries="@array/pe_bob_filter_loaned"
+            android:entries="@array/pe_bob_filter_lending"
             android:entryValues="@array/pv_bob_filter_values"
             android:icon="@drawable/ic_filter_list"
-            android:key="style.booklist.filter.loaned"
-            android:title="@string/lbl_loaned"
+            android:key="style.booklist.filter.lending"
+            android:title="@string/lbl_lend_out"
             />
 
         <!--        -->

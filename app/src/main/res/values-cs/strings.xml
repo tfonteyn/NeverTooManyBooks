@@ -61,7 +61,6 @@
     <string name="action_clear_credentials">Vymazat pověření</string>
     <string name="btn_disable_message">Zakázat zprávu</string>
     <string name="btn_email">Poslat e-mail</string>
-    <string name="X_btn_loan_returned">Vráceno</string>
     <string name="btn_options">Možnosti</string>
     <string name="action_reset">Resetovat</string>
     <string name="btn_scan_barcode">Naskenujte čárový kód</string>
@@ -277,8 +276,8 @@
     <string name="lbl_language">Jazyk</string>
     <string name="lbl_lend_book_to_colon">Půjčte tuto knihu:</string>
     <string name="lbl_lending">Půjčování</string>
-    <string name="lbl_loaned">Půjčeno</string>
-    <string name="lbl_loaned_to_name">Na úvěr na %1$s</string>
+    <string name="lbl_lend_out">Půjčeno</string>
+    <string name="lbl_lend_out_to_name">Na úvěr na %1$s</string>
     <string name="lbl_location">Umístění</string>
     <string name="lbl_location_long">Umístění knihy</string>
     <string name="lbl_month">Měsíc</string>
@@ -361,8 +360,8 @@
     <string name="lbl_level_collapse">Sbalit vše</string>
     <string name="lbl_level_expand">Rozbalit vše</string>
     <string name="lbl_level_reset">Upřednostňovaná úroveň expanze</string>
-    <string name="menu_loan_lend_book">Půjčit knihu…</string>
-    <string name="menu_loan_return_book">Vypůjčená kniha je zpět</string>
+    <string name="menu_lend_out_book">Půjčit knihu…</string>
+    <string name="menu_lend_return_book">Vypůjčená kniha je zpět</string>
     <string name="menu_rebuild_fts">Obnovit FTS</string>
     <string name="menu_rebuild_index">Znovu vytvořit index</string>
     <string name="lbl_local_search">Rozšířené místní vyhledávání</string>
@@ -384,8 +383,8 @@
     <string name="notification_channel_info">Informace</string>
     <string name="pe_bob_filter_anthology_no">Všechno kromě Anthologies</string>
     <string name="pe_bob_filter_anthology_yes">Anthology</string>
-    <string name="pe_bob_filter_loaned_no">Dostupné knihy</string>
-    <string name="pe_bob_filter_loaned_yes">Knihy o půjčce</string>
+    <string name="pe_bob_filter_lend_out_no">Dostupné knihy</string>
+    <string name="pe_bob_filter_lend_out_yes">Knihy o půjčce</string>
     <string name="pe_bob_filter_read_no">Knihy nepřečtené</string>
     <string name="pe_bob_filter_read_yes">Knihy číst</string>
     <string name="pe_bob_filter_signed_no">Knihy nepodepsané</string>
@@ -503,7 +502,7 @@
     <string name="style_builtin_format">Formát</string>
     <string name="style_builtin_genre">Název žánru</string>
     <string name="style_builtin_language">Jazyk</string>
-    <string name="style_builtin_loaned">Půjčeno</string>
+    <string name="style_builtin_lending">Půjčeno</string>
     <string name="style_builtin_location">Umístění</string>
     <string name="style_builtin_publication_date">Datum vydání</string>
     <string name="style_builtin_rating">Hodnocení</string>

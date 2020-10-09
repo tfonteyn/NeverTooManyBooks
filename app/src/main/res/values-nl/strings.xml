@@ -63,7 +63,6 @@
     <string name="action_clear_credentials">Certificaatgegevens wissen</string>
     <string name="btn_disable_message">Bericht uitschakelen</string>
     <string name="btn_email">E-mailen</string>
-    <string name="X_btn_loan_returned">Terug</string>
     <string name="btn_options">Opties</string>
     <string name="action_reset">Resetten</string>
     <string name="btn_scan_barcode">Scan barcode</string>
@@ -284,8 +283,8 @@
     <string name="lbl_language">Taal</string>
     <string name="lbl_lend_book_to_colon">Leen dit boek aan:</string>
     <string name="lbl_lending">Uitlenen</string>
-    <string name="lbl_loaned">Uitgeleend</string>
-    <string name="lbl_loaned_to_name">Uitgeleend aan %1$s</string>
+    <string name="lbl_lend_out">Uitgeleend</string>
+    <string name="lbl_lend_out_to_name">Uitgeleend aan %1$s</string>
     <string name="lbl_location">Locatie</string>
     <string name="lbl_location_long">Locatie van het boek</string>
     <string name="lbl_month">Maand</string>
@@ -368,8 +367,8 @@
     <string name="lbl_level_collapse">Alles samenvouwen</string>
     <string name="lbl_level_expand">Alles uitklappen</string>
     <string name="lbl_level_reset">Voorkeur expansieniveau</string>
-    <string name="menu_loan_lend_book">Boek uitlenen…</string>
-    <string name="menu_loan_return_book">Uitgeleend boek is terug</string>
+    <string name="menu_lend_out_book">Boek uitlenen…</string>
+    <string name="menu_lend_return_book">Uitgeleend boek is terug</string>
     <string name="menu_rebuild_fts">FTS opnieuw opbouwen</string>
     <string name="menu_rebuild_index">Index opnieuw opbouwen</string>
     <string name="lbl_local_search">Geavanceerd lokaal zoeken</string>
@@ -391,8 +390,8 @@
     <string name="notification_channel_info">Informatie</string>
     <string name="pe_bob_filter_anthology_no">Geen Bloemlezingen</string>
     <string name="pe_bob_filter_anthology_yes">Bloemlezingen</string>
-    <string name="pe_bob_filter_loaned_no">Niet Uitgeleende boeken</string>
-    <string name="pe_bob_filter_loaned_yes">Uitgeleende boeken</string>
+    <string name="pe_bob_filter_lend_out_no">Niet Uitgeleende boeken</string>
+    <string name="pe_bob_filter_lend_out_yes">Uitgeleende boeken</string>
     <string name="pe_bob_filter_read_no">Niet Gelezen boeken</string>
     <string name="pe_bob_filter_read_yes">Gelezen boeken</string>
     <string name="pe_bob_filter_signed_no">Niet Gesigneerd boeken</string>
@@ -513,7 +512,7 @@
     <string name="style_builtin_format">Formaat</string>
     <string name="style_builtin_genre">Genrenaam</string>
     <string name="style_builtin_language">Taal</string>
-    <string name="style_builtin_loaned">Uitlenen</string>
+    <string name="style_builtin_lending">Uitlenen</string>
     <string name="style_builtin_location">Locatie</string>
     <string name="style_builtin_publication_date">Uitgifte datum</string>
     <string name="style_builtin_rating">Waardering</string>

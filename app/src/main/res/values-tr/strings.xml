@@ -62,7 +62,6 @@
     <string name="action_clear_credentials">Kimlik bilgilerini temizle</string>
     <string name="btn_disable_message">İletiyi kapat</string>
     <string name="btn_email">E-posta</string>
-    <string name="X_btn_loan_returned">Geri geldi</string>
     <string name="btn_options">Seçenekler</string>
     <string name="action_reset">Sıfırla</string>
     <string name="btn_scan_barcode">Barkod tara</string>
@@ -281,8 +280,8 @@
     <string name="lbl_language">Dil</string>
     <string name="lbl_lend_book_to_colon">Şuna ödünç ver:</string>
     <string name="lbl_lending">Ödünç verilmiş</string>
-    <string name="lbl_loaned">Ödünç verilen</string>
-    <string name="lbl_loaned_to_name">%1$s kişisine ödünç verilmiş</string>
+    <string name="lbl_lend_out">Ödünç verilen</string>
+    <string name="lbl_lend_out_to_name">%1$s kişisine ödünç verilmiş</string>
     <string name="lbl_location">Konum</string>
     <string name="lbl_location_long">Kitabın yeri</string>
     <string name="lbl_month">Ay</string>
@@ -365,8 +364,8 @@
     <string name="lbl_level_collapse">Hepsini gizle</string>
     <string name="lbl_level_expand">Hepsini göster</string>
     <string name="lbl_level_reset">Tercih edilen seviye genişlemesi</string>
-    <string name="menu_loan_lend_book">Kitabı ödünç ver…</string>
-    <string name="menu_loan_return_book">Ödünç alınan kitap geri döndü</string>
+    <string name="menu_lend_out_book">Kitabı ödünç ver…</string>
+    <string name="menu_lend_return_book">Ödünç alınan kitap geri döndü</string>
     <string name="menu_rebuild_fts">FTS\'yi yeniden yapıla</string>
     <string name="menu_rebuild_index">Dizini yeniden oluştur</string>
     <string name="lbl_local_search">Gelişmiş Yerel Arama</string>
@@ -388,8 +387,8 @@
     <string name="notification_channel_info">Bilgi</string>
     <string name="pe_bob_filter_anthology_no">Antolojiler hariç hepsi</string>
     <string name="pe_bob_filter_anthology_yes">Antolojiler</string>
-    <string name="pe_bob_filter_loaned_no">Mevcut kitaplar</string>
-    <string name="pe_bob_filter_loaned_yes">Borç kitapları</string>
+    <string name="pe_bob_filter_lend_out_no">Mevcut kitaplar</string>
+    <string name="pe_bob_filter_lend_out_yes">Borç kitapları</string>
     <string name="pe_bob_filter_read_no">Kitaplar okunmadı</string>
     <string name="pe_bob_filter_read_yes">Kitap okumak</string>
     <string name="pe_bob_filter_signed_no">İmzasız kitaplar</string>
@@ -507,7 +506,7 @@
     <string name="style_builtin_format">Biçim</string>
     <string name="style_builtin_genre">Tür</string>
     <string name="style_builtin_language">Dil</string>
-    <string name="style_builtin_loaned">Ödünç verilmiş</string>
+    <string name="style_builtin_lending">Ödünç verilmiş</string>
     <string name="style_builtin_location">Konum</string>
     <string name="style_builtin_publication_date">Yayın tarihi</string>
     <string name="style_builtin_rating">Değerlendirme</string>

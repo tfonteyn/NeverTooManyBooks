@@ -64,13 +64,13 @@
         android:id="@id/MENU_BOOK_LOAN_ADD"
         android:icon="@drawable/ic_people"
         android:orderInCategory="@integer/MENU_ORDER_LENDING"
-        android:title="@string/menu_loan_lend_book" />
+        android:title="@string/menu_lend_out_book" />
 
     <item
         android:id="@id/MENU_BOOK_LOAN_DELETE"
         android:icon="@drawable/ic_people"
         android:orderInCategory="@integer/MENU_ORDER_LENDING"
-        android:title="@string/menu_loan_return_book" />
+        android:title="@string/menu_lend_return_book" />
 
     <item
         android:id="@id/MENU_SHARE"

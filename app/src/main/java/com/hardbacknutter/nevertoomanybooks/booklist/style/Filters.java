@@ -56,7 +56,7 @@ public class Filters {
     /** Booklist Filter - ListPreference. */
     static final String PK_FILTER_SIGNED = "style.booklist.filter.signed";
     /** Booklist Filter - ListPreference. */
-    static final String PK_FILTER_LEND = "style.booklist.filter.loaned";
+    static final String PK_FILTER_LEND = "style.booklist.filter.lending";
     /** Booklist Filter - ListPreference. */
     static final String PK_FILTER_ANTHOLOGY = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
@@ -95,7 +95,7 @@ public class Filters {
                                        DBDefinitions.KEY_TOC_BITMASK));
 
         mFilters.put(PK_FILTER_LEND,
-                     new BooleanFilter(stylePrefs, isUserDefined, R.string.lbl_loaned,
+                     new BooleanFilter(stylePrefs, isUserDefined, R.string.lbl_lend_out,
                                        PK_FILTER_LEND,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_LOANEE));

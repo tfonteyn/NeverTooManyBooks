@@ -52,8 +52,8 @@
         />
 
     <ImageView
-        android:id="@+id/icon_on_loan"
-        style="@style/Flag.OnLoan"
+        android:id="@+id/icon_lend_out"
+        style="@style/Flag.LendOut"
         android:visibility="gone"
         tools:ignore="ContentDescription"
         tools:visibility="visible"
