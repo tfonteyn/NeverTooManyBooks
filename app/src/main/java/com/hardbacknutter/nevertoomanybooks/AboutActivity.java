@@ -101,7 +101,7 @@ public class AboutActivity
         mVb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
 
-        mVb.icon.setOnClickListener(v -> {
+        mVb.appIcon.setOnClickListener(v -> {
             mDebugClicks++;
             if (mDebugClicks >= DEBUG_CLICKS) {
                 // show the entire group

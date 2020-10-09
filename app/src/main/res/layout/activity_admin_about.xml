@@ -49,9 +49,9 @@
         >
 
         <ImageView
-            android:id="@+id/icon"
-            android:layout_width="@dimen/app_icon"
-            android:layout_height="@dimen/app_icon"
+            android:id="@+id/app_icon"
+            android:layout_width="@dimen/app_logo"
+            android:layout_height="@dimen/app_logo"
             android:contentDescription="@string/app_name"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             android:src="@drawable/ic_nevertoomanybooks_about"
@@ -62,11 +62,10 @@
         <TextView
             android:id="@+id/app_name"
             style="@style/AppName"
-            android:layout_marginTop="24dp"
             android:text="@string/app_name"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/icon"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/app_icon"
+            app:layout_constraintStart_toEndOf="@id/app_icon"
+            app:layout_constraintTop_toTopOf="@id/app_icon"
             tools:text="NeverTooManyBooks"
             />
 
@@ -80,11 +79,11 @@
             />
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/sepBar"
+            android:id="@+id/barrier_header_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="icon,version"
+            app:constraint_referenced_ids="app_icon,version"
             />
 
         <androidx.constraintlayout.widget.Guideline
@@ -110,7 +109,7 @@
             style="@style/Text.Header"
             android:text="@string/lbl_about_contact"
             app:layout_constraintStart_toEndOf="@id/indents"
-            app:layout_constraintTop_toBottomOf="@id/sepBar"
+            app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
             />
 
         <Button

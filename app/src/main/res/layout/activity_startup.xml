@@ -34,9 +34,9 @@
     >
 
     <ImageView
-        android:id="@+id/logo"
-        android:layout_width="@dimen/app_icon"
-        android:layout_height="@dimen/app_icon"
+        android:id="@+id/app_icon"
+        android:layout_width="@dimen/app_logo"
+        android:layout_height="@dimen/app_logo"
         android:src="@drawable/ic_nevertoomanybooks_about"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -47,10 +47,9 @@
         android:id="@+id/app"
         style="@style/AppName"
         android:text="@string/app_name"
-        app:layout_constraintBottom_toBottomOf="@id/logo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/logo"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/app_icon"
+        app:layout_constraintStart_toEndOf="@id/app_icon"
+        app:layout_constraintTop_toTopOf="@id/app_icon"
         tools:text="NeverTooManyBooks"
         />
 
@@ -60,18 +59,20 @@
         app:layout_constraintEnd_toEndOf="@id/app"
         app:layout_constraintTop_toBottomOf="@id/app"
         tools:ignore="SelectableText"
-        tools:text="1.1.2"
+        tools:text="1.2.0"
         />
 
     <TextView
         android:id="@+id/progressMessage"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/progress_msg_starting_up"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textIsSelectable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toTopOf="@id/progressBar"
-        app:layout_constraintTop_toBottomOf="@id/logo"
+        app:layout_constraintTop_toBottomOf="@id/app_icon"
         />
 
     <ProgressBar
