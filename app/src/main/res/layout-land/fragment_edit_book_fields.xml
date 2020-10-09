@@ -53,7 +53,7 @@
             android:contentDescription="@string/lbl_cover_front"
             android:focusable="true"
             app:layout_constraintStart_toEndOf="@id/coverImage0"
-            app:layout_constraintEnd_toStartOf="@id/coversBarrier"
+            app:layout_constraintEnd_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@drawable/outline_rounded"
             tools:layout_height="@dimen/cover_edit_1_height"
@@ -62,7 +62,7 @@
             />
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/coversBarrier"
+            android:id="@+id/barrier_covers_end"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="end"
@@ -75,7 +75,7 @@
             android:hint="@string/lbl_author"
             app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/coversBarrier"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toTopOf="parent"
             >
 
@@ -93,7 +93,7 @@
             style="@style/Envelope.EditText"
             android:hint="@string/lbl_title"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/coversBarrier"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/lbl_author"
             >
 
@@ -112,7 +112,7 @@
             android:id="@+id/lbl_isbn"
             style="@style/Envelope.EditText.Isbn"
             app:layout_constraintEnd_toStartOf="@id/btn_scan"
-            app:layout_constraintStart_toStartOf="@id/coversBarrier"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/lbl_title"
             >
 
@@ -145,7 +145,7 @@
             style="@style/Envelope.AutoCompleteTextView"
             android:hint="@string/lbl_language"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/coversBarrier"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             >
 

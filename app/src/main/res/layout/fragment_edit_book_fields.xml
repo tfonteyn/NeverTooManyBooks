@@ -62,7 +62,7 @@
             />
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/coversBarrier"
+            android:id="@+id/barrier_covers_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
@@ -76,7 +76,7 @@
             app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coversBarrier"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             >
 
             <com.google.android.material.textfield.TextInputEditText

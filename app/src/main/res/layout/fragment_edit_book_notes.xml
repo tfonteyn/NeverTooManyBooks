@@ -102,7 +102,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_date_read_fields"
+            android:id="@+id/barrier_date_read_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
@@ -115,7 +115,7 @@
             android:hint="@string/lbl_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_date_read_fields"
+            app:layout_constraintTop_toBottomOf="@id/barrier_date_read_bottom"
             >
 
             <AutoCompleteTextView
@@ -224,7 +224,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_condition_fields"
+            android:id="@+id/barrier_condition_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
@@ -236,7 +236,7 @@
             style="@style/Field.Label"
             android:text="@string/lbl_edition"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_condition_fields"
+            app:layout_constraintTop_toBottomOf="@id/barrier_condition_bottom"
             />
 
         <com.google.android.material.chip.ChipGroup
