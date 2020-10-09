@@ -42,7 +42,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="On Loan to Alvin"
+            tools:text="@sample/data.json/loaned_out_to/full"
             tools:visibility="visible"
             />
 
@@ -55,49 +55,11 @@
             />
 
         <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_rating_read"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="rating,icon_read"
-            />
-
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/barrier_top_section"
+            android:id="@+id/barrier_covers_bottom"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
             app:constraint_referenced_ids="coverImage0,coverImage1,publication_section"
-            />
-
-        <RatingBar
-            android:id="@+id/rating"
-            style="?attr/ratingBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin"
-            android:layout_marginTop="@dimen/border1"
-            android:numStars="5"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            />
-
-        <ImageView
-            android:id="@+id/icon_read"
-            style="@style/Flag.Read"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
-            tools:ignore="ContentDescription"
-            />
-
-        <TextView
-            android:id="@+id/title"
-            style="@style/Field.BookTitle.Large"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lend_to"
-            tools:ignore="SelectableText"
-            tools:text="@sample/data.json/book/title"
             />
 
         <ImageView
@@ -148,13 +110,50 @@
             tools:src="@drawable/ic_add_a_photo"
         -->
 
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_rating_read_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="rating,icon_read"
+            />
+
+        <RatingBar
+            android:id="@+id/rating"
+            style="?attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/field_margin"
+            android:layout_marginTop="@dimen/border1"
+            android:numStars="5"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            />
+
+        <ImageView
+            android:id="@+id/icon_read"
+            style="@style/Flag.Read"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/title"
+            tools:ignore="ContentDescription"
+            />
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/Field.BookTitle.Large"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lend_to"
+            tools:ignore="SelectableText"
+            tools:text="@sample/data.json/book/title"
+            />
 
         <TextView
             android:id="@+id/author"
             style="@style/Field.Generic"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read"
+            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read_bottom"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/author/full_name"
             />
@@ -169,144 +168,7 @@
             app:layout_constraintTop_toBottomOf="@id/author"
             >
 
-            <TextView
-                android:id="@+id/lbl_first_publication"
-                style="@style/Field.Label"
-                android:text="@string/lbl_first_publication"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/first_publication"
-                style="@style/Field.Generic.Small"
-                app:layout_constraintStart_toStartOf="@id/lbl_first_publication"
-                app:layout_constraintTop_toBottomOf="@id/lbl_first_publication"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/date/year"
-                />
-
-            <TextView
-                android:id="@+id/lbl_isbn"
-                style="@style/Field.Label"
-                android:text="@string/lbl_isbn"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/first_publication"
-                />
-
-            <TextView
-                android:id="@+id/isbn"
-                style="@style/Field.Isbn.Small"
-                app:layout_constraintStart_toStartOf="@id/lbl_isbn"
-                app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/isbn/d13"
-                />
-
-            <TextView
-                android:id="@+id/lbl_publication"
-                style="@style/Field.Label"
-                android:text="@string/lbl_publication"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/isbn"
-                />
-
-            <TextView
-                android:id="@+id/publisher"
-                style="@style/Field.Generic.Small"
-                app:layout_constraintStart_toStartOf="@id/lbl_publication"
-                app:layout_constraintTop_toBottomOf="@id/lbl_publication"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/publisher/name"
-                />
-
-            <TextView
-                android:id="@+id/date_published"
-                style="@style/Field.Generic.Small"
-                app:layout_constraintStart_toStartOf="@id/lbl_publication"
-                app:layout_constraintTop_toBottomOf="@id/publisher"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/date/long"
-                />
-
-            <TextView
-                android:id="@+id/price_listed"
-                style="@style/Field.Generic.Inline.Small"
-                app:layout_constraintStart_toEndOf="@id/date_published"
-                app:layout_constraintTop_toBottomOf="@id/publisher"
-                tools:ignore="SelectableText"
-                tools:text="$45"
-                />
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrier_format"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="isbn,publisher,date_published,price_listed"
-                />
-
-            <TextView
-                android:id="@+id/format"
-                style="@style/Field.Generic.Small"
-                app:layout_constraintStart_toStartOf="@id/lbl_publication"
-                app:layout_constraintTop_toBottomOf="@id/barrier_format"
-                tools:ignore="SelectableText"
-                tools:text="@string/book_format_hardcover"
-                />
-
-            <TextView
-                android:id="@+id/color"
-                style="@style/Field.Generic.Inline.Small"
-                app:layout_constraintStart_toEndOf="@id/format"
-                app:layout_constraintTop_toBottomOf="@id/barrier_format"
-                tools:ignore="SelectableText"
-                tools:text="color"
-                />
-
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/barrier_language"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:barrierDirection="bottom"
-                app:constraint_referenced_ids="format,color,barrier_format"
-                />
-
-            <TextView
-                android:id="@+id/language"
-                style="@style/Field.Generic.Small"
-                app:layout_constraintStart_toStartOf="@id/lbl_publication"
-                app:layout_constraintTop_toBottomOf="@id/barrier_language"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/language/name"
-                />
-
-            <TextView
-                android:id="@+id/pages"
-                style="@style/Field.Generic.Small"
-                app:layout_constraintStart_toStartOf="@id/lbl_publication"
-                app:layout_constraintTop_toBottomOf="@id/language"
-                tools:ignore="SelectableText"
-                tools:text="1073 pages"
-                />
-
-            <TextView
-                android:id="@+id/lbl_print_run"
-                style="@style/Field.Label"
-                android:text="@string/lbl_print_run"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pages"
-                />
-
-            <TextView
-                android:id="@+id/print_run"
-                style="@style/Field.Generic.Small"
-                app:layout_constraintStart_toStartOf="@id/lbl_print_run"
-                app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
-                tools:ignore="SelectableText"
-                tools:text="limited to 150 copies"
-                />
-
+            <include layout="@layout/fragment_book_details_merge_publication_section" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
@@ -314,7 +176,7 @@
             style="@style/Field.Label"
             android:text="@string/lbl_genre"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_top_section"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             />
 
         <TextView
@@ -353,82 +215,15 @@
             app:layout_constraintTop_toBottomOf="@id/series_title"
             >
 
-            <TextView
-                android:id="@+id/lbl_toc"
-                style="@style/Field.Label"
-                android:layout_marginTop="@dimen/border1"
-                android:layout_marginBottom="@dimen/border1"
-                android:text="@string/lbl_table_of_content"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="visible"
-                />
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/btn_show_toc"
-                style="@style/TocSwitch"
-                android:layout_marginStart="@dimen/field_margin_inline"
-                app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
-                app:layout_constraintStart_toEndOf="@id/lbl_toc"
-                tools:checked="true"
-                tools:visibility="visible"
-                />
-
-            <TextView
-                android:id="@+id/lbl_anthology"
-                style="@style/Field.Label"
-                android:text="@string/lbl_anthology"
-                app:layout_constraintBottom_toBottomOf="@id/icon_anthology"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@id/icon_anthology"
-                />
-
-            <ImageView
-                android:id="@+id/icon_anthology"
-                style="@style/Flag"
-                android:layout_marginStart="@dimen/field_margin_inline"
-                android:contentDescription="@string/lbl_anthology"
-                android:src="@drawable/ic_check"
-                android:tint="?attr/colorSecondaryVariant"
-                app:layout_constraintStart_toEndOf="@id/lbl_anthology"
-                app:layout_constraintTop_toBottomOf="@id/lbl_toc"
-                />
-
-            <!-- Don't set padding on the toc. The toc height is calculated as needed.
-                 User can flick the button to 'open/close' the list.
-            -->
-            <LinearLayout
-                android:id="@+id/toc"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/icon_anthology"
-                tools:visibility="visible"
-                >
-                <!-- rows will be added here dynamically -->
-            </LinearLayout>
-
+            <include layout="@layout/fragment_book_details_merge_toc_section" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/edition"
-            style="@style/Field.ChipGroup"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/toc_section"
-            >
-            <!-- chips will be added here dynamically -->
-        </com.google.android.material.chip.ChipGroup>
 
         <TextView
             android:id="@+id/lbl_bookshelves"
             style="@style/Field.Label"
             android:text="@string/lbl_bookshelves_long"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edition"
+            app:layout_constraintTop_toBottomOf="@id/toc_section"
             />
 
         <com.google.android.material.chip.ChipGroup
@@ -450,167 +245,7 @@
             app:layout_constraintTop_toBottomOf="@id/bookshelves"
             >
 
-            <TextView
-                android:id="@+id/lbl_notes"
-                style="@style/Field.Label"
-                android:text="@string/lbl_personal_notes"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/notes"
-                style="@style/Field.Notes"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@id/lbl_notes"
-                app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-                tools:ignore="SelectableText"
-                tools:text="The best book of all times."
-                />
-
-            <!-- note that the views used to set constraints are the data views.
-              The labels are baseline'd to them.
-              This is due to font size of the labels being smaller than the data.
-              iow: the data fields form the vertical chain.
-             -->
-
-            <TextView
-                android:id="@+id/lbl_signed"
-                style="@style/Field.Label"
-                android:text="@string/lbl_signed"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/notes"
-                />
-
-            <ImageView
-                android:id="@+id/icon_signed"
-                style="@style/Flag"
-                android:layout_marginStart="@dimen/field_margin_inline"
-                android:contentDescription="@string/lbl_signed"
-                android:src="@drawable/ic_check"
-                android:tint="?attr/colorSecondaryVariant"
-                app:layout_constraintStart_toEndOf="@id/lbl_signed"
-                app:layout_constraintTop_toBottomOf="@id/notes"
-                />
-
-            <TextView
-                android:id="@+id/lbl_date_acquired"
-                style="@style/Field.Label"
-                android:text="@string/lbl_date_acquired"
-                app:layout_constraintBaseline_toBaselineOf="@id/date_acquired"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/date_acquired"
-                style="@style/Field.Generic.Inline"
-                app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
-                app:layout_constraintTop_toBottomOf="@id/icon_signed"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/date/long"
-                />
-
-            <TextView
-                android:id="@+id/lbl_price_paid"
-                style="@style/Field.Label"
-                android:text="@string/lbl_price_paid"
-                app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/price_paid"
-                style="@style/Field.Generic.Inline"
-                app:layout_constraintStart_toEndOf="@id/lbl_price_paid"
-                app:layout_constraintTop_toBottomOf="@id/date_acquired"
-                tools:ignore="SelectableText"
-                tools:text="$45"
-                />
-
-            <TextView
-                android:id="@+id/lbl_condition"
-                style="@style/Field.Label"
-                android:text="@string/lbl_condition"
-                app:layout_constraintBaseline_toBaselineOf="@id/condition"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/condition"
-                style="@style/Field.Generic.Inline"
-                app:layout_constraintStart_toEndOf="@id/lbl_condition"
-                app:layout_constraintTop_toBottomOf="@id/price_paid"
-                tools:ignore="SelectableText"
-                tools:text="Very good"
-                />
-
-            <TextView
-                android:id="@+id/lbl_condition_cover"
-                style="@style/Field.Label"
-                android:text="@string/lbl_dust_cover"
-                app:layout_constraintBaseline_toBaselineOf="@id/condition_cover"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/condition_cover"
-                style="@style/Field.Generic.Inline"
-                app:layout_constraintStart_toEndOf="@id/lbl_condition_cover"
-                app:layout_constraintTop_toBottomOf="@id/condition"
-                tools:ignore="SelectableText"
-                tools:text="Very good"
-                />
-
-            <TextView
-                android:id="@+id/lbl_read_start"
-                style="@style/Field.Label"
-                android:text="@string/lbl_read_start"
-                app:layout_constraintBaseline_toBaselineOf="@id/read_start"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/read_start"
-                style="@style/Field.Generic.Inline"
-                app:layout_constraintStart_toEndOf="@id/lbl_read_start"
-                app:layout_constraintTop_toBottomOf="@id/condition_cover"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/date/long"
-                />
-
-            <TextView
-                android:id="@+id/lbl_read_end"
-                style="@style/Field.Label"
-                android:text="@string/lbl_read_end"
-                app:layout_constraintBaseline_toBaselineOf="@id/read_end"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/read_end"
-                style="@style/Field.Generic.Inline"
-                app:layout_constraintStart_toEndOf="@id/lbl_read_end"
-                app:layout_constraintTop_toBottomOf="@id/read_start"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/date/long"
-                />
-
-            <TextView
-                android:id="@+id/lbl_location_long"
-                style="@style/Field.Label"
-                android:text="@string/lbl_location_long"
-                app:layout_constraintBaseline_toBaselineOf="@id/location"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-
-            <TextView
-                android:id="@+id/location"
-                style="@style/Field.Generic.Inline"
-                app:layout_constraintStart_toEndOf="@id/lbl_location_long"
-                app:layout_constraintTop_toBottomOf="@id/read_end"
-                tools:ignore="SelectableText"
-                tools:text="@sample/data.json/location/name"
-                />
+            <include layout="@layout/fragment_book_details_merge_notes_section" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView

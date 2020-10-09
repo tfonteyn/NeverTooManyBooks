@@ -57,6 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeNotesSectionBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeTocSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryWithAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -118,6 +121,10 @@ public class BookDetailsFragment
     private BookDetailsFragmentViewModel mFragmentVM;
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
+    private FragmentBookDetailsMergePublicationSectionBinding mVbPub;
+    private FragmentBookDetailsMergeTocSectionBinding mVbToc;
+    private FragmentBookDetailsMergeNotesSectionBinding mVbNotes;
+
     /** Listen for changes coming from child (dialog) fragments. */
     private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
         if (data != null) {
@@ -164,17 +171,20 @@ public class BookDetailsFragment
                              @Nullable final Bundle savedInstanceState) {
 
         mVb = FragmentBookDetailsBinding.inflate(inflater, container, false);
+        mVbPub = FragmentBookDetailsMergePublicationSectionBinding.bind(mVb.publicationSection);
+        mVbToc = FragmentBookDetailsMergeTocSectionBinding.bind(mVb.tocSection);
+        mVbNotes = FragmentBookDetailsMergeNotesSectionBinding.bind(mVb.notesSection);
 
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // Anthology/TOC fields
         if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
-            mVb.lblAnthology.setVisibility(View.GONE);
-            mVb.iconAnthology.setVisibility(View.GONE);
-            mVb.lblToc.setVisibility(View.GONE);
-            mVb.toc.setVisibility(View.GONE);
-            mVb.btnShowToc.setVisibility(View.GONE);
+            mVbToc.lblAnthology.setVisibility(View.GONE);
+            mVbToc.iconAnthology.setVisibility(View.GONE);
+            mVbToc.lblToc.setVisibility(View.GONE);
+            mVbToc.toc.setVisibility(View.GONE);
+            mVbToc.btnShowToc.setVisibility(View.GONE);
         }
 
         // Covers
@@ -214,18 +224,18 @@ public class BookDetailsFragment
         mOnTouchListener = (v, event) -> mGestureDetector.onTouchEvent(event);
 
         // show/hide the TOC as the user flips the switch.
-        mVb.btnShowToc.setOnClickListener(v -> {
+        mVbToc.btnShowToc.setOnClickListener(v -> {
             // note that the button is explicitly (re)set.
             // If user clicks to fast it seems to get out of sync.
-            if (mVb.toc.getVisibility() == View.VISIBLE) {
+            if (mVbToc.toc.getVisibility() == View.VISIBLE) {
                 // force a scroll; a manual scroll is no longer possible after the TOC closes.
                 mVb.rootScroller.fullScroll(View.FOCUS_UP);
-                mVb.toc.setVisibility(View.GONE);
-                mVb.btnShowToc.setChecked(false);
+                mVbToc.toc.setVisibility(View.GONE);
+                mVbToc.btnShowToc.setChecked(false);
 
             } else {
-                mVb.toc.setVisibility(View.VISIBLE);
-                mVb.btnShowToc.setChecked(true);
+                mVbToc.toc.setVisibility(View.VISIBLE);
+                mVbToc.btnShowToc.setChecked(true);
             }
         });
 
@@ -345,7 +355,8 @@ public class BookDetailsFragment
 
         fields.add(R.id.edition,
                    new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(context), false),
-                   DBDefinitions.KEY_EDITION_BITMASK);
+                   DBDefinitions.KEY_EDITION_BITMASK)
+              .setRelatedFields(R.id.lbl_edition);
 
         fields.add(R.id.location, new TextViewAccessor<>(), DBDefinitions.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
@@ -495,7 +506,7 @@ public class BookDetailsFragment
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
-                    this, mBookViewModel, 0, mVb.isbn, mVb.coverImage0,
+                    this, mBookViewModel, 0, mVbPub.isbn, mVb.coverImage0,
                     getResources().getDimensionPixelSize(R.dimen.cover_details_0_height),
                     mProgressBar
             );
@@ -503,7 +514,7 @@ public class BookDetailsFragment
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
-                    this, mBookViewModel, 1, mVb.isbn, mVb.coverImage1,
+                    this, mBookViewModel, 1, mVbPub.isbn, mVb.coverImage1,
                     getResources().getDimensionPixelSize(R.dimen.cover_details_1_height),
                     mProgressBar
             );
@@ -522,23 +533,23 @@ public class BookDetailsFragment
         fields.setVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
-        setSectionVisibility(mVb.lblPublication,
-                             mVb.publisher,
-                             mVb.datePublished,
-                             mVb.priceListed,
-                             mVb.format,
-                             mVb.color,
-                             mVb.language,
-                             mVb.pages);
+        setSectionVisibility(mVbPub.lblPublication,
+                             mVbPub.publisher,
+                             mVbPub.datePublished,
+                             mVbPub.priceListed,
+                             mVbPub.format,
+                             mVbPub.color,
+                             mVbPub.language,
+                             mVbPub.pages);
         // Hide the "Personal notes" label if none of the notes fields are shown.
-        setSectionVisibility(mVb.lblNotes,
-                             mVb.notes,
-                             mVb.iconSigned,
-                             mVb.dateAcquired,
-                             mVb.pricePaid,
-                             mVb.readStart,
-                             mVb.readEnd,
-                             mVb.location);
+        setSectionVisibility(mVbNotes.lblNotes,
+                             mVbNotes.notes,
+                             mVbNotes.iconSigned,
+                             mVbNotes.dateAcquired,
+                             mVbNotes.pricePaid,
+                             mVbNotes.readStart,
+                             mVbNotes.readEnd,
+                             mVbNotes.location);
     }
 
     /**
@@ -580,15 +591,15 @@ public class BookDetailsFragment
     private void populateToc(@NonNull final Book book) {
         final boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
                                                   Book.TOC_MULTIPLE_WORKS);
-        mVb.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-        mVb.iconAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
+        mVbToc.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
+        mVbToc.iconAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
 
         // we can get called more than once (when user moves sideways to another book),
         // so clear and hide/disable the view before populating it.
         // Actual visibility is handled after building the list.
-        mVb.toc.removeAllViews();
-        mVb.toc.setVisibility(View.GONE);
-        mVb.btnShowToc.setChecked(false);
+        mVbToc.toc.removeAllViews();
+        mVbToc.toc.setVisibility(View.GONE);
+        mVbToc.btnShowToc.setChecked(false);
 
         final List<TocEntry> tocList = book.getParcelableArrayList(Book.BKEY_TOC_LIST);
 
@@ -597,7 +608,7 @@ public class BookDetailsFragment
 
             for (TocEntry tocEntry : tocList) {
                 final RowTocEntryWithAuthorBinding rowVb = RowTocEntryWithAuthorBinding
-                        .inflate(getLayoutInflater(), mVb.toc, false);
+                        .inflate(getLayoutInflater(), mVbToc.toc, false);
 
                 //noinspection ConstantConditions
                 rowVb.title.setText(tocEntry.getLabel(context));
@@ -624,15 +635,15 @@ public class BookDetailsFragment
                     // show full date string (if available)
                     rowVb.year.setText(context.getString(R.string.brackets, date.getIsoString()));
                 }
-                mVb.toc.addView(rowVb.getRoot());
+                mVbToc.toc.addView(rowVb.getRoot());
             }
 
-            mVb.lblToc.setVisibility(View.VISIBLE);
-            mVb.btnShowToc.setVisibility(View.VISIBLE);
+            mVbToc.lblToc.setVisibility(View.VISIBLE);
+            mVbToc.btnShowToc.setVisibility(View.VISIBLE);
 
         } else {
-            mVb.lblToc.setVisibility(View.GONE);
-            mVb.btnShowToc.setVisibility(View.GONE);
+            mVbToc.lblToc.setVisibility(View.GONE);
+            mVbToc.btnShowToc.setVisibility(View.GONE);
         }
     }
 

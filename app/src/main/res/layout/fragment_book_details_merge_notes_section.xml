@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="@layout/fragment_book_details"
+    >
+
+    <TextView
+        android:id="@+id/lbl_notes"
+        style="@style/Field.Label"
+        android:text="@string/lbl_personal_notes"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/notes"
+        style="@style/Field.Notes"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lbl_notes"
+        app:layout_constraintTop_toBottomOf="@id/lbl_notes"
+        tools:ignore="SelectableText"
+        tools:text="The best book of all times."
+        />
+
+    <!-- note that the views used to set constraints are the data views.
+      The labels are baseline'd to them.
+      This is due to font size of the labels being smaller than the data.
+      i.o.w.: the data fields form the vertical chain.
+     -->
+
+    <TextView
+        android:id="@+id/lbl_signed"
+        style="@style/Field.Label"
+        android:text="@string/lbl_signed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/notes"
+        />
+
+    <ImageView
+        android:id="@+id/icon_signed"
+        style="@style/Flag"
+        android:layout_marginStart="@dimen/field_margin_inline"
+        android:contentDescription="@string/lbl_signed"
+        android:src="@drawable/ic_check"
+        android:tint="?attr/colorSecondaryVariant"
+        app:layout_constraintStart_toEndOf="@id/lbl_signed"
+        app:layout_constraintTop_toBottomOf="@id/notes"
+        />
+
+    <TextView
+        android:id="@+id/lbl_date_acquired"
+        style="@style/Field.Label"
+        android:text="@string/lbl_date_acquired"
+        app:layout_constraintBaseline_toBaselineOf="@id/date_acquired"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/date_acquired"
+        style="@style/Field.Generic.Inline"
+        app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
+        app:layout_constraintTop_toBottomOf="@id/icon_signed"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/date/long"
+        />
+
+    <TextView
+        android:id="@+id/lbl_price_paid"
+        style="@style/Field.Label"
+        android:text="@string/lbl_price_paid"
+        app:layout_constraintBaseline_toBaselineOf="@id/price_paid"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/price_paid"
+        style="@style/Field.Generic.Inline"
+        app:layout_constraintStart_toEndOf="@id/lbl_price_paid"
+        app:layout_constraintTop_toBottomOf="@id/date_acquired"
+        tools:ignore="SelectableText"
+        tools:text="$45"
+        />
+
+    <TextView
+        android:id="@+id/lbl_condition"
+        style="@style/Field.Label"
+        android:text="@string/lbl_condition"
+        app:layout_constraintBaseline_toBaselineOf="@id/condition"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/condition"
+        style="@style/Field.Generic.Inline"
+        app:layout_constraintStart_toEndOf="@id/lbl_condition"
+        app:layout_constraintTop_toBottomOf="@id/price_paid"
+        tools:ignore="SelectableText"
+        tools:text="Very good"
+        />
+
+    <TextView
+        android:id="@+id/lbl_condition_cover"
+        style="@style/Field.Label"
+        android:text="@string/lbl_dust_cover"
+        app:layout_constraintBaseline_toBaselineOf="@id/condition_cover"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/condition_cover"
+        style="@style/Field.Generic.Inline"
+        app:layout_constraintStart_toEndOf="@id/lbl_condition_cover"
+        app:layout_constraintTop_toBottomOf="@id/condition"
+        tools:ignore="SelectableText"
+        tools:text="Very good"
+        />
+
+    <TextView
+        android:id="@+id/lbl_read_start"
+        style="@style/Field.Label"
+        android:text="@string/lbl_read_start"
+        app:layout_constraintBaseline_toBaselineOf="@id/read_start"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/read_start"
+        style="@style/Field.Generic.Inline"
+        app:layout_constraintStart_toEndOf="@id/lbl_read_start"
+        app:layout_constraintTop_toBottomOf="@id/condition_cover"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/date/long"
+        />
+
+    <TextView
+        android:id="@+id/lbl_read_end"
+        style="@style/Field.Label"
+        android:text="@string/lbl_read_end"
+        app:layout_constraintBaseline_toBaselineOf="@id/read_end"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/read_end"
+        style="@style/Field.Generic.Inline"
+        app:layout_constraintStart_toEndOf="@id/lbl_read_end"
+        app:layout_constraintTop_toBottomOf="@id/read_start"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/date/long"
+        />
+
+    <TextView
+        android:id="@+id/lbl_location_long"
+        style="@style/Field.Label"
+        android:text="@string/lbl_location_long"
+        app:layout_constraintBaseline_toBaselineOf="@id/location"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/location"
+        style="@style/Field.Generic.Inline"
+        app:layout_constraintStart_toEndOf="@id/lbl_location_long"
+        app:layout_constraintTop_toBottomOf="@id/read_end"
+        tools:ignore="SelectableText"
+        tools:text="@sample/data.json/location/name"
+        />
+</merge>
