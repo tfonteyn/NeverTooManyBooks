@@ -37,11 +37,16 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.StringJoiner;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+
 /**
  * FIXME: DateTimeParseException https://issuetracker.google.com/issues/158417777
  */
 public class PartialDate
         implements Parcelable {
+
+    private static final String TAG = "PartialDate";
 
     /** {@link Parcelable}. */
     public static final Creator<PartialDate> CREATOR = new Creator<PartialDate>() {
@@ -70,7 +75,7 @@ public class PartialDate
      *
      * @param dateStr a valid ISO string (full or partial date), or {@code null}, or {@code ""}
      */
-    public PartialDate(@Nullable final CharSequence dateStr) {
+    public PartialDate(@Nullable final String dateStr) {
         parse(dateStr);
     }
 
@@ -133,7 +138,7 @@ public class PartialDate
         return 0;
     }
 
-    private void parse(@Nullable final CharSequence dateStr) {
+    private void parse(@Nullable final String dateStr) {
         if (dateStr != null) {
             final int len = dateStr.length();
             try {
@@ -153,15 +158,17 @@ public class PartialDate
                     return;
                 } else if (len >= 10) {
                     // yyyy-MM-dd[...]
-                    mLocalDate = LocalDate.parse(dateStr.subSequence(0, 11));
+                    mLocalDate = LocalDate.parse(dateStr.substring(0, 10));
                     mYearSet = true;
                     mMonthSet = true;
                     mDaySet = true;
                     return;
                 }
-                // } catch (@NonNull final DateTimeParseException ignore) {
-            } catch (@NonNull final RuntimeException ignore) {
-                // ignore
+                // } catch (@NonNull final DateTimeParseException e) {
+            } catch (@NonNull final RuntimeException e) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.d(TAG, "parse", e, "dateStr=" + dateStr);
+                }
             }
         }
 
@@ -176,7 +183,7 @@ public class PartialDate
         return mLocalDate;
     }
 
-    public void setDate(@Nullable final CharSequence dateStr) {
+    public void setDate(@Nullable final String dateStr) {
         parse(dateStr);
     }
 

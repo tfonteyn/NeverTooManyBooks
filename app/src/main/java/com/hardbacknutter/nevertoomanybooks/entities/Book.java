@@ -908,7 +908,7 @@ public class Book
                    // This is very crude... we simply truncate to 10 characters maximum
                    // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date
                    if (date.length() > 10) {
-                       putString(key, date.substring(0, 11));
+                       putString(key, date.substring(0, 10));
                        if (BuildConfig.DEBUG /* always */) {
                            Logger.d(TAG, "preprocessDates",
                                     "key=" + key
