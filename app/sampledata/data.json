@@ -81,6 +81,9 @@
     {"name": "Date Acquired"},
     {"name": "Genre"}
   ],
+  "loaned_out_to": [
+    {"full": "Loaned out to Alvin", "name": "Alvin"}
+  ],
   "context_menu": [
     {"name": "Cut"},
     {"name": "Copy"},

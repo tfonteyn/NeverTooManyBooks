@@ -73,7 +73,7 @@
                         android:layout_width="match_parent"
                         android:imeOptions="actionDone"
                         tools:ignore="LabelFor"
-                        tools:text="Alvin"
+                        tools:text="@sample/data.json/loaned_out_to/name"
                         />
 
                 </com.google.android.material.textfield.TextInputLayout>
