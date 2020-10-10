@@ -22,7 +22,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Dialog.Body.Floating"
+    style="@style/Dialog.Body"
     android:orientation="vertical"
     >
 
@@ -34,7 +34,6 @@
         android:fontFamily="sans-serif-medium"
         android:gravity="center_vertical|start"
         android:maxLines="2"
-        android:paddingTop="18dp"
         android:shadowRadius="0"
         android:textAppearance="?attr/textAppearanceHeadline6"
         android:textIsSelectable="true"

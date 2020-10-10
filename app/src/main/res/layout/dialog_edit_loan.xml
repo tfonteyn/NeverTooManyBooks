@@ -24,7 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -44,7 +44,7 @@
 
     <FrameLayout
         android:id="@+id/body_frame"
-        style="@style/Dialog.Frame.FloatingAndFullscreen"
+        style="@style/Dialog.Frame"
         >
 
         <LinearLayout
@@ -54,7 +54,7 @@
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                style="@style/Dialog.Body.FloatingAndFullscreen"
+                style="@style/Dialog.Body"
                 >
 
                 <com.google.android.material.textfield.TextInputLayout

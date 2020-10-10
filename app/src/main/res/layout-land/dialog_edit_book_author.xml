@@ -30,7 +30,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -48,14 +48,13 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- always full-screen. -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/body_frame"
-        style="@style/Dialog.Frame.FloatingAndFullscreen"
+        style="@style/Dialog.Frame.Fullscreen"
         >
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            style="@style/Dialog.Body.FloatingAndFullscreen"
+            style="@style/Dialog.Body"
             >
 
             <androidx.constraintlayout.widget.Guideline

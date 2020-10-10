@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,34 +48,54 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
 /**
  * Provides fullscreen or floating dialog support.
- * Does <strong>not</strong> support AlertDialog style title bar and buttons.
+ * <p>
+ * Special cases:
+ * <p>
+ * {@link CoverBrowserDialogFragment}
+ * - force the width to a 'dimen' setting to maximize it.
+ * <p>
+ * {@link StylePickerDialogFragment}
+ * - force the height to a 'dimen' to work around the RecyclerView collapsing or growing to large.
+ * This is NOT ideal.
+ * - prevent the compensation of the 'actionBarSize'. This is far from ideal.
+ * ... but the {@link #adjustBodyFrameMargins} method is a bad workaround to start with.
  */
 public abstract class BaseDialogFragment
         extends DialogFragment {
+
+    /** Log tag. */
+    private static final String TAG = "BaseDialogFragment";
 
     // SnackBar:
     //  private static final int SHORT_DURATION_MS = 1500;
     //  private static final int LONG_DURATION_MS = 2750;
 
-    private boolean mForceFullscreen;
-    /** Show the dialog fullscreen (default) or as a floating dialog. */
-    private boolean mFullscreen;
-
-    private int mFloatingDialogWidth;
-
+    @Nullable
+    private View mButtonPanel;
+    private Toolbar mToolbar;
     @Nullable
     private Button mOkButton;
 
-    /**
-     * Constructor.
-     */
-    public BaseDialogFragment() {
-    }
+    /** Show the dialog fullscreen (default) or as a floating dialog. */
+    private boolean mFullscreen;
+    private boolean mForceFullscreen;
+
+    /** FLOATING DIALOG mode only. */
+    private boolean mAdjustBodyFrameMargins = true;
+    /** FLOATING DIALOG mode only. */
+    @DimenRes
+    private int mDimenWidth = R.dimen.floating_dialogs_min_width;
+    /** FLOATING DIALOG mode only. */
+    @DimenRes
+    private int mDimenHeight = 0;
 
     /**
      * Constructor.
@@ -86,31 +107,49 @@ public abstract class BaseDialogFragment
     }
 
     /**
-     * If required, this <strong>MUST</strong> be called <strong>BEFORE</strong>
-     * {@link #onAttach(Context)}.
+     * If required, this <strong>MUST</strong> be called from the constructor.
      */
     protected void setForceFullscreen() {
         mForceFullscreen = true;
     }
 
     /**
-     * If required, this <strong>MUST</strong> be called <strong>BEFORE</strong>
-     * {@link #onViewCreated(View, Bundle)}.
+     * FLOATING DIALOG mode only. Has no effect in fullscreen mode.
+     * If required, this <strong>MUST</strong> be called from the constructor.
+     * <p>
+     * Default: R.dimen.floating_dialogs_min_width
      *
-     * @param floatingDialogWidth the width to use
+     * @param widthResId the width to use as an 'R.dimen.value'
      */
-    protected void setFloatingDialogWidth(@DimenRes final int floatingDialogWidth) {
-//        if ((floatingDialogWidth == ViewGroup.LayoutParams.MATCH_PARENT)
-//            || (floatingDialogWidth == ViewGroup.LayoutParams.WRAP_CONTENT)) {
-//            mFloatingDialogWidth = floatingDialogWidth;
-//
-//        } else {
-        final Resources res = getResources();
-        final float density = res.getDisplayMetrics().density;
-        final float widthDp = res.getConfiguration().screenWidthDp;
-        final float minWidthDp = res.getDimension(floatingDialogWidth);
-        mFloatingDialogWidth = (int) (density * Math.min(widthDp, minWidthDp));
-//        }
+    protected void setFloatingDialogWidth(@SuppressWarnings("SameParameterValue")
+                                          @DimenRes final int widthResId) {
+        mDimenWidth = widthResId;
+    }
+
+    /**
+     * FLOATING DIALOG mode only. Has no effect in fullscreen mode.
+     * If required, this <strong>MUST</strong> be called from the constructor.
+     * <p>
+     * Default: as configured in the layout
+     *
+     * @param heightResId the height to use as an 'R.dimen.value'
+     */
+    protected void setFloatingDialogHeight(@SuppressWarnings("SameParameterValue")
+                                           @DimenRes final int heightResId) {
+        mDimenHeight = heightResId;
+    }
+
+    /**
+     * FLOATING DIALOG mode only. Has no effect in fullscreen mode.
+     * If required, this <strong>MUST</strong> be called from the constructor.
+     * <p>
+     * Default: {@code true}
+     *
+     * @param compensate {@code false} to disable compensation
+     */
+    protected void setFloatingDialogAdjustMargins(
+            @SuppressWarnings("SameParameterValue") final boolean compensate) {
+        mAdjustBodyFrameMargins = compensate;
     }
 
     @Override
@@ -144,24 +183,44 @@ public abstract class BaseDialogFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mToolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar), "R.id.toolbar");
 
-        @NonNull
-        final Toolbar toolbar = Objects.requireNonNull(view.findViewById(R.id.toolbar),
-                                                       "R.id.toolbar");
-        toolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
-        toolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
+        // dialogs that are set as full-screen ONLY will not have a button bar.
+        mButtonPanel = view.findViewById(R.id.buttonPanel);
+
+        hookupButtons();
+
+        if (!mFullscreen) {
+            adjustLayoutSize(view);
+
+            if (mAdjustBodyFrameMargins) {
+                adjustBodyFrameMargins(view);
+            }
+        }
+    }
+
+    /**
+     * In fullscreen mode, hookup the navigation icon to the 'cancel' action,
+     * and the toolbar action view confirmation button to the 'ok' action.
+     * <p>
+     * In floating mode, hookup the navigation icon to the 'cancel' action,
+     * remove the toolbar action view, and display the button-bar instead.
+     * Then hookup the button-bar 'cancel' and 'ok' buttons.
+     */
+    private void hookupButtons() {
+
+        mToolbar.setNavigationOnClickListener(this::onToolbarNavigationClick);
+        mToolbar.setOnMenuItemClickListener(this::onToolbarMenuItemClick);
 
         // Show or hide the button panel depending on the dialog being fullscreen or not.
-        @Nullable
-        final View buttonPanel = view.findViewById(R.id.buttonPanel);
-        if (buttonPanel != null) {
-            buttonPanel.setVisibility(mFullscreen ? View.GONE : View.VISIBLE);
-        }
-
         if (mFullscreen) {
+            if (mButtonPanel != null) {
+                mButtonPanel.setVisibility(View.GONE);
+            }
+
             // Hook-up the toolbar 'confirm' button with the menu title
             // and the default menu listener.
-            final MenuItem menuItem = toolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+            final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
             if (menuItem != null) {
                 // the ok-button is a button inside the action view of the toolbar menu item
                 mOkButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
@@ -172,15 +231,15 @@ public abstract class BaseDialogFragment
             }
 
         } else {
-
-            if (buttonPanel != null) {
+            if (mButtonPanel != null) {
+                mButtonPanel.setVisibility(View.VISIBLE);
                 // Toolbar confirmation menu item is mapped to the ok button.
                 // The menu item is hidden.
-                final MenuItem menuItem = toolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+                final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
                 if (menuItem != null) {
                     menuItem.setVisible(false);
                     // the ok-button is a simple button on the button panel.
-                    mOkButton = buttonPanel.findViewById(R.id.btn_ok);
+                    mOkButton = mButtonPanel.findViewById(R.id.btn_ok);
                     if (mOkButton != null) {
                         mOkButton.setVisibility(View.VISIBLE);
                         mOkButton.setText(menuItem.getTitle());
@@ -189,41 +248,69 @@ public abstract class BaseDialogFragment
                 }
 
                 // Toolbar navigation icon is mapped to the cancel button. Both are visible.
-                final Button cancelBtn = buttonPanel.findViewById(R.id.btn_cancel);
+                final Button cancelBtn = mButtonPanel.findViewById(R.id.btn_cancel);
                 if (cancelBtn != null) {
                     // If the toolbar nav button has a description,
                     // use it for the 'cancel' button text.
-                    final CharSequence cancelText = toolbar.getNavigationContentDescription();
+                    final CharSequence cancelText = mToolbar.getNavigationContentDescription();
                     if (cancelText != null) {
                         cancelBtn.setText(cancelText);
                     }
                     cancelBtn.setOnClickListener(this::onToolbarNavigationClick);
                 }
             }
+        }
+    }
 
-            // if the parent class has not set the width, use the default.
-            if (mFloatingDialogWidth == 0) {
-                setFloatingDialogWidth(R.dimen.floating_dialogs_min_width);
+    /**
+     * FLOATING DIALOG mode only.
+     * <p>
+     * Set the width and height for the layout view.
+     *
+     * @param view of the layout
+     */
+    private void adjustLayoutSize(@NonNull final View view) {
+        final Resources res = getResources();
+        final float density = res.getDisplayMetrics().density;
+
+        if (mDimenWidth != 0) {
+            final float screenWidthDp = res.getConfiguration().screenWidthDp;
+            final float dimenWidth = res.getDimension(mDimenWidth);
+            final int width = (int) (density * Math.min(screenWidthDp, dimenWidth));
+            view.getLayoutParams().width = width;
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "adjustLayoutSize|width=" + width);
             }
+        }
 
-            // adjust the overall width as calculated before
-            view.getLayoutParams().width = mFloatingDialogWidth;
-
-            // Add actionBarSize (56dp) to the body frame to compensate for the toolbar.
-            final int bottomMargin;
-            if (buttonPanel != null) {
-                //noinspection ConstantConditions
-                bottomMargin = AttrUtils.getDimen(getContext(), R.attr.actionBarSize);
-            } else {
-                //noinspection ConstantConditions
-                bottomMargin = AttrUtils.getDimen(getContext(), R.attr.actionBarSize)
-                               // There is no button bar, add an extra padding (24dp)
-                               + AttrUtils.getDimen(getContext(), R.attr.dialogPreferredPadding);
+        if (mDimenHeight != 0) {
+            final float screenHeightDp = res.getConfiguration().screenHeightDp;
+            final float dimenHeight = res.getDimension(mDimenHeight);
+            final int height = (int) (density * Math.min(screenHeightDp, dimenHeight));
+            view.getLayoutParams().height = height;
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "adjustLayoutSize|height=" + height);
             }
+        }
+    }
 
-            final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
-                    view.findViewById(R.id.body_frame).getLayoutParams();
-            lp.setMargins(0, 0, 0, bottomMargin);
+    /**
+     * FLOATING DIALOG mode only.
+     * <p>
+     * Adjust the margins for the R.id.body_frame.
+     *
+     * @param view of the layout
+     */
+    private void adjustBodyFrameMargins(@NonNull final View view) {
+        //noinspection ConstantConditions
+        final int bottom = AttrUtils.getDimen(getContext(), R.attr.actionBarSize);
+
+        final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                view.findViewById(R.id.body_frame).getLayoutParams();
+        lp.setMargins(0, 0, 0, bottom);
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "adjustBodyFrameMargins|bottom=" + bottom);
         }
     }
 

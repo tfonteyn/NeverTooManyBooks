@@ -24,4 +24,6 @@
     <!-- based on w640dp being the next smaller screen supported. -->
     <dimen name="floating_dialogs_min_width">640dp</dimen>
     <dimen name="floating_dialogs_min_width_cover_browser">800dp</dimen>
+
+    <dimen name="floating_dialogs_min_height_styles_picker">480dp</dimen>
 </resources>

@@ -23,14 +23,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/Dialog.Body.Floating"
+    style="@style/Dialog.Body"
     >
 
     <TextView
         android:id="@+id/progressMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/border2"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textIsSelectable="true"
         app:layout_constraintEnd_toEndOf="parent"

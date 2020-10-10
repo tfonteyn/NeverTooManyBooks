@@ -75,6 +75,8 @@ public class StylePickerDialogFragment
      */
     public StylePickerDialogFragment() {
         super(R.layout.dialog_styles_menu);
+        setFloatingDialogAdjustMargins(false);
+        setFloatingDialogHeight(R.dimen.floating_dialogs_min_height_styles_picker);
     }
 
     /**
@@ -109,7 +111,6 @@ public class StylePickerDialogFragment
                                                    "BKEY_STYLE_UUID");
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
     }
-
 
     @Override
     public void onViewCreated(@NonNull final View view,

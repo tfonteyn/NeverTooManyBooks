@@ -44,7 +44,7 @@
 
     <FrameLayout
         android:id="@+id/body_frame"
-        style="@style/Dialog.Frame.FloatingAndFullscreen"
+        style="@style/Dialog.Frame"
         >
 
         <LinearLayout
@@ -54,7 +54,7 @@
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                style="@style/Dialog.Body.FloatingAndFullscreen"
+                style="@style/Dialog.Body"
                 >
 
                 <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
@@ -79,13 +79,11 @@
                     android:id="@+id/info"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="?attr/dialogPreferredPadding"
                     android:text="@string/lbl_import_options"
                     android:textAppearance="?attr/textAppearanceSubtitle1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:ignore="InconsistentLayout"
                     />
 
                 <CheckBox

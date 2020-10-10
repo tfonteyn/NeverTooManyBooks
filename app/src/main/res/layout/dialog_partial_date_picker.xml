@@ -24,7 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -44,7 +44,7 @@
 
     <FrameLayout
         android:id="@+id/body_frame"
-        style="@style/Dialog.Frame.FloatingAndFullscreen"
+        style="@style/Dialog.Frame"
         >
 
         <LinearLayout
@@ -52,7 +52,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical"
             >
-
             <!--
             Keep this as a LinearLayout!
             The order of the 3 columns will be changed dynamically depending on the Locale.
@@ -60,10 +59,9 @@
              -->
             <LinearLayout
                 android:id="@+id/dateSelector"
-                style="@style/Dialog.Body.FloatingAndFullscreen"
+                style="@style/Dialog.Body"
                 android:gravity="center"
                 android:orientation="horizontal"
-                android:paddingTop="?attr/dialogPreferredPadding"
                 tools:viewBindingIgnore="true"
                 >
 

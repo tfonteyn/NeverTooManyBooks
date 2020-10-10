@@ -105,6 +105,8 @@ public class CoverBrowserDialogFragment
      */
     public CoverBrowserDialogFragment() {
         super(R.layout.dialog_cover_browser);
+        // Make the width as large as we possibly can
+        setFloatingDialogWidth(R.dimen.floating_dialogs_min_width_cover_browser);
     }
 
     /**
@@ -149,8 +151,6 @@ public class CoverBrowserDialogFragment
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
-        // special case, override the standard minimum width.
-        setFloatingDialogWidth(R.dimen.floating_dialogs_min_width_cover_browser);
         super.onViewCreated(view, savedInstanceState);
 
         mVb = DialogCoverBrowserBinding.bind(view);

@@ -521,6 +521,17 @@
     <!-- Dialogs -->
     <!-- *************************************************************************************** -->
 
+    <!-- FrameLayout for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
+     FLOATING and FULLSCREEN dialog
+     Important: in FLOATING mode, some adjustments are done from code.
+     See com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java#onViewCreated
+     -->
+    <style name="Dialog.Frame" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
     <!-- FrameLayout for a DialogFragment based on a CoordinatorLayout/Toolbar/NestedScrollView.
          FULLSCREEN dialog ONLY -->
     <style name="Dialog.Frame.Fullscreen" parent="">
@@ -530,34 +541,11 @@
         <item name="android:fillViewport">true</item>
     </style>
 
-    <!-- FrameLayout for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
-         FLOATING and FULLSCREEN dialog
-         Important: in FLOATING mode, the margins are set by code to 0,0,0,"?attr/actionBarSize"
-         See com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java#onViewCreated
-         -->
-    <style name="Dialog.Frame.FloatingAndFullscreen" parent="">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-    </style>
-
-    <!-- Dialog body (content) for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
-         FLOATING and FULLSCREEN dialog -->
-    <style name="Dialog.Body.FloatingAndFullscreen" parent="">
+    <!-- Dialog content. -->
+    <style name="Dialog.Body" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingBottom">4dp</item>
-    </style>
-
-    <!-- Dialog body (content) for a plain AlertDialog/DialogFragment.
-         FLOATING dialog ONLY -->
-    <style name="Dialog.Body.Floating" parent="">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+        <item name="android:padding">?attr/dialogPreferredPadding</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -577,8 +565,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">bottom|end</item>
-        <item name="android:visibility">invisible</item>
         <item name="android:layout_margin">@dimen/fab_margin</item>
+        <item name="android:visibility">invisible</item>
         <item name="iconGravity">end</item>
     </style>
 

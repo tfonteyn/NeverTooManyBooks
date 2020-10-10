@@ -44,7 +44,7 @@
 
     <FrameLayout
         android:id="@+id/body_frame"
-        style="@style/Dialog.Frame.FloatingAndFullscreen"
+        style="@style/Dialog.Frame"
         >
 
         <LinearLayout
@@ -54,7 +54,7 @@
             >
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                style="@style/Dialog.Body.FloatingAndFullscreen"
+                style="@style/Dialog.Body"
                 >
 
                 <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
@@ -71,7 +71,6 @@
                     style="@style/Text.Header"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="?attr/dialogPreferredPadding"
                     android:text="@string/lbl_export_options"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
