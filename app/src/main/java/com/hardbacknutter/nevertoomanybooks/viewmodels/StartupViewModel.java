@@ -242,8 +242,11 @@ public class StartupViewModel
         return mStartupStage;
     }
 
-    public void incStartupStage() {
-        mStartupStage++;
+    public int getNextStartupStage() {
+        if (mStartupStage < 3) {
+            mStartupStage++;
+        }
+        return mStartupStage;
     }
 
     /**

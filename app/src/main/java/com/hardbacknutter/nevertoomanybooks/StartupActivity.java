@@ -126,10 +126,8 @@ public class StartupActivity
      * Startup stages.
      */
     private void nextStage() {
-        // onCreate being stage 0
-        mModel.incStartupStage();
 
-        switch (mModel.getStartupStage()) {
+        switch (mModel.getNextStartupStage()) {
             case 1:
                 startTasks();
                 break;
