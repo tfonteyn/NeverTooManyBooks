@@ -64,9 +64,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * <p>
  * {@link StylePickerDialogFragment}
  * - force the height to a 'dimen' to work around the RecyclerView collapsing or growing to large.
- * This is NOT ideal.
- * - prevent the compensation of the 'actionBarSize'. This is far from ideal.
- * ... but the {@link #adjustBodyFrameMargins} method is a bad workaround to start with.
+ * - prevent the compensation of the 'actionBarSize'.
+ * <p>
+ * 2020-10-10: experiments done to reverse fullscreen/floating coding produced MORE problems...
+ * In onViewCreated set MATCH_PARENT when running fullscreen, and do nothing when floating.
+ * Set the width of the CoordinatorLayout to 360dp
+ * -> the action view is set to invisible, and the AppBarLayout gets shorter,
+ * -> leaving a white space on the right
+ * Set the width of the CoordinatorLayout to 360dp AND the AppBarLayout to 360dp
+ * -> a small white space is seen on the right of the AppBarLayout
+ * -> layout inspector shows that AppBarLayout=360dp.. BUT CoordinatorLayout==367dp  ???
+ * <p>
+ * As
  */
 public abstract class BaseDialogFragment
         extends DialogFragment {
