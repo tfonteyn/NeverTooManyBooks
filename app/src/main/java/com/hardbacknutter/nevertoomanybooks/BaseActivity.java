@@ -260,8 +260,9 @@ public abstract class BaseActivity
             }
             fragment.setArguments(getIntent().getExtras());
             final FragmentTransaction ft =
-                    fm.beginTransaction()
-                      .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+                    fm.beginTransaction();
+            // FIXME: https://issuetracker.google.com/issues/169874632
+            //   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
             if (isAdd) {
                 ft.add(containerViewId, fragment, tag);

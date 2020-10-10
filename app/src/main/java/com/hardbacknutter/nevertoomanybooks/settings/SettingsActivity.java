@@ -29,7 +29,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -98,7 +97,8 @@ public class SettingsActivity
 
             frag.setArguments(getIntent().getExtras());
             fm.beginTransaction()
-              .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              // FIXME: https://issuetracker.google.com/issues/169874632
+              // .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
               // add! not replace!
               .add(R.id.main_fragment, frag, tag)
               .commit();
@@ -147,7 +147,8 @@ public class SettingsActivity
 
         // Replace the existing Fragment with the new Fragment
         fm.beginTransaction()
-          .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+          // FIXME: https://issuetracker.google.com/issues/169874632
+          // .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
           .addToBackStack(null)
           .replace(R.id.main_fragment, fragment)
           .commit();
@@ -186,7 +187,8 @@ public class SettingsActivity
         fragment.setArguments(args);
         getSupportFragmentManager()
                 .beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                // FIXME: https://issuetracker.google.com/issues/169874632
+                // .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .addToBackStack(pref.getKey())
                 .replace(R.id.main_fragment, fragment, pref.getKey())
                 .commit();
