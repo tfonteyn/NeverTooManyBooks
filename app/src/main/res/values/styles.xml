@@ -545,6 +545,7 @@
     <style name="Dialog.Body" parent="">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
         <item name="android:padding">?attr/dialogPreferredPadding</item>
     </style>
 
