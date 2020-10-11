@@ -211,12 +211,12 @@ public abstract class BaseDialogFragment
 
         if (!mFullscreen) {
             final Resources res = getResources();
-            final float density = res.getDisplayMetrics().density;
 
             if (mWidthDrId != DIMEN_NOT_SET) {
                 final float screenWidthDp = res.getConfiguration().screenWidthDp;
-                final float dimenWidth = res.getDimension(mWidthDrId);
-                final int width = (int) (density * Math.min(screenWidthDp, dimenWidth));
+                final int dimenWidth = res.getDimensionPixelSize(mWidthDrId);
+                // sanity check
+                final int width = (int) Math.min(screenWidthDp, dimenWidth);
                 view.getLayoutParams().width = width;
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onViewCreated|width=" + width);
@@ -225,8 +225,9 @@ public abstract class BaseDialogFragment
 
             if (mDHeightDrId != DIMEN_NOT_SET) {
                 final float screenHeightDp = res.getConfiguration().screenHeightDp;
-                final float dimenHeight = res.getDimension(mDHeightDrId);
-                final int height = (int) (density * Math.min(screenHeightDp, dimenHeight));
+                final int dimenHeight = res.getDimensionPixelSize(mDHeightDrId);
+                // sanity check
+                final int height = (int) Math.min(screenHeightDp, dimenHeight);
                 view.getLayoutParams().height = height;
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onViewCreated|height=" + height);
@@ -234,8 +235,7 @@ public abstract class BaseDialogFragment
             }
 
             if (mMarginBottomDrId != DIMEN_NOT_SET && mMarginBottomDrId != 0) {
-                final float marginBottomDr = res.getDimension(mMarginBottomDrId);
-                final int marginBottom = (int) (density * marginBottomDr);
+                final int marginBottom = res.getDimensionPixelSize(mMarginBottomDrId);
                 final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
                         view.findViewById(R.id.body_frame).getLayoutParams();
                 lp.setMargins(0, 0, 0, marginBottom);
