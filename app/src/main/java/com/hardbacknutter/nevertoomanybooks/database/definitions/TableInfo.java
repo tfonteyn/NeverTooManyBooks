@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import android.database.Cursor;
@@ -34,7 +35,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
- * Details of a database table.
+ * Details of a database table as retrieved from {@code PRAGMA table_info(tableName)}.
+ * <p>
+ * This functionality could be made a part {@link TableDefinition}.
+ * Keeping it separate; so we can optionally use it with just a table-name.
  */
 public class TableInfo {
 
@@ -45,18 +49,14 @@ public class TableInfo {
     @NonNull
     private final String mTableName;
 
-    @SuppressWarnings("FieldNotUsedInToString")
-    private final Locale mSystemLocale;
-
     /**
      * Constructor.
      *
      * @param db        Database Access
      * @param tableName name of table
      */
-    public TableInfo(@NonNull final SynchronizedDb db,
-                     @NonNull final String tableName) {
-        mSystemLocale = AppLocale.getInstance().getSystemLocale();
+    TableInfo(@NonNull final SynchronizedDb db,
+              @NonNull final String tableName) {
 
         mTableName = tableName;
         mColumns = describeTable(db, mTableName);
@@ -81,10 +81,7 @@ public class TableInfo {
      */
     @Nullable
     public ColumnInfo getColumn(@NonNull final String name) {
-        final String lcName = name.toLowerCase(mSystemLocale);
-        if (!mColumns.containsKey(lcName)) {
-            return null;
-        }
+        final String lcName = name.toLowerCase(AppLocale.getInstance().getSystemLocale());
         return mColumns.get(lcName);
     }
 
@@ -99,12 +96,13 @@ public class TableInfo {
     @NonNull
     private Map<String, ColumnInfo> describeTable(@NonNull final SynchronizedDb db,
                                                   @NonNull final String tableName) {
-        final Map<String, ColumnInfo> allColumns = new HashMap<>();
+        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
 
+        final Map<String, ColumnInfo> allColumns = new HashMap<>();
         try (Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {
             while (colCsr.moveToNext()) {
                 final ColumnInfo col = new ColumnInfo(colCsr);
-                allColumns.put(col.name.toLowerCase(mSystemLocale), col);
+                allColumns.put(col.name.toLowerCase(systemLocale), col);
             }
         }
 

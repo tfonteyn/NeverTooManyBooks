@@ -19,8 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -34,15 +36,19 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Class to store table name and a list of domain definitions.
@@ -744,14 +750,103 @@ public class TableDefinition {
     }
 
     /**
-     * Alter the physical table in the database: add the given domain.
+     * Alter the physical table in the database: add the given domains.
      *
-     * @param db     Database Access
-     * @param domain to add
+     * @param db      Database Access
+     * @param domains to add
      */
-    public void alterTableAddColumn(@NonNull final SynchronizedDb db,
-                                    @NonNull final Domain domain) {
-        db.execSQL("ALTER TABLE " + getName() + " ADD " + domain.def(true));
+    public void alterTableAddColumns(@NonNull final SynchronizedDb db,
+                                     @NonNull final Domain... domains) {
+        for (Domain domain : domains) {
+            db.execSQL("ALTER TABLE " + getName() + " ADD " + domain.def(true));
+        }
+    }
+
+    /**
+     * Alter the physical table in the database.
+     * Takes care of newly added (based on TableDefinition),
+     * removes obsolete, and renames columns. The latter based on a list/map passed in.
+     *
+     * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
+     * SQLite - making_other_kinds_of_table_schema_changes</a>
+     * <p>
+     * The 12 steps in summary:
+     * <ol>
+     *  <li>If foreign key constraints are enabled, disable them using PRAGMA foreign_keys=OFF.</li>
+     *  <li>Create new table</li>
+     *  <li>Copy data</li>
+     *  <li>Drop old table</li>
+     *  <li>Rename new into old</li>
+     *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
+     * </ol>
+     *
+     * @param db              Database Access
+     * @param withConstraints Indicates if fields should have constraints applied
+     * @param toRename        (optional) Map of fields to be renamed
+     * @param toRemove        (optional) List of fields to be removed
+     */
+    public void recreateAndReload(@NonNull final SynchronizedDb db,
+                                  @SuppressWarnings("SameParameterValue")
+                                  final boolean withConstraints,
+                                  @SuppressWarnings("SameParameterValue")
+                                  @Nullable final Map<String, String> toRename,
+                                  @Nullable final Collection<String> toRemove) {
+
+        final String dstTableName = "copyOf" + mName;
+        final TableDefinition dstTable = new TableDefinition(this);
+        dstTable.setName(dstTableName);
+        dstTable.create(db, withConstraints)
+                .createIndices(db);
+
+        // This handles re-ordered fields etc.
+        copyTableSafely(db, dstTableName, toRename, toRemove);
+
+        db.execSQL("DROP TABLE " + mName);
+        db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + mName);
+    }
+
+    /**
+     * Provide a safe table copy method that is insulated from risks associated with
+     * column order. This method will copy all columns from the source to the destination;
+     * if columns do not exist in the destination, an error will occur. Columns in the
+     * destination that are not in the source will be defaulted or set to {@code null}
+     * if no default is defined.
+     * <p>
+     * TODO: instead of passing in 'toRemove' use the Domain list,
+     * i.e. a column present in the describe TableInfo but not in the domain list can be removed.
+     *
+     * @param db          Database Access
+     * @param destination to table
+     * @param toRename    (optional) Map of fields to be renamed
+     * @param toRemove    (optional) List of fields to be removed
+     */
+    private void copyTableSafely(@NonNull final SynchronizedDb db,
+                                 @SuppressWarnings("SameParameterValue")
+                                 @NonNull final String destination,
+                                 @Nullable final Map<String, String> toRename,
+                                 @Nullable final Collection<String> toRemove) {
+
+        // Build the source column list, removing columns we no longer want.
+        final Collection<String> removals = toRemove != null ? toRemove : new ArrayList<>();
+        final TableInfo sourceTable = getTableInfo(db);
+        final List<String> srcColumns = sourceTable
+                .getColumns()
+                .stream()
+                .map(columnInfo -> columnInfo.name)
+                .filter(name -> !removals.contains(name))
+                .collect(Collectors.toList());
+
+        // Build the destination column list, renaming columns as needed
+        final Map<String, String> renames = toRename != null ? toRename : new HashMap<>();
+        final List<String> dstColumns = srcColumns
+                .stream()
+                .map(column -> renames.containsKey(column) ? renames.get(column) : column)
+                .collect(Collectors.toList());
+
+        final String sql =
+                "INSERT INTO " + destination + " (" + TextUtils.join(",", dstColumns) + ")"
+                + " SELECT " + TextUtils.join(",", srcColumns) + " FROM " + mName;
+        db.execSQL(sql);
     }
 
     /**
@@ -817,6 +912,47 @@ public class TableDefinition {
         sql.append(')');
 
         return sql.toString();
+    }
+
+    /**
+     * NOT USED RIGHT NOW. BEFORE USING SHOULD BE ENHANCED WITH PREPROCESS_TITLE IF NEEDED
+     * <p>
+     * Create and populate the 'order by' column.
+     * This method is used/meant for use during upgrades.
+     * <p>
+     * Note this is a lazy approach using the users preferred Locale,
+     * as compared to the DAO code where we take the book's language/Locale into account.
+     * The overhead here would be huge.
+     * If the user has any specific book issue, a simple update of the book will fix it.
+     */
+    @SuppressWarnings("unused")
+    private void addOrderByColumn(@NonNull final Context context,
+                                  @NonNull final SQLiteDatabase db,
+                                  @NonNull final Domain source,
+                                  @NonNull final Domain destination) {
+
+        db.execSQL("ALTER TABLE " + getName()
+                   + " ADD " + destination.getName() + " text NOT NULL default ''");
+
+        final String updateSql =
+                "UPDATE " + getName() + " SET " + destination.getName() + "=?"
+                + " WHERE " + DBDefinitions.KEY_PK_ID + "=?";
+
+        try (final SQLiteStatement update = db.compileStatement(updateSql);
+             final Cursor cursor = db.rawQuery(
+                     "SELECT " + DBDefinitions.KEY_PK_ID
+                     + ',' + source.getName() + " FROM " + getName(),
+                     null)) {
+
+            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+            while (cursor.moveToNext()) {
+                final long id = cursor.getLong(0);
+                final String in = cursor.getString(1);
+                update.bindString(1, DAO.encodeOrderByColumn(in, userLocale));
+                update.bindLong(2, id);
+                update.executeUpdateDelete();
+            }
+        }
     }
 
     /**
@@ -994,4 +1130,5 @@ public class TableDefinition {
                    + '}';
         }
     }
+
 }
