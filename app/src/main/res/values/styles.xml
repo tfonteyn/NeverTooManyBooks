@@ -546,7 +546,11 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-        <item name="android:padding">?attr/dialogPreferredPadding</item>
+        <!-- abc_dialog_padding_top_material -->
+        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
+        <item name="android:paddingBottom">12dp</item>
     </style>
 
     <!-- *************************************************************************************** -->
