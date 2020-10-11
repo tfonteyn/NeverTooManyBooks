@@ -273,7 +273,7 @@
     <string name="lbl_genre">Género</string>
     <string name="lbl_given_names">Nombre</string>
     <string name="lbl_import">Importar</string>
-    <string name="lbl_import_option_new_and_changed_books">Libros nuevos y actualizados</string>
+    <string name="lbl_option_new_and_changed_books">Libros nuevos y actualizados</string>
     <string name="lbl_is_complete">Esta completo</string>
     <string name="lbl_keywords">Palabras clave</string>
     <string name="lbl_language">Idioma</string>

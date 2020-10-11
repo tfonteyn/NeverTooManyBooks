@@ -305,6 +305,8 @@
 
     <string name="confirm_delete_series">Really delete series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
     <string name="confirm_delete_publisher">Really delete publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
+    <!-- TODO: this message is BAD....-->
+    <string name="confirm_delete_bookshelf">Really delete bookshelf “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the bookshelf and changing the bookshelf name to that of another bookshelf to preserve this data.</string>
     <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
 
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\nAre you sure you want to continue?</string>
@@ -1484,7 +1486,7 @@
     <!-- 'export books' option. -->
     <string name="lbl_export_option_books_since_last_full_backup">Books added or updated since last full backup.</string>
     <!-- 'import' option -->
-    <string name="lbl_import_option_new_and_changed_books">New and updated books</string>
+    <string name="lbl_option_new_and_changed_books">New and updated books</string>
 
 
     <!-- [VERIFIED] - heading/titles for settings/preference screens. -->

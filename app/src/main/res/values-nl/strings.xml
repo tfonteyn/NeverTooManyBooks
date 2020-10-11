@@ -277,7 +277,7 @@
     <string name="lbl_genre">Genre</string>
     <string name="lbl_given_names">Voornamen</string>
     <string name="lbl_import">Importeren</string>
-    <string name="lbl_import_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
+    <string name="lbl_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
     <string name="lbl_is_complete">Is volledig</string>
     <string name="lbl_keywords">Trefwoorden</string>
     <string name="lbl_language">Taal</string>

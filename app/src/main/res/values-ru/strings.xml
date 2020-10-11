@@ -268,7 +268,7 @@
     <string name="lbl_genre">Жанр</string>
     <string name="lbl_given_names">Имя</string>
     <string name="lbl_import">Импортировать</string>
-    <string name="lbl_import_option_new_and_changed_books">Новые и обновленные книги</string>
+    <string name="lbl_option_new_and_changed_books">Новые и обновленные книги</string>
     <string name="lbl_is_complete">Завершено</string>
     <string name="lbl_keywords">Ключевые слова</string>
     <string name="lbl_language">Язык</string>

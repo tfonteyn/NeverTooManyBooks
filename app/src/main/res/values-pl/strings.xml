@@ -270,7 +270,7 @@
     <string name="lbl_genre">Gatunek</string>
     <string name="lbl_given_names">Imiona</string>
     <string name="lbl_import">Importuj</string>
-    <string name="lbl_import_option_new_and_changed_books">Nowe i zaktualizowane książki</string>
+    <string name="lbl_option_new_and_changed_books">Nowe i zaktualizowane książki</string>
     <string name="lbl_is_complete">Jest gotowy</string>
     <string name="lbl_keywords">Słowa kluczowe</string>
     <string name="lbl_language">Język</string>

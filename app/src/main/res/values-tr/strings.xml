@@ -274,7 +274,7 @@
     <string name="lbl_genre">Tür</string>
     <string name="lbl_given_names">Adı</string>
     <string name="lbl_import">Ithal etmek</string>
-    <string name="lbl_import_option_new_and_changed_books">Yeni ve güncellenmiş kitaplar</string>
+    <string name="lbl_option_new_and_changed_books">Yeni ve güncellenmiş kitaplar</string>
     <string name="lbl_is_complete">Tamamlandı</string>
     <string name="lbl_keywords">Anahtar kelimeler</string>
     <string name="lbl_language">Dil</string>

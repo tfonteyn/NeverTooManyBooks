@@ -273,7 +273,7 @@
     <string name="lbl_genre">Είδος</string>
     <string name="lbl_given_names">Ονόματα</string>
     <string name="lbl_import">εισάγω</string>
-    <string name="lbl_import_option_new_and_changed_books">Καινούρια και ενημερωμένα βιβλία</string>
+    <string name="lbl_option_new_and_changed_books">Καινούρια και ενημερωμένα βιβλία</string>
     <string name="lbl_is_complete">Ολοκληρώθηκε</string>
     <string name="lbl_keywords">Λέξεις κλειδιά</string>
     <string name="lbl_language">Γλώσσα</string>

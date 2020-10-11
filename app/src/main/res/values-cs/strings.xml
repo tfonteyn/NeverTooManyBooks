@@ -270,7 +270,7 @@
     <string name="lbl_genre">Žánr</string>
     <string name="lbl_given_names">Křestní jméno</string>
     <string name="lbl_import">Importovat</string>
-    <string name="lbl_import_option_new_and_changed_books">Nové a aktualizované knihy</string>
+    <string name="lbl_option_new_and_changed_books">Nové a aktualizované knihy</string>
     <string name="lbl_is_complete">Je kompletní</string>
     <string name="lbl_keywords">Klíčová slova</string>
     <string name="lbl_language">Jazyk</string>
