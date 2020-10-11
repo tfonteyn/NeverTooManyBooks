@@ -130,10 +130,10 @@ public class EditBookTocFragment
     @Nullable
     private Integer mEditPosition;
     /** Listen for the results of the entry edit-dialog. */
-    private final BookChangedListener mOnBookChangedListener = (bookId, fieldChanges, data) -> {
+    private final ChangeListener mOnChangeListener = (changes, data) -> {
         Objects.requireNonNull(data, "data");
 
-        if ((fieldChanges & BookChangedListener.TOC_ENTRY) != 0) {
+        if ((changes & ChangeListener.TOC_ENTRY) != 0) {
             final TocEntry tocEntry = Objects.requireNonNull(
                     data.getParcelable(EditTocEntryDialogFragment.BKEY_TOC_ENTRY),
                     "BKEY_TOC_ENTRY");
@@ -145,10 +145,10 @@ public class EditBookTocFragment
         } else {
             // we don't expect/implement any others.
             if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "bookId=" + bookId + "|fieldChanges=" + fieldChanges);
+                Log.d(TAG, "changes=0b" + Integer.toBinaryString(changes)
+                           + "|data=" + data);
             }
         }
-
     };
 
     private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
@@ -179,7 +179,7 @@ public class EditBookTocFragment
         super.onCreate(savedInstanceState);
 
         final FragmentManager fm = getChildFragmentManager();
-        fm.setFragmentResultListener(RK_EDIT_TOC, this, mOnBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_TOC, this, mOnChangeListener);
         fm.setFragmentResultListener(RK_CONFIRM_TOC, this, mConfirmTocResultsListener);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {

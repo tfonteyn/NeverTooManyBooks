@@ -29,7 +29,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -213,12 +213,12 @@ public class EditTocEntryDialogFragment
 
         // We don't update/insert to the database here, but just send the data back.
         // TOCs are updated in bulk/list per Book
-        final Bundle result = new Bundle(2);
+        final Bundle result = new Bundle(3);
         result.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
         result.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
+        result.putLong(DBDefinitions.KEY_FK_BOOK, mBookId);
 
-        BookChangedListener.sendResult(this, mRequestKey, mBookId,
-                                       BookChangedListener.TOC_ENTRY, result);
+        ChangeListener.update(this, mRequestKey, ChangeListener.TOC_ENTRY, result);
         return true;
     }
 

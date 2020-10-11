@@ -126,9 +126,9 @@ public class BookDetailsFragment
     private FragmentBookDetailsMergeNotesSectionBinding mVbNotes;
 
     /** Listen for changes coming from child (dialog) fragments. */
-    private final BookChangedListener mBookChangedListener = (bookId, fieldsChanged, data) -> {
+    private final ChangeListener mChangeListener = (changes, data) -> {
         if (data != null) {
-            if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
+            if ((changes & ChangeListener.BOOK_LOANEE) != 0) {
                 final String loanee = Objects.requireNonNull(
                         data.getString(DBDefinitions.KEY_LOANEE), "loanee");
                 // the db was already updated, just update the book to avoid a reload.
@@ -137,7 +137,8 @@ public class BookDetailsFragment
             } else {
                 // we don't expect/implement any others.
                 if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "bookId=" + bookId + "|fieldsChanged=" + fieldsChanged);
+                    Log.d(TAG, "changes=0b" + Integer.toBinaryString(changes)
+                               + "|data=" + data);
                 }
             }
         }
@@ -157,7 +158,7 @@ public class BookDetailsFragment
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager()
-                .setFragmentResultListener(RK_EDIT_LENDER, this, mBookChangedListener);
+                .setFragmentResultListener(RK_EDIT_LENDER, this, mChangeListener);
 
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions

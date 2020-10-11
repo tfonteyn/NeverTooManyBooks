@@ -34,6 +34,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -170,6 +171,7 @@ public class EditBookshelfDialogFragment
                 success = mDb.update(getContext(), mBookshelf);
             }
             if (success) {
+                ChangeListener.update(this, mRequestKey, ChangeListener.BOOKSHELF, null);
                 OnResultListener.sendResult(this, mRequestKey, mBookshelf.getId());
                 return true;
             }
@@ -185,6 +187,7 @@ public class EditBookshelfDialogFragment
                         // move all books from the one being edited to the existing one
                         mDb.merge(mBookshelf, existingId);
 
+                        ChangeListener.update(this, mRequestKey, ChangeListener.BOOKSHELF, null);
                         OnResultListener.sendResult(this, mRequestKey, existingId);
                         dismiss();
                     })

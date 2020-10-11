@@ -31,20 +31,21 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Allows to be notified of changes made to book(s).
+ * Allows to be notified of changes made.
  * The bit number are not stored and can be changed.
+ * <p>
+ * If a book id is passed back, it should be available
+ * in {@code data.getLong(DBDefinitions.KEY_FK_BOOK)}.
  */
-public interface BookChangedListener
+public interface ChangeListener
         extends FragmentResultListener {
 
-    /** Author was modified. */
+    // Note that BOOK is missing here.
+    // It's implied if a bookId is passed back, or if the context makes it clear anyhow.
     int AUTHOR = 1;
-    /** Series was modified. */
     int SERIES = 1 << 1;
-    /** ... */
     int PUBLISHER = 1 << 2;
     int BOOKSHELF = 1 << 3;
-
     int TOC_ENTRY = 1 << 4;
 
     int FORMAT = 1 << 5;
@@ -67,27 +68,21 @@ public interface BookChangedListener
     /** A book was deleted. */
     int BOOK_DELETED = 1 << 12;
 
-
-    /* private. */ String BOOK_ID = "bookId";
-    /* private. */ String FIELDS = "fields";
+    /* private. */ String CHANGES = "changes";
     /* private. */ String DATA = "data";
 
-    static void sendResult(@NonNull final Fragment fragment,
-                           @NonNull final String requestKey,
-                           @FieldChanges int fieldChanges) {
-        final Bundle result = new Bundle(1);
-        result.putInt(FIELDS, fieldChanges);
-        fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-    }
-
-    static void sendResult(@NonNull final Fragment fragment,
-                           @NonNull final String requestKey,
-                           final long bookId,
-                           @FieldChanges int fieldChanges,
-                           @Nullable final Bundle data) {
-        final Bundle result = new Bundle(3);
-        result.putLong(BOOK_ID, bookId);
-        result.putInt(FIELDS, fieldChanges);
+    /**
+     * Notify changes where made.
+     *
+     * @param changes flags
+     * @param data    (optional) data bundle with details
+     */
+    static void update(@NonNull final Fragment fragment,
+                       @NonNull final String requestKey,
+                       @Changes int changes,
+                       @Nullable final Bundle data) {
+        final Bundle result = new Bundle(2);
+        result.putInt(CHANGES, changes);
         result.putBundle(DATA, data);
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
@@ -95,25 +90,23 @@ public interface BookChangedListener
     @Override
     default void onFragmentResult(@NonNull final String requestKey,
                                   @NonNull final Bundle result) {
-        onChange(result.getLong(BOOK_ID), result.getInt(FIELDS), result.getBundle(DATA));
+        onChange(result.getInt(CHANGES), result.getBundle(DATA));
     }
 
     /**
      * Called if changes were made.
      *
-     * @param bookId       the book that was changed, or 0 if the change was global
-     * @param fieldChanges a bitmask build from the flags
-     * @param data         bundle with custom data, can be {@code null}
+     * @param changes a bitmask build from the flags
+     * @param data    bundle with custom data, can be {@code null}
      */
-    void onChange(long bookId,
-                  @FieldChanges int fieldChanges,
+    void onChange(@Changes int changes,
                   @Nullable Bundle data);
 
     @IntDef(flag = true, value = {AUTHOR, SERIES, PUBLISHER, BOOKSHELF, TOC_ENTRY,
                                   FORMAT, COLOR, GENRE, LANGUAGE, LOCATION,
                                   BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
     @Retention(RetentionPolicy.SOURCE)
-    @interface FieldChanges {
+    @interface Changes {
 
     }
 }

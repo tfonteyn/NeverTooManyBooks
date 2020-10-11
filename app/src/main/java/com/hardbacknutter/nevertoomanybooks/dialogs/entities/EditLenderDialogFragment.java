@@ -39,7 +39,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
-import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -260,22 +260,20 @@ public class EditLenderDialogFragment
         }
 
         final boolean success;
-        final Bundle result;
+        final Bundle result = new Bundle(2);
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
             success = mDb.setLoanee(mBookId, mLoanee, true);
-            result = new Bundle();
             result.putString(DBDefinitions.KEY_LOANEE, mLoanee);
 
         } else {
             // return the book
             success = mDb.setLoanee(mBookId, null, true);
-            result = null;
         }
 
         if (success) {
-            BookChangedListener.sendResult(this, mRequestKey, mBookId,
-                                           BookChangedListener.BOOK_LOANEE, result);
+            result.putLong(DBDefinitions.KEY_FK_BOOK, mBookId);
+            ChangeListener.update(this, mRequestKey, ChangeListener.BOOK_LOANEE, result);
             return true;
         }
         return false;

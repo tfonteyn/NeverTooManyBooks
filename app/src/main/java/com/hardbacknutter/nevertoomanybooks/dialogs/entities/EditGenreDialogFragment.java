@@ -27,7 +27,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -43,7 +43,7 @@ public class EditGenreDialogFragment
      * No-arg constructor for OS use.
      */
     public EditGenreDialogFragment() {
-        super(R.string.lbl_genre, R.string.lbl_genre, BookChangedListener.GENRE);
+        super(R.string.lbl_genre, R.string.lbl_genre, ChangeListener.GENRE);
     }
 
     /**

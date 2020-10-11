@@ -27,7 +27,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -43,7 +43,7 @@ public class EditLocationDialogFragment
      * No-arg constructor for OS use.
      */
     public EditLocationDialogFragment() {
-        super(R.string.lbl_location, R.string.lbl_location, BookChangedListener.LOCATION);
+        super(R.string.lbl_location, R.string.lbl_location, ChangeListener.LOCATION);
     }
 
     /**

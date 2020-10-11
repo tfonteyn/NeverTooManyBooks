@@ -30,7 +30,7 @@ import androidx.annotation.StringRes;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.BookChangedListener;
+import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
@@ -53,7 +53,7 @@ public abstract class EditStringBaseDialogFragment
     private final int mDialogTitleId;
     @StringRes
     private final int mLabelId;
-    @BookChangedListener.FieldChanges
+    @ChangeListener.Changes
     private final int mFieldChanges;
     /** Database Access. */
     @Nullable
@@ -72,11 +72,11 @@ public abstract class EditStringBaseDialogFragment
      *
      * @param titleId      for the dialog (i.e. the toolbar)
      * @param label        to use for the 'hint' of the input field
-     * @param fieldChanges one of the {@link BookChangedListener.FieldChanges} bits
+     * @param fieldChanges one of the {@link ChangeListener.Changes} bits
      */
     EditStringBaseDialogFragment(@StringRes final int titleId,
                                  @StringRes final int label,
-                                 @BookChangedListener.FieldChanges final int fieldChanges) {
+                                 @ChangeListener.Changes final int fieldChanges) {
         super(R.layout.dialog_edit_string);
 
         mDialogTitleId = titleId;
@@ -168,7 +168,7 @@ public abstract class EditStringBaseDialogFragment
 
         final Bundle data = onSave(mOriginalText, mCurrentText);
 
-        BookChangedListener.sendResult(this, mRequestKey, 0, mFieldChanges, data);
+        ChangeListener.update(this, mRequestKey, mFieldChanges, data);
         return true;
     }
 
