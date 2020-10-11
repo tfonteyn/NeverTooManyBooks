@@ -676,6 +676,22 @@ public class BooksOnBookshelfModel
         return null;
     }
 
+    /**
+     * Get the Bookshelf for the given row.
+     *
+     * @param rowData with book data
+     *
+     * @return Bookshelf, or {@code null} if the row contains no Bookshelf id.
+     */
+    @Nullable
+    public Bookshelf getBookshelf(@NonNull final DataHolder rowData) {
+        final long id = rowData.getLong(DBDefinitions.KEY_FK_BOOKSHELF);
+        if (id > 0) {
+            return mDb.getBookshelf(id);
+        }
+        return null;
+    }
+
     @NonNull
     public String getBooklistTableName() {
         Objects.requireNonNull(mBooklist, Booklist.TAG);
@@ -929,6 +945,10 @@ public class BooksOnBookshelfModel
     public boolean delete(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
         return mDb.delete(context, publisher);
+    }
+
+    public boolean delete(@NonNull final Bookshelf bookshelf) {
+        return mDb.delete(bookshelf);
     }
 
     @SuppressWarnings("UnusedReturnValue")

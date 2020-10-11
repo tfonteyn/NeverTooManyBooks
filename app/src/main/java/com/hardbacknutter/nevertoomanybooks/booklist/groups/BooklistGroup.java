@@ -57,10 +57,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOKSHELF_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_PUBLISHER_SORT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_SERIES_SORT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
@@ -75,6 +75,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
@@ -91,6 +92,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FORMAT;
@@ -112,6 +114,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
@@ -278,6 +281,8 @@ public class BooklistGroup
                 return new SeriesBooklistGroup(style);
             case PUBLISHER:
                 return new PublisherBooklistGroup(style);
+            case BOOKSHELF:
+                return new BookshelfBooklistGroup(style);
 
             default:
                 return new BooklistGroup(id, style);
@@ -674,10 +679,9 @@ public class BooklistGroup
 
                 }
                 case PUBLISHER: {
-                    // We do NOT use the foreign ID to create the key.
-                    // The linked data is used directly to display.
-                    // If we ever create a dedicated BooklistGroup for Publisher,
-                    // this can/should be changed.
+                    // We use the foreign ID to create the key.
+                    // We override the display domain in the BooklistGroup.
+                    // We do not sort on the key domain but add the OB column instead
                     return new GroupKey(R.string.lbl_publisher, "p",
                                         DOM_FK_PUBLISHER, TBL_PUBLISHERS.dot(KEY_PK_ID),
                                         VirtualDomain.SORT_UNSORTED)
@@ -695,13 +699,22 @@ public class BooklistGroup
                                                       TBL_BOOK_PUBLISHER.dot(KEY_FK_PUBLISHER)));
                 }
                 case BOOKSHELF: {
-                    // We do NOT use the foreign ID to create the key.
-                    // The linked data is used directly to display.
-                    // If we ever create a dedicated BooklistGroup for Bookshelf,
-                    // this can/should be changed.
+                    // We use the foreign ID to create the key.
+                    // We override the display domain in the BooklistGroup.
                     return new GroupKey(R.string.lbl_bookshelf, "shelf",
-                                        DOM_BOOKSHELF_NAME, TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
-                                        VirtualDomain.SORT_ASC);
+                                        DOM_FK_BOOKSHELF, TBL_BOOKSHELF.dot(KEY_PK_ID),
+                                        VirtualDomain.SORT_UNSORTED)
+
+                            .addGroupDomain(
+                                    // Group and sort by the NAME column
+                                    new VirtualDomain(DOM_BL_BOOKSHELF_SORT,
+                                                      TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
+                                                      VirtualDomain.SORT_ASC)
+                                           )
+                            .addGroupDomain(
+                                    // Group by id (we want the id available)
+                                    new VirtualDomain(DOM_FK_BOOKSHELF,
+                                                      TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF)));
                 }
 
                 // Data without a linked table use the display name as the key domain.

@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.BookshelfBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.PublisherBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.SeriesBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
@@ -955,6 +956,25 @@ public class BooklistStyle
         } else {
             // return the global default.
             return PublisherBooklistGroup.showBooksUnderEachDefault(context);
+        }
+    }
+
+    /**
+     * Wrapper that gets the preference from {@link BookshelfBooklistGroup}
+     * if we have it this group, or from the global default if not.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} if we want to show a book under each of its Publishers.
+     */
+    public boolean isShowBooksUnderEachBookshelf(@NonNull final Context context) {
+        final BookshelfBooklistGroup group = (BookshelfBooklistGroup)
+                (mGroups.getGroupById(BooklistGroup.BOOKSHELF));
+        if (group != null) {
+            return group.showBooksUnderEach(context);
+        } else {
+            // return the global default.
+            return BookshelfBooklistGroup.showBooksUnderEachDefault(context);
         }
     }
 

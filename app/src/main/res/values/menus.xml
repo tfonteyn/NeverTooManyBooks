@@ -106,12 +106,17 @@
     <item name="MENU_SERIES_SET_COMPLETE" type="id" />
     <item name="MENU_SERIES_SET_INCOMPLETE" type="id" />
 
+    <item name="MENU_PUBLISHER_DELETE" type="id" />
+    <item name="MENU_PUBLISHER_EDIT" type="id" />
+
+    <item name="MENU_BOOKSHELF_DELETE" type="id" />
+    <item name="MENU_BOOKSHELF_EDIT" type="id" />
+
     <item name="MENU_FORMAT_EDIT" type="id" />
     <item name="MENU_COLOR_EDIT" type="id" />
     <item name="MENU_GENRE_EDIT" type="id" />
     <item name="MENU_LANGUAGE_EDIT" type="id" />
     <item name="MENU_LOCATION_EDIT" type="id" />
-    <item name="MENU_PUBLISHER_EDIT" type="id" />
 
     <item name="MENU_SHARE" type="id" />
 
@@ -191,7 +196,6 @@
     <!-- debug options for the SQLite shell activity. -->
     <item name="MENU_DEBUG_SQ_SHELL_RUN" type="id" />
     <item name="MENU_DEBUG_SQ_SHELL_LIST_TABLES" type="id" />
-    <item name="MENU_PUBLISHER_DELETE" type="id" />
 
 
 </resources>

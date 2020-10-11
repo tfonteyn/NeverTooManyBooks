@@ -73,8 +73,8 @@ public class SeriesBooklistGroup
     /** Customized domain with display data. */
     @NonNull
     private final VirtualDomain mDisplayDomain;
-    /** Show a book under each Series it appears in. */
-    private PBoolean mAllSeries;
+    /** Show a book under each {@link Series} it is linked to. */
+    private PBoolean mUnderEach;
 
     /**
      * Constructor.
@@ -98,7 +98,7 @@ public class SeriesBooklistGroup
         mDisplayDomain = createDisplayDomain();
 
         initPrefs();
-        mAllSeries.set(in);
+        mUnderEach.set(in);
     }
 
     /**
@@ -115,7 +115,7 @@ public class SeriesBooklistGroup
     }
 
     private void initPrefs() {
-        mAllSeries = new PBoolean(mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH
+        mUnderEach = new PBoolean(mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH
         );
     }
 
@@ -135,7 +135,7 @@ public class SeriesBooklistGroup
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         super.writeToParcel(dest, flags);
-        mAllSeries.writeToParcel(dest);
+        mUnderEach.writeToParcel(dest);
     }
 
     @NonNull
@@ -143,7 +143,7 @@ public class SeriesBooklistGroup
     @CallSuper
     public Map<String, PPref> getPreferences() {
         final Map<String, PPref> map = super.getPreferences();
-        map.put(mAllSeries.getKey(), mAllSeries);
+        map.put(mUnderEach.getKey(), mUnderEach);
         return map;
     }
 
@@ -166,7 +166,7 @@ public class SeriesBooklistGroup
      * @return {@code true} if we want to show a book under each of its Series.
      */
     public boolean showBooksUnderEach(@NonNull final Context context) {
-        return mAllSeries.isTrue(context);
+        return mUnderEach.isTrue(context);
     }
 
     @Override
@@ -175,7 +175,7 @@ public class SeriesBooklistGroup
         return "SeriesBooklistGroup{"
                + super.toString()
                + ", mDisplayDomain=" + mDisplayDomain
-               + ", mAllSeries=" + mAllSeries
+               + ", mUnderEach=" + mUnderEach
                + '}';
     }
 }

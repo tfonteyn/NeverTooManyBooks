@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditAuthorDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditColorDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditFormatDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditGenreDialogFragment;
@@ -163,6 +164,8 @@ public class BooksOnBookshelf
     private static final String RK_EDIT_SERIES = EditSeriesDialogFragment.TAG + ":rk";
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_PUBLISHER = EditPublisherDialogFragment.TAG + ":rk";
+    /** FragmentResultListener request key. */
+    private static final String RK_EDIT_BOOKSHELF = EditBookshelfDialogFragment.TAG + ":rk";
 
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_COLOR = EditColorDialogFragment.TAG + ":rk";
@@ -237,8 +240,15 @@ public class BooksOnBookshelf
                 }
             };
 
-    /** React to row changes made. ENHANCE: update the modified row without a rebuild. */
-    private final BookChangedListener mBookChangedListener = this::onBookChange;
+    /** React to row changes made. */
+    private final ChangeListener mChangeListener = (changes, data) -> {
+        // Extract here for convenience
+        long bookId = 0;
+        if (data != null) {
+            bookId = data.getLong(DBDefinitions.KEY_FK_BOOK);
+        }
+        onBookChange(bookId, changes, data);
+    };
 
     /** React to the user selecting a style to apply. */
     private final StylePickerDialogFragment.OnResultListener mOnStylePickerListener =
@@ -366,17 +376,18 @@ public class BooksOnBookshelf
 
         final FragmentManager fm = getSupportFragmentManager();
 
-        fm.setFragmentResultListener(RK_EDIT_AUTHOR, this, mBookChangedListener);
-        fm.setFragmentResultListener(RK_EDIT_SERIES, this, mBookChangedListener);
-        fm.setFragmentResultListener(RK_EDIT_PUBLISHER, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_AUTHOR, this, mChangeListener);
+        fm.setFragmentResultListener(RK_EDIT_SERIES, this, mChangeListener);
+        fm.setFragmentResultListener(RK_EDIT_PUBLISHER, this, mChangeListener);
+        fm.setFragmentResultListener(RK_EDIT_BOOKSHELF, this, mChangeListener);
 
-        fm.setFragmentResultListener(RK_EDIT_COLOR, this, mBookChangedListener);
-        fm.setFragmentResultListener(RK_EDIT_FORMAT, this, mBookChangedListener);
-        fm.setFragmentResultListener(RK_EDIT_GENRE, this, mBookChangedListener);
-        fm.setFragmentResultListener(RK_EDIT_LANGUAGE, this, mBookChangedListener);
-        fm.setFragmentResultListener(RK_EDIT_LOCATION, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_COLOR, this, mChangeListener);
+        fm.setFragmentResultListener(RK_EDIT_FORMAT, this, mChangeListener);
+        fm.setFragmentResultListener(RK_EDIT_GENRE, this, mChangeListener);
+        fm.setFragmentResultListener(RK_EDIT_LANGUAGE, this, mChangeListener);
+        fm.setFragmentResultListener(RK_EDIT_LOCATION, this, mChangeListener);
 
-        fm.setFragmentResultListener(RK_EDIT_LENDER, this, mBookChangedListener);
+        fm.setFragmentResultListener(RK_EDIT_LENDER, this, mChangeListener);
 
         fm.setFragmentResultListener(RK_STYLE_PICKER, this, mOnStylePickerListener);
 
@@ -705,6 +716,12 @@ public class BooksOnBookshelf
                 }
                 break;
             }
+            case BooklistGroup.BOOKSHELF: {
+                if (!rowData.getString(DBDefinitions.KEY_FK_BOOKSHELF).isEmpty()) {
+                    getMenuInflater().inflate(R.menu.bookshelf, menu);
+                }
+                break;
+            }
             case BooklistGroup.LANGUAGE: {
                 if (!rowData.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
@@ -811,7 +828,7 @@ public class BooksOnBookshelf
                 final List<Author> authors = mModel.getAuthorsByBookId(bookId);
                 StandardDialogs.deleteBook(this, title, authors, () -> {
                     if (mModel.deleteBook(this, bookId)) {
-                        onBookChange(bookId, BookChangedListener.BOOK_DELETED, null);
+                        onBookChange(bookId, ChangeListener.BOOK_DELETED, null);
                     }
                 });
                 return true;
@@ -832,7 +849,7 @@ public class BooksOnBookshelf
                 final boolean status = !rowData.getBoolean(DBDefinitions.KEY_READ);
                 final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 if (mModel.setBookRead(bookId, status)) {
-                    onBookChange(bookId, BookChangedListener.BOOK_READ, null);
+                    onBookChange(bookId, ChangeListener.BOOK_READ, null);
                 }
                 return true;
             }
@@ -850,7 +867,7 @@ public class BooksOnBookshelf
             case R.id.MENU_BOOK_LOAN_DELETE: {
                 final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
                 mModel.lendBook(bookId, null);
-                onBookChange(bookId, BookChangedListener.BOOK_LOANEE, null);
+                onBookChange(bookId, ChangeListener.BOOK_LOANEE, null);
                 return true;
             }
             /* ********************************************************************************** */
@@ -945,7 +962,7 @@ public class BooksOnBookshelf
                 // toggle the complete status
                 final boolean status = !rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
                 if (mModel.setSeriesComplete(seriesId, status)) {
-                    onBookChange(0, BookChangedListener.SERIES, null);
+                    onBookChange(0, ChangeListener.SERIES, null);
                 }
                 return true;
             }
@@ -954,7 +971,7 @@ public class BooksOnBookshelf
                 if (series != null) {
                     StandardDialogs.deleteSeries(this, series, () -> {
                         mModel.delete(this, series);
-                        onBookChange(0, BookChangedListener.SERIES, null);
+                        onBookChange(0, ChangeListener.SERIES, null);
                     });
                 }
                 return true;
@@ -986,7 +1003,7 @@ public class BooksOnBookshelf
                 // toggle the complete status
                 final boolean status = !rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
                 if (mModel.setAuthorComplete(authorId, status)) {
-                    onBookChange(0, BookChangedListener.AUTHOR, null);
+                    onBookChange(0, ChangeListener.AUTHOR, null);
                 }
                 return true;
             }
@@ -1006,7 +1023,28 @@ public class BooksOnBookshelf
                 if (publisher != null) {
                     StandardDialogs.deletePublisher(this, publisher, () -> {
                         mModel.delete(this, publisher);
-                        onBookChange(0, BookChangedListener.PUBLISHER, null);
+                        onBookChange(0, ChangeListener.PUBLISHER, null);
+                    });
+                }
+                return true;
+            }
+            /* ********************************************************************************** */
+
+            case R.id.MENU_BOOKSHELF_EDIT: {
+                final Bookshelf bookshelf = mModel.getBookshelf(rowData);
+                if (bookshelf != null) {
+                    EditBookshelfDialogFragment
+                            .newInstance(RK_EDIT_BOOKSHELF, bookshelf)
+                            .show(getSupportFragmentManager(), EditBookshelfDialogFragment.TAG);
+                }
+                return true;
+            }
+            case R.id.MENU_BOOKSHELF_DELETE: {
+                final Bookshelf bookshelf = mModel.getBookshelf(rowData);
+                if (bookshelf != null) {
+                    StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
+                        mModel.delete(bookshelf);
+                        onBookChange(0, ChangeListener.BOOKSHELF, null);
                     });
                 }
                 return true;
@@ -1111,43 +1149,42 @@ public class BooksOnBookshelf
     /**
      * React to row changes made. ENHANCE: update the modified row without a rebuild.
      *
-     * @param bookId        the book that was changed, or 0 if the change was global
-     * @param fieldsChanged a bitmask build from the flags
-     * @param data          bundle with custom data, can be {@code null}
+     * @param changes a bitmask build from the flags
+     * @param data    bundle with custom data, can be {@code null}
      */
     public void onBookChange(final long bookId,
-                             final int fieldsChanged,
+                             final int changes,
                              @Nullable final Bundle data) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
             Log.d(TAG, "onBookChanged"
                        + "|bookId=" + bookId
-                       + "|fieldsChanged=0b" + Integer.toBinaryString(fieldsChanged)
+                       + "|changes=0b" + Integer.toBinaryString(changes)
                        + "|data=" + data);
         }
 
         saveListPosition();
         buildBookList();
 
-        // changes were made to a single book
+//        // changes were made to a single book
 //        if (bookId > 0) {
-//            if ((fieldsChanged & BookChangedListener.BOOK_READ) != 0) {
+//            if ((changes & ChangeListener.BOOK_READ) != 0) {
 //                saveListPosition();
 //                buildBookList();
 //
-//          } else if ((fieldsChanged & BookChangedListener.BOOK_LOANEE) != 0) {
-//                if (data != null) {
-//                    String loanee = data.getString(DBDefinitions.KEY_LOANEE);
-//                }
+//          } else if ((changes & ChangeListener.BOOK_LOANEE) != 0) {
+//                final String loanee =
+//                       Objects.requireNonNull(data.getString(DBDefinitions.KEY_LOANEE),
+//                                              "loanee");
 //                saveListPosition();
 //                buildBookList();
 //
-//            } else if ((fieldsChanged & BookChangedListener.BOOK_DELETED) != 0) {
+//            } else if ((changes & ChangeListener.BOOK_DELETED) != 0) {
 //                saveListPosition();
 //                buildBookList();
 //            }
 //        } else {
 //            // changes (Author, Series, ...) were made to (potentially) the whole list
-//            if (fieldsChanged != 0) {
+//            if (changes != 0) {
 //                saveListPosition();
 //                buildBookList();
 //            }

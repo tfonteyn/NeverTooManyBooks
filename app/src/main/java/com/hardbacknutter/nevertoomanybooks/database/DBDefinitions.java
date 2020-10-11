@@ -337,6 +337,8 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_SERIES_SORT;
     /** For sorting in the {@link Booklist}. */
     public static final Domain DOM_BL_PUBLISHER_SORT;
+    /** For sorting in the {@link Booklist}. */
+    public static final Domain DOM_BL_BOOKSHELF_SORT;
 
     /**
      * Series number, cast()'d for sorting purposes in {@link Booklist}
@@ -390,7 +392,7 @@ public final class DBDefinitions {
     /** Foreign key. */
     public static final String KEY_FK_PUBLISHER = "publisher_id";
     /** Foreign key. */
-    public static final String KEY_FK_BOOKSHELF = "bookshelf";
+    public static final String KEY_FK_BOOKSHELF = "bookshelf_id";
     /** Foreign key. */
     public static final String KEY_FK_TOC_ENTRY = "anthology";
     /** Foreign key. */
@@ -425,7 +427,7 @@ public final class DBDefinitions {
     public static final String KEY_EID_CALIBRE_UUID = "clb_uuid";
 
     /** {@link #TBL_BOOKSHELF}. */
-    public static final String KEY_BOOKSHELF_NAME = "bookshelf";
+    public static final String KEY_BOOKSHELF_NAME = "bookshelf_name";
     public static final String KEY_BOOKSHELF_BL_TOP_POS = "bl_top_pos";
     public static final String KEY_BOOKSHELF_BL_TOP_OFFSET = "bl_top_offset";
     /** Alias. */
@@ -515,6 +517,7 @@ public final class DBDefinitions {
     public static final String KEY_BL_AUTHOR_SORT = "bl_aut_sort";
     public static final String KEY_BL_SERIES_SORT = "bl_ser_sort";
     public static final String KEY_BL_PUBLISHER_SORT = "bl_pub_sort";
+    public static final String KEY_BL_BOOKSHELF_SORT = "bl_shelf_sort";
 
     public static final String KEY_BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
     public static final String KEY_BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
@@ -1014,12 +1017,12 @@ public final class DBDefinitions {
 
         DOM_BL_AUTHOR_SORT =
                 new Domain.Builder(KEY_BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT).build();
-
         DOM_BL_SERIES_SORT =
                 new Domain.Builder(KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT).build();
-
         DOM_BL_PUBLISHER_SORT =
                 new Domain.Builder(KEY_BL_PUBLISHER_SORT, ColumnInfo.TYPE_TEXT).build();
+        DOM_BL_BOOKSHELF_SORT =
+                new Domain.Builder(KEY_BL_BOOKSHELF_SORT, ColumnInfo.TYPE_TEXT).build();
 
         DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
                 new Domain.Builder(KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL).build();

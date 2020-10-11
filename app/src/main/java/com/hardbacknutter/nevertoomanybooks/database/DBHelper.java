@@ -35,6 +35,8 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -62,6 +64,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
@@ -98,7 +101,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 11;
+    public static final int DATABASE_VERSION = 12;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -645,11 +648,12 @@ public final class DBHelper
         final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
         if (oldVersion < 2) {
-            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_COLOR);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_BOOK_COLOR);
         }
         if (oldVersion < 3) {
-            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_CONDITION);
-            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER);
+            TBL_BOOKS.alterTableAddColumns(syncedDb,
+                                           DBDefinitions.DOM_BOOK_CONDITION,
+                                           DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER);
         }
         if (oldVersion < 4) {
             // bug fix: this was modifying the books last update-date each time a bookshelf
@@ -662,8 +666,9 @@ public final class DBHelper
             TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
         }
         if (oldVersion < 6) {
-            TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_POS);
-            TBL_BOOKSHELF.alterTableAddColumn(syncedDb, DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET);
+            TBL_BOOKSHELF.alterTableAddColumns(syncedDb,
+                                               DBDefinitions.DOM_BOOKSHELF_BL_TOP_POS,
+                                               DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET);
 
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
@@ -732,10 +737,10 @@ public final class DBHelper
                   .remove("startup.lastVersion")
                   .apply();
 
-            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_LAST_DODO_NL);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_EID_LAST_DODO_NL);
         }
         if (oldVersion < 9) {
-            TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_EID_CALIBRE);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_EID_CALIBRE);
         }
         if (oldVersion < 10) {
             // added visibility column; just scrap the old data
@@ -746,10 +751,27 @@ public final class DBHelper
         }
         if (oldVersion < 11) {
             // remove the obsolete "bl_top_row" from TBL_BOOKSHELF
-            UpgradeDatabase.recreateAndReloadTable(syncedDb, TBL_BOOKSHELF, true,
-                                                   "bl_top_row");
+            final Collection<String> toRemove = new ArrayList<>();
+            toRemove.add("bl_top_row");
+            TBL_BOOKSHELF.recreateAndReload(syncedDb, true, null, toRemove);
             StartupViewModel.scheduleMaintenance(context, true);
         }
+        if (oldVersion < 12) {
+
+            final Map<String, String> toRename = new HashMap<>();
+            toRename.put("bookshelf", KEY_BOOKSHELF_NAME);
+            TBL_BOOKSHELF.recreateAndReload(syncedDb, true, toRename, null);
+
+            toRename.clear();
+            toRename.put("bookshelf", KEY_FK_BOOKSHELF);
+            TBL_BOOK_BOOKSHELF.recreateAndReload(syncedDb, true, toRename, null);
+
+            // just scrap the old data
+            syncedDb.drop(TBL_BOOK_LIST_NODE_STATE.getName());
+            TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
+        }
+
+
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table,
         // we should at the same time change DOM_UTC_LAST_SYNC_DATE_GOODREADS

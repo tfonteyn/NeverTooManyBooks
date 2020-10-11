@@ -39,6 +39,7 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -156,6 +157,27 @@ public final class StandardDialogs {
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_publisher,
                                               publisher.getLabel(context)))
+                .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .create()
+                .show();
+    }
+
+    /**
+     * Ask the user to confirm a delete.
+     *
+     * @param context   Current context
+     * @param bookshelf Bookshelf we're about to delete
+     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     */
+    public static void deleteBookshelf(@NonNull final Context context,
+                                       @NonNull final Bookshelf bookshelf,
+                                       @NonNull final Runnable onConfirm) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_warning)
+                .setTitle(R.string.action_delete)
+                .setMessage(context.getString(R.string.confirm_delete_bookshelf,
+                                              bookshelf.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()

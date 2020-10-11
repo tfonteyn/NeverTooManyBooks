@@ -35,45 +35,49 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PUBLISHER_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 
 /**
- * Specialized BooklistGroup representing a {@link Publisher} group.
+ * All plumbing present, but the 'under each' preference is not exposed to the user yet,
+ * because there is no 'position' column for bookshelves.
+ * <p>
+ * <p>
+ * Specialized BooklistGroup representing a {@link Bookshelf} group.
  * Includes extra attributes based on preferences.
  * <p>
  * {@link #getDisplayDomain()} returns a customized display domain
  * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
  */
-public class PublisherBooklistGroup
+public class BookshelfBooklistGroup
         extends BooklistGroup
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<PublisherBooklistGroup> CREATOR =
-            new Creator<PublisherBooklistGroup>() {
+    public static final Creator<BookshelfBooklistGroup> CREATOR =
+            new Creator<BookshelfBooklistGroup>() {
                 @Override
-                public PublisherBooklistGroup createFromParcel(@NonNull final Parcel source) {
-                    return new PublisherBooklistGroup(source);
+                public BookshelfBooklistGroup createFromParcel(@NonNull final Parcel source) {
+                    return new BookshelfBooklistGroup(source);
                 }
 
                 @Override
-                public PublisherBooklistGroup[] newArray(final int size) {
-                    return new PublisherBooklistGroup[size];
+                public BookshelfBooklistGroup[] newArray(final int size) {
+                    return new BookshelfBooklistGroup[size];
                 }
             };
 
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
-            "style.booklist.group.publisher.show.all";
+            "style.booklist.group.bookshelf.show.all";
 
     /** Customized domain with display data. */
     @NonNull
     private final VirtualDomain mDisplayDomain;
-    /** Show a book under each {@link Publisher} it is linked to. */
+    /** Show a book under each {@link Bookshelf} it is linked to. */
     private PBoolean mUnderEach;
 
     /**
@@ -81,8 +85,8 @@ public class PublisherBooklistGroup
      *
      * @param style the style
      */
-    PublisherBooklistGroup(@NonNull final BooklistStyle style) {
-        super(PUBLISHER, style);
+    BookshelfBooklistGroup(@NonNull final BooklistStyle style) {
+        super(BOOKSHELF, style);
         mDisplayDomain = createDisplayDomain();
 
         initPrefs();
@@ -93,7 +97,7 @@ public class PublisherBooklistGroup
      *
      * @param in Parcel to construct the object from
      */
-    private PublisherBooklistGroup(@NonNull final Parcel in) {
+    private BookshelfBooklistGroup(@NonNull final Parcel in) {
         super(in);
         mDisplayDomain = createDisplayDomain();
 
@@ -106,7 +110,7 @@ public class PublisherBooklistGroup
      *
      * @param context Current context
      *
-     * @return {@code true} if we want to show a book under each of its Publishers.
+     * @return {@code true} if we want to show a book under each of its Bookshelves.
      */
     public static boolean showBooksUnderEachDefault(@NonNull final Context context) {
         return PreferenceManager
@@ -124,7 +128,7 @@ public class PublisherBooklistGroup
     @NonNull
     private VirtualDomain createDisplayDomain() {
         // Not sorted; we sort on the OB domain as defined in the GroupKey.
-        return new VirtualDomain(DOM_PUBLISHER_NAME, TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME));
+        return new VirtualDomain(DOM_BOOKSHELF_NAME, TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME));
     }
 
     @NonNull
@@ -153,7 +157,7 @@ public class PublisherBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_PUBLISHER);
+        final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_BOOKSHELF);
         if (category != null) {
             final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH};
             setPreferenceVisibility(category, keys, visible);
@@ -165,7 +169,7 @@ public class PublisherBooklistGroup
      *
      * @param context Current context
      *
-     * @return {@code true} if we want to show a book under each of its Publishers.
+     * @return {@code true} if we want to show a book under each of its Bookshelves.
      */
     public boolean showBooksUnderEach(@NonNull final Context context) {
         return mUnderEach.isTrue(context);
@@ -174,7 +178,7 @@ public class PublisherBooklistGroup
     @Override
     @NonNull
     public String toString() {
-        return "PublisherBooklistGroup{"
+        return "BookshelfBooklistGroup{"
                + super.toString()
                + ", mDisplayDomain=" + mDisplayDomain
                + ", mUnderEach=" + mUnderEach

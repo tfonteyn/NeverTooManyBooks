@@ -80,6 +80,8 @@ public final class Prefs {
     public static final String PSK_STYLE_SERIES = "psk_style_series";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    public static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
     /** Global - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
 

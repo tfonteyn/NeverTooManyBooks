@@ -86,8 +86,8 @@ public class AuthorBooklistGroup
     /** We cannot parcel the style here, so keep a local copy of this preference. */
     private final boolean mSortAuthorByGivenNameFirst;
 
-    /** Support for 'Show All Authors of Book' property. */
-    private PBoolean mAllAuthors;
+    /** Show a book under each {@link Author} it is linked to. */
+    private PBoolean mUnderEach;
     /** The primary author type the user prefers. */
     private PBitmask mPrimaryType;
 
@@ -116,7 +116,7 @@ public class AuthorBooklistGroup
     private AuthorBooklistGroup(@NonNull final Parcel in) {
         super(in);
         initPrefs();
-        mAllAuthors.set(in);
+        mUnderEach.set(in);
 
         mShowAuthorWithGivenNameFirst = in.readByte() != 0;
         mSortAuthorByGivenNameFirst = in.readByte() != 0;
@@ -185,14 +185,14 @@ public class AuthorBooklistGroup
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         super.writeToParcel(dest, flags);
-        mAllAuthors.writeToParcel(dest);
+        mUnderEach.writeToParcel(dest);
 
         dest.writeByte((byte) (mShowAuthorWithGivenNameFirst ? 1 : 0));
         dest.writeByte((byte) (mSortAuthorByGivenNameFirst ? 1 : 0));
     }
 
     private void initPrefs() {
-        mAllAuthors = new PBoolean(mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH);
+        mUnderEach = new PBoolean(mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH);
 
         mPrimaryType = new PBitmask(mStylePrefs, mIsUserDefinedStyle, PK_PRIMARY_TYPE,
                                     Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
@@ -203,7 +203,7 @@ public class AuthorBooklistGroup
     @CallSuper
     public Map<String, PPref> getPreferences() {
         final Map<String, PPref> map = super.getPreferences();
-        map.put(mAllAuthors.getKey(), mAllAuthors);
+        map.put(mUnderEach.getKey(), mUnderEach);
         map.put(mPrimaryType.getKey(), mPrimaryType);
         return map;
     }
@@ -229,7 +229,7 @@ public class AuthorBooklistGroup
      * @return {@code true} if we want to show a book under each of its Authors.
      */
     public boolean showBooksUnderEach(@NonNull final Context context) {
-        return mAllAuthors.isTrue(context);
+        return mUnderEach.isTrue(context);
     }
 
     /**
@@ -253,7 +253,7 @@ public class AuthorBooklistGroup
                + ", mSortedDomain=" + mSortedDomain
                + ", mShowAuthorWithGivenNameFirst=" + mShowAuthorWithGivenNameFirst
                + ", mSortAuthorByGivenNameFirst=" + mSortAuthorByGivenNameFirst
-               + ", mAllAuthors=" + mAllAuthors
+               + ", mUnderEach=" + mUnderEach
                + ", mPrimaryType=" + mPrimaryType
                + '}';
     }
