@@ -811,9 +811,6 @@ public class TableDefinition {
      * if columns do not exist in the destination, an error will occur. Columns in the
      * destination that are not in the source will be defaulted or set to {@code null}
      * if no default is defined.
-     * <p>
-     * TODO: instead of passing in 'toRemove' use the Domain list,
-     * i.e. a column present in the describe TableInfo but not in the domain list can be removed.
      *
      * @param db          Database Access
      * @param destination to table
@@ -826,6 +823,8 @@ public class TableDefinition {
                                  @Nullable final Map<String, String> toRename,
                                  @Nullable final Collection<String> toRemove) {
 
+        // Note: don't use the mDomains to check for columns no longer there,
+        // we'd be removing columns that need to be renamed as well.
         // Build the source column list, removing columns we no longer want.
         final Collection<String> removals = toRemove != null ? toRemove : new ArrayList<>();
         final TableInfo sourceTable = getTableInfo(db);
