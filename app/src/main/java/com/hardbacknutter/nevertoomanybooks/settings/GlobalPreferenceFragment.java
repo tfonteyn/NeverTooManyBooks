@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.Preference;
@@ -123,16 +124,20 @@ public class GlobalPreferenceFragment
                                     @SuppressWarnings("SameParameterValue")
                                     @NonNull final String schedulerKey) {
         if (preference != null) {
-            final Drawable d = preference.getIcon().mutate();
+            @AttrRes
+            final int attr;
             if (getPreferenceManager().getSharedPreferences().getBoolean(schedulerKey, false)) {
-                //noinspection ConstantConditions
-                d.setTint(AttrUtils.getColorInt(getContext(), R.attr.appPreferenceAlertColor));
+                attr = R.attr.appPreferenceAlertColor;
             } else {
-                //noinspection ConstantConditions
-                d.setTint(AttrUtils.getColorInt(getContext(), R.attr.colorControlNormal));
+                attr = R.attr.colorControlNormal;
             }
-            preference.setIcon(d);
+
+            final Drawable icon = preference.getIcon().mutate();
+            //noinspection ConstantConditions
+            icon.setTint(AttrUtils.getColorInt(getContext(), attr));
+            preference.setIcon(icon);
         }
+
     }
 
 }

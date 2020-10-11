@@ -864,7 +864,7 @@ public class BooklistStyle
      */
     public int getGroupRowHeight(@NonNull final Context context) {
         if (mGroupRowHeight.getValue(context)) {
-            return AttrUtils.getDimen(context, R.attr.listPreferredItemHeightSmall);
+            return AttrUtils.getDimensionPixelSize(context, R.attr.listPreferredItemHeightSmall);
         } else {
             return ViewGroup.LayoutParams.WRAP_CONTENT;
         }
