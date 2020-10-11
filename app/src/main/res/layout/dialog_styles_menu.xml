@@ -60,6 +60,7 @@
                 android:layout_height="0dp"
                 android:scrollbarAlwaysDrawVerticalTrack="true"
                 android:scrollbars="vertical"
+                android:fadeScrollbars="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintBottom_toTopOf="@id/buttonPanel"
