@@ -20,5 +20,5 @@
   -->
 
 <resources>
-    <dimen name="floating_dialogs_min_width_cover_browser">900dp</dimen>
+    <dimen name="floating_dialogs_cover_browser_width">900dp</dimen>
 </resources>

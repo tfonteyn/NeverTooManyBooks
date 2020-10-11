@@ -61,7 +61,7 @@
                     android:id="@+id/rb_books_group"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    app:constraint_referenced_ids="rb_books_all,rb_books_since_last_backup"
+                    app:constraint_referenced_ids="rb_books_all,rb_books_sync"
                     tools:ignore="MissingConstraints"
                     />
 
@@ -102,14 +102,23 @@
                     />
 
                 <RadioButton
-                    android:id="@+id/rb_books_since_last_backup"
+                    android:id="@+id/rb_books_sync"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/indent_radio_button"
-                    android:text="@string/lbl_export_option_books_since_last_full_backup"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:text="@string/lbl_option_new_and_changed_books"
                     app:layout_constraintStart_toStartOf="@id/cbx_books"
                     app:layout_constraintTop_toBottomOf="@id/rb_books_all"
+                    />
+
+                <ImageButton
+                    android:id="@+id/info_btn_rb_books_sync"
+                    style="@style/InfoButton"
+                    android:contentDescription="@string/lbl_export_option_books_since_last_full_backup"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintStart_toEndOf="@id/rb_books_sync"
+                    app:layout_constraintTop_toTopOf="@id/rb_books_sync"
                     />
 
                 <CheckBox
@@ -120,7 +129,7 @@
                     android:text="@string/lbl_covers_long"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rb_books_since_last_backup"
+                    app:layout_constraintTop_toBottomOf="@id/rb_books_sync"
                     />
 
                 <CheckBox

@@ -97,14 +97,18 @@ public abstract class BaseDialogFragment
     private boolean mFullscreen;
     private boolean mForceFullscreen;
 
-    /** FLOATING DIALOG mode only. */
-    private boolean mAdjustBodyFrameMargins = true;
-    /** FLOATING DIALOG mode only. */
-    @DimenRes
-    private int mDimenWidth = R.dimen.floating_dialogs_min_width;
+    //URGENT: clean this up
+    private static final int DIMEN_NOT_SET = -1;
+
     /** FLOATING DIALOG mode only. */
     @DimenRes
-    private int mDimenHeight = 0;
+    private int mWidthDrId = R.dimen.floating_dialogs_width;
+    /** FLOATING DIALOG mode only. Default is 'do not set'. */
+    @DimenRes
+    private int mDHeightDrId = DIMEN_NOT_SET;
+    /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
+    @DimenRes
+    private int mMarginBottomDrId = DIMEN_NOT_SET;
 
     /**
      * Constructor.
@@ -128,11 +132,11 @@ public abstract class BaseDialogFragment
      * <p>
      * Default: R.dimen.floating_dialogs_min_width
      *
-     * @param widthResId the width to use as an 'R.dimen.value'
+     * @param dimenResId the width to use as an 'R.dimen.value'
      */
     protected void setFloatingDialogWidth(@SuppressWarnings("SameParameterValue")
-                                          @DimenRes final int widthResId) {
-        mDimenWidth = widthResId;
+                                          @DimenRes final int dimenResId) {
+        mWidthDrId = dimenResId;
     }
 
     /**
@@ -141,24 +145,24 @@ public abstract class BaseDialogFragment
      * <p>
      * Default: as configured in the layout
      *
-     * @param heightResId the height to use as an 'R.dimen.value'
+     * @param dimenResId the height to use as an 'R.dimen.value'
      */
     protected void setFloatingDialogHeight(@SuppressWarnings("SameParameterValue")
-                                           @DimenRes final int heightResId) {
-        mDimenHeight = heightResId;
+                                           @DimenRes final int dimenResId) {
+        mDHeightDrId = dimenResId;
     }
 
     /**
      * FLOATING DIALOG mode only. Has no effect in fullscreen mode.
      * If required, this <strong>MUST</strong> be called from the constructor.
      * <p>
-     * Default: {@code true}
+     * Default: the resolved R.attr.actionBarSize
      *
-     * @param compensate {@code false} to disable compensation
+     * @param dimenResId the bottom margin to use as an 'R.dimen.value'
      */
-    protected void setFloatingDialogAdjustMargins(
-            @SuppressWarnings("SameParameterValue") final boolean compensate) {
-        mAdjustBodyFrameMargins = compensate;
+    protected void setFloatingDialogMarginBottom(@SuppressWarnings("SameParameterValue")
+                                                 @DimenRes final int dimenResId) {
+        mMarginBottomDrId = dimenResId;
     }
 
     @Override
@@ -169,6 +173,12 @@ public abstract class BaseDialogFragment
                       || mForceFullscreen;
         if (mFullscreen) {
             setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
+        } else {
+            // resolve the attribute to the actual dimen res id
+            // If not set in the constructor, use the default.
+            if (mMarginBottomDrId == DIMEN_NOT_SET) {
+                mMarginBottomDrId = AttrUtils.getResId(context, R.attr.actionBarSize);
+            }
         }
     }
 
@@ -200,10 +210,39 @@ public abstract class BaseDialogFragment
         hookupButtons();
 
         if (!mFullscreen) {
-            adjustLayoutSize(view);
+            final Resources res = getResources();
+            final float density = res.getDisplayMetrics().density;
 
-            if (mAdjustBodyFrameMargins) {
-                adjustBodyFrameMargins(view);
+            if (mWidthDrId != DIMEN_NOT_SET) {
+                final float screenWidthDp = res.getConfiguration().screenWidthDp;
+                final float dimenWidth = res.getDimension(mWidthDrId);
+                final int width = (int) (density * Math.min(screenWidthDp, dimenWidth));
+                view.getLayoutParams().width = width;
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onViewCreated|width=" + width);
+                }
+            }
+
+            if (mDHeightDrId != DIMEN_NOT_SET) {
+                final float screenHeightDp = res.getConfiguration().screenHeightDp;
+                final float dimenHeight = res.getDimension(mDHeightDrId);
+                final int height = (int) (density * Math.min(screenHeightDp, dimenHeight));
+                view.getLayoutParams().height = height;
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onViewCreated|height=" + height);
+                }
+            }
+
+            if (mMarginBottomDrId != DIMEN_NOT_SET && mMarginBottomDrId != 0) {
+                final float marginBottomDr = res.getDimension(mMarginBottomDrId);
+                final int marginBottom = (int) (density * marginBottomDr);
+                final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
+                        view.findViewById(R.id.body_frame).getLayoutParams();
+                lp.setMargins(0, 0, 0, marginBottom);
+
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "onViewCreated|marginBottom=" + marginBottom);
+                }
             }
         }
     }
@@ -268,58 +307,6 @@ public abstract class BaseDialogFragment
                     cancelBtn.setOnClickListener(this::onToolbarNavigationClick);
                 }
             }
-        }
-    }
-
-    /**
-     * FLOATING DIALOG mode only.
-     * <p>
-     * Set the width and height for the layout view.
-     *
-     * @param view of the layout
-     */
-    private void adjustLayoutSize(@NonNull final View view) {
-        final Resources res = getResources();
-        final float density = res.getDisplayMetrics().density;
-
-        if (mDimenWidth != 0) {
-            final float screenWidthDp = res.getConfiguration().screenWidthDp;
-            final float dimenWidth = res.getDimension(mDimenWidth);
-            final int width = (int) (density * Math.min(screenWidthDp, dimenWidth));
-            view.getLayoutParams().width = width;
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "adjustLayoutSize|width=" + width);
-            }
-        }
-
-        if (mDimenHeight != 0) {
-            final float screenHeightDp = res.getConfiguration().screenHeightDp;
-            final float dimenHeight = res.getDimension(mDimenHeight);
-            final int height = (int) (density * Math.min(screenHeightDp, dimenHeight));
-            view.getLayoutParams().height = height;
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "adjustLayoutSize|height=" + height);
-            }
-        }
-    }
-
-    /**
-     * FLOATING DIALOG mode only.
-     * <p>
-     * Adjust the margins for the R.id.body_frame.
-     *
-     * @param view of the layout
-     */
-    private void adjustBodyFrameMargins(@NonNull final View view) {
-        //noinspection ConstantConditions
-        final int bottom = AttrUtils.getDimen(getContext(), R.attr.actionBarSize);
-
-        final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
-                view.findViewById(R.id.body_frame).getLayoutParams();
-        lp.setMargins(0, 0, 0, bottom);
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "adjustBodyFrameMargins|bottom=" + bottom);
         }
     }
 

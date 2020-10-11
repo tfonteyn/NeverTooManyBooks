@@ -27,14 +27,19 @@
 <resources>
     <!-- com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java
          FULLSCREEN mode on this screen size.
+         The width/height values defined here are not active on this screen size
+         but we still need to provide place holder values.
+         See sw600 (floating_dialogs_enabled==true) resource files for active values.
     -->
     <bool name="floating_dialogs_enabled">false</bool>
-    <!-- none of these are active on this screen size.
-         See sw600 (floating_dialogs_enabled==true) resource files for active values.
-     -->
-    <dimen name="floating_dialogs_min_width">300dp</dimen>
-    <dimen name="floating_dialogs_min_width_cover_browser">300dp</dimen>
-    <dimen name="floating_dialogs_min_height_styles_picker">400dp</dimen>
+    <!-- the default if a dialog does not specify a width. -->
+    <dimen name="floating_dialogs_width">100dp</dimen>
+    <!-- dialog specific settings. -->
+    <dimen name="floating_dialogs_cover_browser_width">100dp</dimen>
+    <dimen name="floating_dialogs_styles_picker_height">100dp</dimen>
+    <dimen name="floating_dialogs_width_export_options">100dp</dimen>
+    <dimen name="floating_dialogs_width_import_options">100dp</dimen>
+
     <!--
         Copy of "material:abc_alert_dialog_button_bar_height" which is used as minHeight for a button.
         This is a work around for what seems to be a bug where the buttons end up with a 0-height

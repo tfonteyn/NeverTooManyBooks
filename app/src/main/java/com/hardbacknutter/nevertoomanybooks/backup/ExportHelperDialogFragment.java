@@ -57,6 +57,7 @@ public class ExportHelperDialogFragment
      */
     public ExportHelperDialogFragment() {
         super(R.layout.dialog_export_options);
+        setFloatingDialogWidth(R.dimen.floating_dialogs_width_export_options);
     }
 
     /**
@@ -125,10 +126,10 @@ public class ExportHelperDialogFragment
 
         final boolean allBooks = !helper.isOptionSet(Options.IS_SYNC);
         mVb.rbBooksAll.setChecked(allBooks);
-        mVb.rbBooksSinceLastBackup.setChecked(!allBooks);
+        mVb.rbBooksSync.setChecked(!allBooks);
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
             // We only have two buttons and one option, so just check the pertinent one.
-            helper.setOption(Options.IS_SYNC, checkedId == mVb.rbBooksSinceLastBackup.getId());
+            helper.setOption(Options.IS_SYNC, checkedId == mVb.rbBooksSync.getId());
         });
 
         mVb.cbxCovers.setChecked(helper.isOptionSet(Options.COVERS));
@@ -181,7 +182,7 @@ public class ExportHelperDialogFragment
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
                         mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksSinceLastBackup.setChecked(true);
+                        mVb.rbBooksSync.setChecked(true);
 
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
@@ -199,7 +200,7 @@ public class ExportHelperDialogFragment
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
                         mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksSinceLastBackup.setChecked(true);
+                        mVb.rbBooksSync.setChecked(true);
 
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
@@ -217,7 +218,7 @@ public class ExportHelperDialogFragment
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
                         mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksSinceLastBackup.setChecked(true);
+                        mVb.rbBooksSync.setChecked(true);
 
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);

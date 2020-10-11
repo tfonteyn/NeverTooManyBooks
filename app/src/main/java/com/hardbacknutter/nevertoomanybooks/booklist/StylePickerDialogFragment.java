@@ -70,14 +70,7 @@ public class StylePickerDialogFragment
     @Nullable
     private String mCurrentStyleUuid;
 
-    /**
-     * No-arg constructor for OS use.
-     */
-    public StylePickerDialogFragment() {
-        super(R.layout.dialog_styles_menu);
-        setFloatingDialogAdjustMargins(false);
-        setFloatingDialogHeight(R.dimen.floating_dialogs_min_height_styles_picker);
-    }
+    private DialogStylesMenuBinding mVb;
 
     /**
      * Constructor.
@@ -112,12 +105,21 @@ public class StylePickerDialogFragment
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
     }
 
+    /**
+     * No-arg constructor for OS use.
+     */
+    public StylePickerDialogFragment() {
+        super(R.layout.dialog_styles_menu);
+        setFloatingDialogMarginBottom(0);
+        setFloatingDialogHeight(R.dimen.floating_dialogs_styles_picker_height);
+    }
+
     @Override
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final DialogStylesMenuBinding vb = DialogStylesMenuBinding.bind(view);
+        mVb = DialogStylesMenuBinding.bind(view);
 
         loadStyles();
 
@@ -125,7 +127,7 @@ public class StylePickerDialogFragment
         mAdapter = new RadioGroupRecyclerAdapter<>(getContext(),
                                                    mAdapterItemList, mCurrentStyleUuid,
                                                    uuid -> mCurrentStyleUuid = uuid);
-        vb.styles.setAdapter(mAdapter);
+        mVb.styles.setAdapter(mAdapter);
     }
 
     @Override
