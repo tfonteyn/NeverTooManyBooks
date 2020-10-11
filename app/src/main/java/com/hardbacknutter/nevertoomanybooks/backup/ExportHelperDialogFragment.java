@@ -57,7 +57,7 @@ public class ExportHelperDialogFragment
      */
     public ExportHelperDialogFragment() {
         super(R.layout.dialog_export_options);
-        setFloatingDialogWidth(R.dimen.floating_dialogs_width_export_options);
+        setFloatingDialogWidth(R.dimen.floating_dialogs_export_options_width);
     }
 
     /**

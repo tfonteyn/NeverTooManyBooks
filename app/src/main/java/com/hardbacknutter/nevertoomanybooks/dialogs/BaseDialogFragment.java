@@ -74,8 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * Set the width of the CoordinatorLayout to 360dp AND the AppBarLayout to 360dp
  * -> a small white space is seen on the right of the AppBarLayout
  * -> layout inspector shows that AppBarLayout=360dp.. BUT CoordinatorLayout==367dp  ???
- * <p>
- * As
  */
 public abstract class BaseDialogFragment
         extends DialogFragment {
@@ -86,29 +84,25 @@ public abstract class BaseDialogFragment
     // SnackBar:
     //  private static final int SHORT_DURATION_MS = 1500;
     //  private static final int LONG_DURATION_MS = 2750;
-
+    private static final int USE_DEFAULT = -1;
     @Nullable
     private View mButtonPanel;
     private Toolbar mToolbar;
     @Nullable
     private Button mOkButton;
-
     /** Show the dialog fullscreen (default) or as a floating dialog. */
     private boolean mFullscreen;
     private boolean mForceFullscreen;
 
-    //URGENT: clean this up
-    private static final int DIMEN_NOT_SET = -1;
-
-    /** FLOATING DIALOG mode only. */
-    @DimenRes
-    private int mWidthDrId = R.dimen.floating_dialogs_width;
-    /** FLOATING DIALOG mode only. Default is 'do not set'. */
-    @DimenRes
-    private int mDHeightDrId = DIMEN_NOT_SET;
     /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
     @DimenRes
-    private int mMarginBottomDrId = DIMEN_NOT_SET;
+    private int mWidthDrId = USE_DEFAULT;
+    /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
+    @DimenRes
+    private int mDHeightDrId = USE_DEFAULT;
+    /** FLOATING DIALOG mode only. Default set in {@link #onAttach(Context)}. */
+    @DimenRes
+    private int mMarginBottomDrId = USE_DEFAULT;
 
     /**
      * Constructor.
@@ -173,10 +167,15 @@ public abstract class BaseDialogFragment
                       || mForceFullscreen;
         if (mFullscreen) {
             setStyle(DialogFragment.STYLE_NO_FRAME, R.style.Theme_App_FullScreen);
+
         } else {
-            // resolve the attribute to the actual dimen res id
-            // If not set in the constructor, use the default.
-            if (mMarginBottomDrId == DIMEN_NOT_SET) {
+            if (mWidthDrId == USE_DEFAULT) {
+                mWidthDrId = R.dimen.floating_dialogs_width;
+            }
+            if (mDHeightDrId == USE_DEFAULT) {
+                mDHeightDrId = 0;
+            }
+            if (mMarginBottomDrId == USE_DEFAULT) {
                 mMarginBottomDrId = AttrUtils.getResId(context, R.attr.actionBarSize);
             }
         }
@@ -212,29 +211,23 @@ public abstract class BaseDialogFragment
         if (!mFullscreen) {
             final Resources res = getResources();
 
-            if (mWidthDrId != DIMEN_NOT_SET) {
-                final float screenWidthDp = res.getConfiguration().screenWidthDp;
-                final int dimenWidth = res.getDimensionPixelSize(mWidthDrId);
-                // sanity check
-                final int width = (int) Math.min(screenWidthDp, dimenWidth);
+            if (mWidthDrId != 0) {
+                final int width = res.getDimensionPixelSize(mWidthDrId);
                 view.getLayoutParams().width = width;
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onViewCreated|width=" + width);
                 }
             }
 
-            if (mDHeightDrId != DIMEN_NOT_SET) {
-                final float screenHeightDp = res.getConfiguration().screenHeightDp;
-                final int dimenHeight = res.getDimensionPixelSize(mDHeightDrId);
-                // sanity check
-                final int height = (int) Math.min(screenHeightDp, dimenHeight);
+            if (mDHeightDrId != 0) {
+                final int height = res.getDimensionPixelSize(mDHeightDrId);
                 view.getLayoutParams().height = height;
                 if (BuildConfig.DEBUG) {
                     Log.d(TAG, "onViewCreated|height=" + height);
                 }
             }
 
-            if (mMarginBottomDrId != DIMEN_NOT_SET && mMarginBottomDrId != 0) {
+            if (mMarginBottomDrId != 0) {
                 final int marginBottom = res.getDimensionPixelSize(mMarginBottomDrId);
                 final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
                         view.findViewById(R.id.body_frame).getLayoutParams();

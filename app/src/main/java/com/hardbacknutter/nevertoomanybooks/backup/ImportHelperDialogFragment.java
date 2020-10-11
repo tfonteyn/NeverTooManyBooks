@@ -64,7 +64,7 @@ public class ImportHelperDialogFragment
      */
     public ImportHelperDialogFragment() {
         super(R.layout.dialog_import_options);
-        setFloatingDialogWidth(R.dimen.floating_dialogs_width_import_options);
+        setFloatingDialogWidth(R.dimen.floating_dialogs_import_options_width);
     }
 
     /**

@@ -19,14 +19,11 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<!-- Some of these actually have the same value in light and dark themes,
-     and could be refactored out... (e.g. the fast scroller)
-     but leaving these for now so we can change them at will.
--->
 <resources>
 
     <!-- The card "cardBackgroundColor" for a book on the BoB screen. -->
     <attr name="appBookCardBackgroundColor" format="reference|color" />
+
     <!-- Color gradient used in the Navigation side bar. -->
     <attr name="appNavBarColorStart" format="reference|color" />
     <attr name="appNavBarColorCenter" format="reference|color" />

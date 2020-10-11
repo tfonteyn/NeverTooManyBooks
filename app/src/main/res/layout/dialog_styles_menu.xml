@@ -42,41 +42,40 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/body_frame"
         style="@style/Dialog.Frame"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/styles"
+            style="@style/Dialog.Body"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="0dp"
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/styles"
-                style="@style/Dialog.Body"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:scrollbarAlwaysDrawVerticalTrack="true"
-                android:scrollbars="vertical"
-                android:fadeScrollbars="false"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior"
-                app:layout_constraintBottom_toTopOf="@id/buttonPanel"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                tools:itemCount="14"
-                tools:listitem="@layout/row_choice_single"
-                />
+            android:fadeScrollbars="false"
+            android:scrollbarAlwaysDrawVerticalTrack="true"
+            android:scrollbars="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
 
-            <include
-                android:id="@+id/buttonPanel"
-                layout="@layout/inc_dialog_buttonbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </FrameLayout>
+            app:layout_constraintBottom_toTopOf="@id/buttonPanel"
+            app:layout_constraintTop_toTopOf="parent"
+
+            app:layout_constraintVertical_bias="0.0"
+
+            tools:itemCount="14"
+            tools:listitem="@layout/row_choice_single"
+            />
+
+        <include
+            android:id="@+id/buttonPanel"
+            layout="@layout/inc_dialog_buttonbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
