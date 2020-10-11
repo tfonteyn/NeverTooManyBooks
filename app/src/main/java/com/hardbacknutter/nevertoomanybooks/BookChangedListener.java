@@ -32,6 +32,7 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * Allows to be notified of changes made to book(s).
+ * The bit number are not stored and can be changed.
  */
 public interface BookChangedListener
         extends FragmentResultListener {
@@ -42,17 +43,18 @@ public interface BookChangedListener
     int SERIES = 1 << 1;
     /** ... */
     int PUBLISHER = 1 << 2;
+    int BOOKSHELF = 1 << 3;
 
-    int TOC_ENTRY = 1 << 3;
+    int TOC_ENTRY = 1 << 4;
 
-    int FORMAT = 1 << 4;
-    int COLOR = 1 << 5;
-    int GENRE = 1 << 6;
-    int LANGUAGE = 1 << 7;
-    int LOCATION = 1 << 8;
+    int FORMAT = 1 << 5;
+    int COLOR = 1 << 6;
+    int GENRE = 1 << 7;
+    int LANGUAGE = 1 << 8;
+    int LOCATION = 1 << 9;
 
     /** A book was set to read/unread. */
-    int BOOK_READ = 1 << 9;
+    int BOOK_READ = 1 << 10;
 
     /**
      * A book was either lend out, or returned.
@@ -60,10 +62,10 @@ public interface BookChangedListener
      * When lend out:  data.putString(DBDefinitions.KEY_LOANEE, mLoanee);
      * When returned: data == null
      */
-    int BOOK_LOANEE = 1 << 10;
+    int BOOK_LOANEE = 1 << 11;
 
     /** A book was deleted. */
-    int BOOK_DELETED = 1 << 11;
+    int BOOK_DELETED = 1 << 12;
 
 
     /* private. */ String BOOK_ID = "bookId";
@@ -107,7 +109,7 @@ public interface BookChangedListener
                   @FieldChanges int fieldChanges,
                   @Nullable Bundle data);
 
-    @IntDef(flag = true, value = {AUTHOR, SERIES, PUBLISHER, TOC_ENTRY,
+    @IntDef(flag = true, value = {AUTHOR, SERIES, PUBLISHER, BOOKSHELF, TOC_ENTRY,
                                   FORMAT, COLOR, GENRE, LANGUAGE, LOCATION,
                                   BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
     @Retention(RetentionPolicy.SOURCE)
