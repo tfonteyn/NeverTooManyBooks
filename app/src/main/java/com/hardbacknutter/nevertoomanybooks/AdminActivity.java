@@ -30,7 +30,6 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
@@ -80,7 +79,7 @@ public class AdminActivity
                 return;
 
             default:
-                throw new UnexpectedValueException(tag);
+                throw new IllegalArgumentException(tag);
         }
     }
 
