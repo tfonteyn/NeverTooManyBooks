@@ -541,7 +541,7 @@ public class DAO
             if (!book.storeCovers(context)) {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
-                throw new DAO.DaoWriteException(ERROR_STORING_COVERS + this);
+                throw new DAO.DaoWriteException(ERROR_STORING_COVERS + book);
             }
 
             // all done
@@ -621,7 +621,7 @@ public class DAO
                 ftsUpdate(context, book.getId());
 
                 if (!book.storeCovers(context)) {
-                    throw new DAO.DaoWriteException(ERROR_STORING_COVERS + this);
+                    throw new DAO.DaoWriteException(ERROR_STORING_COVERS + book);
                 }
 
                 if (txLock != null) {
