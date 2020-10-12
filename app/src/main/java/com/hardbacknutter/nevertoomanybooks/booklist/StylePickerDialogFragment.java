@@ -70,8 +70,6 @@ public class StylePickerDialogFragment
     @Nullable
     private String mCurrentStyleUuid;
 
-    private DialogStylesMenuBinding mVb;
-
     /**
      * Constructor.
      *
@@ -119,7 +117,7 @@ public class StylePickerDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVb = DialogStylesMenuBinding.bind(view);
+        final DialogStylesMenuBinding vb = DialogStylesMenuBinding.bind(view);
 
         loadStyles();
 
@@ -127,7 +125,7 @@ public class StylePickerDialogFragment
         mAdapter = new RadioGroupRecyclerAdapter<>(getContext(),
                                                    mAdapterItemList, mCurrentStyleUuid,
                                                    uuid -> mCurrentStyleUuid = uuid);
-        mVb.styles.setAdapter(mAdapter);
+        vb.styles.setAdapter(mAdapter);
     }
 
     @Override
