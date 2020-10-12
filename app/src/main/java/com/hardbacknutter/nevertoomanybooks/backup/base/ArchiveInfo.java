@@ -230,4 +230,12 @@ public class ArchiveInfo {
             throw new InvalidArchiveException("info block lacks version field");
         }
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ArchiveInfo{"
+               + "mInfo=" + mInfo
+               + '}';
+    }
 }
