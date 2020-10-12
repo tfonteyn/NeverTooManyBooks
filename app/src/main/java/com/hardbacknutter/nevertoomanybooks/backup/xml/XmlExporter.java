@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -105,7 +104,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
  * </ul>
  */
 public class XmlExporter
-        implements Exporter, Closeable {
+        implements Exporter {
 
     /** The format version of this exporter. */
     public static final int VERSION = 2;

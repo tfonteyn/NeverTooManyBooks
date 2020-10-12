@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
  * Represents a Publisher.
  */
 public class Publisher
-        implements Parcelable, Entity, ItemWithTitle {
+        implements Entity, ItemWithTitle {
 
     /** {@link Parcelable}. */
     public static final Creator<Publisher> CREATOR = new Creator<Publisher>() {

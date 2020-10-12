@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * i.e one entry typed 'pseudonym' with the 'real-name-id' column pointing to the real name entry.
  */
 public class Author
-        implements Parcelable, Entity {
+        implements Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR = new Creator<Author>() {

@@ -50,8 +50,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * {@link #getGroupDomains} adds the group/sorted domain based on the OB column.
  */
 public class SeriesBooklistGroup
-        extends BooklistGroup
-        implements Parcelable {
+        extends BooklistGroup {
 
     /** {@link Parcelable}. */
     public static final Creator<SeriesBooklistGroup> CREATOR =

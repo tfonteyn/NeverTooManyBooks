@@ -58,7 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * but a particular pain is the titles/series for comics.
  */
 public class Series
-        implements Parcelable, Entity, ItemWithTitle {
+        implements Entity, ItemWithTitle {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR = new Creator<Series>() {

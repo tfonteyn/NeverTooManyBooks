@@ -80,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * to allow editing global defaults.
  */
 public class BooklistStyle
-        implements Parcelable, Entity {
+        implements Entity {
 
     /** {@link Parcelable}. */
     public static final Creator<BooklistStyle> CREATOR = new Creator<BooklistStyle>() {

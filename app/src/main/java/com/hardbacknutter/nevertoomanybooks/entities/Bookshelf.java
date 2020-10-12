@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
  * See {@link #getStyle(Context, DAO)}.
  */
 public class Bookshelf
-        implements Parcelable, Entity {
+        implements Entity {
 
     /** Log tag. */
     public static final String TAG = "Bookshelf";
