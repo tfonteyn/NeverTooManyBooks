@@ -20,6 +20,8 @@
 package com.hardbacknutter.nevertoomanybooks.searches.amazon;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
@@ -191,38 +193,48 @@ public class AmazonSearchEngine
      * @param context Application context
      * @param author  to search for
      * @param series  to search for
-     *
-     * @return url
      */
-    public static String createUrl(@NonNull final Context context,
-                                   @Nullable final String author,
-                                   @Nullable final String series) {
-
-        final String cAuthor = cleanupOpenWebsiteString(author);
-        final String cSeries = cleanupOpenWebsiteString(series);
+    public static void startSearchActivity(@NonNull final Context context,
+                                           @Nullable final Author author,
+                                           @Nullable final Series series) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (author == null && series == null) {
+                throw new IllegalArgumentException("both author and series are null");
+            }
+        }
 
         String fields = "";
-        if (!cAuthor.isEmpty()) {
-            try {
-                fields += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
-            } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(context, TAG, e, "Unable to add author to URL");
+
+        if (author != null) {
+            final String cAuthor = encodeSearchString(author.getFormattedName(true));
+            if (!cAuthor.isEmpty()) {
+                try {
+                    fields += "&field-author=" + URLEncoder.encode(cAuthor, UTF_8);
+                } catch (@NonNull final UnsupportedEncodingException e) {
+                    Logger.error(context, TAG, e, "Unable to add author to URL");
+                }
+            }
+        }
+        if (series != null) {
+            final String cSeries = encodeSearchString(series.getTitle());
+            if (!cSeries.isEmpty()) {
+                try {
+                    fields += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
+                } catch (@NonNull final UnsupportedEncodingException e) {
+                    Logger.error(context, TAG, e, "Unable to add series to URL");
+                }
             }
         }
 
-        if (!cSeries.isEmpty()) {
-            try {
-                fields += "&field-keywords=" + URLEncoder.encode(cSeries, UTF_8);
-            } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(context, TAG, e, "Unable to add series to URL");
-            }
-        }
-
-        return getSiteUrl(context) + SEARCH_SUFFIX + fields.trim();
+        // Start the intent even if for some reason the fields string is empty.
+        // If we don't the user will not see anything happen / we'ld need to popup
+        // an explanation why we cannot search.
+        final String url = getSiteUrl(context) + SEARCH_SUFFIX + fields.trim();
+        context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
     }
 
     @NonNull
-    private static String cleanupOpenWebsiteString(@Nullable final String search) {
+    private static String encodeSearchString(@Nullable final String search) {
         if (search == null || search.isEmpty()) {
             return "";
         }

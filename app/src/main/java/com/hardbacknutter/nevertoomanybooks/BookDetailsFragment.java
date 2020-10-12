@@ -675,7 +675,7 @@ public class BookDetailsFragment
         // add the search action view
         inflater.inflate(R.menu.sav_search, menu);
         //noinspection ConstantConditions
-        MenuHandler.setupSearch(getActivity(), menu);
+        MenuHelper.setupSearchActionView(getActivity(), menu);
 
         inflater.inflate(R.menu.book, menu);
         super.onCreateOptionsMenu(menu, inflater);

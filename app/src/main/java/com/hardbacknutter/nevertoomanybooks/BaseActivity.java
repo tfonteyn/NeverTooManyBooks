@@ -441,7 +441,7 @@ public abstract class BaseActivity
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        MenuHandler.setupSearch(this, menu);
+        MenuHelper.setupSearchActionView(this, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

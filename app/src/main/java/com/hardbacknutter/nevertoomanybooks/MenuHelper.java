@@ -44,9 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
-final class MenuHandler {
+final class MenuHelper {
 
-    private MenuHandler() {
+    private MenuHelper() {
     }
 
     /**
@@ -61,7 +61,6 @@ final class MenuHandler {
         final boolean hasAuthor = !book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST).isEmpty();
         final boolean hasSeries = !book.getParcelableArrayList(Book.BKEY_SERIES_LIST).isEmpty();
 
-        prepareOpenOnWebsiteMenu(menu, book);
         prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
     }
 
@@ -74,17 +73,59 @@ final class MenuHandler {
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final DataHolder rowData) {
 
-        final boolean hasAuthor = rowData.contains(DBDefinitions.KEY_FK_AUTHOR)
-                                  && rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
-        final boolean hasSeries = rowData.contains(DBDefinitions.KEY_FK_SERIES)
-                                  && rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+        final boolean hasAuthor = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
+        final boolean hasSeries = rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
 
-        prepareOpenOnWebsiteMenu(menu, rowData);
         prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
     }
 
-    private static void prepareOpenOnWebsiteMenu(@NonNull final Menu menu,
-                                                 @NonNull final DataHolder dataHolder) {
+    private static void prepareSearchOnAmazonMenu(@NonNull final Menu menu,
+                                                  final boolean hasAuthor,
+                                                  final boolean hasSeries) {
+
+        final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
+        if (subMenuItem == null) {
+            return;
+        }
+
+        final boolean show = hasAuthor || hasSeries;
+        subMenuItem.setVisible(show);
+        if (show) {
+            final SubMenu sm = subMenuItem.getSubMenu();
+            sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
+              .setVisible(hasAuthor);
+            sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
+              .setVisible(hasAuthor && hasSeries);
+            sm.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
+              .setVisible(hasSeries);
+        }
+    }
+
+    static void setupSearchActionView(@NonNull final Activity activity,
+                                      @NonNull final Menu menu) {
+        final MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
+        if (searchItem != null) {
+            // Reminder: we let the SearchView handle its own icons.
+            // The hint text is defined in xml/searchable.xml
+            final SearchView searchView = (SearchView) searchItem.getActionView();
+            final SearchManager searchManager = (SearchManager)
+                    activity.getSystemService(Context.SEARCH_SERVICE);
+            //noinspection ConstantConditions
+            final SearchableInfo si = searchManager.getSearchableInfo(
+                    new ComponentName(activity, BooksOnBookshelf.class.getName()));
+            searchView.setSearchableInfo(si);
+        }
+    }
+
+    /**
+     * Populate the OpenOnWebsiteMenu sub menu (if present) for a book
+     * with the sites for which the book has a valid external-id.
+     *
+     * @param menu       root menu
+     * @param dataHolder the row data
+     */
+    static void prepareViewBookOnWebsiteMenu(@NonNull final Menu menu,
+                                             @NonNull final DataHolder dataHolder) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
         if (subMenuItem == null) {
@@ -117,9 +158,9 @@ final class MenuHandler {
         subMenuItem.setVisible(subMenuVisible);
     }
 
-    static boolean handleOpenOnWebsiteMenus(@NonNull final Context context,
-                                            @IdRes final int menuItemId,
-                                            @NonNull final DataHolder rowData) {
+    static boolean handleViewBookOnWebsiteMenu(@NonNull final Context context,
+                                               @IdRes final int menuItemId,
+                                               @NonNull final DataHolder rowData) {
 
         final Optional<SearchEngineRegistry.Config> oConfig =
                 SearchEngineRegistry.getByMenuId(menuItemId);
@@ -136,44 +177,6 @@ final class MenuHandler {
 
         } else {
             return false;
-        }
-    }
-
-    private static void prepareSearchOnAmazonMenu(@NonNull final Menu menu,
-                                                  final boolean hasAuthor,
-                                                  final boolean hasSeries) {
-
-        final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_AMAZON_SEARCH);
-        if (subMenuItem == null) {
-            return;
-        }
-
-        final boolean show = hasAuthor || hasSeries;
-        subMenuItem.setVisible(show);
-        if (show) {
-            final SubMenu sm = subMenuItem.getSubMenu();
-            sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR)
-              .setVisible(hasAuthor);
-            sm.findItem(R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES)
-              .setVisible(hasAuthor && hasSeries);
-            sm.findItem(R.id.MENU_AMAZON_BOOKS_IN_SERIES)
-              .setVisible(hasSeries);
-        }
-    }
-
-    static void setupSearch(@NonNull final Activity activity,
-                            @NonNull final Menu menu) {
-        final MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
-        if (searchItem != null) {
-            // Reminder: we let the SearchView handle its own icons.
-            // The hint text is defined in xml/searchable.xml
-            final SearchView searchView = (SearchView) searchItem.getActionView();
-            final SearchManager searchManager = (SearchManager)
-                    activity.getSystemService(Context.SEARCH_SERVICE);
-            //noinspection ConstantConditions
-            final SearchableInfo si = searchManager.getSearchableInfo(
-                    new ComponentName(activity, BooksOnBookshelf.class.getName()));
-            searchView.setSearchableInfo(si);
         }
     }
 }

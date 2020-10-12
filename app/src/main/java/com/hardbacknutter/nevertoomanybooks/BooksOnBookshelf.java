@@ -26,7 +26,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
@@ -684,29 +683,32 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
                     .setVisible(GoodreadsManager.isShowSyncMenus(prefs));
 
-                MenuHandler.prepareOptionalMenus(menu, rowData);
+                MenuHelper.prepareViewBookOnWebsiteMenu(menu, rowData);
+                MenuHelper.prepareOptionalMenus(menu, rowData);
                 break;
             }
             case BooklistGroup.AUTHOR: {
                 getMenuInflater().inflate(R.menu.author, menu);
+                getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
                 final boolean complete = rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
-                MenuHandler.prepareOptionalMenus(menu, rowData);
+                MenuHelper.prepareOptionalMenus(menu, rowData);
                 break;
             }
             case BooklistGroup.SERIES: {
                 if (rowData.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
                     getMenuInflater().inflate(R.menu.series, menu);
+                    getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
                     final boolean complete =
                             rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
                     menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
-                    MenuHandler.prepareOptionalMenus(menu, rowData);
+                    MenuHelper.prepareOptionalMenus(menu, rowData);
                 }
                 break;
             }
@@ -783,6 +785,8 @@ public class BooksOnBookshelf
 
         // if it's a level, add the expand option
         if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
+            menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder++, "")
+                .setEnabled(false);
             //noinspection UnusedAssignment
             menu.add(Menu.NONE, R.id.MENU_LEVEL_EXPAND, menuOrder++, R.string.lbl_level_expand)
                 .setIcon(R.drawable.ic_unfold_more);
@@ -1088,18 +1092,14 @@ public class BooksOnBookshelf
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
                 final Author author = mModel.getAuthor(rowData);
                 if (author != null) {
-                    final String url = AmazonSearchEngine.createUrl(
-                            this, author.getLabel(this), null);
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    AmazonSearchEngine.startSearchActivity(this, author, null);
                 }
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
                 final Series series = mModel.getSeries(rowData);
                 if (series != null) {
-                    final String url = AmazonSearchEngine.createUrl(
-                            this, null, series.getTitle());
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    AmazonSearchEngine.startSearchActivity(this, null, series);
                 }
                 return true;
             }
@@ -1107,9 +1107,7 @@ public class BooksOnBookshelf
                 final Author author = mModel.getAuthor(rowData);
                 final Series series = mModel.getSeries(rowData);
                 if (author != null && series != null) {
-                    final String url = AmazonSearchEngine.createUrl(
-                            this, author.getLabel(this), series.getTitle());
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    AmazonSearchEngine.startSearchActivity(this, author, series);
                 }
                 return true;
             }
@@ -1132,7 +1130,7 @@ public class BooksOnBookshelf
             }
 
             default:
-                return MenuHandler.handleOpenOnWebsiteMenus(this, menuItem, rowData);
+                return MenuHelper.handleViewBookOnWebsiteMenu(this, menuItem, rowData);
         }
     }
 

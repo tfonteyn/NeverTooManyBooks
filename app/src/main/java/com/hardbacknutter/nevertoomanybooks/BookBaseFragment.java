@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -301,7 +300,8 @@ public abstract class BookBaseFragment
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final Book book = mBookViewModel.getBook();
-        MenuHandler.prepareOptionalMenus(menu, book);
+        MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
+        MenuHelper.prepareOptionalMenus(menu, book);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -330,40 +330,34 @@ public abstract class BookBaseFragment
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                final Author primAuthor = book.getPrimaryAuthor();
-                if (primAuthor != null) {
+                final Author author = book.getPrimaryAuthor();
+                if (author != null) {
                     //noinspection ConstantConditions
-                    final String url = AmazonSearchEngine.createUrl(
-                            context, primAuthor.getFormattedName(true), null);
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    AmazonSearchEngine.startSearchActivity(context, author, null);
                 }
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                final Series primSeries = book.getPrimarySeries();
-                if (primSeries != null) {
+                final Series series = book.getPrimarySeries();
+                if (series != null) {
                     //noinspection ConstantConditions
-                    final String url = AmazonSearchEngine.createUrl(
-                            context, null, primSeries.getTitle());
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    AmazonSearchEngine.startSearchActivity(context, null, series);
                 }
                 return true;
             }
             case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                final Author primAuthor = book.getPrimaryAuthor();
-                final Series primSeries = book.getPrimarySeries();
-                if (primAuthor != null && primSeries != null) {
+                final Author author = book.getPrimaryAuthor();
+                final Series series = book.getPrimarySeries();
+                if (author != null && series != null) {
                     //noinspection ConstantConditions
-                    final String url = AmazonSearchEngine.createUrl(
-                            context, primAuthor.getFormattedName(true), primSeries.getTitle());
-                    context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                    AmazonSearchEngine.startSearchActivity(context, author, series);
                 }
                 return true;
             }
 
             default: {
                 //noinspection ConstantConditions
-                if (MenuHandler.handleOpenOnWebsiteMenus(context, item.getItemId(), book)) {
+                if (MenuHelper.handleViewBookOnWebsiteMenu(context, item.getItemId(), book)) {
                     return true;
                 }
                 return super.onOptionsItemSelected(item);
