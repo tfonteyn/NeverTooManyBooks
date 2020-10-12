@@ -265,7 +265,7 @@ class BooklistNodeDAO {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "updateNodesForLevel"
-                       + "|level" + levelOperand + nodeLevel
+                       + "|level=" + levelOperand + nodeLevel
                        + "|expand=" + expand
                        + "|visible=" + visible
                        + "|rowsUpdated=" + rowsUpdated);
