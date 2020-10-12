@@ -55,7 +55,7 @@ public class AuthorTest
         boolean updateOk;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "crud")) {
+        try (final DAO db = new DAO(context, "crud")) {
 
             author[0] = Author.from(AuthorFullName(0));
             authorId[0] = db.insert(context, author[0]);
@@ -91,16 +91,16 @@ public class AuthorTest
     @Test
     public void renameAuthor()
             throws DAO.DaoWriteException {
-        boolean updateOk;
+        final boolean updateOk;
 
-        ArrayList<Long> bookIdList;
+        final ArrayList<Long> bookIdList;
 
         long idBefore;
         long existingId;
-        Author tmpAuthor;
+        final Author tmpAuthor;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "renameAuthor")) {
+        try (final DAO db = new DAO(context, "renameAuthor")) {
 
             // rename an author
             // UPDATE in the database
@@ -155,16 +155,16 @@ public class AuthorTest
     @Test
     public void renameAuthorWithTocs()
             throws DAO.DaoWriteException {
-        boolean updateOk;
+        final boolean updateOk;
 
-        ArrayList<Long> bookIdList;
-        ArrayList<AuthorWork> works;
+        final ArrayList<Long> bookIdList;
+        final ArrayList<AuthorWork> works;
 
-        long idBefore;
+        final long idBefore;
         long existingId;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "renameAuthorWithTocs")) {
+        try (final DAO db = new DAO(context, "renameAuthorWithTocs")) {
 
             // rename an author
             // UPDATE in the database

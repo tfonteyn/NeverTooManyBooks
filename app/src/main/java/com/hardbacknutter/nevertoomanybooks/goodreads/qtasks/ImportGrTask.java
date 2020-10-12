@@ -144,7 +144,7 @@ public class ImportGrTask
     @Override
     public boolean run(@NonNull final Context context,
                        @NonNull final QueueManager queueManager) {
-        try (DAO db = new DAO(TAG)) {
+        try (final DAO db = new DAO(TAG)) {
             // Load the Goodreads reviews
             final boolean ok = importReviews(context, db, queueManager);
 
@@ -239,7 +239,7 @@ public class ImportGrTask
             if (reviewsFromPage != null) {
                 // Note that processing may involve a SLOW thumbnail download...
                 // so we don't run the import in a transaction.
-                for (Bundle review : reviewsFromPage) {
+                for (final Bundle review : reviewsFromPage) {
                     if (isCancelled()) {
                         return false;
                     }
@@ -470,7 +470,7 @@ public class ImportGrTask
         if (!list.isEmpty()) {
             String bestIsbn = list.get(0);
             int bestLen = bestIsbn.length();
-            for (String curr : list) {
+            for (final String curr : list) {
                 if (curr.length() > bestLen) {
                     bestIsbn = curr;
                     bestLen = bestIsbn.length();
@@ -496,7 +496,7 @@ public class ImportGrTask
             final ArrayList<Author> authorList =
                     localData.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
 
-            for (Bundle grAuthor : grAuthors) {
+            for (final Bundle grAuthor : grAuthors) {
                 final String name = grAuthor.getString(Review.AUTHOR_NAME_GF);
                 if (name != null && !name.trim().isEmpty()) {
                     final Author author = Author.from(name);
@@ -531,7 +531,7 @@ public class ImportGrTask
 
             final ArrayList<Bookshelf> bookshelfList =
                     localData.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
-            for (Bundle shelfData : grShelves) {
+            for (final Bundle shelfData : grShelves) {
                 final String name = mapShelf(userLocale, db, shelfData.getString(Review.SHELF));
                 if (name != null && !name.isEmpty()) {
                     bookshelfList.add(new Bookshelf(name, BooklistStyle.getDefault(context, db)));
@@ -587,7 +587,7 @@ public class ImportGrTask
         if (mBookshelfLookup == null) {
             final List<Bookshelf> bookshelves = db.getBookshelves();
             mBookshelfLookup = new HashMap<>(bookshelves.size());
-            for (Bookshelf bookshelf : bookshelves) {
+            for (final Bookshelf bookshelf : bookshelves) {
                 mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(locale, bookshelf.getName()),
                                      bookshelf.getName());
             }

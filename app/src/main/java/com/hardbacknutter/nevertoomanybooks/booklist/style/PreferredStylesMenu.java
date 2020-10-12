@@ -54,7 +54,7 @@ public final class PreferredStylesMenu {
 
         if (itemsStr != null && !itemsStr.isEmpty()) {
             final String[] entries = itemsStr.split(",");
-            for (String entry : entries) {
+            for (final String entry : entries) {
                 if (entry != null && !entry.isEmpty()) {
                     uuidSet.add(entry);
                 }
@@ -128,7 +128,7 @@ public final class PreferredStylesMenu {
         final Map<String, BooklistStyle> resultingStyles = new LinkedHashMap<>();
 
         // first check the saved and ordered list
-        for (String uuid : get(context)) {
+        for (final String uuid : get(context)) {
             final BooklistStyle style = allStyles.get(uuid);
             if (style != null) {
                 // catch mismatches in any imported bad-data.
@@ -139,7 +139,7 @@ public final class PreferredStylesMenu {
         }
         // now check for styles marked preferred, but not in the menu list,
         // again to catch mismatches in any imported bad-data.
-        for (BooklistStyle style : allStyles.values()) {
+        for (final BooklistStyle style : allStyles.values()) {
             if (style.isPreferred(context) && !resultingStyles.containsKey(style.getUuid())) {
                 resultingStyles.put(style.getUuid(), style);
             }

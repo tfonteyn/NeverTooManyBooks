@@ -49,14 +49,14 @@ public final class EmbeddedZxingScanner
     @Override
     public boolean startActivityForResult(@NonNull final Fragment fragment,
                                           final int requestCode) {
-        IntentIntegrator integrator = new IntentIntegrator(fragment.getActivity());
+        final IntentIntegrator integrator = new IntentIntegrator(fragment.getActivity());
         integrator.setOrientationLocked(false);
         // we want to use the apps locale.
         integrator.setPrompt(fragment.getString(R.string.zxing_msg_default_status));
         //noinspection ConstantConditions
         integrator.setBeepEnabled(ScannerManager.isBeepOnBarcodeFound(fragment.getContext()));
 
-        Intent intent = integrator.createScanIntent();
+        final Intent intent = integrator.createScanIntent();
         fragment.startActivityForResult(intent, requestCode);
         return true;
     }
@@ -67,7 +67,7 @@ public final class EmbeddedZxingScanner
                              @Nullable final Intent data) {
         Objects.requireNonNull(data, "data");
         // resultCode: we wouldn't be here unless it was RESULT_OK
-        IntentResult result = IntentIntegrator.parseActivityResult(Activity.RESULT_OK, data);
+        final IntentResult result = IntentIntegrator.parseActivityResult(Activity.RESULT_OK, data);
 
         return result.getContents();
     }

@@ -39,8 +39,8 @@ public final class SoundManager {
     public static void playFile(@NonNull final Context context,
                                 @RawRes final int resId) {
         try {
-            AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
-            MediaPlayer player = new MediaPlayer();
+            final AssetFileDescriptor file = context.getResources().openRawResourceFd(resId);
+            final MediaPlayer player = new MediaPlayer();
             player.setAudioStreamType(AudioManager.STREAM_MUSIC);
             // When the beep has finished playing, rewind to queue up another one.
             player.setOnCompletionListener(MediaPlayer::release);

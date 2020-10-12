@@ -45,7 +45,7 @@ public interface ArchiveReader
      * @throws IOException             on other failures
      */
     @Nullable
-    default ArchiveInfo readArchiveInfo(@NonNull Context context)
+    default ArchiveInfo readArchiveInfo(@NonNull final Context context)
             throws IOException, InvalidArchiveException {
         return null;
     }
@@ -59,7 +59,7 @@ public interface ArchiveReader
      * @throws InvalidArchiveException on failure to recognise a supported archive
      * @throws IOException             on other failures
      */
-    default void validate(@NonNull Context context)
+    default void validate(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
         // do nothing
     }

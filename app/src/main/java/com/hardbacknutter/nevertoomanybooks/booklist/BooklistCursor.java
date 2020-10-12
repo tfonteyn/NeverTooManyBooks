@@ -164,7 +164,7 @@ public class BooklistCursor
      * @return {@code true} if cursor is in list
      */
     private boolean checkMru(final int id) {
-        for (int i : mMruList) {
+        for (final int i : mMruList) {
             if (id == i) {
                 return true;
             }
@@ -320,7 +320,7 @@ public class BooklistCursor
             }
 
             // Purge them
-            for (Integer i : toPurge) {
+            for (final Integer i : toPurge) {
                 final Cursor cursor = mCursors.get(i);
                 if (cursor != null) {
                     cursor.close();

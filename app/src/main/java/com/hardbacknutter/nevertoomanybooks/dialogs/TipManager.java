@@ -162,7 +162,7 @@ public final class TipManager {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         final SharedPreferences.Editor ed = prefs.edit();
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
-        for (String key : prefs.getAll().keySet()) {
+        for (final String key : prefs.getAll().keySet()) {
             if (key.toLowerCase(systemLocale).startsWith(prefix.toLowerCase(systemLocale))) {
                 ed.remove(key);
             }

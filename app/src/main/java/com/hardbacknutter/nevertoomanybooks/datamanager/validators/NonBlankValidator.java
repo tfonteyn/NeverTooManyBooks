@@ -42,7 +42,7 @@ public class NonBlankValidator
                          @StringRes final int errorLabelId)
             throws ValidatorException {
 
-        Object o = dataManager.get(key);
+        final Object o = dataManager.get(key);
         if (o == null) {
             throw new ValidatorException(context.getString(R.string.vldt_non_blank_required_for_x,
                                                            context.getString(errorLabelId)));

@@ -79,7 +79,7 @@ public class TQEventCursorRow
     @NonNull
     public TQEvent getEvent(@NonNull final Context context) {
         TQEvent event;
-        byte[] blob = getBlob(QueueDBHelper.KEY_EVENT);
+        final byte[] blob = getBlob(QueueDBHelper.KEY_EVENT);
         try {
             event = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {

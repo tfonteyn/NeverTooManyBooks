@@ -54,7 +54,7 @@ public class BooleanValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        Object o = dataManager.get(key);
+        final Object o = dataManager.get(key);
         if (o == null || o.toString().trim().isEmpty()) {
             dataManager.putBoolean(key, mDefaultValue);
             return;

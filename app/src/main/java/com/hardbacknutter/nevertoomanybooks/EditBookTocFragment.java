@@ -570,7 +570,7 @@ public class EditBookTocFragment
                 final ArrayList<Series> inBook =
                         book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
                 // add, weeding out duplicates
-                for (Series s : series) {
+                for (final Series s : series) {
                     if (!inBook.contains(s)) {
                         inBook.add(s);
                     }
@@ -742,8 +742,8 @@ public class EditBookTocFragment
 
             static void sendResult(@NonNull final Fragment fragment,
                                    @NonNull final String requestKey,
-                                   @Book.TocBits long tocBitMask,
-                                   @NonNull ArrayList<TocEntry> tocEntries) {
+                                   @Book.TocBits final long tocBitMask,
+                                   @NonNull final ArrayList<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
                 result.putLong(TOC_BIT_MASK, tocBitMask);
                 result.putParcelableArrayList(TOC_LIST, tocEntries);

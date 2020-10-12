@@ -241,7 +241,7 @@ public class Series
         // This makes the pattern easier to maintain.
         Matcher matcher = TEXT1_BR_TEXT2_BR_PATTERN.matcher(text);
         if (matcher.find()) {
-            String g1 = matcher.group(1);
+            final String g1 = matcher.group(1);
             if (g1 != null) {
                 return from(g1, matcher.group(2));
             }
@@ -256,10 +256,10 @@ public class Series
         matcher = TITLE_NUMBER_PATTERN.matcher(text);
         if (matcher.find()) {
 
-            String uTitle = ParseUtils.unEscape(matcher.group(1));
+            final String uTitle = ParseUtils.unEscape(matcher.group(1));
             String uNumber = ParseUtils.unEscape(matcher.group(2));
 
-            Series newSeries = new Series(uTitle);
+            final Series newSeries = new Series(uTitle);
             // If it's purely numeric, remove any leading zeros.
             if (PURE_NUMERICAL_PATTERN.matcher(uNumber).find()) {
                 uNumber = String.valueOf(Long.parseLong(uNumber));
@@ -269,7 +269,7 @@ public class Series
 
         } else {
             // no number part found
-            String uTitle = ParseUtils.unEscape(text.trim());
+            final String uTitle = ParseUtils.unEscape(text.trim());
             return new Series(uTitle);
         }
     }
@@ -291,14 +291,14 @@ public class Series
      */
     @NonNull
     public static Series from3(@NonNull final String text) {
-        Series series;
+        final Series series;
 
         // Detect "title (middle) number" and "title (number)"
-        Matcher matcher = TEXT1_BR_TEXT2_BR_TEXT3_PATTERN.matcher(text);
+        final Matcher matcher = TEXT1_BR_TEXT2_BR_TEXT3_PATTERN.matcher(text);
         if (matcher.find()) {
-            String prefix = matcher.group(1);
-            String middle = matcher.group(2);
-            String suffix = matcher.group(3);
+            final String prefix = matcher.group(1);
+            final String middle = matcher.group(2);
+            final String suffix = matcher.group(3);
 
             if (prefix != null) {
                 if (suffix != null && !suffix.isEmpty()) {
@@ -342,12 +342,12 @@ public class Series
     @NonNull
     public static Series from(@NonNull final String title,
                               @Nullable final String number) {
-        String uTitle = ParseUtils.unEscape(title);
-        String uNumber = ParseUtils.unEscape(number);
+        final String uTitle = ParseUtils.unEscape(title);
+        final String uNumber = ParseUtils.unEscape(number);
 
-        Series newSeries = new Series(uTitle);
+        final Series newSeries = new Series(uTitle);
         if (!uNumber.isEmpty()) {
-            Matcher matcher = NUMBER_CLEANUP_PATTERN.matcher(uNumber);
+            final Matcher matcher = NUMBER_CLEANUP_PATTERN.matcher(uNumber);
             if (matcher.find()) {
                 String cleanNumber = matcher.group(1);
                 if (cleanNumber != null && !cleanNumber.isEmpty()) {
@@ -477,7 +477,7 @@ public class Series
             }
         }
 
-        for (Series series : toDelete) {
+        for (final Series series : toDelete) {
             list.remove(series);
         }
 

@@ -35,7 +35,7 @@ class CurrencyUtilsTest
     @Test
     void splitPrice10() {
 
-        Locale locale = Locale.UK;
+        final Locale locale = Locale.UK;
         Money money;
 
         money = new Money(locale, "$10.50");
@@ -54,8 +54,8 @@ class CurrencyUtilsTest
     @Test
     void splitPrice100() {
 
-        Locale locale = Locale.UK;
-        Money money;
+        final Locale locale = Locale.UK;
+        final Money money;
 
         money = new Money(locale, "10.50");
         assertNull(money.getCurrency());
@@ -65,7 +65,7 @@ class CurrencyUtilsTest
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice20() {
-        Locale locale = new Locale("nl", "BE");
+        final Locale locale = new Locale("nl", "BE");
         Money money;
 
         money = new Money(locale, "fr10,50");
@@ -80,8 +80,8 @@ class CurrencyUtilsTest
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice21() {
-        Locale locale = new Locale("nl", "NL");
-        Money money;
+        final Locale locale = new Locale("nl", "NL");
+        final Money money;
 
         money = new Money(locale, "£10.50");
         assertEquals("GBP", money.getCurrency());
@@ -91,8 +91,8 @@ class CurrencyUtilsTest
     /** Country with '.' as thousands, and ',' as decimal separator. */
     @Test
     void splitPrice22() {
-        Locale locale = new Locale("nl", "NL");
-        Money money;
+        final Locale locale = new Locale("nl", "NL");
+        final Money money;
 
         money = new Money(locale, "EUR 10.50");
         assertEquals("EUR", money.getCurrency());

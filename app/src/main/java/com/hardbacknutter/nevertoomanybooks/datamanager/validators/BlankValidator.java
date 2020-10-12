@@ -39,7 +39,7 @@ public class BlankValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        String s = dataManager.getString(key).trim();
+        final String s = dataManager.getString(key).trim();
         if (s.isEmpty()) {
             // store the trimmed string.
             dataManager.putString(key, s);

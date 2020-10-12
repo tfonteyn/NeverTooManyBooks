@@ -130,7 +130,7 @@ public class BookViewModel
 
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
-                    long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+                    final long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
                     if (bookId > 0) {
                         mBook = Book.from(bookId, mDb);
                     } else {

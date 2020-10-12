@@ -63,11 +63,11 @@ class IsfdbEditionsHandlerTest
     @Test
     void parseMultiEdition() {
         setLocale(Locale.UK);
-        String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?11169";
-        String filename = "/isfdb/11169-multi-edition.html";
+        final String locationHeader = "http://www.isfdb.org/cgi-bin/title.cgi?11169";
+        final String filename = "/isfdb/11169-multi-edition.html";
 
         Document document = null;
-        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
+        try (final InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
             document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
         } catch (@NonNull final IOException e) {

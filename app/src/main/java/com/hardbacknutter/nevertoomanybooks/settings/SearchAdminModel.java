@@ -72,7 +72,7 @@ public class SearchAdminModel
                 mSiteListMap.put(type, singleList);
 
             } else {
-                for (Site.Type type : Site.Type.values()) {
+                for (final Site.Type type : Site.Type.values()) {
                     mSiteListMap.put(type, type.getSites());
                 }
             }
@@ -141,7 +141,7 @@ public class SearchAdminModel
      * @return {@code true} if each list handled has at least one site enabled.
      */
     public boolean validate() {
-        for (ArrayList<Site> list : mSiteListMap.values()) {
+        for (final ArrayList<Site> list : mSiteListMap.values()) {
             if (list.stream().noneMatch(Site::isEnabled)) {
                 return false;
             }
@@ -162,7 +162,7 @@ public class SearchAdminModel
             throw new IllegalStateException("in single-list mode");
         }
 
-        for (Map.Entry<Site.Type, ArrayList<Site>> entry : mSiteListMap.entrySet()) {
+        for (final Map.Entry<Site.Type, ArrayList<Site>> entry : mSiteListMap.entrySet()) {
             entry.getKey().setList(context, entry.getValue());
         }
     }

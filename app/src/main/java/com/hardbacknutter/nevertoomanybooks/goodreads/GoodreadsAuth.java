@@ -463,7 +463,7 @@ public class GoodreadsAuth {
             // The key to signing the POST fields is to add them as additional parameters,
             // but already percent-encoded; and also to add the realm header.
             final HttpParameters parameters = new HttpParameters();
-            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+            for (final Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 // note we need to encode both key and value.
                 parameters.put(OAuth.percentEncode(entry.getKey()),
                                OAuth.percentEncode(entry.getValue()));

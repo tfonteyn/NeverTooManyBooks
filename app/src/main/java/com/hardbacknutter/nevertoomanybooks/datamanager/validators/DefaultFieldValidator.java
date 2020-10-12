@@ -61,7 +61,7 @@ public class DefaultFieldValidator
                          @NonNull final String key,
                          final int errorLabelId) {
 
-        Object value = dataManager.get(key);
+        final Object value = dataManager.get(key);
         if (value != null && value.toString().trim().isEmpty()) {
             dataManager.putString(key, mDefaultValue);
         }

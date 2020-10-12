@@ -207,8 +207,8 @@ public class XmlImporter
     public ArchiveInfo readInfo(@NonNull final InputStream inputStream)
             throws IOException {
         final ArchiveInfo info = new ArchiveInfo();
-        try (Reader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE)) {
+        try (final Reader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+             final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE)) {
 
             fromXml(in, new InfoReader(info));
         }
@@ -400,7 +400,7 @@ public class XmlImporter
          * but importing an Element in a Collection is always done as a String in a List (for now?)
          */
         // set/list elements with attributes.
-        Consumer<ElementContext> startElementInCollection = elementContext -> {
+        final Consumer<ElementContext> startElementInCollection = elementContext -> {
             mTagStack.push(mTag);
             mTag = new TagInfo(elementContext);
 
@@ -513,7 +513,7 @@ public class XmlImporter
                                     + "|tag=" + mTag);
                      }
                      try {
-                         String body = elementContext.getBody();
+                         final String body = elementContext.getBody();
                          switch (mTag.type) {
                              case "Int":
                                  accessor.putInt(mTag.name, Integer.parseInt(body));
@@ -938,7 +938,7 @@ public class XmlImporter
             // So loop all groups, and get their Preferences.
             // Do NOT add the group itself to the style at this point as our import
             // might not actually have it.
-            for (BooklistGroup group : BooklistGroup.getAllGroups(mContext, mStyle)) {
+            for (final BooklistGroup group : BooklistGroup.getAllGroups(mContext, mStyle)) {
                 mStylePrefs.putAll(group.getPreferences());
             }
         }
@@ -951,7 +951,7 @@ public class XmlImporter
         public void endElement() {
             // we now have the groups themselves (one of the 'flat' prefs) set on the style,
             // so transfer their specific Preferences.
-            for (BooklistGroup group : mStyle.getGroups().getGroupList()) {
+            for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
                 mStyle.updatePreferences(mContext, group.getPreferences());
             }
             // add to the menu of preferred styles if needed.

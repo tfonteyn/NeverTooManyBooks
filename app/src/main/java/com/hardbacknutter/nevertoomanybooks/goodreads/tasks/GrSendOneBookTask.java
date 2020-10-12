@@ -87,8 +87,8 @@ public class GrSendOneBookTask
                 return new GrStatus(GrStatus.CANCELLED);
             }
 
-            try (DAO db = new DAO(TAG);
-                 Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
+            try (final DAO db = new DAO(TAG);
+                 final Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
                 if (cursor.moveToFirst()) {
                     if (isCancelled()) {
                         return new GrStatus(GrStatus.CANCELLED);

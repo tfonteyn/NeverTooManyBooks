@@ -256,7 +256,7 @@ class BooklistNodeDAO {
                            + _WHERE_ + KEY_BL_NODE_LEVEL + levelOperand + "?";
 
         final int rowsUpdated;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindBoolean(1, expand);
             stmt.bindBoolean(2, visible);
             stmt.bindLong(3, nodeLevel);
@@ -741,7 +741,7 @@ class BooklistNodeDAO {
         final String sql = String.format(sqlTemplate, columnName, columnName);
 
         final int rowsUpdated;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindLong(1, mBookshelfId);
             stmt.bindLong(2, mStyle.getId());
             rowsUpdated = stmt.executeUpdateDelete();
@@ -773,7 +773,7 @@ class BooklistNodeDAO {
         final Collection<Pair<Integer, String>> keyPrefixes = new ArrayList<>();
 
         // find all branches (groups on level 2+) with visible nodes
-        try (Cursor cursor = mSyncedDb.rawQuery(
+        try (final Cursor cursor = mSyncedDb.rawQuery(
                 SELECT_DISTINCT_ + KEY_BL_NODE_KEY + ',' + KEY_BL_NODE_LEVEL
                 + _FROM_ + mListTable.getName()
                 + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
@@ -796,13 +796,13 @@ class BooklistNodeDAO {
 
         // update the branches we found
         int rows = 0;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
                 UPDATE_ + mListTable.getName() + _SET_ + KEY_BL_NODE_VISIBLE + "=1"
                 + _WHERE_ + KEY_BL_NODE_VISIBLE + "=0"
                 + _AND_ + KEY_BL_NODE_LEVEL + "=?"
                 + _AND_ + KEY_BL_NODE_KEY + " LIKE ?")) {
 
-            for (Pair<Integer, String> entry : keyPrefixes) {
+            for (final Pair<Integer, String> entry : keyPrefixes) {
                 stmt.bindLong(1, entry.first);
                 stmt.bindString(2, entry.second);
                 rows += stmt.executeUpdateDelete();

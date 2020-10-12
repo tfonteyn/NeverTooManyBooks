@@ -92,7 +92,7 @@ public class SqlStatementManager
      */
     @Override
     public void close() {
-        for (SynchronizedStatement stmt : mStatements.values()) {
+        for (final SynchronizedStatement stmt : mStatements.values()) {
             try {
                 stmt.close();
             } catch (@NonNull final RuntimeException ignore) {

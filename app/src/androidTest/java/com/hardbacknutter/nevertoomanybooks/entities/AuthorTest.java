@@ -43,7 +43,7 @@ public class AuthorTest {
         final Parcel parcel = Parcel.obtain();
         author.writeToParcel(parcel, author.describeContents());
         parcel.setDataPosition(0);
-        Author pAuthor = Author.CREATOR.createFromParcel(parcel);
+        final Author pAuthor = Author.CREATOR.createFromParcel(parcel);
 
         assertEquals(pAuthor, author);
 

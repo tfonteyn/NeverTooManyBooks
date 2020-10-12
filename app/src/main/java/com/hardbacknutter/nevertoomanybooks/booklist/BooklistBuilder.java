@@ -204,12 +204,12 @@ final class BooklistBuilder {
         addDomain(new VirtualDomain(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID)), false);
 
         // Add style-specified groups
-        for (BooklistGroup group : mStyle.getGroups().getGroupList()) {
+        for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
             addGroup(group);
         }
 
         // Add caller-specified book data
-        for (VirtualDomain bookDomain : bookDomains) {
+        for (final VirtualDomain bookDomain : bookDomains) {
             addDomain(bookDomain, false);
         }
 
@@ -227,7 +227,7 @@ final class BooklistBuilder {
         // The 'AS' is for SQL readability/debug only
 
         boolean first = true;
-        for (VirtualDomain domain : mDomains) {
+        for (final VirtualDomain domain : mDomains) {
             if (first) {
                 first = false;
             } else {
@@ -308,14 +308,14 @@ final class BooklistBuilder {
 
         // Build the lowest level (i.e. books) using our initial insert statement
         // The triggers will do the other levels.
-        int initialInsertCount;
+        final int initialInsertCount;
 
-        long t0 = System.nanoTime();
+        final long t0 = System.nanoTime();
 
-        try (SynchronizedStatement stmt = syncedDb.compileStatement(mSqlForInitialInsert)) {
+        try (final SynchronizedStatement stmt = syncedDb.compileStatement(mSqlForInitialInsert)) {
             initialInsertCount = stmt.executeUpdateDelete();
         }
-        long t1_insert = System.nanoTime();
+        final long t1_insert = System.nanoTime();
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
             Log.d(TAG, "build|insert(" + initialInsertCount + "): "
@@ -417,7 +417,7 @@ final class BooklistBuilder {
             final StringBuilder whereClause = new StringBuilder();
 
             //noinspection ConstantConditions
-            for (Domain groupDomain : group.getAccumulatedDomains()) {
+            for (final Domain groupDomain : group.getAccumulatedDomains()) {
                 listColumns.append(',').append(groupDomain.getName());
                 listValues.append(", NEW.").append(groupDomain.getName());
 
@@ -548,11 +548,11 @@ final class BooklistBuilder {
         // display domain first
         addDomain(group.getDisplayDomain(), true);
         // then how we group
-        for (VirtualDomain domain : group.getGroupDomains()) {
+        for (final VirtualDomain domain : group.getGroupDomains()) {
             addDomain(domain, true);
         }
         // the base domains we always need/have
-        for (VirtualDomain domain : group.getBaseDomains()) {
+        for (final VirtualDomain domain : group.getBaseDomains()) {
             addDomain(domain, false);
         }
 
@@ -580,10 +580,10 @@ final class BooklistBuilder {
      */
     private String buildNodeKey() {
         final StringBuilder keyColumn = new StringBuilder();
-        for (BooklistGroup group : mStyle.getGroups().getGroupList()) {
+        for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
             keyColumn.append(group.getNodeKeyExpression()).append("||");
         }
-        int len = keyColumn.length();
+        final int len = keyColumn.length();
         // remove the trailing "||"
         return keyColumn.delete(len - 2, len).toString();
     }
@@ -724,7 +724,7 @@ final class BooklistBuilder {
     private String buildOrderBy() {
         // List of column names appropriate for 'ORDER BY' clause
         final StringBuilder orderBy = new StringBuilder();
-        for (VirtualDomain sd : mOrderByDomains) {
+        for (final VirtualDomain sd : mOrderByDomains) {
             if (sd.getDomain().isText()) {
                 // The order of this if/elseif/else is important, don't merge branch 1 and 3!
                 if (sd.getDomain().isPrePreparedOrderBy()) {
@@ -762,7 +762,7 @@ final class BooklistBuilder {
     private String getSortedDomainsIndexColumns() {
         final StringBuilder indexCols = new StringBuilder();
 
-        for (VirtualDomain sd : mOrderByDomains) {
+        for (final VirtualDomain sd : mOrderByDomains) {
             indexCols.append(sd.getName());
             if (sd.getDomain().isText()) {
                 indexCols.append(DAOSql._COLLATION);

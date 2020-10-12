@@ -55,7 +55,7 @@ public final class SharedPreferencesMock {
         };
 
         final Answer<Object> getOrDefault = invocation -> {
-            String key = (String) invocation.getArguments()[0];
+            final String key = (String) invocation.getArguments()[0];
             return map.containsKey(key) ? map.get(key) : invocation.getArguments()[1];
         };
 
@@ -93,7 +93,7 @@ public final class SharedPreferencesMock {
         final Collection<String> editorRemovals = new ArrayList<>();
         final AtomicBoolean editorClearWasCalled = new AtomicBoolean(false);
 
-        Answer<SharedPreferences.Editor> putAndChain = invocation -> {
+        final Answer<SharedPreferences.Editor> putAndChain = invocation -> {
             editorMap.put((String) invocation.getArguments()[0], invocation.getArguments()[1]);
             return editor;
         };
@@ -112,7 +112,7 @@ public final class SharedPreferencesMock {
         doAnswer(putAndChain).when(editor).putInt(anyString(), any(int.class));
         doAnswer(putAndChain).when(editor).putFloat(anyString(), any(float.class));
 
-        Answer<Void> apply = invocation -> {
+        final Answer<Void> apply = invocation -> {
             // contract of apply states that clear/remove is run first
             if (editorClearWasCalled.get()) {
                 map.clear();

@@ -470,7 +470,7 @@ public class CoverHandler {
                         .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (!resInfoList.isEmpty()) {
             // We do not know which app will be used, so need to grant permission to all.
-            for (ResolveInfo resolveInfo : resInfoList) {
+            for (final ResolveInfo resolveInfo : resInfoList) {
                 final String packageName = resolveInfo.activityInfo.packageName;
                 mContext.grantUriPermission(packageName, dstUri,
                                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
@@ -504,7 +504,8 @@ public class CoverHandler {
                     final Uri uri = data.getData();
                     if (uri != null) {
                         File file = null;
-                        try (InputStream is = mContext.getContentResolver().openInputStream(uri)) {
+                        try (final InputStream is = mContext.getContentResolver()
+                                                            .openInputStream(uri)) {
                             file = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
                             // copy the data, and retrieve the (potentially) resolved file
                             file = FileUtils.copyInputStream(mContext, is, file);

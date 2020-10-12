@@ -82,7 +82,7 @@ public class GlobalPreferenceFragment
     public void onStart() {
         super.onStart();
 
-        Preference preference;
+        final Preference preference;
 
         preference = findPreference(Prefs.pk_sort_title_reordered);
         if (preference != null) {

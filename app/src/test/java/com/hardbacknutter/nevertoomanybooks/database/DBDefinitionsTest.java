@@ -34,7 +34,7 @@ class DBDefinitionsTest {
     void duplicates() {
         final Collection<String> tNames = new HashSet<>();
         final Collection<String> tAliases = new HashSet<>();
-        for (TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
+        for (final TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
             if (!tNames.add(table.getName())) {
                 fail("Duplicate table name: " + table.getName());
             }

@@ -77,7 +77,7 @@ public abstract class BookFields {
     }
 
     void addToMap(@NonNull final Map<String, PPref> map) {
-        for (PBoolean field : mFields.values()) {
+        for (final PBoolean field : mFields.values()) {
             map.put(field.getKey(), field);
         }
     }
@@ -89,7 +89,7 @@ public abstract class BookFields {
      */
     public void set(@NonNull final Parcel in) {
         // the collection is ordered, so we don't need the keys.
-        for (PBoolean field : mFields.values()) {
+        for (final PBoolean field : mFields.values()) {
             field.set(in);
         }
     }
@@ -101,7 +101,7 @@ public abstract class BookFields {
      */
     public void writeToParcel(@NonNull final Parcel dest) {
         // the collection is ordered, so we don't write the keys.
-        for (PBoolean field : mFields.values()) {
+        for (final PBoolean field : mFields.values()) {
             field.writeToParcel(dest);
         }
     }

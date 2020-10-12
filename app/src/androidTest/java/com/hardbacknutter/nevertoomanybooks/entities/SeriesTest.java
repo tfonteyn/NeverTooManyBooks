@@ -38,7 +38,7 @@ public class SeriesTest {
         final Parcel parcel = Parcel.obtain();
         series.writeToParcel(parcel, series.describeContents());
         parcel.setDataPosition(0);
-        Series pSeries = Series.CREATOR.createFromParcel(parcel);
+        final Series pSeries = Series.CREATOR.createFromParcel(parcel);
 
         assertEquals(pSeries, series);
 

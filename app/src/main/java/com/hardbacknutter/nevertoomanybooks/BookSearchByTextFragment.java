@@ -212,12 +212,12 @@ public class BookSearchByTextFragment
                 mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
-        for (String s : authors) {
+        for (final String s : authors) {
             uniqueNames.add(s.toLowerCase(userLocale));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
-        for (String s : authorNames) {
+        for (final String s : authorNames) {
             if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
                 authors.add(s);
             }
@@ -248,12 +248,12 @@ public class BookSearchByTextFragment
         final ArrayList<String> publishers = mDb.getPublisherNames();
 
         final Collection<String> uniqueNames = new HashSet<>(publishers.size());
-        for (String s : publishers) {
+        for (final String s : publishers) {
             uniqueNames.add(s.toLowerCase(userLocale));
         }
 
         // Add the names the user has already tried (to handle errors and mistakes)
-        for (String s : publisherNames) {
+        for (final String s : publisherNames) {
             if (!uniqueNames.contains(s.toLowerCase(userLocale))) {
                 publishers.add(s);
             }

@@ -115,7 +115,7 @@ public class StringList<E> {
 
         boolean isEsc = false;
         for (int i = 0; i < stringList.length(); i++) {
-            char c = stringList.charAt(i);
+            final char c = stringList.charAt(i);
             if (isEsc) {
                 switch (c) {
                     case '\\':

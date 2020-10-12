@@ -109,7 +109,7 @@ public class IsbnTextInputEditText
     public void onKey(final char keyChar) {
         final int start = getSelectionStart();
         final int end = getSelectionEnd();
-        Editable current = getText();
+        final Editable current = getText();
         if (current != null) {
             // only allow one X character
             if (keyChar != 'X'

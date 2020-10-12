@@ -79,7 +79,7 @@ public interface ChangeListener
      */
     static void update(@NonNull final Fragment fragment,
                        @NonNull final String requestKey,
-                       @Changes int changes,
+                       @Changes final int changes,
                        @Nullable final Bundle data) {
         final Bundle result = new Bundle(2);
         result.putInt(CHANGES, changes);

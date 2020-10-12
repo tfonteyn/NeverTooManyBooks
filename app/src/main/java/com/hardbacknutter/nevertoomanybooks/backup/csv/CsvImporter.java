@@ -471,8 +471,8 @@ public class CsvImporter
                 // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
                 // - NO id, OR an id which does not exist in the database yet.
                 // INSERT, explicitly allowing the id to be reused if present
-                long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                                       | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+                final long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                                             | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
                 mResults.booksCreated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + importUuid
@@ -490,8 +490,8 @@ public class CsvImporter
             if (!mDb.bookExistsById(importNumericId)) {
                 // The id is not in use, simply insert the book using the given importNumericId,
                 // explicitly allowing the id to be reused
-                long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                                       | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+                final long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
+                                                             | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
                 mResults.booksCreated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "importNumericId=" + importNumericId
@@ -526,7 +526,7 @@ public class CsvImporter
         } else {
             // Always import books which have no UUID/ID, even if the book is a potential duplicate.
             // We don't try and search/match but leave it to the user.
-            long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+            final long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "UUID=''"
@@ -643,7 +643,7 @@ public class CsvImporter
         }
 
         if (encodedList != null && !encodedList.isEmpty()) {
-            ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
+            final ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
                 Bookshelf.pruneList(bookshelves, db);
                 book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
@@ -852,7 +852,7 @@ public class CsvImporter
             // 'Current' char
             char c;
             // Last position in row
-            int endPos = line.length() - 1;
+            final int endPos = line.length() - 1;
             // 'Next' char
             char next = (line.isEmpty()) ? '\0' : line.charAt(0);
 
@@ -990,7 +990,7 @@ public class CsvImporter
                                       @NonNull final Book book,
                                       @NonNull final String... names)
             throws ImportException {
-        for (String name : names) {
+        for (final String name : names) {
             if (book.contains(name)) {
                 return;
             }

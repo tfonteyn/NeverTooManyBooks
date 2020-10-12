@@ -126,7 +126,7 @@ public class CheckListDialogFragment
         final View root = getLayoutInflater().inflate(R.layout.dialog_edit_checklist, null);
         final ViewGroup itemListView = root.findViewById(R.id.item_list);
         // Takes the list of items and create a list of checkboxes in the display.
-        for (Entity item : mAllItems) {
+        for (final Entity item : mAllItems) {
             final CompoundButton itemView = new CheckBox(getContext());
             //noinspection ConstantConditions
             itemView.setText(item.getLabel(getContext()));

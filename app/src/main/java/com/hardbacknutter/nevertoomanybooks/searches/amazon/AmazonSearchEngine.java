@@ -241,7 +241,7 @@ public class AmazonSearchEngine
 
         final StringBuilder out = new StringBuilder(search.length());
         char prev = ' ';
-        for (char curr : search.toCharArray()) {
+        for (final char curr : search.toCharArray()) {
             if (Character.isLetterOrDigit(curr)) {
                 out.append(curr);
                 prev = curr;
@@ -406,7 +406,7 @@ public class AmazonSearchEngine
 
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
-            Money money = new Money(siteLocale, price.text());
+            final Money money = new Money(siteLocale, price.text());
             if (money.getCurrency() != null) {
                 bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, money.doubleValue());
                 bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, money.getCurrency());
@@ -416,7 +416,7 @@ public class AmazonSearchEngine
         }
 
         final Elements authorSpans = document.select("div#bylineInfo > span.author");
-        for (Element span : authorSpans) {
+        for (final Element span : authorSpans) {
             // If an author has a popup dialog linked, then it has an id with contributorNameID
             Element a = span.selectFirst("a.contributorNameID");
             if (a == null) {
@@ -451,7 +451,7 @@ public class AmazonSearchEngine
 
         final Elements lis = document
                 .select("div#detail_bullets_id > table > tbody > tr > td > div > ul > li");
-        for (Element li : lis) {
+        for (final Element li : lis) {
             String label = li.child(0).text().trim();
             if (label.endsWith(":")) {
                 label = label.substring(0, label.length() - 1).trim();

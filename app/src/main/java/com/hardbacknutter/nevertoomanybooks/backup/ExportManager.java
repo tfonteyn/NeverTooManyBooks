@@ -334,8 +334,8 @@ public class ExportManager
      */
     @Nullable
     private LocalDateTime getLastFullBackupDate(@NonNull final Context context) {
-        String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getString(PREF_LAST_FULL_BACKUP_DATE, null);
+        final String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
+                                                   .getString(PREF_LAST_FULL_BACKUP_DATE, null);
 
         if (lastBackup != null && !lastBackup.isEmpty()) {
             return DateParser.getInstance(context).parseISO(lastBackup);

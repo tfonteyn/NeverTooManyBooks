@@ -71,7 +71,7 @@ class KbNlBookHandlerTest
     @Test
     void parseComic() {
 
-        try (InputStream in = this.getClass().getResourceAsStream(comicFilename)) {
+        try (final InputStream in = this.getClass().getResourceAsStream(comicFilename)) {
             mParser.parse(in, mHandler);
         } catch (@NonNull final IOException | SAXException e) {
             fail(e);
@@ -109,7 +109,7 @@ class KbNlBookHandlerTest
         final List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(series);
         assertFalse(series.isEmpty());
-        Series expectedSeries;
+        final Series expectedSeries;
         expectedSeries = new Series("De buitengewone reis");
         expectedSeries.setNumber("1");
         assertEquals(expectedSeries, series.get(0));
@@ -119,7 +119,7 @@ class KbNlBookHandlerTest
     @Test
     void parseBook() {
 
-        try (InputStream in = this.getClass().getResourceAsStream(bookFilename)) {
+        try (final InputStream in = this.getClass().getResourceAsStream(bookFilename)) {
             mParser.parse(in, mHandler);
         } catch (@NonNull final IOException | SAXException e) {
             fail(e);
@@ -152,7 +152,7 @@ class KbNlBookHandlerTest
         final List<Series> series = mRawData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
         assertNotNull(series);
         assertFalse(series.isEmpty());
-        Series expectedSeries;
+        final Series expectedSeries;
         expectedSeries = new Series("Foundation-trilogie");
         expectedSeries.setNumber("1");
         assertEquals(expectedSeries, series.get(0));

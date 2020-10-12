@@ -163,7 +163,7 @@ public class DataManager
      * @param src bundle to copy from
      */
     protected void putAll(@NonNull final Bundle src) {
-        for (String key : src.keySet()) {
+        for (final String key : src.keySet()) {
             put(key, src.get(key));
         }
     }
@@ -655,7 +655,7 @@ public class DataManager
         boolean isOk = true;
         mValidationExceptions.clear();
 
-        for (Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
+        for (final Map.Entry<String, DataValidator> entry : mValidatorsMap.entrySet()) {
             final String key = entry.getKey();
             try {
                 entry.getValue()
@@ -667,7 +667,7 @@ public class DataManager
             }
         }
 
-        for (DataCrossValidator crossValidator : mCrossValidators) {
+        for (final DataCrossValidator crossValidator : mCrossValidators) {
             try {
                 crossValidator.validate(context, this);
             } catch (@NonNull final ValidatorException e) {
@@ -690,7 +690,7 @@ public class DataManager
         } else {
             final StringBuilder message = new StringBuilder();
             int i = 0;
-            for (ValidatorException e : mValidationExceptions) {
+            for (final ValidatorException e : mValidationExceptions) {
                 message.append(" (").append(++i).append(") ")
                        .append(e.getLocalizedMessage())
                        .append('\n');

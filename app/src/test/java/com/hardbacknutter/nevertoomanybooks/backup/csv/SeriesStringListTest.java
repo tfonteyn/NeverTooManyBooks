@@ -69,7 +69,7 @@ class SeriesStringListTest {
     @BeforeEach
     void setUp() {
         mSeries = new ArrayList<>();
-        for (String s : SERIES) {
+        for (final String s : SERIES) {
             mSeries.add(Series.from(s));
         }
         mSeries.get(1).setComplete(true);
@@ -80,13 +80,13 @@ class SeriesStringListTest {
 
     @Test
     void encode() {
-        String encoded = mCoder.encodeList(mSeries);
+        final String encoded = mCoder.encodeList(mSeries);
         assertEquals(ENCODED, encoded);
     }
 
     @Test
     void decode() {
-        List<Series> decoded = mCoder.decodeList(ENCODED);
+        final List<Series> decoded = mCoder.decodeList(ENCODED);
         assertEquals(SERIES.length, decoded.size());
 
         Series series;

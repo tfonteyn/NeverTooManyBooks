@@ -156,7 +156,7 @@ public interface FieldViewAccessor<T, V extends View> {
      *
      * @param errorText to display if the field is empty.
      */
-    default void setErrorIfEmpty(@NonNull String errorText) {
+    default void setErrorIfEmpty(@NonNull final String errorText) {
         setError(isEmpty() ? errorText : null);
     }
 }

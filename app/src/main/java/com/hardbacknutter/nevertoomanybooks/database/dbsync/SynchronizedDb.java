@@ -387,7 +387,7 @@ public class SynchronizedDb {
             }
             mSqlDb.execSQL(sql);
         } else {
-            Synchronizer.SyncLock txLock = mSynchronizer.getExclusiveLock();
+            final Synchronizer.SyncLock txLock = mSynchronizer.getExclusiveLock();
             try {
                 mSqlDb.execSQL(sql);
             } finally {
@@ -533,8 +533,8 @@ public class SynchronizedDb {
                               "PRAGMA foreign_keys",
                               "PRAGMA recursive_triggers",
                               };
-        for (String s : sql) {
-            try (Cursor cursor = db.rawQuery(s, null)) {
+        for (final String s : sql) {
+            try (final Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
                     Log.d(TAG, "debugDumpInfo|" + s + " = " + cursor.getString(0));
                 }

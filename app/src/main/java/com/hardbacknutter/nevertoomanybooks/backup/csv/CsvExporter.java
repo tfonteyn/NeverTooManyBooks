@@ -201,7 +201,7 @@ public class CsvExporter
 
         final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
-        try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
+        try (final Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             // row 0 with the column labels
             writer.write(getFieldHeaders(externalIdDomains));
 
@@ -303,7 +303,7 @@ public class CsvExporter
                 writer.write(encode(book.getString(DBDefinitions.KEY_UTC_ADDED)));
 
                 // external ID's
-                for (Domain domain : externalIdDomains) {
+                for (final Domain domain : externalIdDomains) {
                     writer.write(COMMA);
                     writer.write(encode(book.getString(domain.getName())));
                 }
@@ -341,7 +341,7 @@ public class CsvExporter
     @NonNull
     private String getFieldHeaders(final Iterable<Domain> externalIdDomains) {
         final StringBuilder sb = new StringBuilder(EXPORT_FIELD_HEADERS_BASE);
-        for (Domain domain : externalIdDomains) {
+        for (final Domain domain : externalIdDomains) {
             sb.append(COMMA)
               .append('"').append(domain.getName()).append('"');
         }
@@ -377,10 +377,10 @@ public class CsvExporter
             }
 
             final StringBuilder sb = new StringBuilder("\"");
-            int endPos = cell.length() - 1;
+            final int endPos = cell.length() - 1;
             int pos = 0;
             while (pos <= endPos) {
-                char c = cell.charAt(pos);
+                final char c = cell.charAt(pos);
                 switch (c) {
                     case '\r':
                         sb.append("\\r");

@@ -199,10 +199,10 @@ public class DateParser
                              @NonNull final Locale... locales) {
         // prevent duplicate locales
         final Collection<Locale> added = new HashSet<>();
-        for (Locale locale : locales) {
+        for (final Locale locale : locales) {
             if (!added.contains(locale)) {
                 added.add(locale);
-                for (String pattern : patterns) {
+                for (final String pattern : patterns) {
                     final DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder()
                             .parseCaseInsensitive()
                             .appendPattern(pattern)
@@ -228,7 +228,7 @@ public class DateParser
                             @NonNull final String[] patterns,
                             @NonNull final Locale[] locales) {
         boolean hasEnglish = false;
-        for (Locale locale : locales) {
+        for (final Locale locale : locales) {
             if (Locale.ENGLISH.getISO3Language().equals(locale.getISO3Language())) {
                 hasEnglish = true;
                 break;
@@ -343,7 +343,7 @@ public class DateParser
 
         // Try the specified Locale first
         if (locale != null) {
-            for (DateTimeFormatter dtf : parsers) {
+            for (final DateTimeFormatter dtf : parsers) {
                 try {
                     return LocalDateTime.parse(dateStr, dtf.withLocale(locale));
 //            } catch (@NonNull final DateTimeParseException ignore) {
@@ -354,7 +354,7 @@ public class DateParser
         }
 
         // Parse with the default locales, using the default ResolverStyle
-        for (DateTimeFormatter dtf : parsers) {
+        for (final DateTimeFormatter dtf : parsers) {
             try {
                 return LocalDateTime.parse(dateStr, dtf);
 //            } catch (@NonNull final DateTimeParseException ignore) {

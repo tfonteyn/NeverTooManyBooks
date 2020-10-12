@@ -530,7 +530,7 @@ public class Booklist
 
         // get all positions the book is on
         final ArrayList<BooklistNode> nodeList = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(mSqlGetBookNodes, new String[]{
+        try (final Cursor cursor = mSyncedDb.rawQuery(mSqlGetBookNodes, new String[]{
                 String.valueOf(bookId)})) {
 
             while (cursor.moveToNext()) {
@@ -583,7 +583,7 @@ public class Booklist
                     + _ORDER_BY_ + KEY_FK_BOOK;
         }
 
-        try (Cursor cursor = mSyncedDb.rawQuery(mSqlGetCurrentBookIdList, new String[]{
+        try (final Cursor cursor = mSyncedDb.rawQuery(mSqlGetCurrentBookIdList, new String[]{
                 String.valueOf(BooklistGroup.BOOK)})) {
 
             if (cursor.moveToFirst()) {
@@ -612,7 +612,7 @@ public class Booklist
                     + _AND_ + mListTable.dot(KEY_PK_ID) + ">?";
         }
 
-        try (Cursor cursor = mSyncedDb.rawQuery(mSqlGetNextBookWithoutCover, new String[]{
+        try (final Cursor cursor = mSyncedDb.rawQuery(mSqlGetNextBookWithoutCover, new String[]{
                 String.valueOf(BooklistGroup.BOOK),
                 String.valueOf(rowId)})) {
 
@@ -690,7 +690,7 @@ public class Booklist
                                  + _WHERE_ + mListTable.dot(KEY_PK_ID) + "=?";
         }
 
-        try (Cursor cursor = mSyncedDb.rawQuery(mSqlGetNodeByRowId, new String[]{
+        try (final Cursor cursor = mSyncedDb.rawQuery(mSqlGetNodeByRowId, new String[]{
                 String.valueOf(rowId)})) {
 
             if (cursor.moveToFirst()) {
@@ -762,7 +762,7 @@ public class Booklist
         // Pair: rowId/Level
         final Deque<Pair<Long, Integer>> nodes = new ArrayDeque<>();
         for (int level = node.getLevel() - 1; level >= 1; level--) {
-            try (Cursor cursor = mSyncedDb.rawQuery(mSqlEnsureNodeIsVisible, new String[]{
+            try (final Cursor cursor = mSyncedDb.rawQuery(mSqlEnsureNodeIsVisible, new String[]{
                     nodeKey + "%",
                     String.valueOf(level)})) {
 
@@ -775,7 +775,7 @@ public class Booklist
         }
 
         // Now process the collected nodes from the root downwards.
-        for (Pair<Long, Integer> n : nodes) {
+        for (final Pair<Long, Integer> n : nodes) {
             mRowStateDAO.setNode(n.first, n.second,
                                  // Expand (and make visible) the given node
                                  true,
@@ -809,7 +809,7 @@ public class Booklist
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             if (!mDebugReferenceDecremented) {
-                int inst = DEBUG_INSTANCE_COUNTER.decrementAndGet();
+                final int inst = DEBUG_INSTANCE_COUNTER.decrementAndGet();
                 // Only de-reference once! Paranoia ... close() might be called twice?
                 Log.d(TAG, "close|instances left=" + inst);
             }

@@ -151,7 +151,7 @@ public class SqliteShellFragment
                 getActivity().setTitle("");
 
                 if (mAllowUpdates) {
-                    try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
+                    try (final SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
                         final int rowsAffected = stmt.executeUpdateDelete();
                         final String result = STR_ROWS_AFFECTED + rowsAffected;
                         mVb.output.loadDataWithBaseURL(null, result,
@@ -162,7 +162,7 @@ public class SqliteShellFragment
                                                    TEXT_HTML, UTF_8, null);
                 }
             } else {
-                try (Cursor cursor = mDb.getSyncDb().rawQuery(sql, null)) {
+                try (final Cursor cursor = mDb.getSyncDb().rawQuery(sql, null)) {
                     final String title = STR_LAST_COUNT + cursor.getCount();
                     //noinspection ConstantConditions
                     getActivity().setTitle(title);
@@ -170,7 +170,7 @@ public class SqliteShellFragment
                     final StringBuilder sb = new StringBuilder("<table>");
                     final String[] columnNames = cursor.getColumnNames();
                     sb.append("<tr>");
-                    for (String column : columnNames) {
+                    for (final String column : columnNames) {
                         sb.append("<td><i>").append(column).append("</i></td>");
                     }
                     sb.append("</tr>");

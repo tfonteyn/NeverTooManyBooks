@@ -100,11 +100,11 @@ public final class ViewFocusOrder {
                 }
             };
 
-            SparseArray<View> vh = new SparseArray<>();
+            final SparseArray<View> vh = new SparseArray<>();
             getViews(rootView, vh);
 
             for (int i = 0; i < vh.size(); i++) {
-                View v = vh.valueAt(i);
+                final View v = vh.valueAt(i);
                 if (v.getVisibility() == View.VISIBLE) {
                     fixNextView(vh, v, getDown);
                     fixNextView(vh, v, getUp);
@@ -132,9 +132,9 @@ public final class ViewFocusOrder {
     private static void fixNextView(@NonNull final SparseArray<View> list,
                                     @NonNull final View view,
                                     @NonNull final INextView getter) {
-        int nextId = getter.getNext(view);
+        final int nextId = getter.getNext(view);
         if (nextId != View.NO_ID) {
-            int actualNextId = getNextView(list, nextId, getter);
+            final int actualNextId = getNextView(list, nextId, getter);
             if (actualNextId != nextId) {
                 getter.setNext(view, actualNextId);
             }

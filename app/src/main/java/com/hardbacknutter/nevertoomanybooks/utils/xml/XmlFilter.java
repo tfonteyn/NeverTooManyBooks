@@ -172,7 +172,7 @@ public class XmlFilter {
      */
     @Nullable
     private XmlFilter getSubFilter(@Nullable final String name) {
-        for (XmlFilter f : mSubFilters) {
+        for (final XmlFilter f : mSubFilters) {
             if (f.matches(name)) {
                 return f;
             }
@@ -265,7 +265,7 @@ public class XmlFilter {
      * @param filter filter to add
      */
     private void addFilter(@NonNull final XmlFilter filter) {
-        String lcPat = filter.getTagName().toLowerCase(mSystemLocale);
+        final String lcPat = filter.getTagName().toLowerCase(mSystemLocale);
         if (mSubFilterHash.containsKey(lcPat)) {
             throw new RuntimeException("Filter " + filter.getTagName() + " already exists");
         }

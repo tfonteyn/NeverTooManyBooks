@@ -105,8 +105,8 @@ public class BitmaskChipGroupAccessor
             final Context context = chipGroup.getContext();
 
             // *all* values
-            for (Map.Entry<Integer, String> entry : mListSupplier.get().entrySet()) {
-                boolean isSet = (entry.getKey() & mRawValue) != 0;
+            for (final Map.Entry<Integer, String> entry : mListSupplier.get().entrySet()) {
+                final boolean isSet = (entry.getKey() & mRawValue) != 0;
                 // if editable, all values; if not editable only the set values.
                 if (isSet || mIsEditable) {
                     chipGroup.addView(createChip(context, entry.getKey(), entry.getValue(), isSet));
@@ -124,7 +124,7 @@ public class BitmaskChipGroupAccessor
                             @NonNull final Object tag,
                             @NonNull final CharSequence label,
                             final boolean initialState) {
-        Chip chip;
+        final Chip chip;
         if (mIsEditable) {
             chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Filter);
         } else {

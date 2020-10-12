@@ -294,7 +294,7 @@ public class BooklistStyle
         mUuid = uuid;
         mNameResId = nameId;
         initPrefs(context, mNameResId == 0);
-        for (@BooklistGroup.Id int groupId : groupIds) {
+        for (@BooklistGroup.Id final int groupId : groupIds) {
             mGroups.add(BooklistGroup.newInstance(context, groupId, this));
         }
     }
@@ -536,7 +536,7 @@ public class BooklistStyle
 
         // but if we want all, add the missing styles to the end of the list
         if (all && !styles.equals(allStyles)) {
-            for (BooklistStyle style : allStyles.values()) {
+            for (final BooklistStyle style : allStyles.values()) {
                 if (!styles.containsKey(style.getUuid())) {
                     styles.put(style.getUuid(), style);
                 }
@@ -570,14 +570,14 @@ public class BooklistStyle
         //TODO: revisit... this is to complicated/inefficient.
         Parcel parcel = Parcel.obtain();
         writeToParcel(parcel, 0);
-        byte[] bytes = parcel.marshall();
+        final byte[] bytes = parcel.marshall();
         parcel.recycle();
 
         parcel = Parcel.obtain();
         parcel.unmarshall(bytes, 0, bytes.length);
         parcel.setDataPosition(0);
 
-        BooklistStyle clone = new BooklistStyle(context, getLabel(context), parcel);
+        final BooklistStyle clone = new BooklistStyle(context, getLabel(context), parcel);
         parcel.recycle();
 
         return clone;
@@ -809,7 +809,7 @@ public class BooklistStyle
                                    @NonNull final Map<String, PPref> newPrefs) {
         final Map<String, PPref> currentPreferences = getPreferences(true);
 
-        for (PPref p : newPrefs.values()) {
+        for (final PPref p : newPrefs.values()) {
             // do we have this Preference ?
             final PPref ourPPref = currentPreferences.get(p.getKey());
             if (ourPPref != null) {

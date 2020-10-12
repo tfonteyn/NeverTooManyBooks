@@ -131,24 +131,24 @@ public class TableDefinition {
         mAlias = from.mAlias;
         mType = from.mType;
 
-        for (Domain d : from.mDomains) {
+        for (final Domain d : from.mDomains) {
             // use the method, so mDomainNameCheck/mDomainCheck get populated properly
             addDomain(d);
         }
 
         mPrimaryKey.addAll(from.mPrimaryKey);
 
-        for (FkReference fromFK : from.mParents.values()) {
+        for (final FkReference fromFK : from.mParents.values()) {
             addReference(fromFK.mParent, fromFK.mDomains);
         }
 
-        for (FkReference childFK : from.mChildren.values()) {
+        for (final FkReference childFK : from.mChildren.values()) {
             // create a reference between the CHILDREN of the definition we're copying
             // and this object.
             childFK.mChild.addReference(this, childFK.mDomains);
         }
 
-        for (IndexDefinition fromIndex : from.mIndexes) {
+        for (final IndexDefinition fromIndex : from.mIndexes) {
             // use the method, so mIndexNameCheck get populated properly
             addIndex(fromIndex.getNameSuffix(), fromIndex.getUnique(), fromIndex.getDomains());
         }
@@ -166,9 +166,9 @@ public class TableDefinition {
      */
     public static void onCreate(@NonNull final SQLiteDatabase db,
                                 @NonNull final TableDefinition... tables) {
-        for (TableDefinition table : tables) {
+        for (final TableDefinition table : tables) {
             db.execSQL(table.def(table.mName, true, true, false));
-            for (IndexDefinition index : table.mIndexes) {
+            for (final IndexDefinition index : table.mIndexes) {
                 index.onCreate(db);
             }
         }
@@ -195,7 +195,7 @@ public class TableDefinition {
      * @param db Database Access
      */
     public void createIndices(@NonNull final SynchronizedDb db) {
-        for (IndexDefinition index : mIndexes) {
+        for (final IndexDefinition index : mIndexes) {
             index.create(db);
         }
     }
@@ -218,7 +218,7 @@ public class TableDefinition {
             db.drop(mName);
         }
         db.execSQL(def(mName, withConstraints, true, false));
-        for (IndexDefinition index : mIndexes) {
+        for (final IndexDefinition index : mIndexes) {
             index.create(db);
         }
     }
@@ -236,19 +236,19 @@ public class TableDefinition {
 
         // Need to make local copies to avoid 'collection modified' errors
         final Collection<TableDefinition> tmpParents = new ArrayList<>();
-        for (FkReference fk : mParents.values()) {
+        for (final FkReference fk : mParents.values()) {
             tmpParents.add(fk.mParent);
         }
-        for (TableDefinition parent : tmpParents) {
+        for (final TableDefinition parent : tmpParents) {
             removeReference(parent);
         }
 
         // Need to make local copies to avoid 'collection modified' errors
         final Collection<TableDefinition> tmpChildren = new ArrayList<>();
-        for (FkReference fk : mChildren.values()) {
+        for (final FkReference fk : mChildren.values()) {
             tmpChildren.add(fk.mChild);
         }
-        for (TableDefinition child : tmpChildren) {
+        for (final TableDefinition child : tmpChildren) {
             child.removeReference(this);
         }
     }
@@ -339,7 +339,7 @@ public class TableDefinition {
      */
     @NonNull
     public TableDefinition addDomains(@NonNull final Domain... domains) {
-        for (Domain d : domains) {
+        for (final Domain d : domains) {
             addDomain(d);
         }
         return this;
@@ -451,7 +451,7 @@ public class TableDefinition {
     @NonNull
     public TableDefinition addReference(@NonNull final TableDefinition parent,
                                         @NonNull final Domain... domains) {
-        FkReference fk = new FkReference(parent, this, domains);
+        final FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
 
@@ -467,7 +467,7 @@ public class TableDefinition {
     @NonNull
     private TableDefinition addReference(@NonNull final TableDefinition parent,
                                          @NonNull final List<Domain> domains) {
-        FkReference fk = new FkReference(parent, this, domains);
+        final FkReference fk = new FkReference(parent, this, domains);
         return addReference(fk);
     }
 
@@ -485,7 +485,7 @@ public class TableDefinition {
     public TableDefinition addReference(@NonNull final TableDefinition parent,
                                         @NonNull final Domain parentKey,
                                         @NonNull final Domain domain) {
-        FkReference fk = new FkReference(parent, parentKey, this, domain);
+        final FkReference fk = new FkReference(parent, parentKey, this, domain);
         return addReference(fk);
     }
 
@@ -661,7 +661,7 @@ public class TableDefinition {
      */
     @NonNull
     public String fkMatch(@NonNull final TableDefinition to) {
-        FkReference fk;
+        final FkReference fk;
         if (mChildren.containsKey(to)) {
             fk = mChildren.get(to);
         } else {
@@ -689,7 +689,7 @@ public class TableDefinition {
         } else {
             sql = TABLE_EXISTS_SQL_TEMP;
         }
-        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+        try (final SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindString(1, mName);
             return stmt.simpleQueryForLongOrZero() > 0;
         }
@@ -712,17 +712,18 @@ public class TableDefinition {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(tag, "Table: " + mName + ": " + header);
 
-            String sql = "SELECT * FROM " + mName + " ORDER BY " + orderBy + " LIMIT " + limit;
-            try (Cursor cursor = db.rawQuery(sql, null)) {
-                StringBuilder columnHeading = new StringBuilder("\n");
-                String[] columnNames = cursor.getColumnNames();
-                for (String column : columnNames) {
+            final String sql =
+                    "SELECT * FROM " + mName + " ORDER BY " + orderBy + " LIMIT " + limit;
+            try (final Cursor cursor = db.rawQuery(sql, null)) {
+                final StringBuilder columnHeading = new StringBuilder("\n");
+                final String[] columnNames = cursor.getColumnNames();
+                for (final String column : columnNames) {
                     columnHeading.append(String.format("%-12s  ", column));
                 }
                 Log.d(tag, columnHeading.toString());
 
                 while (cursor.moveToNext()) {
-                    StringBuilder line = new StringBuilder();
+                    final StringBuilder line = new StringBuilder();
                     for (int c = 0; c < cursor.getColumnCount(); c++) {
                         line.append(String.format("%-12s  ", cursor.getString(c)));
                     }
@@ -757,7 +758,7 @@ public class TableDefinition {
      */
     public void alterTableAddColumns(@NonNull final SynchronizedDb db,
                                      @NonNull final Domain... domains) {
-        for (Domain domain : domains) {
+        for (final Domain domain : domains) {
             db.execSQL("ALTER TABLE " + getName() + " ADD " + domain.def(true));
         }
     }
@@ -885,7 +886,7 @@ public class TableDefinition {
         // add the columns
         boolean hasPrimaryKey = false;
         final StringJoiner columns = new StringJoiner(",");
-        for (Domain domain : mDomains) {
+        for (final Domain domain : mDomains) {
             columns.add(domain.def(withConstraints));
             // remember if we added a primary key column.
             hasPrimaryKey = hasPrimaryKey || domain.isPrimaryKey();

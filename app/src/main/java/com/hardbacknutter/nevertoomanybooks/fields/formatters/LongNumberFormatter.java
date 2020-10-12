@@ -45,7 +45,7 @@ public class LongNumberFormatter
             return "";
         }
 
-        long value = rawValue.longValue();
+        final long value = rawValue.longValue();
         if (value == 0) {
             return "";
         }
@@ -56,7 +56,7 @@ public class LongNumberFormatter
     @NonNull
     @Override
     public Number extract(@NonNull final TextView view) {
-        String sv = view.getText().toString().trim();
+        final String sv = view.getText().toString().trim();
         if (sv.isEmpty()) {
             return 0;
         }

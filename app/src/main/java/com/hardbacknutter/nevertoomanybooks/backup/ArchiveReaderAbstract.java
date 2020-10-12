@@ -143,7 +143,7 @@ public abstract class ArchiveReaderAbstract
                 progressListener.publishProgressStep(1, mProcessBooklistStyles);
                 final ReaderEntity entity = seek(ArchiveContainerEntry.BooklistStylesXml);
                 if (entity != null) {
-                    try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
+                    try (final Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
                     entitiesRead |= Options.STYLES;
@@ -157,7 +157,7 @@ public abstract class ArchiveReaderAbstract
                 progressListener.publishProgressStep(1, mProcessPreferences);
                 final ReaderEntity entity = seek(ArchiveContainerEntry.PreferencesXml);
                 if (entity != null) {
-                    try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
+                    try (final Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
                     entitiesRead |= Options.PREFS;
@@ -190,8 +190,8 @@ public abstract class ArchiveReaderAbstract
                     }
                     case BooksCsv: {
                         if (readBooks) {
-                            try (Importer importer = new CsvImporter(context,
-                                                                     mHelper.getOptions())) {
+                            try (final Importer importer = new CsvImporter(context,
+                                                                           mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
                             entitiesRead |= Options.BOOKS;
@@ -200,8 +200,8 @@ public abstract class ArchiveReaderAbstract
                     }
                     case BooksXml: {
                         if (readBooks) {
-                            try (Importer importer = new XmlImporter(context,
-                                                                     mHelper.getOptions())) {
+                            try (final Importer importer = new XmlImporter(context,
+                                                                           mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
                             entitiesRead |= Options.BOOKS;
@@ -213,8 +213,8 @@ public abstract class ArchiveReaderAbstract
                         // Leaving the code as we might support multiple entries in the future.
                         if (readPrefs) {
                             progressListener.publishProgressStep(1, mProcessPreferences);
-                            try (Importer importer = new XmlImporter(context,
-                                                                     mHelper.getOptions())) {
+                            try (final Importer importer = new XmlImporter(context,
+                                                                           mHelper.getOptions())) {
                                 importer.read(context, entity, progressListener);
                             }
                             entitiesRead |= Options.PREFS;
@@ -227,8 +227,8 @@ public abstract class ArchiveReaderAbstract
                         // Leaving the code as we might support multiple entries in the future.
                         if (readStyles) {
                             progressListener.publishProgressStep(1, mProcessBooklistStyles);
-                            try (Importer importer = new XmlImporter(context,
-                                                                     mHelper.getOptions())) {
+                            try (final Importer importer = new XmlImporter(context,
+                                                                           mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
                             entitiesRead |= Options.STYLES;

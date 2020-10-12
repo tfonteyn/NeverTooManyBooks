@@ -74,7 +74,7 @@ public final class BundleMock {
         };
         final Answer<Object> get = invocation -> map.get((String) invocation.getArguments()[0]);
         final Answer<Object> getOrDefault = invocation -> {
-            String key = (String) invocation.getArguments()[0];
+            final String key = (String) invocation.getArguments()[0];
             return map.containsKey(key) ? map.get(key) : invocation.getArguments()[1];
         };
 
@@ -206,7 +206,7 @@ public final class BundleMock {
         // 2020-08-07: implemented putAll
         doAnswer(invocation -> {
             final Bundle source = (Bundle) invocation.getArguments()[0];
-            for (String key : source.keySet()) {
+            for (final String key : source.keySet()) {
                 map.put(key, source.get(key));
             }
             return null;
@@ -220,10 +220,10 @@ public final class BundleMock {
 
     @Test
     void bu() {
-        Bundle b1 = BundleMock.create();
+        final Bundle b1 = BundleMock.create();
         b1.putString("foo", "bar");
         b1.putInt("ii", 11);
-        Bundle b2 = BundleMock.create();
+        final Bundle b2 = BundleMock.create();
         b2.putAll(b1);
 
         assertEquals("bar", b2.getString("foo"));

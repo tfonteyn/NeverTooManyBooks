@@ -163,7 +163,7 @@ public class UpdateFieldsFragment
      * Display the list of fields.
      */
     private void populateFields() {
-        for (FieldUsage usage : mUpdateFieldsModel.getFieldUsages()) {
+        for (final FieldUsage usage : mUpdateFieldsModel.getFieldUsages()) {
             final RowUpdateFromInternetBinding rowVb = RowUpdateFromInternetBinding
                     .inflate(getLayoutInflater(), mVb.fieldList, false);
 

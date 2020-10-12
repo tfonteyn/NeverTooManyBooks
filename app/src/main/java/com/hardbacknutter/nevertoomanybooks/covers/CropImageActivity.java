@@ -130,7 +130,7 @@ public class CropImageActivity
         final Uri uri = Uri.fromFile(new File(srcPath));
 
         Bitmap bitmap = null;
-        try (InputStream is = getContentResolver().openInputStream(uri)) {
+        try (final InputStream is = getContentResolver().openInputStream(uri)) {
             bitmap = BitmapFactory.decodeStream(is);
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG /* always */) {
@@ -159,7 +159,7 @@ public class CropImageActivity
 
         Bitmap bitmap = mVb.coverImage0.getCroppedBitmap();
         if (bitmap != null) {
-            try (OutputStream os = getContentResolver().openOutputStream(mDestinationUri)) {
+            try (final OutputStream os = getContentResolver().openOutputStream(mDestinationUri)) {
                 if (os != null) {
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
                     setResult(Activity.RESULT_OK, new Intent().setData(mDestinationUri));

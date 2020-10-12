@@ -122,7 +122,7 @@ public class ExtGroup
     }
 
     public void updatePostLayout(@NonNull final ConstraintLayout container) {
-        ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) getLayoutParams();
+        final ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) getLayoutParams();
         params.getConstraintWidget().setWidth(0);
         params.getConstraintWidget().setHeight(0);
     }
@@ -153,12 +153,12 @@ public class ExtGroup
         //            }
         //        }
 
-        int visibility = this.getVisibility();
-        float elevation = this.getElevation();
+        final int visibility = this.getVisibility();
+        final float elevation = this.getElevation();
 
         for (int i = 0; i < this.mCount; ++i) {
-            int id = this.mIds[i];
-            View view = container.getViewById(id);
+            final int id = this.mIds[i];
+            final View view = container.getViewById(id);
             if (view != null) {
 
                 if ((mApplyFlags & APPLY_VISIBILITY) != 0) {

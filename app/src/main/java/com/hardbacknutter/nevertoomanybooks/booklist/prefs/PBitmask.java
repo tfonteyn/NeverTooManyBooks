@@ -66,8 +66,8 @@ public class PBitmask
 
     @NonNull
     public Integer getGlobalValue(@NonNull final Context context) {
-        Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getStringSet(getKey(), null);
+        final Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
+                                                   .getStringSet(getKey(), null);
         if (value == null || value.isEmpty()) {
             return mDefaultValue;
         }
@@ -92,7 +92,7 @@ public class PBitmask
     @Override
     public Integer getValue(@NonNull final Context context) {
         if (mIsPersistent) {
-            Set<String> value = mStylePrefs.getStringSet(getKey(), null);
+            final Set<String> value = mStylePrefs.getStringSet(getKey(), null);
             if (value != null) {
                 return BitUtils.from(value) & mMask;
             }

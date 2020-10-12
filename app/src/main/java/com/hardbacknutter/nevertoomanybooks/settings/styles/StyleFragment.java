@@ -97,13 +97,13 @@ public class StyleFragment
     public void onStart() {
         super.onStart();
 
-        Preference preference;
+        final Preference preference;
 
         // the 'groups' in use.
         preference = findPreference(Groups.PK_STYLE_GROUPS);
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
-                Intent intent = new Intent(getContext(), StyleGroupsActivity.class)
+                final Intent intent = new Intent(getContext(), StyleGroupsActivity.class)
                         .putExtra(BooklistStyle.BKEY_STYLE, mStyle);
                 startActivityForResult(intent, RequestCode.EDIT_STYLE_GROUPS);
                 return true;
@@ -121,7 +121,7 @@ public class StyleFragment
         final BooklistStyle style = new BooklistStyle(getContext());
         final Groups styleGroups = mStyle.getGroups();
 
-        for (BooklistGroup group : BooklistGroup.getAllGroups(getContext(), style)) {
+        for (final BooklistGroup group : BooklistGroup.getAllGroups(getContext(), style)) {
             group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
         }
 

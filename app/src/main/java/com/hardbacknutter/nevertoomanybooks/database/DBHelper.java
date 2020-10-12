@@ -207,10 +207,10 @@ public final class DBHelper
             // will be returned first if 'A' < 'a'.
             db.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
 
-            String s;
-            try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
-                                        + " ORDER BY t " + DAOSql._COLLATION + ",i",
-                                        null)) {
+            final String s;
+            try (final Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
+                                              + " ORDER BY t " + DAOSql._COLLATION + ",i",
+                                              null)) {
                 c.moveToFirst();
                 s = c.getString(0);
             }
@@ -247,7 +247,7 @@ public final class DBHelper
         // Delete all indices.
         // We read the index names from the database, so we can delete
         // indexes which were removed from the TableDefinition objects.
-        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+        try (final Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
             while (current.moveToNext()) {
                 final String indexName = current.getString(0);
                 try {
@@ -263,7 +263,7 @@ public final class DBHelper
         }
 
         // now recreate
-        for (TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
+        for (final TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
             table.createIndices(db);
         }
 
@@ -284,7 +284,7 @@ public final class DBHelper
                 + ',' + KEY_UUID
                 // 1==true
                 + ") VALUES(?,1,?)";
-        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
+        try (final SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
             for (int id = Builtin.MAX_ID; id < 0; id++) {
                 stmt.bindLong(1, id);
                 stmt.bindString(2, Builtin.getUuidById(-id));
@@ -536,7 +536,7 @@ public final class DBHelper
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
         final StringBuilder eidSb = new StringBuilder();
-        for (Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
+        for (final Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
             eidSb.append(domain.getName()).append("=null,");
         }
         body += eidSb.toString();
@@ -687,7 +687,7 @@ public final class DBHelper
 
             final ContentValues cv = new ContentValues();
             final Map<String, Long> pubs = new HashMap<>();
-            try (Cursor cursor = syncedDb.rawQuery(
+            try (final Cursor cursor = syncedDb.rawQuery(
                     "SELECT _id,publisher,language FROM books", null)) {
                 while (cursor.moveToNext()) {
                     final long bookId = cursor.getLong(0);
@@ -728,7 +728,7 @@ public final class DBHelper
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
             final Set<String> all = prefs.getAll().keySet();
             final SharedPreferences.Editor editor = prefs.edit();
-            for (String key : all) {
+            for (final String key : all) {
                 if (key.startsWith("search.site")) {
                     editor.remove(key);
                 }

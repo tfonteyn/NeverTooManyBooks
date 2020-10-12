@@ -88,7 +88,7 @@ public class CursorRow
     public String getString(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(key);
+        final int col = mCursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
@@ -120,7 +120,7 @@ public class CursorRow
     public int getInt(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(key);
+        final int col = mCursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
@@ -140,7 +140,7 @@ public class CursorRow
     public long getLong(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(key);
+        final int col = mCursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
@@ -160,7 +160,7 @@ public class CursorRow
     public double getDouble(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(key);
+        final int col = mCursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
@@ -180,7 +180,7 @@ public class CursorRow
     public byte[] getBlob(@NonNull final String key)
             throws ColumnNotPresentException {
 
-        int col = mCursor.getColumnIndex(key);
+        final int col = mCursor.getColumnIndex(key);
         if (col == -1) {
             throw new ColumnNotPresentException(key);
         }
@@ -203,8 +203,8 @@ public class CursorRow
     public Bundle getAll(@NonNull final Context context) {
         final Bundle result = new Bundle();
 
-        for (String columnName : mCursor.getColumnNames()) {
-            int col = mCursor.getColumnIndex(columnName);
+        for (final String columnName : mCursor.getColumnNames()) {
+            final int col = mCursor.getColumnIndex(columnName);
             if (col != -1) {
                 switch (mCursor.getType(col)) {
                     case Cursor.FIELD_TYPE_STRING:

@@ -189,7 +189,7 @@ public class AddBookToShelfApiHandler
             throws CredentialsException, Http404Exception, IOException {
 
         mReviewId = 0;
-        Map<String, String> parameters = new HashMap<>();
+        final Map<String, String> parameters = new HashMap<>();
         parameters.put("book_id", String.valueOf(grBookId));
         parameters.put("name", shelfName);
         if (isRemove) {

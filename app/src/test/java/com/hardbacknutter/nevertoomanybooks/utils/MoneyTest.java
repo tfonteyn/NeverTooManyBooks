@@ -32,35 +32,35 @@ class MoneyTest
 
     @Test
     void uk00() {
-        Money m = new Money(Locale.UK, "GBP&nbsp;12.34");
+        final Money m = new Money(Locale.UK, "GBP&nbsp;12.34");
         assertEquals(12.34d, m.doubleValue());
         assertEquals("GBP", m.getCurrency());
     }
 
     @Test
     void uk01() {
-        Money m = new Money(Locale.UK, "£ 12.34");
+        final Money m = new Money(Locale.UK, "£ 12.34");
         assertEquals(12.34d, m.doubleValue());
         assertEquals("GBP", m.getCurrency());
     }
 
     @Test
     void uk02() {
-        Money m = new Money(Locale.UK, "£12.34");
+        final Money m = new Money(Locale.UK, "£12.34");
         assertEquals(12.34d, m.doubleValue());
         assertEquals("GBP", m.getCurrency());
     }
 
     @Test
     void uk03() {
-        Money m = new Money(Locale.UK, "GBP12.34");
+        final Money m = new Money(Locale.UK, "GBP12.34");
         assertEquals(12.34d, m.doubleValue());
         assertEquals("GBP", m.getCurrency());
     }
 
     @Test
     void uk04() {
-        Money m = new Money(Locale.UK, "£12");
+        final Money m = new Money(Locale.UK, "£12");
         assertEquals(12d, m.doubleValue());
         assertEquals("GBP", m.getCurrency());
     }
@@ -68,28 +68,28 @@ class MoneyTest
 
     @Test
     void fr01() {
-        Money m = new Money(Locale.FRANCE, "12,34&nbsp;€");
+        final Money m = new Money(Locale.FRANCE, "12,34&nbsp;€");
         assertEquals(12.34d, m.doubleValue());
         assertEquals("EUR", m.getCurrency());
     }
 
     @Test
     void fr02() {
-        Money m = new Money(Locale.FRANCE, "12,34 €");
+        final Money m = new Money(Locale.FRANCE, "12,34 €");
         assertEquals(12.34d, m.doubleValue());
         assertEquals("EUR", m.getCurrency());
     }
 
     @Test
     void fr03() {
-        Money m = new Money(Locale.FRANCE, "12,34€");
+        final Money m = new Money(Locale.FRANCE, "12,34€");
         assertEquals(12.34d, m.doubleValue());
         assertEquals("EUR", m.getCurrency());
     }
 
     @Test
     void fr04() {
-        Money m = new Money(Locale.FRANCE, "12,34 eur");
+        final Money m = new Money(Locale.FRANCE, "12,34 eur");
         assertEquals(12.34d, m.doubleValue());
         assertEquals("EUR", m.getCurrency());
     }

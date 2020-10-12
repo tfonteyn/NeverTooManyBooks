@@ -93,7 +93,7 @@ public class ImageFileInfo
         mFileSpec = in.readString();
         mEngineId = in.readInt();
 
-        int sizeOrdinal = in.readInt();
+        final int sizeOrdinal = in.readInt();
         if (sizeOrdinal >= 0) {
             mSize = Size.values()[sizeOrdinal];
         } else {

@@ -60,7 +60,7 @@ public class XmlResponseParser
      */
     public XmlResponseParser(@NonNull final XmlFilter rootFilter) {
         // Build the root context and add to hierarchy.
-        ElementContext tag = new ElementContext(rootFilter);
+        final ElementContext tag = new ElementContext(rootFilter);
         mParents.add(tag);
     }
 

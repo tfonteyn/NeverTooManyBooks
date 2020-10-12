@@ -134,7 +134,7 @@ public enum AppDir {
 
             // create sub directories if needed
             final AppDir[] appDirs = {Log, Upgrades};
-            for (AppDir appDir : appDirs) {
+            for (final AppDir appDir : appDirs) {
                 final File dir = appDir.get(context);
                 if (!(dir.isDirectory() || dir.mkdirs())) {
                     return context.getString(R.string.error_storage_not_writable);
@@ -305,7 +305,7 @@ public enum AppDir {
 
         final List<File> files = collectFiles(get(context), filter);
         long totalSize = 0;
-        for (File file : files) {
+        for (final File file : files) {
             if (BuildConfig.DEBUG /* always */) {
                 Logger.d(TAG, "purge", this + "|" + file.getName());
             }
@@ -351,11 +351,11 @@ public enum AppDir {
     @NonNull
     private List<File> collectFiles(@NonNull final File root,
                                     @Nullable final FileFilter filter) {
-        List<File> files = new ArrayList<>();
+        final List<File> files = new ArrayList<>();
         // sanity check
         if (root.isDirectory()) {
             //noinspection ConstantConditions
-            for (File file : root.listFiles(filter)) {
+            for (final File file : root.listFiles(filter)) {
                 if (file.isFile()) {
                     files.add(file);
                 } else if (file.isDirectory()) {

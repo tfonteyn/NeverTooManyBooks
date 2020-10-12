@@ -54,7 +54,7 @@ public final class BitUtils {
     public static Integer from(@SuppressWarnings("TypeMayBeWeakened")
                                @NonNull final Set<String> set) {
         int tmp = 0;
-        for (String s : set) {
+        for (final String s : set) {
             tmp |= Integer.parseInt(s);
         }
         return tmp;
@@ -71,7 +71,7 @@ public final class BitUtils {
     public static Integer from(@SuppressWarnings("TypeMayBeWeakened")
                                @NonNull final List<Integer> set) {
         int tmp = 0;
-        for (Integer value : set) {
+        for (final Integer value : set) {
             tmp |= value;
         }
         return tmp;
@@ -91,7 +91,7 @@ public final class BitUtils {
             throw new IllegalArgumentException(BITMASK + bitmask);
         }
 
-        Set<String> set = new HashSet<>();
+        final Set<String> set = new HashSet<>();
         int tmp = bitmask;
         int bit = 1;
         while (tmp != 0) {

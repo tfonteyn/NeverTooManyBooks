@@ -99,14 +99,14 @@ public abstract class BaseDataAccessor<T, V extends View>
         // Don't complain if the view is not there. We can get called when
         // the field is not on display.
         if (mErrorViewReference != null) {
-            View errorView = mErrorViewReference.get();
+            final View errorView = mErrorViewReference.get();
             if (errorView != null) {
                 if (errorView instanceof TextInputLayout) {
-                    TextInputLayout til = (TextInputLayout) errorView;
+                    final TextInputLayout til = (TextInputLayout) errorView;
                     til.setErrorEnabled(errorText != null);
                     til.setError(errorText);
                 } else if (errorView instanceof TextView) {
-                    TextView textView = (TextView) errorView;
+                    final TextView textView = (TextView) errorView;
                     textView.setError(errorText);
                 }
             }

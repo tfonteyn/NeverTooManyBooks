@@ -50,8 +50,8 @@ final class SerializationUtils {
     @NonNull
     static byte[] serializeObject(@NonNull final Serializable o)
             throws IllegalStateException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try (ObjectOutput out = new ObjectOutputStream(bos)) {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (final ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(o);
         } catch (@NonNull final IOException e) {
             throw new IllegalStateException(e);
@@ -72,7 +72,7 @@ final class SerializationUtils {
     @NonNull
     static <T> T deserializeObject(@NonNull final byte[] obj)
             throws DeserializationException {
-        try (ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(obj))) {
+        try (final ObjectInputStream is = new ObjectInputStream(new ByteArrayInputStream(obj))) {
             return (T) is.readObject();
         } catch (@NonNull final ClassCastException | ClassNotFoundException | IOException e) {
             throw new DeserializationException(e);

@@ -201,7 +201,7 @@ class CalibreArchiveReader
 
         Synchronizer.SyncLock txLock = null;
 
-        try (Cursor source = mCalibreDb.rawQuery(SQL_SELECT_BOOKS, null)) {
+        try (final Cursor source = mCalibreDb.rawQuery(SQL_SELECT_BOOKS, null)) {
             final int count = source.getCount();
             // not perfect, but good enough
             if (count > 0 && progressListener.getMaxPos() < count) {
@@ -274,8 +274,9 @@ class CalibreArchiveReader
                 // process the book
                 try {
                     // check if the book exists in our database, and fetch it's id.
-                    long databaseBookId = mDb.getBookIdFromKey(DBDefinitions.KEY_EID_CALIBRE_UUID,
-                                                               calibreUuid);
+                    final long databaseBookId = mDb
+                            .getBookIdFromKey(DBDefinitions.KEY_EID_CALIBRE_UUID,
+                                              calibreUuid);
 
                     //    if (databaseBookId == 0) {
                     //        // try to find it using the ISBN
@@ -354,8 +355,8 @@ class CalibreArchiveReader
     private void handleAuthor(@NonNull final Book book,
                               final int calibreId) {
         final ArrayList<Author> mAuthors = new ArrayList<>();
-        try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_AUTHORS,
-                                                 new String[]{String.valueOf(calibreId)})) {
+        try (final Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_AUTHORS,
+                                                       new String[]{String.valueOf(calibreId)})) {
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);
                 mAuthors.add(Author.from(name));
@@ -369,8 +370,8 @@ class CalibreArchiveReader
     private void handlePublishers(@NonNull final Book book,
                                   final int calibreId) {
         final ArrayList<Publisher> mPublishers = new ArrayList<>();
-        try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_PUBLISHERS,
-                                                 new String[]{String.valueOf(calibreId)})) {
+        try (final Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_PUBLISHERS,
+                                                       new String[]{String.valueOf(calibreId)})) {
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);
                 mPublishers.add(Publisher.from(name));
@@ -383,8 +384,8 @@ class CalibreArchiveReader
 
     private void handleIdentifiers(@NonNull final Book book,
                                    final int calibreId) {
-        try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_IDENTIFIERS,
-                                                 new String[]{String.valueOf(calibreId)})) {
+        try (final Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_IDENTIFIERS,
+                                                       new String[]{String.valueOf(calibreId)})) {
             while (cursor.moveToNext()) {
                 String name = cursor.getString(0);
                 if (name != null) {
@@ -424,7 +425,7 @@ class CalibreArchiveReader
 
     private void handleCustomColumns(@NonNull final Book book,
                                      final int calibreId) {
-        for (CustomColumn cc : mCustomColumns) {
+        for (final CustomColumn cc : mCustomColumns) {
             switch (cc.label) {
                 case DBDefinitions.KEY_READ:
                     customBoolean(cc.id, calibreId).ifPresent(
@@ -456,7 +457,7 @@ class CalibreArchiveReader
     @NonNull
     private Collection<CustomColumn> readCustomColumns() {
         final Collection<CustomColumn> customColumns = new ArrayList<>();
-        try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_CUSTOM_COLUMNS, null)) {
+        try (final Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_CUSTOM_COLUMNS, null)) {
             int id;
             String label;
             // The datatype as used in Calibre.
@@ -503,7 +504,7 @@ class CalibreArchiveReader
     @NonNull
     private Optional<String> customString(final int customColumnId,
                                           final int calibreId) {
-        try (Cursor cursor = mCalibreDb.rawQuery(
+        try (final Cursor cursor = mCalibreDb.rawQuery(
                 String.format(SQL_SELECT_CUSTOM_COLUMN_X, customColumnId),
                 new String[]{String.valueOf(calibreId)})) {
             if (cursor.moveToFirst()) {
@@ -516,7 +517,7 @@ class CalibreArchiveReader
     @NonNull
     private Optional<Boolean> customBoolean(final int customColumnId,
                                             final int calibreId) {
-        try (Cursor cursor = mCalibreDb.rawQuery(
+        try (final Cursor cursor = mCalibreDb.rawQuery(
                 String.format(SQL_SELECT_CUSTOM_COLUMN_X, customColumnId),
                 new String[]{String.valueOf(calibreId)})) {
             if (cursor.moveToFirst()) {

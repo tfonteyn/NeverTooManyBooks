@@ -568,7 +568,7 @@ public class IsfdbSearchEngine
 
         String tmpString;
 
-        for (Element li : lis) {
+        for (final Element li : lis) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
                 Log.d(TAG, "fetch|" + li.toString());
             }
@@ -602,7 +602,7 @@ public class IsfdbSearchEngine
                            || "Authors:".equalsIgnoreCase(fieldName)) {
                     final Elements as = li.select("a");
                     if (as != null) {
-                        for (Element a : as) {
+                        for (final Element a : as) {
                             final Author author = Author.from(a.text());
                             // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mAuthors.add(author);
@@ -642,7 +642,7 @@ public class IsfdbSearchEngine
                 } else if ("Publisher:".equalsIgnoreCase(fieldName)) {
                     final Elements as = li.select("a");
                     if (as != null) {
-                        for (Element a : as) {
+                        for (final Element a : as) {
                             final Publisher publisher = Publisher.from(a.text());
                             // publisher.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mPublishers.add(publisher);
@@ -652,7 +652,7 @@ public class IsfdbSearchEngine
                 } else if ("Pub. Series:".equalsIgnoreCase(fieldName)) {
                     final Elements as = li.select("a");
                     if (as != null) {
-                        for (Element a : as) {
+                        for (final Element a : as) {
                             final Series series = Series.from(a.text());
                             // series.setIsfDbId(stripNumber(a.attr("href"), '?'));
                             mSeries.add(series);
@@ -717,7 +717,7 @@ public class IsfdbSearchEngine
                 } else if ("Editors:".equalsIgnoreCase(fieldName)) {
                     final Elements as = li.select("a");
                     if (as != null) {
-                        for (Element a : as) {
+                        for (final Element a : as) {
                             final Author author = Author.from(a.text());
                             author.setType(Author.TYPE_EDITOR);
                             // author.setIsfDbId(stripNumber(a.attr("href"), '?'));
@@ -868,7 +868,7 @@ public class IsfdbSearchEngine
         // <div class="ContentBox"> but there are two, so get last one
         final Element contentBox = document.select(CSS_Q_DIV_CONTENTBOX).last();
         final Elements lis = contentBox.select("li");
-        for (Element li : lis) {
+        for (final Element li : lis) {
 
             /* LI entries, possibilities:
             7
@@ -947,7 +947,7 @@ public class IsfdbSearchEngine
             Author author = null;
             final Elements aas = li.select("a");
             // find the first occurrence of each
-            for (Element a : aas) {
+            for (final Element a : aas) {
                 final String href = a.attr("href");
 
                 if (title == null && href.contains(IsfdbSearchEngine.URL_TITLE_CGI)) {
@@ -1157,7 +1157,7 @@ public class IsfdbSearchEngine
                     entries.add(evenEntries.get(i));
                 }
 
-                for (Element tr : entries) {
+                for (final Element tr : entries) {
                     // 1st column: Title == the book link
                     final Element edLink = tr.child(0).select("a").first();
                     if (edLink != null) {
@@ -1263,7 +1263,7 @@ public class IsfdbSearchEngine
                         bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, stripString(url, '/'));
 
                     } else if (url.contains("amazon")) {
-                        int start = url.lastIndexOf('/');
+                        final int start = url.lastIndexOf('/');
                         if (start != -1) {
                             int end = url.indexOf('?', start);
                             if (end == -1) {

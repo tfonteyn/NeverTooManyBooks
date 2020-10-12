@@ -169,7 +169,7 @@ public class StartupActivity
                     .setMessage(R.string.warning_backup_request)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        Intent intent = new Intent(this, AdminActivity.class)
+                        final Intent intent = new Intent(this, AdminActivity.class)
                                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
                         startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
                     })

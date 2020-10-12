@@ -41,7 +41,7 @@ public class PartialDateTest {
         final Parcel parcel = Parcel.obtain();
         date.writeToParcel(parcel, date.describeContents());
         parcel.setDataPosition(0);
-        PartialDate pDate = PartialDate.CREATOR.createFromParcel(parcel);
+        final PartialDate pDate = PartialDate.CREATOR.createFromParcel(parcel);
 
         assertEquals(pDate, date);
     }

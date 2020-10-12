@@ -37,7 +37,7 @@ public class PublisherTest {
         final Parcel parcel = Parcel.obtain();
         publisher.writeToParcel(parcel, publisher.describeContents());
         parcel.setDataPosition(0);
-        Publisher pPublisher = Publisher.CREATOR.createFromParcel(parcel);
+        final Publisher pPublisher = Publisher.CREATOR.createFromParcel(parcel);
 
         assertEquals(pPublisher, publisher);
 

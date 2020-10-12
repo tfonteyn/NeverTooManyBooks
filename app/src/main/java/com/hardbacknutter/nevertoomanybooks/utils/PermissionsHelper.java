@@ -74,7 +74,7 @@ public interface PermissionsHelper {
                                                         @NonNull final String[] permissions,
                                                         @NonNull final int[] grantResults) {
 
-            PermissionsHelper.ResultHandler callback = permissionCallback.get(requestCode);
+            final PermissionsHelper.ResultHandler callback = permissionCallback.get(requestCode);
             if (callback != null) {
                 callback.requestResult(permissions, grantResults);
             } else {

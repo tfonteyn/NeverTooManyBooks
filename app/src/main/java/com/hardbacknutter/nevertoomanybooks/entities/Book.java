@@ -273,7 +273,7 @@ public class Book
                      @NonNull final DAO db) {
         SanityCheck.requireValue(bookId, "bookId");
 
-        try (Cursor bookCursor = db.fetchBookById(bookId)) {
+        try (final Cursor bookCursor = db.fetchBookById(bookId)) {
             if (bookCursor.moveToFirst()) {
                 load(bookId, bookCursor, db);
             }
@@ -616,7 +616,7 @@ public class Book
 
         final Locale bookLocale = getLocale(context);
         final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_LIST);
-        for (Author author : list) {
+        for (final Author author : list) {
             db.refresh(context, author, bookLocale);
         }
     }
@@ -643,7 +643,7 @@ public class Book
 
         final Locale bookLocale = getLocale(context);
         final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_LIST);
-        for (Series series : list) {
+        for (final Series series : list) {
             db.refresh(context, series, bookLocale);
         }
     }
@@ -670,7 +670,7 @@ public class Book
 
         final Locale bookLocale = getLocale(context);
         final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_LIST);
-        for (Publisher publisher : list) {
+        for (final Publisher publisher : list) {
             db.refresh(context, publisher, bookLocale);
         }
     }
@@ -1503,7 +1503,7 @@ public class Book
         @NonNull
         public static Map<Integer, String> getEditions(@NonNull final Context context) {
             final Map<Integer, String> map = new LinkedHashMap<>();
-            for (Map.Entry<Integer, Integer> entry : ALL.entrySet()) {
+            for (final Map.Entry<Integer, Integer> entry : ALL.entrySet()) {
                 map.put(entry.getKey(), context.getString(entry.getValue()));
             }
             return map;

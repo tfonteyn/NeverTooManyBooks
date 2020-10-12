@@ -85,7 +85,7 @@ public class ShelvesListApiHandler
                 break;
             }
 
-            for (Bundle shelf : shelves) {
+            for (final Bundle shelf : shelves) {
                 final GoodreadsShelf grShelf = new GoodreadsShelf(shelf);
                 map.put(grShelf.getName(), grShelf);
             }

@@ -321,7 +321,7 @@ public class BooklistGroup
                                  @NonNull final String[] keys,
                                  final boolean visible) {
 
-        for (String key : keys) {
+        for (final String key : keys) {
             final Preference preference = category.findPreference(key);
             if (preference != null) {
                 preference.setVisible(visible);

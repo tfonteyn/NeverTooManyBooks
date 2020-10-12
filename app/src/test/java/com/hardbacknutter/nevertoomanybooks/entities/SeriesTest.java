@@ -31,14 +31,14 @@ class SeriesTest {
 
     @Test
     void fromString00() {
-        Series series = Series.from("This is the series title");
+        final Series series = Series.from("This is the series title");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
     }
 
     @Test
     void fromString01() {
-        Series series = Series.from("This is the series title(34)");
+        final Series series = Series.from("This is the series title(34)");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -46,7 +46,7 @@ class SeriesTest {
 
     @Test
     void fromString02() {
-        Series series = Series.from("This is the series title (34)");
+        final Series series = Series.from("This is the series title (34)");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -54,7 +54,7 @@ class SeriesTest {
 
     @Test
     void fromString03() {
-        Series series = Series.from("This is the series title ( 34)");
+        final Series series = Series.from("This is the series title ( 34)");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -62,7 +62,7 @@ class SeriesTest {
 
     @Test
     void fromString04() {
-        Series series = Series.from("Series Title");
+        final Series series = Series.from("Series Title");
         assertNotNull(series);
         assertEquals("Series Title", series.getTitle());
         assertEquals("", series.getNumber());
@@ -73,7 +73,7 @@ class SeriesTest {
      */
     @Test
     void fromString05() {
-        Series series = Series.from("bill");
+        final Series series = Series.from("bill");
         assertNotNull(series);
         assertEquals("bill", series.getTitle());
         assertEquals("", series.getNumber());
@@ -81,7 +81,7 @@ class SeriesTest {
 
     @Test
     void fromString05a() {
-        Series series = Series.from("bill", "");
+        final Series series = Series.from("bill", "");
         assertNotNull(series);
         assertEquals("bill", series.getTitle());
         assertEquals("", series.getNumber());
@@ -92,7 +92,7 @@ class SeriesTest {
      */
     @Test
     void fromString06() {
-        Series series = Series.from("illegal");
+        final Series series = Series.from("illegal");
         assertNotNull(series);
         assertEquals("illegal", series.getTitle());
         assertEquals("", series.getNumber());
@@ -100,7 +100,7 @@ class SeriesTest {
 
     @Test
     void fromString06a() {
-        Series series = Series.from("illegal", "");
+        final Series series = Series.from("illegal", "");
         assertNotNull(series);
         assertEquals("illegal", series.getTitle());
         assertEquals("", series.getNumber());
@@ -108,7 +108,7 @@ class SeriesTest {
 
     @Test
     void fromString07() {
-        Series series = Series.from("illegal 5");
+        final Series series = Series.from("illegal 5");
         assertNotNull(series);
         assertEquals("illegal", series.getTitle());
         assertEquals("5", series.getNumber());
@@ -116,7 +116,7 @@ class SeriesTest {
 
     @Test
     void fromString11() {
-        Series series = Series.from("This is the series title(iv)");
+        final Series series = Series.from("This is the series title(iv)");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("iv", series.getNumber());
@@ -124,7 +124,7 @@ class SeriesTest {
 
     @Test
     void fromString12() {
-        Series series = Series.from("This is the series title (iv)");
+        final Series series = Series.from("This is the series title (iv)");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("iv", series.getNumber());
@@ -132,7 +132,7 @@ class SeriesTest {
 
     @Test
     void fromString13() {
-        Series series = Series.from("This is the series title ( iv)");
+        final Series series = Series.from("This is the series title ( iv)");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("iv", series.getNumber());
@@ -141,7 +141,7 @@ class SeriesTest {
 
     @Test
     void fromString21() {
-        Series series = Series.from("This is the series title, subtitle(34)");
+        final Series series = Series.from("This is the series title, subtitle(34)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -149,7 +149,7 @@ class SeriesTest {
 
     @Test
     void fromString22() {
-        Series series = Series.from("This is the series title, subtitle (34)");
+        final Series series = Series.from("This is the series title, subtitle (34)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -157,7 +157,7 @@ class SeriesTest {
 
     @Test
     void fromString23() {
-        Series series = Series.from("This is the series title, subtitle ( 34)");
+        final Series series = Series.from("This is the series title, subtitle ( 34)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -166,7 +166,7 @@ class SeriesTest {
 
     @Test
     void fromString31() {
-        Series series = Series.from("This is the series title, subtitle(vii)");
+        final Series series = Series.from("This is the series title, subtitle(vii)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("vii", series.getNumber());
@@ -174,7 +174,7 @@ class SeriesTest {
 
     @Test
     void fromString32() {
-        Series series = Series.from("This is the series title, subtitle (vii)");
+        final Series series = Series.from("This is the series title, subtitle (vii)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("vii", series.getNumber());
@@ -182,7 +182,7 @@ class SeriesTest {
 
     @Test
     void fromString33() {
-        Series series = Series.from("This is the series title, subtitle ( vii)");
+        final Series series = Series.from("This is the series title, subtitle ( vii)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("vii", series.getNumber());
@@ -191,7 +191,7 @@ class SeriesTest {
 
     @Test
     void fromString41() {
-        Series series = Series.from("This is the series title, subtitle(part 1)");
+        final Series series = Series.from("This is the series title, subtitle(part 1)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("1", series.getNumber());
@@ -199,7 +199,7 @@ class SeriesTest {
 
     @Test
     void fromString42() {
-        Series series = Series.from("This is the series title, subtitle (deel 2)");
+        final Series series = Series.from("This is the series title, subtitle (deel 2)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("2", series.getNumber());
@@ -207,7 +207,7 @@ class SeriesTest {
 
     @Test
     void fromString43() {
-        Series series = Series.from("This is the series title, subtitle ( vol. 3)");
+        final Series series = Series.from("This is the series title, subtitle ( vol. 3)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("3", series.getNumber());
@@ -216,7 +216,7 @@ class SeriesTest {
 
     @Test
     void fromString51() {
-        Series series = Series.from("This is the series title, subtitle(part1)");
+        final Series series = Series.from("This is the series title, subtitle(part1)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("1", series.getNumber());
@@ -224,7 +224,7 @@ class SeriesTest {
 
     @Test
     void fromString52() {
-        Series series = Series.from("This is the series title, subtitle (deel2)");
+        final Series series = Series.from("This is the series title, subtitle (deel2)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("2", series.getNumber());
@@ -232,7 +232,7 @@ class SeriesTest {
 
     @Test
     void fromString53() {
-        Series series = Series.from("This is the series title, subtitle ( vol3)");
+        final Series series = Series.from("This is the series title, subtitle ( vol3)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("3", series.getNumber());
@@ -241,7 +241,7 @@ class SeriesTest {
 
     @Test
     void fromString61() {
-        Series series = Series.from("This is the series title, subtitle(34|omnibus)");
+        final Series series = Series.from("This is the series title, subtitle(34|omnibus)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34|omnibus", series.getNumber());
@@ -249,7 +249,7 @@ class SeriesTest {
 
     @Test
     void fromString62() {
-        Series series = Series.from("This is the series title, subtitle (34|omnibus)");
+        final Series series = Series.from("This is the series title, subtitle (34|omnibus)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34|omnibus", series.getNumber());
@@ -257,14 +257,14 @@ class SeriesTest {
 
     @Test
     void fromString62b() {
-        Series series = Series.from("This is the series title, subtitle 34|omnibus");
+        final Series series = Series.from("This is the series title, subtitle 34|omnibus");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34|omnibus", series.getNumber());
     }
     @Test
     void fromString63() {
-        Series series = Series.from("This is the series title, subtitle ( 34|omnibus)");
+        final Series series = Series.from("This is the series title, subtitle ( 34|omnibus)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34|omnibus", series.getNumber());
@@ -273,7 +273,7 @@ class SeriesTest {
 
     @Test
     void fromString71() {
-        Series series = Series.from("This is the series title, subtitle(iii|omnibus)");
+        final Series series = Series.from("This is the series title, subtitle(iii|omnibus)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("iii|omnibus", series.getNumber());
@@ -281,7 +281,7 @@ class SeriesTest {
 
     @Test
     void fromString72() {
-        Series series = Series.from("This is the series title, subtitle (iii|omnibus)");
+        final Series series = Series.from("This is the series title, subtitle (iii|omnibus)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("iii|omnibus", series.getNumber());
@@ -289,7 +289,7 @@ class SeriesTest {
 
     @Test
     void fromString73() {
-        Series series = Series.from("This is the series title, subtitle ( iii|omnibus)");
+        final Series series = Series.from("This is the series title, subtitle ( iii|omnibus)");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("iii|omnibus", series.getNumber());
@@ -298,7 +298,7 @@ class SeriesTest {
 
     @Test
     void fromString81() {
-        Series series = Series.from("This is the series title #34");
+        final Series series = Series.from("This is the series title #34");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -306,7 +306,7 @@ class SeriesTest {
 
     @Test
     void fromString82() {
-        Series series = Series.from("This is the series title, subtitle # 34");
+        final Series series = Series.from("This is the series title, subtitle # 34");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -314,7 +314,7 @@ class SeriesTest {
 
     @Test
     void fromString83() {
-        Series series = Series.from("This is the series title, subtitle #34  ");
+        final Series series = Series.from("This is the series title, subtitle #34  ");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -322,7 +322,7 @@ class SeriesTest {
 
     @Test
     void fromString84() {
-        Series series = Series.from("This is the series title, #34  ");
+        final Series series = Series.from("This is the series title, #34  ");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -330,7 +330,7 @@ class SeriesTest {
 
     @Test
     void fromString85() {
-        Series series = Series.from("This is the series title,#34  ");
+        final Series series = Series.from("This is the series title,#34  ");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -338,7 +338,7 @@ class SeriesTest {
 
     @Test
     void fromString86() {
-        Series series = Series.from("This is the series title#34  ");
+        final Series series = Series.from("This is the series title#34  ");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -347,7 +347,7 @@ class SeriesTest {
 
     @Test
     void fromString91() {
-        Series series = Series.from("This is the series 34  ");
+        final Series series = Series.from("This is the series 34  ");
         assertNotNull(series);
         assertEquals("This is the series", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -355,7 +355,7 @@ class SeriesTest {
 
     @Test
     void fromString92() {
-        Series series = Series.from("This is the series, 34");
+        final Series series = Series.from("This is the series, 34");
         assertNotNull(series);
         assertEquals("This is the series", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -363,7 +363,7 @@ class SeriesTest {
 
     @Test
     void fromString93() {
-        Series series = Series.from("This is the series, subtitle part 34");
+        final Series series = Series.from("This is the series, subtitle part 34");
         assertNotNull(series);
         assertEquals("This is the series, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -371,7 +371,7 @@ class SeriesTest {
 
     @Test
     void fromString94() {
-        Series series = Series.from("This is the series, subtitle, part 34");
+        final Series series = Series.from("This is the series, subtitle, part 34");
         assertNotNull(series);
         assertEquals("This is the series, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -380,7 +380,7 @@ class SeriesTest {
     @Test
     void fromString95() {
         // Testing the variant
-        Series series = Series.from3("Favorietenreeks (II) nr. 24");
+        final Series series = Series.from3("Favorietenreeks (II) nr. 24");
         assertNotNull(series);
         assertEquals("Favorietenreeks", series.getTitle());
         assertEquals("2.24", series.getNumber());
@@ -388,7 +388,7 @@ class SeriesTest {
 
     @Test
     void fromString96() {
-        Series series = Series.from("De avonturen van de 3L");
+        final Series series = Series.from("De avonturen van de 3L");
         assertNotNull(series);
         assertEquals("De avonturen van de 3L", series.getTitle());
         assertEquals("", series.getNumber());
@@ -400,7 +400,7 @@ class SeriesTest {
      */
     @Test
     void fromString100() {
-        Series series = Series.from("Blake's 7");
+        final Series series = Series.from("Blake's 7");
         assertNotNull(series);
         assertEquals("Blake's 7", series.getTitle());
         assertEquals("", series.getNumber());
@@ -409,7 +409,7 @@ class SeriesTest {
 
     @Test
     void fromString101() {
-        Series series = Series.from("Stephen Baxter: Non-Fiction");
+        final Series series = Series.from("Stephen Baxter: Non-Fiction");
         assertNotNull(series);
         assertEquals("Stephen Baxter: Non-Fiction", series.getTitle());
         assertEquals("", series.getNumber());
@@ -421,7 +421,7 @@ class SeriesTest {
      */
     @Test
     void fromString201() {
-        Series series = Series.from("Jerry Cornelius");
+        final Series series = Series.from("Jerry Cornelius");
         assertNotNull(series);
         assertEquals("Jerry Cornelius", series.getTitle());
         assertEquals("", series.getNumber());
@@ -429,7 +429,7 @@ class SeriesTest {
 
     @Test
     void fromString202() {
-        Series series = Series.from("Jerry Cornelius 2");
+        final Series series = Series.from("Jerry Cornelius 2");
         assertNotNull(series);
         assertEquals("Jerry Cornelius", series.getTitle());
         assertEquals("2", series.getNumber());
@@ -437,7 +437,7 @@ class SeriesTest {
 
     @Test
     void fromString203() {
-        Series series = Series.from("Jerry Cornelius xii");
+        final Series series = Series.from("Jerry Cornelius xii");
         assertNotNull(series);
         assertEquals("Jerry Cornelius", series.getTitle());
         assertEquals("xii", series.getNumber());
@@ -448,7 +448,7 @@ class SeriesTest {
      */
     @Test
     void fromString204() {
-        Series series = Series.from("Jerry Cornelius xii|bla");
+        final Series series = Series.from("Jerry Cornelius xii|bla");
         assertNotNull(series);
         assertEquals("Jerry Cornelius", series.getTitle());
         assertEquals("xii|bla", series.getNumber());
@@ -456,7 +456,7 @@ class SeriesTest {
 
     @Test
     void fromString205() {
-        Series series = Series.from(
+        final Series series = Series.from(
                 "Cornelius Chronicles, The (8|8 as includes The Alchemist's Question)");
         assertNotNull(series);
         assertEquals("Cornelius Chronicles, The", series.getTitle());
@@ -465,7 +465,7 @@ class SeriesTest {
 
     @Test
     void fromString206() {
-        Series series = Series.from(
+        final Series series = Series.from(
                 "Eternal Champion, The (984|Jerry Cornelius Calendar 4 as includes"
                 + " The Alchemist's Question)");
         assertNotNull(series);
@@ -476,7 +476,7 @@ class SeriesTest {
 
     @Test
     void fromString1001() {
-        Series series = Series.from("This is (the series) title, subtitle ( iii|omnibus)");
+        final Series series = Series.from("This is (the series) title, subtitle ( iii|omnibus)");
         assertNotNull(series);
         assertEquals("This is (the series) title, subtitle", series.getTitle());
         assertEquals("iii|omnibus", series.getNumber());
@@ -484,7 +484,7 @@ class SeriesTest {
 
     @Test
     void fromString1002() {
-        Series series = Series.from("This is (the series) title, subtitle (34)");
+        final Series series = Series.from("This is (the series) title, subtitle (34)");
         assertNotNull(series);
         assertEquals("This is (the series) title, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -492,7 +492,7 @@ class SeriesTest {
 
     @Test
     void fromString1003() {
-        Series series = Series.from("This is #title, subtitle (4omnibus)");
+        final Series series = Series.from("This is #title, subtitle (4omnibus)");
         assertNotNull(series);
         assertEquals("This is #title, subtitle", series.getTitle());
         assertEquals("4omnibus", series.getNumber());
@@ -500,7 +500,7 @@ class SeriesTest {
 
     @Test
     void fromString1004() {
-        Series series = Series.from("This is #title, subtitle (omnibus)");
+        final Series series = Series.from("This is #title, subtitle (omnibus)");
         assertNotNull(series);
         assertEquals("This is #title, subtitle", series.getTitle());
         assertEquals("omnibus", series.getNumber());
@@ -508,7 +508,7 @@ class SeriesTest {
 
     @Test
     void fromString1005() {
-        Series series = Series.from("This is #title, subtitle (omnibus)");
+        final Series series = Series.from("This is #title, subtitle (omnibus)");
         assertNotNull(series);
         assertEquals("This is #title, subtitle", series.getTitle());
         assertEquals("omnibus", series.getNumber());
@@ -517,7 +517,7 @@ class SeriesTest {
 
     @Test
     void from2String00() {
-        Series series = Series.from("This is the series title", "");
+        final Series series = Series.from("This is the series title", "");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("", series.getNumber());
@@ -525,7 +525,7 @@ class SeriesTest {
 
     @Test
     void from2String01() {
-        Series series = Series.from("This is the series title", "34");
+        final Series series = Series.from("This is the series title", "34");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -534,7 +534,7 @@ class SeriesTest {
 
     @Test
     void from2String03() {
-        Series series = Series.from("This is the series title", " 34");
+        final Series series = Series.from("This is the series title", " 34");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -542,7 +542,7 @@ class SeriesTest {
 
     @Test
     void from2String11() {
-        Series series = Series.from("This is the series title", "iv");
+        final Series series = Series.from("This is the series title", "iv");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("iv", series.getNumber());
@@ -551,7 +551,7 @@ class SeriesTest {
 
     @Test
     void from2String13() {
-        Series series = Series.from("This is the series title", " iv");
+        final Series series = Series.from("This is the series title", " iv");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("iv", series.getNumber());
@@ -559,7 +559,7 @@ class SeriesTest {
 
     @Test
     void from2String41() {
-        Series series = Series.from("This is the series title, subtitle", "part 1");
+        final Series series = Series.from("This is the series title, subtitle", "part 1");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("1", series.getNumber());
@@ -567,7 +567,7 @@ class SeriesTest {
 
     @Test
     void from2String42() {
-        Series series = Series.from("This is the series title, subtitle ", " deel  2");
+        final Series series = Series.from("This is the series title, subtitle ", " deel  2");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("2", series.getNumber());
@@ -575,7 +575,7 @@ class SeriesTest {
 
     @Test
     void from2String43() {
-        Series series = Series.from("This is the series title, subtitle ", " vol. 3");
+        final Series series = Series.from("This is the series title, subtitle ", " vol. 3");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("3", series.getNumber());
@@ -584,7 +584,7 @@ class SeriesTest {
 
     @Test
     void from2String51() {
-        Series series = Series.from("This is the series title, subtitle", "part1");
+        final Series series = Series.from("This is the series title, subtitle", "part1");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("1", series.getNumber());
@@ -592,7 +592,7 @@ class SeriesTest {
 
     @Test
     void from2String61() {
-        Series series = Series.from("This is the series title, subtitle", "34|omnibus");
+        final Series series = Series.from("This is the series title, subtitle", "34|omnibus");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34|omnibus", series.getNumber());
@@ -600,7 +600,7 @@ class SeriesTest {
 
     @Test
     void from2String71() {
-        Series series = Series.from("This is the series title, subtitle", "iii|omnibus");
+        final Series series = Series.from("This is the series title, subtitle", "iii|omnibus");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("iii|omnibus", series.getNumber());
@@ -608,7 +608,7 @@ class SeriesTest {
 
     @Test
     void from2String81() {
-        Series series = Series.from("This is the series title", "#34");
+        final Series series = Series.from("This is the series title", "#34");
         assertNotNull(series);
         assertEquals("This is the series title", series.getTitle());
         assertEquals("34", series.getNumber());
@@ -616,7 +616,7 @@ class SeriesTest {
 
     @Test
     void from2String82() {
-        Series series = Series.from("This is the series title, subtitle", " # 34 ");
+        final Series series = Series.from("This is the series title, subtitle", " # 34 ");
         assertNotNull(series);
         assertEquals("This is the series title, subtitle", series.getTitle());
         assertEquals("34", series.getNumber());

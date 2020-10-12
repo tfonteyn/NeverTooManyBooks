@@ -1233,14 +1233,14 @@ public class BooksOnBookshelf
                             mModel.setForceRebuildInOnResume(true);
                         }
                         if (extras.containsKey(BooksOnBookshelfModel.BKEY_LIST_STATE)) {
-                            int state = extras.getInt(BooksOnBookshelfModel.BKEY_LIST_STATE,
-                                                      Booklist.PREF_REBUILD_SAVED_STATE);
+                            final int state = extras.getInt(BooksOnBookshelfModel.BKEY_LIST_STATE,
+                                                            Booklist.PREF_REBUILD_SAVED_STATE);
                             mModel.setRebuildState(state);
                             mModel.setForceRebuildInOnResume(true);
                         }
 
                         // if we got an id back, make any rebuild re-position to it.
-                        long bookId = extras.getLong(DBDefinitions.KEY_PK_ID, 0);
+                        final long bookId = extras.getLong(DBDefinitions.KEY_PK_ID, 0);
                         if (bookId > 0) {
                             mModel.setDesiredCentralBookId(bookId);
                         }

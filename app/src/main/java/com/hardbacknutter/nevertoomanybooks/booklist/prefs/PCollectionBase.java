@@ -166,7 +166,7 @@ public abstract class PCollectionBase<E, T extends Collection<E>>
             final String list = mStylePrefs.getString(getKey(), null);
             if (list != null && !list.isEmpty()) {
                 final Collection<String> newList = new ArrayList<>();
-                for (String e : list.split(DELIM)) {
+                for (final String e : list.split(DELIM)) {
                     if (!e.equals(String.valueOf(element))) {
                         newList.add(e);
                     }

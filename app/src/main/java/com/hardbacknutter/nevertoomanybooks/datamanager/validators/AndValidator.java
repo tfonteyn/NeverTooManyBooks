@@ -53,7 +53,7 @@ public class AndValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        for (DataValidator validator : mList) {
+        for (final DataValidator validator : mList) {
             validator.validate(context, dataManager, key, errorLabelId);
         }
     }

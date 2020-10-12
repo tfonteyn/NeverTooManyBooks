@@ -307,7 +307,7 @@ public class SearchCoordinator
     public boolean cancel(final boolean mayInterruptIfRunning) {
         mIsCancelled = true;
         synchronized (mActiveTasks) {
-            for (SearchTask searchTask : mActiveTasks) {
+            for (final SearchTask searchTask : mActiveTasks) {
                 searchTask.cancel(mayInterruptIfRunning);
             }
         }
@@ -359,10 +359,10 @@ public class SearchCoordinator
             }
         }
 
-        boolean allDone;
+        final boolean allDone;
         synchronized (mActiveTasks) {
             // Remove the finished task from our list
-            for (SearchTask searchTask : mActiveTasks) {
+            for (final SearchTask searchTask : mActiveTasks) {
                 if (searchTask.getTaskId() == taskId) {
                     mActiveTasks.remove(searchTask);
                     break;
@@ -375,7 +375,7 @@ public class SearchCoordinator
                 Log.d(TAG, "mSearchTaskListener.onFinished|finished="
                            + appContext.getString(config.getNameResId()));
 
-                for (SearchTask searchTask : mActiveTasks) {
+                for (final SearchTask searchTask : mActiveTasks) {
                     config = SearchEngineRegistry.getByEngineId(searchTask.getTaskId());
                     //noinspection ConstantConditions
                     Log.d(TAG, "mSearchTaskListener.onFinished|running="
@@ -724,7 +724,7 @@ public class SearchCoordinator
     private boolean startSearch(@NonNull final Context context) {
         // if currentSearchSites is empty, we return false.
         boolean atLeastOneStarted = false;
-        for (Site site : Site.filterForEnabled(mAllSites)) {
+        for (final Site site : Site.filterForEnabled(mAllSites)) {
             // If the site has not been searched yet, search it
             if (!mSearchResults.containsKey(site.engineId)) {
                 if (startSearch(site.getSearchEngine(context))) {
@@ -741,7 +741,7 @@ public class SearchCoordinator
      * @return {@code true} if a search was started, {@code false} if not
      */
     private boolean startNextSearch(@NonNull final Context context) {
-        for (Site site : Site.filterForEnabled(mAllSites)) {
+        for (final Site site : Site.filterForEnabled(mAllSites)) {
             // If the site has not been searched yet, search it
             if (!mSearchResults.containsKey(site.engineId)) {
                 return startSearch(site.getSearchEngine(context));
@@ -845,7 +845,7 @@ public class SearchCoordinator
             // and put entries without ISBN at the end
             final Collection<Site> sitesWithoutIsbn = new ArrayList<>();
             final List<Site> allSites = Site.Type.getDataSitesByReliability();
-            for (Site site : allSites) {
+            for (final Site site : allSites) {
                 if (mSearchResults.containsKey(site.engineId)) {
                     final Bundle bookData = mSearchResults.get(site.engineId);
                     if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
@@ -877,7 +877,7 @@ public class SearchCoordinator
         }
 
         // Merge the data we have in the order as decided upon above.
-        for (Site site : sites) {
+        for (final Site site : sites) {
             final SearchEngine searchEngine = site.getSearchEngine(context);
 
             final Bundle siteData = mSearchResults.get(searchEngine.getId());
@@ -891,7 +891,7 @@ public class SearchCoordinator
         }
 
         // run the mappers
-        for (Mapper mapper : mMappers) {
+        for (final Mapper mapper : mMappers) {
             mapper.map(context, mBookData);
         }
 
@@ -988,7 +988,7 @@ public class SearchCoordinator
                                     @NonNull final Bundle siteData,
                                     @NonNull final Locale locale) {
 
-        for (String key : siteData.keySet()) {
+        for (final String key : siteData.keySet()) {
             if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
                 || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
                 accumulateDates(context, locale, key, siteData);
@@ -1133,7 +1133,7 @@ public class SearchCoordinator
         // no synchronized needed, at this point all other threads have finished.
         if (!mSearchFinishedMessages.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
-            for (Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
+            for (final Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
                 final SearchEngineRegistry.Config config = SearchEngineRegistry
                         .getByEngineId(entry.getKey());
                 //noinspection ConstantConditions
@@ -1240,7 +1240,7 @@ public class SearchCoordinator
                                   .map(msg -> context.getString(R.string.list_element, msg.text))
                                   .collect(Collectors.joining("\n")));
 
-                for (ProgressMessage progressMessage : mSearchProgressMessages.values()) {
+                for (final ProgressMessage progressMessage : mSearchProgressMessages.values()) {
                     progressMax += progressMessage.maxPosition;
                     progressCount += progressMessage.position;
                 }

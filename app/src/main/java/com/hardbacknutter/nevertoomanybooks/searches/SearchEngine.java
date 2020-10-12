@@ -253,7 +253,7 @@ public interface SearchEngine {
         setCaller(null);
     }
 
-    default void setCaller(@Nullable Canceller caller) {
+    default void setCaller(@Nullable final Canceller caller) {
 
     }
 

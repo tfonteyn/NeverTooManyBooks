@@ -57,7 +57,7 @@ public final class ContextMock {
     }
 
     public static File getTmpDir(@NonNull final String path) {
-        File tmp = new File(System.getProperty("java.io.tmpdir") + path);
+        final File tmp = new File(System.getProperty("java.io.tmpdir") + path);
         //noinspection ResultOfMethodCallIgnored
         tmp.mkdir();
         return tmp;

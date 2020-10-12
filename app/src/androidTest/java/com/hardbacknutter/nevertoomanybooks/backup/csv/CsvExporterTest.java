@@ -58,23 +58,23 @@ public class CsvExporterTest {
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
-        ExportResults results;
+        final ExportResults results;
 
         final int entities = Options.BOOKS;
         //final int entities = Options.BOOKS | Options.COVERS;
-        try (Exporter exporter = new CsvExporter(context, entities, null)) {
+        try (final Exporter exporter = new CsvExporter(context, entities, null)) {
             results = exporter.write(context, file, new MyProgressListener());
         }
 
-        long exportCount;
-        try (BufferedReader reader = new BufferedReader(
+        final long exportCount;
+        try (final BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             // -1 for the header line.
             exportCount = reader.lines().count() - 1;
         }
 
-        long bookCount;
-        try (DAO db = new DAO(TAG)) {
+        final long bookCount;
+        try (final DAO db = new DAO(TAG)) {
             bookCount = db.countBooks();
         }
         assertEquals(bookCount, exportCount);

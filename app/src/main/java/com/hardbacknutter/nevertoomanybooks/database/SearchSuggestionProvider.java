@@ -100,7 +100,7 @@ public class SearchSuggestionProvider
         // not sure this is actually useful.
         final int length = uri.getPathSegments().size();
         if (length >= 1) {
-            String base = uri.getPathSegments().get(0);
+            final String base = uri.getPathSegments().get(0);
             if ("suggestions".equals(base)) {
                 if (length == 1) {
                     return "vnd.android.cursor.dir/suggestion";

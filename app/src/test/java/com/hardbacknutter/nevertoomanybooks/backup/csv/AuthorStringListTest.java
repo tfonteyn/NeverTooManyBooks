@@ -78,7 +78,7 @@ class AuthorStringListTest {
     @BeforeEach
     void setUp() {
         mAuthor = new ArrayList<>();
-        for (String s : AUTHORS) {
+        for (final String s : AUTHORS) {
             mAuthor.add(Author.from(s));
         }
         mAuthor.get(5).setType(Author.TYPE_ARTIST | Author.TYPE_COLORIST);
@@ -89,13 +89,13 @@ class AuthorStringListTest {
 
     @Test
     void encode() {
-        String encoded = mCoder.encodeList(mAuthor);
+        final String encoded = mCoder.encodeList(mAuthor);
         assertEquals(ENCODED, encoded);
     }
 
     @Test
     void decode() {
-        List<Author> decoded = mCoder.decodeList(ENCODED);
+        final List<Author> decoded = mCoder.decodeList(ENCODED);
         assertEquals(AUTHORS.length, decoded.size());
         Author author;
 
@@ -141,15 +141,15 @@ class AuthorStringListTest {
 
     @Test
     void encode01() {
-        Author author = Author.from("Charles Emerson Winchester");
-        String authorStr = new StringList<>(new AuthorCoder()).encodeElement(author);
+        final Author author = Author.from("Charles Emerson Winchester");
+        final String authorStr = new StringList<>(new AuthorCoder()).encodeElement(author);
 
         assertEquals("Winchester, Charles\\ Emerson", authorStr);
     }
 
     @Test
     void decode01() {
-        List<Author> author = new StringList<>(new AuthorCoder())
+        final List<Author> author = new StringList<>(new AuthorCoder())
                 .decodeElement("Winchester, Charles\\ Emerson");
 
         assertEquals("Winchester", author.get(0).getFamilyName());
@@ -158,7 +158,7 @@ class AuthorStringListTest {
 
     @Test
     void decode01b() {
-        List<Author> author = new StringList<>(new AuthorCoder())
+        final List<Author> author = new StringList<>(new AuthorCoder())
                 .decodeElement("Winchester, Charles Emerson");
 
         assertEquals("Winchester", author.get(0).getFamilyName());

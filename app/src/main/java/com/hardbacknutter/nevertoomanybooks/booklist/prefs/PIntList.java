@@ -61,8 +61,8 @@ public class PIntList
 
     @NonNull
     public List<Integer> getGlobalValue(@NonNull final Context context) {
-        String value = PreferenceManager.getDefaultSharedPreferences(context)
-                                        .getString(getKey(), null);
+        final String value = PreferenceManager.getDefaultSharedPreferences(context)
+                                              .getString(getKey(), null);
         if (value == null || value.isEmpty()) {
             return mDefaultValue;
         }
@@ -76,7 +76,7 @@ public class PIntList
      */
     @Override
     public void set(@NonNull final Parcel in) {
-        List<Integer> list = new ArrayList<>();
+        final List<Integer> list = new ArrayList<>();
         in.readList(list, getClass().getClassLoader());
         this.set(list);
     }
@@ -86,7 +86,7 @@ public class PIntList
     public List<Integer> getValue(@NonNull final Context context) {
         if (mIsPersistent) {
             // reminder: it's a CSV string
-            String value = mStylePrefs.getString(getKey(), null);
+            final String value = mStylePrefs.getString(getKey(), null);
             if (value != null && !value.isEmpty()) {
                 return getAsList(value);
             }

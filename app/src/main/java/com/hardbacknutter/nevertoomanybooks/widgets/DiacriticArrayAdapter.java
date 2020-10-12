@@ -643,8 +643,8 @@ public class DiacriticArrayAdapter<T>
                     final T value = values.get(i);
                     final String valueText = value.toString().toLowerCase(Locale.getDefault());
 
-                    String valueTextNoDiacritics = filterDiacritics(valueText);
-                    String prefixStringNoDiacritics = filterDiacritics(prefixString);
+                    final String valueTextNoDiacritics = filterDiacritics(valueText);
+                    final String prefixStringNoDiacritics = filterDiacritics(prefixString);
 
                     // First match against the whole, non-split value
                     if (valueText.startsWith(prefixString)
@@ -652,7 +652,7 @@ public class DiacriticArrayAdapter<T>
                         newValues.add(value);
                     } else {
                         final String[] words = valueText.split(" ");
-                        for (String word : words) {
+                        for (final String word : words) {
                             if (word.startsWith(prefixString)
                                 || valueTextNoDiacritics.startsWith(prefixStringNoDiacritics)) {
                                 newValues.add(value);

@@ -56,7 +56,7 @@ public class ValidateKeyTask
                 .searchCoverImageByIsbn("0451451783", 0, ImageFileInfo.Size.Small);
 
         if (fileSpec != null) {
-            int result;
+            final int result;
             final File file = new File(fileSpec);
             if (ImageUtils.isAcceptableSize(file)) {
                 result = R.string.lt_key_is_correct;

@@ -119,7 +119,7 @@ class IndexDefinition {
      */
     @NonNull
     private String def() {
-        StringBuilder sql = new StringBuilder("CREATE");
+        final StringBuilder sql = new StringBuilder("CREATE");
         if (mIsUnique) {
             sql.append(" UNIQUE");
         }

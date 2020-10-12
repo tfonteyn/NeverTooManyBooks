@@ -107,9 +107,9 @@ public abstract class ArchiveWriterAbstract
             throws IOException {
         // Write the archiveInfo as XML to a byte array.
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             XmlExporter xmlExporter = new XmlExporter(context, Options.INFO, null)) {
+        try (final Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
+             final Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
+             final XmlExporter xmlExporter = new XmlExporter(context, Options.INFO, null)) {
 
             xmlExporter.writeArchiveInfo(writer, archiveInfo);
         }
@@ -128,9 +128,9 @@ public abstract class ArchiveWriterAbstract
             throws IOException {
         // Write the styles as XML to a byte array.
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             Exporter exporter = new XmlExporter(context, Options.STYLES, null)) {
+        try (final Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
+             final Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
+             final Exporter exporter = new XmlExporter(context, Options.STYLES, null)) {
 
             mResults.add(exporter.write(context, writer, progressListener));
         }
@@ -149,9 +149,9 @@ public abstract class ArchiveWriterAbstract
             throws IOException {
         // Write the preferences as XML to a byte array.
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             Exporter exporter = new XmlExporter(context, Options.PREFS, null)) {
+        try (final Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
+             final Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
+             final Exporter exporter = new XmlExporter(context, Options.PREFS, null)) {
 
             mResults.add(exporter.write(context, writer, progressListener));
         }
@@ -178,8 +178,8 @@ public abstract class ArchiveWriterAbstract
         // Not strictly needed for the CsvExporter as it will ignore
         // other options, but done as a reminder (see XmlArchiveWriter)
         final int entities = mHelper.getOptions() & (Options.BOOKS | Options.COVERS);
-        try (Exporter exporter = new CsvExporter(context, entities,
-                                                 mHelper.getUtcDateTimeSince())) {
+        try (final Exporter exporter = new CsvExporter(context, entities,
+                                                       mHelper.getUtcDateTimeSince())) {
             return exporter.write(context, mTmpBooksFile, progressListener);
         }
     }
@@ -224,7 +224,7 @@ public abstract class ArchiveWriterAbstract
 
         final String coverStr = context.getString(R.string.lbl_covers);
 
-        for (String filename : mResults.getCoverFileNames()) {
+        for (final String filename : mResults.getCoverFileNames()) {
             final File cover = AppDir.Covers.getFile(context, filename);
             // We're using jpg, png.. don't bother compressing.
             // Compressing might actually make some image files bigger!

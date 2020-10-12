@@ -61,7 +61,7 @@ public class PString
     @Override
     public String getValue(@NonNull final Context context) {
         if (mIsPersistent) {
-            String value = mStylePrefs.getString(getKey(), null);
+            final String value = mStylePrefs.getString(getKey(), null);
             if (value != null && !value.isEmpty()) {
                 return value;
             }

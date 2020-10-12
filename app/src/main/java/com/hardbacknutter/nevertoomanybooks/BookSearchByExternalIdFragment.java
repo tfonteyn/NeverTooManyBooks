@@ -213,7 +213,7 @@ public class BookSearchByExternalIdFragment
             // if the user switched from a text input, clean the input
             if ((mVb.externalId.getInputType() & InputType.TYPE_CLASS_NUMBER) == 0) {
                 //noinspection ConstantConditions
-                String text = mVb.externalId.getText().toString().trim();
+                final String text = mVb.externalId.getText().toString().trim();
                 if (!DIGITS_PATTERN.matcher(text).matches()) {
                     mVb.externalId.setText("");
                 }

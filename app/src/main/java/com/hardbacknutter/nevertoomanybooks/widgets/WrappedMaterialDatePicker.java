@@ -103,8 +103,8 @@ public class WrappedMaterialDatePicker<S>
      *                   Will ALSO be used as the regular tag for this fragment, as per
      *                   {@link FragmentTransaction#add(Fragment, String) FragmentTransaction.add}.
      */
-    public void show(@NonNull FragmentManager manager,
-                     @NonNull String requestKey) {
+    public void show(@NonNull final FragmentManager manager,
+                     @NonNull final String requestKey) {
         mRequestKey = requestKey;
 
         mPicker.addOnPositiveButtonClickListener(this);

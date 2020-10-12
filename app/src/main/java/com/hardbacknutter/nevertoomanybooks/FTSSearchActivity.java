@@ -175,7 +175,7 @@ public class FTSSearchActivity
 
         // When the show results buttons is tapped, go show the resulting booklist.
         mVb.btnSearch.setOnClickListener(v -> {
-            Intent data = new Intent()
+            final Intent data = new Intent()
                     // pass these for displaying to the user
                     .putExtra(DBDefinitions.KEY_TITLE, mTitleSearchText)
                     .putExtra(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText)
@@ -340,12 +340,12 @@ public class FTSSearchActivity
                 viewToModel();
 
                 int count = 0;
-                try (Cursor cursor = mDb.fetchSearchSuggestionsAdv(mAuthorSearchText,
-                                                                   mTitleSearchText,
-                                                                   mSeriesTitleSearchText,
-                                                                   mPublisherNameSearchText,
-                                                                   mKeywordsSearchText,
-                                                                   20)) {
+                try (final Cursor cursor = mDb.fetchSearchSuggestionsAdv(mAuthorSearchText,
+                                                                         mTitleSearchText,
+                                                                         mSeriesTitleSearchText,
+                                                                         mPublisherNameSearchText,
+                                                                         mKeywordsSearchText,
+                                                                         20)) {
                     // Null return means searchFts thought the parameters were effectively blank.
                     if (cursor != null) {
                         count = cursor.getCount();

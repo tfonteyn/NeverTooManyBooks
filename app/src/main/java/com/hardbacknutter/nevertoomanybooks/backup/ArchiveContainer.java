@@ -65,11 +65,11 @@ public enum ArchiveContainer {
     public static ArchiveContainer create(@NonNull final Context context,
                                           @NonNull final Uri uri) {
 
-        try (InputStream is = context.getContentResolver().openInputStream(uri)) {
+        try (final InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is != null) {
                 // read the "magic bytes": https://en.wikipedia.org/wiki/List_of_file_signatures
-                byte[] b = new byte[0x200];
-                int len = is.read(b);
+                final byte[] b = new byte[0x200];
+                final int len = is.read(b);
 
                 // zip file, offset 0, "PK{3}{4}"
                 if (len > 4

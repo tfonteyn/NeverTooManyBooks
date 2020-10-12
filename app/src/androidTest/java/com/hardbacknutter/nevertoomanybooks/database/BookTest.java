@@ -107,7 +107,7 @@ public class BookTest {
         mTocEntryList.clear();
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "setup")) {
+        try (final DAO db = new DAO(context, "setup")) {
 
             Constants.deleteTocs(db);
             Constants.deleteBooks(db);
@@ -209,7 +209,7 @@ public class BookTest {
             throws DAO.DaoWriteException, IOException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "book")) {
+        try (final DAO db = new DAO(context, "book")) {
 
             mBook[0] = prepareBook(context, db);
             mBookId[0] = mBook[0].getId();
@@ -223,10 +223,10 @@ public class BookTest {
 
             ArrayList<Author> authors;
             String uuid;
-            ArrayList<Bookshelf> bookshelves;
-            ArrayList<Publisher> publishers;
+            final ArrayList<Bookshelf> bookshelves;
+            final ArrayList<Publisher> publishers;
             File cover;
-            File[] cachedFiles;
+            final File[] cachedFiles;
 
             /*
              * update the stored book
@@ -340,7 +340,7 @@ public class BookTest {
     public void bookViewModelReadOnly()
             throws DAO.DaoWriteException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "bookViewModel-prep")) {
+        try (final DAO db = new DAO(context, "bookViewModel-prep")) {
             mBook[0] = prepareBook(context, db);
             mBookId[0] = mBook[0].getId();
         }
@@ -350,7 +350,7 @@ public class BookTest {
         args.putLong(DBDefinitions.KEY_PK_ID, mBookId[0]);
         try {
             vm.init(context, args, false);
-            Book retrieved = vm.getBook();
+            final Book retrieved = vm.getBook();
             assertEquals(mBookId[0], retrieved.getId());
             checkBookAfterInitialInsert(context, retrieved);
 
@@ -395,31 +395,33 @@ public class BookTest {
                                              final Book book) {
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
-        String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
         assertFalse(uuid.isEmpty());
         assertEquals(BOOK_TITLE + "0", book.getString(KEY_TITLE));
 
-        ArrayList<Bookshelf> bookshelves = book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+        final ArrayList<Bookshelf> bookshelves = book
+                .getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
         assertEquals(1, bookshelves.size());
         assertEquals(mBookshelf[0], bookshelves.get(0));
 
-        ArrayList<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         assertEquals(1, authors.size());
         assertEquals(mAuthor[0], authors.get(0));
 
-        ArrayList<Publisher> publishers = book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final ArrayList<Publisher> publishers = book
+                .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         assertEquals(1, publishers.size());
         assertEquals(mPublisher[0], publishers.get(0));
 
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
         assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
 
-        File cover = book.getCoverFile(context, 0);
+        final File cover = book.getCoverFile(context, 0);
         assertNotNull(cover);
         assertEquals(mOriginalImageSize[0], cover.length());
         assertEquals(uuid + EXT_JPG, cover.getName());
 
-        File[] cachedFiles = mExternalCacheDir.listFiles(mJpgFilter);
+        final File[] cachedFiles = mExternalCacheDir.listFiles(mJpgFilter);
         assertNotNull(cachedFiles);
         // expected: 1: because "0.jpg" should be gone, but "1.jpg" will still be there
         assertEquals(1, cachedFiles.length);

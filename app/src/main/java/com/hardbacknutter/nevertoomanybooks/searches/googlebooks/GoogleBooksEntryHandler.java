@@ -375,7 +375,7 @@ class GoogleBooksEntryHandler
 
             case XML_LANGUAGE:
                 // the language field can be empty, check before storing it
-                String iso = mBuilder.toString();
+                final String iso = mBuilder.toString();
                 if (!iso.isEmpty()) {
                     // the language is a proper iso code, just store.
                     addIfNotPresent(DBDefinitions.KEY_LANGUAGE, iso);
@@ -402,7 +402,7 @@ class GoogleBooksEntryHandler
                  *
                  * crude check for 'pages' and 'Dimensions'
                  */
-                String tmpFormat = mBuilder.toString();
+                final String tmpFormat = mBuilder.toString();
                 int index = tmpFormat.indexOf(" pages");
                 if (index > -1) {
                     mBookData.putString(DBDefinitions.KEY_PAGES,

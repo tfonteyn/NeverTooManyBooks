@@ -60,7 +60,7 @@ public class Languages {
     private Languages() {
         final String[] languages = Locale.getISOLanguages();
         mLang3ToLang2Map = new HashMap<>(languages.length);
-        for (String language : languages) {
+        for (final String language : languages) {
             final Locale locale = new Locale(language);
             mLang3ToLang2Map.put(locale.getISO3Language(), language);
         }

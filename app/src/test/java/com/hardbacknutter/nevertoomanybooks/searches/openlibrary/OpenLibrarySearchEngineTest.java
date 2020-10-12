@@ -68,7 +68,7 @@ class OpenLibrarySearchEngineTest
 
         final String filename = "/openlibrary/9780980200447.json";
 
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+        try (final InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             final String response = mSearchEngine.readResponseStream(is);
             final JSONObject json = new JSONObject(response);

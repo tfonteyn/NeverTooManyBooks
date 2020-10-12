@@ -97,7 +97,7 @@ class StripInfoTest
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
-        Series series = allSeries.get(0);
+        final Series series = allSeries.get(0);
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 
@@ -230,7 +230,7 @@ class StripInfoTest
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
-        Series series = allSeries.get(0);
+        final Series series = allSeries.get(0);
         assertEquals("Okiya, het huis van verboden geneugten", series.getTitle());
         assertEquals("1", series.getNumber());
 
@@ -300,7 +300,7 @@ class StripInfoTest
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
-        Series series = allSeries.get(0);
+        final Series series = allSeries.get(0);
         assertEquals("Johan en Pirrewiet", series.getTitle());
         assertEquals("INT 5", series.getNumber());
 
@@ -357,7 +357,7 @@ class StripInfoTest
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
-        Series series = allSeries.get(0);
+        final Series series = allSeries.get(0);
         assertEquals("Comanche", series.getTitle());
         assertEquals("1", series.getNumber());
 
@@ -437,7 +437,7 @@ class StripInfoTest
         final String filename = "/stripinfo/multi-result-pluvi.html";
 
         Document document = null;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+        try (final InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             document = Jsoup.parse(is, null, locationHeader);
         } catch (@NonNull final IOException e) {

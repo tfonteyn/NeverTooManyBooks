@@ -664,7 +664,7 @@ public class BooklistAdapter
 
         // sanity check.
         if (BuildConfig.DEBUG /* always */) {
-            int groupCount = mStyle.getGroups().size() + 1;
+            final int groupCount = mStyle.getGroups().size() + 1;
             if (level > groupCount) {
                 throw new IllegalArgumentException(
                         "level=" + level + "> (getGroupCount+1)=" + groupCount);

@@ -159,7 +159,7 @@ public final class FileUtils {
         }
 
         final File tmpFile = AppDir.Cache.getFile(context, System.nanoTime() + ".jpg");
-        try (OutputStream os = new FileOutputStream(tmpFile)) {
+        try (final OutputStream os = new FileOutputStream(tmpFile)) {
             copy(is, os);
             // rename to real output file
             rename(tmpFile, destFile);
@@ -192,8 +192,9 @@ public final class FileUtils {
         }
 
         final Uri destinationUri = destinationFile.getUri();
-        try (InputStream is = new FileInputStream(file);
-             OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
+        try (final InputStream is = new FileInputStream(file);
+             final OutputStream os = context.getContentResolver()
+                                            .openOutputStream(destinationUri)) {
             if (os == null) {
                 throw new IOException("Could not resolve uri=" + destinationUri);
             }
@@ -216,8 +217,8 @@ public final class FileUtils {
             throws IOException {
         final ContentResolver cr = context.getContentResolver();
 
-        try (InputStream is = new FileInputStream(source);
-             OutputStream os = cr.openOutputStream(destUri)) {
+        try (final InputStream is = new FileInputStream(source);
+             final OutputStream os = cr.openOutputStream(destUri)) {
             if (os != null) {
                 copy(is, os);
             }
@@ -269,8 +270,8 @@ public final class FileUtils {
     public static void copy(@NonNull final File source,
                             @NonNull final File destination)
             throws IOException {
-        try (InputStream is = new FileInputStream(source);
-             OutputStream os = new FileOutputStream(destination)) {
+        try (final InputStream is = new FileInputStream(source);
+             final OutputStream os = new FileOutputStream(destination)) {
             copy(is, os);
         } catch (@NonNull final FileNotFoundException ignore) {
             // ignore
@@ -360,7 +361,7 @@ public final class FileUtils {
                                                 @NonNull final Uri uri) {
         if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
             final ContentResolver contentResolver = context.getContentResolver();
-            try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
+            try (final Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
                     final String name = cursor.getString(cursor.getColumnIndex(
                             OpenableColumns.DISPLAY_NAME));

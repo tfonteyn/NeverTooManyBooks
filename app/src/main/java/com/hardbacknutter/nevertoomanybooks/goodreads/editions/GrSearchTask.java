@@ -91,7 +91,7 @@ public class GrSearchTask
 
             mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
             if (mBookId > 0) {
-                try (Cursor cursor = mDb.fetchBookColumnsForGoodreadsSearch(mBookId)) {
+                try (final Cursor cursor = mDb.fetchBookColumnsForGoodreadsSearch(mBookId)) {
                     if (cursor.moveToFirst()) {
                         final DataHolder bookData = new CursorRow(cursor);
                         mAuthorText = bookData

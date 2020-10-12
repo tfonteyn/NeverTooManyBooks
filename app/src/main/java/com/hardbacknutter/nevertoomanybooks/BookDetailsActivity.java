@@ -86,7 +86,7 @@ public class BookDetailsActivity
     @Override
     public boolean dispatchTouchEvent(@NonNull final MotionEvent ev) {
         synchronized (mOnTouchListeners) {
-            for (View.OnTouchListener listener : mOnTouchListeners) {
+            for (final View.OnTouchListener listener : mOnTouchListeners) {
                 listener.onTouch(null, ev);
             }
         }

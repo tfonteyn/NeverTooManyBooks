@@ -279,24 +279,24 @@ public class XmlExporter
         writer.write(XmlUtils.versionAttr(XML_EXPORTER_STYLES_VERSION_EXPERIMENTAL));
         writer.write(">\n");
 
-        for (BooklistStyle style : styles) {
+        for (final BooklistStyle style : styles) {
             writer.write('<' + XmlTags.TAG_STYLE);
             writer.write(XmlUtils.idAttr(style.getId()));
             writer.write(XmlUtils.nameAttr(style.getUuid()));
             writer.write(">\n");
 
             // All 'flat' Preferences for this style.
-            for (PPref p : style.getPreferences(false).values()) {
+            for (final PPref p : style.getPreferences(false).values()) {
                 writer.write(XmlUtils.typedTag(p.getKey(), p.getValue(context)));
             }
 
             // Groups with their Preferences.
             writer.write('<' + XmlTags.TAG_GROUP_LIST + '>');
-            for (BooklistGroup group : style.getGroups().getGroupList()) {
+            for (final BooklistGroup group : style.getGroups().getGroupList()) {
                 writer.write('<' + XmlTags.TAG_GROUP);
                 writer.write(XmlUtils.idAttr(group.getId()));
                 writer.write(">\n");
-                for (PPref p : group.getPreferences().values()) {
+                for (final PPref p : group.getPreferences().values()) {
                     writer.write(XmlUtils.typedTag(p.getKey(), p.getValue(context)));
                 }
                 writer.write("</" + XmlTags.TAG_GROUP + ">\n");
@@ -305,7 +305,7 @@ public class XmlExporter
 
             // Active filters with their Preferences.
             writer.write('<' + XmlTags.TAG_FILTER_LIST + '>');
-            for (Filter<?> filter : style.getFilters().getActiveFilters(context)) {
+            for (final Filter<?> filter : style.getFilters().getActiveFilters(context)) {
                 writer.write(XmlUtils.tag(XmlTags.TAG_FILTER,
                                           filter.getKey(), filter.getValue(context)));
             }
@@ -357,7 +357,7 @@ public class XmlExporter
                                   @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = mDb.fetchBookshelves()) {
+        try (final Cursor cursor = mDb.fetchBookshelves()) {
             writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKSHELVES_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -389,7 +389,7 @@ public class XmlExporter
                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = mDb.fetchAuthors()) {
+        try (final Cursor cursor = mDb.fetchAuthors()) {
             writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_AUTHORS_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -428,7 +428,7 @@ public class XmlExporter
                              @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = mDb.fetchSeries()) {
+        try (final Cursor cursor = mDb.fetchSeries()) {
             writer.write('<' + XmlTags.TAG_SERIES_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_SERIES_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -462,7 +462,7 @@ public class XmlExporter
                                  @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = mDb.fetchPublishers()) {
+        try (final Cursor cursor = mDb.fetchPublishers()) {
             writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_PUBLISHER_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -492,7 +492,7 @@ public class XmlExporter
     private void writeToc(@NonNull final Writer writer,
                           @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (Cursor cursor = mDb.fetchTocs()) {
+        try (final Cursor cursor = mDb.fetchTocs()) {
             writer.write('<' + XmlTags.TAG_TOC_ENTRY_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_TOC_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -550,7 +550,7 @@ public class XmlExporter
 
         final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
-        try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
+        try (final Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             writer.write('<' + XmlTags.TAG_BOOK_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKS_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -633,7 +633,7 @@ public class XmlExporter
                                            book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
 
                 // external ID's
-                for (Domain domain : externalIdDomains) {
+                for (final Domain domain : externalIdDomains) {
                     final String key = domain.getName();
                     writer.write(XmlUtils.attr(key, book.getString(key)));
                 }
@@ -665,7 +665,7 @@ public class XmlExporter
                     writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
                     writer.write(XmlUtils.sizeAttr(authors.size()));
                     writer.write(">");
-                    for (Author author : authors) {
+                    for (final Author author : authors) {
                         writer.write('<' + XmlTags.TAG_AUTHOR);
                         writer.write(XmlUtils.idAttr(author.getId()));
                         writer.write("/>");
@@ -679,7 +679,7 @@ public class XmlExporter
                     writer.write('<' + XmlTags.TAG_SERIES_LIST);
                     writer.write(XmlUtils.sizeAttr(seriesList.size()));
                     writer.write(">");
-                    for (Series series : seriesList) {
+                    for (final Series series : seriesList) {
                         writer.write('<' + XmlTags.TAG_SERIES);
                         writer.write(XmlUtils.idAttr(series.getId()));
                         writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
@@ -695,7 +695,7 @@ public class XmlExporter
                     writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
                     writer.write(XmlUtils.sizeAttr(publishers.size()));
                     writer.write(">");
-                    for (Publisher publisher : publishers) {
+                    for (final Publisher publisher : publishers) {
                         writer.write('<' + XmlTags.TAG_PUBLISHER);
                         writer.write(XmlUtils.idAttr(publisher.getId()));
                         writer.write("/>");
@@ -709,7 +709,7 @@ public class XmlExporter
                     writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
                     writer.write(XmlUtils.sizeAttr(bookshelves.size()));
                     writer.write(">");
-                    for (Bookshelf bookshelf : bookshelves) {
+                    for (final Bookshelf bookshelf : bookshelves) {
                         writer.write('<' + XmlTags.TAG_BOOKSHELF);
                         writer.write(XmlUtils.idAttr(bookshelf.getId()));
                         writer.write("/>");
@@ -723,7 +723,7 @@ public class XmlExporter
                     writer.write('<' + XmlTags.TAG_TOC_ENTRY_LIST);
                     writer.write(XmlUtils.sizeAttr(tocEntries.size()));
                     writer.write(">");
-                    for (TocEntry tocEntry : tocEntries) {
+                    for (final TocEntry tocEntry : tocEntries) {
                         writer.write('<' + XmlTags.TAG_TOC_ENTRY);
                         writer.write(XmlUtils.idAttr(tocEntry.getId()));
                         writer.write("/>");
@@ -795,7 +795,7 @@ public class XmlExporter
             // loop through all keys of the element
             // IMPORTANT: get the keys for each iteration, as they might be different
             // from element to element.
-            for (String name : accessor.getElementKeySet()) {
+            for (final String name : accessor.getElementKeySet()) {
                 writer.write(XmlUtils.typedTag(name, accessor.get(name)));
             }
             // end of element.

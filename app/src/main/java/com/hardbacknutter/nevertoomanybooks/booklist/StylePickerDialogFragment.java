@@ -206,13 +206,13 @@ public class StylePickerDialogFragment
     private void loadStyles() {
         final Context context = getContext();
 
-        try (DAO db = new DAO(TAG)) {
+        try (final DAO db = new DAO(TAG)) {
             //noinspection ConstantConditions
             mBooklistStyles = BooklistStyle.getStyles(context, db, mShowAllStyles);
         }
 
         mAdapterItemList.clear();
-        for (BooklistStyle style : mBooklistStyles.values()) {
+        for (final BooklistStyle style : mBooklistStyles.values()) {
             mAdapterItemList.add(new Pair<>(style.getUuid(), style.getLabel(context)));
         }
     }

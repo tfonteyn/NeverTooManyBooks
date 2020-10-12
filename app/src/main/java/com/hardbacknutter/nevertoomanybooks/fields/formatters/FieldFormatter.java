@@ -51,10 +51,10 @@ public interface FieldFormatter<T> {
      * <strong>Update class variables (if any) here.</strong>
      *
      * @param rawValue Input value
-     * @param view to populate
+     * @param view     to populate
      */
-    default void apply(@Nullable T rawValue,
-                       @NonNull TextView view) {
+    default void apply(@Nullable final T rawValue,
+                       @NonNull final TextView view) {
         view.setText(format(view.getContext(), rawValue));
     }
 }

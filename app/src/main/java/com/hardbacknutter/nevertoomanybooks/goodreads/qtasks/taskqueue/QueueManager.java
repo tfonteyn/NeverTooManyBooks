@@ -116,7 +116,7 @@ public final class QueueManager {
 
     public void registerTaskListener(@NonNull final OnChangeListener listener) {
         synchronized (mTaskChangeListeners) {
-            for (WeakReference<OnChangeListener> lr : mTaskChangeListeners) {
+            for (final WeakReference<OnChangeListener> lr : mTaskChangeListeners) {
                 final OnChangeListener l = lr.get();
                 if (listener.equals(l)) {
                     return;
@@ -130,12 +130,12 @@ public final class QueueManager {
         try {
             synchronized (mTaskChangeListeners) {
                 final Collection<WeakReference<OnChangeListener>> ll = new ArrayList<>();
-                for (WeakReference<OnChangeListener> l : mTaskChangeListeners) {
+                for (final WeakReference<OnChangeListener> l : mTaskChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
                     }
                 }
-                for (WeakReference<OnChangeListener> l : ll) {
+                for (final WeakReference<OnChangeListener> l : ll) {
                     mTaskChangeListeners.remove(l);
                 }
             }
@@ -146,7 +146,7 @@ public final class QueueManager {
 
     public void registerEventListener(@NonNull final OnChangeListener listener) {
         synchronized (mEventChangeListeners) {
-            for (WeakReference<OnChangeListener> lr : mEventChangeListeners) {
+            for (final WeakReference<OnChangeListener> lr : mEventChangeListeners) {
                 final OnChangeListener l = lr.get();
                 if (listener.equals(l)) {
                     return;
@@ -160,12 +160,12 @@ public final class QueueManager {
         try {
             synchronized (mEventChangeListeners) {
                 final Collection<WeakReference<OnChangeListener>> ll = new ArrayList<>();
-                for (WeakReference<OnChangeListener> l : mEventChangeListeners) {
+                for (final WeakReference<OnChangeListener> l : mEventChangeListeners) {
                     if (l.get().equals(listener)) {
                         ll.add(l);
                     }
                 }
-                for (WeakReference<OnChangeListener> l : ll) {
+                for (final WeakReference<OnChangeListener> l : ll) {
                     mEventChangeListeners.remove(l);
                 }
             }
@@ -181,7 +181,7 @@ public final class QueueManager {
             list = new ArrayList<>(mTaskChangeListeners);
         }
         // Loop through the list. If the ref is dead, delete from original, otherwise call it.
-        for (WeakReference<OnChangeListener> wl : list) {
+        for (final WeakReference<OnChangeListener> wl : list) {
             final OnChangeListener listener = wl.get();
             if (listener == null) {
                 synchronized (mTaskChangeListeners) {
@@ -204,7 +204,7 @@ public final class QueueManager {
             list = new ArrayList<>(mEventChangeListeners);
         }
         // Loop through the list. If the ref is dead, delete from original, otherwise call it.
-        for (WeakReference<OnChangeListener> wl : list) {
+        for (final WeakReference<OnChangeListener> wl : list) {
             final OnChangeListener listener = wl.get();
             if (listener == null) {
                 synchronized (mEventChangeListeners) {
@@ -357,7 +357,7 @@ public final class QueueManager {
         // Synchronize so that no queue will be able to get another task while we are deleting
         synchronized (this) {
             // Check if the task is running in a queue.
-            for (Queue queue : mActiveQueues.values()) {
+            for (final Queue queue : mActiveQueues.values()) {
                 final TQTask task = queue.getTask();
                 if (task != null && task.getId() == id) {
                     // Abort it, don't delete from DB...it will do that WHEN it aborts

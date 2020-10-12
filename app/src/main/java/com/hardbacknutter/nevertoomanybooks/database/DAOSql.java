@@ -807,7 +807,7 @@ public class DAOSql {
                     + ',' + TBL_BOOKS.dotAs(KEY_UTC_ADDED)
                     + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_UPDATED));
 
-            for (Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
+            for (final Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
                 sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(domain.getName()));
             }
 
@@ -1566,7 +1566,7 @@ public class DAOSql {
             if (domain != null) {
                 // prepend each word with the FTS column name.
                 final StringBuilder result = new StringBuilder();
-                for (String word : cleanedText.split(" ")) {
+                for (final String word : cleanedText.split(" ")) {
                     if (!word.isEmpty()) {
                         result.append(' ').append(domain).append(':').append(word);
                     }

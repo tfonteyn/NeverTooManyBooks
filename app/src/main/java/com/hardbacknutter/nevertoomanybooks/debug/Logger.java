@@ -148,7 +148,7 @@ public final class Logger {
     private static String concat(@NonNull final Object... params) {
         final StringBuilder message = new StringBuilder();
         Exception e = null;
-        for (Object parameter : params) {
+        for (final Object parameter : params) {
             if (parameter instanceof Exception) {
                 e = (Exception) parameter;
                 continue;
@@ -194,8 +194,8 @@ public final class Logger {
 
         final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
-        try (FileWriter fw = new FileWriter(logFile, true);
-             Writer out = new BufferedWriter(fw)) {
+        try (final FileWriter fw = new FileWriter(logFile, true);
+             final Writer out = new BufferedWriter(fw)) {
             out.write(fullMsg);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
@@ -281,7 +281,7 @@ public final class Logger {
     @NonNull
     public static String toString(@NonNull final Bundle bundle) {
         final StringBuilder sb = new StringBuilder();
-        for (String k : bundle.keySet()) {
+        for (final String k : bundle.keySet()) {
             sb.append(k).append("->");
             final Object o = bundle.get(k);
             if (o != null) {

@@ -138,7 +138,7 @@ public class Notifier
         final Intent notifyIntent = new Intent(context, activityClass);
 
         // Create the TaskStackBuilder and add the intent, which inflates the back stack
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        final TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
         stackBuilder.addNextIntentWithParentStack(notifyIntent);
         // Get the PendingIntent containing the entire back stack
         return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);

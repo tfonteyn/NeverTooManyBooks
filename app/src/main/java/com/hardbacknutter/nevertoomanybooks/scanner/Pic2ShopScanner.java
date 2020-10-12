@@ -59,14 +59,14 @@ public class Pic2ShopScanner
 
     private static boolean isIntentAvailable(@NonNull final Context context,
                                              @NonNull final String action) {
-        Intent test = new Intent(action);
+        final Intent test = new Intent(action);
         return context.getPackageManager().resolveActivity(test, 0) != null;
     }
 
     @Override
     public boolean startActivityForResult(@NonNull final Fragment fragment,
                                           final int requestCode) {
-        Intent intent;
+        final Intent intent;
         //noinspection ConstantConditions
         if (isIntentAvailable(fragment.getContext(), Free.ACTION)) {
             intent = new Intent(Free.ACTION);
@@ -86,9 +86,9 @@ public class Pic2ShopScanner
                              @Nullable final Intent data) {
         Objects.requireNonNull(data, "data");
 
-        String barcode = data.getStringExtra(BARCODE);
+        final String barcode = data.getStringExtra(BARCODE);
         // only for Pro:
-        String barcodeFormat = data.getStringExtra(Pro.FORMAT);
+        final String barcodeFormat = data.getStringExtra(Pro.FORMAT);
         if (barcodeFormat != null && !Arrays.asList(Pro.BARCODE_TYPES).contains(barcodeFormat)) {
             return null;
         }

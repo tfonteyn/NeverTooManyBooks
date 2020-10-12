@@ -240,7 +240,7 @@ public class Field<T, V extends View> {
      */
     private void setRelatedFieldsVisibility(@NonNull final View parent,
                                             final int visibility) {
-        for (int fieldId : mRelatedFields) {
+        for (final int fieldId : mRelatedFields) {
             final View view = parent.findViewById(fieldId);
             if (view != null) {
                 view.setVisibility(visibility);

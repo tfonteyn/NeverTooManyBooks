@@ -395,9 +395,9 @@ public class Site
                                          @NonNull final String order) {
 
             final List<Site> reorderedList = new ArrayList<>();
-            for (String idStr : order.split(",")) {
+            for (final String idStr : order.split(",")) {
                 final int id = Integer.parseInt(idStr);
-                for (Site site : sites) {
+                for (final Site site : sites) {
                     if (site.engineId == id) {
                         reorderedList.add(site);
                         break;
@@ -454,7 +454,7 @@ public class Site
         public void setList(@NonNull final Context context,
                             @NonNull final Collection<Site> sites) {
             mList.clear();
-            for (Site site : sites) {
+            for (final Site site : sites) {
                 mList.add(new Site(site));
             }
             savePrefs(context);
@@ -469,7 +469,7 @@ public class Site
          */
         @NonNull
         public Site getSite(@SearchSites.EngineId final int engineId) {
-            for (Site site : mList) {
+            for (final Site site : mList) {
                 if (site.engineId == engineId) {
                     return new Site(site);
                 }
@@ -487,7 +487,7 @@ public class Site
         @NonNull
         public ArrayList<Site> getSites() {
             final ArrayList<Site> list = new ArrayList<>();
-            for (Site site : mList) {
+            for (final Site site : mList) {
                 list.add(new Site(site));
             }
             return list;
@@ -522,7 +522,7 @@ public class Site
         public void loadPrefs(@NonNull final Context context) {
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            for (Site site : mList) {
+            for (final Site site : mList) {
                 site.loadFromPrefs(prefs);
             }
 
@@ -535,7 +535,7 @@ public class Site
                     // This is a fringe case: a new engine was added, and the user upgraded
                     // this app. The stored order will lack the new engine.
                     // Add any sites not added yet to the end of the list
-                    for (Site site : mList) {
+                    for (final Site site : mList) {
                         if (!reorderedList.contains(site)) {
                             reorderedList.add(site);
                         }

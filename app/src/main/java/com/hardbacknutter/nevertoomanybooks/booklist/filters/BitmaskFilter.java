@@ -87,7 +87,7 @@ public class BitmaskFilter
     @Nullable
     public String getExpression(@NonNull final Context context) {
         if (isActive(context)) {
-            int value = getValue(context);
+            final int value = getValue(context);
             if (value > 0) {
                 return "((" + mTable.dot(mDomainKey) + " & " + value + ") <> 0)";
             } else {

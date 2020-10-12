@@ -47,7 +47,7 @@ class SearchSitesTest
         SearchEngineRegistry.create(mContext);
 
         final Collection<SearchEngineRegistry.Config> all = SearchEngineRegistry.getAll();
-        for (SearchEngineRegistry.Config config : all) {
+        for (final SearchEngineRegistry.Config config : all) {
             assertNotNull(config);
             System.out.println("\n" + config);
         }
@@ -57,11 +57,11 @@ class SearchSitesTest
     void dumpSites() {
         SearchEngineRegistry.create(mContext);
 
-        for (Site.Type type : Site.Type.values()) {
+        for (final Site.Type type : Site.Type.values()) {
             final List<Site> sites = type.getSites();
             System.out.println("\n------------------------------------------\n\n" + type);
 
-            for (Site site : sites) {
+            for (final Site site : sites) {
                 final SearchEngineRegistry.Config config =
                         SearchEngineRegistry.getByEngineId(site.engineId);
                 assertNotNull(config);

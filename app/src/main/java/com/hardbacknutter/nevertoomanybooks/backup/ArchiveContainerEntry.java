@@ -103,7 +103,7 @@ public enum ArchiveContainerEntry {
      */
     @NonNull
     public static ArchiveContainerEntry getType(@NonNull final String entityName) {
-        String name = entityName.toLowerCase(AppLocale.getInstance().getSystemLocale());
+        final String name = entityName.toLowerCase(AppLocale.getInstance().getSystemLocale());
 
         if (name.endsWith(".jpg") || name.endsWith(".png")) {
             return Cover;

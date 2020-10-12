@@ -54,7 +54,7 @@ public class ASIN {
         boolean foundAlpha = false;
         asin = asin.trim().toUpperCase(Locale.ENGLISH);
         for (int i = 0; i < asin.length(); i++) {
-            int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
+            final int pos = "1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(asin.charAt(i));
             // Make sure it's a valid char
             if (pos == -1) {
                 return false;

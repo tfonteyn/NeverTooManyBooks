@@ -55,7 +55,7 @@ public class NotEmptyFilter
     @Override
     @Nullable
     public String getExpression(@NonNull final Context context) {
-        Integer value = getValue(context);
+        final Integer value = getValue(context);
         if (!P_NOT_USED.equals(value)) {
             if (value == 0) {
                 return "((" + mTable.dot(mDomainKey) + " IS NULL)"

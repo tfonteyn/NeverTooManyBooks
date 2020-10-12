@@ -38,13 +38,13 @@ public class JSoupBase
         extends Base {
 
     /** Helper: Load the data from the given file, and populate {@link #mRawData} */
-    protected void loadData(@NonNull JsoupSearchEngineBase searchEngine,
+    protected void loadData(@NonNull final JsoupSearchEngineBase searchEngine,
                             @NonNull final String charsetName,
                             @NonNull final String locationHeader,
                             @NonNull final String filename,
                             final boolean[] fetchThumbnails) {
-        Document document;
-        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
+        final Document document;
+        try (final InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             document = Jsoup.parse(is, charsetName, locationHeader);
 

@@ -189,7 +189,7 @@ public class Filters {
      * @param map to add to
      */
     void addToMap(@NonNull final Map<String, PPref> map) {
-        for (Filter<?> filter : mFilters.values()) {
+        for (final Filter<?> filter : mFilters.values()) {
             map.put(filter.getKey(), (PPref) filter);
         }
     }
@@ -201,7 +201,7 @@ public class Filters {
      */
     public void set(@NonNull final Parcel in) {
         // the collection is ordered, so we don't need the keys.
-        for (Filter<?> filter : mFilters.values()) {
+        for (final Filter<?> filter : mFilters.values()) {
             filter.set(in);
         }
     }
@@ -213,7 +213,7 @@ public class Filters {
      */
     public void writeToParcel(@NonNull final Parcel dest) {
         // the collection is ordered, so we don't write the keys.
-        for (Filter<?> filter : mFilters.values()) {
+        for (final Filter<?> filter : mFilters.values()) {
             filter.writeToParcel(dest);
         }
     }

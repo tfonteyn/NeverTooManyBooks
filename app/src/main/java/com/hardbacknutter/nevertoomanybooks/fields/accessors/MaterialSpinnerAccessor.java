@@ -92,7 +92,7 @@ public class MaterialSpinnerAccessor
     public Integer getValue() {
         final AutoCompleteTextView view = getView();
         if (view != null) {
-            String current = view.getText().toString();
+            final String current = view.getText().toString();
             return mAdapter.getPosition(current);
         } else {
             return mRawValue != null ? mRawValue : 0;

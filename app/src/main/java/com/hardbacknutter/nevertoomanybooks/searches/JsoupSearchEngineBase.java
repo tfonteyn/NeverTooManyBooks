@@ -124,8 +124,8 @@ public abstract class JsoupSearchEngineBase
     @WorkerThread
     @CallSuper
     public void parse(@NonNull final Document document,
-                      @NonNull boolean[] fetchThumbnail,
-                      @NonNull Bundle bookData)
+                      @NonNull final boolean[] fetchThumbnail,
+                      @NonNull final Bundle bookData)
             throws IOException {
         // yes, instead of forcing child classes to call this super,
         // we could make them call a 'clear()' method instead.

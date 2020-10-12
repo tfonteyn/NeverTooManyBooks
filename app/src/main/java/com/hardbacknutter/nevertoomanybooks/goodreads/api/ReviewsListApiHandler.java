@@ -128,7 +128,7 @@ public class ReviewsListApiHandler
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, perPage,
                                          mGrAuth.getUserId());
-        DefaultHandler handler = new XmlResponseParser(mRootFilter);
+        final DefaultHandler handler = new XmlResponseParser(mRootFilter);
 //        DefaultHandler handler = new XmlDumpParser();
         executeGet(url, null, true, handler);
         return mFilters.getData();
@@ -516,7 +516,7 @@ public class ReviewsListApiHandler
 
             final LocalDateTime date = parseDate(sourceBundle.getString(sourceKey));
             if (date != null) {
-                String value = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
+                final String value = date.format(DateTimeFormatter.ISO_LOCAL_DATE);
                 destBundle.putString(destKey, value);
                 return value;
             }

@@ -92,7 +92,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
 
         if (holder.mDeleteButton != null) {
             holder.mDeleteButton.setOnClickListener(v -> {
-                int adapterPosition = holder.getBindingAdapterPosition();
+                final int adapterPosition = holder.getBindingAdapterPosition();
                 // 2019-09-25: yes, we CAN (and did) get a NO_POSITION value here. So check it!
                 if (adapterPosition == RecyclerView.NO_POSITION) {
                     // don't touch the item list, but update the screen.

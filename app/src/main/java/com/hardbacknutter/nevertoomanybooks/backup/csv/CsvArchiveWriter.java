@@ -64,8 +64,8 @@ public class CsvArchiveWriter
             throws IOException {
 
         // This is a plain books-only flat csv-file,so we *only* pass in Options.BOOKS.
-        try (Exporter exporter = new CsvExporter(context, Options.BOOKS,
-                                                 mHelper.getUtcDateTimeSince())) {
+        try (final Exporter exporter = new CsvExporter(context, Options.BOOKS,
+                                                       mHelper.getUtcDateTimeSince())) {
             return exporter.write(context, mHelper.getTempOutputFile(context), progressListener);
         }
     }

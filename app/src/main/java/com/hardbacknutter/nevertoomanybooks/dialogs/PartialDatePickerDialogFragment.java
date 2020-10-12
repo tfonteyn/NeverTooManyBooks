@@ -287,7 +287,7 @@ public class PartialDatePickerDialogFragment
         int currentlySelectedDay = mDay;
 
         // Determine the total days if we have a valid month/year
-        int totalDays;
+        final int totalDays;
         if (mYear != 0 && mMonth != 0) {
             totalDays = LocalDate.of(mYear, mMonth, 1).lengthOfMonth();
         } else {
@@ -339,7 +339,7 @@ public class PartialDatePickerDialogFragment
         // Remove them
         parent.removeAllViews();
         // Re-add in the correct order.
-        for (char c : order) {
+        for (final char c : order) {
             switch (c) {
                 case 'd':
                     parent.addView(d);

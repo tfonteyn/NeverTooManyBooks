@@ -140,7 +140,8 @@ class PruneListTest
         author.setType(Author.TYPE_CONTRIBUTOR);
         authorList.add(author);
 
-        boolean modified = Author.pruneList(authorList, mContext, mDb, false, Locale.getDefault());
+        final boolean modified = Author
+                .pruneList(authorList, mContext, mDb, false, Locale.getDefault());
 
         assertTrue(modified);
         assertEquals(3, authorList.size());
@@ -206,7 +207,7 @@ class PruneListTest
         series.setId(100);
         list.add(series);
 
-        boolean modified = Series.pruneList(list, mContext, mDb, false, Locale.getDefault());
+        final boolean modified = Series.pruneList(list, mContext, mDb, false, Locale.getDefault());
 
         assertTrue(modified);
         assertEquals(3, list.size());

@@ -62,8 +62,8 @@ class IsfdbBookHandlerTest
         // Override the default 'false'
         mSharedPreferences.edit().putBoolean(PREFS_SERIES_FROM_TOC, true).apply();
 
-        boolean b = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                     .getBoolean(PREFS_SERIES_FROM_TOC, false);
+        final boolean b = PreferenceManager.getDefaultSharedPreferences(mContext)
+                                           .getBoolean(PREFS_SERIES_FROM_TOC, false);
         assertTrue(b);
     }
 
@@ -184,7 +184,7 @@ class IsfdbBookHandlerTest
         final ArrayList<TocEntry> toc = mRawData.getParcelableArrayList(Book.BKEY_TOC_LIST);
         assertNotNull(toc);
         assertEquals(1, toc.size());
-        TocEntry entry = toc.get(0);
+        final TocEntry entry = toc.get(0);
         assertEquals("Mort", entry.getTitle());
         assertEquals(1987, entry.getFirstPublicationDate().getYearValue());
         assertEquals("Pratchett", entry.getPrimaryAuthor().getFamilyName());

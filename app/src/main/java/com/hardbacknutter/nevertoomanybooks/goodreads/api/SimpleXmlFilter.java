@@ -172,10 +172,10 @@ public class SimpleXmlFilter {
      */
     @NonNull
     public SimpleXmlFilter s(@NonNull final String tag) {
-        DataStoreProvider parent;
+        final DataStoreProvider parent;
 
         mTags.add(tag);
-        int size = mContexts.size();
+        final int size = mContexts.size();
 
         if (size == 0) {
             parent = mRootData;
@@ -203,7 +203,7 @@ public class SimpleXmlFilter {
 
     @NonNull
     private List<AttrFilter> getAttrFilters() {
-        BuilderContext c = mContexts.get(mContexts.size() - 1);
+        final BuilderContext c = mContexts.get(mContexts.size() - 1);
         if (c.attrs == null) {
             c.attrs = new ArrayList<>();
         }
@@ -212,7 +212,7 @@ public class SimpleXmlFilter {
 
     @NonNull
     public SimpleXmlFilter setListener(@NonNull final XmlListener listener) {
-        BuilderContext c = mContexts.get(mContexts.size() - 1);
+        final BuilderContext c = mContexts.get(mContexts.size() - 1);
         c.listener = listener;
         return this;
     }
@@ -243,7 +243,7 @@ public class SimpleXmlFilter {
     @NonNull
     SimpleXmlFilter booleanAttr(@NonNull final String key,
                                 @NonNull final String attrName) {
-        List<AttrFilter> attrs = getAttrFilters();
+        final List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new BooleanAttrFilter(key, attrName));
         return this;
     }
@@ -252,7 +252,7 @@ public class SimpleXmlFilter {
     @NonNull
     SimpleXmlFilter doubleAttr(@NonNull final String attrName,
                                @NonNull final String key) {
-        List<AttrFilter> attrs = getAttrFilters();
+        final List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new DoubleAttrFilter(key, attrName, mLocale));
         return this;
     }
@@ -260,7 +260,7 @@ public class SimpleXmlFilter {
     @NonNull
     SimpleXmlFilter longAttr(@NonNull final String attrName,
                              @NonNull final String key) {
-        List<AttrFilter> attrs = getAttrFilters();
+        final List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new LongAttrFilter(key, attrName));
         return this;
     }
@@ -269,7 +269,7 @@ public class SimpleXmlFilter {
     @NonNull
     SimpleXmlFilter stringAttr(@NonNull final String attrName,
                                @NonNull final String key) {
-        List<AttrFilter> attrs = getAttrFilters();
+        final List<AttrFilter> attrs = getAttrFilters();
         attrs.add(new StringAttrFilter(key, attrName));
         return this;
     }
@@ -284,7 +284,7 @@ public class SimpleXmlFilter {
 
     private void setCollector(@NonNull final Consumer<ElementContext> handler,
                               @NonNull final String fieldName) {
-        BuilderContext c = mContexts.get(mContexts.size() - 1);
+        final BuilderContext c = mContexts.get(mContexts.size() - 1);
         c.collectField = fieldName;
         c.finishHandler = handler;
     }
@@ -561,7 +561,7 @@ public class SimpleXmlFilter {
 
         public void put(@NonNull final BuilderContext context,
                         @NonNull final String value) {
-            boolean b = ParseUtils.parseBoolean(value.trim(), true);
+            final boolean b = ParseUtils.parseBoolean(value.trim(), true);
             context.getData().putBoolean(key, b);
         }
     }

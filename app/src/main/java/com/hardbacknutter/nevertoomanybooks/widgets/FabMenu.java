@@ -88,7 +88,7 @@ public class FabMenu {
     }
 
     public void setOnClickListener(@NonNull final View.OnClickListener listener) {
-        for (ExtendedFloatingActionButton fabMenuItem : mFabMenuItems) {
+        for (final ExtendedFloatingActionButton fabMenuItem : mFabMenuItems) {
             fabMenuItem.setOnClickListener(listener);
         }
     }
@@ -152,7 +152,7 @@ public class FabMenu {
         final boolean smallScreen = res.getConfiguration().screenHeightDp < 400;
 
         int i = 0;
-        for (ExtendedFloatingActionButton fab : mFabMenuItems) {
+        for (final ExtendedFloatingActionButton fab : mFabMenuItems) {
             // allow for null items
             if (fab != null && fab.isEnabled()) {
                 if (show) {

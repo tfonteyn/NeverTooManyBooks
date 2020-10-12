@@ -441,7 +441,7 @@ public class BookDetailsFragment
                         // pass the data up
                         mBookViewModel.putResultData(data);
 
-                        long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
+                        final long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
                         if (id > 0) {
                             mBookViewModel.loadBook(id);
                         }
@@ -574,7 +574,7 @@ public class BookDetailsFragment
                                                 @NonNull final View v,
                                                 @NonNull
                                                 final ContextMenu.ContextMenuInfo menuInfo) {
-                    Resources r = getResources();
+                    final Resources r = getResources();
                     menu.add(Menu.NONE, R.id.MENU_BOOK_LOAN_DELETE,
                              r.getInteger(R.integer.MENU_ORDER_LENDING),
                              R.string.menu_lend_return_book);
@@ -607,7 +607,7 @@ public class BookDetailsFragment
         if (!tocList.isEmpty()) {
             final Context context = getContext();
 
-            for (TocEntry tocEntry : tocList) {
+            for (final TocEntry tocEntry : tocList) {
                 final RowTocEntryWithAuthorBinding rowVb = RowTocEntryWithAuthorBinding
                         .inflate(getLayoutInflater(), mVbToc.toc, false);
 
@@ -657,7 +657,7 @@ public class BookDetailsFragment
      */
     private void setSectionVisibility(@NonNull final View sectionView,
                                       @NonNull final View... fieldViews) {
-        for (View view : fieldViews) {
+        for (final View view : fieldViews) {
             if (view != null && view.getVisibility() != View.GONE) {
                 // at least one field was visible
                 sectionView.setVisibility(View.VISIBLE);

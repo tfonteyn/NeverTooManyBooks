@@ -70,7 +70,7 @@ public final class HtmlUtils {
         Linkify.addLinks(buffer, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
 
         // Add back the HTML spannable's
-        for (URLSpan span : currentSpans) {
+        for (final URLSpan span : currentSpans) {
             buffer.setSpan(span, text.getSpanStart(span), text.getSpanEnd(span), 0);
         }
         return buffer;

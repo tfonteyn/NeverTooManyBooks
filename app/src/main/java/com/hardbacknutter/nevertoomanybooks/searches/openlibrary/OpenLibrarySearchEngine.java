@@ -245,8 +245,8 @@ public class OpenLibrarySearchEngine
             throws IOException {
         // get and store the result into a string.
         final String response;
-        try (TerminatorConnection con = createConnection(url, true);
-             InputStream is = con.getInputStream()) {
+        try (final TerminatorConnection con = createConnection(url, true);
+             final InputStream is = con.getInputStream()) {
             response = readResponseStream(is);
         }
 
@@ -457,7 +457,7 @@ public class OpenLibrarySearchEngine
         JSONObject element;
         JSONArray a;
         String s;
-        int i;
+        final int i;
 
         s = document.optString("title");
         if (!s.isEmpty()) {

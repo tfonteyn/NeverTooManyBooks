@@ -515,7 +515,7 @@ public class Author
             }
         }
 
-        for (Author author : toDelete) {
+        for (final Author author : toDelete) {
             list.remove(author);
         }
 
@@ -561,7 +561,7 @@ public class Author
      */
     public void setType(@NonNull final Iterable<Integer> type) {
         int bitmask = 0;
-        for (Integer bit : type) {
+        for (final Integer bit : type) {
             bitmask += bit;
         }
         mType = bitmask;

@@ -356,7 +356,7 @@ public class AppLocale {
     public void unregisterOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
         synchronized (ON_LOCALE_CHANGED_LISTENERS) {
-            Iterator<WeakReference<OnLocaleChangedListener>> it =
+            final Iterator<WeakReference<OnLocaleChangedListener>> it =
                     ON_LOCALE_CHANGED_LISTENERS.iterator();
             while (it.hasNext()) {
                 final WeakReference<OnLocaleChangedListener> listenerRef = it.next();
@@ -373,7 +373,7 @@ public class AppLocale {
      */
     private void onLocaleChanged(@NonNull final Context context) {
         synchronized (ON_LOCALE_CHANGED_LISTENERS) {
-            Iterator<WeakReference<OnLocaleChangedListener>> it =
+            final Iterator<WeakReference<OnLocaleChangedListener>> it =
                     ON_LOCALE_CHANGED_LISTENERS.iterator();
             while (it.hasNext()) {
                 final WeakReference<OnLocaleChangedListener> listenerRef = it.next();

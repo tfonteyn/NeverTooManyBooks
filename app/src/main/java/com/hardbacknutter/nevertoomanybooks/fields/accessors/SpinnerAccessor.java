@@ -75,8 +75,8 @@ public class SpinnerAccessor
      */
     public SpinnerAccessor(@NonNull final Context context,
                            @NonNull final Iterable<Integer> resIds) {
-        List<String> list = new ArrayList<>();
-        for (int id : resIds) {
+        final List<String> list = new ArrayList<>();
+        for (final int id : resIds) {
             list.add(context.getString(id));
         }
         mAdapter = new ArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);

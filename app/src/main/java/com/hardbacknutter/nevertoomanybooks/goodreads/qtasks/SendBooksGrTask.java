@@ -93,8 +93,8 @@ public class SendBooksGrTask
             lastBookSend = 0;
         }
 
-        try (DAO db = new DAO(TAG);
-             Cursor cursor = db.fetchBooksForGoodreadsExport(lastBookSend, mUpdatesOnly)) {
+        try (final DAO db = new DAO(TAG);
+             final Cursor cursor = db.fetchBooksForGoodreadsExport(lastBookSend, mUpdatesOnly)) {
             final DataHolder bookData = new CursorRow(cursor);
             mTotalBooks = cursor.getCount() + mCount;
 

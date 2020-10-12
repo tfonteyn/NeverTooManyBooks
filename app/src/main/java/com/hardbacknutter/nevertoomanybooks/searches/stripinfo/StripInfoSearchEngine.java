@@ -219,7 +219,7 @@ public class StripInfoSearchEngine
 
         final Elements sections = document.select("section.c6");
         if (sections != null) {
-            for (Element section : sections) {
+            for (final Element section : sections) {
                 // A series:
                 // <a href="https://stripinfo.be/reeks/index/481
                 //      _Het_narrenschip">Het narrenschip</a>
@@ -266,7 +266,7 @@ public class StripInfoSearchEngine
         String primarySeriesBookNr = null;
 
         final Elements rows = document.select("div.row");
-        for (Element row : rows) {
+        for (final Element row : rows) {
 
             if (isCancelled()) {
                 return;
@@ -520,7 +520,7 @@ public class StripInfoSearchEngine
                 if (fileLen == NO_COVER_FILE_LEN
                     || fileLen == MATURE_FILE_LEN) {
                     // do the thorough check with md5 calculation as a second defence
-                    byte[] digest = md5(file);
+                    final byte[] digest = md5(file);
                     if (Arrays.equals(digest, NO_COVER_MD5)
                         || Arrays.equals(digest, MATURE_COVER_MD5)) {
                         //noinspection ResultOfMethodCallIgnored
@@ -573,7 +573,7 @@ public class StripInfoSearchEngine
                     if (fileLen == NO_COVER_FILE_LEN
                         || fileLen == MATURE_FILE_LEN) {
                         // do the thorough check with md5 calculation as a second defence
-                        byte[] digest = md5(file);
+                        final byte[] digest = md5(file);
                         if (Arrays.equals(digest, NO_COVER_MD5)
                             || Arrays.equals(digest, MATURE_COVER_MD5)) {
                             //noinspection ResultOfMethodCallIgnored
@@ -612,7 +612,7 @@ public class StripInfoSearchEngine
     private ArrayList<TocEntry> parseToc(@NonNull final Document document) {
         final Elements sections = document.select("div.c12");
         if (sections != null) {
-            for (Element section : sections) {
+            for (final Element section : sections) {
                 final Element divs = section.selectFirst("div");
                 if (divs != null) {
                     final Elements sectionChildren = divs.children();
@@ -623,8 +623,8 @@ public class StripInfoSearchEngine
                         final Node header = sectionContent.selectFirst("h4");
                         if (header != null && header.toString().contains("bundeling")) {
                             // the div's inside Element 'row' should now contain the TOC.
-                            ArrayList<TocEntry> toc = new ArrayList<>();
-                            for (Element entry : sectionContent.select("div div")) {
+                            final ArrayList<TocEntry> toc = new ArrayList<>();
+                            for (final Element entry : sectionContent.select("div div")) {
                                 String number = null;
                                 String title = null;
 
@@ -652,7 +652,7 @@ public class StripInfoSearchEngine
                                     } else {
                                         author = Author.createUnknownAuthor(mAppContext);
                                     }
-                                    TocEntry tocEntry = new TocEntry(author, title, null);
+                                    final TocEntry tocEntry = new TocEntry(author, title, null);
                                     toc.add(tocEntry);
                                 }
                             }
@@ -776,7 +776,7 @@ public class StripInfoSearchEngine
 
     private int processLanguage(@NonNull final Element td,
                                 @NonNull final Bundle bookData) {
-        int found = processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
+        final int found = processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = Languages
@@ -804,7 +804,7 @@ public class StripInfoSearchEngine
                 final Author currentAuthor = Author.from(name);
                 boolean add = true;
                 // check if already present
-                for (Author author : mAuthors) {
+                for (final Author author : mAuthors) {
                     if (author.equals(currentAuthor)) {
                         // merge types.
                         author.addType(currentAuthorType);
@@ -929,8 +929,8 @@ public class StripInfoSearchEngine
         byte[] digest = null;
         try {
             final MessageDigest md = MessageDigest.getInstance("MD5");
-            try (InputStream is = new FileInputStream(file)) {
-                try (DigestInputStream dis = new DigestInputStream(is, md)) {
+            try (final InputStream is = new FileInputStream(file)) {
+                try (final DigestInputStream dis = new DigestInputStream(is, md)) {
                     // read and discard. The images are small enough to always read in one go.
                     //noinspection ResultOfMethodCallIgnored
                     dis.read(new byte[(int) file.length() + 1]);

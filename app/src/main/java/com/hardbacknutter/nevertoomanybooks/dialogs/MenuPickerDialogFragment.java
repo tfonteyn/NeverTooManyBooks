@@ -364,7 +364,7 @@ public class MenuPickerDialogFragment
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(final Object o) {
             if (!(o instanceof Pick)) {
                 return false;
             }
@@ -438,7 +438,7 @@ public class MenuPickerDialogFragment
          */
         void setMenu(@NonNull final Iterable<Pick> menu) {
             mList.clear();
-            for (Pick item : menu) {
+            for (final Pick item : menu) {
                 if (item.isVisible()) {
                     mList.add(item);
                 }

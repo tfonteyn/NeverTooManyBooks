@@ -199,7 +199,7 @@ public final class CoversDAO
                 }
             }
 
-            int noi = INSTANCE_COUNTER.incrementAndGet();
+            final int noi = INSTANCE_COUNTER.incrementAndGet();
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "getInstance|instances in use=" + noi);
             }
@@ -248,7 +248,7 @@ public final class CoversDAO
                                   final int maxWidth,
                                   final int maxHeight) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dao = CoversDAO.getInstance(context)) {
+        try (@SuppressWarnings("unused") final CoversDAO dao = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return null;
             }
@@ -263,7 +263,7 @@ public final class CoversDAO
                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                     final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
 
-                    try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{
+                    try (final Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{
                             cacheId, fileLastModified})) {
                         if (cursor.moveToFirst()) {
                             final byte[] bytes = cursor.getBlob(0);
@@ -295,7 +295,7 @@ public final class CoversDAO
     public static void delete(@NonNull final Context context,
                               @NonNull final String uuid) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dao = CoversDAO.getInstance(context)) {
+        try (@SuppressWarnings("unused") final CoversDAO dao = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
@@ -314,7 +314,7 @@ public final class CoversDAO
      */
     public static void deleteAll(@NonNull final Context context) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dao = CoversDAO.getInstance(context)) {
+        try (@SuppressWarnings("unused") final CoversDAO dao = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
@@ -331,7 +331,7 @@ public final class CoversDAO
      */
     public static void optimize(@NonNull final Context context) {
         // safely initialise if needed
-        try (@SuppressWarnings("unused") CoversDAO dao = CoversDAO.getInstance(context)) {
+        try (@SuppressWarnings("unused") final CoversDAO dao = CoversDAO.getInstance(context)) {
             if (sSyncedDb == null) {
                 return;
             }
@@ -573,7 +573,7 @@ public final class CoversDAO
 
             RUNNING_TASKS.incrementAndGet();
 
-            try (CoversDAO coversDBAdapter = getInstance(context)) {
+            try (final CoversDAO coversDBAdapter = getInstance(context)) {
                 coversDBAdapter.saveFile(mUuid, mIndex, mBitmap, mWidth, mHeight);
             }
 

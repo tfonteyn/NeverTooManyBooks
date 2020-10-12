@@ -148,7 +148,7 @@ public class JsoupLoader {
                 Logger.d(TAG, "loadDocument", "REQUESTED|url=\"" + url + '\"');
             }
 
-            try (TerminatorConnection con = searchEngine.createConnection(url, true)) {
+            try (final TerminatorConnection con = searchEngine.createConnection(url, true)) {
                 // Don't retry if the initial connection fails...
                 // We use our own retry mechanism here.
                 con.setRetryCount(0);

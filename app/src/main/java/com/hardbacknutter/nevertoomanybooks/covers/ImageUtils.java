@@ -249,7 +249,7 @@ public final class ImageUtils {
     static boolean saveBitmap(@NonNull final Bitmap bitmap,
                               @NonNull final File dstFile) {
         try {
-            try (OutputStream os = new FileOutputStream(dstFile.getAbsoluteFile())) {
+            try (final OutputStream os = new FileOutputStream(dstFile.getAbsoluteFile())) {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
             }
             return true;
@@ -313,14 +313,14 @@ public final class ImageUtils {
         File file = AppDir.Cache.getFile(context, filename);
         try {
             if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
-                try (OutputStream os = new FileOutputStream(file)) {
+                try (final OutputStream os = new FileOutputStream(file)) {
                     final byte[] image = Base64
                             .decode(url.substring(DATA_IMAGE_JPEG_BASE_64.length())
                                        .getBytes(StandardCharsets.UTF_8), 0);
                     os.write(image);
                 }
             } else {
-                try (TerminatorConnection con = new TerminatorConnection(
+                try (final TerminatorConnection con = new TerminatorConnection(
                         context, url, connectTimeout, readTimeout, throttler)) {
                     file = FileUtils.copyInputStream(context, con.getInputStream(), file);
                 }

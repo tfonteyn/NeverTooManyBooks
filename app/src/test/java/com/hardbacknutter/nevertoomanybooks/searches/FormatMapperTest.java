@@ -33,8 +33,8 @@ class FormatMapperTest
     @Test
     void basic() {
         setLocale(Locale.UK);
-        Mapper mapper = new FormatMapper();
-        String key = mapper.getKey();
+        final Mapper mapper = new FormatMapper();
+        final String key = mapper.getKey();
         mRawData.putString(key, "pb");
         mapper.map(mContext, mRawData);
         assertEquals("Paperback", mRawData.getString(key));

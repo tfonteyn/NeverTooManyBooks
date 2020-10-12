@@ -174,7 +174,7 @@ public class StyleGroupsActivity
         void onItemCheckChanged(@NonNull final Holder holder) {
             final int position = holder.getBindingAdapterPosition();
             final StyleGroupsModel.GroupWrapper groupWrapper = getItem(position);
-            boolean newStatus = !groupWrapper.present;
+            final boolean newStatus = !groupWrapper.present;
             groupWrapper.present = newStatus;
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(newStatus);

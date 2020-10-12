@@ -60,8 +60,8 @@ public class LongValidator
                          final int errorLabelId)
             throws ValidatorException {
 
-        long value;
-        Object obj = dataManager.get(key);
+        final long value;
+        final Object obj = dataManager.get(key);
         if (obj == null) {
             value = mDefaultValue;
         } else if (obj instanceof Long) {
@@ -69,7 +69,7 @@ public class LongValidator
         } else if (obj instanceof Integer) {
             value = ((Integer) obj).longValue();
         } else {
-            String stringValue = obj.toString().trim();
+            final String stringValue = obj.toString().trim();
             if (stringValue.isEmpty()) {
                 value = mDefaultValue;
             } else {

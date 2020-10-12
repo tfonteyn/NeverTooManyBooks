@@ -115,7 +115,7 @@ public class EntityListChipGroupAccessor
             final Context context = chipGroup.getContext();
 
             // *all* values
-            for (Entity entity : mListSupplier.get()) {
+            for (final Entity entity : mListSupplier.get()) {
                 final boolean isSet = mRawValue.contains(entity);
                 // if editable, all values; if not editable only the set values.
                 if (isSet || mIsEditable) {

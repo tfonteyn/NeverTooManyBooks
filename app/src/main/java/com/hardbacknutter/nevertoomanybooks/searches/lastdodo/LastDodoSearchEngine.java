@@ -171,7 +171,7 @@ public class LastDodoSearchEngine
 
         String tmpString;
 
-        for (Element tr : trs) {
+        for (final Element tr : trs) {
             final Element th = tr.child(0);
             final Element td = tr.child(1);
             switch (th.text()) {
@@ -358,7 +358,7 @@ public class LastDodoSearchEngine
             final ArrayList<TocEntry> toc = new ArrayList<>();
             section = section.nextElementSibling();
             final Elements entries = section.select("tr:contains(Verhaaltitel)");
-            for (Element tr : entries) {
+            for (final Element tr : entries) {
                 final String title = tr.child(1).text();
                 toc.add(new TocEntry(mAuthors.get(0), title, null));
             }
@@ -379,12 +379,12 @@ public class LastDodoSearchEngine
                                @Author.Type final int currentAuthorType) {
 
         final Elements aas = td.select("a");
-        for (Element a : aas) {
+        for (final Element a : aas) {
             final String name = a.text();
             final Author currentAuthor = Author.from(name);
             boolean add = true;
             // check if already present
-            for (Author author : mAuthors) {
+            for (final Author author : mAuthors) {
                 if (author.equals(currentAuthor)) {
                     // merge types.
                     author.addType(currentAuthorType);
@@ -407,7 +407,7 @@ public class LastDodoSearchEngine
      */
     private void processSeries(@NonNull final Element td) {
         final Elements aas = td.select("a");
-        for (Element a : aas) {
+        for (final Element a : aas) {
             final String name = a.text();
             final Series currentSeries = Series.from(name);
             // check if already present
@@ -426,7 +426,7 @@ public class LastDodoSearchEngine
      */
     private void processPublisher(@NonNull final Element td) {
         final Elements aas = td.select("a");
-        for (Element a : aas) {
+        for (final Element a : aas) {
             final String name = cleanText(a.text());
             final Publisher currentPublisher = Publisher.from(name);
             // check if already present

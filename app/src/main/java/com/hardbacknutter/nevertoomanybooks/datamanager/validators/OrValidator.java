@@ -54,7 +54,7 @@ public class OrValidator
                          final int errorLabelId)
             throws ValidatorException {
         ValidatorException lastException = null;
-        for (DataValidator validator : mList) {
+        for (final DataValidator validator : mList) {
             try {
                 validator.validate(context, dataManager, key, errorLabelId);
                 // as soon as one is reporting 'ok' by NOT throwing an exception, we're done.

@@ -81,7 +81,7 @@ class LastDodoTest
         assertNotNull(allSeries);
         assertEquals(1, allSeries.size());
 
-        Series series = allSeries.get(0);
+        final Series series = allSeries.get(0);
         assertEquals("Hauteville House", series.getTitle());
         assertEquals("14", series.getNumber());
 

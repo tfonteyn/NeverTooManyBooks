@@ -229,7 +229,7 @@ public abstract class BasePreferenceFragment
             preference.setOnPreferenceClickListener(p -> {
                 final Context context = getContext();
                 final ArrayList<String> bookUuidList;
-                try (DAO db = new DAO(TAG)) {
+                try (final DAO db = new DAO(TAG)) {
                     bookUuidList = db.getBookUuidList();
                 }
 
@@ -466,7 +466,7 @@ public abstract class BasePreferenceFragment
         if (preference instanceof MultiSelectListPreference) {
             final MultiSelectListPreference msp = (MultiSelectListPreference) preference;
             final StringBuilder text = new StringBuilder();
-            for (String s : msp.getValues()) {
+            for (final String s : msp.getValues()) {
                 final int index = msp.findIndexOfValue(s);
                 if (index >= 0) {
                     text.append(msp.getEntries()[index]).append('\n');

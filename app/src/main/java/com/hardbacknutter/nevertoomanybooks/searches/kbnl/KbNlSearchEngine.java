@@ -117,7 +117,7 @@ public class KbNlSearchEngine
         final KbNlBookHandler handler = new KbNlBookHandler(bookData);
 
         // Don't follow redirects, so we get the XML instead of the rendered page
-        try (TerminatorConnection con = createConnection(url, false)) {
+        try (final TerminatorConnection con = createConnection(url, false)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException e) {

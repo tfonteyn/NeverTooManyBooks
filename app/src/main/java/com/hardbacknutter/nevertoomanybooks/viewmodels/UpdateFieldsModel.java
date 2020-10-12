@@ -187,7 +187,7 @@ public class UpdateFieldsModel
         addField(prefs, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
         addField(prefs, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
-        for (SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
+        for (final SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
             final Domain domain = config.getExternalIdDomain();
             if (domain != null) {
                 addField(prefs, domain.getName(), config.getNameResId(), Overwrite);
@@ -327,7 +327,7 @@ public class UpdateFieldsModel
         final SharedPreferences.Editor ed =
                 PreferenceManager.getDefaultSharedPreferences(context).edit();
 
-        for (FieldUsage fieldUsage : mFields.values()) {
+        for (final FieldUsage fieldUsage : mFields.values()) {
             fieldUsage.getUsage().write(ed, fieldUsage.fieldId);
         }
         ed.apply();
@@ -339,7 +339,7 @@ public class UpdateFieldsModel
      * @param context Current context
      */
     public void resetPreferences(@NonNull final Context context) {
-        for (FieldUsage fieldUsage : mFields.values()) {
+        for (final FieldUsage fieldUsage : mFields.values()) {
             fieldUsage.reset();
         }
         writePreferences(context);
@@ -433,7 +433,7 @@ public class UpdateFieldsModel
 
                     // Collect external ID's we can use
                     final SparseArray<String> externalIds = new SparseArray<>();
-                    for (SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
+                    for (final SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
                         final Domain domain = config.getExternalIdDomain();
                         if (domain != null) {
                             final String value = mCurrentBook.getString(domain.getName());
@@ -508,13 +508,13 @@ public class UpdateFieldsModel
 
             // Filter the data to remove keys we don't care about
             final Collection<String> toRemove = new ArrayList<>();
-            for (String key : bookData.keySet()) {
+            for (final String key : bookData.keySet()) {
                 final FieldUsage fieldUsage = mCurrentFieldsWanted.get(key);
                 if (fieldUsage == null || !fieldUsage.isWanted()) {
                     toRemove.add(key);
                 }
             }
-            for (String key : toRemove) {
+            for (final String key : toRemove) {
                 bookData.remove(key);
             }
 
@@ -692,7 +692,7 @@ public class UpdateFieldsModel
                                            @NonNull final Map<String, FieldUsage> requestedFields) {
 
         final Map<String, FieldUsage> fieldUsages = new LinkedHashMap<>();
-        for (FieldUsage usage : requestedFields.values()) {
+        for (final FieldUsage usage : requestedFields.values()) {
             switch (usage.getUsage()) {
                 case Skip:
                     // duh...

@@ -72,10 +72,10 @@ public class GoogleBarcodeScanner
     @Nullable
     private String decode(@NonNull final Bitmap bm) {
         if (mDetector.isOperational()) {
-            Frame frame = new Frame.Builder().setBitmap(bm).build();
-            SparseArray<Barcode> barCodes = mDetector.detect(frame);
+            final Frame frame = new Frame.Builder().setBitmap(bm).build();
+            final SparseArray<Barcode> barCodes = mDetector.detect(frame);
             if (barCodes.size() > 0) {
-                Barcode code = barCodes.valueAt(0);
+                final Barcode code = barCodes.valueAt(0);
                 if (code != null) {
                     return code.rawValue;
                 }
@@ -150,7 +150,7 @@ public class GoogleBarcodeScanner
 
         @Override
         public boolean isAvailable(@NonNull final Context context) {
-            GoogleApiAvailability instance = GoogleApiAvailability.getInstance();
+            final GoogleApiAvailability instance = GoogleApiAvailability.getInstance();
             return ConnectionResult.SUCCESS == instance.isGooglePlayServicesAvailable(context);
         }
     }

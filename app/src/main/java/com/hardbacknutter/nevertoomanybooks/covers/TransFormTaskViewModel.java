@@ -89,7 +89,7 @@ public class TransFormTaskViewModel
 
         // Rotate if needed
         if (bitmap != null) {
-            int angle = calculateRotationAngle();
+            final int angle = calculateRotationAngle();
             if (angle != 0) {
                 bitmap = rotate(context, bitmap, angle);
             }
@@ -188,7 +188,7 @@ public class TransFormTaskViewModel
         }
 
         final int rotation;
-        int orientation = exif.getAttributeInt(
+        final int orientation = exif.getAttributeInt(
                 ExifInterface.TAG_ORIENTATION,
                 ExifInterface.ORIENTATION_UNDEFINED);
         switch (orientation) {

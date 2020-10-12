@@ -330,7 +330,7 @@ class BookTest
     }
 
     private void dump(@NonNull final Book book) {
-        for (String key : mRawData.keySet()) {
+        for (final String key : mRawData.keySet()) {
             final Object value = book.get(key);
             System.out.println(key + "=" + value);
         }

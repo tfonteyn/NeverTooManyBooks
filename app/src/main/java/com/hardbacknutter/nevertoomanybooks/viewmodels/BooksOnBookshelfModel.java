@@ -124,7 +124,7 @@ public class BooksOnBookshelfModel
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
 
         // external site ID's
-        for (Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
+        for (final Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
             FIXED_DOMAIN_LIST.add(
                     new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }
@@ -189,7 +189,7 @@ public class BooksOnBookshelfModel
 
                 // check for an explicit bookshelf set
                 if (args.containsKey(BKEY_BOOKSHELF)) {
-                    int exShelfId = args.getInt(BKEY_BOOKSHELF);
+                    final int exShelfId = args.getInt(BKEY_BOOKSHELF);
                     // might be null, that's ok.
                     mBookshelf = Bookshelf.getBookshelf(context, mDb, exShelfId);
                 }
@@ -727,7 +727,7 @@ public class BooksOnBookshelfModel
             builder = new Booklist(mDb.getSyncDb(), style, mBookshelf, mRebuildState);
 
             // Add the fixed list of domains we always need.
-            for (VirtualDomain domainDetails : FIXED_DOMAIN_LIST) {
+            for (final VirtualDomain domainDetails : FIXED_DOMAIN_LIST) {
                 builder.addDomain(domainDetails);
             }
 

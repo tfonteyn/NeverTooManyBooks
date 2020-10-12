@@ -81,10 +81,10 @@ public final class DebugReport {
      */
     @SuppressLint("PackageManagerGetSignatures")
     public static String signedBy(@NonNull final Context context) {
-        StringBuilder signedBy = new StringBuilder();
+        final StringBuilder signedBy = new StringBuilder();
 
         try {
-            PackageInfo info;
+            final PackageInfo info;
             if (Build.VERSION.SDK_INT >= 28) {
                 info = context.getPackageManager()
                               .getPackageInfo(context.getPackageName(),
@@ -97,26 +97,26 @@ public final class DebugReport {
             }
 
             // concat the signature chain.
-            for (Signature sig : info.signatures) {
+            for (final Signature sig : info.signatures) {
                 if (sig != null) {
                     final MessageDigest md = MessageDigest.getInstance("SHA256");
                     final byte[] publicKey = md.digest(sig.toByteArray());
                     // Turn the hex bytes into a more traditional string representation.
                     final StringBuilder hexString = new StringBuilder();
                     boolean first = true;
-                    for (byte aPublicKey : publicKey) {
+                    for (final byte aPublicKey : publicKey) {
                         if (first) {
                             first = false;
                         } else {
                             hexString.append(':');
                         }
-                        String byteString = Integer.toHexString(0xFF & aPublicKey);
+                        final String byteString = Integer.toHexString(0xFF & aPublicKey);
                         if (byteString.length() == 1) {
                             hexString.append('0');
                         }
                         hexString.append(byteString);
                     }
-                    String fingerprint = hexString.toString();
+                    final String fingerprint = hexString.toString();
 
                     if (signedBy.length() == 0) {
                         signedBy.append(fingerprint);
@@ -145,7 +145,7 @@ public final class DebugReport {
         final StringBuilder message = new StringBuilder();
 
         try {
-            PackageInfo info =
+            final PackageInfo info =
                     context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             message.append("App: ").append(info.packageName).append('\n')
                    .append("Version: ").append(info.versionName)
@@ -219,9 +219,9 @@ public final class DebugReport {
             final String subject = '[' + context.getString(R.string.app_name) + "] "
                                    + context.getString(R.string.debug_subject);
             final String[] to = context.getString(R.string.email_debug).split(";");
-            ArrayList<String> bodyText = new ArrayList<>();
+            final ArrayList<String> bodyText = new ArrayList<>();
             bodyText.add(message.toString());
-            Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
+            final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
                     .setType("plain/text")
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
                     .putExtra(Intent.EXTRA_EMAIL, to)

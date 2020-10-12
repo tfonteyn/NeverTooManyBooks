@@ -61,8 +61,8 @@ public class SendOneBookGrTask
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final GoodreadsManager grManager) {
 
-        try (DAO db = new DAO(TAG);
-             Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
+        try (final DAO db = new DAO(TAG);
+             final Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
             final DataHolder bookData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 if (!sendOneBook(queueManager, grManager, db, bookData)) {

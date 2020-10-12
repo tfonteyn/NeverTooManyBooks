@@ -89,7 +89,7 @@ public class BuildLanguageMappingsTask
             return;
         }
         final SharedPreferences.Editor ed = preferences.edit();
-        for (Locale loc : Locale.getAvailableLocales()) {
+        for (final Locale loc : Locale.getAvailableLocales()) {
             ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
                          loc.getISO3Language());
         }

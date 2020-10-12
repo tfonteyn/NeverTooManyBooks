@@ -105,7 +105,7 @@ public final class ParseUtils {
                         sb.append("\\\\");
 
                     } else {
-                        for (char e : escapeChars) {
+                        for (final char e : escapeChars) {
                             if (c == e) {
                                 sb.append('\\');
                                 // break from the for (char e : escapeChars)
@@ -349,7 +349,7 @@ public final class ParseUtils {
         final Locale[] locales = {sourceLocale,
                                   AppLocale.getInstance().getSystemLocale(),
                                   Locale.US};
-        for (Locale locale : locales) {
+        for (final Locale locale : locales) {
             try {
                 final Number number = DecimalFormat.getInstance(locale).parse(source);
                 if (number != null) {
@@ -433,7 +433,7 @@ public final class ParseUtils {
                                   AppLocale.getInstance().getSystemLocale(),
                                   Locale.US};
 
-        for (Locale locale : locales) {
+        for (final Locale locale : locales) {
             try {
                 final DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(locale);
                 final char decSep = nf.getDecimalFormatSymbols().getDecimalSeparator();

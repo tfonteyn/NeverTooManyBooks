@@ -105,7 +105,7 @@ public class ZipArchiveWriter
             entry.setCrc(crc32.getValue());
         }
         mOutputStream.putNextEntry(entry);
-        try (InputStream is = new FileInputStream(file)) {
+        try (final InputStream is = new FileInputStream(file)) {
             FileUtils.copy(is, mOutputStream);
         } finally {
             mOutputStream.closeEntry();
@@ -131,7 +131,7 @@ public class ZipArchiveWriter
             entry.setCrc(crc32.getValue());
         }
         mOutputStream.putNextEntry(entry);
-        try (InputStream is = new ByteArrayInputStream(bytes)) {
+        try (final InputStream is = new ByteArrayInputStream(bytes)) {
             FileUtils.copy(is, mOutputStream);
         } finally {
             mOutputStream.closeEntry();

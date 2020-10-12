@@ -324,14 +324,14 @@ public final class ScannerManager {
                    .append(Prefs.getIntListPref(prefs, Prefs.pk_scanner_preferred, -1))
                    .append('\n');
 
-            for (String scannerAction : ALL_ACTIONS) {
+            for (final String scannerAction : ALL_ACTIONS) {
                 message.append("Scanner [").append(scannerAction).append("]:\n");
                 final Intent scannerIntent = new Intent(scannerAction, null);
                 final List<ResolveInfo> resolved =
                         context.getPackageManager().queryIntentActivities(scannerIntent, 0);
 
                 if (!resolved.isEmpty()) {
-                    for (ResolveInfo r : resolved) {
+                    for (final ResolveInfo r : resolved) {
                         message.append("    ");
                         // Could be activity or service...
                         if (r.activityInfo != null) {

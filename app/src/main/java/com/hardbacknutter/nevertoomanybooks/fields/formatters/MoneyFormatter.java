@@ -69,14 +69,14 @@ public class MoneyFormatter
             return "";
         }
 
-        String currency = rawValue.getCurrency();
+        final String currency = rawValue.getCurrency();
         // no currency ? just display the source value as-is
         if (currency == null || currency.isEmpty()) {
             return String.valueOf(rawValue.doubleValue());
         }
 
         try {
-            DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
+            final DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(mLocale);
             nf.setCurrency(Currency.getInstance(currency));
 
             // the result is rather dire... most currency symbols are shown as 3-char codes

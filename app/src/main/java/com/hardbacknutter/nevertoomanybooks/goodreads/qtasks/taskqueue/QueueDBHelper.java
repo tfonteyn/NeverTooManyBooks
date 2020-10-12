@@ -130,11 +130,11 @@ class QueueDBHelper
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
 
-        for (String table : TABLES) {
+        for (final String table : TABLES) {
             db.execSQL(table);
         }
 
-        for (String index : INDEXES) {
+        for (final String index : INDEXES) {
             db.execSQL(index);
         }
     }

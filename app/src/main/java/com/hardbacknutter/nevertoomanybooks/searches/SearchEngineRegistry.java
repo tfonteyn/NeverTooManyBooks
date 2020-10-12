@@ -60,7 +60,7 @@ public final class SearchEngineRegistry {
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
-        for (Site.Type type : Site.Type.values()) {
+        for (final Site.Type type : Site.Type.values()) {
             type.createList(context, systemLocale, userLocale);
         }
     }

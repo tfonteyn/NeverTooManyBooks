@@ -191,7 +191,7 @@ public class ImportManager
     ArchiveInfo getInfo(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
         if (mArchiveInfo == null) {
-            try (ArchiveReader reader = getArchiveReader(context)) {
+            try (final ArchiveReader reader = getArchiveReader(context)) {
                 mArchiveInfo = reader.readArchiveInfo(context);
             }
         }

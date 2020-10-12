@@ -172,7 +172,7 @@ public class SettingsActivity
         final Fragment fragment;
         try {
             fragment = caller.getClass().newInstance();
-        } catch (IllegalAccessException | InstantiationException e) {
+        } catch (final IllegalAccessException | InstantiationException e) {
             throw new IllegalStateException(e);
         }
 

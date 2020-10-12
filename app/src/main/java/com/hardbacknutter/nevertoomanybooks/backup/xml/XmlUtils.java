@@ -212,7 +212,7 @@ final class XmlUtils {
     private static String typedCollection(@NonNull final Iterable<?> values)
             throws IOException {
         final StringBuilder sb = new StringBuilder("\n");
-        for (Object value : values) {
+        for (final Object value : values) {
             sb.append(typedTag(null, value));
         }
         return sb.toString();
@@ -230,8 +230,8 @@ final class XmlUtils {
     @NonNull
     private static byte[] convertToBytes(@NonNull final Object object)
             throws IOException {
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             ObjectOutput out = new ObjectOutputStream(bos)) {
+        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             final ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(object);
             return bos.toByteArray();
         }
@@ -264,7 +264,7 @@ final class XmlUtils {
             final int endPos = data.length() - 1;
             int pos = 0;
             while (pos <= endPos) {
-                char c = data.charAt(pos);
+                final char c = data.charAt(pos);
                 switch (c) {
                     case '"':
                         sb.append("&quot;");

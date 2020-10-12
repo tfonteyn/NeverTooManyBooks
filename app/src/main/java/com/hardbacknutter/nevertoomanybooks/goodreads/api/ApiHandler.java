@@ -114,7 +114,7 @@ public abstract class ApiHandler {
         String fullUrl = url;
         if (parameterMap != null) {
             final Uri.Builder builder = new Uri.Builder();
-            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+            for (final Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 builder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
             final String query = builder.build().getEncodedQuery();
@@ -167,7 +167,7 @@ public abstract class ApiHandler {
         if (parameterMap != null) {
             // encode using JDK
             final Uri.Builder builder = new Uri.Builder();
-            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
+            for (final Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 builder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
             final String query = builder.build().getEncodedQuery();
@@ -194,9 +194,9 @@ public abstract class ApiHandler {
 //            Log.d(TAG,"SIGN|oauth_query.equals(native_query)= " + oauth_query.equals(query));
 
             if (query != null) {
-                try (OutputStream os = request.getOutputStream();
-                     Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-                     Writer writer = new BufferedWriter(osw)) {
+                try (final OutputStream os = request.getOutputStream();
+                     final Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                     final Writer writer = new BufferedWriter(osw)) {
                     writer.write(query);
                     writer.flush();
                 }
@@ -272,7 +272,7 @@ public abstract class ApiHandler {
                                @Nullable final DefaultHandler requestHandler)
             throws IOException {
 
-        try (InputStream is = request.getInputStream()) {
+        try (final InputStream is = request.getInputStream()) {
             final SAXParserFactory factory = SAXParserFactory.newInstance();
             final SAXParser parser = factory.newSAXParser();
             parser.parse(is, requestHandler);
@@ -319,7 +319,7 @@ public abstract class ApiHandler {
         request.setReadTimeout(mSiteConfig.getReadTimeoutMs());
         request.connect();
 
-        int code = request.getResponseCode();
+        final int code = request.getResponseCode();
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
             Log.d(TAG, "execute"
                        + "\nrequest: " + request.getURL()

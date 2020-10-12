@@ -197,7 +197,7 @@ public class SearchTask
                 mFetchThumbnail = new boolean[2];
             }
 
-            Bundle bookData;
+            final Bundle bookData;
             switch (mBy) {
                 case BY_EXTERNAL_ID:
                     SanityCheck.requireValue(mExternalId, "mExternalId");

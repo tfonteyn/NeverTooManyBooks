@@ -208,7 +208,7 @@ public class SynchronizedStatement
             throws SQLiteDoneException {
         final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
-            long result = mStatement.simpleQueryForLong();
+            final long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "simpleQueryForLong|" + mStatement + "|result=" + result);
             }
@@ -230,7 +230,7 @@ public class SynchronizedStatement
     public long simpleQueryForLongOrZero() {
         final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
-            long result = mStatement.simpleQueryForLong();
+            final long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "simpleQueryForLongOrZero|" + mStatement + "|result=" + result);
             }
@@ -257,7 +257,7 @@ public class SynchronizedStatement
             throws SQLiteDoneException {
         final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
         try {
-            String result = mStatement.simpleQueryForString();
+            final String result = mStatement.simpleQueryForString();
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
                 Log.d(TAG, "simpleQueryForString|" + mStatement + "|result=" + result);

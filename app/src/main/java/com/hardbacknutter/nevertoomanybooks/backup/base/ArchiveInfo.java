@@ -86,7 +86,7 @@ public class ArchiveInfo {
                         LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
         try {
-            PackageInfo info =
+            final PackageInfo info =
                     context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
             mInfo.putString(INFO_APP_PACKAGE, info.packageName);
             mInfo.putString(INFO_APP_VERSION_NAME, info.versionName);
@@ -138,7 +138,7 @@ public class ArchiveInfo {
      */
     private long getAppVersionCode() {
         // old archives used an Integer, newer use Long.
-        Object version = mInfo.get(INFO_APP_VERSION_CODE);
+        final Object version = mInfo.get(INFO_APP_VERSION_CODE);
         if (version == null) {
             return 0;
         } else {

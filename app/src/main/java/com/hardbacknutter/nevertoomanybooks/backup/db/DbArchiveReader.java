@@ -71,7 +71,8 @@ public class DbArchiveReader
         mHelper = helper;
 
         // Copy the file from the uri to a place where we can access it as a database.
-        try (InputStream is = context.getContentResolver().openInputStream(mHelper.getUri())) {
+        try (final InputStream is = context.getContentResolver()
+                                           .openInputStream(mHelper.getUri())) {
             if (is == null) {
                 // openInputStream can return null, just pretend we couldn't find the file.
                 // Should never happen - flw
@@ -102,7 +103,7 @@ public class DbArchiveReader
 
         // checking 6 tables should be sufficient (and likely excessive)
         int calibreTables = 6;
-        try (Cursor cursor = mSQLiteDatabase.rawQuery(SQL_LIST_TABLES, null)) {
+        try (final Cursor cursor = mSQLiteDatabase.rawQuery(SQL_LIST_TABLES, null)) {
             while (cursor.moveToNext()) {
                 final String tableName = cursor.getString(0);
                 if ("library_id".equals(tableName)
@@ -131,7 +132,7 @@ public class DbArchiveReader
 
         // sanity check, we should not even get here if the database is not supported
         if (mIsCalibre && mSQLiteDatabase != null) {
-            try (ArchiveReader reader =
+            try (final ArchiveReader reader =
                          new CalibreArchiveReader(context, mHelper, mSQLiteDatabase)) {
                 reader.validate(context);
                 return reader.read(context, progressListener);

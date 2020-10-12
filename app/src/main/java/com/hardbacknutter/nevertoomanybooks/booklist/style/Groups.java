@@ -62,7 +62,7 @@ public class Groups
 
         // load the group ID's from the SharedPreference and populates the Group object list.
         mGroupMap.clear();
-        for (@BooklistGroup.Id int id : getValue(context)) {
+        for (@BooklistGroup.Id final int id : getValue(context)) {
             mGroupMap.put(id, BooklistGroup.newInstance(context, id, style));
         }
     }
@@ -203,7 +203,7 @@ public class Groups
      */
     void addToMap(@NonNull final Map<String, PPref> map) {
         // for each group used by the style, add its specific preferences to our list
-        for (BooklistGroup group : getGroupList()) {
+        for (final BooklistGroup group : getGroupList()) {
             map.putAll(group.getPreferences());
         }
     }
@@ -222,7 +222,7 @@ public class Groups
         in.readList(list, getClass().getClassLoader());
         // (faster) equivalent of add(@NonNull final BooklistGroup group)
         // but split in adding the group and...
-        for (BooklistGroup group : list) {
+        for (final BooklistGroup group : list) {
             mGroupMap.put(group.getId(), group);
         }
         // storing the ID's in SharedPreference.

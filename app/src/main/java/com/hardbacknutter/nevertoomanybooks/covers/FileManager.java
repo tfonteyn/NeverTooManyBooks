@@ -115,7 +115,7 @@ public class FileManager {
         // modifying the list by using a simple bitmask.
         @SearchSites.EngineId
         int currentSearchSites = 0;
-        for (Site site : enabledSites) {
+        for (final Site site : enabledSites) {
             currentSearchSites = currentSearchSites | site.engineId;
         }
 
@@ -124,7 +124,7 @@ public class FileManager {
         // We need to use the size as the outer loop.
         // The idea is to check all sites for the same size first.
         // If none respond with that size, try the next size inline.
-        for (ImageFileInfo.Size size : sizes) {
+        for (final ImageFileInfo.Size size : sizes) {
             if (caller.isCancelled()) {
                 return new ImageFileInfo(isbn);
             }
@@ -166,7 +166,7 @@ public class FileManager {
             }
 
 
-            for (Site site : enabledSites) {
+            for (final Site site : enabledSites) {
                 // Should we search this site ?
                 if ((currentSearchSites & site.engineId) != 0) {
 

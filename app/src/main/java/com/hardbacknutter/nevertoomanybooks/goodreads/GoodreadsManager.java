@@ -265,7 +265,7 @@ public class GoodreadsManager {
 
         // Build the list of shelves for the book that we have in the local database
         int exclusiveCount = 0;
-        for (Bookshelf bookshelf : db.getBookshelvesByBookId(bookId)) {
+        for (final Bookshelf bookshelf : db.getBookshelvesByBookId(bookId)) {
             final String bookshelfName = bookshelf.getName();
             shelves.add(bookshelfName);
 
@@ -305,7 +305,7 @@ public class GoodreadsManager {
         }
 
         // Remove from any shelves from Goodreads that are not in our local list
-        for (String grShelf : grShelves) {
+        for (final String grShelf : grShelves) {
             if (!canonicalShelves.contains(grShelf)) {
                 try {
                     // Goodreads does not seem to like removing books from the special shelves.
@@ -320,7 +320,7 @@ public class GoodreadsManager {
 
         // Add shelves to Goodreads if they are not currently there
         final Collection<String> shelvesToAddTo = new ArrayList<>();
-        for (String shelf : shelves) {
+        for (final String shelf : shelves) {
             // Get the name the shelf will have at Goodreads
             final String canonicalShelfName = GoodreadsShelf.canonicalizeName(userLocale, shelf);
             // Can only sent canonical shelf names if the book is on 0 or 1 of them.

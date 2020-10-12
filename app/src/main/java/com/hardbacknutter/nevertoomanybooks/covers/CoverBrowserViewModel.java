@@ -173,7 +173,7 @@ public class CoverBrowserViewModel
         }
 
         synchronized (mGalleryTasks) {
-            for (FetchImageTask task : mGalleryTasks.values()) {
+            for (final FetchImageTask task : mGalleryTasks.values()) {
                 task.cancel(true);
             }
             // not strictly needed, but future-proof
@@ -189,7 +189,7 @@ public class CoverBrowserViewModel
     private void removeTask(final int taskId) {
         synchronized (mGalleryTasks) {
             String isbn = null;
-            for (Map.Entry<String, FetchImageTask> entry : mGalleryTasks.entrySet()) {
+            for (final Map.Entry<String, FetchImageTask> entry : mGalleryTasks.entrySet()) {
                 if (entry.getValue().getTaskId() == taskId) {
                     isbn = entry.getKey();
                     break;

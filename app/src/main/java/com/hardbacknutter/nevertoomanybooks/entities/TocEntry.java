@@ -223,7 +223,7 @@ public class TocEntry
             }
         }
 
-        for (TocEntry tocEntry : toDelete) {
+        for (final TocEntry tocEntry : toDelete) {
             list.remove(tocEntry);
         }
 
@@ -240,7 +240,7 @@ public class TocEntry
     public static boolean hasMultipleAuthors(@NonNull final List<TocEntry> list) {
         if (list.size() > 1) {
             // use the first one as the comparator.
-            Author firstAuthor = list.get(0).getPrimaryAuthor();
+            final Author firstAuthor = list.get(0).getPrimaryAuthor();
             for (int i = 1, listSize = list.size(); i < listSize; i++) {
                 if (!firstAuthor.equals(list.get(i).getPrimaryAuthor())) {
                     return true;
@@ -427,7 +427,7 @@ public class TocEntry
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        TocEntry that = (TocEntry) obj;
+        final TocEntry that = (TocEntry) obj;
         // if both 'exist' but have different ID's -> different.
         if (mId != 0 && that.mId != 0 && mId != that.mId) {
             return false;

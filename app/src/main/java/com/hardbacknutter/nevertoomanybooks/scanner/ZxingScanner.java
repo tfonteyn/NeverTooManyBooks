@@ -70,7 +70,7 @@ public final class ZxingScanner
      */
     private static boolean isIntentAvailable(@NonNull final Context context,
                                              @Nullable final String packageName) {
-        Intent intent = new Intent(Intents.Scan.ACTION);
+        final Intent intent = new Intent(Intents.Scan.ACTION);
         if (packageName != null && !packageName.isEmpty()) {
             intent.setPackage(packageName);
         }
@@ -80,7 +80,7 @@ public final class ZxingScanner
     @Override
     public boolean startActivityForResult(@NonNull final Fragment fragment,
                                           final int requestCode) {
-        Intent intent = new Intent(Intents.Scan.ACTION);
+        final Intent intent = new Intent(Intents.Scan.ACTION);
         if (mMustBeZxing) {
             intent.setPackage(PACKAGE);
         }

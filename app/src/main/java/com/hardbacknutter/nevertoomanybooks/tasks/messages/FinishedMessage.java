@@ -52,7 +52,7 @@ public class FinishedMessage<Result>
 
     @Override
     public boolean isNewEvent() {
-        boolean isNew = !mHasBeenHandled;
+        final boolean isNew = !mHasBeenHandled;
         mHasBeenHandled = true;
         return isNew;
     }

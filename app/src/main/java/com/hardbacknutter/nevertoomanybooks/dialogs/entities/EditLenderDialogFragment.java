@@ -206,11 +206,12 @@ public class EditLenderDialogFragment
 
             final ArrayList<String> list = new ArrayList<>();
             final ContentResolver cr = getContext().getContentResolver();
-            try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
-                                                  null, null, null)) {
+            try (final Cursor contactsCursor = cr
+                    .query(ContactsContract.Contacts.CONTENT_URI, PROJECTION,
+                           null, null, null)) {
                 if (contactsCursor != null) {
                     while (contactsCursor.moveToNext()) {
-                        String name = contactsCursor.getString(contactsCursor.getColumnIndex(
+                        final String name = contactsCursor.getString(contactsCursor.getColumnIndex(
                                 ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
                         list.add(name);
                     }
@@ -247,7 +248,7 @@ public class EditLenderDialogFragment
         Collections.sort(people);
 
         //noinspection ConstantConditions
-        DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
+        final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item, people);
         mVb.lendTo.setAdapter(adapter);
     }

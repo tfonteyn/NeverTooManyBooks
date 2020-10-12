@@ -60,12 +60,12 @@ public class StyleGroupsModel
 
             // Build an array list with the groups from the style
             mList = new ArrayList<>(styleGroups.size());
-            for (BooklistGroup group : styleGroups.getGroupList()) {
+            for (final BooklistGroup group : styleGroups.getGroupList()) {
                 mList.add(new GroupWrapper(group, true));
             }
             // Get all other groups and add any missing ones to the list so the user can
             // add them if wanted.
-            for (BooklistGroup group : BooklistGroup.getAllGroups(context, mStyle)) {
+            for (final BooklistGroup group : BooklistGroup.getAllGroups(context, mStyle)) {
                 if (!styleGroups.contains(group.getId())) {
                     mList.add(new GroupWrapper(group, false));
                 }
@@ -94,7 +94,7 @@ public class StyleGroupsModel
         final Groups styleGroups = mStyle.getGroups();
 
         // Loop through all groups
-        for (GroupWrapper wrapper : mList) {
+        for (final GroupWrapper wrapper : mList) {
             // Remove it from the style
             styleGroups.remove(wrapper.group.getId());
             // If required, add the group back; this also takes care of the order.

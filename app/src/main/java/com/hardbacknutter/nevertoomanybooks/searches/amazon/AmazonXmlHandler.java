@@ -474,8 +474,8 @@ class AmazonXmlHandler
                        || localName.equalsIgnoreCase(XML_E_ISBN)
                        || localName.equalsIgnoreCase(XML_ISBN_OLD)) {
                 // we prefer the "longest" isbn, which theoretically should be an ISBN-13
-                String tmp = mBuilder.toString();
-                String isbnStr = mBookData.getString(DBDefinitions.KEY_ISBN);
+                final String tmp = mBuilder.toString();
+                final String isbnStr = mBookData.getString(DBDefinitions.KEY_ISBN);
                 if (isbnStr == null || isbnStr.length() < tmp.length()) {
                     mBookData.putString(DBDefinitions.KEY_ISBN, tmp);
                 }
@@ -533,10 +533,10 @@ class AmazonXmlHandler
     private void handleListPrice() {
         if (!mBookData.containsKey(DBDefinitions.KEY_PRICE_LISTED)) {
             try {
-                int decDigits = java.util.Currency.getInstance(mCurrencyCode)
-                                                  .getDefaultFractionDigits();
+                final int decDigits = java.util.Currency.getInstance(mCurrencyCode)
+                                                        .getDefaultFractionDigits();
                 // move the decimal point 'digits' up
-                double price = Double.parseDouble(mCurrencyAmount) / Math.pow(10, decDigits);
+                final double price = Double.parseDouble(mCurrencyAmount) / Math.pow(10, decDigits);
                 mBookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, price);
                 mBookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, mCurrencyCode);
             } catch (@NonNull final NumberFormatException ignore) {

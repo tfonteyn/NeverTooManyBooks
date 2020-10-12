@@ -115,7 +115,7 @@ public class TQTaskCursorRow
     @NonNull
     public TQTask getTask(@NonNull final Context context) {
         TQTask task;
-        byte[] blob = getBlob(QueueDBHelper.KEY_TASK);
+        final byte[] blob = getBlob(QueueDBHelper.KEY_TASK);
         try {
             task = SerializationUtils.deserializeObject(blob);
         } catch (@NonNull final SerializationUtils.DeserializationException de) {

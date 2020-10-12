@@ -75,7 +75,7 @@ public interface ItemWithTitle {
                                   AppLocale.getInstance().getSystemLocale(),
                                   Locale.ENGLISH};
 
-        for (Locale locale : locales) {
+        for (final Locale locale : locales) {
             if (locale == null) {
                 continue;
             }

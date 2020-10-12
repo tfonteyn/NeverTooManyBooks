@@ -211,7 +211,7 @@ public class GoodreadsSearchActivity
      */
     private void onWorkSelected(@NonNull final Holder holder) {
         final GoodreadsWork work = mWorks.get(holder.getBindingAdapterPosition());
-        String msg = "Not implemented: requires access to work.editions from Goodreads";
+        final String msg = "Not implemented: requires access to work.editions from Goodreads";
         Snackbar.make(mVb.resultList, msg, Snackbar.LENGTH_LONG).show();
     }
 

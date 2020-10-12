@@ -227,7 +227,7 @@ class KbNlBookHandler
      */
     private void processTitle(@NonNull final Iterable<String> currentData) {
         final StringBuilder sbTitle = new StringBuilder();
-        for (String name : currentData) {
+        for (final String name : currentData) {
             sbTitle.append(name).append(" ");
         }
         final String cleanedTitle = sbTitle.toString().split("/")[0].trim();
@@ -273,7 +273,7 @@ class KbNlBookHandler
      */
     private void processAuthor(@NonNull final Iterable<String> currentData,
                                @Author.Type final int type) {
-        for (String name : currentData) {
+        for (final String name : currentData) {
             // remove a year part in the name
             final String cleanedString = name.split("\\(")[0].trim();
             // reject separators as for example: <psi:text>;</psi:text>
@@ -388,7 +388,7 @@ class KbNlBookHandler
      */
     private void processPublisher(@NonNull final Iterable<String> currentData) {
         final StringBuilder sbPublisher = new StringBuilder();
-        for (String name : currentData) {
+        for (final String name : currentData) {
             if (!name.isEmpty()) {
                 sbPublisher.append(name).append(" ");
             }

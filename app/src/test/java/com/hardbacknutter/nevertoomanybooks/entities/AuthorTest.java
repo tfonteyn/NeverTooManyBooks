@@ -31,7 +31,7 @@ class AuthorTest {
 
     @Test
     void fromString00() {
-        Author author = Author.from("Asimov, Isaac");
+        final Author author = Author.from("Asimov, Isaac");
         assertNotNull(author);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
@@ -39,7 +39,7 @@ class AuthorTest {
 
     @Test
     void fromString01() {
-        Author author = Author.from("Isaac Asimov");
+        final Author author = Author.from("Isaac Asimov");
         assertNotNull(author);
         assertEquals("Asimov", author.getFamilyName());
         assertEquals("Isaac", author.getGivenNames());
@@ -47,7 +47,7 @@ class AuthorTest {
 
     @Test
     void fromString09() {
-        Author author = Author.from("James Tiptree, Jr.");
+        final Author author = Author.from("James Tiptree, Jr.");
         assertNotNull(author);
         assertEquals("Tiptree Jr.", author.getFamilyName());
         assertEquals("James", author.getGivenNames());
@@ -55,7 +55,7 @@ class AuthorTest {
 
     @Test
     void fromString10() {
-        Author author = Author.from("Ursula Le Guin");
+        final Author author = Author.from("Ursula Le Guin");
         assertNotNull(author);
         assertEquals("Le Guin", author.getFamilyName());
         assertEquals("Ursula", author.getGivenNames());
@@ -63,7 +63,7 @@ class AuthorTest {
 
     @Test
     void fromString11() {
-        Author author = Author.from("Charles Emerson Winchester");
+        final Author author = Author.from("Charles Emerson Winchester");
         assertNotNull(author);
         assertEquals("Winchester", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());
@@ -72,7 +72,7 @@ class AuthorTest {
     @Test
     void fromString12() {
         // yes, there REALLY is a book with an author named like this...
-        Author author = Author.from("Don (*3)");
+        final Author author = Author.from("Don (*3)");
         assertNotNull(author);
         assertEquals("(*3)", author.getFamilyName());
         assertEquals("Don", author.getGivenNames());
@@ -80,7 +80,7 @@ class AuthorTest {
 
     @Test
     void fromString20() {
-        Author author = Author.from("Charles Emerson Winchester III");
+        final Author author = Author.from("Charles Emerson Winchester III");
         assertNotNull(author);
         assertEquals("Winchester III", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());
@@ -88,7 +88,7 @@ class AuthorTest {
 
     @Test
     void fromString21() {
-        Author author = Author.from("Charles Emerson Winchester, jr.");
+        final Author author = Author.from("Charles Emerson Winchester, jr.");
         assertNotNull(author);
         assertEquals("Winchester jr.", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());
@@ -96,7 +96,7 @@ class AuthorTest {
 
     @Test
     void fromString22() {
-        Author author = Author.from("Charles Emerson Winchester jr.");
+        final Author author = Author.from("Charles Emerson Winchester jr.");
         assertNotNull(author);
         assertEquals("Winchester jr.", author.getFamilyName());
         assertEquals("Charles Emerson", author.getGivenNames());

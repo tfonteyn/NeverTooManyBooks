@@ -442,7 +442,7 @@ public class ISBN {
 
                 // Must be ISBN10 or we cannot convert
                 if (mType == TYPE_ISBN10) {
-                    List<Integer> digits = new ArrayList<>();
+                    final List<Integer> digits = new ArrayList<>();
                     // standard prefix 978
                     digits.add(9);
                     digits.add(7);
@@ -520,11 +520,11 @@ public class ISBN {
         // the digit '10' is represented as 'X'
         boolean foundX = false;
 
-        List<Integer> digits = new ArrayList<>();
+        final List<Integer> digits = new ArrayList<>();
 
         for (int i = 0; i < str.length(); i++) {
             final char c = str.charAt(i);
-            int digit;
+            final int digit;
             if (Character.isDigit(c)) {
                 if (foundX) {
                     throw new NumberFormatException(ERROR_X_CAN_ONLY_BE_AT_THE_END_OF_AN_ISBN_10);
@@ -564,7 +564,7 @@ public class ISBN {
             return TYPE_INVALID;
         }
 
-        int size = digits.size();
+        final int size = digits.size();
 
         if (size == 10) {
             if (calculateIsbn10Checksum(digits) == digits.get(digits.size() - 1)) {
@@ -606,7 +606,7 @@ public class ISBN {
      */
     private int calculateIsbn10Checksum(@NonNull final List<Integer> digits)
             throws NumberFormatException {
-        int len = digits.size();
+        final int len = digits.size();
         if (len < 9 || len > 10) {
             throw new NumberFormatException(ERROR_WRONG_SIZE + len);
         }
@@ -627,7 +627,7 @@ public class ISBN {
         }
 
         // 4. Do a modulo 11 division on the sum.
-        int modulo = sum % 11;
+        final int modulo = sum % 11;
         if (modulo == 0) {
             return 0;
         } else {
@@ -647,7 +647,7 @@ public class ISBN {
      */
     private int calculateEan13Checksum(@NonNull final List<Integer> digits)
             throws NumberFormatException {
-        int len = digits.size();
+        final int len = digits.size();
         if (len < 12 || len > 13) {
             throw new NumberFormatException(ERROR_WRONG_SIZE + len);
         }
@@ -691,7 +691,7 @@ public class ISBN {
      */
     private int calculateUpcAChecksum(@NonNull final List<Integer> digits)
             throws NumberFormatException {
-        int len = digits.size();
+        final int len = digits.size();
         if (len < 11 || len > 12) {
             throw new NumberFormatException(ERROR_WRONG_SIZE + len);
         }
@@ -729,7 +729,7 @@ public class ISBN {
      */
     private String concat(@NonNull final Iterable<Integer> digits) {
         final StringBuilder sb = new StringBuilder();
-        for (int d : digits) {
+        for (final int d : digits) {
             if (d == 10) {
                 sb.append('X');
             } else {
@@ -900,7 +900,7 @@ public class ISBN {
                     if (text.length() != 13 && text.length() != 17) {
                         return;
                     }
-                    for (char c : text.toCharArray()) {
+                    for (final char c : text.toCharArray()) {
                         if (!Character.isDigit(c) && c != '-' && c != 'x' && c != 'X') {
                             // non isbn character, leave it.
                             return;
@@ -912,7 +912,7 @@ public class ISBN {
                 boolean x = false;
                 final StringBuilder sb = new StringBuilder();
                 // strip out all but digits and the 'x' character
-                for (char c : text.toCharArray()) {
+                for (final char c : text.toCharArray()) {
                     if (Character.isDigit(c)) {
                         sb.append(c);
                     } else if (c == 'X' || c == 'x') {

@@ -71,7 +71,7 @@ public class XmlDumpParser
                              final String localName,
                              final String qName,
                              final Attributes attributes) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("<").append(qName);
         if (mNamespaceBegin) {
             sb.append(" xmlns:").append(mCurrentNamespace).append("=\"")
@@ -95,7 +95,7 @@ public class XmlDumpParser
     public void characters(final char[] ch,
                            final int start,
                            final int length) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
         }
@@ -105,7 +105,7 @@ public class XmlDumpParser
     public void ignorableWhitespace(final char[] ch,
                                     final int start,
                                     final int length) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = start; i < start + length; i++) {
             sb.append(ch[i]);
         }
