@@ -46,8 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class PartialDate
         implements Parcelable {
 
-    private static final String TAG = "PartialDate";
-
     /** {@link Parcelable}. */
     public static final Creator<PartialDate> CREATOR = new Creator<PartialDate>() {
         @Override
@@ -60,7 +58,8 @@ public class PartialDate
             return new PartialDate[size];
         }
     };
-
+    /** Log tag. */
+    private static final String TAG = "PartialDate";
     /** NonNull - the partial date; using '1' for not-set day,month,year fields. */
     private LocalDate mLocalDate;
     private boolean mYearSet;
@@ -274,5 +273,16 @@ public class PartialDate
     @Override
     public int hashCode() {
         return Objects.hash(mLocalDate, mYearSet, mMonthSet, mDaySet);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PartialDate{"
+               + "mLocalDate=" + mLocalDate
+               + ", mYearSet=" + mYearSet
+               + ", mMonthSet=" + mMonthSet
+               + ", mDaySet=" + mDaySet
+               + '}';
     }
 }
