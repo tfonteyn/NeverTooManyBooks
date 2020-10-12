@@ -387,9 +387,9 @@ public class DiacriticArrayAdapter<T>
     public void sort(@NonNull final Comparator<? super T> comparator) {
         synchronized (mLock) {
             if (mOriginalValues != null) {
-                Collections.sort(mOriginalValues, comparator);
+                mOriginalValues.sort(comparator);
             } else {
-                Collections.sort(mObjects, comparator);
+                mObjects.sort(comparator);
             }
         }
         if (mNotifyOnChange) {
