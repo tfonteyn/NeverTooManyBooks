@@ -61,7 +61,9 @@ public class EditLenderDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
-    private static final String BKEY_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
+    /** savedInstanceState key for the newly entered loanee name. */
+    private static final String SIS_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
+
     private static final String[] PROJECTION = {
             ContactsContract.Contacts._ID,
             ContactsContract.Contacts.LOOKUP_KEY,
@@ -89,7 +91,7 @@ public class EditLenderDialogFragment
 
     /**
      * The loanee being edited.
-     * {@link #BKEY_NEW_LOANEE} in savedInstanceState.
+     * {@link #SIS_NEW_LOANEE} in savedInstanceState.
      */
     @Nullable
     private String mLoanee;
@@ -159,7 +161,7 @@ public class EditLenderDialogFragment
             mLoanee = mOriginalLoanee;
         } else {
             mOriginalLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
-            mLoanee = savedInstanceState.getString(BKEY_NEW_LOANEE);
+            mLoanee = savedInstanceState.getString(SIS_NEW_LOANEE);
         }
     }
 
@@ -288,7 +290,7 @@ public class EditLenderDialogFragment
         super.onSaveInstanceState(outState);
         // store the original loanee to avoid a trip to the database
         outState.putString(DBDefinitions.KEY_LOANEE, mOriginalLoanee);
-        outState.putString(BKEY_NEW_LOANEE, mLoanee);
+        outState.putString(SIS_NEW_LOANEE, mLoanee);
     }
 
     @Override

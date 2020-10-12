@@ -395,9 +395,9 @@ public class EditBookFieldsFragment
                         // Take picture... get here and see NULL mCoverHandler[cIdx].
 
                         //noinspection ConstantConditions
-                        Logger.error(getContext(), TAG, new Throwable(), "onActivityResult"
-                                                                         + "|mCoverHandler was NULL for cIdx="
-                                                                         + cIdx);
+                        Logger.error(getContext(), TAG, new Throwable(),
+                                     "onActivityResult"
+                                     + "|mCoverHandler was NULL for cIdx=" + cIdx);
                     }
                 }
 

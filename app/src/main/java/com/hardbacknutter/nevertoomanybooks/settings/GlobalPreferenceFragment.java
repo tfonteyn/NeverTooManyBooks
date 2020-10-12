@@ -43,7 +43,8 @@ public class GlobalPreferenceFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "GlobalPreferenceFragment";
-    private static final String BKEY_CURRENT_SORT_TITLE_REORDERED = TAG + ":cSTR";
+    /** savedInstanceState key. */
+    private static final String SIS_CURRENT_SORT_TITLE_REORDERED = TAG + ":cSTR";
 
     /** Used to be able to reset this pref to what it was when this fragment started. */
     private boolean mCurrentSortTitleReordered;
@@ -64,7 +65,7 @@ public class GlobalPreferenceFragment
             mCurrentSortTitleReordered = storedSortTitleReordered;
         } else {
             mCurrentSortTitleReordered = savedInstanceState
-                    .getBoolean(BKEY_CURRENT_SORT_TITLE_REORDERED, storedSortTitleReordered);
+                    .getBoolean(SIS_CURRENT_SORT_TITLE_REORDERED, storedSortTitleReordered);
         }
 
         setVisualIndicator(findPreference(Prefs.pk_sort_title_reordered),
@@ -74,7 +75,7 @@ public class GlobalPreferenceFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(BKEY_CURRENT_SORT_TITLE_REORDERED, mCurrentSortTitleReordered);
+        outState.putBoolean(SIS_CURRENT_SORT_TITLE_REORDERED, mCurrentSortTitleReordered);
     }
 
     @Override
@@ -137,7 +138,5 @@ public class GlobalPreferenceFragment
             icon.setTint(AttrUtils.getColorInt(getContext(), attr));
             preference.setIcon(icon);
         }
-
     }
-
 }
