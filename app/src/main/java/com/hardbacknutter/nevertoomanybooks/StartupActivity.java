@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -141,7 +140,7 @@ public class StartupActivity
                 break;
 
             default:
-                throw new UnexpectedValueException(mModel.getStartupStage());
+                throw new IllegalArgumentException(String.valueOf(mModel.getStartupStage()));
         }
     }
 

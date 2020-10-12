@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
@@ -92,7 +91,7 @@ public class BookSearchActivity
                 return;
 
             default:
-                throw new UnexpectedValueException(tag);
+                throw new IllegalArgumentException(tag);
         }
     }
 

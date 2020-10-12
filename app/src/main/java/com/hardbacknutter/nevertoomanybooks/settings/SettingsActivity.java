@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
@@ -92,7 +91,7 @@ public class SettingsActivity
                     break;
 
                 default:
-                    throw new UnexpectedValueException(tag);
+                    throw new IllegalArgumentException(tag);
             }
 
             frag.setArguments(getIntent().getExtras());

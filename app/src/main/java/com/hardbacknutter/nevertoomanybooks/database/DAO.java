@@ -86,7 +86,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME_OB;
@@ -2564,7 +2563,7 @@ public class DAO
                         key);
 
             default:
-                throw new UnexpectedValueException(key);
+                throw new IllegalArgumentException(key);
         }
     }
 
@@ -3474,7 +3473,7 @@ public class DAO
                         break;
 
                     default:
-                        throw new UnexpectedValueException(type);
+                        throw new IllegalArgumentException(String.valueOf(type));
                 }
             }
         }

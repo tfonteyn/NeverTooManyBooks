@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 public class AuthorWorksModel
         extends ViewModel {
@@ -151,7 +150,7 @@ public class AuthorWorksModel
             success = mDb.deleteBook(context, work.getId());
 
         } else {
-            throw new UnexpectedValueException(String.valueOf(work));
+            throw new IllegalArgumentException(String.valueOf(work));
         }
 
         if (success) {

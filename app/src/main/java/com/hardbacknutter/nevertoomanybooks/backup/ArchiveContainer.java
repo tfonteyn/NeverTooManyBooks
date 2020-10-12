@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Archive formats (partially) supported.
@@ -143,7 +142,7 @@ public enum ArchiveContainer {
 
             case Unknown:
             default:
-                throw new UnexpectedValueException(name());
+                throw new IllegalArgumentException(name());
         }
     }
 }

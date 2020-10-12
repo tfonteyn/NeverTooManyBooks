@@ -362,9 +362,8 @@ class BooklistNodeDAO {
         final int groupCount = mStyle.getGroups().size();
 
         if (relativeChildLevel > groupCount) {
-            throw new IllegalArgumentException(
-                    "groupCount=" + groupCount
-                    + "|relativeChildLevel=" + relativeChildLevel);
+            throw new IllegalArgumentException("groupCount=" + groupCount
+                                               + "|relativeChildLevel=" + relativeChildLevel);
         }
 
         Synchronizer.SyncLock txLock = null;

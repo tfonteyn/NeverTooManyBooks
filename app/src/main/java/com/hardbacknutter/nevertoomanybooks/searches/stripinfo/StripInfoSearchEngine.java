@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * <a href="https://stripinfo.be/">https://stripinfo.be/</a>
@@ -497,7 +496,7 @@ public class StripInfoSearchEngine
                 }
                 break;
             default:
-                throw new UnexpectedValueException(cIdx);
+                throw new IllegalArgumentException(String.valueOf(cIdx));
         }
 
         final ArrayList<String> imageList = new ArrayList<>();
@@ -550,7 +549,7 @@ public class StripInfoSearchEngine
                 coverElement = document.selectFirst("a.belowImage");
                 break;
             default:
-                throw new UnexpectedValueException(cIdx);
+                throw new IllegalArgumentException(String.valueOf(cIdx));
         }
 
         final ArrayList<String> imageList = new ArrayList<>();

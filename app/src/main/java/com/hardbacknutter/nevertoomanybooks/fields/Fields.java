@@ -163,9 +163,8 @@ public class Fields {
             return field;
         }
 
-        throw new IllegalArgumentException(
-                "mAllFields.size()=" + mAllFields.size()
-                + "|fieldId= " + id);
+        throw new IllegalArgumentException("mAllFields.size()=" + mAllFields.size()
+                                           + "|fieldId= " + id);
     }
 
     /**

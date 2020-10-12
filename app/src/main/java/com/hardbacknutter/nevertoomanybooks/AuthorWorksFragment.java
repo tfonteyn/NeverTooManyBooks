@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -303,7 +302,7 @@ public class AuthorWorksFragment
                         mResultData.putResultData(BookViewModel.BKEY_BOOK_DELETED, true);
                     });
         } else {
-            throw new UnexpectedValueException(String.valueOf(work));
+            throw new IllegalArgumentException(String.valueOf(work));
         }
     }
 
@@ -348,7 +347,7 @@ public class AuthorWorksFragment
             startActivity(intent);
 
         } else {
-            throw new UnexpectedValueException(String.valueOf(work));
+            throw new IllegalArgumentException(String.valueOf(work));
         }
     }
 
@@ -416,7 +415,7 @@ public class AuthorWorksFragment
                     itemView = mInflater.inflate(R.layout.row_toc_entry_book, parent, false);
                     break;
                 default:
-                    throw new UnexpectedValueException(viewType);
+                    throw new IllegalArgumentException(String.valueOf(viewType));
             }
 
             final Holder holder = new Holder(itemView);

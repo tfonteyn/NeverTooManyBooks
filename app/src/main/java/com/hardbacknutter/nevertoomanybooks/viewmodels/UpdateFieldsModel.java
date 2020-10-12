@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
@@ -835,7 +834,7 @@ public class UpdateFieldsModel
                 break;
             }
             default:
-                throw new UnexpectedValueException(key);
+                throw new IllegalArgumentException(key);
         }
     }
 

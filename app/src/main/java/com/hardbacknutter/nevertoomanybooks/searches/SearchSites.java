@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.openlibrary.OpenLibrarySear
 import com.hardbacknutter.nevertoomanybooks.searches.stripinfo.StripInfoSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Manages the setup of {@link SearchEngine}'s.
@@ -240,7 +239,7 @@ public final class SearchSites {
             }
 
             default:
-                throw new UnexpectedValueException(String.valueOf(type));
+                throw new IllegalArgumentException(String.valueOf(type));
         }
     }
 

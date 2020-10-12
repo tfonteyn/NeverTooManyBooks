@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOKSHELF_SORT;
@@ -963,7 +962,7 @@ public class BooklistGroup
                 }
 
                 default:
-                    throw new UnexpectedValueException(id);
+                    throw new IllegalArgumentException(String.valueOf(id));
             }
         }
 

@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 public class ImportFragment
@@ -257,12 +256,12 @@ public class ImportFragment
                             .newInstance(RK_IMPORT_HELPER, helper)
                             .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
                 } else {
-                    throw new UnexpectedValueException(String.valueOf(container));
+                    throw new IllegalArgumentException(String.valueOf(container));
                 }
                 break;
 
             default:
-                throw new UnexpectedValueException(String.valueOf(container));
+                throw new IllegalArgumentException(String.valueOf(container));
         }
     }
 

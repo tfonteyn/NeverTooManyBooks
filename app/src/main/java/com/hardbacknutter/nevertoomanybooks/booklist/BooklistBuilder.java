@@ -51,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
@@ -270,7 +269,7 @@ final class BooklistBuilder {
                 break;
 
             default:
-                throw new UnexpectedValueException(mRebuildState);
+                throw new IllegalArgumentException(String.valueOf(mRebuildState));
         }
 
         mSqlForInitialInsert =

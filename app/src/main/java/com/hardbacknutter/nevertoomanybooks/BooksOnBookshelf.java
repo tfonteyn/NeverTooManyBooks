@@ -104,7 +104,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActiv
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -127,7 +126,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  * </ol>
  *
  * <ol>Standard:
- *     <li>User clicks option menu search iconF</li>
+ *     <li>User clicks option menu search icon</li>
  *     <li>shows the search widget, user types</li>
  *     <li>#onNewIntent() gets called with the query data</li>
  *     <li>build the list</li>
@@ -462,7 +461,7 @@ public class BooksOnBookshelf
 
     /**
      * Create the adapter and (optionally) set the cursor.
-     *
+     * <p>
      * <strong>Developer note:</strong>
      * There seems to be no other solution but to always create the adapter
      * in {@link #onCreate} (with null cursor) and RECREATE it when we have a valid cursor.
@@ -504,7 +503,8 @@ public class BooksOnBookshelf
 
     /**
      * Handle the standard search intent / suggestions click.
-     *
+     * <p>
+     * See
      * <a href="https://developer.android.com/guide/topics/search/search-dialog#ReceivingTheQuery">
      * ReceivingTheQuery</a>
      */
@@ -585,7 +585,7 @@ public class BooksOnBookshelf
                 break;
 
             default:
-                throw new UnexpectedValueException(String.valueOf(view));
+                throw new IllegalArgumentException(String.valueOf(view));
         }
     }
 
@@ -615,8 +615,7 @@ public class BooksOnBookshelf
         switch (item.getItemId()) {
             case R.id.MENU_SORT: {
                 StylePickerDialogFragment
-                        .newInstance(RK_STYLE_PICKER,
-                                     mModel.getCurrentStyle(this), false)
+                        .newInstance(RK_STYLE_PICKER, mModel.getCurrentStyle(this), false)
                         .show(getSupportFragmentManager(), StylePickerDialogFragment.TAG);
                 return true;
             }
@@ -1744,7 +1743,7 @@ public class BooksOnBookshelf
 
     @NonNull
     private ProgressDialogFragment getOrCreateProgressDialog(@IdRes final int taskId) {
-        FragmentManager fm = getSupportFragmentManager();
+        final FragmentManager fm = getSupportFragmentManager();
 
         // get dialog after a fragment restart
         ProgressDialogFragment dialog = (ProgressDialogFragment)
@@ -1765,7 +1764,7 @@ public class BooksOnBookshelf
                     break;
 
                 default:
-                    throw new UnexpectedValueException("id=" + taskId);
+                    throw new IllegalArgumentException("id=" + taskId);
             }
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
@@ -1780,7 +1779,7 @@ public class BooksOnBookshelf
                 break;
 
             default:
-                throw new UnexpectedValueException("taskId=" + taskId);
+                throw new IllegalArgumentException("taskId=" + taskId);
         }
         return dialog;
     }

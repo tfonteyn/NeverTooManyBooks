@@ -42,7 +42,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.UnexpectedValueException;
 
 /**
  * Encapsulates a {@link SearchEngine} instance + the current enabled/disabled state.
@@ -475,7 +474,7 @@ public class Site
                     return new Site(site);
                 }
             }
-            throw new UnexpectedValueException(engineId);
+            throw new IllegalArgumentException(String.valueOf(engineId));
         }
 
 
