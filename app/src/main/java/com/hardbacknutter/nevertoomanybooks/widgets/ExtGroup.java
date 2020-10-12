@@ -122,7 +122,8 @@ public class ExtGroup
     }
 
     public void updatePostLayout(@NonNull final ConstraintLayout container) {
-        final ConstraintLayout.LayoutParams params = (ConstraintLayout.LayoutParams) getLayoutParams();
+        final ConstraintLayout.LayoutParams params =
+                (ConstraintLayout.LayoutParams) getLayoutParams();
         params.getConstraintWidget().setWidth(0);
         params.getConstraintWidget().setHeight(0);
     }
