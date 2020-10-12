@@ -94,6 +94,7 @@ public abstract class EditBookBaseFragment
      *
      * @return instant
      */
+    @Nullable
     private Instant getInstant(@NonNull final Field<String, TextView> field,
                                final boolean todayIfNone) {
         //noinspection ConstantConditions
