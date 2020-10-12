@@ -183,6 +183,7 @@ public class ScannerViewModel
                               Snackbar.LENGTH_LONG).show();
 
                 try {
+                    //noinspection BusyWait
                     Thread.sleep(SCANNER_WAIT);
                 } catch (@NonNull final InterruptedException ignore) {
                     // ignore
