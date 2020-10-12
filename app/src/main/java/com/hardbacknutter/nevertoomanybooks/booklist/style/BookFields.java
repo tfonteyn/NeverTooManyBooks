@@ -105,4 +105,13 @@ public abstract class BookFields {
             field.writeToParcel(dest);
         }
     }
+
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "DetailScreenBookFields{"
+               + "mFields=" + mFields
+               + '}';
+    }
 }
