@@ -158,6 +158,16 @@ public class VirtualDomain
         }
     }
 
+    @Override
+    @NonNull
+    public String toString() {
+        return "VirtualDomain{"
+               + "mDomain=" + mDomain
+               + ", mExpression='" + mExpression + '\''
+               + ", mSorted=" + mSorted
+               + '}';
+    }
+
     @IntDef({SORT_UNSORTED, SORT_ASC, SORT_DESC})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Sorting {
