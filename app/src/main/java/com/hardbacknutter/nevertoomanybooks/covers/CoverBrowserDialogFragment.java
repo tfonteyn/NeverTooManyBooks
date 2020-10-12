@@ -312,7 +312,7 @@ public class CoverBrowserDialogFragment
         final File file = imageFileInfo.getFile();
         // sanity check
         if (file != null) {
-            if (ImageFileInfo.Size.Large.equals(imageFileInfo.getSize())) {
+            if (ImageFileInfo.Size.Large == imageFileInfo.getSize()) {
                 // the gallery image IS a valid large image, so just display it
                 setSelectedImage(imageFileInfo);
 

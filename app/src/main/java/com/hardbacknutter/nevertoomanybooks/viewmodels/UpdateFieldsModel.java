@@ -214,7 +214,7 @@ public class UpdateFieldsModel
 
         // More than 10 books, check if the user actually wants covers
         final FieldUsage covers = mFields.get(DBDefinitions.PREFS_IS_USED_COVER + ".0");
-        return covers != null && covers.getUsage().equals(FieldUsage.Usage.Overwrite);
+        return covers != null && covers.getUsage() == FieldUsage.Usage.Overwrite;
     }
 
     /**

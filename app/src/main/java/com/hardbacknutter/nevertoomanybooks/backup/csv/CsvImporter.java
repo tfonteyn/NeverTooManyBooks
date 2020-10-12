@@ -196,7 +196,7 @@ public class CsvImporter
             throws IOException, ImportException {
 
         // we only support books, return empty results
-        if (!entity.getType().equals(ArchiveContainerEntry.BooksCsv)) {
+        if (entity.getType() != ArchiveContainerEntry.BooksCsv) {
             return mResults;
         }
 

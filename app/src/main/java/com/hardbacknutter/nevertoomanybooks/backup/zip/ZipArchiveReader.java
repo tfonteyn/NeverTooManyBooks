@@ -102,7 +102,7 @@ public class ZipArchiveReader
 
             // Based on the file name, determine entity type
             final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
-            if (type.equals(typeFound)) {
+            if (type == typeFound) {
                 return new ZipReaderEntity(typeFound, this, entry);
             }
         }

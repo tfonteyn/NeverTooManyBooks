@@ -101,7 +101,7 @@ public class TarArchiveReader
 
             // Based on the file name, determine entity type
             final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
-            if (type.equals(typeFound)) {
+            if (type == typeFound) {
                 return new TarReaderEntity(typeFound, this, entry);
             }
         }

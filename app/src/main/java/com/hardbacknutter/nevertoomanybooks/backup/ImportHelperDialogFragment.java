@@ -246,9 +246,9 @@ public class ImportHelperDialogFragment
         // TODO: split this up into one check for each entity we could import.
         boolean isBooksOnlyContainer(@NonNull final Context context) {
             final ArchiveContainer container = mHelper.getContainer(context);
-            return ArchiveContainer.CsvBooks.equals(container)
+            return ArchiveContainer.CsvBooks == container
                    ||
-                   (BuildConfig.IMPORT_CALIBRE && ArchiveContainer.SqLiteDb.equals(container));
+                   (BuildConfig.IMPORT_CALIBRE && ArchiveContainer.SqLiteDb == container);
         }
     }
 }
