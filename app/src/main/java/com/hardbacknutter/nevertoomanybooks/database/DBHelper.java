@@ -635,7 +635,7 @@ public final class DBHelper
                     } catch (@NonNull final IOException e) {
                         Logger.error(context, TAG, e,
                                      "failed to rename source=" + destFile
-                                     + " TO destination" + destination, e);
+                                     + " TO destination=" + destination, e);
                     }
                 }
                 // and create a new copy

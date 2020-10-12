@@ -857,8 +857,8 @@ public class SearchCoordinator
                         }
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                             Log.d(TAG, "accumulateResults"
-                                       + "|mIsbn" + mIsbn
-                                       + "|isbnFound" + isbnFound);
+                                       + "|mIsbn=" + mIsbn
+                                       + "|isbnFound=" + isbnFound);
                         }
                     } else {
                         sitesWithoutIsbn.add(site);
