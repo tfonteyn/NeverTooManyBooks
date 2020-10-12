@@ -271,6 +271,7 @@ public class EditBookAuthorListDialogFragment
             if (original.getType() != modified.getType()) {
                 // so if the type is different, just update it
                 original.setType(modified.getType());
+                //noinspection ConstantConditions
                 Author.pruneList(mList, getContext(), mDb, true, bookLocale);
                 mListAdapter.notifyDataSetChanged();
             }
@@ -283,6 +284,7 @@ public class EditBookAuthorListDialogFragment
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified, true);
+            //noinspection ConstantConditions
             Author.pruneList(mList, getContext(), mDb, true, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;

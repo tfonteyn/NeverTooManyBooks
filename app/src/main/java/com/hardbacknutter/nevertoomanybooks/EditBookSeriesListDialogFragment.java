@@ -267,6 +267,7 @@ public class EditBookSeriesListDialogFragment
             if (!original.getNumber().equals(modified.getNumber())) {
                 // so if the number is different, just update it
                 original.setNumber(modified.getNumber());
+                //noinspection ConstantConditions
                 Series.pruneList(mList, getContext(), mDb, true, bookLocale);
                 mListAdapter.notifyDataSetChanged();
             }
@@ -279,6 +280,7 @@ public class EditBookSeriesListDialogFragment
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified, true);
+            //noinspection ConstantConditions
             Series.pruneList(mList, getContext(), mDb, true, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;

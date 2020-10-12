@@ -263,6 +263,7 @@ public class EditBookPublisherListDialogFragment
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified);
+            //noinspection ConstantConditions
             Publisher.pruneList(mList, getContext(), mDb, true, bookLocale);
             mListAdapter.notifyDataSetChanged();
             return;
