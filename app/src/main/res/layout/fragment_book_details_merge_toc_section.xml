@@ -63,7 +63,7 @@
         android:layout_marginStart="@dimen/field_margin_inline"
         android:contentDescription="@string/lbl_anthology"
         android:src="@drawable/ic_check"
-        android:tint="?attr/colorSecondaryVariant"
+        app:tint="?attr/colorSecondaryVariant"
         app:layout_constraintStart_toEndOf="@id/lbl_anthology"
         app:layout_constraintTop_toBottomOf="@id/lbl_toc"
         />

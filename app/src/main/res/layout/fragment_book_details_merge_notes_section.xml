@@ -64,7 +64,7 @@
         android:layout_marginStart="@dimen/field_margin_inline"
         android:contentDescription="@string/lbl_signed"
         android:src="@drawable/ic_check"
-        android:tint="?attr/colorSecondaryVariant"
+        app:tint="?attr/colorSecondaryVariant"
         app:layout_constraintStart_toEndOf="@id/lbl_signed"
         app:layout_constraintTop_toBottomOf="@id/notes"
         />
