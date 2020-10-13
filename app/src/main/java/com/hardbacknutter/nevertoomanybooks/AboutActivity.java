@@ -69,7 +69,7 @@ public class AboutActivity
     private int mDebugClicks;
     private boolean mSqLiteAllowUpdates;
 
-    private String mVersionText;
+    private long mVersionCode;
 
     @Override
     protected void onSetContentView() {
@@ -83,17 +83,14 @@ public class AboutActivity
         try {
             final PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
 
-            final long versionCode;
             if (Build.VERSION.SDK_INT >= 28) {
-                versionCode = info.getLongVersionCode();
+                mVersionCode = info.getLongVersionCode();
             } else {
-                versionCode = info.versionCode;
-
+                mVersionCode = info.versionCode;
             }
-            mVersionText = info.versionName
-                           + " (" + versionCode + '/' + DBHelper.DATABASE_VERSION + ')';
 
-            mVb.version.setText(mVersionText);
+            mVb.version.setText(info.versionName);
+
         } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
             // ignore
         }
@@ -106,9 +103,11 @@ public class AboutActivity
             if (mDebugClicks >= DEBUG_CLICKS) {
                 // show the entire group
                 mVb.debugGroup.setVisibility(View.VISIBLE);
-                // show the build date
-                mVb.version.setText(getString(R.string.a_bracket_b_bracket,
-                                              mVersionText, BuildConfig.TIMESTAMP));
+                // show the full version + build date
+                final String code = "a" + mVersionCode
+                                    + " d" + DBHelper.DATABASE_VERSION
+                                    + " b" + BuildConfig.TIMESTAMP;
+                mVb.debugVersion.setText(code);
             }
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {
                 ((MaterialButton) (mVb.debugSqShell)).setIconResource(R.drawable.ic_warning);

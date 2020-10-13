@@ -131,6 +131,16 @@
             app:layout_constraintTop_toBottomOf="@id/btn_sourcecode_url"
             />
 
+        <TextView
+            android:id="@+id/debug_version"
+            style="@style/AppVersion"
+            android:layout_marginStart="@dimen/field_margin_inline"
+            app:layout_constraintBaseline_toBaselineOf="@id/debug_section_lbl"
+            app:layout_constraintStart_toEndOf="@id/debug_section_lbl"
+            tools:ignore="SelectableText"
+            tools:text="a6 d10 b2020-12-13"
+            />
+
         <Button
             android:id="@+id/debug_prefs"
             style="@style/MenuButton"
