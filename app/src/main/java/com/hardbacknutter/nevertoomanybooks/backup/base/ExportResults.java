@@ -99,8 +99,8 @@ public class ExportResults
         preferences += results.preferences;
     }
 
-    public void addBook(final long bookID) {
-        mBooksExported.add(bookID);
+    public void addBook(final long bookId) {
+        mBooksExported.add(bookId);
     }
 
     public int getBookCount() {
