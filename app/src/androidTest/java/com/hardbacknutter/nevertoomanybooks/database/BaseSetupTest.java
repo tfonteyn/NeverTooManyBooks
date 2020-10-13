@@ -46,7 +46,7 @@ public class BaseSetupTest
         ArrayList<AuthorWork> works;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (final DAO db = new DAO(context, "basic")) {
+        try (DAO db = new DAO(context, "basic")) {
 
             // The objects should have been updated with their id
             assertTrue(author[0].getId() > 0);

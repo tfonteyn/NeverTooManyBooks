@@ -63,7 +63,7 @@ public class OptimizeDbTask
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));
-        try (final DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(TAG)) {
             // small hack to make sure we always update the triggers.
             // Makes creating/modifying triggers MUCH easier.
             if (BuildConfig.DEBUG /* always */) {

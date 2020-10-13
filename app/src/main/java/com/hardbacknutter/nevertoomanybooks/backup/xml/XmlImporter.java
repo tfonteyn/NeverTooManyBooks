@@ -207,7 +207,7 @@ public class XmlImporter
     public ArchiveInfo readInfo(@NonNull final InputStream inputStream)
             throws IOException {
         final ArchiveInfo info = new ArchiveInfo();
-        try (final Reader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+        try (Reader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
              final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE)) {
 
             fromXml(in, new InfoReader(info));

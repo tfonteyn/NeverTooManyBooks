@@ -208,9 +208,9 @@ public final class DBHelper
             db.execSQL("INSERT INTO collation_cs_check VALUES('A', 2)");
 
             final String s;
-            try (final Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
-                                              + " ORDER BY t " + DAOSql._COLLATION + ",i",
-                                              null)) {
+            try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
+                                        + " ORDER BY t " + DAOSql._COLLATION + ",i",
+                                        null)) {
                 c.moveToFirst();
                 s = c.getString(0);
             }
@@ -247,7 +247,7 @@ public final class DBHelper
         // Delete all indices.
         // We read the index names from the database, so we can delete
         // indexes which were removed from the TableDefinition objects.
-        try (final Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
             while (current.moveToNext()) {
                 final String indexName = current.getString(0);
                 try {
@@ -284,7 +284,7 @@ public final class DBHelper
                 + ',' + KEY_UUID
                 // 1==true
                 + ") VALUES(?,1,?)";
-        try (final SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
+        try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
             for (int id = Builtin.MAX_ID; id < 0; id++) {
                 stmt.bindLong(1, id);
                 stmt.bindString(2, Builtin.getUuidById(-id));
@@ -687,7 +687,7 @@ public final class DBHelper
 
             final ContentValues cv = new ContentValues();
             final Map<String, Long> pubs = new HashMap<>();
-            try (final Cursor cursor = syncedDb.rawQuery(
+            try (Cursor cursor = syncedDb.rawQuery(
                     "SELECT _id,publisher,language FROM books", null)) {
                 while (cursor.moveToNext()) {
                     final long bookId = cursor.getLong(0);

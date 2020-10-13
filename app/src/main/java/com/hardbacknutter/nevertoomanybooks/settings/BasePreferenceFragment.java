@@ -229,7 +229,7 @@ public abstract class BasePreferenceFragment
             preference.setOnPreferenceClickListener(p -> {
                 final Context context = getContext();
                 final ArrayList<String> bookUuidList;
-                try (final DAO db = new DAO(TAG)) {
+                try (DAO db = new DAO(TAG)) {
                     bookUuidList = db.getBookUuidList();
                 }
 

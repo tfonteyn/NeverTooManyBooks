@@ -929,12 +929,11 @@ public class StripInfoSearchEngine
         byte[] digest = null;
         try {
             final MessageDigest md = MessageDigest.getInstance("MD5");
-            try (final InputStream is = new FileInputStream(file)) {
-                try (final DigestInputStream dis = new DigestInputStream(is, md)) {
-                    // read and discard. The images are small enough to always read in one go.
-                    //noinspection ResultOfMethodCallIgnored
-                    dis.read(new byte[(int) file.length() + 1]);
-                }
+            try (InputStream is = new FileInputStream(file);
+                 DigestInputStream dis = new DigestInputStream(is, md)) {
+                // read and discard. The images are small enough to always read in one go.
+                //noinspection ResultOfMethodCallIgnored
+                dis.read(new byte[(int) file.length() + 1]);
             }
             digest = md.digest();
 

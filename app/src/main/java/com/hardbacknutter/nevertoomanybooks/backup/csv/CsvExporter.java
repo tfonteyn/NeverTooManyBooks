@@ -201,7 +201,7 @@ public class CsvExporter
 
         final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
-        try (final Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
+        try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             // row 0 with the column labels
             writer.write(getFieldHeaders(externalIdDomains));
 

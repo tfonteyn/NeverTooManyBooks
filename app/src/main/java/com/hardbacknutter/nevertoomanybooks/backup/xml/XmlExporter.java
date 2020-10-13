@@ -357,7 +357,7 @@ public class XmlExporter
                                   @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (final Cursor cursor = mDb.fetchBookshelves()) {
+        try (Cursor cursor = mDb.fetchBookshelves()) {
             writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKSHELVES_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -389,7 +389,7 @@ public class XmlExporter
                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (final Cursor cursor = mDb.fetchAuthors()) {
+        try (Cursor cursor = mDb.fetchAuthors()) {
             writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_AUTHORS_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -428,7 +428,7 @@ public class XmlExporter
                              @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (final Cursor cursor = mDb.fetchSeries()) {
+        try (Cursor cursor = mDb.fetchSeries()) {
             writer.write('<' + XmlTags.TAG_SERIES_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_SERIES_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -462,7 +462,7 @@ public class XmlExporter
                                  @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (final Cursor cursor = mDb.fetchPublishers()) {
+        try (Cursor cursor = mDb.fetchPublishers()) {
             writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_PUBLISHER_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -492,7 +492,7 @@ public class XmlExporter
     private void writeToc(@NonNull final Writer writer,
                           @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (final Cursor cursor = mDb.fetchTocs()) {
+        try (Cursor cursor = mDb.fetchTocs()) {
             writer.write('<' + XmlTags.TAG_TOC_ENTRY_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_TOC_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -550,7 +550,7 @@ public class XmlExporter
 
         final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
-        try (final Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
+        try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             writer.write('<' + XmlTags.TAG_BOOK_LIST);
             writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKS_VERSION));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));

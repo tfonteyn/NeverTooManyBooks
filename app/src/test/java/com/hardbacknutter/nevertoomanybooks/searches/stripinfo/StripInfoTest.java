@@ -437,7 +437,7 @@ class StripInfoTest
         final String filename = "/stripinfo/multi-result-pluvi.html";
 
         Document document = null;
-        try (final InputStream is = this.getClass().getResourceAsStream(filename)) {
+        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             document = Jsoup.parse(is, null, locationHeader);
         } catch (@NonNull final IOException e) {

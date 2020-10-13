@@ -230,8 +230,8 @@ final class XmlUtils {
     @NonNull
     private static byte[] convertToBytes(@NonNull final Object object)
             throws IOException {
-        try (final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-             final ObjectOutput out = new ObjectOutputStream(bos)) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ObjectOutput out = new ObjectOutputStream(bos)) {
             out.writeObject(object);
             return bos.toByteArray();
         }

@@ -55,7 +55,7 @@ public class AuthorTest
         boolean updateOk;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (final DAO db = new DAO(context, "crud")) {
+        try (DAO db = new DAO(context, "crud")) {
 
             author[0] = Author.from(AuthorFullName(0));
             authorId[0] = db.insert(context, author[0]);
@@ -100,7 +100,7 @@ public class AuthorTest
         final Author tmpAuthor;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (final DAO db = new DAO(context, "renameAuthor")) {
+        try (DAO db = new DAO(context, "renameAuthor")) {
 
             // rename an author
             // UPDATE in the database
@@ -164,7 +164,7 @@ public class AuthorTest
         long existingId;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (final DAO db = new DAO(context, "renameAuthorWithTocs")) {
+        try (DAO db = new DAO(context, "renameAuthorWithTocs")) {
 
             // rename an author
             // UPDATE in the database

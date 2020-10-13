@@ -75,9 +75,9 @@ public interface Exporter
                                 @NonNull final File file,
                                 @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (final OutputStream os = new FileOutputStream(file);
-             final Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             final Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
+        try (OutputStream os = new FileOutputStream(file);
+             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
             return write(context, writer, progressListener);
         }
     }

@@ -386,7 +386,7 @@ public abstract class BaseActivity
                 // Child classes should override if they have a 'current' style
                 // and/or a database to pass instead of the default and new instance here.
                 final Intent intent = new Intent(this, PreferredStylesActivity.class);
-                try (final DAO db = new DAO(TAG)) {
+                try (DAO db = new DAO(TAG)) {
                     intent.putExtra(BooklistStyle.BKEY_STYLE_UUID,
                                     BooklistStyle.getDefault(this, db).getUuid());
                 }

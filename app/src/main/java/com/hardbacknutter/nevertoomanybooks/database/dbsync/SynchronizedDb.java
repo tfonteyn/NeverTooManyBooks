@@ -534,7 +534,7 @@ public class SynchronizedDb {
                               "PRAGMA recursive_triggers",
                               };
         for (final String s : sql) {
-            try (final Cursor cursor = db.rawQuery(s, null)) {
+            try (Cursor cursor = db.rawQuery(s, null)) {
                 if (cursor.moveToNext()) {
                     Log.d(TAG, "debugDumpInfo|" + s + " = " + cursor.getString(0));
                 }

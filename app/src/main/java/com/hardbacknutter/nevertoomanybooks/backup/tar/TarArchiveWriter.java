@@ -105,7 +105,7 @@ public class TarArchiveWriter
         entry.setModTime(file.lastModified());
         entry.setSize(file.length());
         mOutputStream.putArchiveEntry(entry);
-        try (final InputStream is = new FileInputStream(file)) {
+        try (InputStream is = new FileInputStream(file)) {
             FileUtils.copy(is, mOutputStream);
         } finally {
             mOutputStream.closeArchiveEntry();
@@ -131,7 +131,7 @@ public class TarArchiveWriter
         entry.setModTime(Instant.now().toEpochMilli());
         entry.setSize(bytes.length);
         mOutputStream.putArchiveEntry(entry);
-        try (final InputStream is = new ByteArrayInputStream(bytes)) {
+        try (InputStream is = new ByteArrayInputStream(bytes)) {
             FileUtils.copy(is, mOutputStream);
         } finally {
             mOutputStream.closeArchiveEntry();

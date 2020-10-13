@@ -107,7 +107,7 @@ public class BookTest {
         mTocEntryList.clear();
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (final DAO db = new DAO(context, "setup")) {
+        try (DAO db = new DAO(context, "setup")) {
 
             Constants.deleteTocs(db);
             Constants.deleteBooks(db);
@@ -209,7 +209,7 @@ public class BookTest {
             throws DAO.DaoWriteException, IOException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (final DAO db = new DAO(context, "book")) {
+        try (DAO db = new DAO(context, "book")) {
 
             mBook[0] = prepareBook(context, db);
             mBookId[0] = mBook[0].getId();
@@ -340,7 +340,7 @@ public class BookTest {
     public void bookViewModelReadOnly()
             throws DAO.DaoWriteException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (final DAO db = new DAO(context, "bookViewModel-prep")) {
+        try (DAO db = new DAO(context, "bookViewModel-prep")) {
             mBook[0] = prepareBook(context, db);
             mBookId[0] = mBook[0].getId();
         }

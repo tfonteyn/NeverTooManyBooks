@@ -62,7 +62,7 @@ public class ArchiveImportTask
             throws IOException, ImportException, InvalidArchiveException {
         Thread.currentThread().setName(TAG);
 
-        try (final ArchiveReader reader = mHelper.getArchiveReader(context)) {
+        try (ArchiveReader reader = mHelper.getArchiveReader(context)) {
             mHelper.setResults(reader.read(context, this));
 
         }

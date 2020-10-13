@@ -62,19 +62,19 @@ public class CsvExporterTest {
 
         final int entities = Options.BOOKS;
         //final int entities = Options.BOOKS | Options.COVERS;
-        try (final Exporter exporter = new CsvExporter(context, entities, null)) {
+        try (Exporter exporter = new CsvExporter(context, entities, null)) {
             results = exporter.write(context, file, new MyProgressListener());
         }
 
         final long exportCount;
-        try (final BufferedReader reader = new BufferedReader(
+        try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             // -1 for the header line.
             exportCount = reader.lines().count() - 1;
         }
 
         final long bookCount;
-        try (final DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(TAG)) {
             bookCount = db.countBooks();
         }
         assertEquals(bookCount, exportCount);

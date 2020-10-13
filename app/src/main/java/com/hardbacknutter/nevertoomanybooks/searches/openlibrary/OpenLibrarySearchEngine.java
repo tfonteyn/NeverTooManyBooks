@@ -245,8 +245,8 @@ public class OpenLibrarySearchEngine
             throws IOException {
         // get and store the result into a string.
         final String response;
-        try (final TerminatorConnection con = createConnection(url, true);
-             final InputStream is = con.getInputStream()) {
+        try (TerminatorConnection con = createConnection(url, true);
+             InputStream is = con.getInputStream()) {
             response = readResponseStream(is);
         }
 

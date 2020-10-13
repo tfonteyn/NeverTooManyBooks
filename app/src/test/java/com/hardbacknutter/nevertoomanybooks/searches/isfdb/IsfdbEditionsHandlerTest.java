@@ -67,7 +67,7 @@ class IsfdbEditionsHandlerTest
         final String filename = "/isfdb/11169-multi-edition.html";
 
         Document document = null;
-        try (final InputStream in = this.getClass().getResourceAsStream(filename)) {
+        try (InputStream in = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(in);
             document = Jsoup.parse(in, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader);
         } catch (@NonNull final IOException e) {

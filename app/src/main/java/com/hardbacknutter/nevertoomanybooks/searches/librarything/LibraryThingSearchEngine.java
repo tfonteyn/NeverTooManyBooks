@@ -319,7 +319,7 @@ public class LibraryThingSearchEngine
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 
         final String url = getSiteUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
-        try (final TerminatorConnection con = createConnection(url, true)) {
+        try (TerminatorConnection con = createConnection(url, true)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -345,7 +345,7 @@ public class LibraryThingSearchEngine
 //        final XmlDumpParser handler = new XmlDumpParser();
 
         // Get it
-        try (final TerminatorConnection con = createConnection(url, true)) {
+        try (TerminatorConnection con = createConnection(url, true)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
 

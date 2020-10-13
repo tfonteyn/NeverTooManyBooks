@@ -504,8 +504,8 @@ public class CoverHandler {
                     final Uri uri = data.getData();
                     if (uri != null) {
                         File file = null;
-                        try (final InputStream is = mContext.getContentResolver()
-                                                            .openInputStream(uri)) {
+                        try (InputStream is = mContext.getContentResolver()
+                                                      .openInputStream(uri)) {
                             file = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
                             // copy the data, and retrieve the (potentially) resolved file
                             file = FileUtils.copyInputStream(mContext, is, file);

@@ -71,7 +71,7 @@ class KbNlBookHandlerTest
     @Test
     void parseComic() {
 
-        try (final InputStream in = this.getClass().getResourceAsStream(comicFilename)) {
+        try (InputStream in = this.getClass().getResourceAsStream(comicFilename)) {
             mParser.parse(in, mHandler);
         } catch (@NonNull final IOException | SAXException e) {
             fail(e);
@@ -119,7 +119,7 @@ class KbNlBookHandlerTest
     @Test
     void parseBook() {
 
-        try (final InputStream in = this.getClass().getResourceAsStream(bookFilename)) {
+        try (InputStream in = this.getClass().getResourceAsStream(bookFilename)) {
             mParser.parse(in, mHandler);
         } catch (@NonNull final IOException | SAXException e) {
             fail(e);

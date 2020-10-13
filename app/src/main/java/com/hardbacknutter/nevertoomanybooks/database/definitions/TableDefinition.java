@@ -689,7 +689,7 @@ public class TableDefinition {
         } else {
             sql = TABLE_EXISTS_SQL_TEMP;
         }
-        try (final SynchronizedStatement stmt = db.compileStatement(sql)) {
+        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
             stmt.bindString(1, mName);
             return stmt.simpleQueryForLongOrZero() > 0;
         }
@@ -714,7 +714,7 @@ public class TableDefinition {
 
             final String sql =
                     "SELECT * FROM " + mName + " ORDER BY " + orderBy + " LIMIT " + limit;
-            try (final Cursor cursor = db.rawQuery(sql, null)) {
+            try (Cursor cursor = db.rawQuery(sql, null)) {
                 final StringBuilder columnHeading = new StringBuilder("\n");
                 final String[] columnNames = cursor.getColumnNames();
                 for (final String column : columnNames) {
@@ -938,8 +938,8 @@ public class TableDefinition {
                 "UPDATE " + getName() + " SET " + destination.getName() + "=?"
                 + " WHERE " + DBDefinitions.KEY_PK_ID + "=?";
 
-        try (final SQLiteStatement update = db.compileStatement(updateSql);
-             final Cursor cursor = db.rawQuery(
+        try (SQLiteStatement update = db.compileStatement(updateSql);
+             Cursor cursor = db.rawQuery(
                      "SELECT " + DBDefinitions.KEY_PK_ID
                      + ',' + source.getName() + " FROM " + getName(),
                      null)) {

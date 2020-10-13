@@ -77,7 +77,7 @@ public class ArchiveExportTask
         Thread.currentThread().setName(TAG);
 
         //noinspection ConstantConditions
-        try (final ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
+        try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
             mHelper.setResults(exporter.write(context, this));
 
         } catch (@NonNull final IOException e) {

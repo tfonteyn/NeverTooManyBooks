@@ -44,7 +44,7 @@ public class JSoupBase
                             @NonNull final String filename,
                             final boolean[] fetchThumbnails) {
         final Document document;
-        try (final InputStream is = this.getClass().getResourceAsStream(filename)) {
+        try (InputStream is = this.getClass().getResourceAsStream(filename)) {
             assertNotNull(is);
             document = Jsoup.parse(is, charsetName, locationHeader);
 

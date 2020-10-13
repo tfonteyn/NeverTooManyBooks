@@ -136,7 +136,7 @@ public class DBCleaner {
         final Collection<Pair<Long, String>> rows = new ArrayList<>();
 
         for (final String key : columns) {
-            try (final Cursor cursor = mDb.getSyncDb().rawQuery(
+            try (Cursor cursor = mDb.getSyncDb().rawQuery(
                     "SELECT " + KEY_PK_ID + ',' + key + " FROM " + TBL_BOOKS.getName()
                     + " WHERE " + key + " LIKE '%T%'", null)) {
                 while (cursor.moveToNext()) {
@@ -149,7 +149,7 @@ public class DBCleaner {
                          "key=" + key
                          + "|rows.size()=" + rows.size());
             }
-            try (final SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(
+            try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(
                     "UPDATE " + TBL_BOOKS.getName()
                     + " SET " + key + "=? WHERE " + KEY_PK_ID + "=?")) {
 
@@ -209,7 +209,7 @@ public class DBCleaner {
                               + " WHERE lower(" + column + ") IN ";
         String sql;
         sql = update + "('true','t','yes')";
-        try (final SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
+        try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
             stmt.bindLong(1, 1);
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
@@ -220,7 +220,7 @@ public class DBCleaner {
         }
 
         sql = update + "('false','f','no')";
-        try (final SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
+        try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
             stmt.bindLong(1, 0);
             final int count = stmt.executeUpdateDelete();
             if (BuildConfig.DEBUG /* always */) {
@@ -453,7 +453,7 @@ public class DBCleaner {
         if (!dryRun) {
             final String sql = "DELETE " + TBL_BOOK_BOOKSHELF
                                + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
-            try (final SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog("bookBookshelf|EXIT", select);
@@ -478,7 +478,7 @@ public class DBCleaner {
         if (!dryRun) {
             final String sql = "UPDATE " + table + " SET " + column + "=''"
                                + " WHERE " + column + "=NULL";
-            try (final SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
+            try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
             toLog("nullString2empty|EXIT", select);
@@ -495,7 +495,7 @@ public class DBCleaner {
     private void toLog(@NonNull final String state,
                        @NonNull final String query) {
         if (BuildConfig.DEBUG) {
-            try (final SynchronizedCursor cursor = mDb.getSyncDb().rawQuery(query, null)) {
+            try (SynchronizedCursor cursor = mDb.getSyncDb().rawQuery(query, null)) {
                 Log.d(TAG, state + "|row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
                     final String field = cursor.getColumnName(0);

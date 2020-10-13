@@ -651,7 +651,7 @@ public class DAO
      */
     private boolean touchBook(final long bookId) {
 
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlUpdate.TOUCH)) {
             stmt.bindLong(1, bookId);
             return 0 < stmt.executeUpdateDelete();
@@ -1343,7 +1343,7 @@ public class DAO
         // validate the style first
         final long styleId = bookshelf.getStyle(context, this).getId();
 
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlInsert.BOOKSHELF)) {
             stmt.bindString(1, bookshelf.getName());
             stmt.bindLong(2, styleId);
@@ -1374,7 +1374,7 @@ public class DAO
         try {
             purgeNodeStatesByBookshelf(bookshelf.getId());
 
-            try (final SynchronizedStatement stmt = mSyncedDb
+            try (SynchronizedStatement stmt = mSyncedDb
                     .compileStatement(DAOSql.SqlDelete.BOOKSHELF_BY_ID)) {
                 stmt.bindLong(1, bookshelf.getId());
                 rowsAffected = stmt.executeUpdateDelete();
@@ -1585,7 +1585,7 @@ public class DAO
                           @NonNull final Series series) {
 
         final int rowsAffected;
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlDelete.SERIES_BY_ID)) {
             stmt.bindLong(1, series.getId());
             rowsAffected = stmt.executeUpdateDelete();
@@ -1702,7 +1702,7 @@ public class DAO
                           @NonNull final Author author) {
 
         final int rowsAffected;
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlDelete.AUTHOR_BY_ID)) {
             stmt.bindLong(1, author.getId());
             rowsAffected = stmt.executeUpdateDelete();
@@ -1730,8 +1730,8 @@ public class DAO
                           @NonNull final Publisher publisher) {
 
         final int rowsAffected;
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                DAOSql.SqlDelete.PUBLISHER_BY_ID)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlDelete.PUBLISHER_BY_ID)) {
             stmt.bindLong(1, publisher.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -1871,7 +1871,7 @@ public class DAO
 
         // We cannot update the author as it's part of the primary key.
         // (we should never even get here if the author was changed)
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlUpdate.TOCENTRY)) {
             stmt.bindString(1, tocEntry.getTitle());
             stmt.bindString(2, encodeOrderByColumn(obTitle, tocLocale));
@@ -1944,7 +1944,7 @@ public class DAO
                                   @IntRange(from = 1) final long tocEntryId) {
 
         final int rowsAffected;
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlDelete.TOC_ENTRY)) {
             stmt.bindLong(1, tocEntryId);
             rowsAffected = stmt.executeUpdateDelete();
@@ -1976,8 +1976,8 @@ public class DAO
         boolean success = false;
 
         if (loanee == null || loanee.isEmpty()) {
-            try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    DAOSql.SqlDelete.BOOK_LOANEE_BY_BOOK_ID)) {
+            try (SynchronizedStatement stmt = mSyncedDb
+                    .compileStatement(DAOSql.SqlDelete.BOOK_LOANEE_BY_BOOK_ID)) {
                 stmt.bindLong(1, bookId);
                 success = stmt.executeUpdateDelete() == 1;
             }
@@ -1985,8 +1985,8 @@ public class DAO
 
             final String current = getLoaneeByBookId(bookId);
             if (current == null || current.isEmpty()) {
-                try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                        DAOSql.SqlInsert.BOOK_LOANEE)) {
+                try (SynchronizedStatement stmt = mSyncedDb
+                        .compileStatement(DAOSql.SqlInsert.BOOK_LOANEE)) {
                     stmt.bindLong(1, bookId);
                     stmt.bindString(2, loanee);
                     success = stmt.executeInsert() > 0;
@@ -2055,7 +2055,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getLoanees() {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.LOANEE, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.LOANEE, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2068,8 +2068,8 @@ public class DAO
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long insert(@NonNull final BooklistStyle /* in/out */ style) {
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                DAOSql.SqlInsert.BOOKLIST_STYLE)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlInsert.BOOKLIST_STYLE)) {
             stmt.bindString(1, style.getUuid());
             stmt.bindBoolean(2, !style.isUserDefined());
             final long iId = stmt.executeInsert();
@@ -2097,8 +2097,8 @@ public class DAO
         try {
             purgeNodeStatesByStyle(style.getId());
 
-            try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    DAOSql.SqlDelete.STYLE_BY_ID)) {
+            try (SynchronizedStatement stmt = mSyncedDb
+                    .compileStatement(DAOSql.SqlDelete.STYLE_BY_ID)) {
                 stmt.bindLong(1, style.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
@@ -2128,16 +2128,16 @@ public class DAO
      */
     public void purge() {
         try {
-            try (final SynchronizedStatement stmt =
-                         mSyncedDb.compileStatement(DAOSql.SqlDelete.PURGE_AUTHORS)) {
+            try (SynchronizedStatement stmt = mSyncedDb
+                    .compileStatement(DAOSql.SqlDelete.PURGE_AUTHORS)) {
                 stmt.executeUpdateDelete();
             }
-            try (final SynchronizedStatement stmt =
-                         mSyncedDb.compileStatement(DAOSql.SqlDelete.PURGE_SERIES)) {
+            try (SynchronizedStatement stmt = mSyncedDb
+                    .compileStatement(DAOSql.SqlDelete.PURGE_SERIES)) {
                 stmt.executeUpdateDelete();
             }
-            try (final SynchronizedStatement stmt =
-                         mSyncedDb.compileStatement(DAOSql.SqlDelete.PURGE_PUBLISHERS)) {
+            try (SynchronizedStatement stmt = mSyncedDb
+                    .compileStatement(DAOSql.SqlDelete.PURGE_PUBLISHERS)) {
                 stmt.executeUpdateDelete();
             }
 
@@ -2160,8 +2160,8 @@ public class DAO
      * @param bookshelfId to purge
      */
     public void purgeNodeStatesByBookshelf(final long bookshelfId) {
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                DAOSql.SqlDelete.BOOK_LIST_NODE_STATE_BY_BOOKSHELF)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlDelete.BOOK_LIST_NODE_STATE_BY_BOOKSHELF)) {
             stmt.bindLong(1, bookshelfId);
             stmt.executeUpdateDelete();
         }
@@ -2174,8 +2174,8 @@ public class DAO
      * @param styleId to purge
      */
     public void purgeNodeStatesByStyle(final long styleId) {
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                DAOSql.SqlDelete.BOOK_LIST_NODE_STATE_BY_STYLE)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlDelete.BOOK_LIST_NODE_STATE_BY_STYLE)) {
             stmt.bindLong(1, styleId);
             stmt.executeUpdateDelete();
         }
@@ -2187,7 +2187,8 @@ public class DAO
      * @return number of books
      */
     public long countBooks() {
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlCount.BOOKS)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlCount.BOOKS)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -2208,8 +2209,8 @@ public class DAO
             return 0;
         }
 
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                DAOSql.SqlCount.BOOKS_BY_AUTHOR)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlCount.BOOKS_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -2231,8 +2232,8 @@ public class DAO
             return 0;
         }
 
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                DAOSql.SqlCount.BOOKS_IN_SERIES)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlCount.BOOKS_IN_SERIES)) {
             stmt.bindLong(1, series.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -2254,8 +2255,8 @@ public class DAO
             return 0;
         }
 
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                DAOSql.SqlCount.BOOKS_BY_PUBLISHER)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlCount.BOOKS_BY_PUBLISHER)) {
             stmt.bindLong(1, publisher.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -2277,8 +2278,8 @@ public class DAO
             return 0;
         }
 
-        try (final SynchronizedStatement stmt =
-                     mSyncedDb.compileStatement(DAOSql.SqlCount.TOC_ENTRIES_BY_AUTHOR)) {
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlCount.TOC_ENTRIES_BY_AUTHOR)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -2410,14 +2411,14 @@ public class DAO
 
     public int countBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
         if (lastUpdateInUtc == null) {
-            try (final SynchronizedStatement stmt = mSyncedDb
+            try (SynchronizedStatement stmt = mSyncedDb
                     .compileStatement(DAOSql.SqlCount.BOOKS)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } else {
             final String since = lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-            try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                     DAOSql.SqlCount.BOOKS + " WHERE " + KEY_UTC_LAST_UPDATED + ">=?")) {
                 stmt.bindString(1, since);
                 return (int) stmt.simpleQueryForLongOrZero();
@@ -2518,7 +2519,7 @@ public class DAO
     @NonNull
     public ArrayList<Bookshelf> getBookshelves() {
         final ArrayList<Bookshelf> list = new ArrayList<>();
-        try (final Cursor cursor = fetchBookshelves()) {
+        try (Cursor cursor = fetchBookshelves()) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(KEY_PK_ID), rowData));
@@ -2534,8 +2535,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getBookUuidList() {
-        try (final Cursor cursor = mSyncedDb
-                .rawQuery(DAOSql.SqlSelectFullTable.ALL_BOOK_UUID, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelectFullTable.ALL_BOOK_UUID, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2590,7 +2590,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getPublisherNames() {
-        try (final Cursor cursor = mSyncedDb
+        try (Cursor cursor = mSyncedDb
                 .rawQuery(DAOSql.SqlAutoCompleteText.PUBLISHERS_NAME, null)) {
             return getFirstColumnAsList(cursor);
         }
@@ -2603,7 +2603,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getColors() {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.COLORS, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.COLORS, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2628,7 +2628,7 @@ public class DAO
         final String sql = "SELECT DISTINCT upper(" + column + ") FROM " + TBL_BOOKS.getName()
                            + " ORDER BY " + column + DAOSql._COLLATION;
 
-        try (final Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
             final ArrayList<String> list = getFirstColumnAsList(cursor);
             if (list.isEmpty()) {
                 // sure, this is very crude and discriminating.
@@ -2648,7 +2648,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getFormats() {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.FORMATS, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.FORMATS, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2660,7 +2660,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getGenres() {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.GENRES, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.GENRES, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2673,7 +2673,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getLanguageCodes() {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.LANGUAGES, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.LANGUAGES, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2688,7 +2688,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getLanguages(@NonNull final Context context) {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.LANGUAGES, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.LANGUAGES, null)) {
             // Using a Set to avoid duplicates
             // The cursor is distinct, but we need to make sure code->name does not create
             // duplicates (very unlikely, but not impossible)
@@ -2710,7 +2710,7 @@ public class DAO
      */
     @NonNull
     public ArrayList<String> getLocations() {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.LOCATIONS, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlAutoCompleteText.LOCATIONS, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -2721,7 +2721,7 @@ public class DAO
         if (Objects.equals(from, to)) {
             return;
         }
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlUpdate.COLOR)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
@@ -2734,7 +2734,7 @@ public class DAO
         if (Objects.equals(from, to)) {
             return;
         }
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlUpdate.FORMAT)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
@@ -2747,7 +2747,7 @@ public class DAO
         if (Objects.equals(from, to)) {
             return;
         }
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlUpdate.GENRE)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
@@ -2760,7 +2760,7 @@ public class DAO
         if (Objects.equals(from, to)) {
             return;
         }
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlUpdate.LANGUAGE)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
@@ -2773,7 +2773,7 @@ public class DAO
         if (Objects.equals(from, to)) {
             return;
         }
-        try (final SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlUpdate.LOCATION)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
@@ -2812,8 +2812,8 @@ public class DAO
      */
     @Nullable
     public Bookshelf getBookshelf(final long id) {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.BOOKSHELF,
-                                                      new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.BOOKSHELF,
+                                                new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Bookshelf(id, new CursorRow(cursor));
             } else {
@@ -2832,8 +2832,8 @@ public class DAO
     @Nullable
     public Bookshelf getBookshelfByName(@NonNull final String name) {
 
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.BOOKSHELF_BY_NAME,
-                                                      new String[]{name})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.BOOKSHELF_BY_NAME,
+                                                new String[]{name})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
                 return new Bookshelf(rowData.getLong(KEY_PK_ID), rowData);
@@ -2853,8 +2853,8 @@ public class DAO
     @NonNull
     public ArrayList<Bookshelf> getBookshelvesByBookId(final long bookId) {
         final ArrayList<Bookshelf> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOKSHELVES_BY_BOOK_ID,
-                                                      new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOKSHELVES_BY_BOOK_ID,
+                                                new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(KEY_PK_ID), rowData));
@@ -2913,8 +2913,8 @@ public class DAO
      */
     @Nullable
     public Author getAuthor(final long id) {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.AUTHOR,
-                                                      new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.AUTHOR,
+                                                new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Author(id, new CursorRow(cursor));
             } else {
@@ -2970,8 +2970,8 @@ public class DAO
      */
     @Nullable
     public Series getSeries(final long id) {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.SERIES,
-                                                      new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.SERIES,
+                                                new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Series(id, new CursorRow(cursor));
             } else {
@@ -3027,8 +3027,8 @@ public class DAO
      */
     @Nullable
     public Publisher getPublisher(final long id) {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.PUBLISHER,
-                                                      new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.PUBLISHER,
+                                                new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Publisher(id, new CursorRow(cursor));
             } else {
@@ -3048,8 +3048,8 @@ public class DAO
     @NonNull
     public ArrayList<Long> getBookIdsByAuthor(final long authorId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_IDS_BY_AUTHOR_ID,
-                                                      new String[]{String.valueOf(authorId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_IDS_BY_AUTHOR_ID,
+                                                new String[]{String.valueOf(authorId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -3067,8 +3067,8 @@ public class DAO
     @NonNull
     public ArrayList<Long> getBookIdsBySeries(final long seriesId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_IDS_BY_SERIES_ID,
-                                                      new String[]{String.valueOf(seriesId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_IDS_BY_SERIES_ID,
+                                                new String[]{String.valueOf(seriesId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -3086,8 +3086,8 @@ public class DAO
     @NonNull
     public ArrayList<Long> getBookIdsByPublisher(final long publisherId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_IDS_BY_PUBLISHER_ID,
-                                                      new String[]{String.valueOf(publisherId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_IDS_BY_PUBLISHER_ID,
+                                                new String[]{String.valueOf(publisherId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -3105,8 +3105,8 @@ public class DAO
     @NonNull
     public ArrayList<Long> getBookIdsByTocEntry(final long tocId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_ID_LIST_BY_TOC_ENTRY_ID,
-                                                      new String[]{String.valueOf(tocId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_ID_LIST_BY_TOC_ENTRY_ID,
+                                                new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -3126,11 +3126,11 @@ public class DAO
         // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,
         // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
-            try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BY_VALID_ISBN,
-                                                          new String[]{isbn.asText(
-                                                                  ISBN.TYPE_ISBN10),
-                                                                       isbn.asText(
-                                                                               ISBN.TYPE_ISBN13)})) {
+            try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BY_VALID_ISBN,
+                                                    new String[]{isbn.asText(
+                                                            ISBN.TYPE_ISBN10),
+                                                                 isbn.asText(
+                                                                         ISBN.TYPE_ISBN13)})) {
                 while (cursor.moveToNext()) {
                     list.add(cursor.getLong(0));
                 }
@@ -3140,8 +3140,8 @@ public class DAO
         } else {
             // otherwise just search on the string as-is; regardless of validity
             // (this would actually include valid ISBN-13 in the 979 range).
-            try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BY_ISBN,
-                                                          new String[]{isbn.asText()})) {
+            try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BY_ISBN,
+                                                    new String[]{isbn.asText()})) {
                 while (cursor.moveToNext()) {
                     list.add(cursor.getLong(0));
                 }
@@ -3164,7 +3164,7 @@ public class DAO
         final String sql = "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
                            + " WHERE " + key + "=?";
 
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindString(1, value);
             return stmt.simpleQueryForLongOrZero();
         }
@@ -3258,8 +3258,8 @@ public class DAO
     @NonNull
     public ArrayList<Author> getAuthorsByBookId(final long bookId) {
         final ArrayList<Author> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.AUTHORS_BY_BOOK_ID,
-                                                      new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.AUTHORS_BY_BOOK_ID,
+                                                new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Author(rowData.getLong(KEY_PK_ID), rowData));
@@ -3278,8 +3278,8 @@ public class DAO
     @NonNull
     public ArrayList<Series> getSeriesByBookId(final long bookId) {
         final ArrayList<Series> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.SERIES_BY_BOOK_ID,
-                                                      new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.SERIES_BY_BOOK_ID,
+                                                new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Series(rowData.getLong(KEY_PK_ID), rowData));
@@ -3298,8 +3298,8 @@ public class DAO
     @NonNull
     public ArrayList<Publisher> getPublishersByBookId(final long bookId) {
         final ArrayList<Publisher> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.PUBLISHER_BY_BOOK_ID,
-                                                      new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.PUBLISHER_BY_BOOK_ID,
+                                                new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Publisher(rowData.getLong(KEY_PK_ID), rowData));
@@ -3318,8 +3318,8 @@ public class DAO
     @NonNull
     public ArrayList<TocEntry> getTocEntryByBookId(final long bookId) {
         final ArrayList<TocEntry> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.TOC_ENTRIES_BY_BOOK_ID,
-                                                      new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.TOC_ENTRIES_BY_BOOK_ID,
+                                                new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
@@ -3343,8 +3343,8 @@ public class DAO
      */
     @NonNull
     public String getSeriesLanguage(final long id) {
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.SERIES_LANGUAGE,
-                                                      new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlGet.SERIES_LANGUAGE,
+                                                new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return cursor.getString(0);
             }
@@ -3465,7 +3465,7 @@ public class DAO
 
         final ArrayList<AuthorWork> list = new ArrayList<>();
         //noinspection ZeroLengthArrayAllocation
-        try (final Cursor cursor = mSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final char type = rowData.getString(KEY_TOC_TYPE).charAt(0);
@@ -3504,8 +3504,8 @@ public class DAO
     @NonNull
     public List<Pair<Long, String>> getBookTitlesForToc(@IntRange(from = 1) final long id) {
         final List<Pair<Long, String>> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_TITLES_FOR_TOC,
-                                                      new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_TITLES_FOR_TOC,
+                                                new String[]{String.valueOf(id)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Pair<>(rowData.getLong(KEY_PK_ID),
@@ -3587,7 +3587,7 @@ public class DAO
         final String now =
                 isRead ? LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "";
 
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
             stmt.bindBoolean(1, isRead);
             stmt.bindString(2, now);
             stmt.bindLong(3, bookId);
@@ -3610,7 +3610,7 @@ public class DAO
                 isRead ? LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "";
 
         final boolean success;
-        try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
             stmt.bindBoolean(1, isRead);
             stmt.bindString(2, now);
             stmt.bindLong(3, book.getId());
@@ -3909,7 +3909,7 @@ public class DAO
                            // This is only done to get a reproducible and consistent order.
                            + " ORDER BY " + KEY_PK_ID;
 
-        try (final Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final long id = rowData.getLong(KEY_PK_ID);
@@ -3998,7 +3998,7 @@ public class DAO
     @NonNull
     ArrayList<Long> getIdList(@NonNull final String sql) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -4020,7 +4020,7 @@ public class DAO
     private ArrayList<String> getColumnAsList(@NonNull final String sql,
                                               @NonNull final String columnName) {
         final ArrayList<String> list = new ArrayList<>();
-        try (final Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
             final int column = cursor.getColumnIndexOrThrow(columnName);
             while (cursor.moveToNext()) {
                 list.add(cursor.getString(column));
@@ -4167,7 +4167,7 @@ public class DAO
             final String[] qpBookId = new String[]{String.valueOf(bookId)};
 
             // Get list of authors
-            try (final Cursor authors = mSyncedDb
+            try (Cursor authors = mSyncedDb
                     .rawQuery(DAOSql.SqlFTS.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
@@ -4186,7 +4186,7 @@ public class DAO
             }
 
             // Get list of series
-            try (final Cursor series = mSyncedDb
+            try (Cursor series = mSyncedDb
                     .rawQuery(DAOSql.SqlFTS.GET_SERIES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colSeriesTitle < 0) {
@@ -4199,7 +4199,7 @@ public class DAO
             }
 
             // Get list of publishers
-            try (final Cursor publishers = mSyncedDb
+            try (Cursor publishers = mSyncedDb
                     .rawQuery(DAOSql.SqlFTS.GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colPublisherName < 0) {
@@ -4212,7 +4212,7 @@ public class DAO
             }
 
             // Get list of TOC titles
-            try (final Cursor toc = mSyncedDb
+            try (Cursor toc = mSyncedDb
                     .rawQuery(DAOSql.SqlFTS.GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colTOCEntryTitle < 0) {
@@ -4269,8 +4269,8 @@ public class DAO
             final SynchronizedStatement stmt = mSqlStatementManager.get(
                     STMT_INSERT_FTS, () -> DAOSql.SqlFTS.INSERT);
 
-            try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.BOOK_BY_ID,
-                                                          new String[]{String.valueOf(bookId)})) {
+            try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.BOOK_BY_ID,
+                                                    new String[]{String.valueOf(bookId)})) {
                 ftsProcessBooks(cursor, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
@@ -4300,8 +4300,8 @@ public class DAO
             final SynchronizedStatement stmt = mSqlStatementManager.get(
                     STMT_UPDATE_FTS, () -> DAOSql.SqlFTS.UPDATE);
 
-            try (final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.BOOK_BY_ID,
-                                                          new String[]{String.valueOf(bookId)})) {
+            try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.BOOK_BY_ID,
+                                                    new String[]{String.valueOf(bookId)})) {
                 ftsProcessBooks(cursor, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
@@ -4334,7 +4334,7 @@ public class DAO
             //IMPORTANT: withConstraints MUST BE false
             ftsTemp.recreate(mSyncedDb, false);
 
-            try (final SynchronizedStatement stmt = mSyncedDb.compileStatement(
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                     "INSERT INTO " + ftsTemp.getName() + DAOSql.SqlFTS.INSERT_BODY);
                  final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.ALL_BOOKS, null)) {
                 ftsProcessBooks(cursor, stmt);
@@ -4387,7 +4387,7 @@ public class DAO
         // Books
         String language;
         Locale bookLocale;
-        try (final Cursor cursor = mSyncedDb
+        try (Cursor cursor = mSyncedDb
                 .rawQuery(DAOSql.SqlSelectFullTable.BOOK_TITLES, null)) {
             final int langIdx = cursor.getColumnIndex(KEY_LANGUAGE);
             while (cursor.moveToNext()) {
@@ -4405,7 +4405,7 @@ public class DAO
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         // We should use the locale from the 1st book in the series... but that is a huge overhead.
-        try (final Cursor cursor = mSyncedDb
+        try (Cursor cursor = mSyncedDb
                 .rawQuery(DAOSql.SqlSelectFullTable.SERIES_TITLES, null)) {
             while (cursor.moveToNext()) {
                 rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
@@ -4413,7 +4413,7 @@ public class DAO
             }
         }
 
-        try (final Cursor cursor = mSyncedDb
+        try (Cursor cursor = mSyncedDb
                 .rawQuery(DAOSql.SqlSelectFullTable.PUBLISHER_NAMES, null)) {
             while (cursor.moveToNext()) {
                 rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
@@ -4422,7 +4422,7 @@ public class DAO
         }
 
         // We should use primary book or Author Locale... but that is a huge overhead.
-        try (final Cursor cursor = mSyncedDb
+        try (Cursor cursor = mSyncedDb
                 .rawQuery(DAOSql.SqlSelectFullTable.TOC_ENTRY_TITLES, null)) {
             while (cursor.moveToNext()) {
                 rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,

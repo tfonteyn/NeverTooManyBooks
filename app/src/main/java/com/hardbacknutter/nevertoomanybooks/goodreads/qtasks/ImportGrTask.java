@@ -144,7 +144,7 @@ public class ImportGrTask
     @Override
     public boolean run(@NonNull final Context context,
                        @NonNull final QueueManager queueManager) {
-        try (final DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(TAG)) {
             // Load the Goodreads reviews
             final boolean ok = importReviews(context, db, queueManager);
 

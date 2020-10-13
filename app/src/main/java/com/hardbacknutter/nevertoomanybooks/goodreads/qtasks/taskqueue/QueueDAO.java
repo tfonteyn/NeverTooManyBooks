@@ -191,7 +191,7 @@ class QueueDAO
      * @return The id of the queue, 0 if no match
      */
     private long getQueueId(@NonNull final String name) {
-        try (final Cursor cursor = getDb().rawQuery(SQL_GET_QUEUE_ID, new String[]{name})) {
+        try (Cursor cursor = getDb().rawQuery(SQL_GET_QUEUE_ID, new String[]{name})) {
             if (cursor.moveToFirst()) {
                 return cursor.getInt(0);
             } else {
@@ -206,7 +206,7 @@ class QueueDAO
      * @param queueManager Owner of the created Queue objects
      */
     void initAllQueues(@NonNull final QueueManager queueManager) {
-        try (final Cursor cursor = getDb().rawQuery(SQL_FETCH_ALL_QUEUES, null)) {
+        try (Cursor cursor = getDb().rawQuery(SQL_FETCH_ALL_QUEUES, null)) {
             while (cursor.moveToNext()) {
                 // Create the Queue. It will register itself with its QueueManager.
                 new Queue(queueManager, cursor.getString(0));
@@ -470,7 +470,7 @@ class QueueDAO
      * @return {@code true} if there are active tasks
      */
     boolean hasActiveTasks(final long category) {
-        try (final SQLiteStatement stmt = getDb().compileStatement(SQL_COUNT_ACTIVE_TASKS)) {
+        try (SQLiteStatement stmt = getDb().compileStatement(SQL_COUNT_ACTIVE_TASKS)) {
             stmt.bindLong(1, category);
             return stmt.simpleQueryForLong() > 0;
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -486,7 +486,7 @@ class QueueDAO
      * @return {@code true} if it has events
      */
     private boolean hasEvents(final long taskId) {
-        try (final SQLiteStatement stmt = getDb().compileStatement(SQL_COUNT_EVENTS)) {
+        try (SQLiteStatement stmt = getDb().compileStatement(SQL_COUNT_EVENTS)) {
             stmt.bindLong(1, taskId);
             return stmt.simpleQueryForLong() > 0;
         } catch (@NonNull final SQLiteDoneException ignore) {
@@ -538,13 +538,12 @@ class QueueDAO
 
         db.beginTransaction();
         try {
-            try (final SQLiteStatement stmt = db
-                    .compileStatement(SQL_DELETE_OLD_EVENTS_WITH_TASKS)) {
+            try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_OLD_EVENTS_WITH_TASKS)) {
                 stmt.bindString(1, utcDateTime);
                 stmt.executeUpdateDelete();
             }
 
-            try (final SQLiteStatement stmt = db.compileStatement(SQL_DELETE_OLD_TASKS)) {
+            try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_OLD_TASKS)) {
                 stmt.bindString(1, utcDateTime);
                 stmt.executeUpdateDelete();
             }
@@ -566,7 +565,7 @@ class QueueDAO
 
         db.beginTransaction();
         try {
-            try (final SQLiteStatement stmt = db.compileStatement(SQL_DELETE_OLD_EVENTS)) {
+            try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_OLD_EVENTS)) {
                 stmt.bindString(1, utcDateTime);
                 stmt.executeUpdateDelete();
             }
@@ -590,11 +589,11 @@ class QueueDAO
         if (!db.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);
         }
-        try (final SQLiteStatement stmt = db.compileStatement(SQL_DELETE_ORPHANED_EVENTS)) {
+        try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_ORPHANED_EVENTS)) {
             stmt.executeUpdateDelete();
         }
 
-        try (final SQLiteStatement stmt = db.compileStatement(SQL_DELETE_COMPLETED_TASKS)) {
+        try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_COMPLETED_TASKS)) {
             stmt.executeUpdateDelete();
         }
     }

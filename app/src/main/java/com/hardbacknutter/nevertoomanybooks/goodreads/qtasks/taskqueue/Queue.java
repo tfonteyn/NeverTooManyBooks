@@ -94,7 +94,7 @@ class Queue
      */
     public void run() {
         final Context context = AppLocale.getInstance().apply(App.getTaskContext());
-        try (final QueueDAO queueDAO = new QueueDAO(context)) {
+        try (QueueDAO queueDAO = new QueueDAO(context)) {
             while (!mTerminate) {
                 final ScheduledTask scheduledTask;
                 final TQTask task;

@@ -121,7 +121,7 @@ public class GoodreadsWork {
     private static byte[] getBytes(@NonNull final Context context,
                                    @NonNull final String url) {
 
-        try (final TerminatorConnection con = new TerminatorConnection(
+        try (TerminatorConnection con = new TerminatorConnection(
                 context, url,
                 GoodreadsManager.CONNECTION_TIMEOUT_MS,
                 GoodreadsManager.READ_TIMEOUT_MS,

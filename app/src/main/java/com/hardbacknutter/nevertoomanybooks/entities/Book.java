@@ -273,7 +273,7 @@ public class Book
                      @NonNull final DAO db) {
         SanityCheck.requireValue(bookId, "bookId");
 
-        try (final Cursor bookCursor = db.fetchBookById(bookId)) {
+        try (Cursor bookCursor = db.fetchBookById(bookId)) {
             if (bookCursor.moveToFirst()) {
                 load(bookId, bookCursor, db);
             }

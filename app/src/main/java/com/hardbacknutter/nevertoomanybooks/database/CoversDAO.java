@@ -263,7 +263,7 @@ public final class CoversDAO
                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
                     final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
 
-                    try (final Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{
+                    try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{
                             cacheId, fileLastModified})) {
                         if (cursor.moveToFirst()) {
                             final byte[] bytes = cursor.getBlob(0);
@@ -573,7 +573,7 @@ public final class CoversDAO
 
             RUNNING_TASKS.incrementAndGet();
 
-            try (final CoversDAO coversDBAdapter = getInstance(context)) {
+            try (CoversDAO coversDBAdapter = getInstance(context)) {
                 coversDBAdapter.saveFile(mUuid, mIndex, mBitmap, mWidth, mHeight);
             }
 

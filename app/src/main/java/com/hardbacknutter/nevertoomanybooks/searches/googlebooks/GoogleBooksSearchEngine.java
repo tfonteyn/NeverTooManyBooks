@@ -146,7 +146,7 @@ public class GoogleBooksSearchEngine
 
             // get the booklist, can return multiple books ('entry' elements)
             final GoogleBooksListHandler listHandler = new GoogleBooksListHandler();
-            try (final TerminatorConnection con = createConnection(url, true)) {
+            try (TerminatorConnection con = createConnection(url, true)) {
                 parser.parse(con.getInputStream(), listHandler);
             }
 
@@ -163,7 +163,7 @@ public class GoogleBooksSearchEngine
                 // only using the first one found, maybe future enhancement?
                 final String oneBookUrl = urlList.get(0);
 
-                try (final TerminatorConnection con = createConnection(oneBookUrl, true)) {
+                try (TerminatorConnection con = createConnection(oneBookUrl, true)) {
                     parser.parse(con.getInputStream(), handler);
                 }
 

@@ -312,7 +312,7 @@ final class BooklistBuilder {
 
         final long t0 = System.nanoTime();
 
-        try (final SynchronizedStatement stmt = syncedDb.compileStatement(mSqlForInitialInsert)) {
+        try (SynchronizedStatement stmt = syncedDb.compileStatement(mSqlForInitialInsert)) {
             initialInsertCount = stmt.executeUpdateDelete();
         }
         final long t1_insert = System.nanoTime();

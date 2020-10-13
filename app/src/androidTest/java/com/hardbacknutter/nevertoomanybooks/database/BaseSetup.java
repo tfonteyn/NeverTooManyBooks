@@ -87,7 +87,7 @@ public abstract class BaseSetup {
             throws DAO.DaoWriteException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (final DAO db = new DAO(context, "setup")) {
+        try (DAO db = new DAO(context, "setup")) {
 
             Constants.deleteTocs(db);
             Constants.deleteBooks(db);

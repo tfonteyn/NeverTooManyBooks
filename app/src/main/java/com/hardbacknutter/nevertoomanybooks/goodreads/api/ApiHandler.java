@@ -194,9 +194,9 @@ public abstract class ApiHandler {
 //            Log.d(TAG,"SIGN|oauth_query.equals(native_query)= " + oauth_query.equals(query));
 
             if (query != null) {
-                try (final OutputStream os = request.getOutputStream();
-                     final Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-                     final Writer writer = new BufferedWriter(osw)) {
+                try (OutputStream os = request.getOutputStream();
+                     Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                     Writer writer = new BufferedWriter(osw)) {
                     writer.write(query);
                     writer.flush();
                 }
@@ -272,7 +272,7 @@ public abstract class ApiHandler {
                                @Nullable final DefaultHandler requestHandler)
             throws IOException {
 
-        try (final InputStream is = request.getInputStream()) {
+        try (InputStream is = request.getInputStream()) {
             final SAXParserFactory factory = SAXParserFactory.newInstance();
             final SAXParser parser = factory.newSAXParser();
             parser.parse(is, requestHandler);

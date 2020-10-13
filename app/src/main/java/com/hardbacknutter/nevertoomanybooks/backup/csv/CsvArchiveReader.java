@@ -68,7 +68,7 @@ public class CsvArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (final Importer importer = new CsvImporter(context, mHelper.getOptions())) {
+        try (Importer importer = new CsvImporter(context, mHelper.getOptions())) {
             final ReaderEntity entity = new CsvReaderEntity(is);
             return importer.read(context, entity, progressListener);
         } finally {

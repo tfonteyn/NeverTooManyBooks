@@ -204,7 +204,7 @@ public class StylePickerDialogFragment
     private void loadStyles() {
         final Context context = getContext();
 
-        try (final DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(TAG)) {
             //noinspection ConstantConditions
             mBooklistStyles = BooklistStyle.getStyles(context, db, mShowAllStyles);
         }

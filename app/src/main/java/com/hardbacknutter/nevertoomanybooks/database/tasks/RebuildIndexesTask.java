@@ -60,7 +60,7 @@ public class RebuildIndexesTask
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
-        try (final DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(TAG)) {
             db.getDBHelper().recreateIndices(db.getSyncDb());
             return true;
 

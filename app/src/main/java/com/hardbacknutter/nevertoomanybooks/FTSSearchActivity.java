@@ -340,12 +340,12 @@ public class FTSSearchActivity
                 viewToModel();
 
                 int count = 0;
-                try (final Cursor cursor = mDb.fetchSearchSuggestionsAdv(mAuthorSearchText,
-                                                                         mTitleSearchText,
-                                                                         mSeriesTitleSearchText,
-                                                                         mPublisherNameSearchText,
-                                                                         mKeywordsSearchText,
-                                                                         20)) {
+                try (Cursor cursor = mDb.fetchSearchSuggestionsAdv(mAuthorSearchText,
+                                                                   mTitleSearchText,
+                                                                   mSeriesTitleSearchText,
+                                                                   mPublisherNameSearchText,
+                                                                   mKeywordsSearchText,
+                                                                   20)) {
                     // Null return means searchFts thought the parameters were effectively blank.
                     if (cursor != null) {
                         count = cursor.getCount();

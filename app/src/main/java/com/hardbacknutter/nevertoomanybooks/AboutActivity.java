@@ -131,7 +131,7 @@ public class AboutActivity
                 .setMessage(R.string.confirm_clear_all_data)
                 .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_delete, (d, w) -> {
-                    try (final DAO db = new DAO(TAG)) {
+                    try (DAO db = new DAO(TAG)) {
                         if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
                             AppDir.deleteAllContent(this);
                             setResult(RESULT_ALL_DATA_DESTROYED);

@@ -194,8 +194,8 @@ public final class Logger {
 
         final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
         //noinspection ImplicitDefaultCharsetUsage
-        try (final FileWriter fw = new FileWriter(logFile, true);
-             final Writer out = new BufferedWriter(fw)) {
+        try (FileWriter fw = new FileWriter(logFile, true);
+             Writer out = new BufferedWriter(fw)) {
             out.write(fullMsg);
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger

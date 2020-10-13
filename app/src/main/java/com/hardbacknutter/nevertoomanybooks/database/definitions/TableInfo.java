@@ -99,7 +99,7 @@ public class TableInfo {
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
 
         final Map<String, ColumnInfo> allColumns = new HashMap<>();
-        try (final Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {
+        try (Cursor colCsr = db.rawQuery("PRAGMA table_info(" + tableName + ')', null)) {
             while (colCsr.moveToNext()) {
                 final ColumnInfo col = new ColumnInfo(colCsr);
                 allColumns.put(col.name.toLowerCase(systemLocale), col);
