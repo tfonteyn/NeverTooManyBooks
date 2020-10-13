@@ -235,7 +235,7 @@ public class ZipArchiveReader
         public long getLastModifiedEpochMilli() {
             final long time = mEntry.getTime();
             if (time != -1) {
-                return mEntry.getTime();
+                return time;
             } else {
                 // just pretend
                 return Instant.now().toEpochMilli();
