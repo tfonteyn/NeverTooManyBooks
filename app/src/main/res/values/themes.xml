@@ -43,7 +43,6 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!-- ======================================= -->
         <!-- Material color attributes (light theme) -->
         <!-- ======================================= -->
-        <item name="android:statusBarColor">@color/day_primary_variant</item>
 
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorPrimaryVariant">@color/day_primary_variant</item>
@@ -79,6 +78,8 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendar</item>
 
@@ -89,7 +90,6 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
     <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
-        <item name="android:statusBarColor">@color/day_primary_variant</item>
 
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorPrimaryVariant">@color/day_primary_variant</item>
@@ -102,6 +102,8 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
         <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
@@ -110,8 +112,6 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
     <!-- custom ThemeOverlay used by the "materialAlertDialogTheme" attribute. -->
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
-        <item name="android:statusBarColor">@color/day_primary_variant</item>
-
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorPrimaryVariant">@color/day_primary_variant</item>
         <item name="colorOnPrimary">@color/black</item>
@@ -124,6 +124,9 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.ThemeOverlay.App.MaterialAlertDialog"
         parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
         <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
