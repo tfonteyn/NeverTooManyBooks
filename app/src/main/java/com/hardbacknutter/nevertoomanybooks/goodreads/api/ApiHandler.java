@@ -100,7 +100,7 @@ public abstract class ApiHandler {
      * @throws IOException          on other failures
      */
     protected void executeGet(@NonNull final String url,
-                              @SuppressWarnings({"SameParameterValue", "unused"})
+                              @SuppressWarnings("SameParameterValue")
                               @Nullable final Map<String, String> parameterMap,
                               @SuppressWarnings("SameParameterValue")
                               final boolean requiresSignature,

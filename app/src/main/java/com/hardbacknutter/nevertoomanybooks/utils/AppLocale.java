@@ -339,7 +339,6 @@ public class AppLocale {
      *
      * @param listener to add
      */
-    @SuppressWarnings({"unused", "WeakerAccess"})
     public void registerOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
         synchronized (ON_LOCALE_CHANGED_LISTENERS) {
