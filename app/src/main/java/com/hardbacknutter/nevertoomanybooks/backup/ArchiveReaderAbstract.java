@@ -58,6 +58,8 @@ public abstract class ArchiveReaderAbstract
 
     /** Log tag. */
     private static final String TAG = "ArchiveReaderAbstract";
+    /** The amount of bits we'll shift the last-modified time. (== divide by 65536) */
+    private static final int FILE_LM_PRECISION = 16;
 
     /** Database Access. */
     @NonNull
@@ -143,7 +145,7 @@ public abstract class ArchiveReaderAbstract
                 progressListener.publishProgressStep(1, mProcessBooklistStyles);
                 final ReaderEntity entity = seek(ArchiveContainerEntry.BooklistStylesXml);
                 if (entity != null) {
-                    try (final Importer importer = new XmlImporter(context, mHelper.getOptions())) {
+                    try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
                     entitiesRead |= Options.STYLES;
@@ -157,7 +159,7 @@ public abstract class ArchiveReaderAbstract
                 progressListener.publishProgressStep(1, mProcessPreferences);
                 final ReaderEntity entity = seek(ArchiveContainerEntry.PreferencesXml);
                 if (entity != null) {
-                    try (final Importer importer = new XmlImporter(context, mHelper.getOptions())) {
+                    try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
                     entitiesRead |= Options.PREFS;
@@ -174,24 +176,22 @@ public abstract class ArchiveReaderAbstract
                 switch (entity.getType()) {
                     case Cover: {
                         if (readCovers) {
-                            if (!readCover(context, entity)) {
-                                mResults.coversSkipped++;
-                            }
+                            readCover(context, entity);
+                            mResults.coversProcessed++;
                             final String msg = String.format(mProgressMessage,
                                                              mCoversText,
                                                              mResults.coversCreated,
                                                              mResults.coversUpdated,
                                                              mResults.coversSkipped);
                             progressListener.publishProgressStep(1, msg);
-                            mResults.coversProcessed++;
                             // entitiesRead is set when all done
                         }
                         break;
                     }
                     case BooksCsv: {
                         if (readBooks) {
-                            try (final Importer importer = new CsvImporter(context,
-                                                                           mHelper.getOptions())) {
+                            try (Importer importer = new CsvImporter(context,
+                                                                     mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
                             entitiesRead |= Options.BOOKS;
@@ -199,13 +199,14 @@ public abstract class ArchiveReaderAbstract
                         break;
                     }
                     case BooksXml: {
-                        if (readBooks) {
-                            try (final Importer importer = new XmlImporter(context,
-                                                                           mHelper.getOptions())) {
-                                mResults.add(importer.read(context, entity, progressListener));
-                            }
-                            entitiesRead |= Options.BOOKS;
-                        }
+//                        // ENHANCE: XmlImporter does not currently support importing BooksXml
+//                        if (readBooks) {
+//                            try (Importer importer = new XmlImporter(context,
+//                                                                     mHelper.getOptions())) {
+//                                mResults.add(importer.read(context, entity, progressListener));
+//                            }
+//                            entitiesRead |= Options.BOOKS;
+//                        }
                         break;
                     }
                     case PreferencesXml: {
@@ -213,8 +214,8 @@ public abstract class ArchiveReaderAbstract
                         // Leaving the code as we might support multiple entries in the future.
                         if (readPrefs) {
                             progressListener.publishProgressStep(1, mProcessPreferences);
-                            try (final Importer importer = new XmlImporter(context,
-                                                                           mHelper.getOptions())) {
+                            try (Importer importer = new XmlImporter(context,
+                                                                     mHelper.getOptions())) {
                                 importer.read(context, entity, progressListener);
                             }
                             entitiesRead |= Options.PREFS;
@@ -227,8 +228,8 @@ public abstract class ArchiveReaderAbstract
                         // Leaving the code as we might support multiple entries in the future.
                         if (readStyles) {
                             progressListener.publishProgressStep(1, mProcessBooklistStyles);
-                            try (final Importer importer = new XmlImporter(context,
-                                                                           mHelper.getOptions())) {
+                            try (Importer importer = new XmlImporter(context,
+                                                                     mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
                             entitiesRead |= Options.STYLES;
@@ -279,45 +280,40 @@ public abstract class ArchiveReaderAbstract
      *
      * @param context Current context
      * @param cover   to import
-     *
-     * @return {@code true} if an import was done
      */
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean readCover(@NonNull final Context context,
-                              @NonNull final ReaderEntity cover) {
-        try {
-            final long coverDate = cover.getLastModifiedEpochMilli();
-            final boolean exists;
+    private void readCover(@NonNull final Context context,
+                           @NonNull final ReaderEntity cover) {
 
+        try {
             // see if we have this file already
-            File file = AppDir.Covers.getFile(context, cover.getName());
-            exists = file.exists();
-            if (mHelper.isOptionSet(Options.IS_SYNC)) {
-                if (exists) {
-                    if (file.lastModified() > coverDate) {
-                        return false;
-                    }
+            File dstFile = AppDir.Covers.getFile(context, cover.getName());
+            final boolean exists = dstFile.exists();
+
+            if (mHelper.isOptionSet(Options.IS_SYNC) && exists) {
+                // shift 16 bits to get to +- 1 minute precision.
+                // Using pure milliseconds will create far to many false positives
+                final long importFileDate = cover.getLastModifiedEpochMilli() >> FILE_LM_PRECISION;
+                final long existingFileDate = dstFile.lastModified() >> FILE_LM_PRECISION;
+                if (existingFileDate > importFileDate) {
+                    mResults.coversSkipped++;
+                    return;
                 }
             }
 
-            file = FileUtils.copyInputStream(context, cover.getInputStream(),
-                                             AppDir.Covers.getFile(context, cover.getName()));
+            dstFile = FileUtils.copyInputStream(context, cover.getInputStream(), dstFile);
 
-            if (ImageUtils.isAcceptableSize(file)) {
+            if (ImageUtils.isAcceptableSize(dstFile)) {
                 //noinspection ResultOfMethodCallIgnored
-                file.setLastModified(cover.getLastModifiedEpochMilli());
+                dstFile.setLastModified(cover.getLastModifiedEpochMilli());
+                if (exists) {
+                    mResults.coversUpdated++;
+                } else {
+                    mResults.coversCreated++;
+                }
             }
-
-            if (exists) {
-                mResults.coversUpdated++;
-            } else {
-                mResults.coversCreated++;
-            }
-            return true;
-
         } catch (@NonNull final IOException ignore) {
             // we don't want to quit importing just because one fails.
-            return false;
+            mResults.coversSkipped++;
         }
     }
 
