@@ -71,7 +71,7 @@ public class PreferredStylesViewModel
                      @NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO(TAG);
-            mList = new ArrayList<>(BooklistStyle.getStyles(context, mDb, true).values());
+            mList = BooklistStyle.getStyles(context, mDb, true);
 
             mInitialStyleUuid = Objects.requireNonNull(
                     args.getString(BooklistStyle.BKEY_STYLE_UUID), "mInitialStyleUuid");
