@@ -73,7 +73,7 @@ public class MaterialSpinnerAccessor
                                    @ArrayRes final int arrayResId) {
         mAdapter = ArrayAdapter.createFromResource(context, arrayResId,
                                                    R.layout.dropdown_menu_popup_item);
-        SanityCheck.requireValue(mAdapter.getCount(), "mAdapter.getCount()");
+        SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");
     }
 
     @Override

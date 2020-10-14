@@ -29,9 +29,18 @@ public class SanityCheck {
 
 
     @SuppressWarnings("UnusedReturnValue")
-    public static long requireValue(final long value,
-                                    @Nullable final String message) {
+    public static long requirePositiveValue(final long value,
+                                            @Nullable final String message) {
         if (value < 1) {
+            throw new MissingValueException(message);
+        }
+        return value;
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    public static long requireNonZero(final long value,
+                                      @Nullable final String message) {
+        if (value == 0) {
             throw new MissingValueException(message);
         }
         return value;

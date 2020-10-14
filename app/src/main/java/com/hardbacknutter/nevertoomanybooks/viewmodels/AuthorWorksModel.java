@@ -81,7 +81,7 @@ public class AuthorWorksModel
             mDb = new DAO(TAG);
 
             final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
-            SanityCheck.requireValue(authorId, "authorId");
+            SanityCheck.requirePositiveValue(authorId, "authorId");
 
             mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId), String.valueOf(authorId));
 
