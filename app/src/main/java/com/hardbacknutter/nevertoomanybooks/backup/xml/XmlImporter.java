@@ -72,9 +72,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.PreferredStylesMenu;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -157,6 +157,7 @@ public class XmlImporter
                     final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
                     final StylesReader stylesReader = new StylesReader(context, mDb);
                     fromXml(in, stylesReader);
+                    // URGENT:  StyleDAO.updateMenuOrder(context, mDb, );
                     mResults.styles += stylesReader.getStylesRead();
                 }
                 break;
@@ -184,7 +185,9 @@ public class XmlImporter
             case Cover:
             case Database:
             case LegacyPreferences:
+                // BookCatalogue format. No longer supported.
             case LegacyBooklistStyles:
+                // BookCatalogue format. No longer supported.
             case Unknown:
             default:
                 // not implemented.
@@ -218,21 +221,18 @@ public class XmlImporter
     /**
      * Internal routine to update the passed EntityAccessor from an XML file.
      *
-     * @param reader   to read from
+     * @param in       source to read from
      * @param accessor the EntityReader to convert XML to the object
      *
      * @throws IOException on failure
      */
-    private void fromXml(@NonNull final Reader reader,
+    private void fromXml(@NonNull final Reader in,
                          @NonNull final EntityReader<String> accessor)
             throws IOException {
 
         // we need an uber-root to hang our tree on.
         final XmlFilter rootFilter = new XmlFilter("");
 
-        // The filter are build for *all* entities we can read here.
-        // Allow reading BookCatalogue archive data.
-        buildLegacyFilters(rootFilter, accessor);
         // Current version filters
         buildFilters(rootFilter, accessor);
 
@@ -241,7 +241,7 @@ public class XmlImporter
 
         try {
             final SAXParser parser = factory.newSAXParser();
-            final InputSource is = new InputSource(reader);
+            final InputSource is = new InputSource(in);
             parser.parse(is, handler);
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -486,70 +486,6 @@ public class XmlImporter
                  .setStartAction(startElementInCollection);
     }
 
-    /**
-     * Creates an XmlFilter that can read BookCatalogue Info and Preferences XML format.
-     * <p>
-     * This legacy format was flat, had a fixed tag name ('item') and used an attribute 'type'.
-     * indicating int,string,...
-     */
-    private void buildLegacyFilters(@NonNull final XmlFilter rootFilter,
-                                    @NonNull final EntityReader<String> accessor) {
-
-        XmlFilter.buildFilter(rootFilter, "collection", "item")
-                 .setStartAction(elementContext -> {
-
-                     mTag = new TagInfo(elementContext);
-
-                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Log.d(TAG, "buildLegacyFilters|StartAction"
-                                    + "|localName=" + elementContext.getLocalName()
-                                    + "|tag=" + mTag);
-                     }
-                 })
-                 .setEndAction(elementContext -> {
-                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {
-                         Log.d(TAG, "buildLegacyFilters|EndAction"
-                                    + "|localName=" + elementContext.getLocalName()
-                                    + "|tag=" + mTag);
-                     }
-                     try {
-                         final String body = elementContext.getBody();
-                         switch (mTag.type) {
-                             case "Int":
-                                 accessor.putInt(mTag.name, Integer.parseInt(body));
-                                 break;
-                             case "Long":
-                                 accessor.putLong(mTag.name, Long.parseLong(body));
-                                 break;
-                             case "Flt":
-                                 // no Locales
-                                 accessor.putFloat(mTag.name, Float.parseFloat(body));
-                                 break;
-                             case "Dbl":
-                                 // no Locales
-                                 accessor.putDouble(mTag.name, Double.parseDouble(body));
-                                 break;
-                             case "Str":
-                                 accessor.putString(mTag.name, body);
-                                 break;
-                             case "Bool":
-                                 accessor.putBoolean(mTag.name, Boolean.parseBoolean(body));
-                                 break;
-                             case "Serial":
-                                 accessor.putSerializable(mTag.name,
-                                                          Base64.decode(body, Base64.DEFAULT));
-                                 break;
-
-                             default:
-                                 throw new IllegalArgumentException(mTag.type);
-                         }
-
-                     } catch (@NonNull final NumberFormatException e) {
-                         throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_ENTITY + mTag, e);
-                     }
-                 });
-    }
-
     @Override
     public void close() {
         mDb.purge();
@@ -643,54 +579,57 @@ public class XmlImporter
     /**
      * Value class to preserve data while parsing XML input.
      */
-    static class TagInfo {
+    public static class TagInfo {
 
-        /** attribute with the key into the collection. */
-        @NonNull
-        final String name;
         /**
-         * value attribute (e.g. int,boolean,...),
+         * attribute with the key into the collection.
+         * For convenience, also part of {@link #attrs}.
+         */
+        @NonNull
+        public final String name;
+        /**
+         * optional. {@code 0} if none.
+         * For convenience, also part of {@link #attrs}.
+         */
+        public final int id;
+        /** The type of the element as set by the tag itself. */
+        @NonNull
+        final String type;
+        /** All attributes on this tag. */
+        final Attributes attrs;
+        /**
+         * optional value attribute (e.g. int,boolean,...),
          * not used when the tag body is used (String,..).
          * <p>
-         * optional.
+         * <p>
+         * For convenience, also part of {@link #attrs}.
          */
         @Nullable
         final String value;
-        /**
-         * - current use: the type of the element as set by the tag itself.
-         * - BookCatalogue backward compatibility: the type attribute of a generic 'item' tag.
-         */
-        @NonNull
-        String type;
-        /** optional. 0 if none. */
-        int id;
+
 
         /**
          * Constructor.
-         * <p>
-         * <strong>Important:</strong> a tag called "item" will trigger BookCatalogue parsing:
-         * the 'type' attribute will be read and be used as the tag-name.
          *
          * @param elementContext of the XML tag
          */
         TagInfo(@NonNull final ElementContext elementContext) {
-            final Attributes attrs = elementContext.getAttributes();
-
             type = elementContext.getLocalName();
-            // BookCatalogue used a fixed tag "item", with the type as an attribute
-            if ("item".equals(type)) {
-                type = attrs.getValue("type");
-            }
+            attrs = elementContext.getAttributes();
+
             name = attrs.getValue(XmlUtils.ATTR_NAME);
+            value = attrs.getValue(XmlUtils.ATTR_VALUE);
+
+            int tmpId = 0;
             final String idStr = attrs.getValue(XmlUtils.ATTR_ID);
             if (idStr != null) {
                 try {
-                    id = Integer.parseInt(idStr);
+                    tmpId = Integer.parseInt(idStr);
                 } catch (@NonNull final NumberFormatException e) {
                     Logger.error(App.getAppContext(), TAG, e, "attr=" + name, "idStr=" + idStr);
                 }
             }
-            value = attrs.getValue(XmlUtils.ATTR_VALUE);
+            id = tmpId;
         }
 
         @Override
@@ -698,6 +637,7 @@ public class XmlImporter
         public String toString() {
             return "TagInfo{"
                    + "name=`" + name + '`'
+                   + ", attrs=" + attrs
                    + ", type=`" + type + '`'
                    + ", id=" + id
                    + ", value=`" + value + '`'
@@ -931,8 +871,11 @@ public class XmlImporter
                                  @NonNull final TagInfo tag) {
             SanityCheck.requireValue(tag.name, "tag.name");
 
+            final boolean isUserDefined = !ParseUtils.parseBoolean(
+                    tag.attrs.getValue(DBDefinitions.KEY_STYLE_IS_BUILTIN), true);
+
             // create a new Style object. This will not have any groups assigned to it...
-            mStyle = new BooklistStyle(mContext, tag.id, tag.name);
+            mStyle = new BooklistStyle(mContext, tag.id, tag.name, isUserDefined);
             //... and hence, the Style Preferences won't have any group Preferences either.
             mStylePrefs = mStyle.getPreferences(true);
             // So loop all groups, and get their Preferences.
@@ -941,6 +884,25 @@ public class XmlImporter
             for (final BooklistGroup group : BooklistGroup.getAllGroups(mContext, mStyle)) {
                 mStylePrefs.putAll(group.getPreferences());
             }
+
+            // process database stored style settings now.
+            boolean isPreferred;
+            try {
+                isPreferred = ParseUtils.parseBoolean(
+                        tag.attrs.getValue(DBDefinitions.KEY_STYLE_IS_PREFERRED), true);
+            } catch (@NonNull final NumberFormatException ignore) {
+                isPreferred = false;
+            }
+            mStyle.setPreferred(isPreferred);
+
+            int menuPosition;
+            try {
+                menuPosition = Integer.parseInt(
+                        tag.attrs.getValue(DBDefinitions.KEY_STYLE_MENU_POSITION));
+            } catch (@NonNull final NumberFormatException ignore) {
+                menuPosition = BooklistStyle.MENU_POSITION_NOT_PREFERRED;
+            }
+            mStyle.setMenuPosition(menuPosition);
         }
 
         /**
@@ -954,12 +916,24 @@ public class XmlImporter
             for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
                 mStyle.updatePreferences(mContext, group.getPreferences());
             }
-            // add to the menu of preferred styles if needed.
-            if (mStyle.isPreferred(mContext)) {
-                PreferredStylesMenu.add(mContext, mStyle);
+
+
+            // migrate obsolete entries
+            if (mStylePrefs.containsKey(BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED)) {
+                // if the style is currently not-preferred,
+                if (!mStyle.isPreferred()) {
+                    // use the obsoleted preference entry to set the state
+                    final PPref<?> p = mStylePrefs.get(
+                            BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED);
+                    final Object o = p.getValue(mContext);
+                    if (o instanceof Boolean) {
+                        mStyle.setPreferred((boolean) o);
+                    }
+                }
+                mStylePrefs.remove(BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED);
             }
 
-            // the prefs are written on the fly, but we still need the db entry saved.
+            // the prefs are written on the fly, but we still need the db entries saved.
             StyleDAO.updateOrInsert(mDb, mStyle);
 
             mStylesRead++;

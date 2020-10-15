@@ -71,24 +71,20 @@ public class StyleFragment
 
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
-        // Cover on LIST
-        final Preference thumbScale = findPreference(
-                ListScreenBookFields.PK_COVER_SCALE);
+        // Cover on LIST screen
+        final Preference thumbScale = findPreference(ListScreenBookFields.PK_COVER_SCALE);
         if (thumbScale != null) {
             thumbScale.setDependency(ListScreenBookFields.PK_COVERS);
         }
 
         // Covers on DETAIL screen
         // Setting cover 0 to false -> disable cover 1; also see onSharedPreferenceChanged
-        final Preference cover = findPreference(
-                DetailScreenBookFields.PK_COVER[1]);
+        final Preference cover = findPreference(DetailScreenBookFields.PK_COVER[1]);
         if (cover != null) {
-            cover.setDependency(
-                    DetailScreenBookFields.PK_COVER[0]);
+            cover.setDependency(DetailScreenBookFields.PK_COVER[0]);
         }
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_booklist_style_properties, null);
         }
     }
@@ -117,7 +113,6 @@ public class StyleFragment
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
-        //noinspection ConstantConditions
         final BooklistStyle style = new BooklistStyle(getContext());
         final Groups styleGroups = mStyle.getGroups();
 
@@ -141,10 +136,7 @@ public class StyleFragment
         // Setting cover 0 to false -> set cover 1 to false as well
         if (DetailScreenBookFields.PK_COVER[0].equals(key)
             && !preferences.getBoolean(key, false)) {
-            final SwitchPreference cover =
-                    findPreference(
-                            DetailScreenBookFields.PK_COVER[1]);
-            //noinspection ConstantConditions
+            final SwitchPreference cover = findPreference(DetailScreenBookFields.PK_COVER[1]);
             cover.setChecked(false);
         }
 
@@ -163,7 +155,6 @@ public class StyleFragment
             case TextScale.PK_TEXT_SCALE: {
                 final Preference preference = findPreference(key);
                 if (preference != null) {
-                    //noinspection ConstantConditions
                     preference.setSummary(mStyle.getTextScale()
                                                 .getFontScaleSummaryText(getContext()));
                 }
@@ -173,7 +164,6 @@ public class StyleFragment
             case ListScreenBookFields.PK_COVER_SCALE: {
                 final Preference preference = findPreference(key);
                 if (preference != null) {
-                    //noinspection ConstantConditions
                     preference.setSummary(mStyle.getListScreenBookFields()
                                                 .getCoverScaleSummaryText(getContext()));
                 }
@@ -184,7 +174,6 @@ public class StyleFragment
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     preference.setMax(mStyle.getGroups().size());
-                    //noinspection ConstantConditions
                     preference.setSummary(String.valueOf(mStyle.getTopLevel(getContext())));
                 }
                 break;
@@ -194,7 +183,6 @@ public class StyleFragment
                 // the 'groups' in use.
                 final Preference preference = findPreference(key);
                 if (preference != null) {
-                    //noinspection ConstantConditions
                     preference.setSummary(mStyle.getGroups().getSummaryText(getContext()));
                 }
                 break;
@@ -205,7 +193,6 @@ public class StyleFragment
                 // the 'extra' fields in use.
                 final Preference preference = findPreference(PSK_STYLE_SHOW_DETAILS);
                 if (preference != null) {
-                    //noinspection ConstantConditions
                     preference.setSummary(mStyle.getListScreenBookFields()
                                                 .getSummaryText(getContext()));
                 }
@@ -215,7 +202,6 @@ public class StyleFragment
                 // the 'filters' in use (i.e. the actives ones)
                 final Preference preference = findPreference(key);
                 if (preference != null) {
-                    //noinspection ConstantConditions
                     preference.setSummary(mStyle.getFilters().getSummaryText(getContext(), false));
                 }
                 break;

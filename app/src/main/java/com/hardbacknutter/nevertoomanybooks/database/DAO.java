@@ -45,11 +45,9 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -122,12 +120,14 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_PREFERRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_TYPE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
@@ -2067,17 +2067,36 @@ public class DAO
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
-    public long insert(@NonNull final BooklistStyle /* in/out */ style) {
+    public long insert(@NonNull final BooklistStyle style) {
         try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlInsert.BOOKLIST_STYLE)) {
             stmt.bindString(1, style.getUuid());
-            stmt.bindBoolean(2, !style.isUserDefined());
+            stmt.bindBoolean(2, style.isBuiltin());
+            stmt.bindBoolean(3, style.isPreferred());
+            stmt.bindLong(4, style.getMenuPosition());
             final long iId = stmt.executeInsert();
             if (iId > 0) {
                 style.setId(iId);
             }
             return iId;
         }
+    }
+
+    /**
+     * Update a {@link BooklistStyle}.
+     *
+     * @param style to update
+     *
+     * @return {@code true} for success.
+     */
+    public boolean update(@NonNull final BooklistStyle style) {
+
+        final ContentValues cv = new ContentValues();
+        cv.put(KEY_STYLE_IS_PREFERRED, style.isPreferred());
+        cv.put(KEY_STYLE_MENU_POSITION, style.getMenuPosition());
+
+        return 0 < mSyncedDb.update(TBL_BOOKLIST_STYLES.getName(), cv, KEY_PK_ID + "=?",
+                                    new String[]{String.valueOf(style.getId())});
     }
 
     /**
@@ -3197,7 +3216,7 @@ public class DAO
      */
     @Nullable
     private String getBookUuid(final long bookId) {
-        SanityCheck.requireValue(bookId, "bookId");
+        SanityCheck.requirePositiveValue(bookId, "bookId");
 
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_GET_BOOK_UUID, () -> DAOSql.SqlGet.BOOK_UUID_BY_ID);
@@ -3890,35 +3909,25 @@ public class DAO
         }
     }
 
-
     /**
-     * Get a list of all user defined {@link BooklistStyle}, arranged in a lookup map.
-     * <p>
-     * This is a slow call, as it needs to create a new {@link BooklistStyle} for each row.
+     * Get a cursor over the Styles table.
      *
-     * @param context Current context
+     * @param userDefined {@code true} to get the User defined styles,
+     *                    {@code false} to get the builtin styles
      *
-     * @return ordered map, with the uuid as key
+     * @return cursor
      */
     @NonNull
-    public Map<String, BooklistStyle> getUserStyles(@NonNull final Context context) {
-        final Map<String, BooklistStyle> list = new LinkedHashMap<>();
+    public Cursor fetchStyles(final boolean userDefined) {
         final String sql = DAOSql.SqlSelectFullTable.BOOKLIST_STYLES
-                           + " WHERE " + KEY_STYLE_IS_BUILTIN + "=0"
+                           + " WHERE " + KEY_STYLE_IS_BUILTIN + "=?"
                            // We order by the id, i.e. in the order the styles were created.
                            // This is only done to get a reproducible and consistent order.
                            + " ORDER BY " + KEY_PK_ID;
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
-            final DataHolder rowData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
-                final long id = rowData.getLong(KEY_PK_ID);
-                final String uuid = rowData.getString(KEY_UUID);
-                list.put(uuid, new BooklistStyle(context, id, uuid));
-            }
-        }
-        return list;
+        return mSyncedDb.rawQuery(sql, new String[]{String.valueOf(userDefined ? 0 : 1)});
     }
+
 
     /**
      * Get the id of a {@link BooklistStyle} with matching UUID.

@@ -20,9 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv;
 
 import android.content.Context;
-import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -35,11 +33,11 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 import static org.junit.Assert.assertEquals;
@@ -63,7 +61,7 @@ public class CsvExporterTest {
         final int entities = Options.BOOKS;
         //final int entities = Options.BOOKS | Options.COVERS;
         try (Exporter exporter = new CsvExporter(context, entities, null)) {
-            results = exporter.write(context, file, new MyProgressListener());
+            results = exporter.write(context, file, new TestProgressListener(TAG));
         }
 
         final long exportCount;
@@ -81,43 +79,4 @@ public class CsvExporterTest {
         assertEquals(results.getBookCount(), exportCount);
     }
 
-    private static class MyProgressListener
-            implements ProgressListener {
-
-        private int mProgressCurrentPos;
-        private int mProgressMaxPos;
-
-        @Override
-        public void publishProgressStep(final int delta,
-                                        @Nullable final String message) {
-            mProgressCurrentPos += delta;
-
-            Log.d(TAG + "|publishProgressStep",
-                  "mProgressCurrentPos=" + mProgressCurrentPos
-                  + "|delta=" + delta
-                  + "|message=" + message);
-
-        }
-
-        @Override
-        public boolean isCancelled() {
-            return false;
-        }
-
-        @Override
-        public void setIndeterminate(@Nullable final Boolean indeterminate) {
-            Log.d(TAG + "|setProgressIsIndeterminate", "" + indeterminate);
-        }
-
-        @Override
-        public int getMaxPos() {
-            return mProgressMaxPos;
-        }
-
-        @Override
-        public void setMaxPos(final int maxPosition) {
-            Log.d(TAG + "|setProgressMaxPos", "" + maxPosition);
-            mProgressMaxPos = maxPosition;
-        }
-    }
 }

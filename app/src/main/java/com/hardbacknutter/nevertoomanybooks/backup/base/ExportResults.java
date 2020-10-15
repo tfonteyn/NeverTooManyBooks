@@ -191,7 +191,7 @@ public class ExportResults
     @NonNull
     public String toString() {
         return "Results{"
-               + ", booksExported=" + mBooksExported
+               + "booksExported=" + mBooksExported
                + ", coversExported=" + mCoversExported
                + ", styles=" + styles
                + ", preferences=" + preferences

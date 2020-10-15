@@ -128,7 +128,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     }
 
     @NonNull
-    protected Item getItem(final int position) {
+    public Item getItem(final int position) {
         return mItems.get(position);
     }
 

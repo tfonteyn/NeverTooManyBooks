@@ -44,6 +44,7 @@ import org.json.JSONObject;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -163,9 +164,7 @@ public class Bookshelf
      */
     private Bookshelf(@NonNull final Parcel in) {
         mId = in.readLong();
-        //noinspection ConstantConditions
         mName = in.readString();
-        //noinspection ConstantConditions
         mStyleUuid = in.readString();
 
         mTopItemPosition = in.readInt();
@@ -212,11 +211,11 @@ public class Bookshelf
                                          final long id) {
         if (id == ALL_BOOKS) {
             return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
-                                 BooklistStyle.getDefault(context, db));
+                                 StyleDAO.getDefault(context, db));
 
         } else if (id == DEFAULT) {
             return new Bookshelf(DEFAULT, context.getString(R.string.bookshelf_my_books),
-                                 BooklistStyle.getDefault(context, db));
+                                 StyleDAO.getDefault(context, db));
 
         } else if (id == PREFERRED) {
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -330,7 +329,7 @@ public class Bookshelf
                                   @NonNull final DAO db) {
 
         // Always validate first
-        final BooklistStyle style = BooklistStyle.getStyleOrDefault(context, db, mStyleUuid);
+        final BooklistStyle style = StyleDAO.getStyleOrDefault(context, db, mStyleUuid);
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;
@@ -393,7 +392,6 @@ public class Bookshelf
      *
      * @param source Bookshelf to copy from
      */
-    @SuppressWarnings("unused")
     public void copyFrom(@NonNull final Bookshelf source) {
         mName = source.mName;
         mStyleUuid = source.mStyleUuid;

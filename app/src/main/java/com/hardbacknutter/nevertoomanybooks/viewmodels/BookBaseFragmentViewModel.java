@@ -37,6 +37,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -96,7 +97,7 @@ public abstract class BookBaseFragmentViewModel
             if (args != null) {
                 final String styleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
                 if (styleUuid != null) {
-                    mStyle = BooklistStyle.getStyleOrDefault(context, mDb, styleUuid);
+                    mStyle = StyleDAO.getStyleOrDefault(context, mDb, styleUuid);
                 }
             }
         }

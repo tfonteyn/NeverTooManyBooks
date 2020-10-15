@@ -53,6 +53,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
@@ -388,7 +389,7 @@ public abstract class BaseActivity
                 final Intent intent = new Intent(this, PreferredStylesActivity.class);
                 try (DAO db = new DAO(TAG)) {
                     intent.putExtra(BooklistStyle.BKEY_STYLE_UUID,
-                                    BooklistStyle.getDefault(this, db).getUuid());
+                                    StyleDAO.getDefault(this, db).getUuid());
                 }
                 startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_STYLES);
                 return true;

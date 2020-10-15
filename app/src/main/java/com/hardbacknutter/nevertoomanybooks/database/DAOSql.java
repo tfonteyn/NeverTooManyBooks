@@ -100,6 +100,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SE
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SIGNED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_PREFERRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_BITMASK;
@@ -515,6 +517,12 @@ public class DAOSql {
         static final String LAST_UPDATE_DATE_BY_BOOK_ID =
                 SELECT_ + KEY_UTC_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + KEY_PK_ID + "=?";
+
+
+        /** {@link BooklistStyle} all columns. */
+        static final String BOOKLIST_STYLE_BY_UUID =
+                "SELECT * FROM " + TBL_BOOKLIST_STYLES.getName()
+                + _WHERE_ + KEY_UUID + "=?";
     }
 
     /**
@@ -1167,7 +1175,9 @@ public class DAOSql {
                 INSERT_INTO_ + TBL_BOOKLIST_STYLES.getName()
                 + '(' + KEY_UUID
                 + ',' + KEY_STYLE_IS_BUILTIN
-                + ") VALUES (?,?)";
+                + ',' + KEY_STYLE_IS_PREFERRED
+                + ',' + KEY_STYLE_MENU_POSITION
+                + ") VALUES (?,?,?,?)";
     }
 
     /**

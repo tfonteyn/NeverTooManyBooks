@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
@@ -170,7 +170,7 @@ public class CsvImporter
 
         mDb = new DAO(TAG);
         mBookshelfCoder = new StringList<>(
-                new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
+                new BookshelfCoder(StyleDAO.getDefault(context, mDb)));
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
 
         mBooksString = context.getString(R.string.lbl_books);

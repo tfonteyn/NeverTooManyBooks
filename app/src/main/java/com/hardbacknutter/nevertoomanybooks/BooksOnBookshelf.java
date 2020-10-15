@@ -248,9 +248,22 @@ public class BooksOnBookshelf
         onBookChange(bookId, changes, data);
     };
 
-    /** React to the user selecting a style to apply. */
-    private final StylePickerDialogFragment.OnResultListener mOnStylePickerListener =
-            this::onStyleChanged;
+    /**
+     * React to the user selecting a style to apply.
+     * <p>
+     * We get here after the user SELECTED a style on the {@link StylePickerDialogFragment}.
+     * We do NOT come here when the user decided to EDIT a style,
+     * which is handled {@link #onActivityResult}.
+     */
+    private final StylePickerDialogFragment.OnResultListener mOnStylePickerListener = uuid -> {
+        saveListPosition();
+        mModel.onStyleChanged(this, uuid);
+        // Set the rebuild state like this is the first time in,
+        // which it sort of is, given we are changing style.
+        mModel.setPreferredListRebuildState(this);
+        // and do a rebuild
+        buildBookList();
+    };
 
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
@@ -1133,16 +1146,6 @@ public class BooksOnBookshelf
         }
     }
 
-    private void onStyleChanged(@NonNull final String uuid) {
-        saveListPosition();
-        mModel.onStyleChanged(this, uuid);
-        // Set the rebuild state like this is the first time in,
-        // which it sort of is, given we are changing style.
-        mModel.setPreferredListRebuildState(this);
-        // and do a rebuild
-        buildBookList();
-    }
-
     /**
      * React to row changes made. ENHANCE: update the modified row without a rebuild.
      *
@@ -1265,11 +1268,12 @@ public class BooksOnBookshelf
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, "data");
                     // we get the UUID for the selected style back.
-                    final String styleUuid = data.getStringExtra(BooklistStyle.BKEY_STYLE_UUID);
-                    if (styleUuid != null) {
-                        mModel.onStyleChanged(this, styleUuid);
+                    final String uuid = data.getStringExtra(BooklistStyle.BKEY_STYLE_UUID);
+                    if (uuid != null) {
+                        mModel.onStyleChanged(this, uuid);
                     }
-
+                    // This is independent from the above style having been modified ot not.
+                    // Instead this reflects ANY change to the styles in general
                     if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
                         mModel.setForceRebuildInOnResume(true);
                     }
@@ -1283,16 +1287,16 @@ public class BooksOnBookshelf
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, "data");
                     // We get the ACTUAL style back.
-                    // This style might be new (id==0) or already existing (id!=0).
                     @Nullable
                     final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
                     if (style != null) {
-                        mModel.onStyleChanged(this, style);
+                        mModel.onStyleEdited(this, style);
+                        // This is the above style having been modified ot not.
+                        if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                            mModel.setForceRebuildInOnResume(true);
+                        }
                     }
 
-                    if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
-                        mModel.setForceRebuildInOnResume(true);
-                    }
                 }
                 break;
             }
@@ -1309,7 +1313,7 @@ public class BooksOnBookshelf
                                                              Options.NOTHING);
                         if (options != 0) {
                             if ((options & Options.STYLES) != 0) {
-                                // Force a refresh of the list of all user styles.
+                                // Force a refresh of the cached styles
                                 StyleDAO.clearCache();
                             }
                             if ((options & Options.PREFS) != 0) {
@@ -1794,6 +1798,7 @@ public class BooksOnBookshelf
     private static class BookshelfSpinnerAdapter
             extends ArrayAdapter<Bookshelf> {
 
+        @NonNull
         private final LayoutInflater mInflater;
 
         /**

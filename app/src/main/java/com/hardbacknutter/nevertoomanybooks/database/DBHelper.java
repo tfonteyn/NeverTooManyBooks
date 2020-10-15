@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Builtin;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -60,6 +60,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_PREFERRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
@@ -74,6 +76,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_PREFERRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
@@ -101,7 +105,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 12;
+    public static final int DATABASE_VERSION = 13;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -281,15 +285,20 @@ public final class DBHelper
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
                 + '(' + KEY_PK_ID
                 + ',' + KEY_STYLE_IS_BUILTIN
+                + ',' + KEY_STYLE_IS_PREFERRED
+                + ',' + KEY_STYLE_MENU_POSITION
                 + ',' + KEY_UUID
                 // 1==true
-                + ") VALUES(?,1,?)";
+                + ") VALUES(?,1,0,?,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = Builtin.MAX_ID; id < 0; id++) {
+            for (int id = StyleDAO.Builtin.MAX_ID; id < 0; id++) {
+                // remember, the id is negative -1..
                 stmt.bindLong(1, id);
-                stmt.bindString(2, Builtin.getUuidById(-id));
+                // menu position, initially just as defined but with a positive number
+                stmt.bindLong(2, -id);
+                stmt.bindString(3, StyleDAO.Builtin.getUuidById(-id));
 
-                // oops... after inserting '-1' our debug logging will claim that insert failed.
+                // after inserting '-1' our debug logging will claim that the insert failed.
                 if (BuildConfig.DEBUG /* always */) {
                     if (id == -1) {
                         Log.d(TAG, "prepareStylesTable|Ignore debug message inserting -1 ^^^");
@@ -757,7 +766,6 @@ public final class DBHelper
             StartupViewModel.scheduleMaintenance(context, true);
         }
         if (oldVersion < 12) {
-
             final Map<String, String> toRename = new HashMap<>();
             toRename.put("bookshelf", KEY_BOOKSHELF_NAME);
             TBL_BOOKSHELF.recreateAndReload(syncedDb, true, toRename, null);
@@ -770,7 +778,31 @@ public final class DBHelper
             syncedDb.drop(TBL_BOOK_LIST_NODE_STATE.getName());
             TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
         }
+        if (oldVersion < 13) {
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(syncedDb,
+                                                     DOM_STYLE_MENU_POSITION,
+                                                     DOM_STYLE_IS_PREFERRED);
 
+            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final String itemsStr = prefs.getString("bookList.style.preferred.order", null);
+            if (itemsStr != null && !itemsStr.isEmpty()) {
+                final String[] entries = itemsStr.split(",");
+                if (entries.length > 0) {
+                    final ContentValues cv = new ContentValues();
+                    for (int i = 0; i < entries.length; i++) {
+                        final String uuid = entries[i];
+                        if (uuid != null && !uuid.isEmpty()) {
+                            cv.clear();
+                            cv.put(KEY_STYLE_MENU_POSITION, i);
+                            cv.put(KEY_STYLE_IS_PREFERRED, 1);
+                            syncedDb.update(TBL_BOOKLIST_STYLES.getName(),
+                                            cv, KEY_UUID + "=?", new String[]{uuid});
+                        }
+                    }
+                }
+            }
+            prefs.edit().remove("bookList.style.preferred.order").apply();
+        }
 
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table,

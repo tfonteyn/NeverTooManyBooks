@@ -166,7 +166,7 @@ public class ImportResults
     @NonNull
     public String toString() {
         return "Results{"
-               + ", booksProcessed=" + booksProcessed
+               + "booksProcessed=" + booksProcessed
                + ", booksCreated=" + booksCreated
                + ", booksUpdated=" + booksUpdated
                + ", booksSkipped=" + booksSkipped

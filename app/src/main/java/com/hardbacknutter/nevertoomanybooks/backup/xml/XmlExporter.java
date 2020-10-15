@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
@@ -66,6 +67,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_PREFERRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_MENU_POSITION;
 
 /**
  * <ul>Supports:
@@ -248,8 +253,7 @@ public class XmlExporter
     private void writeStyles(@NonNull final Context context,
                              @NonNull final Writer writer)
             throws IOException {
-        final Collection<BooklistStyle> styles =
-                StyleDAO.getStyles(context, mDb).values();
+        final Collection<BooklistStyle> styles = StyleDAO.getStyles(context, mDb, false);
         if (!styles.isEmpty()) {
             toXml(writer, new StylesWriter(context, styles));
         }
@@ -269,8 +273,7 @@ public class XmlExporter
                               @NonNull final Writer writer,
                               @NonNull final ProgressListener progressListener)
             throws IOException {
-        final Collection<BooklistStyle> styles =
-                StyleDAO.getStyles(context, mDb).values();
+        final Collection<BooklistStyle> styles = StyleDAO.getStyles(context, mDb, false);
         if (styles.isEmpty()) {
             return;
         }
@@ -283,7 +286,15 @@ public class XmlExporter
             writer.write('<' + XmlTags.TAG_STYLE);
             writer.write(XmlUtils.idAttr(style.getId()));
             writer.write(XmlUtils.nameAttr(style.getUuid()));
+            writer.write(XmlUtils.attr(KEY_STYLE_IS_BUILTIN, style.isBuiltin()));
+            writer.write(XmlUtils.attr(KEY_STYLE_IS_PREFERRED, style.isPreferred()));
+            writer.write(XmlUtils.attr(KEY_STYLE_MENU_POSITION, style.getMenuPosition()));
             writer.write(">\n");
+
+            if (style.isBuiltin()) {
+                writer.write("<!-- builtin style preferences are for info only"
+                             + " and will not be imported -->");
+            }
 
             // All 'flat' Preferences for this style.
             for (final PPref p : style.getPreferences(false).values()) {
@@ -310,6 +321,7 @@ public class XmlExporter
                                           filter.getKey(), filter.getValue(context)));
             }
             writer.write("</" + XmlTags.TAG_FILTER_LIST + '>');
+
 
             // close style tag.
             writer.write("</" + XmlTags.TAG_STYLE + ">\n");
@@ -779,16 +791,23 @@ public class XmlExporter
 
         // loop through all elements
         while (accessor.hasMoreElements()) {
-            // start with an element, optionally add an id and/or name attribute
-            final long idAttr = accessor.getElementTagIdAttribute();
-            final String nameAttr = accessor.getElementTagNameAttribute();
+            // start with an element, optionally add a set of attributes
             writer.write('<');
             writer.write(accessor.getElementTag());
+
+            final long idAttr = accessor.getElementTagIdAttribute();
             if (idAttr != 0) {
                 writer.write(XmlUtils.idAttr(idAttr));
             }
+            final String nameAttr = accessor.getElementTagNameAttribute();
             if (nameAttr != null) {
                 writer.write(XmlUtils.nameAttr(nameAttr));
+            }
+            final List<Pair<String, String>> otherAttr = accessor.getElementTagAttributes();
+            if (otherAttr != null && !otherAttr.isEmpty()) {
+                for (final Pair<String, String> attr : otherAttr) {
+                    writer.write(XmlUtils.attr(attr.first, attr.second));
+                }
             }
             writer.write(">\n");
 
@@ -862,6 +881,17 @@ public class XmlExporter
          */
         @NonNull
         String getElementTag();
+
+        /**
+         * Get a list of name=value pairs to add as attributes to the element tag.
+         * Optional; {@code null} by default.
+         *
+         * @return list, or {@code null}
+         */
+        @Nullable
+        default List<Pair<String, String>> getElementTagAttributes() {
+            return null;
+        }
 
         /**
          * Get the element id attribute for each item in the collection.
@@ -1119,6 +1149,19 @@ public class XmlExporter
         @Override
         public String getElementTagNameAttribute() {
             return currentStyle.getUuid();
+        }
+
+        @Nullable
+        @Override
+        public List<Pair<String, String>> getElementTagAttributes() {
+            final List<Pair<String, String>> list = new ArrayList<>();
+            list.add(new Pair<>(KEY_STYLE_IS_BUILTIN,
+                                String.valueOf(currentStyle.isBuiltin())));
+            list.add(new Pair<>(KEY_STYLE_IS_PREFERRED,
+                                String.valueOf(currentStyle.isPreferred())));
+            list.add(new Pair<>(KEY_STYLE_MENU_POSITION,
+                                String.valueOf(currentStyle.getMenuPosition())));
+            return list;
         }
 
         @Override

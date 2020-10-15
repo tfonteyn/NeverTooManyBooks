@@ -363,20 +363,20 @@ public class BooksOnBookshelfModel
     }
 
     /**
-     * Should be called after a style change.
+     * Should be called after <strong>a style was edited</strong>.
      *
      * @param context Current context
      * @param style   the style to apply
      */
-    public void onStyleChanged(@NonNull final Context context,
-                               @NonNull final BooklistStyle style) {
+    public void onStyleEdited(@NonNull final Context context,
+                              @NonNull final BooklistStyle style) {
 
         StyleDAO.updateOrInsert(mDb, style);
         onStyleChanged(context, style.getUuid());
     }
 
     /**
-     * Should be called after a style change.
+     * Should be called after <strong>a style was changed/selected</strong>.
      * The style should exist (id != 0), or if it doesn't, the default style will be used instead.
      *
      * @param context Current context
@@ -387,11 +387,11 @@ public class BooksOnBookshelfModel
         Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
 
         // Always validate first
-        final BooklistStyle style = BooklistStyle.getStyleOrDefault(context, mDb, uuid);
+        final BooklistStyle style = StyleDAO.getStyleOrDefault(context, mDb, uuid);
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // set as the global default.
-        BooklistStyle.setDefault(prefs, style.getUuid());
+        StyleDAO.setDefault(prefs, style.getUuid());
         // save the new bookshelf/style combination
         mBookshelf.setAsPreferred(prefs);
         mBookshelf.setStyle(context, mDb, style);

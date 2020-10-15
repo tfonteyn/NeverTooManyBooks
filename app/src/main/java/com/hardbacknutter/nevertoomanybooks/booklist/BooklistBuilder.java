@@ -359,7 +359,7 @@ final class BooklistBuilder {
         mOrderByDomains.stream()
                        // don't add duplicate domains
                        .filter(sdi -> !sortedDomainNames.contains(sdi.getName()))
-                       .forEach(sdi -> {
+                       .forEachOrdered(sdi -> {
                            sortedDomainNames.add(sdi.getName());
                            if (valuesColumns.length() > 0) {
                                valuesColumns.append(",");

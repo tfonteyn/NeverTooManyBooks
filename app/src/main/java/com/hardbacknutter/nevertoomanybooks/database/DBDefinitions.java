@@ -300,6 +300,8 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final Domain DOM_STYLE_IS_BUILTIN;
+    public static final Domain DOM_STYLE_IS_PREFERRED;
+    public static final Domain DOM_STYLE_MENU_POSITION;
 
     /** {@link #TBL_BOOK_SERIES}. */
     public static final Domain DOM_BOOK_NUM_IN_SERIES;
@@ -507,6 +509,8 @@ public final class DBDefinitions {
     public static final String KEY_LOANEE_AS_BOOLEAN = "loaned_flag";
     /** {@link #TBL_BOOKLIST_STYLES}. */
     public static final String KEY_STYLE_IS_BUILTIN = "builtin";
+    public static final String KEY_STYLE_IS_PREFERRED = "preferred";
+    public static final String KEY_STYLE_MENU_POSITION = "menu_order";
     /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
     public static final String KEY_FTS_AUTHOR_NAME = "author_name";
     /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
@@ -1010,7 +1014,14 @@ public final class DBDefinitions {
         DOM_STYLE_IS_BUILTIN =
                 new Domain.Builder(KEY_STYLE_IS_BUILTIN, ColumnInfo.TYPE_BOOLEAN)
                         .notNull().withDefault(0).build();
-
+        DOM_STYLE_IS_PREFERRED =
+                new Domain.Builder(KEY_STYLE_IS_PREFERRED, ColumnInfo.TYPE_BOOLEAN)
+                        .notNull().withDefault(0).build();
+        DOM_STYLE_MENU_POSITION =
+                new Domain.Builder(KEY_STYLE_MENU_POSITION, ColumnInfo.TYPE_INTEGER)
+                        // default arbitrary 1000: all styles not explicitly configured will
+                        // be at the end of the list (assuming the user has less then 1000 styles)
+                        .notNull().withDefault(BooklistStyle.MENU_POSITION_NOT_PREFERRED).build();
         /* ======================================================================================
          *  Booklist domains
          * ====================================================================================== */
@@ -1271,9 +1282,12 @@ public final class DBDefinitions {
 
         TBL_BOOKLIST_STYLES.addDomains(DOM_PK_ID,
                                        DOM_STYLE_IS_BUILTIN,
+                                       DOM_STYLE_IS_PREFERRED,
+                                       DOM_STYLE_MENU_POSITION,
                                        DOM_UUID)
                            .setPrimaryKey(DOM_PK_ID)
-                           .addIndex(KEY_UUID, true, DOM_UUID);
+                           .addIndex(KEY_UUID, true, DOM_UUID)
+                           .addIndex(KEY_STYLE_MENU_POSITION, false, DOM_STYLE_MENU_POSITION);
         ALL_TABLES.put(TBL_BOOKLIST_STYLES.getName(), TBL_BOOKLIST_STYLES);
 
         /* ======================================================================================

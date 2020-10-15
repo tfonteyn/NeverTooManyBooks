@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -176,7 +176,7 @@ public class CsvExporter
         mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
 
         mBookshelfCoder = new StringList<>(
-                new BookshelfCoder(BooklistStyle.getDefault(context, mDb)));
+                new BookshelfCoder(StyleDAO.getDefault(context, mDb)));
     }
 
     @Override

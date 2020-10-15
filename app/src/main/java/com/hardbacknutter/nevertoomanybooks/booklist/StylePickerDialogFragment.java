@@ -34,15 +34,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -64,13 +63,13 @@ public class StylePickerDialogFragment
     private String mRequestKey;
     /** Show all styles, or only the preferred styles. */
     private boolean mShowAllStyles;
-    /** All styles as loaded from the database. */
-    private Map<String, BooklistStyle> mAllStyles;
-
-    private RadioGroupRecyclerAdapter<String, String> mAdapter;
     /** Currently selected style. */
     @Nullable
     private String mCurrentStyleUuid;
+    /** All styles as loaded from the database. */
+    private List<BooklistStyle> mStyleList;
+    /** Adapter for the selection. */
+    private RadioGroupRecyclerAdapter<String, String> mAdapter;
 
     /**
      * No-arg constructor for OS use.
@@ -180,24 +179,27 @@ public class StylePickerDialogFragment
         }
         dismiss();
 
-        // Get from ALL styles.. as we might be editing a non-preferred style while
-        // only displaying preferred styles.
-        BooklistStyle style = mAllStyles.get(mCurrentStyleUuid);
+        //noinspection OptionalGetWithoutIsPresent
+        BooklistStyle selectedStyle =
+                mStyleList.stream()
+                          .filter(style -> mCurrentStyleUuid.equals(style.getUuid()))
+                          .findFirst()
+                          .get();
 
-        final long templateId = style.getId();
-        if (!style.isUserDefined()) {
+        final long templateId = selectedStyle.getId();
+        if (selectedStyle.isBuiltin()) {
             // clone a builtin style first
-            style = style.clone(getContext());
+            selectedStyle = selectedStyle.clone(getContext());
         }
 
         // make sure it's preferred if it was not before.
-        style.setPreferred(true);
+        selectedStyle.setPreferred(true);
 
         // use the activity so we get the results there.
         final Activity activity = getActivity();
         final Intent intent = new Intent(activity, SettingsActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
-                .putExtra(BooklistStyle.BKEY_STYLE, style)
+                .putExtra(BooklistStyle.BKEY_STYLE, selectedStyle)
                 .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateId);
         activity.startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }
@@ -209,14 +211,21 @@ public class StylePickerDialogFragment
         final Context context = getContext();
 
         try (DAO db = new DAO(TAG)) {
-            mAllStyles = BooklistStyle.getStyles(context, db);
+            mStyleList = StyleDAO.getStyles(context, db, mShowAllStyles);
+            if (!mShowAllStyles) {
+                // make sure the currently selected style is in the list
+                if (mStyleList.stream()
+                              .noneMatch(style -> mCurrentStyleUuid.equals(style.getUuid()))) {
+                    final BooklistStyle style = StyleDAO.getStyle(context, db, mCurrentStyleUuid);
+                    if (style != null) {
+                        mStyleList.add(style);
+                    }
+                }
+            }
         }
 
-        final Collection<BooklistStyle> booklistStyles =
-                BooklistStyle.getStyles(context, mAllStyles, mShowAllStyles);
-
         mAdapterItemList.clear();
-        for (final BooklistStyle style : booklistStyles) {
+        for (final BooklistStyle style : mStyleList) {
             mAdapterItemList.add(new Pair<>(style.getUuid(), style.getLabel(context)));
         }
     }
