@@ -121,12 +121,14 @@ public class CsvImporter
     /** log error string. */
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
 
-    /** Potentially present in old BookCatalogue CSV files. */
-    private static final String LEGACY_STYLE_AUTHOR_NAME = "author_name";
-    /** Present in BookCatalogue CSV files. Obsolete, not used. */
+    /** Obsolete/alternative header: full given+family author name. */
+    private static final String LEGACY_AUTHOR_NAME = "author_name";
+    /** Obsolete/alternative header: bookshelf name. */
+    private static final String LEGACY_BOOKSHELF_TEXT = "bookshelf_text";
+    /** Obsolete, not used. */
     private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
-    /** When present in BookCatalogue CSV files, we should use it as the bookshelf name. */
-    private static final String LEGACY_BOOKSHELF_TEXT_COLUMN = "bookshelf_text";
+    /** Obsolete/alternative header: bookshelf name. Used by pre-1.2 versions. */
+    private static final String LEGACY_BOOKSHELF_1_1_x = "bookshelf";
 
     /** Database Access. */
     @NonNull
@@ -631,15 +633,19 @@ public class CsvImporter
     private void handleBookshelves(@NonNull final DAO db,
                                    @NonNull final Book /* in/out */ book) {
 
-        // Current version uses/prefers KEY_BOOKSHELF,
-        // but old files might contain LEGACY_BOOKSHELF_TEXT_COLUMN (and LEGACY_BOOKSHELF_ID)
-        // Both are CSV formatted
         String encodedList = null;
+
         if (book.contains(DBDefinitions.KEY_BOOKSHELF_NAME)) {
+            // current version
             encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
 
-        } else if (book.contains(LEGACY_BOOKSHELF_TEXT_COLUMN)) {
-            encodedList = book.getString(LEGACY_BOOKSHELF_TEXT_COLUMN);
+        } else if (book.contains(LEGACY_BOOKSHELF_1_1_x)) {
+            // obsolete
+            encodedList = book.getString(LEGACY_BOOKSHELF_1_1_x);
+
+        } else if (book.contains(LEGACY_BOOKSHELF_TEXT)) {
+            // obsolete
+            encodedList = book.getString(LEGACY_BOOKSHELF_TEXT);
         }
 
         if (encodedList != null && !encodedList.isEmpty()) {
@@ -649,9 +655,11 @@ public class CsvImporter
                 book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
             }
         }
-        book.remove(DBDefinitions.KEY_BOOKSHELF_NAME);
-        book.remove(LEGACY_BOOKSHELF_TEXT_COLUMN);
+
         book.remove(LEGACY_BOOKSHELF_ID);
+        book.remove(LEGACY_BOOKSHELF_TEXT);
+        book.remove(LEGACY_BOOKSHELF_1_1_x);
+        book.remove(DBDefinitions.KEY_BOOKSHELF_NAME);
     }
 
     /**
@@ -700,12 +708,12 @@ public class CsvImporter
                 book.remove(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
                 book.remove(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
 
-            } else if (book.contains(LEGACY_STYLE_AUTHOR_NAME)) {
-                final String a = book.getString(LEGACY_STYLE_AUTHOR_NAME);
+            } else if (book.contains(LEGACY_AUTHOR_NAME)) {
+                final String a = book.getString(LEGACY_AUTHOR_NAME);
                 if (!a.isEmpty()) {
                     list.add(Author.from(a));
                 }
-                book.remove(LEGACY_STYLE_AUTHOR_NAME);
+                book.remove(LEGACY_AUTHOR_NAME);
             }
         }
 
