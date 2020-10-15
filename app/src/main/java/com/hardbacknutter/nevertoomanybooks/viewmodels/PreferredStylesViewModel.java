@@ -29,7 +29,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
@@ -106,11 +105,6 @@ public class PreferredStylesViewModel
         return mStyleList;
     }
 
-    @NonNull
-    private Optional<BooklistStyle> getStyle(final long styleId) {
-        return mStyleList.stream().filter(style -> style.getId() == styleId).findFirst();
-    }
-
     /**
      * Called after a style has been edited.
      *
@@ -124,7 +118,8 @@ public class PreferredStylesViewModel
                              final long templateId) {
         mIsDirty = true;
 
-        // Always save/update a new style to the database first!
+        // Always save/update a new style to the database first.
+        // This will give it an id if it's a new style.
         StyleDAO.updateOrInsert(mDb, style);
 
         // Now (re)organise the list of styles.
@@ -141,54 +136,88 @@ public class PreferredStylesViewModel
         }
 
         if (editedRow < 0) {
-            // New Style added. Put at top and set as user-preferred
+            // Not in the list; we're adding a new Style.
+            // Put it at the top and set as user-preferred
             mStyleList.add(0, style);
             style.setPreferred(true);
+            // save the preferred state
+            StyleDAO.update(mDb, style);
             editedRow = 0;
 
         } else {
-            // Existing Style edited.
+            // We edited an existing Style.
+            // Check if we edited in-place or cloned a style
             final BooklistStyle origStyle = mStyleList.get(editedRow);
-            if (!origStyle.equals(style)) {
+            if (origStyle.equals(style)) {
+                // just a style edited in-place, update the list with the new object
+                mStyleList.set(editedRow, style);
+
+            } else {
                 if (origStyle.isUserDefined()) {
-                    // A clone of an user-defined. Put it directly after the user-defined
+                    // It's a clone of an user-defined style.
+                    // Put it directly after the user-defined original
                     mStyleList.add(editedRow, style);
+
                 } else {
-                    // Working on a clone of a builtin style
+                    // It's a clone of a builtin style
                     if (origStyle.isPreferred()) {
-                        // Replace the original row with the new one
+                        // if the original style was a preferred style,
+                        // replace the original row with the new one
                         mStyleList.set(editedRow, style);
+
                         // Make the new one preferred
                         style.setPreferred(true);
+                        // save the preferred state
+                        StyleDAO.update(mDb, style);
+
                         // And demote the original
                         origStyle.setPreferred(false);
+                        // save the preferred state
+                        StyleDAO.update(mDb, origStyle);
+
                         mStyleList.add(origStyle);
+
                     } else {
-                        // Try to put it directly after original
+                        // Put it directly after the original
                         mStyleList.add(editedRow, style);
                     }
                 }
-            } else {
-                mStyleList.set(editedRow, style);
             }
         }
 
-        // check if the style was cloned from a builtin style.
+        // Not sure if this check is really needed... or already covered above
+        // if the style was cloned from a builtin style,
         if (templateId < 0) {
-            // We're assuming the user wanted to 'replace' the builtin style,
+            // then we're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
-            getStyle(templateId).ifPresent(s -> s.setPreferred(false));
+            mStyleList.stream()
+                      .filter(s -> s.getId() == templateId)
+                      .findFirst()
+                      .ifPresent(s -> {
+                          s.setPreferred(false);
+                          // save the preferred state
+                          StyleDAO.update(mDb, s);
+                      });
         }
 
         return editedRow;
     }
 
+    /**
+     * Update the given style.
+     *
+     * @param style to update
+     */
     public void updateStyle(@NonNull final BooklistStyle style) {
-        if (style.getId() != 0) {
-            StyleDAO.update(mDb, style);
-        }
+        StyleDAO.update(mDb, style);
     }
 
+    /**
+     * Delete the given style.
+     *
+     * @param context Current context
+     * @param style   to delete
+     */
     public void deleteStyle(@NonNull final Context context,
                             @NonNull final BooklistStyle style) {
         StyleDAO.delete(context, mDb, style);
@@ -202,8 +231,12 @@ public class PreferredStylesViewModel
         StyleDAO.updateMenuOrder(mDb, mStyleList);
     }
 
-    public void purgeBLNS(final long id) {
-        mDb.purgeNodeStatesByStyle(id);
+    /**
+     * User explicitly wants to purge the BLNS for the given style.
+     *
+     * @param styleId to purge
+     */
+    public void purgeBLNS(final long styleId) {
+        mDb.purgeNodeStatesByStyle(styleId);
     }
-
 }

@@ -3145,11 +3145,9 @@ public class DAO
         // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,
         // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
-            try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BY_VALID_ISBN,
-                                                    new String[]{isbn.asText(
-                                                            ISBN.TYPE_ISBN10),
-                                                                 isbn.asText(
-                                                                         ISBN.TYPE_ISBN13)})) {
+            try (Cursor cursor = mSyncedDb.rawQuery(
+                    DAOSql.SqlSelect.BY_VALID_ISBN,
+                    new String[]{isbn.asText(ISBN.TYPE_ISBN10), isbn.asText(ISBN.TYPE_ISBN13)})) {
                 while (cursor.moveToNext()) {
                     list.add(cursor.getLong(0));
                 }
@@ -3603,8 +3601,12 @@ public class DAO
      */
     public boolean setBookRead(final long bookId,
                                final boolean isRead) {
-        final String now =
-                isRead ? LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "";
+        final String now;
+        if (isRead) {
+            now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else {
+            now = "";
+        }
 
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
             stmt.bindBoolean(1, isRead);
@@ -4345,7 +4347,7 @@ public class DAO
 
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                     "INSERT INTO " + ftsTemp.getName() + DAOSql.SqlFTS.INSERT_BODY);
-                 final Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.ALL_BOOKS, null)) {
+                 Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.ALL_BOOKS, null)) {
                 ftsProcessBooks(cursor, stmt);
             }
 

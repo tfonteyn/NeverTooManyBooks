@@ -179,12 +179,6 @@ public final class StyleDAO {
         return false;
     }
 
-    public static void discard(@NonNull final Context context,
-                               @NonNull final BooklistStyle style) {
-        SanityCheck.requireNonZero(style.getId(), "Can only discard a new style");
-        context.deleteSharedPreferences(style.getUuid());
-    }
-
     /**
      * Get a list with all the styles, ordered by preferred menu position.
      * If 'all' is {@code true} the list contains the preferred styles at the top,
@@ -197,6 +191,7 @@ public final class StyleDAO {
      *
      * @return LinkedHashMap, key: uuid, value: style
      */
+    @NonNull
     public static ArrayList<BooklistStyle> getStyles(@NonNull final Context context,
                                                      @NonNull final DAO db,
                                                      final boolean all) {

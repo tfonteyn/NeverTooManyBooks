@@ -156,10 +156,7 @@ public class BooklistStyle
      * A value of {@code 0} means {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.
      */
     private static final String PK_SCALE_GROUP_ROW = "style.booklist.group.height";
-    /**
-     * Style unique name. This is a stored in our preference file (with the same name)
-     * and is used for backup/restore purposes as the 'ID'.
-     */
+    /** Style unique name. */
     private static final String PK_STYLE_UUID = "style.booklist.uuid";
     /** log tag. */
     private static final String TAG = "BooklistStyle";
@@ -408,7 +405,10 @@ public class BooklistStyle
         // skip mUuid
         in.readString();
         mUuid = UUID.randomUUID().toString();
-        // manually store the new UUID (this will initialise a new xml file)
+        // Manually store the new UUID.
+        // This will initialise a new xml file.
+        // It's not strictly needed (we'll never read it) but handy to have
+        // it stored inside the file for debugging.
         context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
                .edit().putString(PK_STYLE_UUID, mUuid).apply();
 
@@ -989,8 +989,8 @@ public class BooklistStyle
                + "mId=" + mId
                + "\nmUuid=`" + mUuid + '`'
                + "\nmMenuPosition=" + mMenuPosition
-               + "\nmNameResId=`" + (mNameResId != 0 ? App.getAppContext().getString(mNameResId)
-                                                     : 0) + '`'
+               + "\nmNameResId=`" + (mNameResId != 0
+                                     ? App.getAppContext().getString(mNameResId) : 0) + '`'
                + "\nmName=`" + mName + '`'
                + "\nmIsPreferred=" + mIsPreferred
                + "\nmExpansionLevel=" + mExpansionLevel
