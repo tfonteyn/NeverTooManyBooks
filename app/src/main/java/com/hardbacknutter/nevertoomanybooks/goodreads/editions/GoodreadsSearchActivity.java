@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.editions;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -62,6 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
  * IMPORTANT: always use {@link #open} to start this activity. Unless it's called
  * from a place where we know for certain that we have Goodreads authorization tokens.
  */
+@SuppressLint("Registered")
 public class GoodreadsSearchActivity
         extends BaseActivity {
 

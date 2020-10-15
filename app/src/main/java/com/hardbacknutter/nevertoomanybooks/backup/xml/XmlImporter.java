@@ -211,7 +211,7 @@ public class XmlImporter
             throws IOException {
         final ArchiveInfo info = new ArchiveInfo();
         try (Reader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE)) {
+             Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE)) {
 
             fromXml(in, new InfoReader(info));
         }

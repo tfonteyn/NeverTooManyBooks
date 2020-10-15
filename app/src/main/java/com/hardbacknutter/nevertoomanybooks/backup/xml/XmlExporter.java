@@ -68,10 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_PREFERRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_MENU_POSITION;
-
 /**
  * <ul>Supports:
  *      <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
@@ -286,9 +282,12 @@ public class XmlExporter
             writer.write('<' + XmlTags.TAG_STYLE);
             writer.write(XmlUtils.idAttr(style.getId()));
             writer.write(XmlUtils.nameAttr(style.getUuid()));
-            writer.write(XmlUtils.attr(KEY_STYLE_IS_BUILTIN, style.isBuiltin()));
-            writer.write(XmlUtils.attr(KEY_STYLE_IS_PREFERRED, style.isPreferred()));
-            writer.write(XmlUtils.attr(KEY_STYLE_MENU_POSITION, style.getMenuPosition()));
+            writer.write(XmlUtils.attr(DBDefinitions.KEY_STYLE_IS_BUILTIN,
+                                       style.isBuiltin()));
+            writer.write(XmlUtils.attr(DBDefinitions.KEY_STYLE_IS_PREFERRED,
+                                       style.isPreferred()));
+            writer.write(XmlUtils.attr(DBDefinitions.KEY_STYLE_MENU_POSITION,
+                                       style.getMenuPosition()));
             writer.write(">\n");
 
             if (style.isBuiltin()) {
@@ -1155,11 +1154,11 @@ public class XmlExporter
         @Override
         public List<Pair<String, String>> getElementTagAttributes() {
             final List<Pair<String, String>> list = new ArrayList<>();
-            list.add(new Pair<>(KEY_STYLE_IS_BUILTIN,
+            list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_BUILTIN,
                                 String.valueOf(currentStyle.isBuiltin())));
-            list.add(new Pair<>(KEY_STYLE_IS_PREFERRED,
+            list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_PREFERRED,
                                 String.valueOf(currentStyle.isPreferred())));
-            list.add(new Pair<>(KEY_STYLE_MENU_POSITION,
+            list.add(new Pair<>(DBDefinitions.KEY_STYLE_MENU_POSITION,
                                 String.valueOf(currentStyle.getMenuPosition())));
             return list;
         }
