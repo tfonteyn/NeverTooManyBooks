@@ -25,6 +25,13 @@ import androidx.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 
+/**
+ * Quick note: this class came into being as a solution to the missing "assert" functionality
+ * in Android.
+ * <p>
+ * Meanwhile (2020-10-15) it seems the latest Android build tools CAN solve the assert issue.
+ * To be investigated.
+ */
 public class SanityCheck {
 
 
