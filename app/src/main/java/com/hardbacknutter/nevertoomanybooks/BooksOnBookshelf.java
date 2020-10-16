@@ -1246,8 +1246,8 @@ public class BooksOnBookshelf
                     if (uuid != null) {
                         mModel.onStyleChanged(this, uuid);
                     }
+
                     // This is independent from the above style having been modified ot not.
-                    // Instead this reflects ANY change to the styles in general
                     if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
                         mModel.setForceRebuildInOnResume(true);
                     }
@@ -1265,12 +1265,12 @@ public class BooksOnBookshelf
                     final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
                     if (style != null) {
                         mModel.onStyleEdited(this, style);
-                        // This is the above style having been modified ot not.
-                        if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
-                            mModel.setForceRebuildInOnResume(true);
-                        }
                     }
 
+                    // This is independent from the above style having been modified ot not.
+                    if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                        mModel.setForceRebuildInOnResume(true);
+                    }
                 }
                 break;
             }
