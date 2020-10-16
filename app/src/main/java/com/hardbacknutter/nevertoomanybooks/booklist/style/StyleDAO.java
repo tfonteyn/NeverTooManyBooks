@@ -302,7 +302,7 @@ public final class StyleDAO {
             return style;
         }
         // fall back to the builtin default.
-        return Builtin.getDefault();
+        return Builtin.getDefault(context, db);
     }
 
     /**
@@ -505,33 +505,29 @@ public final class StyleDAO {
          * Key: uuid of style.
          */
         private static final Map<String, BooklistStyle> S_BUILTIN_STYLES = new LinkedHashMap<>();
-        /**
-         * Hardcoded initial/default style. Avoids having the create the full set of styles just
-         * to load the default one. Created on first access in {@link #getDefault}.
-         */
-        private static BooklistStyle sDefaultStyle;
 
         private Builtin() {
         }
 
         static void clearCache() {
             S_BUILTIN_STYLES.clear();
-            sDefaultStyle = null;
         }
 
         /**
          * Get the hardcoded default style.
          *
-         * @return style
+         * @param context Current context
+         * @param db      Database Access
+         *
+         * @return style {@link #AUTHOR_THEN_SERIES_ID}
          */
         @NonNull
-        public static BooklistStyle getDefault() {
-            if (sDefaultStyle == null) {
-                sDefaultStyle = Objects.requireNonNull(
-                        S_BUILTIN_STYLES.get(AUTHOR_THEN_SERIES_UUID));
+        public static BooklistStyle getDefault(@NonNull final Context context,
+                                               @NonNull final DAO db) {
+            if (S_BUILTIN_STYLES.isEmpty()) {
+                create(context, db);
             }
-
-            return sDefaultStyle;
+            return Objects.requireNonNull(S_BUILTIN_STYLES.get(AUTHOR_THEN_SERIES_UUID));
         }
 
 
@@ -565,7 +561,6 @@ public final class StyleDAO {
             return ID_UUID[id];
         }
 
-        @SuppressWarnings("ConstantConditions")
         private static void create(@NonNull final Context context,
                                    @NonNull final DAO db) {
 
