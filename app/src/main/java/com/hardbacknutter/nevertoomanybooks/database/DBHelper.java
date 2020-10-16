@@ -831,6 +831,41 @@ public final class DBHelper
     }
 
     /**
+     * Not called yet, but this method collects ALL keys which were declared obsolete.
+     * The issue being that some keys will be in backups and re-created.
+     * <p>
+     * pro: good to clean up
+     * con: a handful of obsolete keys is not an issue
+     *
+     * @param context Current context
+     */
+    private void removeObsoleteKeys(@NonNull final Context context) {
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final Set<String> all = prefs.getAll().keySet();
+
+        final SharedPreferences.Editor ed = prefs.edit();
+        for (final String key : all) {
+            if (key.startsWith("search.site")) {
+                ed.remove(key);
+            }
+        }
+
+        ed.remove("bookList.style.preferred.order")
+          .remove("booklist.top.row")
+          .remove("booklist.top.rowId")
+          .remove("booklist.top.offset")
+          .remove("compat.booklist.mode")
+          .remove("edit.book.tab.authSer")
+          .remove("edit.book.tab.nativeId")
+          .remove("fields.visibility.bookshelf")
+          .remove("startup.lastVersion")
+          .remove("tmp.edit.book.tab.authSer")
+          .apply();
+    }
+
+
+    /**
      * Delete al user data from the database.
      * Tables will get their initial default data re-added (e.g. styles, shelves...)
      *
