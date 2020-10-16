@@ -135,18 +135,25 @@ public final class StyleDAO {
     public static void updateMenuOrder(@NonNull final DAO db,
                                        @NonNull final Collection<BooklistStyle> styles) {
         int order = 0;
+
+        // sort the preferred styles at the top
         for (final BooklistStyle style : styles) {
             if (style.isPreferred()) {
                 style.setMenuPosition(order);
+                db.update(style);
                 order++;
-            } else {
-                // shove them to the end of the list
-                style.setMenuPosition(BooklistStyle.MENU_POSITION_NOT_PREFERRED);
             }
-
-            db.update(style);
         }
-        // keep it safe and easy, just clear them all; almost certainly overkill
+        // followed by the non preferred styles
+        for (final BooklistStyle style : styles) {
+            if (!style.isPreferred()) {
+                style.setMenuPosition(order);
+                db.update(style);
+                order++;
+            }
+        }
+
+        // keep it safe and easy, just clear the caches; almost certainly overkill
         StyleDAO.clearCache();
     }
 
@@ -308,7 +315,6 @@ public final class StyleDAO {
                                   @NonNull final String uuid) {
         preferences.edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid).apply();
     }
-
 
     public static void clearCache() {
         UserStyles.clearCache();
@@ -559,11 +565,13 @@ public final class StyleDAO {
             return ID_UUID[id];
         }
 
+        @SuppressWarnings("ConstantConditions")
         private static void create(@NonNull final Context context,
                                    @NonNull final DAO db) {
 
             final Map<Integer, Boolean> preferred = new HashMap<>();
             final Map<Integer, Integer> menuPos = new HashMap<>();
+
             try (Cursor cursor = db.fetchStyles(false)) {
                 final DataHolder rowData = new CursorRow(cursor);
                 while (cursor.moveToNext()) {
@@ -803,6 +811,7 @@ public final class StyleDAO {
             style.getListScreenBookFields()
                  .setShowField(ListScreenBookFields.PK_AUTHOR, true);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
+
             // NEWTHINGS: BooklistStyle: add a new builtin style
         }
 

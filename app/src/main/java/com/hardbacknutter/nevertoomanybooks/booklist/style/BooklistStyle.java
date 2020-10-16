@@ -211,8 +211,7 @@ public class BooklistStyle
     private long mId;
     /**
      * The menu position of this style as sorted by the user.
-     * Preferred styles will be at the top, others will (should) have their
-     * order set to {@link #MENU_POSITION_NOT_PREFERRED}
+     * Preferred styles will be at the top.
      * <p>
      * Stored in the database.
      */

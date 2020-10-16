@@ -1019,8 +1019,6 @@ public final class DBDefinitions {
                         .notNull().withDefault(0).build();
         DOM_STYLE_MENU_POSITION =
                 new Domain.Builder(KEY_STYLE_MENU_POSITION, ColumnInfo.TYPE_INTEGER)
-                        // default arbitrary 1000: all styles not explicitly configured will
-                        // be at the end of the list (assuming the user has less then 1000 styles)
                         .notNull().withDefault(BooklistStyle.MENU_POSITION_NOT_PREFERRED).build();
         /* ======================================================================================
          *  Booklist domains
