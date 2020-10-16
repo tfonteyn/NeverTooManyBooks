@@ -85,7 +85,7 @@ public abstract class IntStringFilter
                + ", mDomainKey=" + mDomainKey
                + ", mLabelId=" + mLabelId
                + ", " + super.toString()
-               + "}\n";
+               + "}";
     }
 
 }

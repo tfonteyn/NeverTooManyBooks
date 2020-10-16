@@ -114,11 +114,11 @@ public class BitmaskFilter
     @NonNull
     public String toString() {
         return "BitmaskFilter{"
-               + "table=" + mTable.getName()
+               + "mTable=" + mTable.getName()
                + ", mDomainKey=" + mDomainKey
                + ", mLabelId=" + mLabelId
                + ", isActive=" + isActive(App.getAppContext())
                + ", " + super.toString()
-               + "}\n";
+               + "}";
     }
 }

@@ -242,8 +242,9 @@ public class Groups
     @Override
     @NonNull
     public String toString() {
-        return "Groups{" + super.toString()
+        return "Groups{"
                + "mGroups=" + mGroupMap
+               + ", " + super.toString()
                + '}';
     }
 }

@@ -105,8 +105,9 @@ public class PBitmask
     @Override
     @NonNull
     public String toString() {
-        return "PBitmask{" + super.toString()
-               + ", value bits=`" + Integer.toBinaryString(getValue(App.getAppContext())) + '`'
+        return "PBitmask{"
+               + "value=`" + Integer.toBinaryString(getValue(App.getAppContext())) + '`'
+               + ", " + super.toString()
                + '}';
     }
 }

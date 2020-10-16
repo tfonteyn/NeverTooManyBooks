@@ -473,10 +473,10 @@ public class BooklistGroup
     @NonNull
     public String toString() {
         return "BooklistGroup{"
-               + "mUuid=`'`" + mUuid + '`'
+               + "mId=" + mId
+               + ", mUuid=`'`" + mUuid + '`'
                + ", style=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
                + ", mIsUserDefinedStyle=" + mIsUserDefinedStyle
-               + ", mId=" + mId
                + ", mGroupKey=" + mGroupKey
                + ", mAccumulatedDomains=" + mAccumulatedDomains
                + '}';

@@ -129,12 +129,13 @@ public abstract class PPrefBase<T>
     @Override
     @NonNull
     public String toString() {
-        return "mKey=" + mKey
+        return "PPrefBase{"
+               + "mKey=`" + mKey + '`'
                + ", style=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
-               + ", type=" + mDefaultValue.getClass().getSimpleName()
                + ", mDefaultValue=`" + mDefaultValue + '`'
                + ", mIsPersistent=" + mIsPersistent
                + ", mNonPersistedValue=`" + mNonPersistedValue + '`'
-               + ", value=`" + getValue(App.getAppContext()) + '`';
+               + ", value=`" + getValue(App.getAppContext()) + '`'
+               + '}';
     }
 }
