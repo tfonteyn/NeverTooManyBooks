@@ -917,7 +917,6 @@ public class XmlImporter
                 mStyle.updatePreferences(mContext, group.getPreferences());
             }
 
-
             // migrate obsolete entries
             if (mStylePrefs.containsKey(BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED)) {
                 // if the style is currently not-preferred,
@@ -925,9 +924,11 @@ public class XmlImporter
                     // use the obsoleted preference entry to set the state
                     final PPref<?> p = mStylePrefs.get(
                             BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED);
-                    final Object o = p.getValue(mContext);
-                    if (o instanceof Boolean) {
-                        mStyle.setPreferred((boolean) o);
+                    if (p != null) {
+                        final Object o = p.getValue(mContext);
+                        if (o instanceof Boolean) {
+                            mStyle.setPreferred((boolean) o);
+                        }
                     }
                 }
                 mStylePrefs.remove(BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED);

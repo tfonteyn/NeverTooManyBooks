@@ -356,6 +356,7 @@ public class BooklistStyle
     private BooklistStyle(@NonNull final Parcel in) {
         mId = in.readLong();
         mNameResId = in.readInt();
+        //noinspection ConstantConditions
         mUuid = in.readString();
         mIsPreferred = in.readByte() != 0;
         mMenuPosition = in.readInt();

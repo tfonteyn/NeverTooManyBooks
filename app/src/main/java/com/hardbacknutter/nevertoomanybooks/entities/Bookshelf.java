@@ -164,7 +164,9 @@ public class Bookshelf
      */
     private Bookshelf(@NonNull final Parcel in) {
         mId = in.readLong();
+        //noinspection ConstantConditions
         mName = in.readString();
+        //noinspection ConstantConditions
         mStyleUuid = in.readString();
 
         mTopItemPosition = in.readInt();
