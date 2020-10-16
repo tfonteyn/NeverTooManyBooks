@@ -131,18 +131,16 @@ public abstract class BookSearchBaseFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_PREFS_SEARCH_SITES: {
-                final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                        .putExtra(SearchAdminModel.BKEY_LIST, mCoordinator.getSiteList());
-                startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
-                return true;
-            }
+        final int itemId = item.getItemId();
 
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
+            final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
+                    .putExtra(SearchAdminModel.BKEY_LIST, mCoordinator.getSiteList());
+            startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void onSearchFinished(@NonNull final FinishedMessage<Bundle> message) {

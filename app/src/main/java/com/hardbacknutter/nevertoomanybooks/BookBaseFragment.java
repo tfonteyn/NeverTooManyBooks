@@ -311,58 +311,55 @@ public abstract class BookBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
         final Context context = getContext();
-
         final Book book = mBookViewModel.getBook();
+        final int itemId = item.getItemId();
 
-        switch (item.getItemId()) {
-            case R.id.MENU_UPDATE_FROM_INTERNET: {
-                final ArrayList<Long> bookIdList = new ArrayList<>();
-                bookIdList.add(book.getId());
-                final Intent intent = new Intent(context, BookSearchActivity.class)
-                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                        .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
-                        // pass the title for displaying to the user
-                        .putExtra(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE))
-                        // pass the author for displaying to the user
-                        .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                                  book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
-                startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
-                return true;
-            }
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR: {
-                final Author author = book.getPrimaryAuthor();
-                if (author != null) {
-                    //noinspection ConstantConditions
-                    AmazonSearchEngine.startSearchActivity(context, author, null);
-                }
-                return true;
-            }
-            case R.id.MENU_AMAZON_BOOKS_IN_SERIES: {
-                final Series series = book.getPrimarySeries();
-                if (series != null) {
-                    //noinspection ConstantConditions
-                    AmazonSearchEngine.startSearchActivity(context, null, series);
-                }
-                return true;
-            }
-            case R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES: {
-                final Author author = book.getPrimaryAuthor();
-                final Series series = book.getPrimarySeries();
-                if (author != null && series != null) {
-                    //noinspection ConstantConditions
-                    AmazonSearchEngine.startSearchActivity(context, author, series);
-                }
-                return true;
-            }
+        if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            final ArrayList<Long> bookIdList = new ArrayList<>();
+            bookIdList.add(book.getId());
+            final Intent intent = new Intent(context, BookSearchActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
+                    .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
+                    // pass the title for displaying to the user
+                    .putExtra(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE))
+                    // pass the author for displaying to the user
+                    .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
+                              book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
+            startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
+            return true;
 
-            default: {
+        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
+            final Author author = book.getPrimaryAuthor();
+            if (author != null) {
                 //noinspection ConstantConditions
-                if (MenuHelper.handleViewBookOnWebsiteMenu(context, item.getItemId(), book)) {
-                    return true;
-                }
-                return super.onOptionsItemSelected(item);
+                AmazonSearchEngine.startSearchActivity(context, author, null);
             }
+            return true;
+
+        } else if (itemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
+            final Series series = book.getPrimarySeries();
+            if (series != null) {
+                //noinspection ConstantConditions
+                AmazonSearchEngine.startSearchActivity(context, null, series);
+            }
+            return true;
+
+        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
+            final Author author = book.getPrimaryAuthor();
+            final Series series = book.getPrimarySeries();
+            if (author != null && series != null) {
+                //noinspection ConstantConditions
+                AmazonSearchEngine.startSearchActivity(context, author, series);
+            }
+            return true;
+
         }
+
+        //noinspection ConstantConditions
+        if (MenuHelper.handleViewBookOnWebsiteMenu(context, item.getItemId(), book)) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

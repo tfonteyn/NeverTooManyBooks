@@ -73,67 +73,43 @@ public final class TipManager {
     private static Tip getTip(@StringRes final int id) {
         Tip tip = ALL.get(id);
         if (tip == null) {
-            switch (id) {
-                case R.string.tip_booklist_style_menu:
-                    tip = new Tip(id, "booklist_style_menu");
-                    break;
-                case R.string.tip_booklist_styles_editor:
-                    tip = new Tip(id, "booklist_styles_editor");
-                    break;
-                case R.string.tip_booklist_style_groups:
-                    tip = new Tip(id, "booklist_style_groups");
-                    break;
-                case R.string.tip_booklist_style_properties:
-                    tip = new Tip(id, "booklist_style_properties");
-                    break;
-                case R.string.tip_authors_book_may_appear_more_than_once:
-                    tip = new Tip(id, "authors_book_may_appear_more_than_once");
-                    break;
-                case R.string.tip_series_book_may_appear_more_than_once:
-                    tip = new Tip(id, "series_book_may_appear_more_than_once");
-                    break;
-                case R.string.tip_background_tasks:
-                    tip = new Tip(id, "background_tasks");
-                    break;
-                case R.string.tip_background_task_events:
-                    tip = new Tip(id, "background_task_events");
-                    break;
-
-                case R.string.gr_info_no_isbn:
-                    tip = new Tip(id, "gr_explain_no_isbn");
-                    break;
-                case R.string.gr_info_no_match:
-                    tip = new Tip(id, "gr_explain_no_match");
-                    break;
-                case R.string.tip_autorotate_camera_images:
-                    tip = new Tip(id, "autorotate_camera_images");
-                    break;
-                case R.string.tip_view_only_help:
-                    tip = new Tip(id, "view_only_help");
-                    break;
-                case R.string.tip_book_list:
-                    tip = new Tip(id, "book_list");
-                    break;
-
-                case R.string.tip_book_search_by_text:
-                    tip = new Tip(id, "book_search_by_text");
-                    break;
-                case R.string.pt_cropper_layer_type_summary:
-                    tip = new Tip(id, "thumbnail_cropper_layer_type_summary");
-                    break;
-                case R.string.tip_update_fields_from_internet:
-                    tip = new Tip(id, "update_fields_from_internet");
-                    break;
-                case R.string.tip_authors_works:
-                    tip = new Tip(id, "authors_works")
-                            .setLayoutId(R.layout.dialog_tip_author_works);
-                    break;
-//                case R.string.tip_booklist_global_properties:
-//                    // keep, might need again if re-implemented
-//                    tip = new Tip("booklist_global_properties");
-//                    break;
-                default:
-                    throw new IllegalArgumentException(String.valueOf(id));
+            if (id == R.string.tip_booklist_style_menu) {
+                tip = new Tip(id, "booklist_style_menu");
+            } else if (id == R.string.tip_booklist_styles_editor) {
+                tip = new Tip(id, "booklist_styles_editor");
+            } else if (id == R.string.tip_booklist_style_groups) {
+                tip = new Tip(id, "booklist_style_groups");
+            } else if (id == R.string.tip_booklist_style_properties) {
+                tip = new Tip(id, "booklist_style_properties");
+            } else if (id == R.string.tip_authors_book_may_appear_more_than_once) {
+                tip = new Tip(id, "authors_book_may_appear_more_than_once");
+            } else if (id == R.string.tip_series_book_may_appear_more_than_once) {
+                tip = new Tip(id, "series_book_may_appear_more_than_once");
+            } else if (id == R.string.tip_background_tasks) {
+                tip = new Tip(id, "background_tasks");
+            } else if (id == R.string.tip_background_task_events) {
+                tip = new Tip(id, "background_task_events");
+            } else if (id == R.string.gr_info_no_isbn) {
+                tip = new Tip(id, "gr_explain_no_isbn");
+            } else if (id == R.string.gr_info_no_match) {
+                tip = new Tip(id, "gr_explain_no_match");
+            } else if (id == R.string.tip_autorotate_camera_images) {
+                tip = new Tip(id, "autorotate_camera_images");
+            } else if (id == R.string.tip_view_only_help) {
+                tip = new Tip(id, "view_only_help");
+            } else if (id == R.string.tip_book_list) {
+                tip = new Tip(id, "book_list");
+            } else if (id == R.string.tip_book_search_by_text) {
+                tip = new Tip(id, "book_search_by_text");
+            } else if (id == R.string.pt_cropper_layer_type_summary) {
+                tip = new Tip(id, "thumbnail_cropper_layer_type_summary");
+            } else if (id == R.string.tip_update_fields_from_internet) {
+                tip = new Tip(id, "update_fields_from_internet");
+            } else if (id == R.string.tip_authors_works) {
+                tip = new Tip(id, "authors_works")
+                        .setLayoutId(R.layout.dialog_tip_author_works);
+            } else {
+                throw new IllegalArgumentException(String.valueOf(id));
             }
             ALL.put(id, tip);
         }

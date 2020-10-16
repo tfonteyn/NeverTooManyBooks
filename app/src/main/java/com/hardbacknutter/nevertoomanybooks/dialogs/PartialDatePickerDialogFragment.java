@@ -102,29 +102,26 @@ public class PartialDatePickerDialogFragment
     /** This listener is called after <strong>any change</strong> made to the pickers. */
     private final NumberPicker.OnValueChangeListener mOnValueChangeListener =
             (picker, oldVal, newVal) -> {
-                switch (picker.getId()) {
-                    case R.id.year:
-                        mYear = newVal;
-                        // only February can be different number of days
-                        if (mMonth == 2) {
-                            updateDaysInMonth();
-                        }
-                        break;
+                final int pickerId = picker.getId();
 
-                    case R.id.month:
-                        mMonth = newVal;
+                if (pickerId == R.id.year) {
+                    mYear = newVal;
+                    // only February can be different number of days
+                    if (mMonth == 2) {
                         updateDaysInMonth();
-                        break;
+                    }
 
-                    case R.id.day:
-                        mDay = newVal;
-                        break;
+                } else if (pickerId == R.id.month) {
+                    mMonth = newVal;
+                    updateDaysInMonth();
 
-                    default:
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "id=" + picker.getId());
-                        }
-                        break;
+                } else if (pickerId == R.id.day) {
+                    mDay = newVal;
+
+                } else {
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.d(TAG, "id=" + picker.getId());
+                    }
                 }
             };
 

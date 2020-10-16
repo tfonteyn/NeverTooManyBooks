@@ -232,24 +232,23 @@ public class UpdateFieldsFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_PREFS_SEARCH_SITES: {
-                final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                        .putExtra(SearchAdminModel.BKEY_LIST, mUpdateFieldsModel.getSiteList());
-                startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
-                return true;
-            }
-            case R.id.MENU_RESET: {
-                //noinspection ConstantConditions
-                mUpdateFieldsModel.resetPreferences(getContext());
-                mVb.fieldList.removeAllViews();
-                populateFields();
-                return true;
-            }
+        final int itemId = item.getItemId();
 
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
+            final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
+                    .putExtra(SearchAdminModel.BKEY_LIST, mUpdateFieldsModel.getSiteList());
+            startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
+            return true;
+
+        } else if (itemId == R.id.MENU_RESET) {
+            //noinspection ConstantConditions
+            mUpdateFieldsModel.resetPreferences(getContext());
+            mVb.fieldList.removeAllViews();
+            populateFields();
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**

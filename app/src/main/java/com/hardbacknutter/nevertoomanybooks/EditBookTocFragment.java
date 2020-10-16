@@ -326,36 +326,34 @@ public class EditBookTocFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_POPULATE_TOC_FROM_ISFDB: {
-                final Book book = mBookViewModel.getBook();
-                final long isfdbId = book.getLong(DBDefinitions.KEY_EID_ISFDB);
-                if (isfdbId != 0) {
-                    Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
-                                  Snackbar.LENGTH_LONG).show();
-                    mIsfdbGetBookTask.search(isfdbId);
-                    return true;
-                }
+        final int itemId = item.getItemId();
 
-                final String isbnStr = book.getString(DBDefinitions.KEY_ISBN);
-                if (!isbnStr.isEmpty()) {
-                    final ISBN isbn = ISBN.createISBN(isbnStr);
-                    if (isbn.isValid(true)) {
-                        Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
-                                      Snackbar.LENGTH_LONG).show();
-                        mIsfdbGetEditionsTask.search(isbn);
-                        return true;
-                    }
-                }
-                Snackbar.make(mVb.getRoot(), R.string.warning_requires_isbn,
+        if (itemId == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
+            final Book book = mBookViewModel.getBook();
+            final long isfdbId = book.getLong(DBDefinitions.KEY_EID_ISFDB);
+            if (isfdbId != 0) {
+                Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
-                return false;
+                mIsfdbGetBookTask.search(isfdbId);
+                return true;
             }
 
-            default:
-                return super.onOptionsItemSelected(item);
+            final String isbnStr = book.getString(DBDefinitions.KEY_ISBN);
+            if (!isbnStr.isEmpty()) {
+                final ISBN isbn = ISBN.createISBN(isbnStr);
+                if (isbn.isValid(true)) {
+                    Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
+                                  Snackbar.LENGTH_LONG).show();
+                    mIsfdbGetEditionsTask.search(isbn);
+                    return true;
+                }
+            }
+            Snackbar.make(mVb.getRoot(), R.string.warning_requires_isbn,
+                          Snackbar.LENGTH_LONG).show();
+            return false;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void onCreateContextMenu(final int position) {
@@ -396,25 +394,22 @@ public class EditBookTocFragment
     /**
      * Using {@link MenuPicker} for context menus.
      *
-     * @param menuItem that was selected
+     * @param itemId   that was selected
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int menuItem,
+    private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
-        switch (menuItem) {
-            case R.id.MENU_EDIT:
-                editEntry(position);
-                return true;
+        if (itemId == R.id.MENU_EDIT) {
+            editEntry(position);
+            return true;
 
-            case R.id.MENU_DELETE:
-                deleteEntry(position);
-                return true;
-
-            default:
-                return false;
+        } else if (itemId == R.id.MENU_DELETE) {
+            deleteEntry(position);
+            return true;
         }
+        return false;
     }
 
     /**

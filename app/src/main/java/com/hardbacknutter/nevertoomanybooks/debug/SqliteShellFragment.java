@@ -128,19 +128,18 @@ public class SqliteShellFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_DEBUG_SQ_SHELL_RUN: {
-                executeSql(mVb.input.getText().toString().trim());
-                return true;
-            }
-            case R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES: {
-                executeSql(SQL_LIST_TABLES);
-                return true;
-            }
+        final int itemId = item.getItemId();
 
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.MENU_DEBUG_SQ_SHELL_RUN) {
+            executeSql(mVb.input.getText().toString().trim());
+            return true;
+
+        } else if (itemId == R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES) {
+            executeSql(SQL_LIST_TABLES);
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void executeSql(@NonNull final String sql) {

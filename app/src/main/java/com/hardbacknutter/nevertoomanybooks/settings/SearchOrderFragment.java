@@ -139,27 +139,24 @@ public class SearchOrderFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        final int itemId = item.getItemId();
 
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_RESET: {
-                final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
-                //noinspection ConstantConditions
-                final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
+        if (itemId == R.id.MENU_RESET) {
+            final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
+            //noinspection ConstantConditions
+            final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
 
-                // Reset the global/original list for the type.
-                mType.resetList(getContext(), systemLocale, userLocale);
-                // and replace the content of the local list with the (new) defaults.
-                mSiteList.clear();
-                mSiteList.addAll(mType.getSites());
+            // Reset the global/original list for the type.
+            mType.resetList(getContext(), systemLocale, userLocale);
+            // and replace the content of the local list with the (new) defaults.
+            mSiteList.clear();
+            mSiteList.addAll(mType.getSites());
 
-                mListAdapter.notifyDataSetChanged();
-                return true;
-            }
-
-            default:
-                return super.onOptionsItemSelected(item);
+            mListAdapter.notifyDataSetChanged();
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private static class SearchSiteListAdapter

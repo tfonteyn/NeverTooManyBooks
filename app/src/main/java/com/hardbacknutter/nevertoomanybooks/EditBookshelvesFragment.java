@@ -157,22 +157,20 @@ public class EditBookshelvesFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_PURGE_BLNS: {
-                final int position = mModel.getSelectedPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    //noinspection ConstantConditions
-                    StandardDialogs.purgeBLNS(getContext(), R.string.lbl_bookshelf,
-                                              mModel.getBookshelf(position),
-                                              () -> mModel.purgeBLNS());
-                }
-                return true;
-            }
+        final int itemId = item.getItemId();
 
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.MENU_PURGE_BLNS) {
+            final int position = mModel.getSelectedPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                //noinspection ConstantConditions
+                StandardDialogs.purgeBLNS(getContext(), R.string.lbl_bookshelf,
+                                          mModel.getBookshelf(position),
+                                          () -> mModel.purgeBLNS());
+            }
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void onCreateContextMenu(final int position) {
@@ -213,37 +211,35 @@ public class EditBookshelvesFragment
     /**
      * Using {@link MenuPicker} for context menus.
      *
-     * @param menuItem that was selected
+     * @param itemId   that was selected
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int menuItem,
+    private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
 
         final Bookshelf bookshelf = mModel.getBookshelf(position);
 
-        switch (menuItem) {
-            case R.id.MENU_EDIT:
-                editItem(bookshelf);
-                return true;
+        if (itemId == R.id.MENU_EDIT) {
+            editItem(bookshelf);
+            return true;
 
-            case R.id.MENU_DELETE:
-                if (bookshelf.getId() > Bookshelf.DEFAULT) {
-                    mModel.deleteBookshelf(position);
-                    mAdapter.notifyItemRemoved(position);
+        } else if (itemId == R.id.MENU_DELETE) {
+            if (bookshelf.getId() > Bookshelf.DEFAULT) {
+                mModel.deleteBookshelf(position);
+                mAdapter.notifyItemRemoved(position);
 
-                } else {
-                    //TODO: why not ? as long as we make sure there is another one left..
-                    // e.g. count > 2, then you can delete '1'
-                    Snackbar.make(mVb.list, R.string.warning_cannot_delete_1st_bs,
-                                  Snackbar.LENGTH_LONG).show();
-                }
-                return true;
-
-            default:
-                return false;
+            } else {
+                //TODO: why not ? as long as we make sure there is another one left..
+                // e.g. count > 2, then you can delete '1'
+                Snackbar.make(mVb.list, R.string.warning_cannot_delete_1st_bs,
+                              Snackbar.LENGTH_LONG).show();
+            }
+            return true;
         }
+
+        return false;
     }
 
     /**

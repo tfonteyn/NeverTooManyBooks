@@ -715,68 +715,63 @@ public class BookDetailsFragment
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final Book book = mBookViewModel.getBook();
+        final int itemId = item.getItemId();
 
-        switch (item.getItemId()) {
-            case R.id.MENU_BOOK_EDIT: {
-                startEditBook();
-                return true;
-            }
-            case R.id.MENU_BOOK_DELETE: {
-                final String title = book.getString(DBDefinitions.KEY_TITLE);
-                final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-                //noinspection ConstantConditions
-                StandardDialogs.deleteBook(getContext(), title, authors, () -> {
-                    mBookViewModel.deleteBook(getContext());
+        if (itemId == R.id.MENU_BOOK_EDIT) {
+            startEditBook();
+            return true;
 
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
-                    getActivity().finish();
-                });
-                return true;
-            }
-            case R.id.MENU_BOOK_DUPLICATE: {
-                final Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
-                        .putExtra(Book.BKEY_DATA_BUNDLE, book.duplicate());
-                startActivityForResult(dupIntent, RequestCode.BOOK_DUPLICATE);
-                return true;
-            }
-            case R.id.MENU_BOOK_READ:
-            case R.id.MENU_BOOK_UNREAD: {
-                // toggle 'read' status of the book
-                final boolean value = mBookViewModel.toggleRead();
-                final Field<Boolean, View> field = getField(R.id.icon_read);
-                field.getAccessor().setValue(value);
-                // Still call this, as it will handle related views (none for now, but future-proof)
-                //noinspection ConstantConditions
-                field.setVisibility(getView(), true, false);
-                return true;
-            }
-            case R.id.MENU_BOOK_LOAN_ADD: {
-                EditLenderDialogFragment
-                        .newInstance(RK_EDIT_LENDER, book)
-                        .show(getChildFragmentManager(), EditLenderDialogFragment.TAG);
-                return true;
-            }
-            case R.id.MENU_BOOK_LOAN_DELETE: {
-                mBookViewModel.deleteLoan();
-                populateLendToField(null);
-                return true;
-            }
-            case R.id.MENU_SHARE: {
-                //noinspection ConstantConditions
-                startActivity(book.getShareIntent(getContext()));
-                return true;
-            }
-            case R.id.MENU_BOOK_SEND_TO_GOODREADS: {
-                Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
-                              Snackbar.LENGTH_LONG).show();
-                mGrSendOneBookTask.startTask(book.getId());
-                return true;
-            }
+        } else if (itemId == R.id.MENU_BOOK_DELETE) {
+            final String title = book.getString(DBDefinitions.KEY_TITLE);
+            final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            //noinspection ConstantConditions
+            StandardDialogs.deleteBook(getContext(), title, authors, () -> {
+                mBookViewModel.deleteBook(getContext());
 
-            default:
-                return super.onOptionsItemSelected(item);
+                //noinspection ConstantConditions
+                getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
+                getActivity().finish();
+            });
+            return true;
+
+        } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
+            final Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
+                    .putExtra(Book.BKEY_DATA_BUNDLE, book.duplicate());
+            startActivityForResult(dupIntent, RequestCode.BOOK_DUPLICATE);
+            return true;
+
+        } else if (itemId == R.id.MENU_BOOK_READ
+                   || itemId == R.id.MENU_BOOK_UNREAD) {// toggle 'read' status of the book
+            final boolean value = mBookViewModel.toggleRead();
+            final Field<Boolean, View> field = getField(R.id.icon_read);
+            field.getAccessor().setValue(value);
+            // Still call this, as it will handle related views (none for now, but future-proof)
+            //noinspection ConstantConditions
+            field.setVisibility(getView(), true, false);
+            return true;
+
+        } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
+            EditLenderDialogFragment
+                    .newInstance(RK_EDIT_LENDER, book)
+                    .show(getChildFragmentManager(), EditLenderDialogFragment.TAG);
+            return true;
+
+        } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
+            mBookViewModel.deleteLoan();
+            populateLendToField(null);
+            return true;
+
+        } else if (itemId == R.id.MENU_SHARE) {//noinspection ConstantConditions
+            startActivity(book.getShareIntent(getContext()));
+            return true;
+
+        } else if (itemId == R.id.MENU_BOOK_SEND_TO_GOODREADS) {
+            Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
+                          Snackbar.LENGTH_LONG).show();
+            mGrSendOneBookTask.startTask(book.getId());
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private void startEditBook() {
@@ -787,17 +782,16 @@ public class BookDetailsFragment
 
     @Override
     @CallSuper
-    public boolean onContextItemSelected(@NonNull final MenuItem menuItem) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (menuItem.getItemId()) {
-            case R.id.MENU_BOOK_LOAN_DELETE:
-                mBookViewModel.deleteLoan();
-                populateLendToField(null);
-                return true;
+    public boolean onContextItemSelected(@NonNull final MenuItem item) {
+        final int itemId = item.getItemId();
 
-            default:
-                return super.onContextItemSelected(menuItem);
+        if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
+            mBookViewModel.deleteLoan();
+            populateLendToField(null);
+            return true;
         }
+
+        return super.onContextItemSelected(item);
     }
 
     /**

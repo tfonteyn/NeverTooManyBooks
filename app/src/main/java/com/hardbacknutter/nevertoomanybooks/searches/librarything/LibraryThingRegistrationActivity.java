@@ -120,15 +120,14 @@ public class LibraryThingRegistrationActivity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_ACTION_CONFIRM:
-                validateKey();
-                return true;
+        final int itemId = item.getItemId();
 
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.MENU_ACTION_CONFIRM) {
+            validateKey();
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void validateKey() {

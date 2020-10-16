@@ -277,87 +277,82 @@ public class CoverHandler {
     /**
      * Using {@link MenuPicker} for context menus.
      *
-     * @param menuItem that was selected
+     * @param itemId   that was selected
      * @param position in the list (i.e. mCIdx)
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int menuItem,
+    private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
 
         if (mFragment instanceof HostingFragment) {
             ((HostingFragment) mFragment).setCurrentCoverIndex(mCIdx);
         }
 
-        switch (menuItem) {
-            case R.id.MENU_DELETE: {
-                mBookViewModel.setCover(mContext, mCIdx, null);
-                setPlaceholder();
-                return true;
+        if (itemId == R.id.MENU_DELETE) {
+            mBookViewModel.setCover(mContext, mCIdx, null);
+            setPlaceholder();
+            return true;
+
+        } else if (itemId
+                   == R.id.SUBMENU_THUMB_ROTATE) {
+            // Just a submenu; skip, but display a hint if user is rotating a camera image
+            if (mShowHintAboutRotating) {
+                TipManager.display(mContext, R.string.tip_autorotate_camera_images, null);
+                mShowHintAboutRotating = false;
             }
-            case R.id.SUBMENU_THUMB_ROTATE: {
-                // Just a submenu; skip, but display a hint if user is rotating a camera image
-                if (mShowHintAboutRotating) {
-                    TipManager.display(mContext, R.string.tip_autorotate_camera_images, null);
-                    mShowHintAboutRotating = false;
-                }
-                return true;
-            }
-            case R.id.MENU_THUMB_ROTATE_CW: {
-                showProgress(true);
-                startRotation(90);
-                return true;
-            }
-            case R.id.MENU_THUMB_ROTATE_CCW: {
-                showProgress(true);
-                startRotation(-90);
-                return true;
-            }
-            case R.id.MENU_THUMB_ROTATE_180: {
-                showProgress(true);
-                startRotation(180);
-                return true;
-            }
-            case R.id.MENU_THUMB_CROP: {
-                final File srcFile;
-                try {
-                    srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
-                } catch (@NonNull final IOException e) {
-                    Snackbar.make(mCoverView, R.string.error_storage_not_writable,
-                                  Snackbar.LENGTH_LONG).show();
-                    return true;
-                }
+            return true;
+
+        } else if (itemId == R.id.MENU_THUMB_ROTATE_CW) {
+            showProgress(true);
+            startRotation(90);
+            return true;
+
+        } else if (itemId == R.id.MENU_THUMB_ROTATE_CCW) {
+            showProgress(true);
+            startRotation(-90);
+            return true;
+
+        } else if (itemId == R.id.MENU_THUMB_ROTATE_180) {
+            showProgress(true);
+            startRotation(180);
+            return true;
+
+        } else if (itemId == R.id.MENU_THUMB_CROP) {
+            try {
+                final File srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
                 startCropper(srcFile);
-                return true;
+
+            } catch (@NonNull final IOException e) {
+                Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                              Snackbar.LENGTH_LONG).show();
             }
-            case R.id.MENU_EDIT: {
-                final File srcFile;
-                try {
-                    srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
-                } catch (@NonNull final IOException e) {
-                    Snackbar.make(mCoverView, R.string.error_storage_not_writable,
-                                  Snackbar.LENGTH_LONG).show();
-                    return true;
-                }
+            return true;
+
+        } else if (itemId == R.id.MENU_EDIT) {
+            try {
+                final File srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
                 startEditor(srcFile);
-                return true;
+
+            } catch (@NonNull final IOException e) {
+                Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                              Snackbar.LENGTH_LONG).show();
             }
-            case R.id.MENU_THUMB_ADD_FROM_CAMERA: {
-                startCamera();
-                return true;
-            }
-            case R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM: {
-                startChooser();
-                return true;
-            }
-            case R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS: {
-                startCoverBrowser();
-                return true;
-            }
-            default: {
-                return false;
-            }
+            return true;
+
+        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
+            startCamera();
+            return true;
+
+        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
+            startChooser();
+            return true;
+
+        } else if (itemId == R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS) {
+            startCoverBrowser();
+            return true;
         }
+        return false;
     }
 
 

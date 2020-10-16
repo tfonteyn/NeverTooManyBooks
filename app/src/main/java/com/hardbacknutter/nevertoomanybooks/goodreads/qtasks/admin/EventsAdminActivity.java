@@ -75,25 +75,23 @@ public class EventsAdminActivity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_RESET: {
-                new MaterialAlertDialogBuilder(this)
-                        .setIcon(R.drawable.ic_warning)
-                        .setMessage(R.string.gr_tq_btn_cleanup_old_events)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            QueueManager.getInstance().cleanupOldEvents();
-                            refreshData();
-                        })
-                        .create()
-                        .show();
-                return true;
-            }
+        final int itemId = item.getItemId();
 
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.MENU_RESET) {
+            new MaterialAlertDialogBuilder(this)
+                    .setIcon(R.drawable.ic_warning)
+                    .setMessage(R.string.gr_tq_btn_cleanup_old_events)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        QueueManager.getInstance().cleanupOldEvents();
+                        refreshData();
+                    })
+                    .create()
+                    .show();
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**

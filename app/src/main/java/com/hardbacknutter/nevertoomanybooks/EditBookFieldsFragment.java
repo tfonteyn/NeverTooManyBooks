@@ -322,28 +322,28 @@ public class EditBookFieldsFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_ISBN_VALIDITY_NONE:
-                mIsbnValidityCheck = ISBN.VALIDITY_NONE;
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
-                return true;
+        final int itemId = item.getItemId();
 
-            case R.id.MENU_ISBN_VALIDITY_LOOSE:
-                mIsbnValidityCheck = ISBN.VALIDITY_LOOSE;
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
-                return true;
+        if (itemId == R.id.MENU_ISBN_VALIDITY_NONE) {
+            mIsbnValidityCheck = ISBN.VALIDITY_NONE;
+            mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
+            mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_NONE);
+            return true;
 
-            case R.id.MENU_ISBN_VALIDITY_STRICT:
-                mIsbnValidityCheck = ISBN.VALIDITY_STRICT;
-                mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
-                mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
-                return true;
+        } else if (itemId == R.id.MENU_ISBN_VALIDITY_LOOSE) {
+            mIsbnValidityCheck = ISBN.VALIDITY_LOOSE;
+            mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
+            mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_LOOSE);
+            return true;
 
-            default:
-                return super.onOptionsItemSelected(item);
+        } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+            mIsbnValidityCheck = ISBN.VALIDITY_STRICT;
+            mIsbnCleanupTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
+            mIsbnValidationTextWatcher.setValidityLevel(ISBN.VALIDITY_STRICT);
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

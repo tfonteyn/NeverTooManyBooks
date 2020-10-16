@@ -122,6 +122,7 @@ public class StylePickerDialogFragment
 
         loadStyles();
 
+        //noinspection ConstantConditions
         mAdapter = new RadioGroupRecyclerAdapter<>(getContext(),
                                                    mAdapterItemList, mCurrentStyleUuid,
                                                    uuid -> mCurrentStyleUuid = uuid);
@@ -130,29 +131,31 @@ public class StylePickerDialogFragment
 
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_ACTION_CONFIRM:
-                onStyleSelected();
-                return true;
-            case R.id.MENU_EDIT:
-                onEditStyle();
-                return true;
-            case R.id.MENU_LEVEL_TOGGLE:
-                mShowAllStyles = !mShowAllStyles;
-                if (mShowAllStyles) {
-                    item.setTitle(R.string.btn_less_ellipsis);
-                    item.setIcon(R.drawable.ic_unfold_less);
-                } else {
-                    item.setTitle(R.string.btn_more_ellipsis);
-                    item.setIcon(R.drawable.ic_unfold_more);
-                }
-                loadStyles();
-                mAdapter.notifyDataSetChanged();
-                return true;
+        final int itemId = item.getItemId();
 
-            default:
-                return false;
+        if (itemId == R.id.MENU_ACTION_CONFIRM) {
+            onStyleSelected();
+            return true;
+
+        } else if (itemId == R.id.MENU_EDIT) {
+            onEditStyle();
+            return true;
+
+        } else if (itemId == R.id.MENU_LEVEL_TOGGLE) {
+            mShowAllStyles = !mShowAllStyles;
+            if (mShowAllStyles) {
+                item.setTitle(R.string.btn_less_ellipsis);
+                item.setIcon(R.drawable.ic_unfold_less);
+            } else {
+                item.setTitle(R.string.btn_more_ellipsis);
+                item.setIcon(R.drawable.ic_unfold_more);
+            }
+            loadStyles();
+            mAdapter.notifyDataSetChanged();
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -189,6 +192,7 @@ public class StylePickerDialogFragment
         final long templateId = selectedStyle.getId();
         if (selectedStyle.isBuiltin()) {
             // clone a builtin style first
+            //noinspection ConstantConditions
             selectedStyle = selectedStyle.clone(getContext());
         }
 
@@ -201,6 +205,7 @@ public class StylePickerDialogFragment
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
                 .putExtra(BooklistStyle.BKEY_STYLE, selectedStyle)
                 .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateId);
+        //noinspection ConstantConditions
         activity.startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }
 
@@ -211,8 +216,9 @@ public class StylePickerDialogFragment
         final Context context = getContext();
 
         try (DAO db = new DAO(TAG)) {
+            //noinspection ConstantConditions
             mStyleList = StyleDAO.getStyles(context, db, mShowAllStyles);
-            if (!mShowAllStyles) {
+            if (!mShowAllStyles && mCurrentStyleUuid != null) {
                 // make sure the currently selected style is in the list
                 if (mStyleList.stream()
                               .noneMatch(style -> mCurrentStyleUuid.equals(style.getUuid()))) {

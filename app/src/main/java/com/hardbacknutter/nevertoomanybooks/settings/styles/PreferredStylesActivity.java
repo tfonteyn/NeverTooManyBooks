@@ -291,19 +291,18 @@ public class PreferredStylesActivity
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (item.getItemId()) {
-            case R.id.MENU_PURGE_BLNS: {
-                final BooklistStyle selected = mListAdapter.getSelectedStyle();
-                if (selected != null) {
-                    StandardDialogs.purgeBLNS(this, R.string.lbl_style, selected, () ->
-                            mModel.purgeBLNS(selected.getId()));
-                }
-                return true;
+        final int itemId = item.getItemId();
+
+        if (itemId == R.id.MENU_PURGE_BLNS) {
+            final BooklistStyle selected = mListAdapter.getSelectedStyle();
+            if (selected != null) {
+                StandardDialogs.purgeBLNS(this, R.string.lbl_style, selected, () ->
+                        mModel.purgeBLNS(selected.getId()));
             }
-            default:
-                return super.onOptionsItemSelected(item);
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void onCreateContextMenu(final int position) {
@@ -359,40 +358,37 @@ public class PreferredStylesActivity
     /**
      * Using {@link MenuPicker} for context menus.
      *
-     * @param menuItem that was selected
+     * @param itemId   that was selected
      * @param position in the list
      *
      * @return {@code true} if handled.
      */
-    private boolean onContextItemSelected(@IdRes final int menuItem,
+    private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
 
         final BooklistStyle style = mModel.getList().get(position);
 
-        switch (menuItem) {
-            case R.id.MENU_EDIT:
-                // dev sanity check
-                if (BuildConfig.DEBUG /* always */) {
-                    if (style.isBuiltin()) {
-                        throw new IllegalStateException("can't edit a builtin style");
-                    }
+        if (itemId == R.id.MENU_EDIT) {
+            // dev sanity check
+            if (BuildConfig.DEBUG /* always */) {
+                if (style.isBuiltin()) {
+                    throw new IllegalStateException("can't edit a builtin style");
                 }
-                editStyle(style, style.getId());
-                return true;
+            }
+            editStyle(style, style.getId());
+            return true;
 
-            case R.id.MENU_DELETE:
-                mModel.deleteStyle(this, style);
-                mListAdapter.notifyItemRemoved(position);
-                return true;
+        } else if (itemId == R.id.MENU_DELETE) {
+            mModel.deleteStyle(this, style);
+            mListAdapter.notifyItemRemoved(position);
+            return true;
 
-            case R.id.MENU_DUPLICATE:
-                // pass the style id of the template style
-                editStyle(style.clone(this), style.getId());
-                return true;
-
-            default:
-                return false;
+        } else if (itemId == R.id.MENU_DUPLICATE) {
+            // pass the style id of the template style
+            editStyle(style.clone(this), style.getId());
+            return true;
         }
+        return false;
     }
 
     /**

@@ -190,41 +190,39 @@ public class AuthorWorksFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_AUTHOR_WORKS_ALL: {
-                item.setChecked(true);
-                mModel.reloadWorkList(true, true);
-                mAdapter.notifyDataSetChanged();
-                return true;
-            }
-            case R.id.MENU_AUTHOR_WORKS_TOC: {
-                item.setChecked(true);
-                mModel.reloadWorkList(true, false);
-                mAdapter.notifyDataSetChanged();
-                return true;
-            }
-            case R.id.MENU_AUTHOR_WORKS_BOOKS: {
-                item.setChecked(true);
-                mModel.reloadWorkList(false, true);
-                mAdapter.notifyDataSetChanged();
-                return true;
-            }
+        final int itemId = item.getItemId();
 
-            case R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES: {
-                final boolean checked = !item.isChecked();
-                item.setChecked(checked);
-                mModel.setAllBookshelves(checked);
-                mModel.reloadWorkList();
-                mAdapter.notifyDataSetChanged();
-                //noinspection ConstantConditions
-                mActionBar.setTitle(mModel.getScreenTitle(getContext()));
-                mActionBar.setSubtitle(mModel.getScreenSubtitle());
-                return true;
-            }
+        if (itemId == R.id.MENU_AUTHOR_WORKS_ALL) {
+            item.setChecked(true);
+            mModel.reloadWorkList(true, true);
+            mAdapter.notifyDataSetChanged();
+            return true;
 
-            default:
-                return super.onOptionsItemSelected(item);
+        } else if (itemId == R.id.MENU_AUTHOR_WORKS_TOC) {
+            item.setChecked(true);
+            mModel.reloadWorkList(true, false);
+            mAdapter.notifyDataSetChanged();
+            return true;
+
+        } else if (itemId == R.id.MENU_AUTHOR_WORKS_BOOKS) {
+            item.setChecked(true);
+            mModel.reloadWorkList(false, true);
+            mAdapter.notifyDataSetChanged();
+            return true;
+
+        } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
+            final boolean checked = !item.isChecked();
+            item.setChecked(checked);
+            mModel.setAllBookshelves(checked);
+            mModel.reloadWorkList();
+            mAdapter.notifyDataSetChanged();
+            //noinspection ConstantConditions
+            mActionBar.setTitle(mModel.getScreenTitle(getContext()));
+            mActionBar.setSubtitle(mModel.getScreenSubtitle());
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -270,15 +268,11 @@ public class AuthorWorksFragment
                                           final int position) {
         final AuthorWork work = mModel.getWorks().get(position);
 
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (menuItem) {
-            case R.id.MENU_DELETE:
-                deleteWork(position, work);
-                return true;
-
-            default:
-                return false;
+        if (menuItem == R.id.MENU_DELETE) {
+            deleteWork(position, work);
+            return true;
         }
+        return false;
     }
 
     private void deleteWork(final int position,

@@ -180,26 +180,25 @@ public class BookSearchByIsbnFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_SCAN_BARCODE: {
-                Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
-                mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
-                return true;
-            }
-            case R.id.MENU_ISBN_VALIDITY_STRICT: {
-                final boolean checked = !item.isChecked();
-                item.setChecked(checked);
-                mCoordinator.setStrictIsbn(checked);
+        final int itemId = item.getItemId();
 
-                final int validity = checked ? ISBN.VALIDITY_STRICT : ISBN.VALIDITY_NONE;
-                mIsbnCleanupTextWatcher.setValidityLevel(validity);
-                mIsbnValidationTextWatcher.setValidityLevel(validity);
-                return true;
-            }
+        if (itemId == R.id.MENU_SCAN_BARCODE) {
+            Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
+            mInScanMode = mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
+            return true;
 
-            default:
-                return super.onOptionsItemSelected(item);
+        } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
+            final boolean checked = !item.isChecked();
+            item.setChecked(checked);
+            mCoordinator.setStrictIsbn(checked);
+
+            final int validity = checked ? ISBN.VALIDITY_STRICT : ISBN.VALIDITY_NONE;
+            mIsbnCleanupTextWatcher.setValidityLevel(validity);
+            mIsbnValidationTextWatcher.setValidityLevel(validity);
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

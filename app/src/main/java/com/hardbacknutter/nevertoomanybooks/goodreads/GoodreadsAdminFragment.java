@@ -166,22 +166,21 @@ public class GoodreadsAdminFragment
 
     @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.MENU_GOODREADS_TASKS: {
-                // Start the activity that shows the active GoodReads tasks
-                startActivity(new Intent(getContext(), TasksAdminActivity.class));
-                return true;
-            }
+        final int itemId = item.getItemId();
 
-            case R.id.MENU_GOODREADS_SETTINGS: {
-                final Intent intent = new Intent(getContext(), SettingsActivity.class)
-                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, GoodreadsPreferencesFragment.TAG);
-                startActivity(intent);
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.MENU_GOODREADS_TASKS) {
+            // Start the activity that shows the active GoodReads tasks
+            startActivity(new Intent(getContext(), TasksAdminActivity.class));
+            return true;
+
+        } else if (itemId == R.id.MENU_GOODREADS_SETTINGS) {
+            final Intent intent = new Intent(getContext(), SettingsActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, GoodreadsPreferencesFragment.TAG);
+            startActivity(intent);
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     private void importBooks(final boolean sync) {

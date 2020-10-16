@@ -369,65 +369,60 @@ public abstract class BaseActivity
     @CallSuper
     boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
-        switch (item.getItemId()) {
 
-            case R.id.nav_advanced_search: {
-                final Intent searchIntent = new Intent(this, FTSSearchActivity.class);
-                startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
-                return true;
-            }
-            case R.id.nav_manage_bookshelves: {
-                final Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
-                startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
-                return true;
-            }
+        final int itemId = item.getItemId();
 
-            case R.id.nav_manage_list_styles: {
-                // Child classes should override if they have a 'current' style
-                // and/or a database to pass instead of the default and new instance here.
-                final Intent intent = new Intent(this, PreferredStylesActivity.class);
-                try (DAO db = new DAO(TAG)) {
-                    intent.putExtra(BooklistStyle.BKEY_STYLE_UUID,
-                                    StyleDAO.getDefault(this, db).getUuid());
-                }
-                startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_STYLES);
-                return true;
-            }
+        if (itemId == R.id.nav_advanced_search) {
+            final Intent searchIntent = new Intent(this, FTSSearchActivity.class);
+            startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
+            return true;
 
-            case R.id.nav_import: {
-                final Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
-                startActivityForResult(intent, RequestCode.NAV_PANEL_IMPORT);
-                return true;
-            }
-            case R.id.nav_export: {
-                final Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-                startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
-                return true;
-            }
+        } else if (itemId == R.id.nav_manage_bookshelves) {
+            final Intent intent = new Intent(this, AdminActivity.class)
+                    .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
+            return true;
 
-            case R.id.nav_goodreads: {
-                final Intent intent = new Intent(this, AdminActivity.class)
-                        .putExtra(BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
-                startActivityForResult(intent, RequestCode.NAV_PANEL_GOODREADS);
-                return true;
+        } else if (itemId == R.id.nav_manage_list_styles) {
+            // Child classes should override if they have a 'current' style
+            // and/or a database to pass instead of the default and new instance here.
+            final Intent intent = new Intent(this, PreferredStylesActivity.class);
+            try (DAO db = new DAO(TAG)) {
+                intent.putExtra(BooklistStyle.BKEY_STYLE_UUID,
+                                StyleDAO.getDefault(this, db).getUuid());
             }
-            case R.id.nav_settings: {
-                final Intent intent = new Intent(this, SettingsActivity.class);
-                startActivityForResult(intent, RequestCode.NAV_PANEL_SETTINGS);
-                return true;
-            }
-            case R.id.nav_about: {
-                startActivityForResult(new Intent(this, AboutActivity.class),
-                                       RequestCode.NAV_PANEL_ABOUT);
-                return true;
-            }
+            startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_STYLES);
+            return true;
 
-            default:
-                return false;
+        } else if (itemId == R.id.nav_import) {
+            final Intent intent = new Intent(this, AdminActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_IMPORT);
+            return true;
+
+        } else if (itemId == R.id.nav_export) {
+            final Intent intent = new Intent(this, AdminActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
+            return true;
+
+        } else if (itemId == R.id.nav_goodreads) {
+            final Intent intent = new Intent(this, AdminActivity.class)
+                    .putExtra(BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_GOODREADS);
+            return true;
+
+        } else if (itemId == R.id.nav_settings) {
+            final Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_SETTINGS);
+            return true;
+
+        } else if (itemId == R.id.nav_about) {
+            startActivityForResult(new Intent(this, AboutActivity.class),
+                                   RequestCode.NAV_PANEL_ABOUT);
+            return true;
         }
+        return false;
     }
 
     boolean isNavigationDrawerVisible() {
