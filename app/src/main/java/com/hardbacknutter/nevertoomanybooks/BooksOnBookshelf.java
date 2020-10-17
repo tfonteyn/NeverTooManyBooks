@@ -1265,10 +1265,11 @@ public class BooksOnBookshelf
                     final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
                     if (style != null) {
                         mModel.onStyleEdited(this, style);
-                    }
 
-                    // This is independent from the above style having been modified ot not.
-                    if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                        // ALWAYS rebuild here, even when the style was not modified
+                        // as we're handling this as a style-change
+                        // (we could do checks... but it's not worth the effort.)
+                        // i.e. same as in mOnStylePickerListener
                         mModel.setForceRebuildInOnResume(true);
                     }
                 }
