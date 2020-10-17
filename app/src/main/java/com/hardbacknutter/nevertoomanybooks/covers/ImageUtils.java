@@ -54,11 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 public final class ImageUtils {
 
-    /**
-     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
-     * -> width = 0.6 * maxHeight.
-     */
-    public static final float HW_RATIO = 0.6f;
     /** By default, covers will always be downsized to maximum 600 x 1000 pixels. */
     static final int MAX_IMAGE_WIDTH_PX = 600;
     static final int MAX_IMAGE_HEIGHT_PX = 1000;
@@ -79,17 +74,17 @@ public final class ImageUtils {
      * Set a placeholder drawable in the view.
      *
      * @param imageView    View to populate
-     * @param drawable     drawable to use
-     * @param background   (optional) drawable to use for the background; use {@code 0} for none
      * @param layoutWidth  layout width parameter
      * @param layoutHeight layout height parameter
+     * @param drawable     drawable to use
+     * @param background   (optional) drawable to use for the background; use {@code 0} for none
      */
     @UiThread
     public static void setPlaceholder(@NonNull final ImageView imageView,
-                                      @DrawableRes final int drawable,
-                                      @DrawableRes final int background,
                                       final int layoutWidth,
-                                      final int layoutHeight) {
+                                      final int layoutHeight,
+                                      @DrawableRes final int drawable,
+                                      @DrawableRes final int background) {
         final ViewGroup.LayoutParams lp = imageView.getLayoutParams();
         lp.width = layoutWidth;
         lp.height = layoutHeight;

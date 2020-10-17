@@ -23,6 +23,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -265,18 +266,25 @@ public class EditBookFieldsFragment
         super.onPopulateViews(fields, book);
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final Resources res = getResources();
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
-                    this, mBookViewModel, 0, mVb.isbn, mVb.coverImage0,
-                    getResources().getDimensionPixelSize(R.dimen.cover_edit_0_height), mProgressBar
+                    this, mBookViewModel, 0, mVb.isbn,
+                    res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
+                    res.getDimensionPixelSize(R.dimen.cover_edit_0_height),
+                    mVb.coverImage0,
+                    mProgressBar
             );
         }
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
-                    this, mBookViewModel, 1, mVb.isbn, mVb.coverImage1,
-                    getResources().getDimensionPixelSize(R.dimen.cover_edit_1_height), mProgressBar
+                    this, mBookViewModel, 1, mVb.isbn,
+                    res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
+                    res.getDimensionPixelSize(R.dimen.cover_edit_1_height),
+                    mVb.coverImage1,
+                    mProgressBar
             );
         }
 

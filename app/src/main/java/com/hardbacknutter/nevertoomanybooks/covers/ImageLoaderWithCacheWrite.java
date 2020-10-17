@@ -72,21 +72,21 @@ public class ImageLoaderWithCacheWrite
      * Constructor.
      *
      * @param imageView to populate
-     * @param file      to load, must be valid
      * @param maxWidth  Maximum desired width of the image
      * @param maxHeight Maximum desired height of the image
+     * @param file      to load, must be valid
      * @param onSuccess (optional) Runnable to execute after successfully displaying the image
      * @param uuid      UUID of the book
      * @param cIdx      0..n image index
      */
     public ImageLoaderWithCacheWrite(@NonNull final ImageView imageView,
-                                     @NonNull final File file,
                                      final int maxWidth,
                                      final int maxHeight,
+                                     @NonNull final File file,
                                      @Nullable final Runnable onSuccess,
                                      @NonNull final String uuid,
                                      @IntRange(from = 0, to = 1) final int cIdx) {
-        super(imageView, file, maxWidth, maxHeight, onSuccess);
+        super(imageView, maxWidth, maxHeight, file, onSuccess);
 
         mUuid = uuid;
         mCIdx = cIdx;

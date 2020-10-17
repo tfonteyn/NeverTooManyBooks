@@ -133,7 +133,7 @@ public class ZoomedImageDialogFragment
         getDialog().getWindow().setBackgroundDrawableResource(android.R.color.transparent);
 
         // load and resize as needed.
-        new ImageLoader(mImageView, mImageFile, maxWidth, maxHeight, null)
+        new ImageLoader(mImageView, maxWidth, maxHeight, mImageFile, null)
                 .execute();
     }
 }

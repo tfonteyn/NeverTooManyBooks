@@ -102,6 +102,14 @@ public class BooklistAdapter
 
     /** Log tag. */
     private static final String TAG = "BooklistAdapter";
+
+    /**
+     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
+     * -> width = 0.6 * maxHeight.
+     * See {@link #mCoverLongestSide}.
+     */
+    private static final float HW_RATIO = 0.6f;
+
     /** Cached locale. */
     @NonNull
     private final Locale mUserLocale;
@@ -117,14 +125,11 @@ public class BooklistAdapter
     private FieldsInUse mFieldsInUse;
     /** List style to apply. */
     private BooklistStyle mStyle;
-
     private int mGroupRowHeight;
     /** Top margin to use for Level 1 <strong>if</strong> the {@link #mGroupRowHeight} is wrap. */
     private int mGroupLevel1topMargin;
-
     @LayoutRes
     private int mBookLayoutId;
-
     /** Longest side for a cover in pixels. */
     private int mCoverLongestSide;
     /** The cursor is the equivalent of the 'list of items'. */
@@ -286,8 +291,7 @@ public class BooklistAdapter
         // NEWTHINGS: BooklistGroup.KEY add a new holder type if needed
         switch (groupId) {
             case BooklistGroup.BOOK:
-                holder = new BookHolder(this, itemView, mFieldsInUse,
-                                        mCoverLongestSide, mCoverLongestSide);
+                holder = new BookHolder(this, itemView, mFieldsInUse, mCoverLongestSide);
                 break;
 
             case BooklistGroup.AUTHOR:
@@ -897,8 +901,7 @@ public class BooklistAdapter
         @NonNull
         private final String mX_bracket_Y_bracket;
 
-        private final int mMaxWidth;
-        private final int mMaxHeight;
+        private final int mCoverLongestSide;
 
         /** Whether to re-order the title as per global preference. */
         private final boolean mReorderTitle;
@@ -954,8 +957,7 @@ public class BooklistAdapter
         BookHolder(@NonNull final BooklistAdapter adapter,
                    @NonNull final View itemView,
                    @NonNull final FieldsInUse fieldsInUse,
-                   final int coverMaxWidth,
-                   final int coverMaxHeight) {
+                   final int coverLongestSide) {
             super(itemView);
 
             final Context context = itemView.getContext();
@@ -991,8 +993,7 @@ public class BooklistAdapter
             mLocationView = itemView.findViewById(R.id.location);
             mBookshelvesView = itemView.findViewById(R.id.shelves);
 
-            mMaxWidth = coverMaxWidth;
-            mMaxHeight = coverMaxHeight;
+            mCoverLongestSide = coverLongestSide;
             mCoverView = itemView.findViewById(R.id.coverImage0);
             if (!mInUse.cover) {
                 // shown by default, so hide it if not in use.
@@ -1220,9 +1221,11 @@ public class BooklistAdapter
             // 1. If caching is used, and we don't have cache building happening, check it.
             if (mAdapter.isImageCachingEnabled()
                 && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
-                final Bitmap bitmap = CoversDAO.getImage(context, uuid, 0, mMaxWidth, mMaxHeight);
+                final Bitmap bitmap = CoversDAO.getImage(context, uuid, 0,
+                                                         mCoverLongestSide, mCoverLongestSide);
                 if (bitmap != null) {
-                    ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight, bitmap, 0);
+                    ImageUtils.setImageView(mCoverView, mCoverLongestSide, mCoverLongestSide,
+                                            bitmap, 0);
                     return;
                 }
             }
@@ -1233,7 +1236,7 @@ public class BooklistAdapter
             if (file == null || !file.exists()) {
                 // leave the space blank, but preserve the width BASED on the mMaxHeight!
                 final ViewGroup.LayoutParams lp = mCoverView.getLayoutParams();
-                lp.width = (int) (mMaxHeight * ImageUtils.HW_RATIO);
+                lp.width = (int) (mCoverLongestSide * HW_RATIO);
                 lp.height = 0;
                 mCoverView.setLayoutParams(lp);
                 mCoverView.setImageDrawable(null);
@@ -1245,13 +1248,13 @@ public class BooklistAdapter
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 // This 2nd task uses the serial executor.
-                new ImageLoaderWithCacheWrite(mCoverView, file, mMaxWidth, mMaxHeight, null,
-                                              uuid, 0)
+                new ImageLoaderWithCacheWrite(mCoverView, mCoverLongestSide, mCoverLongestSide,
+                                              file, null, uuid, 0)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             } else {
                 // Cache not used: Get the image from the file system and display it.
-                new ImageLoader(mCoverView, file, mMaxWidth, mMaxHeight, null)
+                new ImageLoader(mCoverView, mCoverLongestSide, mCoverLongestSide, file, null)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }

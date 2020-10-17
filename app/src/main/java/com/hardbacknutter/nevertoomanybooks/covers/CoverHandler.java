@@ -148,16 +148,18 @@ public class CoverHandler {
      * @param bookViewModel access to the book
      * @param cIdx          0..n image index
      * @param isbnView      the view to read the *current* ISBN from
+     * @param maxWidth      the maximum width for the cover
+     * @param maxHeight     the maximum height for the cover
      * @param coverView     the views to populate
-     * @param maxHeight     the maximum height (==width) for the cover
      * @param progressBar   (optional) a progress bar
      */
     public CoverHandler(@NonNull final Fragment fragment,
                         @NonNull final BookViewModel bookViewModel,
                         @IntRange(from = 0, to = 1) final int cIdx,
                         @NonNull final TextView isbnView,
-                        @NonNull final ImageView coverView,
+                        final int maxWidth,
                         final int maxHeight,
+                        @NonNull final ImageView coverView,
                         @Nullable final ProgressBar progressBar) {
 
         TEMP_COVER_FILENAME = TAG + "_" + cIdx + ".jpg";
@@ -171,9 +173,7 @@ public class CoverHandler {
         mIsbnView = isbnView;
         mCIdx = cIdx;
         mCoverView = coverView;
-        // we use a square, and adjust when we get the image/placeholder sizes figured out
-        //noinspection SuspiciousNameCombination
-        mMaxWidth = maxHeight;
+        mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
 
         // Allow zooming by clicking on the image;
@@ -218,9 +218,9 @@ public class CoverHandler {
         });
 
         // finally load the image.
-        final File uuidCoverFile = mBookViewModel.getCoverFile(mContext, mCIdx);
-        if (uuidCoverFile != null) {
-            new ImageLoader(mCoverView, uuidCoverFile, mMaxWidth, mMaxHeight, null)
+        final File file = mBookViewModel.getCoverFile(mContext, mCIdx);
+        if (file != null) {
+            new ImageLoader(mCoverView, mMaxWidth, mMaxHeight, file, null)
                     .execute();
             mCoverView.setBackground(null);
 
@@ -634,7 +634,7 @@ public class CoverHandler {
         if (srcFile.exists()) {
             srcFile = mBookViewModel.setCover(mContext, cIdx, srcFile);
             if (srcFile != null) {
-                new ImageLoader(mCoverView, srcFile, mMaxWidth, mMaxHeight, null)
+                new ImageLoader(mCoverView, mMaxWidth, mMaxHeight, srcFile, null)
                         .execute();
                 mCoverView.setBackground(null);
                 return;
@@ -655,10 +655,8 @@ public class CoverHandler {
         if (file == null || file.length() == 0) {
             setPlaceholder();
         } else {
-            ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_broken_image,
-                                      R.drawable.outline_rounded,
-                                      (int) (mMaxWidth * ImageUtils.HW_RATIO),
-                                      mMaxHeight);
+            ImageUtils.setPlaceholder(mCoverView, mMaxWidth, mMaxHeight,
+                                      R.drawable.ic_broken_image, R.drawable.outline_rounded);
         }
     }
 
@@ -666,10 +664,8 @@ public class CoverHandler {
      * Put a standard placeholder.
      */
     private void setPlaceholder() {
-        ImageUtils.setPlaceholder(mCoverView, R.drawable.ic_add_a_photo,
-                                  R.drawable.outline_rounded,
-                                  (int) (mMaxWidth * ImageUtils.HW_RATIO),
-                                  mMaxHeight);
+        ImageUtils.setPlaceholder(mCoverView, mMaxWidth, mMaxHeight,
+                                  R.drawable.ic_add_a_photo, R.drawable.outline_rounded);
     }
 
     public interface HostingFragment {

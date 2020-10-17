@@ -504,19 +504,24 @@ public class BookDetailsFragment
         super.onPopulateViews(fields, book);
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final Resources res = getResources();
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
-                    this, mBookViewModel, 0, mVbPub.isbn, mVb.coverImage0,
-                    getResources().getDimensionPixelSize(R.dimen.cover_details_0_height),
+                    this, mBookViewModel, 0, mVbPub.isbn,
+                    res.getDimensionPixelSize(R.dimen.cover_details_0_width),
+                    res.getDimensionPixelSize(R.dimen.cover_details_0_height),
+                    mVb.coverImage0,
                     mProgressBar
             );
         }
 
         if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
-                    this, mBookViewModel, 1, mVbPub.isbn, mVb.coverImage1,
-                    getResources().getDimensionPixelSize(R.dimen.cover_details_1_height),
+                    this, mBookViewModel, 1, mVbPub.isbn,
+                    res.getDimensionPixelSize(R.dimen.cover_details_1_width),
+                    res.getDimensionPixelSize(R.dimen.cover_details_1_height),
+                    mVb.coverImage1,
                     mProgressBar
             );
         }

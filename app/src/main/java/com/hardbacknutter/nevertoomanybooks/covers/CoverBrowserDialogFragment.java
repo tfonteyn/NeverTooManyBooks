@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -141,10 +142,9 @@ public class CoverBrowserDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
 
-        final int longestSide = getResources()
-                .getDimensionPixelSize(R.dimen.cover_browser_preview_height);
-        mPreviewMaxWidth = longestSide;
-        mPreviewMaxHeight = longestSide;
+        final Resources res = getResources();
+        mPreviewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);
+        mPreviewMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_preview_height);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class CoverBrowserDialogFragment
         // so the progress overlay will be shown in the correct position
         if (mVb.preview.getVisibility() != View.VISIBLE) {
             final ViewGroup.LayoutParams previewLp = mVb.preview.getLayoutParams();
-            previewLp.width = (int) (mPreviewMaxHeight * ImageUtils.HW_RATIO);
+            previewLp.width = mPreviewMaxWidth;
             previewLp.height = mPreviewMaxHeight;
             mVb.preview.setLayoutParams(previewLp);
         }
@@ -340,7 +340,7 @@ public class CoverBrowserDialogFragment
         if (imageFileInfo != null) {
             final File file = imageFileInfo.getFile();
             if (file != null && file.exists()) {
-                new ImageLoader(mVb.preview, file, mPreviewMaxWidth, mPreviewMaxHeight, () -> {
+                new ImageLoader(mVb.preview, mPreviewMaxWidth, mPreviewMaxHeight, file, () -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     mModel.setSelectedFile(file);
                     mVb.preview.setVisibility(View.VISIBLE);
@@ -430,10 +430,9 @@ public class CoverBrowserDialogFragment
          */
         @SuppressWarnings("SameParameterValue")
         GalleryAdapter() {
-            final int longestSide = getResources()
-                    .getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
-            mMaxWidth = longestSide;
-            mMaxHeight = longestSide;
+            final Resources res = getResources();
+            mMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_width);
+            mMaxHeight = res.getDimensionPixelSize(R.dimen.cover_browser_gallery_height);
         }
 
         @Override
@@ -463,8 +462,8 @@ public class CoverBrowserDialogFragment
 
             if (imageFileInfo == null) {
                 // not in the cache,; use a placeholder but preserve the available space
-                ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_image, 0,
-                                          (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
+                ImageUtils.setPlaceholder(holder.imageView, mMaxWidth, mMaxHeight,
+                                          R.drawable.ic_image, 0);
                 // and queue a request for it.
                 mModel.fetchGalleryImage(isbn);
                 holder.siteView.setText("");
@@ -474,7 +473,7 @@ public class CoverBrowserDialogFragment
                 final File file = imageFileInfo.getFile();
                 if (file != null && file.exists()) {
                     // YES, load it into the view.
-                    new ImageLoader(holder.imageView, file, mMaxWidth, mMaxHeight, null)
+                    new ImageLoader(holder.imageView, mMaxWidth, mMaxHeight, file, null)
                             .executeOnExecutor(mModel.getGalleryDisplayExecutor());
 
                     // keep this statement here, or we would need to call file.exists() twice
@@ -489,8 +488,8 @@ public class CoverBrowserDialogFragment
                     // no file. Theoretically we should not get here,
                     // as a failed search should have removed the isbn from the edition list,
                     // but race-conditions + paranoia...
-                    ImageUtils.setPlaceholder(holder.imageView, R.drawable.ic_broken_image, 0,
-                                              (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
+                    ImageUtils.setPlaceholder(holder.imageView, mMaxWidth, mMaxHeight,
+                                              R.drawable.ic_broken_image, 0);
                     holder.siteView.setText("");
                 }
             }

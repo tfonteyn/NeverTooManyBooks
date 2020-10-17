@@ -54,15 +54,15 @@ public class ImageLoader
      * Constructor.
      *
      * @param imageView to populate
-     * @param file      to load, must be valid
      * @param maxWidth  Maximum desired width of the image
      * @param maxHeight Maximum desired height of the image
+     * @param file      to load, must be valid
      * @param onSuccess (optional) Runnable to execute after successfully displaying the image
      */
     public ImageLoader(@NonNull final ImageView imageView,
-                       @NonNull final File file,
                        final int maxWidth,
                        final int maxHeight,
+                       @NonNull final File file,
                        @Nullable final Runnable onSuccess) {
         // see onPostExecute
         imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
@@ -97,8 +97,9 @@ public class ImageLoader
             } else {
                 // We only get here if we THOUGHT we had an image, but we failed to
                 // load/decode it. So use 'broken-image' icon and preserve the space
-                ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
-                                          (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
+                ImageUtils.setPlaceholder(imageView, mMaxWidth, mMaxHeight,
+                                          R.drawable.ic_broken_image, 0
+                                         );
             }
         }
     }
