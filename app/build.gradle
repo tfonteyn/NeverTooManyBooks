@@ -18,7 +18,6 @@
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
 
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -128,7 +127,7 @@ android {
 
         // Add the build date
         buildConfigField('String', 'TIMESTAMP',
-                '"' + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE) + '"')
+                '"' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
 
         // 2020-03-27. Started getting "APIs Temporarily disabled" on LIBRARY_THING
         // searches and "Temporarily down on images.
