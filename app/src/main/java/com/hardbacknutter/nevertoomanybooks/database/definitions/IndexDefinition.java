@@ -139,4 +139,16 @@ class IndexDefinition {
 
         return sql.toString();
     }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "IndexDefinition{"
+               + "mTable=" + mTable
+               + ", mDomains=" + mDomains
+               + ", mIsUnique=" + mIsUnique
+               + ", mNameSuffix='" + mNameSuffix + '\''
+               + ", def=\n" + def()
+               + "\n}";
+    }
 }
