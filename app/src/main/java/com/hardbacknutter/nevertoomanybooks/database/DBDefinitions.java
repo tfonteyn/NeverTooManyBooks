@@ -30,14 +30,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition.TableType;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -112,25 +109,15 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOK_TOC_ENTRIES;
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
-    /** Full text search; should NOT be added to {@link #ALL_TABLES}. */
-    public static final TableDefinition TBL_FTS_BOOKS;
 
     /** Keeps track of nodes in the list across application restarts. */
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
-
-    /**
-     * The temp booklist table. Constructed by {@link Booklist}.
-     * {@link TableDefinition.TableType#Temporary). NOT added to {@link #ALL_TABLES}.
-     */
-    public static final TableDefinition TMP_TBL_BOOK_LIST;
 
     /* ======================================================================================
      * Primary and Foreign key domain definitions.
      * ====================================================================================== */
     /** Primary key. */
     public static final Domain DOM_PK_ID;
-    /** FTS Primary key. */
-    public static final Domain DOM_FTS_BOOKS_PK;
 
     /** Foreign key. */
     public static final Domain DOM_FK_AUTHOR;
@@ -323,12 +310,6 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
     public static final Domain DOM_UUID;
-    /**
-     * {@link #TBL_FTS_BOOKS}
-     * specific formatted list; example: "stephen baxter;arthur c. clarke;"
-     */
-    public static final Domain DOM_FTS_AUTHOR_NAME;
-    public static final Domain DOM_FTS_TOC_ENTRY_TITLE;
     /** For sorting in the {@link Booklist}. */
     public static final Domain DOM_BL_AUTHOR_SORT;
 
@@ -348,7 +329,7 @@ public final class DBDefinitions {
      */
     public static final Domain DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT;
 
-    /** {@link #TMP_TBL_BOOK_LIST} {@link Booklist}. */
+    /** {@link Booklist}. */
     public static final Domain DOM_BL_PRIMARY_SERIES_COUNT;
 
     /**
@@ -361,7 +342,7 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_NODE_KEY;
     /** {@link #TBL_BOOK_LIST_NODE_STATE} {@link Booklist}. */
     public static final Domain DOM_BL_NODE_GROUP;
-    /** {@link #TMP_TBL_BOOK_LIST} {@link Booklist}. */
+    /** {@link Booklist}. */
     public static final Domain DOM_BL_NODE_LEVEL;
     /**
      * {@link Booklist}.
@@ -383,8 +364,6 @@ public final class DBDefinitions {
 
     /** Primary key. */
     public static final String KEY_PK_ID = "_id";
-    /** Primary key. */
-    public static final String KEY_FTS_BOOK_ID = "docid";
     /** Foreign key. */
     public static final String KEY_FK_BOOK = "book";
     /** Foreign key. */
@@ -511,10 +490,6 @@ public final class DBDefinitions {
     public static final String KEY_STYLE_IS_BUILTIN = "builtin";
     public static final String KEY_STYLE_IS_PREFERRED = "preferred";
     public static final String KEY_STYLE_MENU_POSITION = "menu_order";
-    /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
-    public static final String KEY_FTS_AUTHOR_NAME = "author_name";
-    /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
-    public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
     public static final String KEY_BOOK_COUNT = "book_count";
 
     /** Booklist. Virtual domains. */
@@ -1289,29 +1264,12 @@ public final class DBDefinitions {
         ALL_TABLES.put(TBL_BOOKLIST_STYLES.getName(), TBL_BOOKLIST_STYLES);
 
         /* ======================================================================================
-         *  {@link Booklist} tables keeping track of the actual list with visibility
-         *  and expansion, and the flat list for the book details screen.
+         *  {@link Booklist} tables.
          * ====================================================================================== */
 
-        // Prefix name of BOOK_LIST-related tables.
-        final String DB_TN_BOOK_LIST_PREFIX = "book_list";
-        // this one is a standard table to preserve the state across app restarts
-        TBL_BOOK_LIST_NODE_STATE =
-                new TableDefinition(DB_TN_BOOK_LIST_PREFIX + "_node_settings")
-                        .setAlias("bl_ns");
-
-        TMP_TBL_BOOK_LIST =
-                new TableDefinition(DB_TN_BOOK_LIST_PREFIX + "_tmp_")
-                        .setAlias("bl");
-        // Allow debug mode to use a standard table so we can export and inspect the content.
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
-            TMP_TBL_BOOK_LIST.setType(TableDefinition.TableType.Standard);
-        } else {
-            TMP_TBL_BOOK_LIST.setType(TableDefinition.TableType.Temporary);
-        }
-
         // Stores the node state across application restarts.
-        TBL_BOOK_LIST_NODE_STATE
+        TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings")
+                .setAlias("bl_ns")
                 .addDomains(DOM_PK_ID,
                             DOM_FK_BOOKSHELF,
                             DOM_FK_STYLE,
@@ -1325,56 +1283,6 @@ public final class DBDefinitions {
                 .setPrimaryKey(DOM_PK_ID)
                 .addIndex("BOOKSHELF_STYLE", false, DOM_FK_BOOKSHELF, DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(), TBL_BOOK_LIST_NODE_STATE);
-
-        /*
-         * Temporary table used to store a flattened booklist tree structure.
-         * This table should always be created without column constraints applied,
-         * with the exception of the "_id" primary key autoincrement
-         *
-         * Domains are added at runtime depending on how the list is build.
-         */
-        TMP_TBL_BOOK_LIST.addDomains(DOM_PK_ID,
-                                     // {@link BooklistGroup#GroupKey}.
-                                     // The actual value is set on a by-group/book basis.
-                                     DOM_BL_NODE_KEY,
-                                     // {@link BooklistNodeDAO}.
-                                     DOM_BL_NODE_EXPANDED,
-                                     DOM_BL_NODE_VISIBLE
-                                    )
-                         .setPrimaryKey(DOM_PK_ID);
-        //TODO: figure out indexes
-
-
-        /* ======================================================================================
-         *  FTS definitions
-         *  reminder: no need for a type nor constraints: https://sqlite.org/fts3.html
-         * ====================================================================================== */
-        TBL_FTS_BOOKS = new TableDefinition("books_fts")
-                .setType(TableType.FTS4);
-
-        DOM_FTS_BOOKS_PK =
-                new Domain.Builder(KEY_FTS_BOOK_ID, ColumnInfo.TYPE_INTEGER).primaryKey().build();
-
-        DOM_FTS_AUTHOR_NAME =
-                new Domain.Builder(KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT).build();
-
-        DOM_FTS_TOC_ENTRY_TITLE =
-                new Domain.Builder(KEY_FTS_TOC_ENTRY_TITLE, ColumnInfo.TYPE_TEXT).build();
-
-        // should NOT be added to {@link #ALL_TABLES}.
-        TBL_FTS_BOOKS.addDomains(DOM_TITLE,
-                                 DOM_FTS_AUTHOR_NAME,
-                                 DOM_SERIES_TITLE,
-                                 DOM_PUBLISHER_NAME,
-
-                                 DOM_BOOK_DESCRIPTION,
-                                 DOM_BOOK_PRIVATE_NOTES,
-                                 DOM_BOOK_GENRE,
-                                 DOM_BOOK_LOCATION,
-                                 DOM_BOOK_ISBN,
-
-                                 DOM_FTS_TOC_ENTRY_TITLE
-                                );
     }
 
     private DBDefinitions() {

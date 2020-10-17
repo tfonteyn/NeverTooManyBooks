@@ -52,8 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.ListOfValuesFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.FtsDefinition;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -70,13 +70,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinition.KEY_FTS_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinition.TBL_FTS_BOOKS;
 
 /**
  * Build and populate temporary tables with details of "flattened" books.
@@ -283,7 +283,7 @@ public class Booklist
                           @Nullable final String publisherName,
                           @Nullable final String keywords) {
 
-        final String query = DAOSql.SqlFTS.createMatchString(author, title, seriesTitle,
+        final String query = FtsDefinition.createMatchString(author, title, seriesTitle,
                                                              publisherName, keywords);
         if (!query.isEmpty()) {
             mFilters.add(context ->

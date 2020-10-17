@@ -134,7 +134,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -4073,12 +4072,12 @@ public class DAO
      */
     @Nullable
     Cursor fetchSearchSuggestions(@NonNull final String keywords) {
-        final String query = DAOSql.SqlFTS.cleanupFtsCriterion(keywords, null);
+        final String query = FtsDefinition.cleanupFtsCriterion(keywords, null);
         // do we have anything to search for?
         if (query.isEmpty()) {
             return null;
         }
-        return mSyncedDb.rawQuery(DAOSql.SqlFTS.SEARCH_SUGGESTIONS, new String[]{query});
+        return mSyncedDb.rawQuery(FtsDefinition.Sql.SEARCH_SUGGESTIONS, new String[]{query});
     }
 
     /**
@@ -4102,38 +4101,84 @@ public class DAO
                                             @Nullable final String keywords,
                                             final int limit) {
 
-        final String query = DAOSql.SqlFTS.createMatchString(author, title, seriesTitle,
+        final String query = FtsDefinition.createMatchString(author, title, seriesTitle,
                                                              publisherName, keywords);
         // do we have anything to search for?
         if (query.isEmpty()) {
             return null;
         }
-        return mSyncedDb.rawQuery(DAOSql.SqlFTS.SEARCH, new String[]{query, String.valueOf(limit)});
+        return mSyncedDb
+                .rawQuery(FtsDefinition.Sql.SEARCH, new String[]{query, String.valueOf(limit)});
     }
 
-
     /**
-     * Bind a string or {@code null} value to a parameter since binding a {@code null}
-     * in bindString produces an error.
+     * Insert a book into the FTS. Assumes book does not already exist in FTS.
      * <p>
-     * <strong>Note:</strong> We specifically want to use the default Locale for this.
+     * <strong>Transaction:</strong> required
+     *
+     * @param context Current context
+     * @param bookId  the book to add to FTS
+     *
+     * @throws TransactionException a transaction must be started before calling this method
      */
-    private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
-                                  final int position,
-                                  @Nullable final CharSequence text) {
-        if (text == null) {
-            stmt.bindNull(position);
-        } else {
-            stmt.bindString(position, toAscii(text));
+    private void ftsInsert(@NonNull final Context context,
+                           final long bookId) {
+
+        if (!mSyncedDb.inTransaction()) {
+            throw new TransactionException(TransactionException.REQUIRED);
+        }
+
+        try {
+            final SynchronizedStatement stmt = mSqlStatementManager.get(
+                    STMT_INSERT_FTS, () -> FtsDefinition.Sql.INSERT);
+
+            try (Cursor cursor = mSyncedDb.rawQuery(FtsDefinition.Sql.BOOK_BY_ID,
+                                                    new String[]{String.valueOf(bookId)})) {
+                ftsProcessBooks(cursor, stmt);
+            }
+        } catch (@NonNull final RuntimeException e) {
+            // updating FTS should not be fatal.
+            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
         }
     }
 
+    /**
+     * Update an existing FTS record.
+     * <p>
+     * <strong>Transaction:</strong> required
+     *
+     * @param context Application context
+     * @param bookId  the book id
+     *
+     * @throws TransactionException a transaction must be started before calling this method
+     */
+    private void ftsUpdate(@NonNull final Context context,
+                           final long bookId) {
+
+        if (!mSyncedDb.inTransaction()) {
+            throw new TransactionException(TransactionException.REQUIRED);
+        }
+
+        try {
+            final SynchronizedStatement stmt = mSqlStatementManager.get(
+                    STMT_UPDATE_FTS, () -> FtsDefinition.Sql.UPDATE);
+
+            try (Cursor cursor = mSyncedDb.rawQuery(FtsDefinition.Sql.BOOK_BY_ID,
+                                                    new String[]{String.valueOf(bookId)})) {
+                ftsProcessBooks(cursor, stmt);
+            }
+        } catch (@NonNull final RuntimeException e) {
+            // updating FTS should not be fatal.
+            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+        }
+    }
 
     /**
      * Process the book details from the cursor using the passed fts query.
      * <p>
      * <strong>Note:</strong> This assumes a specific order for query parameters.
-     * If modified, then update {@link DAOSql.SqlFTS#INSERT_BODY}, {@link DAOSql.SqlFTS#UPDATE}
+     * If modified, then update {@link FtsDefinition.Sql#INSERT_BODY},
+     * {@link FtsDefinition.Sql#UPDATE}
      *
      * <strong>Transaction:</strong> required
      *
@@ -4179,7 +4224,7 @@ public class DAO
 
             // Get list of authors
             try (Cursor authors = mSyncedDb
-                    .rawQuery(DAOSql.SqlFTS.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
+                    .rawQuery(FtsDefinition.Sql.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndex(KEY_AUTHOR_GIVEN_NAMES);
@@ -4198,7 +4243,7 @@ public class DAO
 
             // Get list of series
             try (Cursor series = mSyncedDb
-                    .rawQuery(DAOSql.SqlFTS.GET_SERIES_BY_BOOK_ID, qpBookId)) {
+                    .rawQuery(FtsDefinition.Sql.GET_SERIES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colSeriesTitle < 0) {
                     colSeriesTitle = series.getColumnIndexOrThrow(KEY_SERIES_TITLE);
@@ -4211,7 +4256,7 @@ public class DAO
 
             // Get list of publishers
             try (Cursor publishers = mSyncedDb
-                    .rawQuery(DAOSql.SqlFTS.GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
+                    .rawQuery(FtsDefinition.Sql.GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colPublisherName < 0) {
                     colPublisherName = publishers.getColumnIndexOrThrow(KEY_PUBLISHER_NAME);
@@ -4224,7 +4269,7 @@ public class DAO
 
             // Get list of TOC titles
             try (Cursor toc = mSyncedDb
-                    .rawQuery(DAOSql.SqlFTS.GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
+                    .rawQuery(FtsDefinition.Sql.GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colTOCEntryTitle < 0) {
                     colTOCEntryTitle = toc.getColumnIndexOrThrow(KEY_TITLE);
@@ -4260,64 +4305,18 @@ public class DAO
     }
 
     /**
-     * Insert a book into the FTS. Assumes book does not already exist in FTS.
+     * Bind a string or {@code null} value to a parameter since binding a {@code null}
+     * in bindString produces an error.
      * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context Current context
-     * @param bookId  the book to add to FTS
-     *
-     * @throws TransactionException a transaction must be started before calling this method
+     * <strong>Note:</strong> We specifically want to use the default Locale for this.
      */
-    private void ftsInsert(@NonNull final Context context,
-                           final long bookId) {
-
-        if (!mSyncedDb.inTransaction()) {
-            throw new TransactionException(TransactionException.REQUIRED);
-        }
-
-        try {
-            final SynchronizedStatement stmt = mSqlStatementManager.get(
-                    STMT_INSERT_FTS, () -> DAOSql.SqlFTS.INSERT);
-
-            try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.BOOK_BY_ID,
-                                                    new String[]{String.valueOf(bookId)})) {
-                ftsProcessBooks(cursor, stmt);
-            }
-        } catch (@NonNull final RuntimeException e) {
-            // updating FTS should not be fatal.
-            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
-        }
-    }
-
-    /**
-     * Update an existing FTS record.
-     * <p>
-     * <strong>Transaction:</strong> required
-     *
-     * @param context Application context
-     * @param bookId  the book id
-     *
-     * @throws TransactionException a transaction must be started before calling this method
-     */
-    private void ftsUpdate(@NonNull final Context context,
-                           final long bookId) {
-
-        if (!mSyncedDb.inTransaction()) {
-            throw new TransactionException(TransactionException.REQUIRED);
-        }
-
-        try {
-            final SynchronizedStatement stmt = mSqlStatementManager.get(
-                    STMT_UPDATE_FTS, () -> DAOSql.SqlFTS.UPDATE);
-
-            try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.BOOK_BY_ID,
-                                                    new String[]{String.valueOf(bookId)})) {
-                ftsProcessBooks(cursor, stmt);
-            }
-        } catch (@NonNull final RuntimeException e) {
-            // updating FTS should not be fatal.
-            Logger.error(context, TAG, e, ERROR_FAILED_TO_UPDATE_FTS);
+    private void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
+                                  final int position,
+                                  @Nullable final CharSequence text) {
+        if (text == null) {
+            stmt.bindNull(position);
+        } else {
+            stmt.bindString(position, toAscii(text));
         }
     }
 
@@ -4328,26 +4327,25 @@ public class DAO
      * @param context Current context
      */
     public void ftsRebuild(@NonNull final Context context) {
+
         long t0 = 0;
         if (BuildConfig.DEBUG /* always */) {
             t0 = System.nanoTime();
         }
         boolean gotError = false;
 
-        // Make a copy of the FTS table definition for our temporary table.
-        final TableDefinition ftsTemp = new TableDefinition(TBL_FTS_BOOKS);
-        // Give it a new name
-        ftsTemp.setName(ftsTemp.getName() + "_temp");
+        final String tmpTableName = "books_fts_rebuilding";
+        final TableDefinition ftsTemp = FtsDefinition.createTableDefinition(tmpTableName);
 
-        final SyncLock txLock = mSyncedDb.beginTransaction(true);
+        final Synchronizer.SyncLock txLock = mSyncedDb.beginTransaction(true);
 
         try {
-            //IMPORTANT: withConstraints MUST BE false
+            //IMPORTANT: withDomainConstraints MUST BE false
             ftsTemp.recreate(mSyncedDb, false);
 
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    "INSERT INTO " + ftsTemp.getName() + DAOSql.SqlFTS.INSERT_BODY);
-                 Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlFTS.ALL_BOOKS, null)) {
+                    "INSERT INTO " + tmpTableName + FtsDefinition.Sql.INSERT_BODY);
+                 Cursor cursor = mSyncedDb.rawQuery(FtsDefinition.Sql.ALL_BOOKS, null)) {
                 ftsProcessBooks(cursor, stmt);
             }
 
@@ -4357,8 +4355,11 @@ public class DAO
             // updating FTS should not be fatal.
             Logger.error(context, TAG, e);
             gotError = true;
+            mSyncedDb.drop(tmpTableName);
+
         } finally {
             mSyncedDb.endTransaction(txLock);
+
             /*
             http://sqlite.1065341.n5.nabble.com/Bug-in-FTS3-when-trying-to-rename-table-within-a-transaction-td11430.html
             FTS tables should only be renamed outside of transactions.
@@ -4366,15 +4367,15 @@ public class DAO
             //  Delete old table and rename the new table
             if (!gotError) {
                 // Drop old table, ready for rename
-                mSyncedDb.drop(TBL_FTS_BOOKS.getName());
-                mSyncedDb.execSQL("ALTER TABLE " + ftsTemp + " RENAME TO " + TBL_FTS_BOOKS);
+                mSyncedDb.drop(FtsDefinition.TBL_FTS_BOOKS.getName());
+                mSyncedDb.execSQL("ALTER TABLE " + tmpTableName
+                                  + " RENAME TO " + FtsDefinition.TBL_FTS_BOOKS.getName());
             }
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, mInstanceName
-                       + "|rebuildFts"
-                       + "|completed in " + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
+            Log.d(TAG, "|rebuildFts|completed in "
+                       + (System.nanoTime() - t0) / NANO_TO_MILLIS + " ms");
         }
     }
 
