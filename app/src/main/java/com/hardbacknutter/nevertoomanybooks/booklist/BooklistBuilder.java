@@ -58,6 +58,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
@@ -168,10 +169,34 @@ final class BooklistBuilder {
         mFilteredOnBookshelf = !bookshelf.isAllBooks();
         mRebuildState = rebuildState;
 
-        // Setup the table (but don't create it yet)
-        // The base definition comes with a small set of essential domains.
-        mListTable = new TableDefinition(DBDefinitions.TMP_TBL_BOOK_LIST);
-        mListTable.setName(mListTable.getName() + instanceId);
+        /*
+         * Temporary table used to store a flattened booklist tree structure.
+         * This table should always be created without column constraints applied,
+         * with the exception of the "_id" primary key autoincrement
+         *
+         * Domains are added at runtime depending on how the list is build.
+         *
+         * We setup the table here, but don't create it yet.
+         */
+        mListTable = new TableDefinition("book_list_tmp_" + instanceId)
+                .setAlias("bl");
+        // Allow debug mode to use a standard table so we can export and inspect the content.
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
+            mListTable.setType(TableDefinition.TableType.Standard);
+        } else {
+            mListTable.setType(TableDefinition.TableType.Temporary);
+        }
+
+        //TODO: figure out indexes
+        mListTable.addDomains(DOM_PK_ID,
+                              // {@link BooklistGroup#GroupKey}.
+                              // The actual value is set on a by-group/book basis.
+                              DOM_BL_NODE_KEY,
+                              // {@link BooklistNodeDAO}.
+                              DOM_BL_NODE_EXPANDED,
+                              DOM_BL_NODE_VISIBLE
+                             )
+                  .setPrimaryKey(DOM_PK_ID);
     }
 
     /**
@@ -300,7 +325,7 @@ final class BooklistBuilder {
             }
         }
 
-        //IMPORTANT: withConstraints MUST BE false
+        //IMPORTANT: withDomainConstraints MUST BE false
         mListTable.recreate(syncedDb, false);
 
         // get the triggers in place, ready to act on our upcoming initial insert.
@@ -375,7 +400,7 @@ final class BooklistBuilder {
          *
          * This is just a simple technique to provide persistent context to the trigger.
          */
-        //IMPORTANT: withConstraints MUST BE false
+        //IMPORTANT: withDomainConstraints MUST BE false
         mTriggerHelperTable.recreate(db, false);
 
         final int groupCount = mStyle.getGroups().size();
