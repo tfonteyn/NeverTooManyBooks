@@ -251,8 +251,7 @@ public class GoodreadsSearchActivity
     private class WorksAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        private final int mMaxWidth;
-        private final int mMaxHeight;
+        private final int mCoverLongestSide;
 
         private final List<GoodreadsWork> mItems;
 
@@ -266,14 +265,11 @@ public class GoodreadsSearchActivity
                      @NonNull final List<GoodreadsWork> items) {
             mItems = items;
             final TypedArray coverSizes =
-                    context.getResources()
-                           .obtainTypedArray(R.array.cover_book_list_longest_side);
-            final int longestSide = coverSizes.getDimensionPixelSize(
-                    BooklistStyle.IMAGE_SCALE_DEFAULT, 0);
+                    context.getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
+            // Same as in BoB, we use a square space and ratio multiplier
+            mCoverLongestSide =
+                    coverSizes.getDimensionPixelSize(BooklistStyle.IMAGE_SCALE_DEFAULT, 0);
             coverSizes.recycle();
-
-            mMaxWidth = longestSide;
-            mMaxHeight = longestSide;
         }
 
         @NonNull
@@ -295,7 +291,7 @@ public class GoodreadsSearchActivity
             final GoodreadsWork item = mItems.get(position);
 
             // get the cover (or start a background task to get it)
-            item.fillImageView(holder.coverView, mMaxWidth, mMaxHeight);
+            item.fillImageView(holder.coverView, mCoverLongestSide);
 
             // Update the views based on the work
             holder.authorView.setText(item.authorName);

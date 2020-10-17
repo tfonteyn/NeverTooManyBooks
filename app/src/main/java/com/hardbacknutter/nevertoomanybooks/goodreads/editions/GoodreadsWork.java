@@ -73,6 +73,13 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  */
 public class GoodreadsWork {
 
+    /**
+     * 0.6 is based on a standard paperback 17.5cm x 10.6cm
+     * -> width = 0.6 * maxHeight.
+     * See {@link #mCoverLongestSide}.
+     */
+    private static final float HW_RATIO = 0.6f;
+
     /** {@link ByteArrayOutputStream} use. */
     private static final int BUFFER_SIZE = 65535;
     @Nullable
@@ -105,8 +112,7 @@ public class GoodreadsWork {
     private byte[] mImageBytes;
     @Nullable
     private WeakReference<ImageView> mImageView;
-    private int mMaxWidth;
-    private int mMaxHeight;
+    private int mCoverLongestSide;
 
     /**
      * Given a URL, get an image and return as a byte array. Called/run in a background task.
@@ -148,21 +154,19 @@ public class GoodreadsWork {
      * Otherwise, request its retrieval and store a reference to the view for use when
      * the image becomes available.
      *
-     * @param imageView ImageView to display cover image
-     * @param maxWidth  Maximum size of the image
-     * @param maxHeight Maximum size of the image
+     * @param imageView        ImageView to display cover image
+     * @param coverLongestSide Maximum size of the image
      */
     @UiThread
     void fillImageView(@NonNull final ImageView imageView,
-                       final int maxWidth,
-                       final int maxHeight) {
-        mMaxWidth = maxWidth;
-        mMaxHeight = maxHeight;
+                       final int coverLongestSide) {
+        mCoverLongestSide = coverLongestSide;
         synchronized (this) {
             if (mImageBytes == null) {
                 // Image not retrieved yet, so clear any existing image
-                ImageUtils.setPlaceholder(imageView, R.drawable.ic_image, 0,
-                                          (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
+                ImageUtils.setPlaceholder(imageView, (int) (mCoverLongestSide * HW_RATIO),
+                                          mCoverLongestSide, R.drawable.ic_image, 0
+                                         );
                 // Save the view so we know where the image is going to be displayed
                 mImageView = new WeakReference<>(imageView);
                 // run task to get the image. Use parallel executor.
@@ -180,10 +184,13 @@ public class GoodreadsWork {
                     final Bitmap bitmap = BitmapFactory
                             .decodeByteArray(mImageBytes, 0, mImageBytes.length,
                                              new BitmapFactory.Options());
-                    ImageUtils.setImageView(imageView, mMaxWidth, mMaxHeight, bitmap, 0);
+                    ImageUtils.setImageView(imageView, mCoverLongestSide, mCoverLongestSide,
+                                            bitmap, 0);
                 } else {
-                    ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
-                                              (int) (mMaxHeight * ImageUtils.HW_RATIO), mMaxHeight);
+                    ImageUtils.setPlaceholder(imageView,
+                                              (int) (mCoverLongestSide * HW_RATIO),
+                                              mCoverLongestSide,
+                                              R.drawable.ic_broken_image, 0);
                 }
 
                 // Clear the work in the View, in case some other job was running
@@ -221,11 +228,15 @@ public class GoodreadsWork {
                             final Bitmap bitmap = BitmapFactory
                                     .decodeByteArray(mImageBytes, 0, mImageBytes.length,
                                                      new BitmapFactory.Options());
-                            ImageUtils.setImageView(imageView, mMaxWidth, mMaxHeight, bitmap, 0);
+                            ImageUtils.setImageView(imageView,
+                                                    mCoverLongestSide, mCoverLongestSide,
+                                                    bitmap, 0);
                         } else {
-                            ImageUtils.setPlaceholder(imageView, R.drawable.ic_broken_image, 0,
-                                                      (int) (mMaxHeight * ImageUtils.HW_RATIO),
-                                                      mMaxHeight);
+                            ImageUtils.setPlaceholder(imageView,
+                                                      (int) (mCoverLongestSide * HW_RATIO),
+                                                      mCoverLongestSide,
+                                                      R.drawable.ic_broken_image, 0
+                                                     );
                         }
                     }
                 }
