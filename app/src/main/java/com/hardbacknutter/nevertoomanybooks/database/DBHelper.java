@@ -797,6 +797,7 @@ public final class DBHelper
         }
 
         //URGENT: the use of recreateAndReload is dangerous right now and can break updates.
+        // It's fine in the db12 update but should no longer be used & must be replaced
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table,
         // we should at the same time change DOM_UTC_LAST_SYNC_DATE_GOODREADS

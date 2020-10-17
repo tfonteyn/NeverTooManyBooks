@@ -157,7 +157,7 @@ public class XmlImporter
                     final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
                     final StylesReader stylesReader = new StylesReader(context, mDb);
                     fromXml(in, stylesReader);
-                    // URGENT:  StyleDAO.updateMenuOrder(context, mDb, );
+                    //TODO: we should update the menu order in the database here
                     mResults.styles += stylesReader.getStylesRead();
                 }
                 break;
