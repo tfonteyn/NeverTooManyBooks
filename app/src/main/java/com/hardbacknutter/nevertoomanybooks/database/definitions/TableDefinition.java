@@ -108,14 +108,11 @@ public class TableDefinition {
     /**
      * Constructor.
      *
-     * @param name    Table name
-     * @param domains List of domains in table
+     * @param name Table name; also used as alias unless the latter is overridden.
      */
-    public TableDefinition(@NonNull final String name,
-                           @NonNull final Domain... domains) {
+    public TableDefinition(@NonNull final String name) {
         mName = name;
         mAlias = name;
-        mDomains.addAll(Arrays.asList(domains));
     }
 
 //    /** NOT IN USE - needs more work/testing on the references.
@@ -317,7 +314,7 @@ public class TableDefinition {
     }
 
 
-    @SuppressWarnings("WeakerAccess")
+    @SuppressWarnings({"WeakerAccess", "unused"})
     @NonNull
     public String toDebugString() {
         return "TableDefinition{" +
@@ -499,7 +496,7 @@ public class TableDefinition {
      *
      * @return TableDefinition (for chaining)
      */
-    @SuppressWarnings("UnusedReturnValue")
+    @SuppressWarnings({"UnusedReturnValue", "unused"})
     @NonNull
     private TableDefinition addReference(@NonNull final TableDefinition parent,
                                          @NonNull final List<Domain> domains) {
@@ -988,6 +985,7 @@ public class TableDefinition {
     public enum TableType {
         Standard, Temporary, FTS3, FTS4;
 
+        @SuppressWarnings("unused")
         boolean isVirtual() {
             return this == FTS3 || this == FTS4;
         }
@@ -1156,5 +1154,4 @@ public class TableDefinition {
                    + "\n}";
         }
     }
-
 }

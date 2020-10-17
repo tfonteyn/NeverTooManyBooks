@@ -133,9 +133,10 @@ public final class CoversDAO
             new Domain.Builder(CKEY_HEIGHT, ColumnInfo.TYPE_INTEGER).notNull().build();
 
     /** table definitions. */
-    private static final TableDefinition TBL_IMAGE =
-            new TableDefinition("image", DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME,
-                                DOM_WIDTH, DOM_HEIGHT, DOM_CACHE_ID);
+    private static final TableDefinition TBL_IMAGE = new TableDefinition("image")
+            .addDomains(DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME,
+                        DOM_WIDTH, DOM_HEIGHT, DOM_CACHE_ID)
+            .setPrimaryKey(DOM_PK_ID);
 
     /** Get a cached image. */
     private static final String SQL_GET_IMAGE =
@@ -164,12 +165,10 @@ public final class CoversDAO
 
     /* table indexes. */
     static {
-        TBL_IMAGE
-                .setPrimaryKey(DOM_PK_ID)
-                .addIndex("id", true, DOM_PK_ID)
-                .addIndex(CKEY_CACHE_ID, true, DOM_CACHE_ID)
-                .addIndex(CKEY_CACHE_ID + "_" + CKEY_UTC_DATETIME,
-                          true, DOM_CACHE_ID, DOM_UTC_DATETIME);
+        TBL_IMAGE.addIndex("id", true, DOM_PK_ID)
+                 .addIndex(CKEY_CACHE_ID, true, DOM_CACHE_ID)
+                 .addIndex(CKEY_CACHE_ID + "_" + CKEY_UTC_DATETIME,
+                           true, DOM_CACHE_ID, DOM_UTC_DATETIME);
     }
 
     /** Collection of statements pre-compiled for this object. */

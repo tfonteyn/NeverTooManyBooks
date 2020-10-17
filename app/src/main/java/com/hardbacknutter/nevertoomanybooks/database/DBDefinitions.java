@@ -75,7 +75,7 @@ public final class DBDefinitions {
      * A collection of all tables used to be able to rebuild indexes etc...,
      * added in order so interdependency's work out.
      * <p>
-     * Only add standard tables. Do not add the TMP_* tables.
+     * Only add standard tables. Do not add temporary/FTS tables.
      */
     public static final Map<String, TableDefinition> ALL_TABLES = new LinkedHashMap<>();
     /** Basic table definition. */
@@ -574,6 +574,10 @@ public final class DBDefinitions {
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology").setAlias("bat");
 
         TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles").setAlias("bls");
+
+        TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings")
+                .setAlias("bl_ns");
+
 
         /* ======================================================================================
          *  Primary and Foreign Key definitions
@@ -1249,9 +1253,6 @@ public final class DBDefinitions {
                             .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_TOC_ENTRIES.getName(), TBL_BOOK_TOC_ENTRIES);
 
-        /* ======================================================================================
-         * Configuration tables.
-         * ====================================================================================== */
 
         TBL_BOOKLIST_STYLES.addDomains(DOM_PK_ID,
                                        DOM_STYLE_IS_BUILTIN,
@@ -1263,13 +1264,8 @@ public final class DBDefinitions {
                            .addIndex(KEY_STYLE_MENU_POSITION, false, DOM_STYLE_MENU_POSITION);
         ALL_TABLES.put(TBL_BOOKLIST_STYLES.getName(), TBL_BOOKLIST_STYLES);
 
-        /* ======================================================================================
-         *  {@link Booklist} tables.
-         * ====================================================================================== */
 
-        // Stores the node state across application restarts.
-        TBL_BOOK_LIST_NODE_STATE = new TableDefinition("book_list_node_settings")
-                .setAlias("bl_ns")
+        TBL_BOOK_LIST_NODE_STATE
                 .addDomains(DOM_PK_ID,
                             DOM_FK_BOOKSHELF,
                             DOM_FK_STYLE,
