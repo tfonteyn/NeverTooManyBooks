@@ -28,6 +28,7 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,42 +118,54 @@ public class TableDefinition {
         mDomains.addAll(Arrays.asList(domains));
     }
 
-    /**
-     * Copy constructor.
-     * <p>
-     * TODO: verify the way foreign key CHILDREN references are copied.
-     * Everything works fine, but I *think* it's not correct. (like removing old references?)
-     *
-     * @param from object to copy
-     */
-    public TableDefinition(@NonNull final TableDefinition from) {
-
-        mName = from.mName;
-        mAlias = from.mAlias;
-        mType = from.mType;
-
-        for (final Domain d : from.mDomains) {
-            // use the method, so mDomainNameCheck/mDomainCheck get populated properly
-            addDomain(d);
-        }
-
-        mPrimaryKey.addAll(from.mPrimaryKey);
-
-        for (final FkReference fromFK : from.mParents.values()) {
-            addReference(fromFK.mParent, fromFK.mDomains);
-        }
-
-        for (final FkReference childFK : from.mChildren.values()) {
-            // create a reference between the CHILDREN of the definition we're copying
-            // and this object.
-            childFK.mChild.addReference(this, childFK.mDomains);
-        }
-
-        for (final IndexDefinition fromIndex : from.mIndexes) {
-            // use the method, so mIndexNameCheck get populated properly
-            addIndex(fromIndex.getNameSuffix(), fromIndex.getUnique(), fromIndex.getDomains());
-        }
-    }
+//    /** NOT IN USE - needs more work/testing on the references.
+//     * Copy constructor.
+//     *
+//     * @param from object to copy
+//     * @param name the NEW name to use
+//     */
+//    public TableDefinition(@NonNull final TableDefinition from,
+//                           @NonNull final String name) {
+//
+//        boolean withRef = false;
+//
+//        mName = name;
+//        mAlias = from.mAlias;
+//        mType = from.mType;
+//
+//        // the domains are copied as is.
+//        for (final Domain d : from.mDomains) {
+//            // use the method, so mDomainNameCheck/mDomainCheck get populated properly
+//            addDomain(d);
+//        }
+//        // the primary key is copied as is.
+//        mPrimaryKey.addAll(from.mPrimaryKey);
+//
+//
+//        if (withRef) {
+//            // copy the foreign keys the 'from' table has to other 3rd-party tables.
+//            // i.e. hook THIS table up with the same 3rd-party tables
+//            for (final FkReference fromFK : from.mParents.values()) {
+//                addReference(fromFK.mParent, fromFK.mDomains);
+//            }
+//
+//            // tell the 3rd-party tables to stop referencing the 'from' table
+//            // and that they should reference THIS table now.
+//            for (final FkReference childFK : from.mChildren.values()) {
+//                // unhook the foreign reference from the CHILDREN of the definition we're copying
+//                childFK.mChild.removeReference(from);
+//                // and create a new reference between the CHILDREN of the definition we're copying
+//                // and THIS object.
+//                childFK.mChild.addReference(this, childFK.mDomains);
+//            }
+//        }
+//
+//        // the indexes are copied as is.
+//        for (final IndexDefinition fromIndex : from.mIndexes) {
+//            // use the method, so mIndexNameCheck get populated properly
+//            addIndex(fromIndex.getNameSuffix(), fromIndex.getUnique(), fromIndex.getDomains());
+//        }
+//    }
 
     /**
      * Given a list of tables, create the database (tables + indexes).
@@ -167,7 +180,7 @@ public class TableDefinition {
     public static void onCreate(@NonNull final SQLiteDatabase db,
                                 @NonNull final TableDefinition... tables) {
         for (final TableDefinition table : tables) {
-            db.execSQL(table.def(table.mName, true, true, false));
+            db.execSQL(table.def(table.getName(), true));
             for (final IndexDefinition index : table.mIndexes) {
                 index.onCreate(db);
             }
@@ -177,15 +190,15 @@ public class TableDefinition {
     /**
      * Create this table. Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
      *
-     * @param db              Database Access
-     * @param withConstraints Indicates if fields should have constraints applied
+     * @param db                    Database Access
+     * @param withDomainConstraints Indicates if fields should have constraints applied
      *
      * @return TableDefinition (for chaining)
      */
     @NonNull
     public TableDefinition create(@NonNull final SynchronizedDb db,
-                                  final boolean withConstraints) {
-        db.execSQL(def(mName, withConstraints, true, false));
+                                  final boolean withDomainConstraints) {
+        db.execSQL(def(mName, withDomainConstraints));
         return this;
     }
 
@@ -208,16 +221,16 @@ public class TableDefinition {
      * <p>
      * Drop this table (if it exists) and (re)create it including its indexes.
      *
-     * @param db              Database Access
-     * @param withConstraints Indicates if fields should have constraints applied
+     * @param db                    Database Access
+     * @param withDomainConstraints Indicates if fields should have constraints applied
      */
     public void recreate(@NonNull final SynchronizedDb db,
-                         final boolean withConstraints) {
+                         final boolean withDomainConstraints) {
         // Drop the table in case there is an orphaned instance with the same name.
         if (exists(db)) {
             db.drop(mName);
         }
-        db.execSQL(def(mName, withConstraints, true, false));
+        db.execSQL(def(mName, withDomainConstraints));
         for (final IndexDefinition index : mIndexes) {
             index.create(db);
         }
@@ -301,6 +314,29 @@ public class TableDefinition {
     @NonNull
     public String toString() {
         return mName;
+    }
+
+
+    @SuppressWarnings("WeakerAccess")
+    @NonNull
+    public String toDebugString() {
+        return "TableDefinition{" +
+               "mName='" + mName + '\'' +
+               ", mAlias='" + mAlias + '\'' +
+               ", mType=" + mType +
+               ", mDomains=" + mDomains +
+               ", mPrimaryKey=" + mPrimaryKey +
+
+               "\nmParents=" + mParents +
+               "\nmChildren=" + mChildren +
+
+               "\nmIndexes=" + mIndexes +
+               "\nmIndexNameCheck=" + mIndexNameCheck +
+               "\nmDomainCheck=" + mDomainCheck +
+               "\nmDomainNameCheck=" + mDomainNameCheck +
+
+               "\nmTableInfo=" + mTableInfo +
+               '}';
     }
 
     /**
@@ -768,6 +804,8 @@ public class TableDefinition {
      * Takes care of newly added (based on TableDefinition),
      * removes obsolete, and renames columns. The latter based on a list/map passed in.
      *
+     * <strong>DOES NOT CREATE INDEXES - those MUST be recreated afterwards by the caller</strong>
+     *
      * <a href="https://www.sqlite.org/lang_altertable.html#making_other_kinds_of_table_schema_changes">
      * SQLite - making_other_kinds_of_table_schema_changes</a>
      * <p>
@@ -781,26 +819,22 @@ public class TableDefinition {
      *  <li>If foreign keys constraints were originally enabled, re-enable them now.</li>
      * </ol>
      *
-     * @param db              Database Access
-     * @param withConstraints Indicates if fields should have constraints applied
-     * @param toRename        (optional) Map of fields to be renamed
-     * @param toRemove        (optional) List of fields to be removed
+     * @param db       Database Access
+     * @param toRename (optional) Map of fields to be renamed
+     * @param toRemove (optional) List of fields to be removed
      */
     public void recreateAndReload(@NonNull final SynchronizedDb db,
-                                  @SuppressWarnings("SameParameterValue")
-                                  final boolean withConstraints,
                                   @SuppressWarnings("SameParameterValue")
                                   @Nullable final Map<String, String> toRename,
                                   @Nullable final Collection<String> toRemove) {
 
         final String dstTableName = "copyOf" + mName;
-        final TableDefinition dstTable = new TableDefinition(this);
-        dstTable.setName(dstTableName);
-        dstTable.create(db, withConstraints)
-                .createIndices(db);
+        // With constraints... sqlite does not allow to add constraints later.
+        // Without indexes.
+        db.execSQL(def(dstTableName, true));
 
         // This handles re-ordered fields etc.
-        copyTableSafely(db, dstTableName, toRename, toRemove);
+        copyTableSafely(db, dstTableName, toRemove, toRename);
 
         db.execSQL("DROP TABLE " + mName);
         db.execSQL("ALTER TABLE " + dstTableName + " RENAME TO " + mName);
@@ -813,16 +847,21 @@ public class TableDefinition {
      * destination that are not in the source will be defaulted or set to {@code null}
      * if no default is defined.
      *
+     * <ul>
+     *     <li>toRemove: columns already gone are ignored</li>
+     *     <li>toRename: columns already renamed are ignored</li>
+     * </ul>
+     *
      * @param db          Database Access
      * @param destination to table
-     * @param toRename    (optional) Map of fields to be renamed
      * @param toRemove    (optional) List of fields to be removed
+     * @param toRename    (optional) Map of fields to be renamed
      */
     private void copyTableSafely(@NonNull final SynchronizedDb db,
                                  @SuppressWarnings("SameParameterValue")
                                  @NonNull final String destination,
-                                 @Nullable final Map<String, String> toRename,
-                                 @Nullable final Collection<String> toRemove) {
+                                 @Nullable final Collection<String> toRemove,
+                                 @Nullable final Map<String, String> toRename) {
 
         // Note: don't use the mDomains to check for columns no longer there,
         // we'd be removing columns that need to be renamed as well.
@@ -852,42 +891,28 @@ public class TableDefinition {
     /**
      * Return the SQL that can be used to define this table.
      *
-     * @param name                Name to use for table
-     * @param withConstraints     Flag indicating DOMAIN constraints should be applied.
-     * @param withTableReferences Flag indicating TABLE constraints (foreign keys)
-     *                            should be applied.
-     * @param ifNotExists         Flag indicating that creation should not be done if
-     *                            the table exists
+     * @param tableName             to use (passed in to be able to create copies of the tables)
+     * @param withDomainConstraints Flag indicating DOMAIN constraints should be applied.
      *
      * @return SQL to create table
      */
     @NonNull
-    private String def(@NonNull final String name,
-                       final boolean withConstraints,
-                       @SuppressWarnings("SameParameterValue") final boolean withTableReferences,
-                       @SuppressWarnings("SameParameterValue") final boolean ifNotExists) {
+    @VisibleForTesting
+    public String def(@NonNull final String tableName,
+                      final boolean withDomainConstraints) {
 
         final StringBuilder sql = new StringBuilder("CREATE")
                 .append(mType.getCreateModifier())
-                .append(" TABLE");
-        if (ifNotExists) {
-            if (mType.isVirtual()) {
-                throw new IllegalStateException(
-                        "'if not exists' can not be used when creating virtual tables");
-            }
-            sql.append(" if not exists");
-        }
-
-        sql.append(' ')
-           .append(name)
-           .append(mType.getUsingModifier())
-           .append("\n(");
+                .append(" TABLE ")
+                .append(tableName)
+                .append(mType.getUsingModifier())
+                .append("\n(");
 
         // add the columns
         boolean hasPrimaryKey = false;
         final StringJoiner columns = new StringJoiner(",");
         for (final Domain domain : mDomains) {
-            columns.add(domain.def(withConstraints));
+            columns.add(domain.def(withDomainConstraints));
             // remember if we added a primary key column.
             hasPrimaryKey = hasPrimaryKey || domain.isPrimaryKey();
         }
@@ -900,8 +925,8 @@ public class TableDefinition {
                .append(')');
         }
 
-        // add foreign key TABLE constraints if allowed/needed.
-        if (withTableReferences && !mParents.isEmpty()) {
+        // add foreign key TABLE constraints if any.
+        if (!mParents.isEmpty()) {
             sql.append("\n,")
                .append(mParents.values().stream()
                                .map(FkReference::def)
@@ -1127,7 +1152,8 @@ public class TableDefinition {
                    + ", mParentKey=" + mParentKey
                    + ", mChild=" + mChild
                    + ", mDomains=" + mDomains
-                   + '}';
+                   + ", def=\n" + def()
+                   + "\n}";
         }
     }
 

@@ -70,7 +70,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
@@ -92,10 +91,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinition.KEY_FTS_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinition.TBL_FTS_BOOKS;
 
 /**
  * Singleton {@link SQLiteOpenHelper} for the main database.
@@ -186,7 +186,6 @@ public final class DBHelper
      * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
      */
     public static boolean isCollationCaseSensitive() {
-        //noinspection ConstantConditions
         return sIsCollationCaseSensitive;
     }
 
@@ -608,7 +607,7 @@ public final class DBHelper
         // and the all/default shelves
         prepareBookshelfTable(context, db);
 
-        //IMPORTANT: withConstraints MUST BE false (FTS columns don't use a type/constraints)
+        //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
         TBL_FTS_BOOKS.create(syncedDb, false);
 
         createTriggers(syncedDb);
@@ -715,7 +714,6 @@ public final class DBHelper
                         pubId = syncedDb.insert(TBL_PUBLISHERS.getName(), null, cv);
                         pubs.put(publisherName, pubId);
                     } else {
-                        //noinspection ConstantConditions
                         pubId = pubs.get(publisherName);
                     }
 
@@ -752,31 +750,25 @@ public final class DBHelper
             TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_EID_CALIBRE);
         }
         if (oldVersion < 10) {
-            // added visibility column; just scrap the old data
-            syncedDb.drop(TBL_BOOK_LIST_NODE_STATE.getName());
-            TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
             // moved to FTS4
             StartupViewModel.scheduleFtsRebuild(context, true);
         }
-        if (oldVersion < 11) {
-            // remove the obsolete "bl_top_row" from TBL_BOOKSHELF
+        if (oldVersion < 12) {
             final Collection<String> toRemove = new ArrayList<>();
             toRemove.add("bl_top_row");
-            TBL_BOOKSHELF.recreateAndReload(syncedDb, true, null, toRemove);
-            StartupViewModel.scheduleMaintenance(context, true);
-        }
-        if (oldVersion < 12) {
             final Map<String, String> toRename = new HashMap<>();
             toRename.put("bookshelf", KEY_BOOKSHELF_NAME);
-            TBL_BOOKSHELF.recreateAndReload(syncedDb, true, toRename, null);
+            TBL_BOOKSHELF.recreateAndReload(syncedDb, toRename, toRemove);
 
             toRename.clear();
             toRename.put("bookshelf", KEY_FK_BOOKSHELF);
-            TBL_BOOK_BOOKSHELF.recreateAndReload(syncedDb, true, toRename, null);
+            TBL_BOOK_BOOKSHELF.recreateAndReload(syncedDb, toRename, null);
 
-            // just scrap the old data
+            // added visibility column in v10; just scrap the old data
             syncedDb.drop(TBL_BOOK_LIST_NODE_STATE.getName());
             TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
+
+            StartupViewModel.scheduleMaintenance(context, true);
         }
         if (oldVersion < 13) {
             TBL_BOOKLIST_STYLES.alterTableAddColumns(syncedDb,
@@ -804,6 +796,7 @@ public final class DBHelper
             prefs.edit().remove("bookList.style.preferred.order").apply();
         }
 
+        //URGENT: the use of recreateAndReload is dangerous right now and can break updates.
 
         //TODO: if at a future time we make a change that requires to copy/reload the books table,
         // we should at the same time change DOM_UTC_LAST_SYNC_DATE_GOODREADS
