@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -312,16 +313,18 @@ public class ImportGrTask
             }
 
             if (found) {
-
                 // Loop over all the books we found
                 while (cursor.moveToNext()) {
-                    final Book book = Book.from(cursor, db);
+                    final Book localBook = Book.from(cursor, db);
 
-                    if (shouldUpdate(context, book, review)) {
+                    if (shouldUpdate(context, localBook, review)) {
                         // Update the book using the Goodreads data.
-                        // IMPORTANT: we will construct a NEW BOOK, with the DELTA-data which
+                        // IMPORTANT: we construct a NEW book with the DELTA-data which
                         // we want to commit to the existing book.
-                        final Book delta = buildBook(context, db, book, review);
+                        // This DELTA-data will be build by combining some essential data
+                        // from the 'localBook' (e.g. local id)
+                        // and the data we get from the Goodreads review.
+                        final Book delta = buildBook(context, db, localBook, review);
                         try {
                             // <strong>WARNING:</strong> a failed update is ignored (but logged).
                             db.update(context, delta, DAO.BOOK_FLAG_IS_BATCH_OPERATION
@@ -392,6 +395,8 @@ public class ImportGrTask
 
         // The Book will'll populate with the delta data, and return from this method.
         final Book delta = new Book();
+        delta.setStage(EntityStage.Stage.Dirty);
+
         final long bookId = localData.getLong(DBDefinitions.KEY_PK_ID);
         // 0 for new, or the existing id for updates
         delta.putLong(DBDefinitions.KEY_PK_ID, bookId);
