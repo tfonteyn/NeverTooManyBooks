@@ -529,7 +529,7 @@ class QueueDAO
         }
     }
 
-    void cleanupOldTasks(@SuppressWarnings("SameParameterValue") final int days) {
+    void deleteTasksOlderThan(final int days) {
         final String utcDateTime = LocalDateTime.now(ZoneOffset.UTC)
                                                 .minusDays(days)
                                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
@@ -556,7 +556,7 @@ class QueueDAO
         }
     }
 
-    void cleanupOldEvents(@SuppressWarnings("SameParameterValue") final int days) {
+    void deleteEventsOlderThan(final int days) {
         final String utcDateTime = LocalDateTime.now(ZoneOffset.UTC)
                                                 .minusDays(days)
                                                 .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);

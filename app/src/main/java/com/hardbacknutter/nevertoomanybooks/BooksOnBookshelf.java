@@ -1307,7 +1307,6 @@ public class BooksOnBookshelf
             // from BaseActivity Nav Panel
             case RequestCode.NAV_PANEL_ABOUT:
                 if (resultCode == AboutActivity.RESULT_ALL_DATA_DESTROYED) {
-                    StyleDAO.clearCache();
                     mModel.reloadSelectedBookshelf(this);
                     mModel.setForceRebuildInOnResume(true);
                 }

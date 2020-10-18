@@ -209,8 +209,8 @@ public class StartupActivity
         // Setup the search engines
         SearchEngineRegistry.create(this);
 
-        // Create the Goodreads QueueManager. This (re)starts stored tasks.
-        QueueManager.create(this);
+        // Create and start the Goodreads QueueManager. This (re)starts stored tasks.
+        QueueManager.create(this).start();
 
         startActivity(new Intent(this, BooksOnBookshelf.class));
         // done here

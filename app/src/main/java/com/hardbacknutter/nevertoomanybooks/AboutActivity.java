@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -35,12 +36,15 @@ import androidx.annotation.StringRes;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
+import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
@@ -115,7 +119,8 @@ public class AboutActivity
             }
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_DELETE_ALL) {
                 // show the button, it's red...
-                mVb.debugClearDb.setVisibility(View.VISIBLE);
+                //URGENT: re-enable once the #onDeleteAll functionality is complete
+                //mVb.debugClearDb.setVisibility(View.VISIBLE);
             }
         });
 
@@ -130,14 +135,7 @@ public class AboutActivity
                 .setIcon(R.drawable.ic_delete)
                 .setMessage(R.string.confirm_clear_all_data)
                 .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
-                .setPositiveButton(R.string.action_delete, (d, w) -> {
-                    try (DAO db = new DAO(TAG)) {
-                        if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
-                            AppDir.deleteAllContent(this);
-                            setResult(RESULT_ALL_DATA_DESTROYED);
-                        }
-                    }
-                })
+                .setPositiveButton(R.string.action_delete, this::onDeleteAll)
                 .create()
                 .show());
 
@@ -160,5 +158,27 @@ public class AboutActivity
         } catch (@NonNull final ActivityNotFoundException e) {
             Logger.error(this, TAG, e);
         }
+    }
+
+    private void onDeleteAll(@NonNull final DialogInterface d,
+                             final int w) {
+        try (DAO db = new DAO(TAG)) {
+            //FIXME: we should stop any active tasks + the qm itself
+            final QueueManager qm = QueueManager.getInstance();
+            qm.deleteTasksOlderThan(0);
+            qm.deleteEventsOlderThan(0);
+
+            StyleDAO.clearCache();
+
+            if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
+                AppDir.deleteAllContent(this);
+                SearchEngineRegistry.create(this);
+                //FIXME: restore al preferences.
+
+                setResult(RESULT_ALL_DATA_DESTROYED);
+            }
+        }
+
+        finish();
     }
 }

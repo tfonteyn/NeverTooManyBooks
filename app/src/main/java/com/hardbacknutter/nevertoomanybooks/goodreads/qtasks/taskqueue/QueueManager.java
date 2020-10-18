@@ -22,8 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Handler;
+import android.os.Looper;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -43,30 +45,27 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
  */
 public final class QueueManager {
 
-    /* Queues we need: */
-    /** main: long-running tasks, or tasks that can just wait. */
+    /** Queue: long-running tasks, or tasks that can just wait. */
     public static final String Q_MAIN = "main";
-    /** small_jobs: trivial background tasks that will only take a few seconds. */
-    public static final String Q_SMALL_JOBS = "small_jobs";
 
+    /** Queue: trivial background tasks that will only take a few seconds. */
+    public static final String Q_SMALL_JOBS = "small_jobs";
     /** Static reference to the active QueueManager - singleton. */
     private static QueueManager sInstance;
-
     /** Database access layer. */
     @NonNull
     private final QueueDAO mQueueDAO;
     /** Collection of currently active queues. */
     private final Map<String, Queue> mActiveQueues = new HashMap<>();
-
     /** Objects listening for Event operations. */
     @NonNull
     private final List<WeakReference<OnChangeListener>> mEventChangeListeners = new ArrayList<>();
     /** Objects listening for Task operations. */
     @NonNull
     private final List<WeakReference<OnChangeListener>> mTaskChangeListeners = new ArrayList<>();
-
     /** Handle inter-thread messages. */
-    private final Handler mHandler = new Handler();
+    @Nullable
+    private final Handler mHandler;
 
     /**
      * Constructor.
@@ -81,11 +80,14 @@ public final class QueueManager {
         }
         sInstance = this;
 
-        mQueueDAO = new QueueDAO(context);
-        // Revive active queues.
-        synchronized (this) {
-            mQueueDAO.initAllQueues(this);
+        // This is for testing when we don't have a looper
+        if (Looper.myLooper() != null) {
+            mHandler = new Handler();
+        } else {
+            mHandler = null;
         }
+
+        mQueueDAO = new QueueDAO(context);
         // Create the queues we need, if they do not already exist.
         mQueueDAO.createQueue(Q_MAIN);
         mQueueDAO.createQueue(Q_SMALL_JOBS);
@@ -96,11 +98,14 @@ public final class QueueManager {
      * so processing can start immediately after startup.
      *
      * @param context Current context; NOT stored.
+     *
+     * @return the single instance
      */
-    public static void create(@NonNull final Context context) {
+    public static QueueManager create(@NonNull final Context context) {
         if (sInstance == null) {
             sInstance = new QueueManager(context);
         }
+        return sInstance;
     }
 
     /**
@@ -112,6 +117,17 @@ public final class QueueManager {
     public static QueueManager getInstance() {
         // do not lazy initialize here. We want the QueueManager running at startup.
         return Objects.requireNonNull(sInstance, "create was not called?");
+    }
+
+    /**
+     * Start the active queues if not already started.
+     */
+    public void start() {
+        synchronized (this) {
+            if (mActiveQueues.isEmpty()) {
+                mQueueDAO.initAllQueues(this);
+            }
+        }
     }
 
     public void registerTaskListener(@NonNull final OnChangeListener listener) {
@@ -188,10 +204,12 @@ public final class QueueManager {
                     mTaskChangeListeners.remove(wl);
                 }
             } else {
-                try {
-                    mHandler.post(listener::onChange);
-                } catch (@NonNull final RuntimeException ignore) {
-                    // ignore
+                if (mHandler != null) {
+                    try {
+                        mHandler.post(listener::onChange);
+                    } catch (@NonNull final RuntimeException ignore) {
+                        // ignore
+                    }
                 }
             }
         }
@@ -211,10 +229,12 @@ public final class QueueManager {
                     mEventChangeListeners.remove(wl);
                 }
             } else {
-                try {
-                    mHandler.post(listener::onChange);
-                } catch (@NonNull final RuntimeException ignore) {
-                    // ignore
+                if (mHandler != null) {
+                    try {
+                        mHandler.post(listener::onChange);
+                    } catch (@NonNull final RuntimeException ignore) {
+                        // ignore
+                    }
                 }
             }
         }
@@ -235,7 +255,7 @@ public final class QueueManager {
             if (mActiveQueues.containsKey(queueName)) {
                 // notify the queue there is work to do
                 final Queue queue = mActiveQueues.get(queueName);
-                //noinspection ConstantConditions,SynchronizationOnLocalVariableOrMethodParameter
+                //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized (queue) {
                     // Reminder: notify() **MUST** be called inside
                     // a synchronized block on the object itself
@@ -353,9 +373,9 @@ public final class QueueManager {
      * @param id of Task to delete.
      */
     void deleteTask(final long id) {
-        boolean isActive = false;
         // Synchronize so that no queue will be able to get another task while we are deleting
         synchronized (this) {
+            boolean isActive = false;
             // Check if the task is running in a queue.
             for (final Queue queue : mActiveQueues.values()) {
                 final TQTask task = queue.getTask();
@@ -388,19 +408,23 @@ public final class QueueManager {
     }
 
     /**
-     * Delete Tasks (and its Events) more than 7 days old.
+     * Delete Tasks (and its Events) more than 'days' old.
+     *
+     * @param days age
      */
-    public void cleanupOldTasks() {
-        mQueueDAO.cleanupOldTasks(7);
+    public void deleteTasksOlderThan(final int days) {
+        mQueueDAO.deleteTasksOlderThan(days);
         notifyEventChange();
         notifyTaskChange();
     }
 
     /**
-     * Delete Events more than 7 days old.
+     * Delete Events more 'days' old.
+     *
+     * @param days age
      */
-    public void cleanupOldEvents() {
-        mQueueDAO.cleanupOldEvents(7);
+    public void deleteEventsOlderThan(final int days) {
+        mQueueDAO.deleteEventsOlderThan(days);
         notifyEventChange();
         notifyTaskChange();
     }

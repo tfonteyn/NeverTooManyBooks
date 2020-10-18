@@ -77,7 +77,7 @@ public class TasksAdminActivity
                     .setMessage(R.string.gr_tq_btn_cleanup_old_tasks)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        QueueManager.getInstance().cleanupOldTasks();
+                        QueueManager.getInstance().deleteTasksOlderThan(7);
                         refreshData();
                     })
                     .create()

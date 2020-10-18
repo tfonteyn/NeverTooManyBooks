@@ -83,7 +83,7 @@ public class EventsAdminActivity
                     .setMessage(R.string.gr_tq_btn_cleanup_old_events)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        QueueManager.getInstance().cleanupOldEvents();
+                        QueueManager.getInstance().deleteEventsOlderThan(7);
                         refreshData();
                     })
                     .create()
