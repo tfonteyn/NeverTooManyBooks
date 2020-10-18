@@ -210,7 +210,12 @@ public class StartupActivity
         SearchEngineRegistry.create(this);
 
         // Create and start the Goodreads QueueManager. This (re)starts stored tasks.
-        QueueManager.create(this).start();
+        // Note this is not a startup-task; it just needs to be started at startup.
+        // (it does not even need to be a background thread, as we only want
+        // to create the QM, but this way we should get the UI up faster)
+        final Thread qmt = new Thread(() -> QueueManager.create(App.getTaskContext()).start());
+        qmt.setName("QueueManager-create");
+        qmt.start();
 
         startActivity(new Intent(this, BooksOnBookshelf.class));
         // done here
