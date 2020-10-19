@@ -494,7 +494,7 @@ public class DBCleaner {
      */
     private void toLog(@NonNull final String state,
                        @NonNull final String query) {
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG /* always */) {
             try (SynchronizedCursor cursor = mDb.getSyncDb().rawQuery(query, null)) {
                 Log.d(TAG, state + "|row count=" + cursor.getCount());
                 while (cursor.moveToNext()) {
