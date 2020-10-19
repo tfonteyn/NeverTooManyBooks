@@ -127,7 +127,7 @@ public class GoogleBarcodeScanner
     @NonNull
     public String toString() {
         return "GoogleBarcodeScanner{"
-               + "mDetector=" + mDetector
+               + "mDetector=" + (mDetector != null)
                + ", isOperational=" + (mDetector != null ? mDetector.isOperational() : "false")
                + ", mCameraHelper=" + mCameraHelper
                + '}';
