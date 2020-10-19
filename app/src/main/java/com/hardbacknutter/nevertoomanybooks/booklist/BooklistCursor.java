@@ -385,7 +385,6 @@ public class BooklistCursor
                + ", mPseudoCount=" + mPseudoCount
                + ", mMruList=" + Arrays.toString(mMruList)
                + ", mMruListPos=" + mMruListPos
-               + ", " + super.toString()
                + '}';
     }
 }
