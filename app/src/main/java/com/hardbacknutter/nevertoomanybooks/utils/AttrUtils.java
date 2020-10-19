@@ -31,12 +31,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-
 public final class AttrUtils {
-
-    private static final String TAG = "AttrUtils";
 
     private AttrUtils() {
     }
@@ -55,11 +50,6 @@ public final class AttrUtils {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
-
-        if (BuildConfig.DEBUG) {
-            Logger.d(TAG, "getResId", "tv=" + tv);
-        }
-
         return tv.resourceId;
     }
 
@@ -77,11 +67,6 @@ public final class AttrUtils {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
-
-        if (BuildConfig.DEBUG) {
-            Logger.d(TAG, "getColorInt", "tv=" + tv);
-        }
-
         return context.getResources().getColor(tv.resourceId, theme);
 
         // Why not use MaterialColors.getColor(context, attr, "") :
@@ -106,15 +91,12 @@ public final class AttrUtils {
      *
      * @return size in integer pixels, or {@code -1} if not defined.
      */
+    @SuppressWarnings("unused")
     public static int getTextSize(@NonNull final Context context,
                                   @AttrRes final int attr) {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
-
-        if (BuildConfig.DEBUG) {
-            Logger.d(TAG, "getTextSize", "tv=" + tv);
-        }
 
         final int[] textSizeAttr = new int[]{android.R.attr.textSize};
         final int indexOfAttrTextSize = 0;
@@ -140,17 +122,6 @@ public final class AttrUtils {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
-
-        if (BuildConfig.DEBUG) {
-            if (tv.type != TypedValue.TYPE_DIMENSION) {
-                throw new IllegalArgumentException("Not a dimension attribute, attr=" + attr
-                                                   + "|tv=" + tv);
-            }
-
-            // example: tv=TypedValue{t=0x5/d=0x3001 a=1}
-            // type 5; dimen
-            Logger.d(TAG, "getDimen", "tv=" + tv);
-        }
 
         final DisplayMetrics metrics = new DisplayMetrics();
         final WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
