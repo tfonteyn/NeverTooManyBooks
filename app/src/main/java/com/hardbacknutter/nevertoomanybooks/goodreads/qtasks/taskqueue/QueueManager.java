@@ -252,9 +252,9 @@ public final class QueueManager {
             // Save it first
             mQueueDAO.enqueueTask(task, queueName);
 
-            if (mActiveQueues.containsKey(queueName)) {
-                // notify the queue there is work to do
-                final Queue queue = mActiveQueues.get(queueName);
+            // notify the queue there is work to do
+            final Queue queue = mActiveQueues.get(queueName);
+            if (queue != null) {
                 //noinspection SynchronizationOnLocalVariableOrMethodParameter
                 synchronized (queue) {
                     // Reminder: notify() **MUST** be called inside
