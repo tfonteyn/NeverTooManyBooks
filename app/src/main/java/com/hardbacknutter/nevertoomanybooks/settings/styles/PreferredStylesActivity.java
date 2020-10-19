@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -100,14 +99,6 @@ public class PreferredStylesActivity
                 public void onItemRangeChanged(final int positionStart,
                                                final int itemCount) {
                     final BooklistStyle style = mListAdapter.getItem(positionStart);
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "onItemRangeChanged"
-                                   + "|positionStart=" + positionStart
-                                   + "|itemCount=" + itemCount
-                                   + "|uuid=" + style.getUuid()
-                                   + "|name=" + style.getLabel(PreferredStylesActivity.this));
-                    }
-
                     // only the style was changed, update the database now
                     mModel.updateStyle(style);
                     // We'll update the list order in onPause.
@@ -117,11 +108,6 @@ public class PreferredStylesActivity
                 @Override
                 public void onItemRangeRemoved(final int positionStart,
                                                final int itemCount) {
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "onItemRangeRemoved"
-                                   + "|positionStart=" + positionStart
-                                   + "|itemCount=" + itemCount);
-                    }
                     // Deleting the style is already done.
                     // We'll update the list order in onPause.
                     mModel.setDirty(true);
@@ -131,12 +117,6 @@ public class PreferredStylesActivity
                 public void onItemRangeMoved(final int fromPosition,
                                              final int toPosition,
                                              final int itemCount) {
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "onItemRangeMoved"
-                                   + "|fromPosition=" + fromPosition
-                                   + "|toPosition=" + toPosition
-                                   + "|itemCount=" + itemCount);
-                    }
                     // warning: this will get called each time a row is moved 1 position
                     // so moving a row 5 rows up... this gets called FIVE times.
 
@@ -147,9 +127,6 @@ public class PreferredStylesActivity
                 /** Fallback for all other types of notification (if any). */
                 @Override
                 public void onChanged() {
-                    if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "onChanged");
-                    }
                     // We'll update the list order in onPause.
                     mModel.setDirty(true);
                 }
