@@ -167,10 +167,10 @@ public class UpdateFieldsFragment
             final RowUpdateFromInternetBinding rowVb = RowUpdateFromInternetBinding
                     .inflate(getLayoutInflater(), mVb.fieldList, false);
 
-            //noinspection ConstantConditions
-            rowVb.field.setText(usage.getLabel(getContext()));
+            rowVb.field.setText(usage.getLabel());
 
             rowVb.cbxUsage.setChecked(usage.isWanted());
+            //noinspection ConstantConditions
             rowVb.cbxUsage.setText(usage.getUsageLabel(getContext()));
             rowVb.cbxUsage.setTag(R.id.TAG_FIELD_USAGE, usage);
             rowVb.cbxUsage.setOnClickListener(v -> {

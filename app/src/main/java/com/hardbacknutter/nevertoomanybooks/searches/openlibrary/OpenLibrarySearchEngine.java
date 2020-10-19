@@ -88,7 +88,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
  */
 @SearchEngine.Configuration(
         id = SearchSites.OPEN_LIBRARY,
-        nameResId = R.string.site_open_library,
+        name = "OpenLibrary",
         url = "https://openlibrary.org",
         prefKey = "openlibrary",
         domainKey = DBDefinitions.KEY_EID_OPEN_LIBRARY,

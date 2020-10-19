@@ -372,14 +372,12 @@ public class SearchCoordinator
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(taskId);
                 //noinspection ConstantConditions
-                Log.d(TAG, "mSearchTaskListener.onFinished|finished="
-                           + appContext.getString(config.getNameResId()));
+                Log.d(TAG, "mSearchTaskListener.onFinished|finished=" + config.getName());
 
                 for (final SearchTask searchTask : mActiveTasks) {
                     config = SearchEngineRegistry.getByEngineId(searchTask.getTaskId());
                     //noinspection ConstantConditions
-                    Log.d(TAG, "mSearchTaskListener.onFinished|running="
-                               + appContext.getString(config.getNameResId()));
+                    Log.d(TAG, "mSearchTaskListener.onFinished|running=" + config.getName());
                 }
             }
 
@@ -420,8 +418,8 @@ public class SearchCoordinator
                         final long end = mSearchTasksEndTime.get(key);
 
                         //noinspection ConstantConditions
-                        final String engineName = appContext.getString(
-                                SearchEngineRegistry.getByEngineId(key).getNameResId());
+                        final String engineName =
+                                SearchEngineRegistry.getByEngineId(key).getName();
 
                         if (end != 0) {
                             Log.d(TAG, String.format(Locale.ENGLISH,
@@ -1137,7 +1135,7 @@ public class SearchCoordinator
                 final SearchEngineRegistry.Config config = SearchEngineRegistry
                         .getByEngineId(entry.getKey());
                 //noinspection ConstantConditions
-                final String engineName = context.getString(config.getNameResId());
+                final String engineName = config.getName();
                 final Exception exception = entry.getValue();
 
                 final String error;

@@ -80,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  */
 @SearchEngine.Configuration(
         id = SearchSites.LIBRARY_THING,
-        nameResId = R.string.site_library_thing,
+        name = "LibraryThing",
         url = "https://www.librarything.com",
         prefKey = LibraryThingSearchEngine.PREF_KEY,
         domainKey = DBDefinitions.KEY_EID_LIBRARY_THING,

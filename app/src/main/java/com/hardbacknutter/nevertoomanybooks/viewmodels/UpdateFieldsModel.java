@@ -30,7 +30,6 @@ import android.util.SparseArray;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.preference.PreferenceManager;
@@ -157,40 +156,56 @@ public class UpdateFieldsModel
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addCoverField(prefs, R.string.lbl_cover_front, 0);
-        addCoverField(prefs, R.string.lbl_cover_back, 1);
+        addCoverField(prefs, context.getString(R.string.lbl_cover_front), 0);
+        addCoverField(prefs, context.getString(R.string.lbl_cover_back), 1);
 
-        addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
-        addListField(prefs, Book.BKEY_AUTHOR_LIST, R.string.lbl_authors,
+        addField(prefs, DBDefinitions.KEY_TITLE,
+                 context.getString(R.string.lbl_title), CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_ISBN,
+                 context.getString(R.string.lbl_isbn), CopyIfBlank);
+        addListField(prefs, Book.BKEY_AUTHOR_LIST,
+                     context.getString(R.string.lbl_authors),
                      DBDefinitions.KEY_FK_AUTHOR);
-        addListField(prefs, Book.BKEY_SERIES_LIST, R.string.lbl_series_multiple,
+        addListField(prefs, Book.BKEY_SERIES_LIST,
+                     context.getString(R.string.lbl_series_multiple),
                      DBDefinitions.KEY_SERIES_TITLE);
-        addField(prefs, DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description, CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_DESCRIPTION,
+                 context.getString(R.string.lbl_description), CopyIfBlank);
 
-        addListField(prefs, Book.BKEY_TOC_LIST, R.string.lbl_table_of_content,
+        addListField(prefs, Book.BKEY_TOC_LIST,
+                     context.getString(R.string.lbl_table_of_content),
                      DBDefinitions.KEY_TOC_BITMASK);
 
-        addListField(prefs, Book.BKEY_PUBLISHER_LIST, R.string.lbl_publishers,
+        addListField(prefs, Book.BKEY_PUBLISHER_LIST,
+                     context.getString(R.string.lbl_publishers),
                      DBDefinitions.KEY_PUBLISHER_NAME);
-        addField(prefs, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_DATE_FIRST_PUBLICATION, R.string.lbl_first_publication,
+        addField(prefs, DBDefinitions.KEY_PRINT_RUN,
+                 context.getString(R.string.lbl_print_run), CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_DATE_PUBLISHED,
+                 context.getString(R.string.lbl_date_published), CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                 context.getString(R.string.lbl_first_publication),
                  CopyIfBlank);
 
         // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(prefs, DBDefinitions.KEY_PRICE_LISTED, R.string.lbl_price_listed, CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_PRICE_LISTED,
+                 context.getString(R.string.lbl_price_listed), CopyIfBlank);
 
-        addField(prefs, DBDefinitions.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_COLOR, R.string.lbl_color, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_PAGES,
+                 context.getString(R.string.lbl_pages), CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_FORMAT,
+                 context.getString(R.string.lbl_format), CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_COLOR,
+                 context.getString(R.string.lbl_color), CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_LANGUAGE,
+                 context.getString(R.string.lbl_language), CopyIfBlank);
+        addField(prefs, DBDefinitions.KEY_GENRE,
+                 context.getString(R.string.lbl_genre), CopyIfBlank);
 
         for (final SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
             final Domain domain = config.getExternalIdDomain();
             if (domain != null) {
-                addField(prefs, domain.getName(), config.getNameResId(), Overwrite);
+                addField(prefs, domain.getName(), config.getName(), Overwrite);
             }
         }
     }
@@ -247,35 +262,35 @@ public class UpdateFieldsModel
      * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
      * <p>
      *
-     * @param preferences  Global preferences
-     * @param fieldId      List-field name to use in FieldUsages
-     * @param nameStringId Field label string resource ID
-     * @param key          Field name to use for preferences.
+     * @param preferences Global preferences
+     * @param fieldId     List-field name to use in FieldUsages
+     * @param name        Field label
+     * @param key         Field name to use for preferences.
      */
     private void addListField(@NonNull final SharedPreferences preferences,
                               @NonNull final String fieldId,
-                              @StringRes final int nameStringId,
+                              @NonNull final String name,
                               @NonNull final String key) {
 
         if (DBDefinitions.isUsed(preferences, key)) {
-            mFields.put(fieldId, FieldUsage.createListField(fieldId, nameStringId, preferences));
+            mFields.put(fieldId, FieldUsage.createListField(fieldId, name, preferences));
         }
     }
 
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param preferences  Global preferences
-     * @param nameStringId Field label string resource ID
-     * @param cIdx         0..n image index
+     * @param preferences Global preferences
+     * @param name        Field label
+     * @param cIdx        0..n image index
      */
     private void addCoverField(@NonNull final SharedPreferences preferences,
-                               @StringRes final int nameStringId,
+                               @NonNull final String name,
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         if (DBDefinitions.isCoverUsed(preferences, cIdx)) {
             final String fieldId = DBDefinitions.PREFS_IS_USED_COVER + "." + cIdx;
-            mFields.put(fieldId, FieldUsage.create(fieldId, nameStringId, preferences,
+            mFields.put(fieldId, FieldUsage.create(fieldId, name, preferences,
                                                    CopyIfBlank));
         }
     }
@@ -283,18 +298,18 @@ public class UpdateFieldsModel
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param preferences  Global preferences
-     * @param fieldId      Field name to use in FieldUsages, and as key for preferences.
-     * @param nameStringId Field label string resource ID
-     * @param defValue     default Usage for this field
+     * @param preferences Global preferences
+     * @param fieldId     Field name to use in FieldUsages, and as key for preferences.
+     * @param name        Field label string
+     * @param defValue    default Usage for this field
      */
     private void addField(@NonNull final SharedPreferences preferences,
                           @NonNull final String fieldId,
-                          @StringRes final int nameStringId,
+                          @NonNull final String name,
                           @NonNull final FieldUsage.Usage defValue) {
 
         if (DBDefinitions.isUsed(preferences, fieldId)) {
-            mFields.put(fieldId, FieldUsage.create(fieldId, nameStringId, preferences, defValue));
+            mFields.put(fieldId, FieldUsage.create(fieldId, name, preferences, defValue));
         }
     }
 
@@ -305,15 +320,15 @@ public class UpdateFieldsModel
      *
      * @param primaryFieldId the field to check
      * @param relatedFieldId to add if the primary field is present
-     * @param nameStringId   Field label string resource ID (not used)
+     * @param name           Field label (not used)
      */
     private void addRelatedField(@NonNull final String primaryFieldId,
                                  @NonNull final String relatedFieldId,
-                                 @StringRes final int nameStringId) {
+                                 @NonNull final String name) {
         final FieldUsage primaryField = mFields.get(primaryFieldId);
 
         if (primaryField != null && primaryField.isWanted()) {
-            final FieldUsage fu = primaryField.createRelatedField(relatedFieldId, nameStringId);
+            final FieldUsage fu = primaryField.createRelatedField(relatedFieldId, name);
             mFields.put(relatedFieldId, fu);
         }
     }
@@ -356,12 +371,15 @@ public class UpdateFieldsModel
         // add related fields.
         // i.e. if we do the 'list-price' field, we'll also want its currency.
         addRelatedField(DBDefinitions.KEY_PRICE_LISTED,
-                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY, R.string.lbl_currency);
+                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                        context.getString(R.string.lbl_currency));
 
         addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".0",
-                        Book.BKEY_TMP_FILE_SPEC[0], R.string.lbl_cover_front);
+                        Book.BKEY_TMP_FILE_SPEC[0],
+                        context.getString(R.string.lbl_cover_front));
         addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".1",
-                        Book.BKEY_TMP_FILE_SPEC[1], R.string.lbl_cover_back);
+                        Book.BKEY_TMP_FILE_SPEC[1],
+                        context.getString(R.string.lbl_cover_back));
 
         mCurrentProgressCounter = 0;
 

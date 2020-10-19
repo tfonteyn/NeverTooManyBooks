@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
  */
 @SearchEngine.Configuration(
         id = SearchSites.GOODREADS,
-        nameResId = R.string.site_goodreads,
+        name = "Goodreads",
         url = GoodreadsManager.BASE_URL,
         prefKey = GoodreadsManager.PREF_KEY,
         domainKey = DBDefinitions.KEY_EID_GOODREADS_BOOK,

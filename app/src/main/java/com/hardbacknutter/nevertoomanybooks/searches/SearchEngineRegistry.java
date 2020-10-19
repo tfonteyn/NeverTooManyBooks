@@ -24,7 +24,6 @@ import android.content.Context;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import java.lang.reflect.Constructor;
@@ -217,13 +216,12 @@ public final class SearchEngineRegistry {
         }
 
         /**
-         * Get the resource id for the human-readable name of the site.
+         * Get the human-readable name of the site.
          *
-         * @return the resource id of the name
+         * @return the displayable name
          */
-        @StringRes
-        public int getNameResId() {
-            return mSEConfig.nameResId();
+        public String getName() {
+            return mSEConfig.name();
         }
 
         @NonNull

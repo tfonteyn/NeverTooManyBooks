@@ -47,7 +47,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -88,7 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  */
 @SearchEngine.Configuration(
         id = SearchSites.AMAZON,
-        nameResId = R.string.site_amazon,
+        name = "Amazon",
         url = "https://www.amazon.com",
         prefKey = AmazonSearchEngine.PREF_KEY,
 //        // ENHANCE: support ASIN

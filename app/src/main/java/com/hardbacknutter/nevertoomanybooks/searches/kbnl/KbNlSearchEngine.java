@@ -37,7 +37,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
@@ -54,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  */
 @SearchEngine.Configuration(
         id = SearchSites.KB_NL,
-        nameResId = R.string.site_kb_nl,
+        name = "KBNL",
         url = "http://opc4.kb.nl",
         prefKey = KbNlSearchEngine.PREF_KEY,
         lang = "nl",

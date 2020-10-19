@@ -25,7 +25,6 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -38,8 +37,8 @@ public class FieldUsage {
     public final String fieldId;
 
     /** label to show to the user. */
-    @StringRes
-    private final int mNameStringId;
+    @NonNull
+    private final String mName;
     /** Default usage at creation time. */
     @NonNull
     private final Usage mDefValue;
@@ -52,19 +51,19 @@ public class FieldUsage {
     /**
      * private Constructor; use static creators instead.
      *
-     * @param fieldId      key
-     * @param nameStringId label to show to the user.
-     * @param usage        how to use this field.
-     * @param defValue     default usage
-     * @param canAppend    {@code true} if this field is capable of appending extra data.
+     * @param fieldId   key
+     * @param name      label to show to the user.
+     * @param usage     how to use this field.
+     * @param defValue  default usage
+     * @param canAppend {@code true} if this field is capable of appending extra data.
      */
     private FieldUsage(@NonNull final String fieldId,
-                       @StringRes final int nameStringId,
+                       @NonNull final String name,
                        @NonNull final Usage usage,
                        @NonNull final Usage defValue,
                        final boolean canAppend) {
         this.fieldId = fieldId;
-        mNameStringId = nameStringId;
+        mName = name;
         mUsage = usage;
         mDefValue = defValue;
         mCanAppend = canAppend;
@@ -75,19 +74,19 @@ public class FieldUsage {
      * <p>
      * The fieldId is used as the preference key.
      *
-     * @param fieldId      Field name
-     * @param nameStringId Field label string resource ID
-     * @param preferences  Global preferences
-     * @param defValue     default Usage for this field
+     * @param fieldId     Field name
+     * @param name        Field label
+     * @param preferences Global preferences
+     * @param defValue    default Usage for this field
      *
      * @return new instance
      */
     public static FieldUsage create(@NonNull final String fieldId,
-                                    @StringRes final int nameStringId,
+                                    @NonNull final String name,
                                     @NonNull final SharedPreferences preferences,
                                     @NonNull final Usage defValue) {
         final Usage initialValue = Usage.read(preferences, fieldId, defValue);
-        return new FieldUsage(fieldId, nameStringId, initialValue, defValue, false);
+        return new FieldUsage(fieldId, name, initialValue, defValue, false);
     }
 
     /**
@@ -95,17 +94,17 @@ public class FieldUsage {
      * <p>
      * The default usage for a list field is always {@link Usage#Append}.
      *
-     * @param fieldId      Field name
-     * @param nameStringId Field label string resource ID
-     * @param preferences  Global preferences
+     * @param fieldId     Field name
+     * @param name        Field label
+     * @param preferences Global preferences
      *
      * @return new instance
      */
     public static FieldUsage createListField(@NonNull final String fieldId,
-                                             @StringRes final int nameStringId,
+                                             @NonNull final String name,
                                              @NonNull final SharedPreferences preferences) {
         final Usage initialValue = Usage.read(preferences, fieldId, Usage.Append);
-        return new FieldUsage(fieldId, nameStringId, initialValue, Usage.Append, true);
+        return new FieldUsage(fieldId, name, initialValue, Usage.Append, true);
     }
 
     public void reset() {
@@ -115,14 +114,14 @@ public class FieldUsage {
     /**
      * Constructor for a related field depending on this field.
      *
-     * @param fieldId      key
-     * @param nameStringId label to show to the user.
+     * @param fieldId key
+     * @param name    label to show to the user.
      *
      * @return a FieldUsage record for the given field.
      */
     public FieldUsage createRelatedField(@NonNull final String fieldId,
-                                         @StringRes final int nameStringId) {
-        return new FieldUsage(fieldId, nameStringId, mUsage, mDefValue, mCanAppend);
+                                         @NonNull final String name) {
+        return new FieldUsage(fieldId, name, mUsage, mDefValue, mCanAppend);
     }
 
     public boolean isWanted() {
@@ -141,13 +140,11 @@ public class FieldUsage {
     /**
      * Get the label for the field.
      *
-     * @param context Current context
-     *
      * @return label
      */
     @NonNull
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(mNameStringId);
+    public String getLabel() {
+        return mName;
     }
 
     /**
@@ -178,7 +175,7 @@ public class FieldUsage {
         return "FieldUsage{"
                + "fieldId=`" + fieldId + '`'
                + ", mCanAppend=" + mCanAppend
-               + ", mNameStringId=" + App.getAppContext().getString(mNameStringId)
+               + ", mNameStringId=" + mName
                + ", mDefValue=" + mDefValue
                + ", mUsage=" + mUsage
                + '}';

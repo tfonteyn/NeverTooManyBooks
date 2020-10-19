@@ -28,7 +28,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
@@ -114,7 +113,7 @@ public interface SearchEngine {
         }
 
         if (showAlert) {
-            final String siteName = context.getString(config.getNameResId());
+            final String siteName = config.getName();
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_warning)
@@ -195,8 +194,7 @@ public interface SearchEngine {
     @NonNull
     default String getName() {
         //noinspection ConstantConditions
-        return getAppContext().getString(SearchEngineRegistry.getByEngineId(getId())
-                                                             .getNameResId());
+        return SearchEngineRegistry.getByEngineId(getId()).getName();
     }
 
     /**
@@ -669,7 +667,8 @@ public interface SearchEngine {
 
         @SearchSites.EngineId int id();
 
-        @StringRes int nameResId();
+        @NonNull
+        String name();
 
         @NonNull
         String prefKey();

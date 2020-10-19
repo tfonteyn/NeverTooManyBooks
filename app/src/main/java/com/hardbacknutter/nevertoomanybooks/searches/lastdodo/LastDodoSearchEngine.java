@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  */
 @SearchEngine.Configuration(
         id = SearchSites.LAST_DODO,
-        nameResId = R.string.site_lastdodo_nl,
+        name = "lastdodo.nl",
         url = "https://www.lastdodo.nl/",
         prefKey = "lastdodo",
         lang = "nl",

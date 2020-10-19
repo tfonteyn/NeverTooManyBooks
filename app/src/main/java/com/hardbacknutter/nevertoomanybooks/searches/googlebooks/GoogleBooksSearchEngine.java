@@ -38,7 +38,6 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
@@ -64,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  */
 @SearchEngine.Configuration(
         id = SearchSites.GOOGLE_BOOKS,
-        nameResId = R.string.site_google_books,
+        name = "Google Books",
         url = "https://books.google.com",
         prefKey = "googlebooks"
 )

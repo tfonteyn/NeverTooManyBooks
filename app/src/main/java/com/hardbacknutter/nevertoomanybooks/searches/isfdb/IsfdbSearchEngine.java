@@ -77,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
  */
 @SearchEngine.Configuration(
         id = SearchSites.ISFDB,
-        nameResId = R.string.site_isfdb,
+        name = "ISFDB",
         url = "http://www.isfdb.org",
         prefKey = IsfdbSearchEngine.PREF_KEY,
         domainKey = DBDefinitions.KEY_EID_ISFDB,
@@ -569,10 +569,6 @@ public class IsfdbSearchEngine
         String tmpString;
 
         for (final Element li : lis) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
-                Log.d(TAG, "fetch|" + li.toString());
-            }
-
             if (isCancelled()) {
                 return;
             }
@@ -587,6 +583,9 @@ public class IsfdbSearchEngine
                 }
 
                 if (fieldName == null) {
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.ISFDB) {
+                        Log.d(TAG, "fetch|" + li.toString());
+                    }
                     continue;
                 }
 

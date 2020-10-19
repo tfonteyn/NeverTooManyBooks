@@ -68,7 +68,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  */
 @SearchEngine.Configuration(
         id = SearchSites.STRIP_INFO_BE,
-        nameResId = R.string.site_stripinfo_be,
+        name = "stripinfo.be",
         prefKey = "stripinfo",
         url = "https://stripinfo.be",
         lang = "nl",

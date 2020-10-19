@@ -480,9 +480,9 @@ public class CoverBrowserDialogFragment
                     holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
 
                     //noinspection ConstantConditions
-                    holder.siteView.setText(
-                            SearchEngineRegistry.getByEngineId(imageFileInfo.getEngineId())
-                                                .getNameResId());
+                    holder.siteView.setText(SearchEngineRegistry
+                                                    .getByEngineId(imageFileInfo.getEngineId())
+                                                    .getName());
 
                 } else {
                     // no file. Theoretically we should not get here,
