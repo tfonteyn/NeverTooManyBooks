@@ -561,6 +561,7 @@ public final class StyleDAO {
             return ID_UUID[id];
         }
 
+        @SuppressWarnings("ConstantConditions")
         private static void create(@NonNull final Context context,
                                    @NonNull final DAO db) {
 
