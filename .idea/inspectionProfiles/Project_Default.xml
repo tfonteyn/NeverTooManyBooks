@@ -16,7 +16,9 @@
     <inspection_tool class="AndroidLintSourceLockedOrientationActivity" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="AndroidLintTypographyQuotes" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="AndroidLintUnsupportedChromeOsCameraSystemFeature" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="AndroidLintUseCompatLoadingForDrawables" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="AndroidLintUseCompatTextViewDrawableApis" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="AndroidLintUseCompatTextViewDrawableXml" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="AndroidLintValidActionsXml" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="AndroidLintWrongThreadInterprocedural" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="AnonymousInnerClassMayBeStatic" enabled="true" level="WARNING" enabled_by_default="true" />
