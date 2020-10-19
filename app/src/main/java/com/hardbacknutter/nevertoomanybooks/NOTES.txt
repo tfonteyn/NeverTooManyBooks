@@ -1,8 +1,8 @@
 Supported Android versions:
 
+* v1.2.0 requires Android 7.0 (API 24)
 * v1.1.2 runs on Android 6.0 (API 23)
 
-* v1.2.0 requires Android 7.0 (API 24)
 Recent code changes using classes from the "coreLibraryDesugaring" functionality,
 and "minSdkVersion 23" led to startup crashes on devices with API 23.
 The same configuration works fine on devices with API 24.
