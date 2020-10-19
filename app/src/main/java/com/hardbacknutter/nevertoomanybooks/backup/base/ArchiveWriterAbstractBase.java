@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -28,7 +27,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -128,12 +126,6 @@ public abstract class ArchiveWriterAbstractBase
                 mResults.add(prepareData(context, progressListener));
             }
 
-            if (BuildConfig.DEBUG) {
-                Log.d(TAG, "prepareData"
-                           + "|getBookCount=" + mResults.getBookCount()
-                           + "|getCoverCount=" + mResults.getCoverCount()
-                     );
-            }
             // Recalculate the progress max value using the exact number of books/covers
             // which will now include the back-covers.
             progressListener.setMaxPos(mResults.getBookCount()
