@@ -579,7 +579,7 @@ public class CoverHandler {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Log.d(TAG, "onAfterTransform"
                        + "|returnCode=" + result.getReturnCode()
-                       + "|bitmap=" + result.getBitmap()
+                       + "|bitmap=" + (result.getBitmap() != null)
                        + "|file=" + result.getFile().getAbsolutePath());
         }
 
