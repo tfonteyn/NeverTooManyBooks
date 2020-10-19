@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,7 +47,6 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
@@ -77,9 +75,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  */
 public abstract class BaseDialogFragment
         extends DialogFragment {
-
-    /** Log tag. */
-    private static final String TAG = "BaseDialogFragment";
 
     // SnackBar:
     //  private static final int SHORT_DURATION_MS = 1500;
@@ -212,19 +207,11 @@ public abstract class BaseDialogFragment
             final Resources res = getResources();
 
             if (mWidthDrId != 0) {
-                final int width = res.getDimensionPixelSize(mWidthDrId);
-                view.getLayoutParams().width = width;
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "onViewCreated|width=" + width);
-                }
+                view.getLayoutParams().width = res.getDimensionPixelSize(mWidthDrId);
             }
 
             if (mDHeightDrId != 0) {
-                final int height = res.getDimensionPixelSize(mDHeightDrId);
-                view.getLayoutParams().height = height;
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "onViewCreated|height=" + height);
-                }
+                view.getLayoutParams().height = res.getDimensionPixelSize(mDHeightDrId);
             }
 
             if (mMarginBottomDrId != 0) {
@@ -232,10 +219,6 @@ public abstract class BaseDialogFragment
                 final ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams)
                         view.findViewById(R.id.body_frame).getLayoutParams();
                 lp.setMargins(0, 0, 0, marginBottom);
-
-                if (BuildConfig.DEBUG) {
-                    Log.d(TAG, "onViewCreated|marginBottom=" + marginBottom);
-                }
             }
         }
     }
