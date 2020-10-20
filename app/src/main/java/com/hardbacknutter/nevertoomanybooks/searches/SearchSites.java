@@ -52,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *     <li>Implement {@link SearchEngine} to create the new engine class
  *          extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
  *          or a similar setup.<br>
- *          Configure the engine using the {@link SearchEngine.Configuration} annotation.
+ *          Configure the engine using {@link SearchEngineRegistry.Config}.
  *      </li>
  *
  *     <li>Add the {@link SearchEngine} class to {@link #registerSearchEngineClasses()}</li>
@@ -133,21 +133,21 @@ public final class SearchSites {
 
         // NEWTHINGS: adding a new search engine: add the search engine class
         // The order added is not relevant
-        SearchEngineRegistry.add(AmazonSearchEngine.class);
-        SearchEngineRegistry.add(GoodreadsSearchEngine.class);
-        SearchEngineRegistry.add(IsfdbSearchEngine.class);
-        SearchEngineRegistry.add(KbNlSearchEngine.class);
-        SearchEngineRegistry.add(OpenLibrarySearchEngine.class);
-        SearchEngineRegistry.add(StripInfoSearchEngine.class);
+        SearchEngineRegistry.add(AmazonSearchEngine.createConfig());
+        SearchEngineRegistry.add(GoodreadsSearchEngine.createConfig());
+        SearchEngineRegistry.add(IsfdbSearchEngine.createConfig());
+        SearchEngineRegistry.add(KbNlSearchEngine.createConfig());
+        SearchEngineRegistry.add(OpenLibrarySearchEngine.createConfig());
+        SearchEngineRegistry.add(StripInfoSearchEngine.createConfig());
 
         if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
-            SearchEngineRegistry.add(GoogleBooksSearchEngine.class);
+            SearchEngineRegistry.add(GoogleBooksSearchEngine.createConfig());
         }
         if (BuildConfig.ENABLE_LAST_DODO) {
-            SearchEngineRegistry.add(LastDodoSearchEngine.class);
+            SearchEngineRegistry.add(LastDodoSearchEngine.createConfig());
         }
         if (BuildConfig.ENABLE_LIBRARY_THING || BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-            SearchEngineRegistry.add(LibraryThingSearchEngine.class);
+            SearchEngineRegistry.add(LibraryThingSearchEngine.createConfig());
         }
     }
 

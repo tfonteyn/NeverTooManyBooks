@@ -38,8 +38,10 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
@@ -61,12 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  * example:
  * <a href="https://stackoverflow.com/questions/7908954">google-books-api-searching-by-isbn</a>
  */
-@SearchEngine.Configuration(
-        id = SearchSites.GOOGLE_BOOKS,
-        name = "Google Books",
-        url = "https://books.google.com",
-        prefKey = "googlebooks"
-)
 public class GoogleBooksSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
@@ -80,8 +76,18 @@ public class GoogleBooksSearchEngine
      * @param appContext Application context
      */
     @SuppressWarnings("WeakerAccess")
-    public GoogleBooksSearchEngine(@NonNull final Context appContext) {
-        super(appContext);
+    public GoogleBooksSearchEngine(@NonNull final Context appContext,
+                                   final int engineId) {
+        super(appContext, engineId);
+    }
+
+    public static SearchEngineRegistry.Config createConfig() {
+        return new SearchEngineRegistry.Config.Builder(GoogleBooksSearchEngine.class,
+                                                       SearchSites.GOOGLE_BOOKS,
+                                                       R.string.site_google_books,
+                                                       "googlebooks",
+                                                       "https://books.google.com")
+                .build();
     }
 
     @NonNull

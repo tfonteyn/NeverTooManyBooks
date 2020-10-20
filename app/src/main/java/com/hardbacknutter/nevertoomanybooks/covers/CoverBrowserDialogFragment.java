@@ -479,10 +479,9 @@ public class CoverBrowserDialogFragment
                     // keep this statement here, or we would need to call file.exists() twice
                     holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
 
-                    //noinspection ConstantConditions
                     holder.siteView.setText(SearchEngineRegistry
                                                     .getByEngineId(imageFileInfo.getEngineId())
-                                                    .getName());
+                                                    .getNameResId());
 
                 } else {
                     // no file. Theoretically we should not get here,

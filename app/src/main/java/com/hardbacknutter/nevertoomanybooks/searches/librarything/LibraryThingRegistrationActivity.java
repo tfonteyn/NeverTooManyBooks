@@ -87,7 +87,6 @@ public class LibraryThingRegistrationActivity
 
         // for the purist: we should call SearchEngine#getSiteUrl()
         // but it's extremely unlikely that LibraryThing would ever get a configurable url
-        //noinspection ConstantConditions
         final String siteUrl = SearchEngineRegistry.getByEngineId(SearchSites.LIBRARY_THING)
                                                    .getSiteUrl();
 

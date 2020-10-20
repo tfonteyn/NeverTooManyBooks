@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -66,20 +67,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * <p>
  * Dutch language (and to an extend French and a minimal amount of other languages) comics website.
  */
-@SearchEngine.Configuration(
-        id = SearchSites.STRIP_INFO_BE,
-        name = "stripinfo.be",
-        prefKey = "stripinfo",
-        url = "https://stripinfo.be",
-        lang = "nl",
-        country = "be",
-        domainMenuId = R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE,
-        domainViewId = R.id.site_strip_info_be,
-        domainKey = DBDefinitions.KEY_EID_STRIP_INFO_BE,
-        connectTimeoutMs = 7_000,
-        readTimeoutMs = 60_000,
-        filenameSuffix = "SI"
-)
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByExternalId,
@@ -136,8 +123,27 @@ public class StripInfoSearchEngine
      *
      * @param appContext Application context
      */
-    public StripInfoSearchEngine(@NonNull final Context appContext) {
-        super(appContext);
+    @SuppressWarnings("WeakerAccess")
+    public StripInfoSearchEngine(@NonNull final Context appContext,
+                                 final int engineId) {
+        super(appContext, engineId);
+    }
+
+    public static SearchEngineRegistry.Config createConfig() {
+        return new SearchEngineRegistry.Config.Builder(StripInfoSearchEngine.class,
+                                                       SearchSites.STRIP_INFO_BE,
+                                                       R.string.site_stripinfo_be,
+                                                       "stripinfo",
+                                                       "https://stripinfo.be")
+                .setCountry("BE", "nl")
+                .setFilenameSuffix("SI")
+
+                .setDomainKey(DBDefinitions.KEY_EID_STRIP_INFO_BE)
+                .setDomainViewId(R.id.site_strip_info_be)
+                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
+
+                .setTimeout(7_000, 60_000)
+                .build();
     }
 
     @NonNull

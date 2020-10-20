@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.AnyThread;
-import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,11 +36,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -113,7 +107,7 @@ public interface SearchEngine {
         }
 
         if (showAlert) {
-            final String siteName = config.getName();
+            final String siteName = context.getString(config.getNameResId());
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
                     .setIcon(R.drawable.ic_warning)
@@ -181,7 +175,6 @@ public interface SearchEngine {
     @AnyThread
     @NonNull
     default SearchEngineRegistry.Config getConfig() {
-        //noinspection ConstantConditions
         return SearchEngineRegistry.getByEngineId(getId());
     }
 
@@ -192,9 +185,8 @@ public interface SearchEngine {
      */
     @AnyThread
     @NonNull
-    default String getName() {
-        //noinspection ConstantConditions
-        return SearchEngineRegistry.getByEngineId(getId()).getName();
+    default String getName(@NonNull final Context context) {
+        return context.getString(SearchEngineRegistry.getByEngineId(getId()).getNameResId());
     }
 
     /**
@@ -207,7 +199,6 @@ public interface SearchEngine {
     @AnyThread
     @NonNull
     default String getSiteUrl() {
-        //noinspection ConstantConditions
         return SearchEngineRegistry.getByEngineId(getId()).getSiteUrl();
     }
 
@@ -222,7 +213,6 @@ public interface SearchEngine {
     @AnyThread
     @NonNull
     default Locale getLocale() {
-        //noinspection ConstantConditions
         return SearchEngineRegistry.getByEngineId(getId()).getLocale();
     }
 
@@ -310,7 +300,6 @@ public interface SearchEngine {
                                                   final boolean followRedirects)
             throws IOException {
         final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
-        //noinspection ConstantConditions
         final TerminatorConnection con = new TerminatorConnection(getAppContext(), url,
                                                                   config.getConnectTimeoutMs(),
                                                                   config.getReadTimeoutMs(),
@@ -336,7 +325,6 @@ public interface SearchEngine {
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @Nullable final ImageFileInfo.Size size) {
         final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
-        //noinspection ConstantConditions
         final String filename = ImageUtils
                 .createFilename(config.getFilenameSuffix(), bookId, cIdx, size);
 
@@ -534,7 +522,6 @@ public interface SearchEngine {
          */
         @AnyThread
         default boolean supportsMultipleCoverSizes() {
-            //noinspection ConstantConditions
             return SearchEngineRegistry.getByEngineId(getId()).supportsMultipleCoverSizes();
         }
 
@@ -658,46 +645,5 @@ public interface SearchEngine {
         @NonNull
         List<String> searchAlternativeEditions(@NonNull String validIsbn)
                 throws CredentialsException, IOException;
-    }
-
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @Documented
-    @interface Configuration {
-
-        @SearchSites.EngineId int id();
-
-        @NonNull
-        String name();
-
-        @NonNull
-        String prefKey();
-
-        @NonNull
-        String url();
-
-        @NonNull
-        String lang() default "en";
-
-        @NonNull
-        String country() default "";
-
-        @NonNull
-        String domainKey() default "";
-
-        @IdRes int domainViewId() default 0;
-
-        @IdRes int domainMenuId() default 0;
-
-        int connectTimeoutMs() default 5_000;
-
-        int readTimeoutMs() default 10_000;
-
-        /** {@link CoverByIsbn} only. */
-        boolean supportsMultipleCoverSizes() default false;
-
-        /** file suffix for cover files. */
-        @NonNull
-        String filenameSuffix() default "";
     }
 }

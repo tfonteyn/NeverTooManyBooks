@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -86,17 +87,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
  * </ul>
  * Below is a rudimentary "data" implementation. "details" was tested with curl.
  */
-@SearchEngine.Configuration(
-        id = SearchSites.OPEN_LIBRARY,
-        name = "OpenLibrary",
-        url = "https://openlibrary.org",
-        prefKey = "openlibrary",
-        domainKey = DBDefinitions.KEY_EID_OPEN_LIBRARY,
-        domainViewId = R.id.site_open_library,
-        domainMenuId = R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY,
-        supportsMultipleCoverSizes = true,
-        filenameSuffix = "OL"
-)
 public class OpenLibrarySearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
@@ -158,8 +148,26 @@ public class OpenLibrarySearchEngine
      *
      * @param appContext Application context
      */
-    public OpenLibrarySearchEngine(@NonNull final Context appContext) {
-        super(appContext);
+    @SuppressWarnings("WeakerAccess")
+    public OpenLibrarySearchEngine(@NonNull final Context appContext,
+                                   final int engineId) {
+        super(appContext, engineId);
+    }
+
+    public static SearchEngineRegistry.Config createConfig() {
+        return new SearchEngineRegistry.Config.Builder(OpenLibrarySearchEngine.class,
+                                                       SearchSites.OPEN_LIBRARY,
+                                                       R.string.site_open_library,
+                                                       "openlibrary",
+                                                       "https://openlibrary.org")
+
+                .setSupportsMultipleCoverSizes(true)
+                .setFilenameSuffix("OL")
+
+                .setDomainKey(DBDefinitions.KEY_EID_OPEN_LIBRARY)
+                .setDomainViewId(R.id.site_open_library)
+                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
+                .build();
     }
 
     @NonNull

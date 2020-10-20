@@ -104,7 +104,8 @@ public class SearchTask
         mSearchEngine.setCaller(this);
 
         mProgressTitle = mSearchEngine.getAppContext().getString(
-                R.string.progress_msg_searching_site, searchEngine.getName());
+                R.string.progress_msg_searching_site,
+                searchEngine.getName(mSearchEngine.getAppContext()));
     }
 
     @NonNull
@@ -184,7 +185,7 @@ public class SearchTask
     @Override
     @WorkerThread
     protected Bundle doWork(@NonNull final Context context) {
-        Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName());
+        Thread.currentThread().setName(TAG + ' ' + mSearchEngine.getName(context));
 
         publishProgress(new ProgressMessage(getTaskId(), mProgressTitle));
 
@@ -224,7 +225,8 @@ public class SearchTask
 
                 default:
                     // we should never get here...
-                    throw new IllegalArgumentException("SearchEngine " + mSearchEngine.getName()
+                    throw new IllegalArgumentException("SearchEngine "
+                                                       + mSearchEngine.getName(context)
                                                        + " does not implement By=" + mBy);
             }
 

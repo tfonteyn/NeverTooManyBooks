@@ -24,7 +24,7 @@ import android.content.Context;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.StringRes;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
- * A registry of all {@link SearchEngine} classes and their {@link SearchEngine.Configuration}.
+ * A registry of all {@link SearchEngine} classes and their {@link Config}.
  */
 public final class SearchEngineRegistry {
 
@@ -67,10 +67,9 @@ public final class SearchEngineRegistry {
     /**
      * Register a {@link SearchEngine}.
      *
-     * @param searchEngineClass to register
+     * @param config to register
      */
-    static void add(@NonNull final Class<? extends SearchEngine> searchEngineClass) {
-        final Config config = new Config(searchEngineClass);
+    static void add(@NonNull final Config config) {
         SITE_CONFIGS_MAP.put(config.getEngineId(), config);
     }
 
@@ -89,11 +88,11 @@ public final class SearchEngineRegistry {
      *
      * @param engineId the search engine id
      *
-     * @return Config, or {@link null} if not found
+     * @return Config
      */
-    @Nullable
+    @NonNull
     public static Config getByEngineId(@SearchSites.EngineId final int engineId) {
-        return SITE_CONFIGS_MAP.get(engineId);
+        return Objects.requireNonNull(SITE_CONFIGS_MAP.get(engineId), "engine not found");
     }
 
     /**
@@ -125,8 +124,8 @@ public final class SearchEngineRegistry {
     }
 
     @NonNull
-    static SearchEngine createSearchEngine(@NonNull final Context context,
-                                           final int engineId) {
+    public static SearchEngine createSearchEngine(@NonNull final Context context,
+                                                  final int engineId) {
         //noinspection ConstantConditions
         return SITE_CONFIGS_MAP.get(engineId).createSearchEngine(context);
     }
@@ -146,17 +145,24 @@ public final class SearchEngineRegistry {
 
     /**
      * Immutable configuration data for a {@link SearchEngine}.
-     * Encapsulates the annotation class together with the search engine class,
-     * and provides the 'complex' configuration objects along side the 'simple' attributes.
-     * <p>
      * See {@link SearchSites} for more details.
      */
     public static final class Config {
 
         @NonNull
         private final Class<? extends SearchEngine> mClass;
+
+        @SearchSites.EngineId
+        private final int mId;
+
+        @StringRes
+        private final int mNameResId;
+
         @NonNull
-        private final SearchEngine.Configuration mSEConfig;
+        private final String mPrefKey;
+
+        @NonNull
+        private final String mUrl;
 
         /** Constructed from language+country. */
         @NonNull
@@ -166,77 +172,103 @@ public final class SearchEngineRegistry {
         @Nullable
         private final Domain mExternalIdDomain;
 
+        @IdRes
+        private final int mDomainViewId;
+
+        @IdRes
+        private final int mDomainMenuId;
+
+        private final int mConnectTimeoutMs;
+
+        private final int mReadTimeoutMs;
+
+        /** {@link SearchEngine.CoverByIsbn} only. */
+        private final boolean mSupportsMultipleCoverSizes;
+
+        /** file suffix for cover files. */
+        @NonNull
+        private final String mFilenameSuffix;
+
+
         /**
          * Constructor.
-         *
-         * @param searchEngineClass to configure
          */
-        public Config(@NonNull final Class<? extends SearchEngine> searchEngineClass) {
-            mClass = searchEngineClass;
-            mSEConfig = Objects.requireNonNull(
-                    searchEngineClass.getAnnotation(SearchEngine.Configuration.class));
+        private Config(@NonNull final Builder builder) {
+            mClass = builder.mClass;
+            mId = builder.mId;
+            mNameResId = builder.mNameResId;
+            mPrefKey = builder.mPrefKey;
+            mUrl = builder.mUrl;
 
-            if ("en".equals(mSEConfig.lang()) && mSEConfig.country().isEmpty()) {
+            if (builder.mLang != null && !builder.mLang.isEmpty()
+                && builder.mCountry != null && !builder.mCountry.isEmpty()) {
+                mLocale = new Locale(builder.mLang, builder.mCountry.toUpperCase(Locale.ENGLISH));
+
+            } else {
                 // be lenient...
                 mLocale = Locale.US;
-            } else {
-                mLocale = new Locale(mSEConfig.lang(),
-                                     mSEConfig.country().toUpperCase(Locale.ENGLISH));
             }
 
-            final String domainKey = mSEConfig.domainKey();
-            if (domainKey.isEmpty()) {
+            if (builder.mDomainKey == null || builder.mDomainKey.isEmpty()) {
                 mExternalIdDomain = null;
             } else {
-                mExternalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(domainKey);
+                mExternalIdDomain = DBDefinitions.TBL_BOOKS.getDomain(builder.mDomainKey);
             }
+
+            mDomainViewId = builder.mDomainViewId;
+            mDomainMenuId = builder.mDomainMenuId;
+
+            mConnectTimeoutMs = builder.mConnectTimeoutMs;
+            mReadTimeoutMs = builder.mReadTimeoutMs;
+
+            mSupportsMultipleCoverSizes = builder.mSupportsMultipleCoverSizes;
+            mFilenameSuffix = builder.mFilenameSuffix != null ? builder.mFilenameSuffix : "";
         }
 
-
-        @VisibleForTesting
         @NonNull
         SearchEngine createSearchEngine(@NonNull final Context context) {
             try {
                 final Constructor<? extends SearchEngine> c =
-                        mClass.getConstructor(Context.class);
+                        mClass.getConstructor(Context.class, int.class);
                 // ALWAYS use the localized Application context here
                 // It's going to get used in background tasks!
-                return c.newInstance(context.getApplicationContext());
+                return c.newInstance(context.getApplicationContext(), mId);
 
             } catch (@NonNull final NoSuchMethodException | IllegalAccessException
                     | InstantiationException | InvocationTargetException e) {
                 throw new IllegalStateException(mClass
-                                                + " must implement SearchEngine(Context)", e);
+                                                + " must implement SearchEngine(Context,int)", e);
             }
         }
 
         @SearchSites.EngineId
         public int getEngineId() {
-            return mSEConfig.id();
+            return mId;
         }
 
         /**
          * Get the human-readable name of the site.
          *
-         * @return the displayable name
+         * @return the displayable name resource id
          */
-        public String getName() {
-            return mSEConfig.name();
+        @StringRes
+        public int getNameResId() {
+            return mNameResId;
         }
 
         @NonNull
         String getPreferenceKey() {
-            return mSEConfig.prefKey();
+            return mPrefKey;
         }
 
         @NonNull
-        public String getFilenameSuffix() {
-            return mSEConfig.filenameSuffix();
+        String getFilenameSuffix() {
+            return mFilenameSuffix;
         }
 
         @NonNull
         public String getSiteUrl() {
-            return mSEConfig.url();
+            return mUrl;
         }
 
         /**
@@ -256,12 +288,12 @@ public final class SearchEngineRegistry {
 
         @IdRes
         int getDomainViewId() {
-            return mSEConfig.domainViewId();
+            return mDomainViewId;
         }
 
         @IdRes
         int getDomainMenuId() {
-            return mSEConfig.domainMenuId();
+            return mDomainMenuId;
         }
 
         /**
@@ -270,7 +302,7 @@ public final class SearchEngineRegistry {
          * @return defaults to 5 second. Override as needed.
          */
         public int getConnectTimeoutMs() {
-            return mSEConfig.connectTimeoutMs();
+            return mConnectTimeoutMs;
         }
 
         /**
@@ -279,7 +311,7 @@ public final class SearchEngineRegistry {
          * @return defaults to 10 second. Override as needed.
          */
         public int getReadTimeoutMs() {
-            return mSEConfig.readTimeoutMs();
+            return mReadTimeoutMs;
         }
 
         /**
@@ -290,17 +322,126 @@ public final class SearchEngineRegistry {
          * @return {@code true} if multiple sizes are supported.
          */
         boolean supportsMultipleCoverSizes() {
-            return mSEConfig.supportsMultipleCoverSizes();
+            return mSupportsMultipleCoverSizes;
         }
 
         @Override
         public String toString() {
             return "Config{"
                    + "mClass=" + mClass
-                   + ", mSEConfig=" + mSEConfig
+                   + ", mId=" + mId
+                   + ", mName=`" + mNameResId + '`'
+                   + ", mPrefKey=`" + mPrefKey + '`'
+                   + ", mUrl=`" + mUrl + '`'
                    + ", mLocale=" + mLocale
                    + ", mExternalIdDomain=" + mExternalIdDomain
+                   + ", mDomainViewId=" + mDomainViewId
+                   + ", mDomainMenuId=" + mDomainMenuId
+                   + ", mConnectTimeoutMs=" + mConnectTimeoutMs
+                   + ", mReadTimeoutMs=" + mReadTimeoutMs
+                   + ", mSupportsMultipleCoverSizes=" + mSupportsMultipleCoverSizes
+                   + ", mFilenameSuffix=`" + mFilenameSuffix + '`'
                    + '}';
+        }
+
+        public static class Builder {
+
+            @NonNull
+            private final Class<? extends SearchEngine> mClass;
+
+            @SearchSites.EngineId
+            private final int mId;
+
+            @StringRes
+            private final int mNameResId;
+
+            @NonNull
+            private final String mPrefKey;
+
+            @NonNull
+            private final String mUrl;
+
+            @Nullable
+            private String mLang;
+
+            @Nullable
+            private String mCountry;
+
+            @Nullable
+            private String mDomainKey;
+
+            @IdRes
+            private int mDomainViewId;
+
+            @IdRes
+            private int mDomainMenuId;
+
+            private int mConnectTimeoutMs = 5_000;
+
+            private int mReadTimeoutMs = 10_000;
+
+            /** {@link SearchEngine.CoverByIsbn} only. */
+            private boolean mSupportsMultipleCoverSizes;
+
+            /** file suffix for cover files. */
+            @Nullable
+            private String mFilenameSuffix;
+
+
+            public Builder(@NonNull final Class<? extends SearchEngine> clazz,
+                           @SearchSites.EngineId final int id,
+                           @StringRes final int nameResId,
+                           @NonNull final String prefKey,
+                           @NonNull final String url) {
+                mClass = clazz;
+                mId = id;
+                mNameResId = nameResId;
+                mPrefKey = prefKey;
+                mUrl = url;
+            }
+
+            public Config build() {
+                return new Config(this);
+            }
+
+            public Builder setCountry(@NonNull final String country,
+                                      @NonNull final String lang) {
+                mCountry = country;
+                mLang = lang;
+                return this;
+            }
+
+            public Builder setTimeout(final int connectTimeoutMs,
+                                      final int readTimeoutMs) {
+                mConnectTimeoutMs = connectTimeoutMs;
+                mReadTimeoutMs = readTimeoutMs;
+                return this;
+            }
+
+            public Builder setDomainKey(@NonNull final String domainKey) {
+                mDomainKey = domainKey;
+                return this;
+            }
+
+            public Builder setDomainMenuId(@IdRes final int domainMenuId) {
+                mDomainMenuId = domainMenuId;
+                return this;
+            }
+
+            public Builder setDomainViewId(@IdRes final int domainViewId) {
+                mDomainViewId = domainViewId;
+                return this;
+            }
+
+            public Builder setSupportsMultipleCoverSizes(final boolean supportsMultipleCoverSizes) {
+                mSupportsMultipleCoverSizes = supportsMultipleCoverSizes;
+                return this;
+            }
+
+            public Builder setFilenameSuffix(@NonNull final String filenameSuffix) {
+                mFilenameSuffix = filenameSuffix;
+                return this;
+            }
         }
     }
 }

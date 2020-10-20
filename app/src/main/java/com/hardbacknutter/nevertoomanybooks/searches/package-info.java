@@ -28,19 +28,19 @@
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngine} :
  *          The interface that the engine class implements and responsible for the actual searches.
  *      </li>
- *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngine.Configuration} :
+ *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry.Config} :
  *          The annotation that configures the engine class.
  *      </li>
  *
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry} :
  *          A registry of all {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngine}
  *          classes and their
- *          {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngine.Configuration}.
+ *          {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry.Config}.
  *      </li>
  *
  *      <li>{@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry.Config} :
  *          Encapsulates
- *          {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngine.Configuration},
+ *          {@link com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry.Config},
  *          resolving complex config items (e.g. Locale).
  *      </li>
  *

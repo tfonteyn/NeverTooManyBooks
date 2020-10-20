@@ -21,9 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.StrictMode;
 
 import androidx.annotation.CallSuper;
@@ -31,80 +28,22 @@ import androidx.annotation.NonNull;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
-import org.acra.annotation.AcraCore;
-import org.acra.annotation.AcraDialog;
-import org.acra.annotation.AcraMailSender;
-import org.acra.annotation.AcraToast;
+import org.acra.config.CoreConfigurationBuilder;
+import org.acra.config.DialogConfigurationBuilder;
+import org.acra.config.MailSenderConfigurationBuilder;
+import org.acra.config.ToastConfigurationBuilder;
 import org.acra.file.Directory;
 
-import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
-@AcraMailSender(
-        mailTo = "",
-        // mailTo = "debug@email",
-        reportFileName = "NeverTooManyBooks-acra-report.txt")
-@AcraToast(
-        //optional, displayed as soon as the crash occurs,
-        // before collecting data which can take a few seconds
-        resText = R.string.acra_resToastText)
-@AcraDialog(
-        resText = R.string.acra_resDialogText,
-        resTitle = R.string.app_name,
-        resTheme = R.style.Theme_App,
-        resIcon = R.drawable.ic_warning,
-        resCommentPrompt = R.string.acra_resDialogCommentPrompt)
-@AcraCore(
-        resReportSendSuccessToast = R.string.acra_resReportSendSuccessToast,
-        resReportSendFailureToast = R.string.error_email_failed,
-        reportContent = {
-                // Device
-                ReportField.PHONE_MODEL,
-                ReportField.BRAND,
-                ReportField.PRODUCT,
-                // Overkill: ReportField.DEVICE_FEATURES,
-                ReportField.DISPLAY,
-                ReportField.ANDROID_VERSION,
-                ReportField.BUILD,
-                ReportField.ENVIRONMENT,
-                ReportField.TOTAL_MEM_SIZE,
-                ReportField.AVAILABLE_MEM_SIZE,
-
-                // Privacy: do not use ReportField.DEVICE_ID,
-                ReportField.INSTALLATION_ID,
-                ReportField.REPORT_ID,
-
-                // Application
-                ReportField.APP_VERSION_CODE,
-                ReportField.APP_VERSION_NAME,
-                ReportField.BUILD_CONFIG,
-                ReportField.FILE_PATH,
-
-                ReportField.APPLICATION_LOG,
-                ReportField.SHARED_PREFERENCES,
-                ReportField.INITIAL_CONFIGURATION,
-                ReportField.CRASH_CONFIGURATION,
-                ReportField.STACK_TRACE,
-                ReportField.STACK_TRACE_HASH,
-                ReportField.THREAD_DETAILS,
-
-                ReportField.CUSTOM_DATA,
-
-                ReportField.USER_APP_START_DATE,
-                ReportField.USER_CRASH_DATE,
-
-                ReportField.USER_COMMENT
-        },
-        applicationLogFileDir = Directory.EXTERNAL_FILES,
-        applicationLogFile = Logger.LOG_PATH,
-        applicationLogFileLines = 1000
-)
 public class App
         extends Application {
 
-    /**
-     * Singleton.
-     */
+    public static final int ACRA_LOGFILE_LINES = 1_000;
+    public static final String ACRA_EMAIL_ATTACHMENT = "NeverTooManyBooks-acra-report.txt";
+
+    /** Singleton. */
     private static App sInstance;
 
     /**
@@ -130,30 +69,6 @@ public class App
         return sInstance.getApplicationContext();
     }
 
-    /**
-     * Reads the application version from the manifest.
-     *
-     * @param context Current context
-     *
-     * @return the version
-     */
-    public static long getVersion(@NonNull final Context context) {
-        try {
-            final PackageInfo info =
-                    context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            if (Build.VERSION.SDK_INT >= 28) {
-                return info.getLongVersionCode();
-            } else {
-                //noinspection deprecation
-                return info.versionCode;
-            }
-        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
-            // eh ?
-            return 0;
-        }
-
-    }
-
     @Override
     @CallSuper
     protected void attachBaseContext(@NonNull final Context base) {
@@ -161,9 +76,8 @@ public class App
         sInstance = this;
 
         super.attachBaseContext(base);
-        // Initialize ACRA reporting
-        ACRA.init(this);
-        ACRA.getErrorReporter().putCustomData("Signed-By", DebugReport.signedBy(this));
+
+        initAcra();
 
         // https://developer.android.com/reference/android/os/StrictMode
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.STRICT_MODE) {
@@ -172,5 +86,77 @@ public class App
                                                .penaltyLog()
                                                .build());
         }
+    }
+
+    /**
+     * Initialize ACRA reporting.
+     */
+    private void initAcra() {
+        final CoreConfigurationBuilder builder = new CoreConfigurationBuilder(this)
+                .setResReportSendSuccessToast(R.string.acra_resReportSendSuccessToast)
+                .setResReportSendFailureToast(R.string.error_email_failed)
+                .setApplicationLogFileDir(Directory.EXTERNAL_FILES)
+                .setApplicationLogFile(Logger.LOG_PATH)
+                .setApplicationLogFileLines(ACRA_LOGFILE_LINES)
+                // TODO: comment-out unneeded fields
+                .setReportContent(
+                        // Device
+                        ReportField.PHONE_MODEL,
+                        ReportField.BRAND,
+                        ReportField.PRODUCT,
+                        // ReportField.DEVICE_FEATURES,
+                        ReportField.DISPLAY,
+                        ReportField.ANDROID_VERSION,
+                        ReportField.BUILD,
+                        ReportField.ENVIRONMENT,
+                        ReportField.TOTAL_MEM_SIZE,
+                        ReportField.AVAILABLE_MEM_SIZE,
+
+                        // Privacy: do not use ReportField.DEVICE_ID,
+                        ReportField.INSTALLATION_ID,
+                        ReportField.REPORT_ID,
+
+                        // Application
+                        ReportField.APP_VERSION_CODE,
+                        ReportField.APP_VERSION_NAME,
+                        ReportField.BUILD_CONFIG,
+                        ReportField.FILE_PATH,
+
+                        ReportField.APPLICATION_LOG,
+                        ReportField.SHARED_PREFERENCES,
+                        ReportField.INITIAL_CONFIGURATION,
+                        ReportField.CRASH_CONFIGURATION,
+                        ReportField.STACK_TRACE,
+                        ReportField.STACK_TRACE_HASH,
+                        ReportField.THREAD_DETAILS,
+
+                        ReportField.CUSTOM_DATA,
+
+                        ReportField.USER_APP_START_DATE,
+                        ReportField.USER_CRASH_DATE,
+
+                        ReportField.USER_COMMENT);
+
+        builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
+               .setMailTo(BuildConfig.ACRA_EMAIL)
+               .setReportFileName(ACRA_EMAIL_ATTACHMENT);
+
+        // Optional, displayed as soon as the crash occurs,
+        // before collecting data which can take a few seconds
+        builder.getPluginConfigurationBuilder(ToastConfigurationBuilder.class)
+               .setResText(R.string.acra_resToastText);
+
+        builder.getPluginConfigurationBuilder(DialogConfigurationBuilder.class)
+               .setResText(R.string.acra_resDialogText)
+               .setResTitle(R.string.app_name)
+               .setResTheme(R.style.Theme_App)
+               .setResIcon(R.drawable.ic_warning)
+               .setResCommentPrompt(R.string.acra_resDialogCommentPrompt);
+
+
+        ACRA.init(this, builder);
+
+        ACRA.getErrorReporter().putCustomData("Signed-By", PackageInfoWrapper
+                .createWithSignatures(this).getSignedBy());
     }
 }

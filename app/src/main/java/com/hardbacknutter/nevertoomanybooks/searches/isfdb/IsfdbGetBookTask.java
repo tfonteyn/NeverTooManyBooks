@@ -30,6 +30,8 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 /**
@@ -80,7 +82,8 @@ public class IsfdbGetBookTask
             throws IOException {
         Thread.currentThread().setName(TAG);
 
-        final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
+        final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
+                SearchEngineRegistry.createSearchEngine(context, SearchSites.ISFDB);
         searchEngine.setCaller(this);
 
         final boolean[] fetchThumbnails = {false, false};

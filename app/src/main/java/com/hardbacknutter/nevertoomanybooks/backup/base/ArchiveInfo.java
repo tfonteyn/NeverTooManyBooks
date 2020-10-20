@@ -20,8 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -32,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
@@ -85,19 +84,10 @@ public class ArchiveInfo {
         mInfo.putString(INFO_CREATION_DATE,
                         LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
 
-        try {
-            final PackageInfo info =
-                    context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            mInfo.putString(INFO_APP_PACKAGE, info.packageName);
-            mInfo.putString(INFO_APP_VERSION_NAME, info.versionName);
-            if (Build.VERSION.SDK_INT >= 28) {
-                mInfo.putLong(INFO_APP_VERSION_CODE, info.getLongVersionCode());
-            } else {
-                mInfo.putLong(INFO_APP_VERSION_CODE, info.versionCode);
-            }
-        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
-            // ignore
-        }
+        final PackageInfoWrapper info = PackageInfoWrapper.create(context);
+        mInfo.putString(INFO_APP_PACKAGE, info.getPackageName());
+        mInfo.putString(INFO_APP_VERSION_NAME, info.getVersionName());
+        mInfo.putLong(INFO_APP_VERSION_CODE, info.getVersionCode());
     }
 
     /**

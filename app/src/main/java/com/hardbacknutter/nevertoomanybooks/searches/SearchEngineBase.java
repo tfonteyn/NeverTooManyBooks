@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -50,13 +49,12 @@ public abstract class SearchEngineBase
      * Constructor.
      *
      * @param appContext Application context
+     * @param engineId   id
      */
-    public SearchEngineBase(@NonNull final Context appContext) {
+    public SearchEngineBase(@NonNull final Context appContext,
+                            final int engineId) {
         mAppContext = appContext;
-
-        final SearchEngine.Configuration se = Objects.requireNonNull(
-                getClass().getAnnotation(SearchEngine.Configuration.class));
-        mId = se.id();
+        mId = engineId;
     }
 
     /**

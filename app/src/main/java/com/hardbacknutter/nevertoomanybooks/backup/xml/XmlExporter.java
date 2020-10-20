@@ -41,7 +41,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
@@ -67,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 /**
  * <ul>Supports:
@@ -1035,7 +1035,7 @@ public class XmlExporter
 
         @Override
         public long getRootTagVersionAttribute() {
-            return App.getVersion(mContext);
+            return PackageInfoWrapper.create(mContext).getVersionCode();
         }
 
         @Override

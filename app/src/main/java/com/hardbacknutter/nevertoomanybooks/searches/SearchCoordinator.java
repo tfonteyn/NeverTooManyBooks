@@ -371,13 +371,13 @@ public class SearchCoordinator
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(taskId);
-                //noinspection ConstantConditions
-                Log.d(TAG, "mSearchTaskListener.onFinished|finished=" + config.getName());
+                Log.d(TAG, "mSearchTaskListener.onFinished|finished=" +
+                           appContext.getString(config.getNameResId()));
 
                 for (final SearchTask searchTask : mActiveTasks) {
                     config = SearchEngineRegistry.getByEngineId(searchTask.getTaskId());
-                    //noinspection ConstantConditions
-                    Log.d(TAG, "mSearchTaskListener.onFinished|running=" + config.getName());
+                    Log.d(TAG, "mSearchTaskListener.onFinished|running=" +
+                               appContext.getString(config.getNameResId()));
                 }
             }
 
@@ -417,9 +417,8 @@ public class SearchCoordinator
                         final int key = mSearchTasksStartTime.keyAt(i);
                         final long end = mSearchTasksEndTime.get(key);
 
-                        //noinspection ConstantConditions
-                        final String engineName =
-                                SearchEngineRegistry.getByEngineId(key).getName();
+                        final String engineName = appContext.getString(
+                                SearchEngineRegistry.getByEngineId(key).getNameResId());
 
                         if (end != 0) {
                             Log.d(TAG, String.format(Locale.ENGLISH,
@@ -817,7 +816,7 @@ public class SearchCoordinator
             mActiveTasks.add(task);
         }
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-            Log.d(TAG, "startSearch|searchEngine=" + searchEngine.getName());
+            Log.d(TAG, "startSearch|searchEngine=" + searchEngine.getName(App.getTaskContext()));
         }
         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, (Void) null);
         return true;
@@ -881,7 +880,8 @@ public class SearchCoordinator
             final Bundle siteData = mSearchResults.get(searchEngine.getId());
             if (siteData != null && !siteData.isEmpty()) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                    Log.d(TAG, "accumulateSiteData|searchEngine=" + searchEngine.getName());
+                    Log.d(TAG, "accumulateSiteData|searchEngine="
+                               + searchEngine.getName(context));
                 }
                 final Locale locale = searchEngine.getLocale();
                 accumulateSiteData(context, siteData, locale);
@@ -1132,10 +1132,9 @@ public class SearchCoordinator
         if (!mSearchFinishedMessages.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
             for (final Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
-                final SearchEngineRegistry.Config config = SearchEngineRegistry
-                        .getByEngineId(entry.getKey());
-                //noinspection ConstantConditions
-                final String engineName = config.getName();
+                final SearchEngineRegistry.Config config =
+                        SearchEngineRegistry.getByEngineId(entry.getKey());
+                final String engineName = context.getString(config.getNameResId());
                 final Exception exception = entry.getValue();
 
                 final String error;

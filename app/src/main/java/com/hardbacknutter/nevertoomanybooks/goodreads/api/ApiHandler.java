@@ -71,7 +71,8 @@ public abstract class ApiHandler {
     protected final GoodreadsAuth mGrAuth;
     @NonNull
     final Context mAppContext;
-    private final SearchEngineRegistry.Config mSiteConfig;
+    @NonNull
+    private final SearchEngineRegistry.Config mConfig;
 
     /**
      * Constructor.
@@ -84,7 +85,7 @@ public abstract class ApiHandler {
         mAppContext = appContext;
         mGrAuth = grAuth;
 
-        mSiteConfig = SearchEngineRegistry.getByEngineId(SearchSites.GOODREADS);
+        mConfig = SearchEngineRegistry.getByEngineId(SearchSites.GOODREADS);
     }
 
     /**
@@ -100,9 +101,7 @@ public abstract class ApiHandler {
      * @throws IOException          on other failures
      */
     protected void executeGet(@NonNull final String url,
-                              @SuppressWarnings("SameParameterValue")
                               @Nullable final Map<String, String> parameterMap,
-                              @SuppressWarnings("SameParameterValue")
                               final boolean requiresSignature,
                               @Nullable final DefaultHandler requestHandler)
             throws CredentialsException, Http404Exception, IOException {
@@ -223,8 +222,8 @@ public abstract class ApiHandler {
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
-        request.setConnectTimeout(mSiteConfig.getConnectTimeoutMs());
-        request.setReadTimeout(mSiteConfig.getReadTimeoutMs());
+        request.setConnectTimeout(mConfig.getConnectTimeoutMs());
+        request.setReadTimeout(mConfig.getReadTimeoutMs());
         request.connect();
 
         final int code = request.getResponseCode();
@@ -315,8 +314,8 @@ public abstract class ApiHandler {
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
-        request.setConnectTimeout(mSiteConfig.getConnectTimeoutMs());
-        request.setReadTimeout(mSiteConfig.getReadTimeoutMs());
+        request.setConnectTimeout(mConfig.getConnectTimeoutMs());
+        request.setReadTimeout(mConfig.getReadTimeoutMs());
         request.connect();
 
         final int code = request.getResponseCode();

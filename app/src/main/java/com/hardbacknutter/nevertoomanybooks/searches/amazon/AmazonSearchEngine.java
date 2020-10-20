@@ -47,6 +47,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -85,24 +86,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * Should really implement the Amazon API.
  * https://docs.aws.amazon.com/en_pv/AWSECommerceService/latest/DG/becomingAssociate.html
  */
-@SearchEngine.Configuration(
-        id = SearchSites.AMAZON,
-        name = "Amazon",
-        url = "https://www.amazon.com",
-        prefKey = AmazonSearchEngine.PREF_KEY,
-//        // ENHANCE: support ASIN
-//        domainKey = DBDefinitions.KEY_EID_ASIN,
-//        domainViewId = R.id.site_amazon,
-//        domainMenuId = R.id.MENU_VIEW_BOOK_AT_AMAZON,
-        filenameSuffix = "AMZ"
-)
 public class AmazonSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
     /** Preferences prefix. */
-    static final String PREF_KEY = "amazon";
+    private static final String PREF_KEY = "amazon";
     /** Type: {@code String}. */
     @VisibleForTesting
     public static final String PREFS_HOST_URL = PREF_KEY + ".host.url";
@@ -153,8 +143,10 @@ public class AmazonSearchEngine
      *
      * @param appContext Application context
      */
-    public AmazonSearchEngine(@NonNull final Context appContext) {
-        super(appContext);
+    @SuppressWarnings("WeakerAccess")
+    public AmazonSearchEngine(@NonNull final Context appContext,
+                              final int engineId) {
+        super(appContext, engineId);
 
         final String baseUrl = getSiteUrl();
         // check the domain name to determine the language of the site
@@ -175,6 +167,21 @@ public class AmazonSearchEngine
                 break;
         }
         mPagesPattern = Pattern.compile(pagesStr, Pattern.LITERAL);
+    }
+
+    public static SearchEngineRegistry.Config createConfig() {
+        return new SearchEngineRegistry.Config.Builder(AmazonSearchEngine.class,
+                                                       SearchSites.AMAZON,
+                                                       R.string.site_amazon,
+                                                       PREF_KEY,
+                                                       "https://www.amazon.com")
+                .setFilenameSuffix("AMZ")
+
+                // ENHANCE: support ASIN
+//                .setDomainKey(DBDefinitions.KEY_EID_ASIN)
+//                .setDomainViewId(R.id.site_amazon)
+//                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
+                .build();
     }
 
     @NonNull

@@ -44,24 +44,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
 /**
  * Current hardcoded to only search comics; could be extended to also search generic books.
  */
-@SearchEngine.Configuration(
-        id = SearchSites.LAST_DODO,
-        name = "lastdodo.nl",
-        url = "https://www.lastdodo.nl/",
-        prefKey = "lastdodo",
-        lang = "nl",
-        country = "NL",
-        domainKey = DBDefinitions.KEY_EID_LAST_DODO_NL,
-        domainViewId = R.id.site_last_dodo_nl,
-        domainMenuId = R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL,
-        filenameSuffix = "LDD"
-)
 public class LastDodoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByIsbn,
@@ -83,8 +72,25 @@ public class LastDodoSearchEngine
      *
      * @param appContext Application context
      */
-    public LastDodoSearchEngine(@NonNull final Context appContext) {
-        super(appContext);
+    @SuppressWarnings("WeakerAccess")
+    public LastDodoSearchEngine(@NonNull final Context appContext,
+                                final int engineId) {
+        super(appContext, engineId);
+    }
+
+    public static SearchEngineRegistry.Config createConfig() {
+        return new SearchEngineRegistry.Config.Builder(LastDodoSearchEngine.class,
+                                                       SearchSites.LAST_DODO,
+                                                       R.string.site_lastdodo_nl,
+                                                       "lastdodo",
+                                                       "https://www.lastdodo.nl/")
+                .setCountry("NL", "nl")
+                .setFilenameSuffix("LDD")
+
+                .setDomainKey(DBDefinitions.KEY_EID_LAST_DODO_NL)
+                .setDomainViewId(R.id.site_last_dodo_nl)
+                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL)
+                .build();
     }
 
     @NonNull
@@ -366,7 +372,6 @@ public class LastDodoSearchEngine
         }
         return null;
     }
-
 
 
     /**

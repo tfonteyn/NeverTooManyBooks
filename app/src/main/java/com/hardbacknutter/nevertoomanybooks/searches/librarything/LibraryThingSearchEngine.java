@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
@@ -78,17 +79,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
  * <p>
  * xml see {@link SearchCoordinator#search} header
  */
-@SearchEngine.Configuration(
-        id = SearchSites.LIBRARY_THING,
-        name = "LibraryThing",
-        url = "https://www.librarything.com",
-        prefKey = LibraryThingSearchEngine.PREF_KEY,
-        domainKey = DBDefinitions.KEY_EID_LIBRARY_THING,
-        domainViewId = R.id.site_library_thing,
-        domainMenuId = R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING,
-        supportsMultipleCoverSizes = true,
-        filenameSuffix = "LT"
-)
 public class LibraryThingSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
@@ -97,7 +87,7 @@ public class LibraryThingSearchEngine
                    SearchEngine.AlternativeEditions {
 
     /** Preferences prefix. */
-    static final String PREF_KEY = "librarything";
+    private static final String PREF_KEY = "librarything";
 
     /** Preference that contains the dev key for the user. Type: {@code String}. */
     static final String PREFS_DEV_KEY = PREF_KEY + ".dev_key";
@@ -123,8 +113,24 @@ public class LibraryThingSearchEngine
      * @param appContext Application context
      */
     @SuppressWarnings("WeakerAccess")
-    public LibraryThingSearchEngine(@NonNull final Context appContext) {
-        super(appContext);
+    public LibraryThingSearchEngine(@NonNull final Context appContext,
+                                    final int engineId) {
+        super(appContext, engineId);
+    }
+
+    public static SearchEngineRegistry.Config createConfig() {
+        return new SearchEngineRegistry.Config.Builder(LibraryThingSearchEngine.class,
+                                                       SearchSites.LIBRARY_THING,
+                                                       R.string.site_library_thing,
+                                                       PREF_KEY,
+                                                       "https://www.librarything.com")
+                .setSupportsMultipleCoverSizes(true)
+                .setFilenameSuffix("LT")
+
+                .setDomainKey(DBDefinitions.KEY_EID_LIBRARY_THING)
+                .setDomainViewId(R.id.site_library_thing)
+                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
+                .build();
     }
 
     /**

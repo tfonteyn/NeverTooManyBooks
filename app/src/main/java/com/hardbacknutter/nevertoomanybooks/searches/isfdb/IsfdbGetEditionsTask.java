@@ -30,6 +30,8 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
@@ -59,7 +61,8 @@ public class IsfdbGetEditionsTask
             throws IOException {
         Thread.currentThread().setName(TAG + mIsbn);
 
-        final IsfdbSearchEngine searchEngine = new IsfdbSearchEngine(context);
+        final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
+                SearchEngineRegistry.createSearchEngine(context, SearchSites.ISFDB);
         searchEngine.setCaller(this);
 
         return searchEngine.fetchEditionsByIsbn(mIsbn);

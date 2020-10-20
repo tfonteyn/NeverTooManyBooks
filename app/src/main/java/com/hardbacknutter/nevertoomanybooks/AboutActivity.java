@@ -22,10 +22,7 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 
@@ -47,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueMana
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 /**
  * This is the About page, showing some info and giving (semi-hidden) access to debug options.
@@ -73,7 +71,7 @@ public class AboutActivity
     private int mDebugClicks;
     private boolean mSqLiteAllowUpdates;
 
-    private long mVersionCode;
+    private PackageInfoWrapper mPackageInfoWrapper;
 
     @Override
     protected void onSetContentView() {
@@ -84,20 +82,10 @@ public class AboutActivity
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            final PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
 
-            if (Build.VERSION.SDK_INT >= 28) {
-                mVersionCode = info.getLongVersionCode();
-            } else {
-                mVersionCode = info.versionCode;
-            }
+        mPackageInfoWrapper = PackageInfoWrapper.create(this);
 
-            mVb.version.setText(info.versionName);
-
-        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
-            // ignore
-        }
+        mVb.version.setText(mPackageInfoWrapper.getVersionName());
 
         mVb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
@@ -108,7 +96,7 @@ public class AboutActivity
                 // show the entire group
                 mVb.debugGroup.setVisibility(View.VISIBLE);
                 // show the full version + build date
-                final String code = "a" + mVersionCode
+                final String code = "a" + mPackageInfoWrapper.getVersionCode()
                                     + " d" + DBHelper.DATABASE_VERSION
                                     + " b" + BuildConfig.TIMESTAMP;
                 mVb.debugVersion.setText(code);

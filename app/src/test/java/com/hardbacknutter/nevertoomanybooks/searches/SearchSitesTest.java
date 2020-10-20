@@ -62,8 +62,8 @@ class SearchSitesTest
             System.out.println("\n------------------------------------------\n\n" + type);
 
             for (final Site site : sites) {
-                final SearchEngineRegistry.Config config =
-                        SearchEngineRegistry.getByEngineId(site.engineId);
+                final SearchEngineRegistry.Config config = SearchEngineRegistry
+                        .getByEngineId(site.engineId);
                 assertNotNull(config);
                 final SearchEngine searchEngine = site.getSearchEngine(mContext);
                 assertNotNull(searchEngine);

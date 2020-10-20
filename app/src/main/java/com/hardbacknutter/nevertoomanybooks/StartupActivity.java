@@ -22,8 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -44,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
+import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 /**
@@ -98,12 +97,8 @@ public class StartupActivity
         setContentView(mVb.getRoot());
 
         // Display the version.
-        try {
-            final PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-            mVb.version.setText(info.versionName);
-        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
-            // ignore
-        }
+        final PackageInfoWrapper info = PackageInfoWrapper.create(this);
+        mVb.version.setText(info.getVersionName());
 
         mModel = new ViewModelProvider(this).get(StartupViewModel.class);
         mModel.init(this);

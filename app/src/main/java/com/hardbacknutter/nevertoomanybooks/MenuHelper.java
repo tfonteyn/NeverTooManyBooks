@@ -162,21 +162,21 @@ final class MenuHelper {
                                                @IdRes final int menuItemId,
                                                @NonNull final DataHolder rowData) {
 
-        final Optional<SearchEngineRegistry.Config> oConfig =
-                SearchEngineRegistry.getByMenuId(menuItemId);
+        final Optional<SearchEngineRegistry.Config> oConfig = SearchEngineRegistry
+                .getByMenuId(menuItemId);
         if (oConfig.isPresent()) {
-            final SearchEngine.ByExternalId searchEngine = (SearchEngine.ByExternalId)
-                    Site.Type.Data.getSite(oConfig.get().getEngineId())
-                                  .getSearchEngine(context);
-
             final Domain domain = oConfig.get().getExternalIdDomain();
-            //noinspection ConstantConditions
-            final String url = searchEngine.createUrl(rowData.getString(domain.getName()));
-            context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-            return true;
+            if (domain != null) {
+                final SearchEngine.ByExternalId searchEngine = (SearchEngine.ByExternalId)
+                        Site.Type.Data.getSite(oConfig.get().getEngineId())
+                                      .getSearchEngine(context);
 
-        } else {
-            return false;
+                final String url = searchEngine.createUrl(rowData.getString(domain.getName()));
+                context.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                return true;
+            }
+
         }
+        return false;
     }
 }

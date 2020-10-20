@@ -278,7 +278,6 @@ public class Site
      */
     @NonNull
     private String getPrefPrefix() {
-        //noinspection ConstantConditions
         return PREF_PREFIX
                + SearchEngineRegistry.getByEngineId(engineId).getPreferenceKey() + '.'
                + mType.mTypeName + '.';

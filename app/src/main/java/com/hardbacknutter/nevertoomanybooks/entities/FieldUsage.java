@@ -37,8 +37,8 @@ public class FieldUsage {
     public final String fieldId;
 
     /** label to show to the user. */
-    @NonNull
-    private final String mName;
+    @StringRes
+    private final int mLabelResId;
     /** Default usage at creation time. */
     @NonNull
     private final Usage mDefValue;
@@ -51,19 +51,19 @@ public class FieldUsage {
     /**
      * private Constructor; use static creators instead.
      *
-     * @param fieldId   key
-     * @param name      label to show to the user.
-     * @param usage     how to use this field.
-     * @param defValue  default usage
-     * @param canAppend {@code true} if this field is capable of appending extra data.
+     * @param fieldId    key
+     * @param labelResId Field label resource id
+     * @param usage      how to use this field.
+     * @param defValue   default usage
+     * @param canAppend  {@code true} if this field is capable of appending extra data.
      */
     private FieldUsage(@NonNull final String fieldId,
-                       @NonNull final String name,
+                       @StringRes final int labelResId,
                        @NonNull final Usage usage,
                        @NonNull final Usage defValue,
                        final boolean canAppend) {
         this.fieldId = fieldId;
-        mName = name;
+        mLabelResId = labelResId;
         mUsage = usage;
         mDefValue = defValue;
         mCanAppend = canAppend;
@@ -75,18 +75,18 @@ public class FieldUsage {
      * The fieldId is used as the preference key.
      *
      * @param fieldId     Field name
-     * @param name        Field label
+     * @param nameResId   Field label resource id
      * @param preferences Global preferences
      * @param defValue    default Usage for this field
      *
      * @return new instance
      */
     public static FieldUsage create(@NonNull final String fieldId,
-                                    @NonNull final String name,
+                                    @StringRes final int nameResId,
                                     @NonNull final SharedPreferences preferences,
                                     @NonNull final Usage defValue) {
         final Usage initialValue = Usage.read(preferences, fieldId, defValue);
-        return new FieldUsage(fieldId, name, initialValue, defValue, false);
+        return new FieldUsage(fieldId, nameResId, initialValue, defValue, false);
     }
 
     /**
@@ -95,16 +95,16 @@ public class FieldUsage {
      * The default usage for a list field is always {@link Usage#Append}.
      *
      * @param fieldId     Field name
-     * @param name        Field label
+     * @param nameResId   Field label resource id
      * @param preferences Global preferences
      *
      * @return new instance
      */
     public static FieldUsage createListField(@NonNull final String fieldId,
-                                             @NonNull final String name,
+                                             @StringRes final int nameResId,
                                              @NonNull final SharedPreferences preferences) {
         final Usage initialValue = Usage.read(preferences, fieldId, Usage.Append);
-        return new FieldUsage(fieldId, name, initialValue, Usage.Append, true);
+        return new FieldUsage(fieldId, nameResId, initialValue, Usage.Append, true);
     }
 
     public void reset() {
@@ -114,14 +114,14 @@ public class FieldUsage {
     /**
      * Constructor for a related field depending on this field.
      *
-     * @param fieldId key
-     * @param name    label to show to the user.
+     * @param fieldId   key
+     * @param nameResId Field label resource id
      *
      * @return a FieldUsage record for the given field.
      */
     public FieldUsage createRelatedField(@NonNull final String fieldId,
-                                         @NonNull final String name) {
-        return new FieldUsage(fieldId, name, mUsage, mDefValue, mCanAppend);
+                                         @StringRes final int nameResId) {
+        return new FieldUsage(fieldId, nameResId, mUsage, mDefValue, mCanAppend);
     }
 
     public boolean isWanted() {
@@ -140,11 +140,11 @@ public class FieldUsage {
     /**
      * Get the label for the field.
      *
-     * @return label
+     * @return label resource id
      */
-    @NonNull
-    public String getLabel() {
-        return mName;
+    @StringRes
+    public int getLabelResId() {
+        return mLabelResId;
     }
 
     /**
@@ -175,7 +175,7 @@ public class FieldUsage {
         return "FieldUsage{"
                + "fieldId=`" + fieldId + '`'
                + ", mCanAppend=" + mCanAppend
-               + ", mNameStringId=" + mName
+               + ", mNameStringId=" + mLabelResId
                + ", mDefValue=" + mDefValue
                + ", mUsage=" + mUsage
                + '}';

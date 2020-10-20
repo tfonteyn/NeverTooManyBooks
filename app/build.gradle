@@ -85,6 +85,22 @@ if (project.hasProperty("NeverTooManyBooks.apiKeys")
     apply from: project.property("NeverTooManyBooks.apiKeys")
 }
 
+/*
+    $HOME/.gradle/gradle.properties:
+    NeverTooManyBooks.email=$HOME/blah/blah/NeverTooManyBooks.email
+
+    $HOME/blah/blah/NeverTooManyBooks.email:
+    android {
+        defaultConfig {
+            buildConfigField('String', 'ACRA_EMAIL', '"someone@somewhere.com"')
+        }
+    }
+ */
+if (project.hasProperty("NeverTooManyBooks.email")
+        && new File(project.property("NeverTooManyBooks.email")).exists()) {
+    apply from: project.property("NeverTooManyBooks.email")
+}
+
 android {
     // show-stopper bug preventing to use API 30:
     // https://issuetracker.google.com/issues/162838995
@@ -118,11 +134,17 @@ android {
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
 
-        // API keys. These are placeholders. Their values should be empty, i.e. '""'.
-        // The real ones are in NeverTooManyBooks.apiKeys; see above
+        // API key placeholders. Their values should be empty, i.e. '""'.
+        // The real values are in "NeverTooManyBooks.apiKeys"; see above
         if (getBuildConfigFields().get('GOODREADS_PUBLIC_KEY') == null) {
             buildConfigField('String', 'GOODREADS_PUBLIC_KEY', '""')
             buildConfigField('String', 'GOODREADS_PRIVATE_KEY', '""')
+        }
+
+        // Email address placeholders. Their values should be empty, i.e. '""'.
+        // The real values are in "NeverTooManyBooks.email"; see above
+        if (getBuildConfigFields().get('ACRA_EMAIL') == null) {
+            buildConfigField('String', 'ACRA_EMAIL', '""')
         }
 
         // Add the build date
@@ -229,7 +251,7 @@ dependencies {
     implementation 'androidx.core:core:1.5.0-alpha04'
     implementation 'androidx.documentfile:documentfile:1.0.1'
     implementation 'androidx.drawerlayout:drawerlayout:1.1.1'
-    implementation 'androidx.exifinterface:exifinterface:1.3.0'
+    implementation 'androidx.exifinterface:exifinterface:1.3.1'
     implementation 'androidx.fragment:fragment:1.3.0-beta01'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.preference:preference:1.1.1'

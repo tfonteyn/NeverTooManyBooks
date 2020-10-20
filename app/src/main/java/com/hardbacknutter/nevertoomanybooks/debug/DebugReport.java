@@ -19,12 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.debug;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
@@ -33,8 +29,6 @@ import androidx.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -48,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
+import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 public final class DebugReport {
 
@@ -64,76 +59,6 @@ public final class DebugReport {
     }
 
     /**
-     * Return the SHA256 hash of the public key that signed this app, or a useful
-     * text message if an error or other problem occurred.
-     *
-     * <pre>
-     *     {@code
-     *     keytool -list -keystore myKeyStore.jks -storepass myPassword -v
-     *      ...
-     *      Certificate fingerprints:
-     *          ...
-     *          SHA256: D4:98:1C:F7:...    <= this one
-     *     }
-     * </pre>
-     *
-     * @param context Current context
-     */
-    @SuppressLint("PackageManagerGetSignatures")
-    public static String signedBy(@NonNull final Context context) {
-        final StringBuilder signedBy = new StringBuilder();
-
-        try {
-            final PackageInfo info;
-            if (Build.VERSION.SDK_INT >= 28) {
-                info = context.getPackageManager()
-                              .getPackageInfo(context.getPackageName(),
-                                              PackageManager.GET_SIGNING_CERTIFICATES);
-            } else {
-                // PackageManagerGetSignatures
-                info = context.getPackageManager()
-                              .getPackageInfo(context.getPackageName(),
-                                              PackageManager.GET_SIGNATURES);
-            }
-
-            // concat the signature chain.
-            for (final Signature sig : info.signatures) {
-                if (sig != null) {
-                    final MessageDigest md = MessageDigest.getInstance("SHA256");
-                    final byte[] publicKey = md.digest(sig.toByteArray());
-                    // Turn the hex bytes into a more traditional string representation.
-                    final StringBuilder hexString = new StringBuilder();
-                    boolean first = true;
-                    for (final byte aPublicKey : publicKey) {
-                        if (first) {
-                            first = false;
-                        } else {
-                            hexString.append(':');
-                        }
-                        final String byteString = Integer.toHexString(0xFF & aPublicKey);
-                        if (byteString.length() == 1) {
-                            hexString.append('0');
-                        }
-                        hexString.append(byteString);
-                    }
-                    final String fingerprint = hexString.toString();
-
-                    if (signedBy.length() == 0) {
-                        signedBy.append(fingerprint);
-                    } else {
-                        signedBy.append('/').append(fingerprint);
-                    }
-                }
-            }
-        } catch (@NonNull final PackageManager.NameNotFoundException
-                | NoSuchAlgorithmException
-                | RuntimeException e) {
-            return e.getLocalizedMessage();
-        }
-        return signedBy.toString();
-    }
-
-    /**
      * Collect and send debug info to a support email address.
      * <p>
      * THIS SHOULD NOT BE A PUBLICLY AVAILABLE MAILING LIST OR FORUM!
@@ -144,24 +69,15 @@ public final class DebugReport {
 
         final StringBuilder message = new StringBuilder();
 
-        try {
-            final PackageInfo info =
-                    context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            message.append("App: ").append(info.packageName).append('\n')
-                   .append("Version: ").append(info.versionName)
-                   .append(" (");
-            if (Build.VERSION.SDK_INT >= 28) {
-                message.append(info.getLongVersionCode());
-            } else {
-                message.append(info.versionCode)
-                       .append(", ")
-                       .append(BuildConfig.TIMESTAMP);
-            }
-            message.append(")\n");
+        final PackageInfoWrapper info = PackageInfoWrapper.createWithSignatures(context);
+        message.append("App: ").append(info.getPackageName()).append('\n')
+               .append("Version: ").append(info.getVersionName())
+               .append(" (")
+               .append(info.getVersionCode())
+               .append(", ")
+               .append(BuildConfig.TIMESTAMP)
+               .append(")\n");
 
-        } catch (@NonNull final PackageManager.NameNotFoundException ignore) {
-            message.append("PackageInfo == null?");
-        }
 
         message.append("SDK: ")
                /* */.append(Build.VERSION.RELEASE)
@@ -174,7 +90,7 @@ public final class DebugReport {
                .append("Brand: ").append(Build.BRAND).append('\n')
                .append("ID: ").append(Build.ID).append('\n')
 
-               .append("Signed-By: ").append(signedBy(context)).append('\n')
+               .append("Signed-By: ").append(info.getSignedBy()).append('\n')
                .append("\nScanner info:\n")
                .append(ScannerManager.collectDebugInfo(context))
                .append("\nDetails:\n\n")

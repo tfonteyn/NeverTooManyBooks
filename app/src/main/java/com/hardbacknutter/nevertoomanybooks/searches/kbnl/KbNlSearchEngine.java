@@ -37,10 +37,12 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 
@@ -51,23 +53,13 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
  * 2020-01-04: "http://opc4.kb.nl" is not available on https.
  * see "src/main/res/xml/network_security_config.xml"
  */
-@SearchEngine.Configuration(
-        id = SearchSites.KB_NL,
-        name = "KBNL",
-        url = "http://opc4.kb.nl",
-        prefKey = KbNlSearchEngine.PREF_KEY,
-        lang = "nl",
-        country = "NL",
-        supportsMultipleCoverSizes = true,
-        filenameSuffix = "KB"
-)
 public class KbNlSearchEngine
         extends SearchEngineBase
         implements SearchEngine.ByIsbn,
                    SearchEngine.CoverByIsbn {
 
     /** Preferences prefix. */
-    static final String PREF_KEY = "kbnl";
+    private static final String PREF_KEY = "kbnl";
 
     /**
      * <strong>Note:</strong> This is not the same site as the search site itself.
@@ -98,8 +90,21 @@ public class KbNlSearchEngine
      * @param appContext Application context
      */
     @SuppressWarnings("WeakerAccess")
-    public KbNlSearchEngine(@NonNull final Context appContext) {
-        super(appContext);
+    public KbNlSearchEngine(@NonNull final Context appContext,
+                            final int engineId) {
+        super(appContext, engineId);
+    }
+
+    public static SearchEngineRegistry.Config createConfig() {
+        return new SearchEngineRegistry.Config.Builder(KbNlSearchEngine.class,
+                                                       SearchSites.KB_NL,
+                                                       R.string.site_kb_nl,
+                                                       PREF_KEY,
+                                                       "http://opc4.kb.nl")
+                .setCountry("NL", "nl")
+                .setFilenameSuffix("KB")
+                .setSupportsMultipleCoverSizes(true)
+                .build();
     }
 
     @NonNull

@@ -64,6 +64,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupSearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
@@ -75,18 +76,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
  * 2020-01-04: "http://www.isfdb.org" is not available on https.
  * see "src/main/res/xml/network_security_config.xml"
  */
-@SearchEngine.Configuration(
-        id = SearchSites.ISFDB,
-        name = "ISFDB",
-        url = "http://www.isfdb.org",
-        prefKey = IsfdbSearchEngine.PREF_KEY,
-        domainKey = DBDefinitions.KEY_EID_ISFDB,
-        domainViewId = R.id.site_isfdb,
-        domainMenuId = R.id.MENU_VIEW_BOOK_AT_ISFDB,
-        connectTimeoutMs = 20_000,
-        readTimeoutMs = 60_000,
-        filenameSuffix = "ISFDB"
-)
 public class IsfdbSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByText,
@@ -96,7 +85,7 @@ public class IsfdbSearchEngine
                    SearchEngine.AlternativeEditions {
 
     /** Preferences prefix. */
-    static final String PREF_KEY = "isfdb";
+    private static final String PREF_KEY = "isfdb";
     /** Type: {@code boolean}. */
     public static final String PREFS_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
     /** Type: {@code boolean}. */
@@ -233,8 +222,25 @@ public class IsfdbSearchEngine
      * @param appContext Application context
      */
     @SuppressWarnings("WeakerAccess")
-    public IsfdbSearchEngine(@NonNull final Context appContext) {
-        super(appContext, IsfdbSearchEngine.CHARSET_DECODE_PAGE);
+    public IsfdbSearchEngine(@NonNull final Context appContext,
+                             final int engineId) {
+        super(appContext, engineId, IsfdbSearchEngine.CHARSET_DECODE_PAGE);
+    }
+
+    public static SearchEngineRegistry.Config createConfig() {
+        return new SearchEngineRegistry.Config.Builder(IsfdbSearchEngine.class,
+                                                       SearchSites.ISFDB,
+                                                       R.string.site_isfdb,
+                                                       PREF_KEY,
+                                                       "http://www.isfdb.org")
+                .setFilenameSuffix("ISFDB")
+
+                .setDomainKey(DBDefinitions.KEY_EID_ISFDB)
+                .setDomainViewId(R.id.site_isfdb)
+                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
+
+                .setTimeout(20_000, 60_000)
+                .build();
     }
 
     @NonNull

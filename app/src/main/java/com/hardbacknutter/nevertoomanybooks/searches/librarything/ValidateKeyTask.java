@@ -30,6 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -51,7 +53,8 @@ public class ValidateKeyTask
     protected Integer doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
 
-        final SearchEngine.CoverByIsbn ltm = new LibraryThingSearchEngine(context);
+        final SearchEngine.CoverByIsbn ltm = (SearchEngine.CoverByIsbn)
+                SearchEngineRegistry.createSearchEngine(context, SearchSites.LIBRARY_THING);
         final String fileSpec = ltm
                 .searchCoverImageByIsbn("0451451783", 0, ImageFileInfo.Size.Small);
 

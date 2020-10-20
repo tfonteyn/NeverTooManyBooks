@@ -181,7 +181,7 @@ public class FileManager {
 
                         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                             Log.d(TAG, "search|SEARCHING"
-                                       + "|searchEngine=" + searchEngine.getName()
+                                       + "|searchEngine=" + searchEngine.getName(context)
                                        + "|isbn=" + isbn
                                        + "|cIdx=" + cIdx
                                        + "|size=" + size);
@@ -199,7 +199,7 @@ public class FileManager {
 
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|SUCCESS"
-                                           + "|searchEngine=" + searchEngine.getName()
+                                           + "|searchEngine=" + searchEngine.getName(context)
                                            + "|imageFileInfo=" + imageFileInfo);
                             }
                             // abort search, we got an image
@@ -208,7 +208,7 @@ public class FileManager {
                         } else {
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                                 Log.d(TAG, "search|NO FILE"
-                                           + "|searchEngine=" + searchEngine.getName()
+                                           + "|searchEngine=" + searchEngine.getName(context)
                                            + "|isbn=" + isbn
                                            + "|cIdx=" + cIdx
                                            + "|size=" + size);
