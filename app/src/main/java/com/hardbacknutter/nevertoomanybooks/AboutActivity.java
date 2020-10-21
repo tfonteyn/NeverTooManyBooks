@@ -161,7 +161,7 @@ public class AboutActivity
             if (db.getDBHelper().deleteAllContent(this, db.getSyncDb())) {
                 AppDir.deleteAllContent(this);
                 SearchEngineRegistry.create(this);
-                //FIXME: restore al preferences.
+                //FIXME: restore all preferences.
 
                 setResult(RESULT_ALL_DATA_DESTROYED);
             }
