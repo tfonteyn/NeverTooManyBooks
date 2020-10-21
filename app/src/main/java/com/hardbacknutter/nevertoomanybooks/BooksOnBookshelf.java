@@ -433,6 +433,7 @@ public class BooksOnBookshelf
         setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(prefs));
 
         // The booklist.
+        //noinspection ConstantConditions
         mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.attach(mVb.list);
@@ -544,14 +545,15 @@ public class BooksOnBookshelf
 
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.nav_advanced_search) {// overridden, so we can pass the current criteria
+        if (itemId == R.id.nav_advanced_search) {
+            // overridden, so we can pass the current criteria
             final Intent intent = new Intent(this, FTSSearchActivity.class);
             mModel.getSearchCriteria().to(intent);
             startActivityForResult(intent, RequestCode.ADVANCED_LOCAL_SEARCH);
             return true;
 
-        } else if (itemId
-                   == R.id.nav_manage_bookshelves) {// overridden, so we can pass the current bookshelf id.
+        } else if (itemId == R.id.nav_manage_bookshelves) {
+            // overridden, so we can pass the current bookshelf id.
             final Intent intent = new Intent(this, AdminActivity.class)
                     .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG)
                     .putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF,
@@ -559,8 +561,8 @@ public class BooksOnBookshelf
             startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
             return true;
 
-        } else if (itemId
-                   == R.id.nav_manage_list_styles) {// overridden, so we can pass the current style uuid.
+        } else if (itemId == R.id.nav_manage_list_styles) {
+            // overridden, so we can pass the current style uuid.
             final Intent intent = new Intent(this, PreferredStylesActivity.class)
                     .putExtra(BooklistStyle.BKEY_STYLE_UUID,
                               mModel.getCurrentStyle(this).getUuid());
@@ -637,8 +639,8 @@ public class BooksOnBookshelf
             expandAllNodes(1, false);
             return true;
 
-        } else if (itemId
-                   == R.id.MENU_UPDATE_FROM_INTERNET) {// IMPORTANT: this is from an options menu selection.
+        } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            // IMPORTANT: this is from an options menu selection.
             // We pass the book ID's for the currently displayed list.
             final ArrayList<Long> bookIdList = mModel.getCurrentBookIdList();
             final Intent intent = new Intent(this, BookSearchActivity.class)

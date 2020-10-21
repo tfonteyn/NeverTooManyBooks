@@ -830,6 +830,7 @@ public class CsvImporter
      * This CSV parser is not a complete parser, but it will parse files exported by older
      * versions.
      *
+     * @param context      Current context
      * @param row          row number
      * @param line         with CSV fields
      * @param fullEscaping if {@code true} handle the import as a version 3.4+;
@@ -989,8 +990,9 @@ public class CsvImporter
     /**
      * Require a column to be present. First one found; remainders are not needed.
      *
-     * @param book  to check
-     * @param names columns which should be checked for, in order of preference
+     * @param context Current context
+     * @param book    to check
+     * @param names   columns which should be checked for, in order of preference
      *
      * @throws ImportException if no suitable column is present
      */

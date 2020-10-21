@@ -43,9 +43,9 @@ public class BookshelfCoder
         implements StringList.Factory<Bookshelf> {
 
     @NonNull
-    private final BooklistStyle defaultStyle;
+    private final BooklistStyle mDefaultStyle;
     @NonNull
-    private final char[] escapeChars = {'(', ')'};
+    private final char[] mEscapeChars = {'(', ')'};
 
     /**
      * Constructor.
@@ -53,7 +53,7 @@ public class BookshelfCoder
      * @param defaultStyle to use for bookshelves without a style set.
      */
     public BookshelfCoder(@NonNull final BooklistStyle defaultStyle) {
-        this.defaultStyle = defaultStyle;
+        mDefaultStyle = defaultStyle;
     }
 
     /**
@@ -68,7 +68,7 @@ public class BookshelfCoder
     @NonNull
     public Bookshelf decode(@NonNull final String element) {
         final List<String> parts = StringList.newInstance().decodeElement(element);
-        final Bookshelf bookshelf = new Bookshelf(parts.get(0), defaultStyle);
+        final Bookshelf bookshelf = new Bookshelf(parts.get(0), mDefaultStyle);
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
@@ -84,7 +84,7 @@ public class BookshelfCoder
     @NonNull
     @Override
     public String encode(@NonNull final Bookshelf bookshelf) {
-        String result = escape(bookshelf.getName(), escapeChars);
+        String result = escape(bookshelf.getName(), mEscapeChars);
 
         final JSONObject details = new JSONObject();
         try {

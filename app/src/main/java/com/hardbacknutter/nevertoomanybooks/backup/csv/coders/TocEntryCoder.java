@@ -58,7 +58,7 @@ public class TocEntryCoder
                             + "\\)");
 
     @NonNull
-    private final char[] escapeChars = {'(', ')'};
+    private final char[] mEscapeChars = {'(', ')'};
 
     /**
      * Attempts to parse a single string into an TocEntry.
@@ -98,7 +98,7 @@ public class TocEntryCoder
     @NonNull
     @Override
     public String encode(@NonNull final TocEntry tocEntry) {
-        String result = escape(tocEntry.getTitle(), escapeChars);
+        String result = escape(tocEntry.getTitle(), mEscapeChars);
 
         if (!tocEntry.getFirstPublicationDate().isEmpty()) {
             // start with a space for readability

@@ -37,7 +37,7 @@ public class PublisherCoder
         implements StringList.Factory<Publisher> {
 
     @NonNull
-    private final char[] escapeChars = {'(', ')'};
+    private final char[] mEscapeChars = {'(', ')'};
 
     @Override
     @NonNull
@@ -49,6 +49,6 @@ public class PublisherCoder
     @NonNull
     @Override
     public String encode(@NonNull final Publisher publisher) {
-        return escape(publisher.getName(), escapeChars);
+        return escape(publisher.getName(), mEscapeChars);
     }
 }

@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
- * A flat file export of books only into a csv file.
+ * Export the main database file.
  */
 public class DbArchiveWriter
         implements ArchiveWriter {

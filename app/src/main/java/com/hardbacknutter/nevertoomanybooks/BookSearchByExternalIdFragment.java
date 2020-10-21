@@ -60,6 +60,7 @@ public class BookSearchByExternalIdFragment
     private FragmentBooksearchByExternalIdBinding mVb;
 
     /** Set when the user selects a site. */
+    @Nullable
     private SearchEngine.ByExternalId mSelectedSearchEngine;
 
     @Override

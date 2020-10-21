@@ -146,6 +146,7 @@ public class BookSearchByIsbnFragment
         //noinspection ConstantConditions
         mVb.btnSearch.setOnClickListener(v -> prepareSearch(mVb.isbn.getText().toString().trim()));
 
+        //noinspection VariableNotUsedInsideIf
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             Site.promptToRegister(getContext(), mCoordinator.getSiteList(),

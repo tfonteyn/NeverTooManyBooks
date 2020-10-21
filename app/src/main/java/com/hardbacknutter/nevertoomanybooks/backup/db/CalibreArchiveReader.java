@@ -561,10 +561,11 @@ class CalibreArchiveReader
     private static class CustomColumn {
 
         final int id;
+        @NonNull
         final String label;
 
         CustomColumn(final int id,
-                     final String label) {
+                     @NonNull final String label) {
             this.id = id;
             this.label = label;
         }

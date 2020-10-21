@@ -46,7 +46,7 @@ public class AuthorCoder
         implements StringList.Factory<Author> {
 
     @NonNull
-    private final char[] escapeChars = {Author.NAME_SEPARATOR, ' ', '(', ')'};
+    private final char[] mEscapeChars = {Author.NAME_SEPARATOR, ' ', '(', ')'};
 
     @Override
     @NonNull
@@ -71,9 +71,9 @@ public class AuthorCoder
         // Note the use of Author.NAME_SEPARATOR between family and given-names,
         // i.e. the names are considered ONE field with a private separator.
         String result =
-                escape(author.getFamilyName(), escapeChars)
+                escape(author.getFamilyName(), mEscapeChars)
                 + Author.NAME_SEPARATOR + ' '
-                + escape(author.getGivenNames(), escapeChars);
+                + escape(author.getGivenNames(), mEscapeChars);
 
         final JSONObject details = new JSONObject();
         try {

@@ -131,6 +131,7 @@ public class AuthorWorksFragment
         //noinspection ConstantConditions
         mModel.init(context, requireArguments());
 
+        //noinspection ConstantConditions
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
         mActionBar.setTitle(mModel.getScreenTitle(getContext()));

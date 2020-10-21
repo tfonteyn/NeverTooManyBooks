@@ -45,7 +45,7 @@ public class SeriesCoder
         implements StringList.Factory<Series> {
 
     @NonNull
-    private final char[] escapeChars = {'(', ')'};
+    private final char[] mEscapeChars = {'(', ')'};
 
     @Override
     @NonNull
@@ -67,11 +67,11 @@ public class SeriesCoder
     @NonNull
     @Override
     public String encode(@NonNull final Series series) {
-        String result = escape(series.getTitle(), escapeChars);
+        String result = escape(series.getTitle(), mEscapeChars);
         if (!series.getNumber().isEmpty()) {
             // start with a space for readability
             // the surrounding () are NOT escaped as they are part of the format.
-            result += " (" + escape(series.getNumber(), escapeChars) + ')';
+            result += " (" + escape(series.getNumber(), mEscapeChars) + ')';
         }
 
         final JSONObject details = new JSONObject();
