@@ -305,8 +305,7 @@
 
     <string name="confirm_delete_series">Really delete series “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the series and changing the series name to that of another series to preserve this data.</string>
     <string name="confirm_delete_publisher">Really delete publisher “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the publisher and changing the publisher name to that of another publisher to preserve this data.</string>
-    <!-- TODO: this message is BAD....-->
-    <string name="confirm_delete_bookshelf">Really delete bookshelf “%1$s”?\n\nThe books themselves will not be deleted.\n\nConsider editing the bookshelf and changing the bookshelf name to that of another bookshelf to preserve this data.</string>
+    <string name="confirm_delete_bookshelf">Really delete bookshelf “%1$s”?  The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
     <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
 
     <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\nAre you sure you want to continue?</string>

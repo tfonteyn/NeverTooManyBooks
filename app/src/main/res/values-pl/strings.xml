@@ -675,4 +675,5 @@
     <string name="lbl_archive_import_supported">Importowanie jest obsługiwane.</string>
     <string name="lbl_archive_format_db_info">Baza danych SQLite.</string>
     <string name="lbl_archive_type_db">Plik bazy danych (%1$s)</string>
+    <string name="confirm_delete_bookshelf">Naprawdę usunąć półkę „%1$s”? Same książki nie zostaną usunięte. Nadal będą obecne na innych półkach lub na półce „%2$s”.</string>
 </resources>

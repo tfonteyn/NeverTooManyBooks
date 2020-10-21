@@ -177,7 +177,8 @@ public final class StandardDialogs {
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_bookshelf,
-                                              bookshelf.getLabel(context)))
+                                              bookshelf.getLabel(context),
+                                              context.getString(R.string.bookshelf_all_books)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
                 .create()

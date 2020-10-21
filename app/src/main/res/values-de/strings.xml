@@ -681,4 +681,5 @@
     <string name="lbl_archive_import_supported">Der Import wird unterstützt.</string>
     <string name="lbl_archive_format_db_info">Die SQLite-Datenbank.</string>
     <string name="lbl_archive_type_db">Datenbankdatei (%1$s)</string>
+    <string name="confirm_delete_bookshelf">Bücherregal „%1$s“ wirklich löschen? Die Bücher selbst werden nicht gelöscht. Sie sind weiterhin in anderen Regalen oder im Regal „%2$s“ vorhanden.</string>
 </resources>

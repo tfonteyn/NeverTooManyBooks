@@ -678,5 +678,6 @@
     <string name="lbl_archive_import_supported">L\'importazione è supportata.</string>
     <string name="lbl_archive_format_db_info">Il database SQLite.</string>
     <string name="lbl_archive_type_db">File di database (%1$s)</string>
+    <string name="confirm_delete_bookshelf">Eliminare davvero lo scaffale «%1$s»? I libri stessi non verranno eliminati. Saranno comunque presenti su qualsiasi altro scaffale o sullo scaffale «%2$s».</string>
 
 </resources>

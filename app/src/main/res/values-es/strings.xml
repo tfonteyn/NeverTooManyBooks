@@ -679,5 +679,6 @@
     <string name="lbl_archive_import_supported">Se admite la importación.</string>
     <string name="lbl_archive_format_db_info">La base de datos SQLite.</string>
     <string name="lbl_archive_type_db">Archivo de base de datos (%1$s)</string>
+    <string name="confirm_delete_bookshelf">¿Realmente eliminar la estantería «%1$s»? Los libros en sí no se eliminarán. Seguirán estando presentes en cualquier otro estante o en el estante «%2$s».</string>
 
 </resources>

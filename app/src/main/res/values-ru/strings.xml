@@ -674,5 +674,6 @@
     <string name="lbl_archive_import_supported">Поддерживается импорт.</string>
     <string name="lbl_archive_format_db_info">База данных SQLite.</string>
     <string name="lbl_archive_type_db">Файл базы данных (%1$s)</string>
+    <string name="confirm_delete_bookshelf">Действительно удалить книжную полку «%1$s»? Сами книги удалены не будут. Они по-прежнему будут присутствовать на любых других полках или на полке «%2$s».</string>
 
 </resources>

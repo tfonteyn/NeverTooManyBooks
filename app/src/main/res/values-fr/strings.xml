@@ -682,5 +682,6 @@
     <string name="lbl_archive_import_supported">L\'importation est prise en charge.</string>
     <string name="lbl_archive_format_db_info">La base de données SQLite.</string>
     <string name="lbl_archive_type_db">Fichier de base de données (%1$s)</string>
+    <string name="confirm_delete_bookshelf" tools:ignore="TypographyQuotes">Voulez-vous vraiment supprimer l\'étagère «%1$s»? Les livres eux-mêmes ne seront pas supprimés. Ils seront toujours présents sur toutes les autres étagères, ou sur l\'étagère «%2$s».</string>
 
 </resources>

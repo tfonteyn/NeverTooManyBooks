@@ -677,5 +677,6 @@
     <string name="lbl_archive_import_supported">İçe aktarma desteklenmektedir.</string>
     <string name="lbl_archive_format_db_info">SQLite veritabanı.</string>
     <string name="lbl_archive_type_db">Veritabanı dosyası (%1$s)</string>
+    <string name="confirm_delete_bookshelf">Kitap rafı “%1$s” gerçekten silinsin mi? Kitapların kendileri silinmeyecektir. Diğer raflarda veya “%2$s” rafında bulunmaya devam edecekler.</string>
 
 </resources>

@@ -675,5 +675,6 @@
     <string name="lbl_archive_import_supported">Import je podporován.</string>
     <string name="lbl_archive_format_db_info">Databáze SQLite.</string>
     <string name="lbl_archive_type_db">Soubor databáze (%1$s)</string>
+    <string name="confirm_delete_bookshelf">Opravdu odstranit polici „%1$s“? Samotné knihy nebudou smazány. Stále budou přítomny na jakýchkoli jiných policích nebo na polici „%2$s“.</string>
 
 </resources>
