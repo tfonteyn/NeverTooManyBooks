@@ -52,7 +52,7 @@
             android:id="@+id/name"
             style="@style/RowTextLine.Primary"
             tools:ignore="SelectableText"
-            tools:text="site name"
+            tools:text="@sample/data.json/sites/name"
             />
 
         <TextView
@@ -60,7 +60,7 @@
             style="@style/RowTextLine.Secondary"
             android:visibility="gone"
             tools:ignore="SelectableText"
-            tools:text="site info"
+            tools:text="@sample/data.json/sites/info"
             tools:visibility="visible"
             />
     </LinearLayout>

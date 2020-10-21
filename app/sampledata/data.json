@@ -1,7 +1,9 @@
 {
   "sites": [
-    {"name": "Amazon"},
-    {"name": "Goodreads"}
+    {"name": "Amazon", "info": "ISBN, Barcode"},
+    {"name": "Goodreads", "info": "ISBN, Search"},
+    {"name": "OpenLibrary", "info": "Search"},
+    {"name": "ISFDB", "info": "ISBN"}
   ],
   "author": [
     {"full_name": "Charles Emerson Winchester III"},

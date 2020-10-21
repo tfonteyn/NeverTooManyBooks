@@ -30,4 +30,5 @@
     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:listitem="@layout/row_edit_searchsite"
+    tools:itemCount="7"
     />
