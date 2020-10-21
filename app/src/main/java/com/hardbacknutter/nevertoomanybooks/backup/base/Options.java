@@ -72,7 +72,7 @@ public final class Options {
             sj.add("INFO");
         }
         if ((options & BOOKS) != 0) {
-            sj.add("INFO");
+            sj.add("BOOKS");
         }
         if ((options & COVERS) != 0) {
             sj.add("COVERS");
