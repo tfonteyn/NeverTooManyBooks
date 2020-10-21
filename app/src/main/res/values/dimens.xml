@@ -139,16 +139,6 @@
     <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
     <dimen name="indent_radio_button">16dp</dimen>
 
-    <!-- Start margin (and optional end) applied to a field.
-        Used for individual fields, or with a Guideline for a group of fields. -->
-    <dimen name="field_margin">8dp</dimen>
-    <dimen name="field_margin_large">16dp</dimen>
-    <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->
-    <dimen name="field_margin_inline">12dp</dimen>
-
-    <!-- Margin applied around all TextInputLayout fields. -->
-    <dimen name="envelope_edit_text_margin">2dp</dimen>
-
     <!-- Vertical Spacing for read-only chips in a ChipGroup -->
     <dimen name="ro_vert_chip_spacing">2dp</dimen>
     <!-- Vertical Spacing for edit-mode chips in a ChipGroup -->
@@ -165,6 +155,19 @@
 
     <!-- generic drawable padding. -->
     <dimen name="drawable_padding1">4dp</dimen>
+
+
+    <!-- Margin applied around all TextInputLayout fields. -->
+    <dimen name="envelope_edit_text_margin">2dp</dimen>
+    <!-- Start margin (and optional end) applied to a field.
+    Used for individual fields, or with a Guideline for a group of fields. -->
+    <dimen name="field_margin">8dp</dimen>
+    <dimen name="field_margin_large">16dp</dimen>
+    <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->
+    <dimen name="field_margin_inline">12dp</dimen>
+
+    <!-- specific fixed-width fields. -->
+    <dimen name="field_external_id_width">280dp</dimen>
 
 
 </resources>

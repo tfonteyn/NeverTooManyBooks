@@ -29,8 +29,9 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/screenBorder"
         >
 
@@ -39,6 +40,7 @@
             style="@style/Envelope.EditText"
             android:layout_marginTop="@dimen/border2"
             android:hint="@string/site_goodreads"
+            android:layout_width="@dimen/field_external_id_width"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -59,6 +61,7 @@
             android:id="@+id/lbl_site_isfdb"
             style="@style/Envelope.EditText"
             android:hint="@string/site_isfdb"
+            android:layout_width="@dimen/field_external_id_width"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_goodreads"
@@ -79,6 +82,7 @@
             android:id="@+id/lbl_site_library_thing"
             style="@style/Envelope.EditText"
             android:hint="@string/site_library_thing"
+            android:layout_width="@dimen/field_external_id_width"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_isfdb"
@@ -99,6 +103,7 @@
             android:id="@+id/lbl_site_open_library"
             style="@style/Envelope.EditText"
             android:hint="@string/site_open_library"
+            android:layout_width="@dimen/field_external_id_width"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_library_thing"
@@ -119,6 +124,7 @@
             android:id="@+id/lbl_site_strip_info_be"
             style="@style/Envelope.EditText"
             android:hint="@string/site_stripinfo_be"
+            android:layout_width="@dimen/field_external_id_width"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_open_library"

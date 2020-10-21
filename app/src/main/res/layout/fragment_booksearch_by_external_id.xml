@@ -137,7 +137,7 @@
             android:id="@+id/lbl_external_id"
             style="@style/Envelope.EditText"
             android:hint="@string/lbl_site_book_id"
-            android:layout_width="300dp"
+            android:layout_width="@dimen/field_external_id_width"
             android:padding="@dimen/border2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/site_last_dodo_nl"
