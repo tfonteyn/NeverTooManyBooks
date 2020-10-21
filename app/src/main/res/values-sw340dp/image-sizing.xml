@@ -29,6 +29,8 @@
     land:  w640dp h336dp
 -->
 <resources>
+    <dimen name="app_logo">100dp</dimen>
+
     <dimen name="cover_details_0_height">250dp</dimen>
     <dimen name="cover_details_0_width">160dp</dimen>
     <dimen name="cover_details_1_height">150dp</dimen>

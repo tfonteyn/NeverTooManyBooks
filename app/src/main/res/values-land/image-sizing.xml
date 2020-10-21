@@ -25,6 +25,8 @@
     land: w533dp h296dp
 -->
 <resources>
+    <dimen name="app_logo">100dp</dimen>
+
     <integer name="cover_browser_gallery_span_count">1</integer>
     <dimen name="cover_browser_gallery_height">100dp</dimen>
     <dimen name="cover_browser_gallery_width">64dp</dimen>
