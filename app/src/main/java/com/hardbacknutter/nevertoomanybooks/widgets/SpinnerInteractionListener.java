@@ -78,6 +78,7 @@ public interface SpinnerInteractionListener
      * Handy default.
      * {@inheritDoc}
      */
+    @Override
     default void onNothingSelected(@NonNull final AdapterView<?> parent) {
         // Do nothing
     }
