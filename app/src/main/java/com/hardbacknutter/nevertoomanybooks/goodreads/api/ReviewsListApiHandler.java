@@ -442,9 +442,9 @@ public class ReviewsListApiHandler
         public static final String PUBLICATION_MONTH = "__r_pub_month";
         public static final String PUBLICATION_DAY = "__r_pub_day";
 
-        /** <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added> */
+        /** <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>. */
         public static final String ADDED = "__r_added";
-        /** <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated> */
+        /** <date_updated>Mon Feb 13 05:32:31 -0800 2012</date_updated>. */
         public static final String UPDATED = "__r_updated";
 
         public static final String REVIEWS = "__r_reviews";
