@@ -187,7 +187,7 @@ public abstract class BaseActivity
 
         mDrawerLayout = findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
-            mNavigationView = findViewById(R.id.nav_view);
+            mNavigationView = mDrawerLayout.findViewById(R.id.nav_view);
             mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
         }
 

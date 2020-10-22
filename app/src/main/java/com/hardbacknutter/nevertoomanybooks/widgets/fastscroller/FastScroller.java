@@ -49,7 +49,10 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <a href="https://stackoverflow.com/questions/47846873">
  * recyclerview-fast-scroll-thumb-height-too-small-for-large-data-set</a>
  */
-public class FastScroller {
+public final class FastScroller {
+
+    private FastScroller() {
+    }
 
     /**
      * Constructor.

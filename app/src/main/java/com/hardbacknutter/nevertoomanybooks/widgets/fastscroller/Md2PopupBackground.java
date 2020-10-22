@@ -143,11 +143,11 @@ class Md2PopupBackground
         width = Math.max(r + sqrt2 * r, width);
         pathArcTo(mPath, r, r, r, 90, 180);
         final float o1X = width - sqrt2 * r;
-        pathArcTo(mPath, o1X, r, r, -90, 45f);
+        pathArcTo(mPath, o1X, r, r, -90, 45);
         final float r2 = r / 5;
         final float o2X = width - sqrt2 * r2;
         pathArcTo(mPath, o2X, r, r2, -45, 90);
-        pathArcTo(mPath, o1X, r, r, 45f, 45f);
+        pathArcTo(mPath, o1X, r, r, 45, 45);
         mPath.close();
 
         if (isLayoutRTL()) {

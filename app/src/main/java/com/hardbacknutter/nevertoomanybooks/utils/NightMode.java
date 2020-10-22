@@ -34,7 +34,7 @@ import java.lang.annotation.RetentionPolicy;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /** Singleton. */
-public class NightMode {
+public final class NightMode {
 
     /**
      * We're not using the actual {@link AppCompatDelegate} mode constants

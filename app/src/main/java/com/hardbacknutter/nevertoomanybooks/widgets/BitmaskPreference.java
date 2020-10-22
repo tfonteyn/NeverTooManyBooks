@@ -78,7 +78,6 @@ public class BitmaskPreference
     @Nullable
     private String mDisregardSummaryText;
 
-
     @Nullable
     private Boolean mActive;
 
@@ -189,6 +188,7 @@ public class BitmaskPreference
      *         onBindDialogView(contentView);
      *         builder.setView(contentView);
      *         onPrepareDialogBuilder(builder);
+     *         }
      * </pre>
      */
     public static class BitmaskPreferenceDialogFragment

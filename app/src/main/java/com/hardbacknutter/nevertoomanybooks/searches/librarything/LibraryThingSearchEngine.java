@@ -194,8 +194,7 @@ public class LibraryThingSearchEngine
 
         return showRegistrationDialog(context, required, callerIdString, action -> {
             if (action == RegistrationAction.Register) {
-                final Intent intent = new Intent(context, LibraryThingRegistrationActivity.class);
-                context.startActivity(intent);
+                context.startActivity(new Intent(context, LibraryThingRegistrationActivity.class));
 
             } else if (onResult != null) {
                 onResult.accept(action);

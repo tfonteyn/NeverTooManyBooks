@@ -40,7 +40,7 @@ import java.util.MissingResourceException;
  * <p>
  * Singleton.
  */
-public class Languages {
+public final class Languages {
 
     /**
      * The SharedPreferences name where we'll maintain our language to ISO mappings.

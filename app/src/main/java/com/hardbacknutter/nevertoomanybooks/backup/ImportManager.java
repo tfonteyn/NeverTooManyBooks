@@ -126,9 +126,10 @@ public class ImportManager
     }
 
 
-
     /**
      * Check if we have an {@link ArchiveReader} available that can read the passed Uri.
+     *
+     * @param context Current context
      *
      * @return {@code true} if supported
      */
@@ -257,7 +258,12 @@ public class ImportManager
     }
 
 
-    /** Called from the dialog via its View listeners. */
+    /**
+     * Called from the dialog via its View listeners.
+     *
+     * @param optionBit bit or combination of bits
+     * @param isSet     bit value
+     */
     void setOption(final int optionBit,
                    final boolean isSet) {
         if (isSet) {

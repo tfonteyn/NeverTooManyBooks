@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads;
 
-import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -45,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Notifier;
 public class GoodreadsAuthorizationActivity
         extends BaseActivity {
 
-    @SuppressLint("SyntheticAccessor")
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

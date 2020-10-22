@@ -558,7 +558,7 @@ public class ISBN {
     @Type
     private int getType(@Nullable final List<Integer> digits)
             throws NumberFormatException {
-        // don't test the type here, this test is used to determine the type!
+        // don't test the type here, this method is used to determine the type!
 
         if (digits == null) {
             return TYPE_INVALID;

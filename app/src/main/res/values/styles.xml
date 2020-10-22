@@ -479,7 +479,7 @@
 
 
     <!-- The content container (MaterialCardView) for a book in the booklist. -->
-    <style name="BoB.BookContainer">
+    <style name="BoB.BookContainer" parent="Widget.MaterialComponents.CardView">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/border2</item>

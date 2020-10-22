@@ -72,7 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  * <p>
  * Singleton.
  */
-public class AppLocale {
+public final class AppLocale {
 
     /**
      * Value stored in preferences if the user runs our app in the default device language.
@@ -87,9 +87,9 @@ public class AppLocale {
     private static AppLocale sInstance;
     @NonNull
     private final Collection<WeakReference<OnLocaleChangedListener>>
-            ON_LOCALE_CHANGED_LISTENERS = new ArrayList<>();
+            mOnLocaleChangedListeners = new ArrayList<>();
     /** Cache for Locales; key: the BOOK language (ISO3). */
-    private final Map<String, Locale> LOCALE_MAP = new HashMap<>();
+    private final Map<String, Locale> mLocaleMap = new HashMap<>();
     /**
      * The currently active/preferred user Locale.
      * See {@link #apply} for why we keep store it.
@@ -341,8 +341,8 @@ public class AppLocale {
      */
     public void registerOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
-        synchronized (ON_LOCALE_CHANGED_LISTENERS) {
-            ON_LOCALE_CHANGED_LISTENERS.add(new WeakReference<>(listener));
+        synchronized (mOnLocaleChangedListeners) {
+            mOnLocaleChangedListeners.add(new WeakReference<>(listener));
         }
     }
 
@@ -354,9 +354,9 @@ public class AppLocale {
     @SuppressWarnings("unused")
     public void unregisterOnLocaleChangedListener(
             @NonNull final OnLocaleChangedListener listener) {
-        synchronized (ON_LOCALE_CHANGED_LISTENERS) {
+        synchronized (mOnLocaleChangedListeners) {
             final Iterator<WeakReference<OnLocaleChangedListener>> it =
-                    ON_LOCALE_CHANGED_LISTENERS.iterator();
+                    mOnLocaleChangedListeners.iterator();
             while (it.hasNext()) {
                 final WeakReference<OnLocaleChangedListener> listenerRef = it.next();
                 if (listenerRef.get() == null || listenerRef.get().equals(listener)) {
@@ -369,11 +369,13 @@ public class AppLocale {
 
     /**
      * Broadcast to registered listener. Dead listeners are removed.
+     *
+     * @param context Current context
      */
     private void onLocaleChanged(@NonNull final Context context) {
-        synchronized (ON_LOCALE_CHANGED_LISTENERS) {
+        synchronized (mOnLocaleChangedListeners) {
             final Iterator<WeakReference<OnLocaleChangedListener>> it =
-                    ON_LOCALE_CHANGED_LISTENERS.iterator();
+                    mOnLocaleChangedListeners.iterator();
             while (it.hasNext()) {
                 final WeakReference<OnLocaleChangedListener> listenerRef = it.next();
                 if (listenerRef.get() != null) {
@@ -420,11 +422,11 @@ public class AppLocale {
         lang = Languages.getInstance().getLocaleIsoFromISO3(context, lang);
 
         // lang should now be an ISO (2 or 3 characters) code (or an invalid string)
-        Locale locale = LOCALE_MAP.get(lang);
+        Locale locale = mLocaleMap.get(lang);
         if (locale == null) {
             locale = create(lang);
             if (isValid(locale)) {
-                LOCALE_MAP.put(lang, locale);
+                mLocaleMap.put(lang, locale);
             } else {
                 locale = null;
             }
@@ -435,6 +437,6 @@ public class AppLocale {
 
     public interface OnLocaleChangedListener {
 
-        void onLocaleChanged(@NonNull final Context context);
+        void onLocaleChanged(@NonNull Context context);
     }
 }
