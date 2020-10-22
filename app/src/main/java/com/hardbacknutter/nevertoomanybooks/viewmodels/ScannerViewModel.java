@@ -161,6 +161,8 @@ public class ScannerViewModel
      *
      * @param fragment    hosting fragment
      * @param requestCode to use
+     *
+     * @return {@code true} if the scan was started
      */
     public boolean scan(@NonNull final Fragment fragment,
                         final int requestCode) {
