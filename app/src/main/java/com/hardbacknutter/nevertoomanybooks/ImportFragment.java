@@ -243,21 +243,11 @@ public class ImportFragment
 
             case Zip:
             case Tar:
+            case SqLiteDb:
                 helper.setOptions(Options.ENTITIES | Options.IS_SYNC);
                 ImportHelperDialogFragment
                         .newInstance(RK_IMPORT_HELPER, helper)
                         .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
-                break;
-
-            case SqLiteDb:
-                if (BuildConfig.IMPORT_CALIBRE) {
-                    helper.setOptions(Options.ENTITIES | Options.IS_SYNC);
-                    ImportHelperDialogFragment
-                            .newInstance(RK_IMPORT_HELPER, helper)
-                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
-                } else {
-                    throw new IllegalArgumentException(String.valueOf(container));
-                }
                 break;
 
             default:

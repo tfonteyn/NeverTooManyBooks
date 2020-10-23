@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
@@ -247,8 +246,7 @@ public class ImportHelperDialogFragment
         boolean isBooksOnlyContainer(@NonNull final Context context) {
             final ArchiveContainer container = mHelper.getContainer(context);
             return ArchiveContainer.CsvBooks == container
-                   ||
-                   (BuildConfig.IMPORT_CALIBRE && ArchiveContainer.SqLiteDb == container);
+                   || ArchiveContainer.SqLiteDb == container;
         }
     }
 }
