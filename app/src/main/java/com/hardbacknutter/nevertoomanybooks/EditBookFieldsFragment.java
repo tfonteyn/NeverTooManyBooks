@@ -369,11 +369,6 @@ public class EditBookFieldsFragment
                 Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
-                    if (BuildConfig.DEBUG /* always */) {
-                        //noinspection ConstantConditions
-                        mScannerModel.fakeScanInEmulator(getContext(), data);
-                    }
-
                     //noinspection ConstantConditions
                     final String barCode =
                             mScannerModel.getScanner().getBarcode(getContext(), data);
