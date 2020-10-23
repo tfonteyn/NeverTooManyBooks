@@ -195,9 +195,7 @@ public abstract class ArchiveWriterAbstractBase
      * Prepare the data.
      * <p>
      * For each book which will be exported, implementations should call:
-     * <ol>
-     *     <li>{@link ExportResults#addBook(long)}</li>
-     * </ol>
+     * {@link ExportResults#addBook(long)} and {@link ExportResults#addCover(String)} as needed.
      *
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
