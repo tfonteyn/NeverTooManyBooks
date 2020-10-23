@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -28,20 +29,21 @@ import android.provider.ContactsContract;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
@@ -63,38 +65,46 @@ public class EditLenderDialogFragment
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** savedInstanceState key for the newly entered loanee name. */
     private static final String SIS_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
-
-    private static final String[] PROJECTION = {
-            ContactsContract.Contacts._ID,
-            ContactsContract.Contacts.LOOKUP_KEY,
-            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
-            };
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
     /** Database Access. */
     private DAO mDb;
     /** View Binding. */
     private DialogEditLoanBinding mVb;
-
     /** The book we're lending. */
     private long mBookId;
     /** Displayed for info. */
     private String mBookTitle;
-
     /**
      * The person who currently has the book.
      * Will be {@code null} if the book is available.
+     * <p>
      * {@link DBDefinitions#KEY_LOANEE} in savedInstanceState.
      */
     @Nullable
     private String mOriginalLoanee;
-
     /**
      * The loanee being edited.
+     * <p>
      * {@link #SIS_NEW_LOANEE} in savedInstanceState.
      */
     @Nullable
     private String mLoanee;
+    private ArrayList<String> mPeople;
+    private DiacriticArrayAdapter<String> mAdapter;
+
+    /**
+     * See <a href="https://developer.android.com/training/permissions/requesting">
+     * developer.android.com</a>
+     */
+    @SuppressLint("MissingPermission")
+    private final ActivityResultLauncher<String> mRequestPermissionLauncher =
+            registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(), (isGranted) -> {
+                        if (isGranted) {
+                            addContacts();
+                        }
+                    });
 
     /**
      * No-arg constructor for OS use.
@@ -150,6 +160,8 @@ public class EditLenderDialogFragment
         super.onCreate(savedInstanceState);
 
         mDb = new DAO(TAG);
+        // get previously used lender names
+        mPeople = mDb.getLoanees();
 
         final Bundle args = requireArguments();
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
@@ -174,12 +186,47 @@ public class EditLenderDialogFragment
 
         mVb.toolbar.setSubtitle(mBookTitle);
 
+        //noinspection ConstantConditions
+        mAdapter = new DiacriticArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
+                                               mPeople);
+        mVb.lendTo.setAdapter(mAdapter);
         mVb.lendTo.setText(mLoanee);
 
-        final ArrayList<String> contacts = getContacts();
-        if (contacts != null) {
-            initAdapter(contacts);
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
+            == PackageManager.PERMISSION_GRANTED) {
+            addContacts();
+            // } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
+            // FIXME: implement shouldShowRequestPermissionRationale
+            //  but without using a dialog box inside a dialog box
+        } else {
+            mRequestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS);
         }
+    }
+
+    @RequiresPermission(Manifest.permission.READ_CONTACTS)
+    private void addContacts() {
+        // LinkedHashSet to remove duplicates
+        final LinkedHashSet<String> contacts = new LinkedHashSet<>(mPeople);
+        //noinspection ConstantConditions
+        final ContentResolver cr = getContext().getContentResolver();
+        try (Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
+                                      new String[]{ContactsContract.Contacts._ID,
+                                                   ContactsContract.Contacts.LOOKUP_KEY,
+                                                   ContactsContract.Contacts.DISPLAY_NAME_PRIMARY},
+                                      null, null, null)) {
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    final String name = cursor.getString(cursor.getColumnIndex(
+                            ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+                    contacts.add(name);
+                }
+            }
+        }
+
+        final List<String> sorted = new ArrayList<>(contacts);
+        Collections.sort(sorted);
+        mAdapter.clear();
+        mAdapter.addAll(sorted);
     }
 
     @Override
@@ -191,65 +238,6 @@ public class EditLenderDialogFragment
             return true;
         }
         return false;
-    }
-
-    /**
-     * Get the device Contacts list.
-     *
-     * @return list of names, or {@code null} if we needed to ask for permissions
-     */
-    @Nullable
-    private ArrayList<String> getContacts() {
-        //noinspection ConstantConditions
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
-            == PackageManager.PERMISSION_GRANTED) {
-
-            final ArrayList<String> list = new ArrayList<>();
-            final ContentResolver cr = getContext().getContentResolver();
-            try (Cursor contactsCursor = cr.query(ContactsContract.Contacts.CONTENT_URI,
-                                                  PROJECTION, null, null, null)) {
-                if (contactsCursor != null) {
-                    while (contactsCursor.moveToNext()) {
-                        final String name = contactsCursor.getString(contactsCursor.getColumnIndex(
-                                ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
-                        list.add(name);
-                    }
-                }
-            }
-            return list;
-
-        } else {
-            //noinspection ConstantConditions
-            ActivityCompat.requestPermissions(getActivity(),
-                                              new String[]{Manifest.permission.READ_CONTACTS},
-                                              RequestCode.ANDROID_PERMISSIONS);
-            return null;
-        }
-    }
-
-    public void onRequestPermissionsResult(final int requestCode,
-                                           @NonNull final String[] permissions,
-                                           @NonNull final int[] grantResults) {
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            final ArrayList<String> contacts = getContacts();
-            if (contacts != null) {
-                initAdapter(contacts);
-            }
-        }
-    }
-
-    private void initAdapter(@NonNull final Collection<String> contacts) {
-        // combine contacts with previously used lender names
-        ArrayList<String> people = mDb.getLoanees();
-        people.addAll(contacts);
-        // remove duplicates
-        people = new ArrayList<>(new LinkedHashSet<>(people));
-        Collections.sort(people);
-
-        //noinspection ConstantConditions
-        final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item, people);
-        mVb.lendTo.setAdapter(adapter);
     }
 
     private boolean saveChanges() {
