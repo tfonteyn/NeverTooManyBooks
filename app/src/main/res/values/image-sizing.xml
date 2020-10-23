@@ -84,9 +84,6 @@
         <item>600dp</item>
     </array>
 
-    <dimen name="tools_cover_scale_2_height">100dp</dimen>
-    <dimen name="tools_cover_scale_2_width">64dp</dimen>
-
     <dimen name="tools_cover_scale_3_height">150dp</dimen>
     <dimen name="tools_cover_scale_3_width">96dp</dimen>
 
