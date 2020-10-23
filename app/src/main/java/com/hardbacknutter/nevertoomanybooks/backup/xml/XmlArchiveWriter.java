@@ -45,9 +45,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Implementation of XML-specific writer functions.
+ * <p>
  * Uses the default format of {@link ArchiveWriterAbstract}, overriding:
- * Books: XML
- * Covers: not supported
+ * <ul>
+ *     <li>Books: XML</li>
+ *     <li>Covers: not supported</li>
+ * </ul>
  */
 public class XmlArchiveWriter
         extends ArchiveWriterAbstract {
