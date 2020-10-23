@@ -25,16 +25,19 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Represents a Publisher.
@@ -66,7 +69,8 @@ public class Publisher
      *
      * @param name of publisher.
      */
-    private Publisher(@NonNull final String name) {
+    @VisibleForTesting
+    public Publisher(@NonNull final String name) {
         mName = name.trim();
     }
 
@@ -105,7 +109,7 @@ public class Publisher
     }
 
     /**
-     * Passed a list of Objects, remove duplicates.
+     * Passed a list of Objects, remove duplicates. We keep the first occurrence.
      *
      * @param list         List to clean up
      * @param context      Current context
@@ -127,21 +131,39 @@ public class Publisher
         }
 
         boolean listModified = false;
-        final Iterator<Publisher> it;
 
+        // Keep track of id
+        final Set<Long> idCodes = new HashSet<>();
         // Keep track of hashCode
-        final Collection<Integer> hashCodes = new HashSet<>();
-        it = list.iterator();
-        while (it.hasNext()) {
-            final Publisher item = it.next();
-            item.fixId(context, db, lookupLocale, bookLocale);
+        final Set<Integer> hashCodes = new HashSet<>();
 
-            final Integer hashCode = item.hashCode();
-            if (!hashCodes.contains(hashCode)) {
-                hashCodes.add(hashCode);
+        final Iterator<Publisher> it = list.iterator();
+        while (it.hasNext()) {
+            final Publisher publisher = it.next();
+            final long id = publisher.fixId(context, db, lookupLocale, bookLocale);
+            final int hash = publisher.asciiHashCodeNoId();
+
+            // exists? i.e has a valid id ?
+            if (id > 0) {
+                if (idCodes.contains(id)) {
+                    // id already present, keep previous, drop current.
+                    it.remove();
+                    listModified = true;
+                } else {
+                    // not present, keep and track
+                    idCodes.add(id);
+                    hashCodes.add(hash);
+                }
             } else {
-                it.remove();
-                listModified = true;
+                // is new (id == 0)
+                if (hashCodes.contains(hash)) {
+                    // already present, keep previous, drop current.
+                    it.remove();
+                    listModified = true;
+                } else {
+                    // not present, keep and track
+                    hashCodes.add(hash);
+                }
             }
         }
 
@@ -245,6 +267,15 @@ public class Publisher
         return mId;
     }
 
+    /**
+     * Diacritic neutral version of {@link  #hashCode()} without id.
+     *
+     * @return hashcode
+     */
+    private int asciiHashCodeNoId() {
+        return Objects.hash(ParseUtils.toAscii(mName));
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(mId, mName);
@@ -253,12 +284,14 @@ public class Publisher
     /**
      * Equality.
      * <ol>
-     *      <li>it's the same Object</li>
-     *      <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     *          AND the names are equal</li>
-     *      <li>if both are 'new' check if family/given-names are equal</li>
+     * <li>it's the same Object</li>
+     * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
+     *     AND the names are equal</li>
+     * <li>if both are 'new' check if family/given-names are equal</li>
      * </ol>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
+     *
+     * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
+     * This allows correcting case mistakes even with identical ID.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {
