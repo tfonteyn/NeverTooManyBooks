@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -28,7 +27,6 @@ import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -37,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminAboutBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -130,23 +127,6 @@ public class AboutActivity
         mVb.debugPrefs.setOnClickListener(v -> Prefs.dumpPreferences(this, null));
     }
 
-    /**
-     * Prepare a new email.
-     *
-     * @param emailId resource id for email address
-     */
-    private void sendContactEmail(@StringRes final int emailId) {
-        try {
-            final String subject = '[' + getString(R.string.app_name) + "] ";
-            final Intent intent = new Intent(Intent.ACTION_SEND)
-                    .setType("text/plain")
-                    .putExtra(Intent.EXTRA_EMAIL, new String[]{getString(emailId)})
-                    .putExtra(Intent.EXTRA_SUBJECT, subject);
-            startActivity(Intent.createChooser(intent, getString(R.string.lbl_send_mail)));
-        } catch (@NonNull final ActivityNotFoundException e) {
-            Logger.error(this, TAG, e);
-        }
-    }
 
     private void onDeleteAll(@NonNull final DialogInterface d,
                              final int w) {
