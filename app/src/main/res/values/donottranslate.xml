@@ -31,8 +31,6 @@
     <string name="lbl_sourcecode_url" translatable="false">github.com</string>
     <string name="sourcecode_url" translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
 
-    <string name="email_debug" translatable="false">replace@me</string>
-
     <!--  acronyms -->
     <string name="lbl_isbn" translatable="false">ISBN</string>
 
@@ -360,7 +358,6 @@
 
     <!-- Popular Goodreads shelf names == genre names to skip.
          This list must be all lowercase.
-         Obviously far from complete.
          https://www.goodreads.com/shelf
 
          2020-09-24
@@ -371,7 +368,6 @@
         <item>currently-reading</item>
         <!-- 10.000.000+ -->
 
-        <item>Ｆａｖｏｒｉｔｅｓ</item>
         <item>favorites</item>
         <item>owned</item>
         <item>own</item>
@@ -498,7 +494,7 @@
         <item>childhood</item>
         <item>collection</item>
         <item>completed</item>
-        <item>didn-t-finish</item>
+        <item tools:ignore="Typos">didn-t-finish</item>
         <item>digital</item>
         <item>done</item>
         <item>epub</item>

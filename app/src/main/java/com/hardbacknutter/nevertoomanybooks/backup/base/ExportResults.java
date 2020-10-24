@@ -25,6 +25,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import java.util.ArrayList;
@@ -103,16 +104,16 @@ public class ExportResults
         mBooksExported.add(bookId);
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public int getBookCount() {
         return mBooksExported.size();
     }
-
 
     public void addCover(@NonNull final String cover) {
         mCoversExported.add(cover);
     }
 
-    public int getCoverCount() {
+    int getCoverCount() {
         return mCoversExported.size();
     }
 

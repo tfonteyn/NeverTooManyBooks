@@ -41,7 +41,7 @@ public class App
         extends Application {
 
     public static final int ACRA_LOGFILE_LINES = 1_000;
-    public static final String ACRA_EMAIL_ATTACHMENT = "NeverTooManyBooks-acra-report.txt";
+    public static final String EMAIL_ACRA_ATTACHMENTS = "NeverTooManyBooks-acra-report.txt";
 
     /** Singleton. */
     private static App sInstance;
@@ -138,8 +138,8 @@ public class App
                         ReportField.USER_COMMENT);
 
         builder.getPluginConfigurationBuilder(MailSenderConfigurationBuilder.class)
-               .setMailTo(BuildConfig.ACRA_EMAIL)
-               .setReportFileName(ACRA_EMAIL_ATTACHMENT);
+               .setMailTo(BuildConfig.EMAIL_ACRA)
+               .setReportFileName(EMAIL_ACRA_ATTACHMENTS);
 
         // Optional, displayed as soon as the crash occurs,
         // before collecting data which can take a few seconds

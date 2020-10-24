@@ -92,7 +92,12 @@ if (project.hasProperty("NeverTooManyBooks.apiKeys")
     $HOME/blah/blah/NeverTooManyBooks.email:
     android {
         defaultConfig {
-            buildConfigField('String', 'ACRA_EMAIL', '"someone@somewhere.com"')
+            // ACRA crash reports
+            buildConfigField('String', 'EMAIL_ACRA', '"acra@somewhere.com"')
+            // Manual debug reports
+            buildConfigField('String', 'EMAIL_DEBUG_REPORT', '"debug@somewhere.com"')
+            // About-page contact
+            buildConfigField('String', 'EMAIL_CONTACT', '"info@somewhere.com"')
         }
     }
  */
@@ -143,13 +148,22 @@ android {
 
         // Email address placeholders. Their values should be empty, i.e. '""'.
         // The real values are in "NeverTooManyBooks.email"; see above
-        if (getBuildConfigFields().get('ACRA_EMAIL') == null) {
-            buildConfigField('String', 'ACRA_EMAIL', '""')
+        if (getBuildConfigFields().get('EMAIL_ACRA') == null) {
+            // ACRA crash reports
+            buildConfigField('String', 'EMAIL_ACRA', '""')
+            // Manual debug reports
+            buildConfigField('String', 'EMAIL_DEBUG_REPORT', '""')
+            // About-page contact
+            buildConfigField('String', 'EMAIL_CONTACT', '""')
         }
 
         // Add the build date
         buildConfigField('String', 'TIMESTAMP',
                 '"' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
+
+        buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
+        buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
+
 
         // 2020-03-27. Started getting "APIs Temporarily disabled" on LIBRARY_THING
         // searches and "Temporarily down on images.
@@ -158,16 +172,8 @@ android {
         // but the alternative edition link still works (for now?).
         buildConfigField('boolean', 'ENABLE_LIBRARY_THING_ALT_ED', 'true')
 
-        buildConfigField('boolean', 'ENABLE_GOOGLE_BOOKS', 'true')
-        buildConfigField('boolean', 'ENABLE_LAST_DODO', 'true')
-
-
         // If set, we'll use {@link MenuPickerDialogFragment} where implemented.
-        // uses reflection to access a private variable
         buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'true')
-
-        // under development
-        buildConfigField('boolean', 'IMPORT_CALIBRE', 'true')
     }
 
     buildTypes {
@@ -177,8 +183,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
                     'proguard-rules.pro'
 
+            // uses reflection to access a private variable
             buildConfigField('boolean', 'MENU_PICKER_USES_FRAGMENT', 'false')
-            buildConfigField('boolean', 'IMPORT_CALIBRE', 'false')
         }
         beta {
             initWith release
@@ -186,10 +192,6 @@ android {
         }
         debug {
             versionNameSuffix 'debug'
-
-            // Add the build date with the time
-            buildConfigField('String', 'TIMESTAMP',
-                    '"' + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + '"')
         }
     }
 

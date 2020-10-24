@@ -127,24 +127,24 @@ public final class DebugReport {
             final ArrayList<Uri> uriList = files
                     .stream()
                     .filter(file -> file.exists() && file.length() > 0)
-                    .map(file -> GenericFileProvider.getUriForFile(context, file))
+                    .map(file -> GenericFileProvider.createUri(context, file))
                     .collect(Collectors.toCollection(ArrayList::new));
 
 
             // setup the mail message
-            final String subject = '[' + context.getString(R.string.app_name) + "] "
+            final String[] to = BuildConfig.EMAIL_DEBUG_REPORT.split(";");
+            final String subject = "[" + context.getString(R.string.app_name) + "] "
                                    + context.getString(R.string.debug_subject);
-            final String[] to = context.getString(R.string.email_debug).split(";");
-            final ArrayList<String> bodyText = new ArrayList<>();
-            bodyText.add(message.toString());
+            final ArrayList<String> report = new ArrayList<>();
+            report.add(message.toString());
+
             final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                    .setType("plain/text")
-                    .putExtra(Intent.EXTRA_SUBJECT, subject)
+                    .setType("text/plain")
                     .putExtra(Intent.EXTRA_EMAIL, to)
-                    .putExtra(Intent.EXTRA_TEXT, bodyText)
+                    .putExtra(Intent.EXTRA_SUBJECT, subject)
+                    .putExtra(Intent.EXTRA_TEXT, report)
                     .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
-            final String chooserText = context.getString(R.string.lbl_send_mail);
-            context.startActivity(Intent.createChooser(intent, chooserText));
+            context.startActivity(intent);
             return true;
 
         } catch (@NonNull final NullPointerException | IOException e) {

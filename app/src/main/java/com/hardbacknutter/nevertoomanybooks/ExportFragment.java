@@ -265,15 +265,17 @@ public class ExportFragment
 
             final Uri uri = message.result.getUri();
             final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
-            String msg = message.result.getResults().createReport(getContext(), uriInfo);
+            final String report = message.result.getResults().createReport(getContext(), uriInfo);
             if (message.result.offerEmail(uriInfo)) {
-                msg += "\n\n" + getString(R.string.confirm_email_export);
                 dialogBuilder
-                        .setNeutralButton(R.string.btn_email, (d, which) -> onExportEmail(uri));
+                        .setMessage(report + "\n\n" + getString(R.string.confirm_email_export))
+                        .setNeutralButton(R.string.btn_email, (d, which) ->
+                                onExportEmail(uri, report));
+            } else {
+                dialogBuilder.setMessage(report);
             }
 
-            dialogBuilder.setMessage(msg)
-                         .create()
+            dialogBuilder.create()
                          .show();
         }
     }
@@ -281,21 +283,24 @@ public class ExportFragment
     /**
      * Create and send an email with the specified Uri.
      *
-     * @param uri for the file to email
+     * @param uri    for the file to email
+     * @param report export report text; will be added to the mail body
      */
-    private void onExportEmail(@NonNull final Uri uri) {
+    private void onExportEmail(@NonNull final Uri uri,
+                               final String report) {
 
         final String subject = '[' + getString(R.string.app_name) + "] "
-                               + getString(R.string.lbl_books);
+                               + getString(R.string.lbl_backup);
 
-        final ArrayList<Uri> uris = new ArrayList<>();
-        uris.add(uri);
+        final ArrayList<Uri> uriList = new ArrayList<>();
+        uriList.add(uri);
         try {
             final Intent intent = new Intent(Intent.ACTION_SEND_MULTIPLE)
-                    .setType("plain/text")
+                    .setType("text/plain")
                     .putExtra(Intent.EXTRA_SUBJECT, subject)
-                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
-            startActivity(Intent.createChooser(intent, getString(R.string.lbl_send_mail)));
+                    .putExtra(Intent.EXTRA_TEXT, report)
+                    .putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
+            startActivity(intent);
             //noinspection ConstantConditions
             getActivity().finish();
 
