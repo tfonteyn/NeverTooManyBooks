@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GENRE;
@@ -140,7 +141,7 @@ public class FtsDefinition {
         }
 
         // Convert the text to pure ASCII. We'll use an array to loop over it.
-        final char[] chars = DAO.toAscii(searchText).toCharArray();
+        final char[] chars = ParseUtils.toAscii(searchText).toCharArray();
         // Cached length
         final int len = chars.length;
         // Initial position

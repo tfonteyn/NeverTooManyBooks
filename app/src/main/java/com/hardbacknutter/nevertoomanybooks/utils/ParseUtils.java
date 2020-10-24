@@ -23,8 +23,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.text.DecimalFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * {@link #parseFloat} / {@link #parseDouble}.
@@ -53,6 +55,8 @@ public final class ParseUtils {
 
     /** log error string. */
     private static final String ERROR_INVALID_BOOLEAN_S = "Invalid boolean, s=`";
+    /** See {@link #toAscii}. */
+    private static final Pattern ASCII_PATTERN = Pattern.compile("[^\\p{ASCII}]");
 
     private ParseUtils() {
     }
@@ -451,5 +455,17 @@ public final class ParseUtils {
             }
         }
         throw new NumberFormatException("not a double: " + source);
+    }
+
+    /**
+     * Normalize a given string to contain only ASCII characters for flexible text comparision.
+     *
+     * @param text to normalize
+     *
+     * @return ascii text
+     */
+    public static String toAscii(@NonNull final CharSequence text) {
+        return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
+                            .replaceAll("");
     }
 }

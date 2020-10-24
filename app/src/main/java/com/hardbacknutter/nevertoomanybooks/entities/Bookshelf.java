@@ -34,8 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Objects;
 
 import org.json.JSONException;
@@ -48,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Represents a Bookshelf.
@@ -57,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
  * See {@link #getStyle(Context, DAO)}.
  */
 public class Bookshelf
-        implements Entity {
+        implements Entity, Mergeable {
 
     /** Log tag. */
     public static final String TAG = "Bookshelf";
@@ -233,36 +232,27 @@ public class Bookshelf
     }
 
     /**
-     * Passed a list of Objects, remove duplicates.
+     * Passed a list of Objects, remove duplicates. We keep the first occurrence.
      *
      * @param list List to clean up
      * @param db   Database Access
      *
      * @return {@code true} if the list was modified.
      */
-    public static boolean pruneList(@NonNull final Iterable<Bookshelf> list,
+    public static boolean pruneList(@NonNull final Collection<Bookshelf> list,
                                     @NonNull final DAO db) {
-
-        boolean listModified = false;
-        final Iterator<Bookshelf> it;
-
-        // Keep track of hashCode
-        final Collection<Integer> hashCodes = new HashSet<>();
-        it = list.iterator();
-        while (it.hasNext()) {
-            final Bookshelf item = it.next();
-            item.fixId(db);
-
-            final Integer hashCode = item.hashCode();
-            if (!hashCodes.contains(hashCode)) {
-                hashCodes.add(hashCode);
-            } else {
-                it.remove();
-                listModified = true;
-            }
+        if (list.isEmpty()) {
+            return false;
         }
 
-        return listModified;
+        final EntityMerger<Bookshelf> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final Bookshelf current = entityMerger.next();
+            current.fixId(db);
+            entityMerger.merge(current);
+        }
+
+        return entityMerger.isListModified();
     }
 
     /**
@@ -470,6 +460,18 @@ public class Bookshelf
         return mId == ALL_BOOKS;
     }
 
+
+    /**
+     * Diacritic neutral version of {@link  #hashCode()} without id.
+     *
+     * @return hashcode
+     */
+    @Override
+    public int asciiHashCodeNoId() {
+        return Objects.hash(ParseUtils.toAscii(mName));
+    }
+
+
     /**
      * Equality: <strong>id, name</strong>.
      *
@@ -482,13 +484,14 @@ public class Bookshelf
 
     /**
      * Equality.
-     * <p>
+     * <ol>
      * <li>it's the same Object</li>
      * <li>one or both of them are 'new' (e.g. id == 0) or have the same id<br>
-     * AND their names are equal</li>
+     *     AND their names are equal</li>
      * <li>Style and positions are ignored</li>
-     * <p>
-     * Compare is CASE SENSITIVE ! This allows correcting case mistakes even with identical id.
+     * </ol>
+     * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
+     * This allows correcting case mistakes even with identical ID.
      */
     @Override
     public boolean equals(@Nullable final Object obj) {

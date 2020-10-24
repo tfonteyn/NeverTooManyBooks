@@ -26,12 +26,8 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  * but a particular pain is the titles/series for comics.
  */
 public class Series
-        implements Entity, ItemWithTitle {
+        implements Entity, ItemWithTitle, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Series> CREATOR = new Creator<Series>() {
@@ -412,76 +408,23 @@ public class Series
             return false;
         }
 
-        boolean listModified = false;
-
-        // Keep track of hashCode -> Series
-        final Map<Integer, Series> hashCodesMap = new HashMap<>();
-        // We need to collect the 'previous' Series to delete, so cannot use the iterator.remove
-        final Collection<Series> toDelete = new ArrayList<>();
-
-        final Iterator<Series> it = list.iterator();
-        while (it.hasNext()) {
-            final Series series = it.next();
+        final EntityMerger<Series> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final Series current = entityMerger.next();
 
             final Locale locale;
             if (lookupLocale) {
-                locale = series.getLocale(context, db, bookLocale);
+                locale = current.getLocale(context, db, bookLocale);
             } else {
                 locale = bookLocale;
             }
-            // try to find and update the id. Don't lookup the locale a 2nd time.
-            series.fixId(context, db, false, locale);
 
-            final Integer hashCode = series.hashCode();
-
-            if (!hashCodesMap.containsKey(hashCode)) {
-                // Not there, so just add and continue
-                hashCodesMap.put(hashCode, series);
-
-            } else {
-                final String number = series.getNumber().trim();
-
-                // See if we can purge either one.
-                if (number.isEmpty()) {
-                    // Always delete Series with empty numbers
-                    // if an equal or more specific one exists
-                    it.remove();
-                    listModified = true;
-
-                } else {
-                    // See if the previous one also has a number
-                    final Series previous = hashCodesMap.get(hashCode);
-                    if (previous != null) {
-                        if (previous.getNumber().trim().isEmpty()) {
-                            // It doesn't. Keep the current.
-                            // Update our map (replacing the previous one)
-                            hashCodesMap.put(hashCode, series);
-                            // And remove the previous
-                            toDelete.add(previous);
-                            listModified = true;
-
-                        } else {
-                            // Both have numbers. See if they are the same.
-                            if (number.toLowerCase(locale)
-                                      .equals(previous.getNumber().trim().toLowerCase(locale))) {
-                                // Same exact Series, delete this one, keep the previous one.
-                                it.remove();
-                                listModified = true;
-                            }
-                            // else: the book has two numbers in a series.
-                            // This might be strange, but absolutely valid.
-                            // The user should clean up manually if needed.
-                        }
-                    }
-                }
-            }
+            // Don't lookup the locale a 2nd time.
+            current.fixId(context, db, false, locale);
+            entityMerger.merge(current);
         }
 
-        for (final Series series : toDelete) {
-            list.remove(series);
-        }
-
-        return listModified;
+        return entityMerger.isListModified();
     }
 
     @Override
@@ -689,6 +632,52 @@ public class Series
     }
 
     @Override
+    public boolean merge(@NonNull final Mergeable mergeable) {
+        final Series incoming = (Series) mergeable;
+
+        // If the incoming Series has no number set, we're done
+        if (incoming.getNumber().isEmpty()) {
+            if (mId == 0 && incoming.getId() > 0) {
+                mId = incoming.getId();
+            }
+            return true;
+        }
+
+        // If this Series has no number set, copy the incoming data
+        if (mNumber.isEmpty()) {
+            mNumber = incoming.getNumber();
+            if (mId == 0 && incoming.getId() > 0) {
+                mId = incoming.getId();
+            }
+            return true;
+        }
+
+        // Both have a number set.
+        // If they are the same, we're done
+        if (mNumber.equals(incoming.getNumber())) {
+            if (mId == 0 && incoming.getId() > 0) {
+                mId = incoming.getId();
+            }
+            return true;
+        }
+
+        // The book has two numbers in a series.
+        // This might be strange, but absolutely valid.
+        // The user can clean up manually if needed.
+        // While we cannot merge the actual objects,
+        // we CAN copy the id if appropriate, as Series are distinguished by id AND number
+        if (mId == 0 && incoming.getId() > 0) {
+            mId = incoming.getId();
+        }
+        return false;
+    }
+
+    @Override
+    public int asciiHashCodeNoId() {
+        return Objects.hash(ParseUtils.toAscii(mTitle));
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(mId, mTitle);
     }
@@ -696,11 +685,11 @@ public class Series
     /**
      * Equality: <strong>id, title</strong>.
      * <ul>
-     *      <li>'number' is on a per book basis. See {@link #pruneList}.</li>
-     *      <li>'isComplete' is a user setting and is ignored.</li>
+     *   <li>'number' is on a per book basis. See {@link #pruneList}.</li>
+     *   <li>'isComplete' is a user setting and is ignored.</li>
      * </ul>
      *
-     * <strong>Compare is CASE SENSITIVE</strong>:
+     * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.
      */
     @Override

@@ -27,17 +27,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
@@ -56,7 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * - a purge based on Author is already done)
  */
 public class TocEntry
-        implements Entity, ItemWithTitle, AuthorWork {
+        implements Entity, ItemWithTitle, AuthorWork,
+                   Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<TocEntry> CREATOR = new Creator<TocEntry>() {
@@ -140,97 +138,6 @@ public class TocEntry
     }
 
     /**
-     * Passed a list of Objects, remove duplicates.
-     *
-     * @param list         List to clean up
-     * @param context      Current context
-     * @param db           Database Access
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @return {@code true} if the list was modified.
-     */
-    public static boolean pruneList(@NonNull final Collection<TocEntry> list,
-                                    @NonNull final Context context,
-                                    @NonNull final DAO db,
-                                    final boolean lookupLocale,
-                                    @NonNull final Locale bookLocale) {
-
-        boolean listModified = false;
-
-        // Keep track of hashCode -> TocEntry
-        final Map<Integer, TocEntry> hashCodesMap = new HashMap<>();
-        // We need to collect the 'previous' TocEntry to delete, so cannot use the iterator.remove
-        final Collection<TocEntry> toDelete = new ArrayList<>();
-
-        final Iterator<TocEntry> it = list.iterator();
-        while (it.hasNext()) {
-            final TocEntry tocEntry = it.next();
-
-            final Locale locale;
-            if (lookupLocale) {
-                locale = tocEntry.getLocale(context, db, bookLocale);
-            } else {
-                locale = bookLocale;
-            }
-            // try to find and update the id. Don't lookup the locale a 2nd time.
-            tocEntry.fixId(context, db, false, locale);
-
-            final Integer hashCode = tocEntry.hashCode();
-
-            if (!hashCodesMap.containsKey(hashCode)) {
-                // Not there, so just add and continue
-                hashCodesMap.put(hashCode, tocEntry);
-
-            } else {
-                final PartialDate firstPublicationDate = tocEntry.getFirstPublicationDate();
-
-                // See if we can purge either one.
-                if (firstPublicationDate.isEmpty()) {
-                    // Always delete TocEntry with empty pubYear
-                    // if an equal or more specific one exists
-                    it.remove();
-                    listModified = true;
-
-                } else {
-                    // See if the previous one also has a pubYear
-                    final TocEntry previous = hashCodesMap.get(hashCode);
-                    if (previous != null) {
-                        if (previous.getFirstPublicationDate().isEmpty()) {
-                            // It doesn't. Keep the current.
-                            // Update our map (replacing the previous one)
-                            hashCodesMap.put(hashCode, tocEntry);
-                            // And remove the previous
-                            toDelete.add(previous);
-                            listModified = true;
-
-                        } else {
-                            // Both have numbers. See if they are the same.
-                            if (firstPublicationDate.equals(previous.getFirstPublicationDate())) {
-                                // Same exact TocEntry, delete this one, keep the previous one.
-                                it.remove();
-                                listModified = true;
-                            }
-                            // else: two entries with a different pubYear.
-                            // This is almost certainly invalid, but we can't decide on the
-                            // 'right' one. The user should clean up manually.
-                        }
-                    }
-                }
-            }
-        }
-
-        for (final TocEntry tocEntry : toDelete) {
-            list.remove(tocEntry);
-        }
-
-        return listModified;
-    }
-
-    /**
      * Helper to check if all titles in a list have the same author.
      *
      * @param list of entries
@@ -249,6 +156,47 @@ public class TocEntry
         }
 
         return false;
+    }
+
+    /**
+     * Passed a list of Objects, remove duplicates.
+     *
+     * @param list         List to clean up
+     * @param context      Current context
+     * @param db           Database Access
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return {@code true} if the list was modified.
+     */
+    public static boolean pruneList(@NonNull final Collection<TocEntry> list,
+                                    @NonNull final Context context,
+                                    @NonNull final DAO db,
+                                    final boolean lookupLocale,
+                                    @NonNull final Locale bookLocale) {
+        if (list.isEmpty()) {
+            return false;
+        }
+
+        final EntityMerger<TocEntry> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final TocEntry current = entityMerger.next();
+
+            final Locale locale;
+            if (lookupLocale) {
+                locale = current.getLocale(context, db, bookLocale);
+            } else {
+                locale = bookLocale;
+            }
+            // Don't lookup the locale a 2nd time.
+            current.fixId(context, db, false, locale);
+            entityMerger.merge(current);
+        }
+
+        return entityMerger.isListModified();
     }
 
     /**
@@ -405,18 +353,61 @@ public class TocEntry
     }
 
     @Override
+    public boolean merge(@NonNull final Mergeable mergeable) {
+        final TocEntry incoming = (TocEntry) mergeable;
+
+        // If the incoming TocEntry has no date set, we're done
+        if (incoming.getFirstPublicationDate().isEmpty()) {
+            if (mId == 0 && incoming.getId() > 0) {
+                mId = incoming.getId();
+            }
+            return true;
+        }
+
+        // If this TocEntry has no date set, copy the incoming data
+        if (mFirstPublicationDate.isEmpty()) {
+            mFirstPublicationDate = incoming.getFirstPublicationDate();
+            if (mId == 0 && incoming.getId() > 0) {
+                mId = incoming.getId();
+            }
+            return true;
+        }
+
+        // Both have a date set.
+        // If they are the same, we're done
+        if (mFirstPublicationDate.equals(incoming.getFirstPublicationDate())) {
+            if (mId == 0 && incoming.getId() > 0) {
+                mId = incoming.getId();
+            }
+            return true;
+        }
+
+        // The entries have a different date.
+        // This is almost certainly invalid.
+        // We can't decide which is the 'right' one.
+        // The user will need to clean up manually.
+        incoming.setId(0);
+        return false;
+    }
+
+    @Override
+    public int asciiHashCodeNoId() {
+        return Objects.hash(ParseUtils.toAscii(mTitle), mAuthor.asciiHashCodeNoId());
+    }
+
+    @Override
     public int hashCode() {
-        return Objects.hash(mId, mAuthor, mTitle);
+        return Objects.hash(mId, mTitle, mAuthor);
     }
 
     /**
      * Equality: <strong>id, Author(id) and Title</strong>.
      * <ul>
-     *      <li>mFirstPublicationDate is excluded on purpose due to to many discrepancies
-     *          depending on source.</li>
+     *   <li>mFirstPublicationDate is excluded on purpose due to too many discrepancies
+     *       depending on source.</li>
      * </ul>
      *
-     * <strong>Compare is CASE SENSITIVE</strong>:
+     * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.
      */
     @Override

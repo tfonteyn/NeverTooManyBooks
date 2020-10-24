@@ -24,6 +24,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,7 +40,6 @@ import androidx.core.util.Pair;
 import java.io.Closeable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.text.Normalizer;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -83,6 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
@@ -254,8 +255,6 @@ public class DAO
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
     /** See {@link #encodeOrderByColumn}. */
     private static final Pattern NON_WORD_CHARACTER_PATTERN = Pattern.compile("\\W");
-    /** See {@link #toAscii}. */
-    private static final Pattern ASCII_PATTERN = Pattern.compile("[^\\p{ASCII}]");
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
@@ -335,21 +334,9 @@ public class DAO
      */
     public static String encodeOrderByColumn(@NonNull final CharSequence value,
                                              @NonNull final Locale locale) {
-        final String s = toAscii(value);
+        final String s = ParseUtils.toAscii(value);
         // remove all non-word characters. i.e. all characters not in [a-zA-Z_0-9]
         return NON_WORD_CHARACTER_PATTERN.matcher(s).replaceAll("").toLowerCase(locale);
-    }
-
-    /**
-     * Normalize a given string to contain only ASCII characters so we can easily text searches.
-     *
-     * @param text to normalize
-     *
-     * @return ascii text
-     */
-    static String toAscii(@NonNull final CharSequence text) {
-        return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
-                            .replaceAll("");
     }
 
     /**
@@ -549,7 +536,7 @@ public class DAO
             }
             return newBookId;
 
-        } catch (@NonNull final IllegalArgumentException e) {
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
             throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book, e);
 
         } finally {
@@ -629,7 +616,7 @@ public class DAO
             } else {
                 throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
             }
-        } catch (@NonNull final IllegalArgumentException e) {
+        } catch (@NonNull final SQLiteException | IllegalArgumentException e) {
             throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book, e);
 
         } finally {
@@ -4316,7 +4303,7 @@ public class DAO
         if (text == null) {
             stmt.bindNull(position);
         } else {
-            stmt.bindString(position, toAscii(text));
+            stmt.bindString(position, ParseUtils.toAscii(text));
         }
     }
 

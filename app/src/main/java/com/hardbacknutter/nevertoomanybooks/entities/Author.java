@@ -32,10 +32,7 @@ import androidx.preference.PreferenceManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -72,7 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * i.e one entry typed 'pseudonym' with the 'real-name-id' column pointing to the real name entry.
  */
 public class Author
-        implements Entity {
+        implements Entity, Mergeable {
 
     /** {@link Parcelable}. */
     public static final Creator<Author> CREATOR = new Creator<Author>() {
@@ -293,22 +290,6 @@ public class Author
         mType = in.readInt();
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mFamilyName);
-        dest.writeString(mGivenNames);
-        dest.writeByte((byte) (mIsComplete ? 1 : 0));
-        dest.writeInt(mType);
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
@@ -458,68 +439,39 @@ public class Author
             return false;
         }
 
-        boolean listModified = false;
-
-        // Keep track of hashCode -> Author
-        final Map<Integer, Author> hashCodesMap = new HashMap<>();
-        // We need to collect the 'previous' Author to delete, so cannot use the iterator.remove
-        final Collection<Author> toDelete = new ArrayList<>();
-
-        final Iterator<Author> it = list.iterator();
-        while (it.hasNext()) {
-            final Author author = it.next();
+        final EntityMerger<Author> entityMerger = new EntityMerger<>(list);
+        while (entityMerger.hasNext()) {
+            final Author current = entityMerger.next();
 
             final Locale locale;
             if (lookupLocale) {
-                locale = author.getLocale(context, db, bookLocale);
+                locale = current.getLocale(context, db, bookLocale);
             } else {
                 locale = bookLocale;
             }
-            // try to find and update the id. Don't lookup the locale a 2nd time.
-            author.fixId(context, db, false, locale);
 
-            final Integer hashCode = author.hashCode();
-
-            if (!hashCodesMap.containsKey(hashCode)) {
-                // Not there, so just add and continue
-                hashCodesMap.put(hashCode, author);
-
-            } else {
-                @Type
-                final int type = author.getType();
-
-                // See if we can purge either one.
-                if (type == TYPE_UNKNOWN) {
-                    // Always delete an Author without a type
-                    // if an equal or more specific one exists
-                    it.remove();
-                    listModified = true;
-
-                } else {
-                    // See if the previous one also has a type
-                    final Author previous = hashCodesMap.get(hashCode);
-                    if (previous != null) {
-                        if (previous.getType() != 0) {
-                            // Both have types, simply combine them.
-                            author.setType(author.getType() | previous.getType());
-                        }
-
-                        // Either way,
-                        // Update our map (replacing the previous one)
-                        hashCodesMap.put(hashCode, author);
-                        // And remove the previous
-                        toDelete.add(previous);
-                        listModified = true;
-                    }
-                }
-            }
+            // Don't lookup the locale a 2nd time.
+            current.fixId(context, db, false, locale);
+            entityMerger.merge(current);
         }
 
-        for (final Author author : toDelete) {
-            list.remove(author);
-        }
+        return entityMerger.isListModified();
+    }
 
-        return listModified;
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mFamilyName);
+        dest.writeString(mGivenNames);
+        dest.writeByte((byte) (mIsComplete ? 1 : 0));
+        dest.writeInt(mType);
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     /**
@@ -779,6 +731,29 @@ public class Author
     }
 
     @Override
+    public boolean merge(@NonNull final Mergeable mergeable) {
+        final Author incoming = (Author) mergeable;
+
+        // always combine the types
+        mType = mType | incoming.getType();
+
+        // if this object has no id, and the incoming has an id, then we copy the id.
+        if (mId == 0 && incoming.getId() > 0) {
+            mId = incoming.getId();
+        }
+        return true;
+    }
+
+    /**
+     * Diacritic neutral version of {@link  #hashCode()} without id.
+     *
+     * @return hashcode
+     */
+    public int asciiHashCodeNoId() {
+        return Objects.hash(ParseUtils.toAscii(mFamilyName), ParseUtils.toAscii(mGivenNames));
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(mId, mFamilyName, mGivenNames);
     }
@@ -786,11 +761,11 @@ public class Author
     /**
      * Equality: <strong>id, family and given-names</strong>.
      * <ul>
-     *      <li>'type' is on a per book basis. See {@link #pruneList}.</li>
-     *      <li>'isComplete' is a user setting and is ignored.</li>
+     *   <li>'type' is on a per book basis. See {@link #pruneList}.</li>
+     *   <li>'isComplete' is a user setting and is ignored.</li>
      * </ul>
      *
-     * <strong>Compare is CASE SENSITIVE</strong>:
+     * <strong>Comparing is DIACRITIC and CASE SENSITIVE</strong>:
      * This allows correcting case mistakes even with identical ID.
      */
     @Override
