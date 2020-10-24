@@ -1230,15 +1230,15 @@ public class DAOSql {
                 + _WHERE_ + KEY_LOCATION + "=?";
 
         /**
-         * Update a single Book's read status
-         * and read_end date using a safe date construct.
+         * Update a single Book's read status and read_end date.
          */
         static final String READ =
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + KEY_UTC_LAST_UPDATED + "=current_timestamp"
                 + ',' + KEY_READ + "=?"
-                + ',' + KEY_READ_END + "=COALESCE(date(?, 'utc'),'')"
+                + ',' + KEY_READ_END + "=?"
                 + _WHERE_ + KEY_PK_ID + "=?";
+
         /**
          * Update a single Book's last sync date with Goodreads.
          * Do NOT update the {@link DBDefinitions#KEY_UTC_LAST_UPDATED} field.
@@ -1247,6 +1247,7 @@ public class DAOSql {
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + KEY_UTC_GOODREADS_LAST_SYNC_DATE + "=current_timestamp"
                 + _WHERE_ + KEY_PK_ID + "=?";
+
         /**
          * Update a single Book's Goodreads id.
          * Do NOT update the {@link DBDefinitions#KEY_UTC_LAST_UPDATED} field.
@@ -1255,14 +1256,15 @@ public class DAOSql {
                 UPDATE_ + TBL_BOOKS.getName()
                 + _SET_ + KEY_EID_GOODREADS_BOOK + "=?"
                 + _WHERE_ + KEY_PK_ID + "=?";
+
         /**
-         * Update a single {@link TocEntry} using a safe date construct.
+         * Update a single {@link TocEntry}.
          */
         static final String TOCENTRY =
                 UPDATE_ + TBL_TOC_ENTRIES.getName()
                 + _SET_ + KEY_TITLE + "=?"
                 + ',' + KEY_TITLE_OB + "=?"
-                + ',' + KEY_DATE_FIRST_PUBLICATION + "=COALESCE(date(?, 'utc'),'')"
+                + ',' + KEY_DATE_FIRST_PUBLICATION + "=?"
                 + _WHERE_ + KEY_PK_ID + "=?";
     }
 

@@ -28,7 +28,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 @SmallTest
-public class PartialDateTest {
+public class PartialDateParcellingTest {
 
     /**
      * Reminder: The base test {@code assertEquals(pDate, date)}
@@ -45,4 +45,5 @@ public class PartialDateTest {
 
         assertEquals(pDate, date);
     }
+
 }

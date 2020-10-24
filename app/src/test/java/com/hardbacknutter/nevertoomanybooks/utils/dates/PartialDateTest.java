@@ -47,5 +47,8 @@ class PartialDateTest
         assertEquals("", date.getIsoString());
         date = new PartialDate("2020-9");
         assertEquals("", date.getIsoString());
+
+        date = new PartialDate("1941");
+        assertEquals("1941", date.getIsoString());
     }
 }
