@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
@@ -70,8 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
  * This class supports the loading of a book. See {@link #populateViews}.
  */
 public abstract class BookBaseFragment
-        extends Fragment
-        implements PermissionsHelper.RequestHandler {
+        extends Fragment {
 
     /** FragmentResultListener request key. */
     public static final String RK_COVER_BROWSER = CoverBrowserDialogFragment.TAG + ":rk:";
@@ -134,14 +132,6 @@ public abstract class BookBaseFragment
      * @param fields collection to add to
      */
     abstract void onInitFields(@NonNull Fields fields);
-
-    @Override
-    public void onRequestPermissionsResult(final int requestCode,
-                                           @NonNull final String[] permissions,
-                                           @NonNull final int[] grantResults) {
-        // Camera permissions
-        onRequestPermissionsResultCallback(requestCode, permissions, grantResults);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {

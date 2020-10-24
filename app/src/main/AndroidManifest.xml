@@ -25,11 +25,17 @@
     package="com.hardbacknutter.nevertoomanybooks"
     android:installLocation="auto"
     android:versionCode="7"
-    android:versionName="1.2.0">
+    android:versionName="1.2.1">
+
+    <!-- scanning bar codes / cover images... -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
     <!-- for the book-lending functionality -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 

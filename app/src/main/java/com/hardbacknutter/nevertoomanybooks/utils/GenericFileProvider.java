@@ -50,8 +50,8 @@ public class GenericFileProvider
      * @return the uri
      */
     @NonNull
-    public static Uri getUriForFile(@NonNull final Context context,
-                                    @NonNull final File file) {
+    public static Uri createUri(@NonNull final Context context,
+                                @NonNull final File file) {
         return getUriForFile(context, BuildConfig.APPLICATION_ID + ".GenericFileProvider",
                              file);
     }

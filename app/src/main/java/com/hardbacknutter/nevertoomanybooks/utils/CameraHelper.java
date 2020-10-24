@@ -20,116 +20,88 @@
 package com.hardbacknutter.nevertoomanybooks.utils;
 
 import android.Manifest;
-import android.content.Context;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.MediaStore;
 
-import androidx.annotation.AnyThread;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
+import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
-
 public class CameraHelper {
 
-    /** Log tag. */
-    private static final String TAG = "CameraHelper";
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    private final Fragment mFragment;
 
-    /**
-     * We use a single temporary file.
-     * Note we might not always clean it up.
-     * We just make sure an orphaned file is deleted before taking a new picture.
-     * But as it's in the cache directory, Android can clean it when it wants.
-     */
-    private static final String TEMP_FILENAME = TAG + ".jpg";
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    private final ActivityResultLauncher<String> mRequestPermissionLauncher;
 
-    /** Needed while checking permissions. */
+    /** Set/returned with the activity result. */
     private int mRequestCode;
 
+    /** The file the camera will write to. */
+    private File mFile;
+
     /**
-     * DEBUG only.
+     * Constructor.
      *
-     * @param context Current context
-     *
-     * @return the default camera file.
+     * @param fragment hosting fragment
      */
-    @NonNull
-    public static File getCameraFile(@NonNull final Context context) {
-        return AppDir.Cache.getFile(context, TEMP_FILENAME);
+    @SuppressLint("MissingPermission")
+    public CameraHelper(@NonNull final Fragment fragment) {
+        mFragment = fragment;
+        mRequestPermissionLauncher = mFragment.registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(), (isGranted) -> {
+                    if (isGranted) {
+                        startCameraInternal();
+                    }
+                });
     }
+
 
     /**
      * Start the camera to get an image.
      *
-     * @param fragment    which will check camera permissions
+     * @param file        for the camera to write to
      * @param requestCode set/returned with the activity result
      */
-    public void startCamera(@NonNull final Fragment fragment,
+    public void startCamera(@NonNull final File file,
                             final int requestCode) {
         mRequestCode = requestCode;
+        mFile = file;
 
-        final Context context = fragment.getContext();
-
-        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         //noinspection ConstantConditions
-        final File file = AppDir.Cache.getFile(context, TEMP_FILENAME);
-        // delete any orphaned file.
-        FileUtils.delete(file);
-
-        final Uri uri = GenericFileProvider.getUriForFile(context, file);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+        if (ContextCompat.checkSelfPermission(mFragment.getContext(), Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
-            // GO!
-            fragment.startActivityForResult(intent, requestCode);
-
+            startCameraInternal();
         } else {
-            ((PermissionsHelper.RequestHandler) fragment).addPermissionCallback(
-                    RequestCode.ANDROID_PERMISSIONS, (perms, grantResults) -> {
-                        if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                            startCamera(fragment, mRequestCode);
-                        }
-                    });
-            //noinspection ConstantConditions
-            ActivityCompat.requestPermissions(fragment.getActivity(),
-                                              new String[]{Manifest.permission.CAMERA},
-                                              RequestCode.ANDROID_PERMISSIONS);
+            mRequestPermissionLauncher.launch(Manifest.permission.CAMERA);
         }
     }
 
-    /**
-     * Get the file.
-     *
-     * @param context Current context
-     *
-     * @return file or {@code null}
-     */
-    @Nullable
-    @AnyThread
-    public File getFile(@NonNull final Context context) {
-        final File file = AppDir.Cache.getFile(context, TEMP_FILENAME);
-        if (file.exists()) {
-            return file;
-        }
-        return null;
-    }
-
-    public void cleanup(@NonNull final Context context) {
-        FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILENAME));
+    @RequiresPermission(Manifest.permission.CAMERA)
+    private void startCameraInternal() {
+        //noinspection ConstantConditions
+        final Uri uri = GenericFileProvider.createUri(mFragment.getContext(), mFile);
+        final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                .putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        mFragment.startActivityForResult(intent, mRequestCode);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "CameraHelper{"
+               + ", mFile=" + mFile
                + ", mRequestCode=" + mRequestCode
                + '}';
     }

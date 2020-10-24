@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.util.SparseArray;
 
 import androidx.annotation.IdRes;
@@ -37,11 +38,14 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.File;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.RequestCode;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Using the Google Play Services to scan a barcode.
@@ -51,8 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 public class GoogleBarcodeScanner
         implements Scanner {
 
+    /** The file name we'll use. */
+    private static final String TEMP_COVER_FILENAME = "GoogleBarcodeScanner.jpg";
     private final BarcodeDetector mDetector;
-
     @Nullable
     private CameraHelper mCameraHelper;
 
@@ -63,10 +68,10 @@ public class GoogleBarcodeScanner
      */
     private GoogleBarcodeScanner(@NonNull final Context context) {
         mDetector = new BarcodeDetector.Builder(context.getApplicationContext())
-                            .setBarcodeFormats(Barcode.ISBN
-                                               | Barcode.EAN_13 | Barcode.EAN_8
-                                               | Barcode.UPC_A | Barcode.UPC_E)
-                            .build();
+                .setBarcodeFormats(Barcode.ISBN
+                                   | Barcode.EAN_13 | Barcode.EAN_8
+                                   | Barcode.UPC_A | Barcode.UPC_E)
+                .build();
     }
 
     @Nullable
@@ -102,9 +107,14 @@ public class GoogleBarcodeScanner
         }
 
         if (mCameraHelper == null) {
-            mCameraHelper = new CameraHelper();
+            mCameraHelper = new CameraHelper(fragment);
         }
-        mCameraHelper.startCamera(fragment, requestCode);
+
+        //noinspection ConstantConditions
+        final File dstFile = getTempFile(fragment.getContext());
+        FileUtils.delete(dstFile);
+        mCameraHelper.startCamera(dstFile, RequestCode.ACTION_IMAGE_CAPTURE);
+
         return true;
     }
 
@@ -112,15 +122,43 @@ public class GoogleBarcodeScanner
     @Override
     public String getBarcode(@NonNull final Context context,
                              @Nullable final Intent data) {
-        Objects.requireNonNull(mCameraHelper, "mCameraHelper");
-        final File file = mCameraHelper.getFile(context);
-        if (file != null) {
+        final File file;
+        // detect emulator for testing
+        if (BuildConfig.DEBUG && Build.PRODUCT.startsWith("sdk")) {
+            // when used, the file must be in the root external app dir.
+            file = AppDir.Root.getFile(context, "barcode.jpg");
+        } else {
+            file = getTempFile(context);
+        }
+
+        if (file.exists()) {
             final Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
             if (bm != null) {
-                return decode(bm);
+                final String barcode = decode(bm);
+                removeTempFile(context);
+                return barcode;
             }
         }
         return null;
+    }
+
+    /**
+     * Get the temporary file.
+     *
+     * @param context Current context
+     *
+     * @return file
+     */
+    @NonNull
+    private File getTempFile(@NonNull final Context context) {
+        return AppDir.Cache.getFile(context, TEMP_COVER_FILENAME);
+    }
+
+    /**
+     * remove any orphaned file.
+     */
+    private void removeTempFile(@NonNull final Context context) {
+        FileUtils.delete(getTempFile(context));
     }
 
     @Override

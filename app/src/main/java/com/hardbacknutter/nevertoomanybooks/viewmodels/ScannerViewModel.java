@@ -21,10 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,9 +30,6 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -45,9 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 /**
@@ -105,32 +95,6 @@ public class ScannerViewModel
     /** The preferred (or found) scanner. */
     @Nullable
     private Scanner mScanner;
-
-    /**
-     * DEBUG only.
-     */
-    public void fakeScanInEmulator(@NonNull final Context context,
-                                   @Nullable final Intent data) {
-        // detect emulator for testing
-        if (Build.PRODUCT.startsWith("sdk")) {
-            // when used, the file must be in the root external app dir.
-            final File file = AppDir.Root.getFile(context, "barcode.jpg");
-            if (file.exists()) {
-                final Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                if (data != null
-                    && data.getExtras() != null
-                    && data.getExtras().containsKey("data")) {
-                    data.putExtra("data", bitmap);
-                } else {
-                    try {
-                        FileUtils.copy(file, CameraHelper.getCameraFile(context));
-                    } catch (@NonNull final IOException e) {
-                        Log.d(TAG, "onActivityResult", e);
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * Get <strong>and clear</strong> the first-start flag.

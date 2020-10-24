@@ -47,15 +47,13 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.PermissionsHelper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
  */
 public class BookSearchByIsbnFragment
-        extends BookSearchBaseFragment
-        implements PermissionsHelper.RequestHandler {
+        extends BookSearchBaseFragment {
 
     /** Log tag. */
     public static final String TAG = "BookSearchByIsbnFrag";
@@ -74,14 +72,6 @@ public class BookSearchByIsbnFragment
     /** manage the validation check next to the field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
-
-    @Override
-    public void onRequestPermissionsResult(final int requestCode,
-                                           @NonNull final String[] permissions,
-                                           @NonNull final int[] grantResults) {
-        // Camera permissions
-        onRequestPermissionsResultCallback(requestCode, permissions, grantResults);
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -249,14 +239,9 @@ public class BookSearchByIsbnFragment
                 Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
-                    if (BuildConfig.DEBUG /* always */) {
-                        //noinspection ConstantConditions
-                        mScannerModel.fakeScanInEmulator(getContext(), data);
-                    }
-
                     //noinspection ConstantConditions
-                    final String barCode = mScannerModel.getScanner()
-                                                        .getBarcode(getContext(), data);
+                    final String barCode =
+                            mScannerModel.getScanner().getBarcode(getContext(), data);
                     if (barCode != null) {
                         mVb.isbn.setText(barCode);
                         prepareSearch(barCode);

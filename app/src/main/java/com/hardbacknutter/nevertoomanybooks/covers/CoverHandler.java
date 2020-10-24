@@ -104,7 +104,7 @@ public class CoverHandler {
     private static final int ACTION_EDIT = 2;
 
     private static final String IMAGE_MIME_TYPE = "image/*";
-    /** The file name we'll use with the external editor/crop. */
+    /** The file name we'll use. */
     private final String TEMP_COVER_FILENAME;
 
     /** The fragment hosting us. Should implement HostingFragment. */
@@ -294,8 +294,7 @@ public class CoverHandler {
             setPlaceholder();
             return true;
 
-        } else if (itemId
-                   == R.id.SUBMENU_THUMB_ROTATE) {
+        } else if (itemId == R.id.SUBMENU_THUMB_ROTATE) {
             // Just a submenu; skip, but display a hint if user is rotating a camera image
             if (mShowHintAboutRotating) {
                 TipManager.display(mContext, R.string.tip_autorotate_camera_images, null);
@@ -320,8 +319,7 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_THUMB_CROP) {
             try {
-                final File srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
-                startCropper(srcFile);
+                startCropper(mBookViewModel.createTempCoverFile(mContext, mCIdx));
 
             } catch (@NonNull final IOException e) {
                 Snackbar.make(mCoverView, R.string.error_storage_not_writable,
@@ -331,8 +329,7 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_EDIT) {
             try {
-                final File srcFile = mBookViewModel.createTempCoverFile(mContext, mCIdx);
-                startEditor(srcFile);
+                startEditor(mBookViewModel.createTempCoverFile(mContext, mCIdx));
 
             } catch (@NonNull final IOException e) {
                 Snackbar.make(mCoverView, R.string.error_storage_not_writable,
@@ -363,8 +360,7 @@ public class CoverHandler {
      * @param srcFile to crop; the file will not be modified
      */
     private void startCropper(@NonNull final File srcFile) {
-        // use the fixed name destination.
-        final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+        final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
 
         final Intent intent = new Intent(mContext, CropImageActivity.class)
@@ -399,8 +395,7 @@ public class CoverHandler {
      * Call out the Intent.ACTION_GET_CONTENT to get an image from an external app.
      */
     private void startChooser() {
-        // use the fixed name destination.
-        final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+        final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
 
         final Intent intent = new Intent(Intent.ACTION_GET_CONTENT)
@@ -434,9 +429,12 @@ public class CoverHandler {
 
     private void startCamera() {
         if (mCameraHelper == null) {
-            mCameraHelper = new CameraHelper();
+            mCameraHelper = new CameraHelper(mFragment);
         }
-        mCameraHelper.startCamera(mFragment, RequestCode.ACTION_IMAGE_CAPTURE);
+
+        final File dstFile = getTempFile();
+        FileUtils.delete(dstFile);
+        mCameraHelper.startCamera(dstFile, RequestCode.ACTION_IMAGE_CAPTURE);
     }
 
     /**
@@ -445,13 +443,12 @@ public class CoverHandler {
      * @param srcFile to use
      */
     private void startEditor(@NonNull final File srcFile) {
-        // use the fixed name destination.
-        final File dstFile = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+        final File dstFile = getTempFile();
         FileUtils.delete(dstFile);
 
         //TODO: we really should revoke the permissions afterwards
-        final Uri srcUri = GenericFileProvider.getUriForFile(mContext, srcFile);
-        final Uri dstUri = GenericFileProvider.getUriForFile(mContext, dstFile);
+        final Uri srcUri = GenericFileProvider.createUri(mContext, srcFile);
+        final Uri dstUri = GenericFileProvider.createUri(mContext, dstFile);
 
         final Intent intent = new Intent(Intent.ACTION_EDIT)
                 .setDataAndType(srcUri, IMAGE_MIME_TYPE)
@@ -481,7 +478,6 @@ public class CoverHandler {
         }
     }
 
-
     /**
      * Handles results from Camera, Picture Gallery and editing (incl. internal cropper).
      *
@@ -490,7 +486,6 @@ public class CoverHandler {
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {
-
         switch (requestCode) {
             case RequestCode.ACTION_GET_CONTENT:
             case RequestCode.CROP_IMAGE: {
@@ -498,10 +493,9 @@ public class CoverHandler {
                     Objects.requireNonNull(data, "data");
                     final Uri uri = data.getData();
                     if (uri != null) {
-                        File file = null;
+                        File file = getTempFile();
                         try (InputStream is = mContext.getContentResolver()
                                                       .openInputStream(uri)) {
-                            file = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
                             // copy the data, and retrieve the (potentially) resolved file
                             file = FileUtils.copyInputStream(mContext, is, file);
                         } catch (@NonNull final IOException e) {
@@ -525,8 +519,8 @@ public class CoverHandler {
             case RequestCode.ACTION_IMAGE_CAPTURE: {
                 Objects.requireNonNull(mCameraHelper, "mCameraHelper");
                 if (resultCode == Activity.RESULT_OK) {
-                    final File srcFile = mCameraHelper.getFile(mContext);
-                    if (srcFile != null && srcFile.exists()) {
+                    final File file = getTempFile();
+                    if (file.exists()) {
                         final SharedPreferences prefs = PreferenceManager
                                 .getDefaultSharedPreferences(mContext);
                         // Should we apply an explicit rotation angle?
@@ -542,7 +536,7 @@ public class CoverHandler {
                         showProgress(true);
                         //noinspection ConstantConditions
                         mTransFormTaskViewModel.startTask(
-                                new TransFormTaskViewModel.Transformation(srcFile)
+                                new TransFormTaskViewModel.Transformation(file)
                                         .setScale(true)
                                         // we'll try to guess a rotation angle
                                         .setWindowManager(
@@ -553,21 +547,23 @@ public class CoverHandler {
                         return true;
                     }
                 }
-                // remove orphan
-                mCameraHelper.cleanup(mContext);
+
+                removeTempFile();
                 return true;
             }
             case RequestCode.EDIT_IMAGE: {
                 if (resultCode == Activity.RESULT_OK) {
-                    final File file = AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
-                    showProgress(true);
-                    mTransFormTaskViewModel.startTask(
-                            new TransFormTaskViewModel.Transformation(file)
-                                    .setScale(true));
+                    final File file = getTempFile();
+                    if (file.exists()) {
+                        showProgress(true);
+                        mTransFormTaskViewModel.startTask(
+                                new TransFormTaskViewModel.Transformation(file)
+                                        .setScale(true));
+                    }
                     return true;
                 }
-                // remove any orphaned file
-                FileUtils.delete(AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME));
+
+                removeTempFile();
                 return true;
             }
             default:
@@ -645,7 +641,6 @@ public class CoverHandler {
         setPlaceholder();
     }
 
-
     /**
      * Put a placeholder on screen.
      *
@@ -666,6 +661,23 @@ public class CoverHandler {
     private void setPlaceholder() {
         ImageUtils.setPlaceholder(mCoverView, mMaxWidth, mMaxHeight,
                                   R.drawable.ic_add_a_photo, R.drawable.outline_rounded);
+    }
+
+    /**
+     * Get the temporary file.
+     *
+     * @return file
+     */
+    @NonNull
+    private File getTempFile() {
+        return AppDir.Cache.getFile(mContext, TEMP_COVER_FILENAME);
+    }
+
+    /**
+     * remove any orphaned file.
+     */
+    private void removeTempFile() {
+        FileUtils.delete(getTempFile());
     }
 
     public interface HostingFragment {
