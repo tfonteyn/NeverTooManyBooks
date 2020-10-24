@@ -33,10 +33,6 @@
       <option name="m_ignoreCloneableDueToInheritance" value="false" />
     </inspection_tool>
     <inspection_tool class="ComparableImplementedButEqualsNotOverridden" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ConstantConditions" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="SUGGEST_NULLABLE_ANNOTATIONS" value="true" />
-      <option name="DONT_REPORT_TRUE_ASSERT_STATEMENTS" value="false" />
-    </inspection_tool>
     <inspection_tool class="CovariantEquals" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DateToString" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DefaultNotLastCaseInSwitch" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -202,7 +198,7 @@
       <option name="useParameterizedTypeForCollectionMethods" value="true" />
       <option name="doNotWeakenToJavaLangObject" value="true" />
       <option name="onlyWeakentoInterface" value="true" />
-      <stopClasses>com.hardbacknutter.nevertoomanybooks.entities.TocEntry,com.hardbacknutter.nevertoomanybooks.entities.Author,com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle,com.hardbacknutter.nevertoomanybooks.entities.Series,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf,com.hardbacknutter.nevertoomanybooks.entities.Publisher,java.util.Date,com.hardbacknutter.nevertoomanybooks.backup.Options,com.hardbacknutter.nevertoomanybooks.backup.base.Options,com.hardbacknutter.nevertoomanybooks.backup.ImportHelper,com.hardbacknutter.nevertoomanybooks.backup.ImportManager,java.time.LocalDateTime,android.text.Editable,java.util.Collection,com.hardbacknutter.nevertoomanybooks.entities.Book,com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle,com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate</stopClasses>
+      <stopClasses>com.hardbacknutter.nevertoomanybooks.entities.TocEntry,com.hardbacknutter.nevertoomanybooks.entities.Author,com.hardbacknutter.nevertoomanybooks.booklist.BooklistStyle,com.hardbacknutter.nevertoomanybooks.entities.Series,com.hardbacknutter.nevertoomanybooks.entities.Bookshelf,com.hardbacknutter.nevertoomanybooks.entities.Publisher,java.util.Date,com.hardbacknutter.nevertoomanybooks.backup.Options,com.hardbacknutter.nevertoomanybooks.backup.base.Options,com.hardbacknutter.nevertoomanybooks.backup.ImportHelper,com.hardbacknutter.nevertoomanybooks.backup.ImportManager,java.time.LocalDateTime,android.text.Editable,java.util.Collection,com.hardbacknutter.nevertoomanybooks.entities.Book,com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle,com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate,java.util.Set,java.util.List</stopClasses>
     </inspection_tool>
     <inspection_tool class="UnnecessaryConstructor" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ignoreAnnotations" value="true" />
@@ -214,7 +210,6 @@
     <inspection_tool class="UnnecessaryUnicodeEscape" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UseOfPropertiesAsHashtable" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="VarargParameter" enabled="false" level="INFORMATION" enabled_by_default="false" />
-    <inspection_tool class="VariableNotUsedInsideIf" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="WeakerAccess" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="SUGGEST_PACKAGE_LOCAL_FOR_MEMBERS" value="true" />
       <option name="SUGGEST_PACKAGE_LOCAL_FOR_TOP_CLASSES" value="true" />
