@@ -130,6 +130,15 @@ public class CoverHandler {
     @NonNull
     private final ActivityResultLauncher<String> mGetFromFileLauncher;
 
+    /**
+     * Crop the image using our internal code in {@link CropImageActivity}.
+     * The input file will not be modified.
+     * <p>
+     * Alternatively the user can use an external editor.
+     */
+    @NonNull
+    private final ActivityResultLauncher<File> mCropperLauncher;
+
     /** The view for this handler. */
     private ImageView mCoverView;
     /**
@@ -172,6 +181,9 @@ public class CoverHandler {
 
         mGetFromFileLauncher = mFragment.registerForActivityResult(
                 new ActivityResultContracts.GetContent(), this::onGetContent);
+
+        mCropperLauncher = mFragment.registerForActivityResult(
+                new CropImageActivity.ResultContract(getTempFile()), this::onGetContent);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             mFragment.getChildFragmentManager().setFragmentResultListener(
@@ -344,7 +356,7 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_THUMB_CROP) {
             try {
-                startCropper(mBookViewModel.createTempCoverFile(context, mCIdx));
+                mCropperLauncher.launch(mBookViewModel.createTempCoverFile(context, mCIdx));
 
             } catch (@NonNull final IOException e) {
                 Snackbar.make(mCoverView, R.string.error_storage_not_writable,
@@ -379,24 +391,6 @@ public class CoverHandler {
             return true;
         }
         return false;
-    }
-
-
-    /**
-     * Crop the image using our internal code in {@link CropImageActivity}.
-     * The user can choose the use an external crop tool by using the external editor.
-     *
-     * @param srcFile to crop; the file will not be modified
-     */
-    private void startCropper(@NonNull final File srcFile) {
-        final File dstFile = getTempFile();
-        FileUtils.delete(dstFile);
-
-        final Intent intent = new Intent(mFragment.getContext(), CropImageActivity.class)
-                .putExtra(CropImageActivity.BKEY_SOURCE, srcFile.getAbsolutePath())
-                .putExtra(CropImageActivity.BKEY_DESTINATION, dstFile.getAbsolutePath());
-
-        mFragment.startActivityForResult(intent, RequestCode.CROP_IMAGE);
     }
 
     /**
@@ -510,10 +504,10 @@ public class CoverHandler {
                 mTransFormTaskViewModel.startTask(
                         new TransFormTaskViewModel.Transformation(file)
                                 .setScale(true));
-                return;
+            } else {
+                StandardDialogs.showError(context, R.string.warning_image_copy_failed);
             }
         }
-        StandardDialogs.showError(context, R.string.warning_image_copy_failed);
     }
 
     /**
@@ -526,13 +520,6 @@ public class CoverHandler {
                                     @Nullable final Intent data) {
         final Context context = mFragment.requireContext();
         switch (requestCode) {
-            case RequestCode.CROP_IMAGE: {
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, "data");
-                    onGetContent(data.getData());
-                }
-                return true;
-            }
             case RequestCode.ACTION_IMAGE_CAPTURE: {
                 Objects.requireNonNull(mCameraLauncher, "mCameraHelper");
                 if (resultCode == Activity.RESULT_OK) {
@@ -604,7 +591,7 @@ public class CoverHandler {
 
             switch (result.getReturnCode()) {
                 case ACTION_CROP:
-                    startCropper(result.getFile());
+                    mCropperLauncher.launch(result.getFile());
                     break;
 
                 case ACTION_EDIT:

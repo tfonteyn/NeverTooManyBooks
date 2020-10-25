@@ -37,6 +37,7 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,6 +46,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -63,6 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * The activity can crop specific region of interest from an image.
@@ -175,5 +179,57 @@ public class CropImageActivity
             return;
         }
         finish();
+    }
+
+    public static class ResultContract
+            extends ActivityResultContract<File, Uri> {
+
+        @Nullable
+        private File mDstFile;
+
+        /**
+         * Constructor.
+         * <p>
+         * The destination file name will be auto-generated.
+         */
+        public ResultContract() {
+        }
+
+        /**
+         * Constructor.
+         *
+         * @param dstFile destination file to write to
+         */
+        @SuppressWarnings("WeakerAccess")
+        public ResultContract(@NonNull final File dstFile) {
+            mDstFile = dstFile;
+        }
+
+        @CallSuper
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @NonNull final File input) {
+
+            if (mDstFile == null) {
+                mDstFile = AppDir.Cache.getFile(context, System.nanoTime() + ".jpg");
+            }
+            FileUtils.delete(mDstFile);
+
+            return new Intent(context, CropImageActivity.class)
+                    .putExtra(CropImageActivity.BKEY_SOURCE, input.getAbsolutePath())
+                    .putExtra(CropImageActivity.BKEY_DESTINATION, mDstFile.getAbsolutePath());
+        }
+
+        @Nullable
+        @Override
+        public final Uri parseResult(final int resultCode,
+                                     @Nullable final Intent intent) {
+            if (intent == null || resultCode != Activity.RESULT_OK) {
+                FileUtils.delete(mDstFile);
+                return null;
+            }
+            return intent.getData();
+        }
     }
 }
