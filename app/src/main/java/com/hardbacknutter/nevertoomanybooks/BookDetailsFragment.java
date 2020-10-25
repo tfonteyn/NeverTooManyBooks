@@ -163,6 +163,23 @@ public class BookDetailsFragment
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions
         mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
+
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final Resources res = getResources();
+
+        if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
+            mCoverHandler[0] = new CoverHandler(
+                    this, mBookViewModel, 0,
+                    res.getDimensionPixelSize(R.dimen.cover_details_0_width),
+                    res.getDimensionPixelSize(R.dimen.cover_details_0_height));
+        }
+
+        if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
+            mCoverHandler[1] = new CoverHandler(
+                    this, mBookViewModel, 1,
+                    res.getDimensionPixelSize(R.dimen.cover_details_1_width),
+                    res.getDimensionPixelSize(R.dimen.cover_details_1_height));
+        }
     }
 
     @Override
@@ -188,16 +205,21 @@ public class BookDetailsFragment
             mVbToc.btnShowToc.setVisibility(View.GONE);
         }
 
-        // Covers
-        if (!mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
-            mVb.coverImage0.setVisibility(View.GONE);
-        }
-        if (!mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
-            mVb.coverImage1.setVisibility(View.GONE);
-        }
-
         if (!DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             mVb.lendTo.setVisibility(View.GONE);
+        }
+
+        // Covers
+        if (mCoverHandler[0] != null) {
+            mCoverHandler[0].onCreateView(mVb.coverImage0, mVbPub.isbn, mProgressBar);
+        } else {
+            mVb.coverImage0.setVisibility(View.GONE);
+        }
+
+        if (mCoverHandler[1] != null) {
+            mCoverHandler[1].onCreateView(mVb.coverImage1, mVbPub.isbn, mProgressBar);
+        } else {
+            mVb.coverImage1.setVisibility(View.GONE);
         }
 
         return mVb.getRoot();
@@ -504,27 +526,6 @@ public class BookDetailsFragment
         super.onPopulateViews(fields, book);
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        final Resources res = getResources();
-
-        if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
-            mCoverHandler[0] = new CoverHandler(
-                    this, mBookViewModel, 0, mVbPub.isbn,
-                    res.getDimensionPixelSize(R.dimen.cover_details_0_width),
-                    res.getDimensionPixelSize(R.dimen.cover_details_0_height),
-                    mVb.coverImage0,
-                    mProgressBar
-            );
-        }
-
-        if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
-            mCoverHandler[1] = new CoverHandler(
-                    this, mBookViewModel, 1, mVbPub.isbn,
-                    res.getDimensionPixelSize(R.dimen.cover_details_1_width),
-                    res.getDimensionPixelSize(R.dimen.cover_details_1_height),
-                    mVb.coverImage1,
-                    mProgressBar
-            );
-        }
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
             populateLendToField(mBookViewModel.getLoanee());
@@ -532,6 +533,13 @@ public class BookDetailsFragment
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
             populateToc(book);
+        }
+
+        if (mCoverHandler[0] != null) {
+            mCoverHandler[0].onPopulateView();
+        }
+        if (mCoverHandler[1] != null) {
+            mCoverHandler[1].onPopulateView();
         }
 
         // hide unwanted but keep empty fields

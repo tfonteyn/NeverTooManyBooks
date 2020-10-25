@@ -113,6 +113,24 @@ public class EditBookFieldsFragment
 
         //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
+
+        //noinspection ConstantConditions
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final Resources res = getResources();
+
+        if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
+            mCoverHandler[0] = new CoverHandler(
+                    this, mBookViewModel, 0,
+                    res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
+                    res.getDimensionPixelSize(R.dimen.cover_edit_0_height));
+        }
+
+        if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
+            mCoverHandler[1] = new CoverHandler(
+                    this, mBookViewModel, 1,
+                    res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
+                    res.getDimensionPixelSize(R.dimen.cover_edit_1_height));
+        }
     }
 
     @Override
@@ -121,6 +139,19 @@ public class EditBookFieldsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         mVb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
+
+        // Covers
+        if (mCoverHandler[0] != null) {
+            mCoverHandler[0].onCreateView(mVb.coverImage0, mVb.isbn, mProgressBar);
+        } else {
+            mVb.coverImage0.setVisibility(View.GONE);
+        }
+        if (mCoverHandler[1] != null) {
+            mCoverHandler[1].onCreateView(mVb.coverImage1, mVb.isbn, mProgressBar);
+        } else {
+            mVb.coverImage1.setVisibility(View.GONE);
+        }
+
         return mVb.getRoot();
     }
 
@@ -131,14 +162,6 @@ public class EditBookFieldsFragment
         super.onViewCreated(view, savedInstanceState);
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-
-        if (!mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
-            mVb.coverImage0.setVisibility(View.GONE);
-        }
-
-        if (!mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
-            mVb.coverImage1.setVisibility(View.GONE);
-        }
 
         mBookViewModel.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
             final Field<List<Author>, TextView> field = getField(R.id.author);
@@ -264,30 +287,13 @@ public class EditBookFieldsFragment
     void onPopulateViews(@NonNull final Fields fields,
                          @NonNull final Book book) {
         super.onPopulateViews(fields, book);
-        //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        final Resources res = getResources();
 
-        if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
-            mCoverHandler[0] = new CoverHandler(
-                    this, mBookViewModel, 0, mVb.isbn,
-                    res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
-                    res.getDimensionPixelSize(R.dimen.cover_edit_0_height),
-                    mVb.coverImage0,
-                    mProgressBar
-            );
+        if (mCoverHandler[0] != null) {
+            mCoverHandler[0].onPopulateView();
         }
-
-        if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
-            mCoverHandler[1] = new CoverHandler(
-                    this, mBookViewModel, 1, mVb.isbn,
-                    res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
-                    res.getDimensionPixelSize(R.dimen.cover_edit_1_height),
-                    mVb.coverImage1,
-                    mProgressBar
-            );
+        if (mCoverHandler[1] != null) {
+            mCoverHandler[1].onPopulateView();
         }
-
         // hide unwanted and empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
