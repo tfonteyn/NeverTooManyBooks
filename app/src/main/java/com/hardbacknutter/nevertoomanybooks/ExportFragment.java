@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,7 +26,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.CallSuper;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -61,9 +61,12 @@ public class ExportFragment
     public static final String TAG = "ExportFragment";
     /** FragmentResultListener request key. */
     private static final String RK_EXPORT_HELPER = ExportHelperDialogFragment.TAG + ":rk:";
-
     /** Export. */
     private ArchiveExportTask mArchiveExportTask;
+    /** The launcher for picking a Uri. */
+    private final ActivityResultLauncher<String> mCreateDocumentLauncher =
+            registerForActivityResult(new ActivityResultContracts.CreateDocument(),
+                                      this::onCreateDocument);
     private final FragmentResultListener mExportOptionsListener =
             new OptionsDialogBase.OnOptionsListener<ExportManager>() {
                 @Override
@@ -116,37 +119,6 @@ public class ExportFragment
         }
     }
 
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.EXPORT_PICK_URI: {
-                // The user selected a file to backup to. Next step starts the export task.
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, "data");
-                    final Uri uri = data.getData();
-                    if (uri != null) {
-                        mArchiveExportTask.startExport(uri);
-                    }
-                } else {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                }
-                break;
-            }
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-            }
-        }
-    }
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
@@ -210,12 +182,25 @@ public class ExportFragment
     private void exportPickUri(@NonNull final ExportManager helper) {
         // save the configured helper
         mArchiveExportTask.setHelper(helper);
+
         //noinspection ConstantConditions
-        final Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT)
-                .addCategory(Intent.CATEGORY_OPENABLE)
-                .setType("*/*")
-                .putExtra(Intent.EXTRA_TITLE, mArchiveExportTask.getDefaultUriName(getContext()));
-        startActivityForResult(intent, RequestCode.EXPORT_PICK_URI);
+        mCreateDocumentLauncher.launch(mArchiveExportTask.getDefaultUriName(getContext()));
+    }
+
+    /**
+     * Called when the user selected a uri to write to.
+     *
+     * @param uri file to write to
+     */
+    private void onCreateDocument(@Nullable final Uri uri) {
+        if (uri == null) {
+            // nothing selected, just quit
+            //noinspection ConstantConditions
+            getActivity().finish();
+
+        } else {
+            mArchiveExportTask.startExport(uri);
+        }
     }
 
     private void onExportFailure(@NonNull final FinishedMessage<Exception> message) {
