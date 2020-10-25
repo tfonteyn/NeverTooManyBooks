@@ -200,7 +200,7 @@ public final class ScannerManager {
     /**
      * Check if the device has Google Play Services.
      * <p>
-     * If anything fails or the user cancels, we set the default scanner to ZXING_COMPATIBLE.
+     * If anything fails or the user cancels, we set the default scanner to {@link #DEFAULT}.
      *
      * @param activity       Calling activity
      * @param resultConsumer will be called with the outcome
@@ -216,13 +216,12 @@ public final class ScannerManager {
             resultConsumer.accept(true);
 
         } else {
-            final Dialog dialog = gApi.getErrorDialog(activity, status,
-                                                      RequestCode.UPDATE_GOOGLE_PLAY_SERVICES,
-                                                      d -> {
-                                                          setPreferredScanner(activity,
-                                                                              ZXING_COMPATIBLE);
-                                                          resultConsumer.accept(false);
-                                                      });
+            final Dialog dialog =
+                    gApi.getErrorDialog(activity, status, RequestCode.UPDATE_GOOGLE_PLAY_SERVICES,
+                                        d -> {
+                                            setDefaultScanner(activity);
+                                            resultConsumer.accept(false);
+                                        });
             // Paranoia...
             if (dialog == null) {
                 resultConsumer.accept(true);
@@ -274,14 +273,10 @@ public final class ScannerManager {
     }
 
     public static void setDefaultScanner(@NonNull final Context context) {
-        setPreferredScanner(context, DEFAULT);
-    }
-
-    private static void setPreferredScanner(@NonNull final Context context,
-                                            final int scannerId) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
-                         .putString(Prefs.pk_scanner_preferred, String.valueOf(scannerId))
+                         .putString(Prefs.pk_scanner_preferred,
+                                    String.valueOf(ScannerManager.DEFAULT))
                          .apply();
     }
 
