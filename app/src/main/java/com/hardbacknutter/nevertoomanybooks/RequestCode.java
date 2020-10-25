@@ -66,26 +66,12 @@ public final class RequestCode {
     /** open the admin page to order and en/disable sites. */
     public static final int PREFERRED_SEARCH_SITES = 2_201;
 
-    /** Let the user pick a Uri to export to. */
-    public static final int EXPORT_PICK_URI = 2_501;
-    /** Let the user pick a Uri to import from. */
-    public static final int IMPORT_PICK_URI = 2_502;
-
-
-    /** use internal routines for cropping images. */
-    public static final int CROP_IMAGE = 3_002;
     /** start an intent for an external application to do the cropping. */
     public static final int EDIT_IMAGE = 3_003;
-    /** start an intent to get an image from the Camera. */
-    public static final int ACTION_IMAGE_CAPTURE = 3_004;
-    /** start an intent to get an image from the an app that provides content. */
-    public static final int ACTION_GET_CONTENT = 3_005;
 
     /** open the author "all works" screen. */
     public static final int AUTHOR_WORKS = 4_001;
 
-    /** system request to ask the user for permissions. */
-    public static final int ANDROID_PERMISSIONS = 9_000;
     /** system request to ask the user to install this stuff. */
     public static final int UPDATE_GOOGLE_PLAY_SERVICES = 9_001;
 
