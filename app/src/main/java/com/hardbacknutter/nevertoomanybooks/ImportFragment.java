@@ -20,14 +20,14 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.CallSuper;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -61,6 +60,20 @@ public class ImportFragment
     public static final String TAG = "ImportFragment";
     /** FragmentResultListener request key. */
     private static final String RK_IMPORT_HELPER = ImportHelperDialogFragment.TAG + ":rk:";
+    /**
+     * The mime types accepted for importing files.
+     * <p>
+     * These do not allow multiple saved files like "foo.zip (1)", "foo.zip (2)"
+     */
+    private static final String[] MIME_TYPES = {"application/zip",
+                                                "application/x-tar",
+                                                "text/csv",
+                                                "application/x-sqlite3"};
+    /** The launcher for picking a Uri. */
+    private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+                                      this::onOpenDocument);
+
     /** Import. */
     private ArchiveImportTask mArchiveImportTask;
     private final FragmentResultListener mImportOptionsListener =
@@ -113,40 +126,75 @@ public class ImportFragment
         mArchiveImportTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
         mArchiveImportTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
-        // if the task is NOT already running (e.g. after a screen rotation...) show the options
+        // If the task is NOT already running (e.g. after a screen rotation...)
+        // then start the import process.
         if (!mArchiveImportTask.isRunning()) {
-            importPickUri();
+            mOpenDocumentLauncher.launch(MIME_TYPES);
         }
     }
 
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
+    /**
+     * Called when the user selected a uri to read from.
+     * Shows the import options; which in turn allow to start the import process.
+     *
+     * @param uri file to read from
+     */
+    private void onOpenDocument(@Nullable final Uri uri) {
+        if (uri == null) {
+            // nothing selected, just quit
+            //noinspection ConstantConditions
+            getActivity().finish();
 
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.IMPORT_PICK_URI: {
-                // The user selected a file to import from. Next step asks for the options.
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, "data");
-                    final Uri uri = data.getData();
-                    if (uri != null) {
-                        importShowOptions(uri);
-                    }
-                } else {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                }
-                break;
+        } else {
+            final ImportManager helper = new ImportManager(uri);
+
+            //noinspection ConstantConditions
+            if (!helper.isSupported(getContext())) {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_error)
+                        .setMessage(R.string.error_import_file_not_supported)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                        .create()
+                        .show();
+                return;
             }
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
+
+            final ArchiveContainer container = helper.getContainer(getContext());
+            //noinspection EnumSwitchStatementWhichMissesCases
+            switch (container) {
+                case CsvBooks:
+                    helper.setOptions(Options.BOOKS | Options.IS_SYNC);
+
+                    //URGENT: make a backup before ANY csv import!
+                    //noinspection ConstantConditions
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setIcon(R.drawable.ic_warning)
+                            .setTitle(R.string.lbl_import_book_data)
+                            .setMessage(R.string.warning_import_be_cautious)
+                            .setNegativeButton(android.R.string.cancel,
+                                               (d, w) -> getActivity().finish())
+                            .setPositiveButton(android.R.string.ok, (d, w) ->
+                                    ImportHelperDialogFragment
+                                            .newInstance(RK_IMPORT_HELPER, helper)
+                                            .show(getChildFragmentManager(),
+                                                  ImportHelperDialogFragment.TAG))
+                            .create()
+                            .show();
+
+                    break;
+
+                case Zip:
+                case Tar:
+                case SqLiteDb:
+                    helper.setOptions(Options.ENTITIES | Options.IS_SYNC);
+                    ImportHelperDialogFragment
+                            .newInstance(RK_IMPORT_HELPER, helper)
+                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
+                    break;
+
+                default:
+                    throw new IllegalArgumentException(String.valueOf(container));
             }
         }
     }
@@ -156,13 +204,6 @@ public class ImportFragment
             mProgressDialog = getOrCreateProgressDialog();
         }
         mProgressDialog.onProgress(message);
-    }
-
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
     }
 
     @NonNull
@@ -185,73 +226,10 @@ public class ImportFragment
         return dialog;
     }
 
-    /**
-     * Import Step 1: prompt the user for a uri to export to.
-     */
-    private void importPickUri() {
-        // Import
-        // This does not allow multiple saved files like "foo.tar (1)", "foo.tar (2)"
-        // String[] mimeTypes = {"application/x-tar", "text/csv"};
-        final Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT)
-                .addCategory(Intent.CATEGORY_OPENABLE)
-                // .putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
-                .setType("*/*");
-        startActivityForResult(intent, RequestCode.IMPORT_PICK_URI);
-    }
-
-    /**
-     * Import Step 2: show the options to the user.
-     *
-     * @param uri file to read from
-     */
-    private void importShowOptions(@NonNull final Uri uri) {
-        final ImportManager helper = new ImportManager(uri);
-
-        //noinspection ConstantConditions
-        if (!helper.isSupported(getContext())) {
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_error)
-                    .setMessage(R.string.error_import_file_not_supported)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                    .create()
-                    .show();
-            return;
-        }
-
-        final ArchiveContainer container = helper.getContainer(getContext());
-        //noinspection EnumSwitchStatementWhichMissesCases
-        switch (container) {
-            case CsvBooks:
-                helper.setOptions(Options.BOOKS | Options.IS_SYNC);
-
-                //URGENT: make a backup before ANY csv import!
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.lbl_import_book_data)
-                        .setMessage(R.string.warning_import_be_cautious)
-                        .setNegativeButton(android.R.string.cancel,
-                                           (d, w) -> getActivity().finish())
-                        .setPositiveButton(android.R.string.ok, (d, w) -> ImportHelperDialogFragment
-                                .newInstance(RK_IMPORT_HELPER, helper)
-                                .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG))
-                        .create()
-                        .show();
-
-                break;
-
-            case Zip:
-            case Tar:
-            case SqLiteDb:
-                helper.setOptions(Options.ENTITIES | Options.IS_SYNC);
-                ImportHelperDialogFragment
-                        .newInstance(RK_IMPORT_HELPER, helper)
-                        .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
-                break;
-
-            default:
-                throw new IllegalArgumentException(String.valueOf(container));
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
     }
 
