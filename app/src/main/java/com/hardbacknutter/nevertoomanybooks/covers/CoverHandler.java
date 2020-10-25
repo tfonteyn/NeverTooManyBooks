@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.covers;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -47,6 +48,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -75,7 +77,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.ZoomedImageDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
@@ -125,10 +126,7 @@ public class CoverHandler {
     private final TransFormTaskViewModel mTransFormTaskViewModel;
     @NonNull
     private final BookViewModel mBookViewModel;
-    @NonNull
-    private final CameraHelper mCameraLauncher;
-    @NonNull
-    private final ActivityResultLauncher<String> mGetFromFileLauncher;
+
 
     /**
      * Crop the image using our internal code in {@link CropImageActivity}.
@@ -138,6 +136,12 @@ public class CoverHandler {
      */
     @NonNull
     private final ActivityResultLauncher<File> mCropperLauncher;
+    @NonNull
+    private final ActivityResultLauncher<String> mGetFromFileLauncher;
+    @NonNull
+    private final ActivityResultLauncher<String> mCameraPermissionLauncher;
+    @NonNull
+    private final ActivityResultLauncher<Uri> mTakePictureLauncher;
 
     /** The view for this handler. */
     private ImageView mCoverView;
@@ -177,10 +181,18 @@ public class CoverHandler {
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
 
-        mCameraLauncher = new CameraHelper(mFragment);
+        mCameraPermissionLauncher = mFragment.registerForActivityResult(
+                new ActivityResultContracts.RequestPermission(), (isGranted) -> {
+                    if (isGranted) {
+                        startCamera(true);
+                    }
+                });
 
         mGetFromFileLauncher = mFragment.registerForActivityResult(
                 new ActivityResultContracts.GetContent(), this::onGetContent);
+
+        mTakePictureLauncher = mFragment.registerForActivityResult(
+                new ActivityResultContracts.TakePicture(), this::onCameraResult);
 
         mCropperLauncher = mFragment.registerForActivityResult(
                 new CropImageActivity.ResultContract(getTempFile()), this::onGetContent);
@@ -194,6 +206,7 @@ public class CoverHandler {
         mTransFormTaskViewModel = new ViewModelProvider(fragment)
                 .get(String.valueOf(cIdx), TransFormTaskViewModel.class);
     }
+
 
     /**
      * Should be called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
@@ -375,14 +388,10 @@ public class CoverHandler {
             return true;
 
         } else if (itemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
-            final File dstFile = getTempFile();
-            FileUtils.delete(dstFile);
-            mCameraLauncher.startCamera(dstFile, RequestCode.ACTION_IMAGE_CAPTURE);
+            startCamera(false);
             return true;
 
         } else if (itemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
-            final File dstFile = getTempFile();
-            FileUtils.delete(dstFile);
             mGetFromFileLauncher.launch(IMAGE_MIME_TYPE);
             return true;
 
@@ -510,6 +519,62 @@ public class CoverHandler {
         }
     }
 
+
+    /**
+     * Start the camera to get an image.
+     *
+     * @param alreadyGranted set to {@code true} if we already got granted access.
+     *                       i.e. when called from the {@link #mTakePictureLauncher}
+     */
+    private void startCamera(final boolean alreadyGranted) {
+        //noinspection ConstantConditions
+        if (alreadyGranted ||
+            ContextCompat.checkSelfPermission(mFragment.getContext(), Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED) {
+
+            final File dstFile = getTempFile();
+            FileUtils.delete(dstFile);
+            //noinspection ConstantConditions
+            final Uri uri = GenericFileProvider.createUri(mFragment.getContext(), dstFile);
+            mTakePictureLauncher.launch(uri);
+
+        } else {
+            mCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void onCameraResult(final boolean result) {
+        if (result) {
+            final File file = getTempFile();
+            if (file.exists()) {
+                //noinspection ConstantConditions
+                final SharedPreferences prefs = PreferenceManager
+                        .getDefaultSharedPreferences(mFragment.getContext());
+
+                // Should we apply an explicit rotation angle?
+                // (which would overrule the setWindowManager call)
+                final int angle = Prefs
+                        .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
+
+                // What action (if any) should we take after we're done?
+                @NextAction
+                final int action = Prefs
+                        .getIntListPref(prefs, Prefs.pk_camera_image_action, ACTION_DONE);
+
+                showProgress(true);
+                //noinspection ConstantConditions
+                mTransFormTaskViewModel.startTask(
+                        new TransFormTaskViewModel.Transformation(file)
+                                .setScale(true)
+                                // we'll try to guess a rotation angle
+                                .setWindowManager(mFragment.getActivity().getWindowManager())
+                                // or apply an explicit angle
+                                .setRotate(angle)
+                                .setReturnCode(action));
+            }
+        }
+    }
+
     /**
      * Handles results from Camera, Picture Gallery and editing (incl. internal cropper).
      *
@@ -518,43 +583,8 @@ public class CoverHandler {
     public boolean onActivityResult(final int requestCode,
                                     final int resultCode,
                                     @Nullable final Intent data) {
-        final Context context = mFragment.requireContext();
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case RequestCode.ACTION_IMAGE_CAPTURE: {
-                Objects.requireNonNull(mCameraLauncher, "mCameraHelper");
-                if (resultCode == Activity.RESULT_OK) {
-                    final File file = getTempFile();
-                    if (file.exists()) {
-                        final SharedPreferences prefs = PreferenceManager
-                                .getDefaultSharedPreferences(context);
-                        // Should we apply an explicit rotation angle?
-                        // (which would overrule the setWindowManager call)
-                        final int angle = Prefs
-                                .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
-
-                        // What action (if any) should we take after we're done?
-                        @NextAction
-                        final int action = Prefs
-                                .getIntListPref(prefs, Prefs.pk_camera_image_action, ACTION_DONE);
-
-                        showProgress(true);
-                        //noinspection ConstantConditions
-                        mTransFormTaskViewModel.startTask(
-                                new TransFormTaskViewModel.Transformation(file)
-                                        .setScale(true)
-                                        // we'll try to guess a rotation angle
-                                        .setWindowManager(
-                                                mFragment.getActivity().getWindowManager())
-                                        // or apply an explicit angle
-                                        .setRotate(angle)
-                                        .setReturnCode(action));
-                        return true;
-                    }
-                }
-
-                removeTempFile();
-                return true;
-            }
             case RequestCode.EDIT_IMAGE: {
                 if (resultCode == Activity.RESULT_OK) {
                     final File file = getTempFile();
