@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -342,7 +341,6 @@ public abstract class BookBaseFragment
                 AmazonSearchEngine.startSearchActivity(context, author, series);
             }
             return true;
-
         }
 
         //noinspection ConstantConditions
@@ -359,29 +357,12 @@ public abstract class BookBaseFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, "data");
 
-                    final long newId = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
-                    if (newId > 0) {
-                        // replace current book with the updated one,
-                        // ENHANCE: merge if in edit mode.
-                        mBookViewModel.loadBook(newId);
-                    }
-                }
-                break;
-
-            default:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "onActivityResult|NOT HANDLED"
-                               + "|requestCode=" + requestCode
-                               + "|resultCode=" + resultCode, new Throwable());
-                }
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Log.d(TAG, "onActivityResult|NOT HANDLED"
+                       + "|requestCode=" + requestCode
+                       + "|resultCode=" + resultCode, new Throwable());
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
