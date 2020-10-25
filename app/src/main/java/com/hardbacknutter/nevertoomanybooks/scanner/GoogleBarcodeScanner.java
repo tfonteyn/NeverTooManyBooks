@@ -19,16 +19,25 @@
  */
 package com.hardbacknutter.nevertoomanybooks.scanner;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.util.SparseArray;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresPermission;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -42,10 +51,9 @@ import java.io.File;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.CameraHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 
 /**
  * Using the Google Play Services to scan a barcode.
@@ -113,7 +121,7 @@ public class GoogleBarcodeScanner
         //noinspection ConstantConditions
         final File dstFile = getTempFile(fragment.getContext());
         FileUtils.delete(dstFile);
-        mCameraHelper.startCamera(dstFile, RequestCode.ACTION_IMAGE_CAPTURE);
+        mCameraHelper.startCamera(dstFile, requestCode);
 
         return true;
     }
@@ -135,7 +143,7 @@ public class GoogleBarcodeScanner
             final Bitmap bm = BitmapFactory.decodeFile(file.getAbsolutePath());
             if (bm != null) {
                 final String barcode = decode(bm);
-                removeTempFile(context);
+                FileUtils.delete(getTempFile(context));
                 return barcode;
             }
         }
@@ -152,23 +160,6 @@ public class GoogleBarcodeScanner
     @NonNull
     private File getTempFile(@NonNull final Context context) {
         return AppDir.Cache.getFile(context, TEMP_COVER_FILENAME);
-    }
-
-    /**
-     * remove any orphaned file.
-     */
-    private void removeTempFile(@NonNull final Context context) {
-        FileUtils.delete(getTempFile(context));
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "GoogleBarcodeScanner{"
-               + "mDetector=" + (mDetector != null)
-               + ", isOperational=" + (mDetector != null ? mDetector.isOperational() : "false")
-               + ", mCameraHelper=" + mCameraHelper
-               + '}';
     }
 
     public static class GoogleBarcodeScannerFactory
@@ -217,6 +208,79 @@ public class GoogleBarcodeScanner
                 // trigger the download if needed.
                 factory.getScanner(context);
             }
+        }
+    }
+
+    private static class CameraHelper {
+
+        @SuppressWarnings("FieldNotUsedInToString")
+        @NonNull
+        private final Fragment mFragment;
+
+        @SuppressWarnings("FieldNotUsedInToString")
+        @NonNull
+        private final ActivityResultLauncher<String> mRequestPermissionLauncher;
+
+        /** Set/returned with the activity result. */
+        private int mRequestCode;
+
+        /** The file the camera will write to. */
+        private File mFile;
+
+        /**
+         * Constructor.
+         *
+         * @param fragment hosting fragment
+         */
+        @SuppressLint("MissingPermission")
+        CameraHelper(@NonNull final Fragment fragment) {
+            mFragment = fragment;
+            mRequestPermissionLauncher = mFragment.registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(), (isGranted) -> {
+                        if (isGranted) {
+                            startCameraInternal();
+                        }
+                    });
+        }
+
+
+        /**
+         * Start the camera to get an image.
+         *
+         * @param file        for the camera to write to
+         * @param requestCode set/returned with the activity result
+         */
+        void startCamera(@NonNull final File file,
+                         final int requestCode) {
+            mRequestCode = requestCode;
+            mFile = file;
+
+            //noinspection ConstantConditions
+            if (ContextCompat
+                        .checkSelfPermission(mFragment.getContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED) {
+                startCameraInternal();
+            } else {
+                mRequestPermissionLauncher.launch(Manifest.permission.CAMERA);
+            }
+        }
+
+        @RequiresPermission(Manifest.permission.CAMERA)
+        private void startCameraInternal() {
+            //noinspection ConstantConditions
+            final Uri uri = GenericFileProvider.createUri(mFragment.getContext(), mFile);
+            final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    .putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            mFragment.startActivityForResult(intent, mRequestCode);
+        }
+
+        @Override
+        @NonNull
+        public String toString() {
+            return "CameraHelper{"
+                   + ", mFile=" + mFile
+                   + ", mRequestCode=" + mRequestCode
+                   + '}';
         }
     }
 }
