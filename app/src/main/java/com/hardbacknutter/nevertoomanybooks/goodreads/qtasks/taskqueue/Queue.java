@@ -55,7 +55,10 @@ class Queue
     private boolean mTerminate;
 
     /**
-     * Constructor. Nothing to see here, move along. Just save the properties and start the thread.
+     * Constructor.
+     *
+     * @param queueManager to connect to
+     * @param queueName    to use
      */
     Queue(@NonNull final QueueManager queueManager,
           @NonNull final String queueName) {
@@ -69,8 +72,6 @@ class Queue
         // that this is done in the constructor AND that new queues are created inside
         // code synchronized on the manager.
         mQueueManager.onQueueStarting(this);
-
-        start();
     }
 
     /**

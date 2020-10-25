@@ -208,8 +208,7 @@ class QueueDAO
     void initAllQueues(@NonNull final QueueManager queueManager) {
         try (Cursor cursor = getDb().rawQuery(SQL_FETCH_ALL_QUEUES, null)) {
             while (cursor.moveToNext()) {
-                // Create the Queue. It will register itself with its QueueManager.
-                new Queue(queueManager, cursor.getString(0));
+                new Queue(queueManager, cursor.getString(0)).start();
             }
         }
     }

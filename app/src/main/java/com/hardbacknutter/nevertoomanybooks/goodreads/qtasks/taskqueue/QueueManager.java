@@ -261,10 +261,8 @@ public final class QueueManager {
                     // a synchronized block on the object itself
                     queue.notify();
                 }
-
             } else {
-                // Create the queue; it will start and add itself to the manager
-                new Queue(this, queueName);
+                new Queue(this, queueName).start();
             }
         }
         notifyTaskChange();
