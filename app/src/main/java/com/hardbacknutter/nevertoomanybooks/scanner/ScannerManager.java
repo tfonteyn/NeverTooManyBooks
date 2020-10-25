@@ -28,7 +28,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.SparseArray;
 
 import androidx.annotation.NonNull;
@@ -78,7 +77,6 @@ public final class ScannerManager {
      * See {@link #collectDebugInfo}.
      */
     private static final String[] ALL_ACTIONS = new String[]{
-            MediaStore.ACTION_IMAGE_CAPTURE,
             com.google.zxing.client.android.Intents.Scan.ACTION,
             Pic2ShopScanner.Free.ACTION,
             Pic2ShopScanner.Pro.ACTION,
