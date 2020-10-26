@@ -161,6 +161,7 @@ public class BookDetailsFragment
                 .setFragmentResultListener(RK_EDIT_LENDER, this, mChangeListener);
 
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
+        //noinspection ConstantConditions
         mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -192,6 +193,7 @@ public class BookDetailsFragment
         mVbToc = FragmentBookDetailsMergeTocSectionBinding.bind(mVb.tocSection);
         mVbNotes = FragmentBookDetailsMergeNotesSectionBinding.bind(mVb.notesSection);
 
+        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // Anthology/TOC fields
@@ -236,6 +238,7 @@ public class BookDetailsFragment
         mGrSendOneBookTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
 
         // The FAB lives in the activity.
+        //noinspection ConstantConditions
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(v -> startEditBook());
 
@@ -260,24 +263,28 @@ public class BookDetailsFragment
         });
 
         if (savedInstanceState == null) {
+            //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_view_only_help, null);
         }
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (message.text != null) {
+            //noinspection ConstantConditions
             Snackbar.make(getView(), message.text, Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
+            //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
+            //noinspection ConstantConditions
             Snackbar.make(getView(), GrStatus.getMessage(getContext(), message.result),
                           Snackbar.LENGTH_LONG).show();
         }
@@ -287,8 +294,10 @@ public class BookDetailsFragment
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
+                //noinspection ConstantConditions
                 mGrAuthTask.prompt(getContext());
             } else {
+                //noinspection ConstantConditions
                 Snackbar.make(getView(), message.result.getMessage(getContext()),
                               Snackbar.LENGTH_LONG).show();
             }
@@ -300,6 +309,7 @@ public class BookDetailsFragment
 
         final Context context = getContext();
 
+        //noinspection ConstantConditions
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
@@ -413,12 +423,14 @@ public class BookDetailsFragment
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
 
+        //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);
     }
 
     @Override
     @CallSuper
     public void onPause() {
+        //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).unregisterOnTouchListener(mOnTouchListener);
 
         super.onPause();
@@ -484,6 +496,7 @@ public class BookDetailsFragment
                                    @NonNull final Book book) {
         super.onPopulateViews(fields, book);
 
+        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
@@ -502,6 +515,7 @@ public class BookDetailsFragment
         }
 
         // hide unwanted but keep empty fields
+        //noinspection ConstantConditions
         fields.setVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
@@ -582,6 +596,7 @@ public class BookDetailsFragment
                 final RowTocEntryWithAuthorBinding rowVb = RowTocEntryWithAuthorBinding
                         .inflate(getLayoutInflater(), mVbToc.toc, false);
 
+                //noinspection ConstantConditions
                 rowVb.title.setText(tocEntry.getLabel(context));
                 rowVb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
 
@@ -644,6 +659,7 @@ public class BookDetailsFragment
                                     @NonNull final MenuInflater inflater) {
         // add the search action view
         inflater.inflate(R.menu.sav_search, menu);
+        //noinspection ConstantConditions
         MenuHelper.setupSearchActionView(getActivity(), menu);
 
         inflater.inflate(R.menu.book, menu);
@@ -654,6 +670,7 @@ public class BookDetailsFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final Book book = mBookViewModel.getBook();
 
+        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         final boolean isSaved = !book.isNew();
@@ -692,9 +709,11 @@ public class BookDetailsFragment
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
             final String title = book.getString(DBDefinitions.KEY_TITLE);
             final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            //noinspection ConstantConditions
             StandardDialogs.deleteBook(getContext(), title, authors, () -> {
                 mBookViewModel.deleteBook(getContext());
 
+                //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
                 getActivity().finish();
             });
@@ -712,6 +731,7 @@ public class BookDetailsFragment
             final Field<Boolean, View> field = getField(R.id.icon_read);
             field.getAccessor().setValue(value);
             // Still call this, as it will handle related views (none for now, but future-proof)
+            //noinspection ConstantConditions
             field.setVisibility(getView(), true, false);
             return true;
 
@@ -727,6 +747,7 @@ public class BookDetailsFragment
             return true;
 
         } else if (itemId == R.id.MENU_SHARE) {
+            //noinspection ConstantConditions
             startActivity(book.getShareIntent(getContext()));
             return true;
 
@@ -779,6 +800,7 @@ public class BookDetailsFragment
 
             // make sure we're not getting a false-positive due to the user
             // swiping to open the navigation drawer.
+            //noinspection ConstantConditions
             if (((BaseActivity) getActivity()).isNavigationDrawerVisible()) {
                 return false;
             }
