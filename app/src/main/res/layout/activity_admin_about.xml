@@ -75,7 +75,7 @@
             app:layout_constraintEnd_toEndOf="@id/app_name"
             app:layout_constraintTop_toBottomOf="@id/app_name"
             tools:ignore="SelectableText"
-            tools:text="1.2.1"
+            tools:text="a.b.c"
             />
 
         <androidx.constraintlayout.widget.Barrier
