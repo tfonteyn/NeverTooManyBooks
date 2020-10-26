@@ -109,8 +109,10 @@ public class EditBookFieldsFragment
         getChildFragmentManager()
                 .setFragmentResultListener(RK_EDIT_BOOKSHELVES, this, mOnCheckListListener);
 
+        //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
 
+        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
 
@@ -156,6 +158,7 @@ public class EditBookFieldsFragment
                               @Nullable final Bundle savedInstanceState) {
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
+        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         mBookViewModel.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
@@ -215,6 +218,7 @@ public class EditBookFieldsFragment
 
     @Override
     public void onResume() {
+        //noinspection ConstantConditions
         mBookViewModel.pruneAuthors(getContext());
         mBookViewModel.pruneSeries(getContext());
 
@@ -234,6 +238,7 @@ public class EditBookFieldsFragment
 
         final Context context = getContext();
 
+        //noinspection ConstantConditions
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         fields.add(R.id.author, new TextViewAccessor<>(
@@ -288,6 +293,7 @@ public class EditBookFieldsFragment
             mCoverHandler[1].onPopulateView();
         }
         // hide unwanted and empty fields
+        //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
     }
 
@@ -361,6 +367,7 @@ public class EditBookFieldsFragment
                 Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
+                    //noinspection ConstantConditions
                     final String barCode =
                             mScannerModel.getScanner().getBarcode(getContext(), data);
                     if (barCode != null) {
