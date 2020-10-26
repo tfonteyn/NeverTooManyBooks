@@ -37,27 +37,27 @@
         <ImageView
             android:id="@+id/coverImage0"
             style="@style/CoverImage"
+            android:layout_width="@dimen/cover_edit_0_width"
+            android:layout_height="@dimen/cover_edit_0_height"
             android:contentDescription="@string/lbl_cover_front"
             android:focusable="true"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/coverImage1"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_height="@dimen/cover_edit_0_height"
-            tools:layout_width="@dimen/cover_edit_0_width"
             tools:src="@sample/covers"
             />
 
         <ImageView
             android:id="@+id/coverImage1"
             style="@style/CoverImage"
+            android:layout_width="@dimen/cover_edit_1_width"
+            android:layout_height="@dimen/cover_edit_1_height"
             android:contentDescription="@string/lbl_cover_front"
             android:focusable="true"
-            app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintEnd_toStartOf="@id/barrier_covers_end"
+            app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@drawable/outline_rounded"
-            tools:layout_height="@dimen/cover_edit_1_height"
-            tools:layout_width="@dimen/cover_edit_1_width"
             tools:src="@drawable/ic_image"
             />
 

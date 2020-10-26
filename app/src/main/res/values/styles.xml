@@ -344,7 +344,7 @@
     <!-- Cover image  -->
     <!-- *************************************************************************************** -->
 
-    <!-- Cover image. All settings are defaults only and will be adjusted in code. -->
+    <!-- Cover image. -->
     <style name="CoverImage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
