@@ -254,6 +254,7 @@ public class CoverHandler {
     }
 
     public void onPopulateView() {
+        //noinspection ConstantConditions
         final File file = mBookViewModel.getCoverFile(mFragment.getContext(), mCIdx);
         if (file != null) {
             new ImageLoader(mCoverView, mMaxWidth, mMaxHeight, file, null)
@@ -531,12 +532,14 @@ public class CoverHandler {
      *                       i.e. when called from the {@link #mTakePictureLauncher}
      */
     private void takePicture(final boolean alreadyGranted) {
+        //noinspection ConstantConditions
         if (alreadyGranted ||
             ContextCompat.checkSelfPermission(mFragment.getContext(), Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
 
             final File dstFile = getTempFile();
             FileUtils.delete(dstFile);
+            //noinspection ConstantConditions
             final Uri uri = GenericFileProvider.createUri(mFragment.getContext(), dstFile);
             mTakePictureLauncher.launch(uri);
 
@@ -549,6 +552,7 @@ public class CoverHandler {
         if (result) {
             final File file = getTempFile();
             if (file.exists()) {
+                //noinspection ConstantConditions
                 final SharedPreferences prefs = PreferenceManager
                         .getDefaultSharedPreferences(mFragment.getContext());
 
@@ -563,6 +567,7 @@ public class CoverHandler {
                         .getIntListPref(prefs, Prefs.pk_camera_image_action, ACTION_DONE);
 
                 showProgress(true);
+                //noinspection ConstantConditions
                 mTransFormTaskViewModel.startTask(
                         new TransFormTaskViewModel.Transformation(file)
                                 .setScale(true)
@@ -584,6 +589,7 @@ public class CoverHandler {
     private void startRotation(final int angle) {
         final File srcFile;
         try {
+            //noinspection ConstantConditions
             srcFile = mBookViewModel.createTempCoverFile(mFragment.getContext(), mCIdx);
         } catch (@NonNull final IOException e) {
             Snackbar.make(mCoverView, R.string.error_storage_not_writable,
@@ -672,6 +678,7 @@ public class CoverHandler {
      */
     @NonNull
     private File getTempFile() {
+        //noinspection ConstantConditions
         return AppDir.Cache.getFile(mFragment.getContext(), TEMP_COVER_FILENAME);
     }
 
