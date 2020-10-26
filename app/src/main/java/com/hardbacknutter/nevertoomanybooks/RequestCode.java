@@ -66,9 +66,6 @@ public final class RequestCode {
     /** open the admin page to order and en/disable sites. */
     public static final int PREFERRED_SEARCH_SITES = 2_201;
 
-    /** start an intent for an external application to do the cropping. */
-    public static final int EDIT_IMAGE = 3_003;
-
     /** open the author "all works" screen. */
     public static final int AUTHOR_WORKS = 4_001;
 
