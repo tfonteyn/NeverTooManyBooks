@@ -134,7 +134,6 @@ final class BooklistBuilder {
      * These are typically a reduced set of the group domains since the group domains
      * may contain more than just the key
      */
-    @SuppressWarnings("TypeMayBeWeakened")
     private final List<VirtualDomain> mOrderByDomains = new ArrayList<>();
 
     /** Guards from adding duplicates. */
