@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -46,7 +45,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -72,9 +70,6 @@ public abstract class BookBaseFragment
 
     /** FragmentResultListener request key. */
     public static final String RK_COVER_BROWSER = CoverBrowserDialogFragment.TAG + ":rk:";
-
-    /** Log tag. */
-    private static final String TAG = "BookBaseFragment";
 
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
@@ -140,7 +135,6 @@ public abstract class BookBaseFragment
         getChildFragmentManager()
                 .setFragmentResultListener(RK_COVER_BROWSER, this, mOnCoverBrowserListener);
 
-        //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
     }
 
@@ -155,7 +149,6 @@ public abstract class BookBaseFragment
             onInitFields(fields);
         }
 
-        //noinspection ConstantConditions
         mProgressBar = getActivity().findViewById(R.id.progressBar);
 
         mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
@@ -167,21 +160,18 @@ public abstract class BookBaseFragment
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (message.text != null) {
-            //noinspection ConstantConditions
             Snackbar.make(getView(), message.text, Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
-            //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
-            //noinspection ConstantConditions
             Snackbar.make(getView(), GrStatus.getMessage(getContext(), message.result),
                           Snackbar.LENGTH_LONG).show();
         }
@@ -191,10 +181,8 @@ public abstract class BookBaseFragment
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-                //noinspection ConstantConditions
                 mGrAuthTask.prompt(getContext());
             } else {
-                //noinspection ConstantConditions
                 Snackbar.make(getView(), message.result.getMessage(getContext()),
                               Snackbar.LENGTH_LONG).show();
             }
@@ -222,7 +210,6 @@ public abstract class BookBaseFragment
         final Fields fields = getFields();
 
         final Book book = mBookViewModel.getBook();
-        //noinspection ConstantConditions
         fields.setParentView(getView());
 
         fields.setAfterChangeListener(null);
@@ -236,11 +223,9 @@ public abstract class BookBaseFragment
         ViewFocusOrder.fix(getView());
 
         // Set the activity title
-        //noinspection ConstantConditions
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (book.isNew()) {
             // EDIT NEW book
-            //noinspection ConstantConditions
             actionBar.setTitle(R.string.lbl_add_book);
             actionBar.setSubtitle(null);
         } else {
@@ -249,9 +234,7 @@ public abstract class BookBaseFragment
             if (BuildConfig.DEBUG /* always */) {
                 title = "[" + book.getId() + "] " + title;
             }
-            //noinspection ConstantConditions
             actionBar.setTitle(title);
-            //noinspection ConstantConditions
             actionBar.setSubtitle(Author.getCondensedNames(
                     getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
         }
@@ -320,7 +303,6 @@ public abstract class BookBaseFragment
         } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
             final Author author = book.getPrimaryAuthor();
             if (author != null) {
-                //noinspection ConstantConditions
                 AmazonSearchEngine.startSearchActivity(context, author, null);
             }
             return true;
@@ -328,7 +310,6 @@ public abstract class BookBaseFragment
         } else if (itemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
             final Series series = book.getPrimarySeries();
             if (series != null) {
-                //noinspection ConstantConditions
                 AmazonSearchEngine.startSearchActivity(context, null, series);
             }
             return true;
@@ -337,32 +318,14 @@ public abstract class BookBaseFragment
             final Author author = book.getPrimaryAuthor();
             final Series series = book.getPrimarySeries();
             if (author != null && series != null) {
-                //noinspection ConstantConditions
                 AmazonSearchEngine.startSearchActivity(context, author, series);
             }
             return true;
         }
 
-        //noinspection ConstantConditions
         if (MenuHelper.handleViewBookOnWebsiteMenu(context, item.getItemId(), book)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Log.d(TAG, "onActivityResult|NOT HANDLED"
-                       + "|requestCode=" + requestCode
-                       + "|resultCode=" + resultCode, new Throwable());
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 }
