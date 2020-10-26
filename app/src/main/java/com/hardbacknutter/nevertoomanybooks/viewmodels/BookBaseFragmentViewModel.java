@@ -35,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -69,10 +68,6 @@ public abstract class BookBaseFragmentViewModel
     /** <strong>Optionally</strong> passed in via the arguments. */
     @Nullable
     private BooklistStyle mStyle;
-
-    /** Track on which cover view the context menu was used. */
-    @IntRange(from = -1)
-    private int mCurrentCoverHandlerIndex = -1;
 
     @Override
     @CallSuper
@@ -157,35 +152,5 @@ public abstract class BookBaseFragmentViewModel
         // not cached.
         // This allows the user to edit the global list of shelves while editing a book.
         return mDb.getBookshelves();
-    }
-
-    /**
-     * Retrieve the previously set cover handler index.
-     * This is destructive: the value will be reset to -1 immediately.
-     *
-     * @return the index; will be {@code -1} if none was set.
-     */
-    @IntRange(from = -1, to = 1)
-    public int getAndClearCurrentCoverHandlerIndex() {
-        final int current = mCurrentCoverHandlerIndex;
-        mCurrentCoverHandlerIndex = -1;
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (current == -1) {
-                throw new IllegalStateException("getAndClearCurrentCoverHandlerIndex"
-                                                + " would return -1");
-            }
-        }
-        return current;
-    }
-
-    /**
-     * Set the current cover handler index.
-     * Call this before starting the camera and similar actions.
-     *
-     * @param cIdx 0..n image index
-     */
-    public void setCurrentCoverHandlerIndex(@IntRange(from = 0, to = 1) final int cIdx) {
-        mCurrentCoverHandlerIndex = cIdx;
     }
 }

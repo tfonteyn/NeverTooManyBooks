@@ -41,6 +41,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.IdRes;
@@ -67,7 +68,6 @@ import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -85,11 +85,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 /**
  * Handler for a displayed Cover ImageView element.
  * Offers context menus and all operations applicable on a Cover image.
- * <p>
- * The fragment using this must implement {@link HostingFragment} if it hosts more than 1
- * instance of this class. See {@link #onContextItemSelected}.
- * It informs the fragment of the cover image index to use in its
- * {@link Fragment#onActivityResult(int, int, Intent)}
  */
 public class CoverHandler {
 
@@ -127,21 +122,16 @@ public class CoverHandler {
     @NonNull
     private final BookViewModel mBookViewModel;
 
-
-    /**
-     * Crop the image using our internal code in {@link CropImageActivity}.
-     * The input file will not be modified.
-     * <p>
-     * Alternatively the user can use an external editor.
-     */
-    @NonNull
-    private final ActivityResultLauncher<File> mCropperLauncher;
-    @NonNull
-    private final ActivityResultLauncher<String> mGetFromFileLauncher;
     @NonNull
     private final ActivityResultLauncher<String> mCameraPermissionLauncher;
     @NonNull
     private final ActivityResultLauncher<Uri> mTakePictureLauncher;
+    @NonNull
+    private final ActivityResultLauncher<File> mCropPictureLauncher;
+    @NonNull
+    private final ActivityResultLauncher<String> mGetFromFileLauncher;
+    @NonNull
+    private final ActivityResultLauncher<Intent> mEditPictureLauncher;
 
     /** The view for this handler. */
     private ImageView mCoverView;
@@ -161,7 +151,7 @@ public class CoverHandler {
      * <p>
      * Should be called from {@link Fragment#onCreate(Bundle)}.
      *
-     * @param fragment      the hosting fragment, should implement {@link HostingFragment}
+     * @param fragment      the hosting fragment
      * @param bookViewModel access to the book
      * @param cIdx          0..n image index
      * @param maxWidth      the maximum width for the cover
@@ -184,18 +174,20 @@ public class CoverHandler {
         mCameraPermissionLauncher = mFragment.registerForActivityResult(
                 new ActivityResultContracts.RequestPermission(), (isGranted) -> {
                     if (isGranted) {
-                        startCamera(true);
+                        takePicture(true);
                     }
                 });
+        mTakePictureLauncher = mFragment.registerForActivityResult(
+                new ActivityResultContracts.TakePicture(), this::onTakePictureResult);
 
         mGetFromFileLauncher = mFragment.registerForActivityResult(
-                new ActivityResultContracts.GetContent(), this::onGetContent);
+                new ActivityResultContracts.GetContent(), this::onGetContentResult);
 
-        mTakePictureLauncher = mFragment.registerForActivityResult(
-                new ActivityResultContracts.TakePicture(), this::onCameraResult);
+        mEditPictureLauncher = mFragment.registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(), this::onEditPictureResult);
 
-        mCropperLauncher = mFragment.registerForActivityResult(
-                new CropImageActivity.ResultContract(getTempFile()), this::onGetContent);
+        mCropPictureLauncher = mFragment.registerForActivityResult(
+                new CropImageActivity.ResultContract(getTempFile()), this::onGetContentResult);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             mFragment.getChildFragmentManager().setFragmentResultListener(
@@ -203,10 +195,9 @@ public class CoverHandler {
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
 
-        mTransFormTaskViewModel = new ViewModelProvider(fragment)
+        mTransFormTaskViewModel = new ViewModelProvider(mFragment)
                 .get(String.valueOf(cIdx), TransFormTaskViewModel.class);
     }
-
 
     /**
      * Should be called from {@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}.
@@ -263,7 +254,6 @@ public class CoverHandler {
     }
 
     public void onPopulateView() {
-        //noinspection ConstantConditions
         final File file = mBookViewModel.getCoverFile(mFragment.getContext(), mCIdx);
         if (file != null) {
             new ImageLoader(mCoverView, mMaxWidth, mMaxHeight, file, null)
@@ -317,16 +307,10 @@ public class CoverHandler {
         }
     }
 
-    private void showProgress(final boolean show) {
-        if (mProgressBar != null) {
-            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        }
-    }
-
     /**
      * Using {@link MenuPicker} for context menus.
      *
-     * @param itemId   that was selected
+     * @param itemId   which was selected
      * @param position in the list (i.e. mCIdx)
      *
      * @return {@code true} if handled.
@@ -334,10 +318,6 @@ public class CoverHandler {
     private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
         final Context context = mFragment.requireContext();
-
-        if (mFragment instanceof HostingFragment) {
-            ((HostingFragment) mFragment).setCurrentCoverIndex(mCIdx);
-        }
 
         if (itemId == R.id.MENU_DELETE) {
             mBookViewModel.setCover(context, mCIdx, null);
@@ -369,7 +349,7 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_THUMB_CROP) {
             try {
-                mCropperLauncher.launch(mBookViewModel.createTempCoverFile(context, mCIdx));
+                mCropPictureLauncher.launch(mBookViewModel.createTempCoverFile(context, mCIdx));
 
             } catch (@NonNull final IOException e) {
                 Snackbar.make(mCoverView, R.string.error_storage_not_writable,
@@ -379,7 +359,7 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_EDIT) {
             try {
-                startEditor(mBookViewModel.createTempCoverFile(context, mCIdx));
+                editPicture(mBookViewModel.createTempCoverFile(context, mCIdx));
 
             } catch (@NonNull final IOException e) {
                 Snackbar.make(mCoverView, R.string.error_storage_not_writable,
@@ -388,7 +368,7 @@ public class CoverHandler {
             return true;
 
         } else if (itemId == R.id.MENU_THUMB_ADD_FROM_CAMERA) {
-            startCamera(false);
+            takePicture(false);
             return true;
 
         } else if (itemId == R.id.MENU_THUMB_ADD_FROM_FILE_SYSTEM) {
@@ -402,27 +382,6 @@ public class CoverHandler {
         return false;
     }
 
-    /**
-     * Rotate the image by the given angle.
-     *
-     * @param angle to rotate.
-     */
-    private void startRotation(final int angle) {
-        final File srcFile;
-        try {
-            //noinspection ConstantConditions
-            srcFile = mBookViewModel.createTempCoverFile(mFragment.getContext(), mCIdx);
-        } catch (@NonNull final IOException e) {
-            Snackbar.make(mCoverView, R.string.error_storage_not_writable,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        }
-
-        showProgress(true);
-        mTransFormTaskViewModel.startTask(
-                new TransFormTaskViewModel.Transformation(srcFile)
-                        .setRotate(angle));
-    }
 
     /**
      * Use the isbn to fetch other possible images from the internet
@@ -444,208 +403,6 @@ public class CoverHandler {
 
         Snackbar.make(mCoverView, R.string.warning_requires_isbn,
                       Snackbar.LENGTH_LONG).show();
-    }
-
-    /**
-     * Edit the image using an external application.
-     *
-     * @param srcFile to use
-     */
-    private void startEditor(@NonNull final File srcFile) {
-        final Context context = mFragment.requireContext();
-
-        final File dstFile = getTempFile();
-        FileUtils.delete(dstFile);
-
-        //TODO: we really should revoke the permissions afterwards
-        final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
-        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
-
-        final Intent intent = new Intent(Intent.ACTION_EDIT)
-                .setDataAndType(srcUri, IMAGE_MIME_TYPE)
-                // read access to the input uri
-                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                // write access see below
-                .putExtra(MediaStore.EXTRA_OUTPUT, dstUri);
-
-        final List<ResolveInfo> resInfoList =
-                context.getPackageManager()
-                       .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-        if (!resInfoList.isEmpty()) {
-            // We do not know which app will be used, so need to grant permission to all.
-            for (final ResolveInfo resolveInfo : resInfoList) {
-                final String packageName = resolveInfo.activityInfo.packageName;
-                context.grantUriPermission(packageName, dstUri,
-                                           Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            }
-
-            mFragment.startActivityForResult(
-                    Intent.createChooser(intent, context.getString(R.string.action_edit)),
-                    RequestCode.EDIT_IMAGE);
-
-        } else {
-            Snackbar.make(mCoverView, context.getString(R.string.error_no_image_editor),
-                          Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Called when the user selected an image from storage,
-     * and after the cropper processed an image.
-     *
-     * @param uri to load the image from
-     */
-    private void onGetContent(@Nullable final Uri uri) {
-        final Context context = mFragment.requireContext();
-        if (uri != null) {
-            File file = getTempFile();
-            try (InputStream is = context.getContentResolver().openInputStream(uri)) {
-                // copy the data, and retrieve the (potentially) resolved file
-                file = FileUtils.copyInputStream(context, is, file);
-            } catch (@NonNull final IOException e) {
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "Unable to copy content to file", e);
-                }
-            }
-
-            if (file != null) {
-                showProgress(true);
-                mTransFormTaskViewModel.startTask(
-                        new TransFormTaskViewModel.Transformation(file)
-                                .setScale(true));
-            } else {
-                StandardDialogs.showError(context, R.string.warning_image_copy_failed);
-            }
-        }
-    }
-
-
-    /**
-     * Start the camera to get an image.
-     *
-     * @param alreadyGranted set to {@code true} if we already got granted access.
-     *                       i.e. when called from the {@link #mTakePictureLauncher}
-     */
-    private void startCamera(final boolean alreadyGranted) {
-        //noinspection ConstantConditions
-        if (alreadyGranted ||
-            ContextCompat.checkSelfPermission(mFragment.getContext(), Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED) {
-
-            final File dstFile = getTempFile();
-            FileUtils.delete(dstFile);
-            //noinspection ConstantConditions
-            final Uri uri = GenericFileProvider.createUri(mFragment.getContext(), dstFile);
-            mTakePictureLauncher.launch(uri);
-
-        } else {
-            mCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
-        }
-    }
-
-    private void onCameraResult(final boolean result) {
-        if (result) {
-            final File file = getTempFile();
-            if (file.exists()) {
-                //noinspection ConstantConditions
-                final SharedPreferences prefs = PreferenceManager
-                        .getDefaultSharedPreferences(mFragment.getContext());
-
-                // Should we apply an explicit rotation angle?
-                // (which would overrule the setWindowManager call)
-                final int angle = Prefs
-                        .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
-
-                // What action (if any) should we take after we're done?
-                @NextAction
-                final int action = Prefs
-                        .getIntListPref(prefs, Prefs.pk_camera_image_action, ACTION_DONE);
-
-                showProgress(true);
-                //noinspection ConstantConditions
-                mTransFormTaskViewModel.startTask(
-                        new TransFormTaskViewModel.Transformation(file)
-                                .setScale(true)
-                                // we'll try to guess a rotation angle
-                                .setWindowManager(mFragment.getActivity().getWindowManager())
-                                // or apply an explicit angle
-                                .setRotate(angle)
-                                .setReturnCode(action));
-            }
-        }
-    }
-
-    /**
-     * Handles results from Camera, Picture Gallery and editing (incl. internal cropper).
-     *
-     * @return {@code true} when handled, {@code false} if unknown requestCode
-     */
-    public boolean onActivityResult(final int requestCode,
-                                    final int resultCode,
-                                    @Nullable final Intent data) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.EDIT_IMAGE: {
-                if (resultCode == Activity.RESULT_OK) {
-                    final File file = getTempFile();
-                    if (file.exists()) {
-                        showProgress(true);
-                        mTransFormTaskViewModel.startTask(
-                                new TransFormTaskViewModel.Transformation(file)
-                                        .setScale(true));
-                    }
-                    return true;
-                }
-
-                removeTempFile();
-                return true;
-            }
-            default:
-                return false;
-        }
-    }
-
-    private void onAfterTransform(@NonNull final TransFormTaskViewModel.TransformedData result) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
-            Log.d(TAG, "onAfterTransform"
-                       + "|returnCode=" + result.getReturnCode()
-                       + "|bitmap=" + (result.getBitmap() != null)
-                       + "|file=" + result.getFile().getAbsolutePath());
-        }
-
-        final Context context = mFragment.requireContext();
-        // The bitmap != null decides if the operation was successful.
-        if (result.getBitmap() != null) {
-            // sanity check: if the bitmap was good, the file will be good.
-            Objects.requireNonNull(result.getFile(), "file");
-
-            switch (result.getReturnCode()) {
-                case ACTION_CROP:
-                    mCropperLauncher.launch(result.getFile());
-                    break;
-
-                case ACTION_EDIT:
-                    startEditor(result.getFile());
-                    break;
-
-                case ACTION_DONE:
-                default:
-                    mBookViewModel.setCover(context, mCIdx, result.getFile());
-                    // must use a post to force the View to update.
-                    mCoverView.post(() -> {
-                        ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight,
-                                                result.getBitmap(), 0);
-                        mCoverView.setBackground(null);
-                    });
-                    break;
-            }
-
-        } else {
-            // transformation failed
-            mBookViewModel.setCover(context, mCIdx, null);
-            // must use a post to force the View to update.
-            mCoverView.post(() -> setPlaceholder(result.getFile()));
-        }
     }
 
     /**
@@ -677,6 +434,215 @@ public class CoverHandler {
         setPlaceholder();
     }
 
+
+    /**
+     * Edit the image using an external application.
+     *
+     * @param srcFile to edit
+     */
+    private void editPicture(@NonNull final File srcFile) {
+        final Context context = mFragment.requireContext();
+
+        final File dstFile = getTempFile();
+        FileUtils.delete(dstFile);
+
+        //TODO: we really should revoke the permissions afterwards
+        final Uri srcUri = GenericFileProvider.createUri(context, srcFile);
+        final Uri dstUri = GenericFileProvider.createUri(context, dstFile);
+
+        final Intent intent = new Intent(Intent.ACTION_EDIT)
+                .setDataAndType(srcUri, IMAGE_MIME_TYPE)
+                // read access to the input uri
+                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                // write access see below
+                .putExtra(MediaStore.EXTRA_OUTPUT, dstUri);
+
+        final List<ResolveInfo> resInfoList =
+                context.getPackageManager()
+                       .queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+        if (!resInfoList.isEmpty()) {
+            // We do not know which app will be used, so need to grant permission to all.
+            for (final ResolveInfo resolveInfo : resInfoList) {
+                final String packageName = resolveInfo.activityInfo.packageName;
+                context.grantUriPermission(packageName, dstUri,
+                                           Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            }
+
+            final String prompt = context.getString(R.string.action_edit);
+            mEditPictureLauncher.launch(Intent.createChooser(intent, prompt));
+
+        } else {
+            Snackbar.make(mCoverView, context.getString(R.string.error_no_image_editor),
+                          Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    private void onEditPictureResult(@NonNull final ActivityResult activityResult) {
+        if (activityResult.getResultCode() == Activity.RESULT_OK) {
+            final File file = getTempFile();
+            if (file.exists()) {
+                showProgress(true);
+                mTransFormTaskViewModel.startTask(
+                        new TransFormTaskViewModel.Transformation(file)
+                                .setScale(true));
+                return;
+            }
+        }
+
+        removeTempFile();
+    }
+
+
+    /**
+     * Called when the user selected an image from storage,
+     * or after the cropping an image.
+     *
+     * @param uri to load the image from
+     */
+    private void onGetContentResult(@Nullable final Uri uri) {
+        final Context context = mFragment.requireContext();
+        if (uri != null) {
+            File file = getTempFile();
+            try (InputStream is = context.getContentResolver().openInputStream(uri)) {
+                // copy the data, and retrieve the (potentially) resolved file
+                file = FileUtils.copyInputStream(context, is, file);
+            } catch (@NonNull final IOException e) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Log.d(TAG, "Unable to copy content to file", e);
+                }
+            }
+
+            if (file != null) {
+                showProgress(true);
+                mTransFormTaskViewModel.startTask(
+                        new TransFormTaskViewModel.Transformation(file)
+                                .setScale(true));
+            } else {
+                StandardDialogs.showError(context, R.string.warning_image_copy_failed);
+            }
+        }
+    }
+
+
+    /**
+     * Start the camera to get an image.
+     *
+     * @param alreadyGranted set to {@code true} if we already got granted access.
+     *                       i.e. when called from the {@link #mTakePictureLauncher}
+     */
+    private void takePicture(final boolean alreadyGranted) {
+        if (alreadyGranted ||
+            ContextCompat.checkSelfPermission(mFragment.getContext(), Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED) {
+
+            final File dstFile = getTempFile();
+            FileUtils.delete(dstFile);
+            final Uri uri = GenericFileProvider.createUri(mFragment.getContext(), dstFile);
+            mTakePictureLauncher.launch(uri);
+
+        } else {
+            mCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void onTakePictureResult(final boolean result) {
+        if (result) {
+            final File file = getTempFile();
+            if (file.exists()) {
+                final SharedPreferences prefs = PreferenceManager
+                        .getDefaultSharedPreferences(mFragment.getContext());
+
+                // Should we apply an explicit rotation angle?
+                // (which would overrule the setWindowManager call)
+                final int angle = Prefs
+                        .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
+
+                // What action (if any) should we take after we're done?
+                @NextAction
+                final int action = Prefs
+                        .getIntListPref(prefs, Prefs.pk_camera_image_action, ACTION_DONE);
+
+                showProgress(true);
+                mTransFormTaskViewModel.startTask(
+                        new TransFormTaskViewModel.Transformation(file)
+                                .setScale(true)
+                                // we'll try to guess a rotation angle
+                                .setWindowManager(mFragment.getActivity().getWindowManager())
+                                // or apply an explicit angle
+                                .setRotate(angle)
+                                .setReturnCode(action));
+            }
+        }
+    }
+
+
+    /**
+     * Rotate the image by the given angle.
+     *
+     * @param angle to rotate.
+     */
+    private void startRotation(final int angle) {
+        final File srcFile;
+        try {
+            srcFile = mBookViewModel.createTempCoverFile(mFragment.getContext(), mCIdx);
+        } catch (@NonNull final IOException e) {
+            Snackbar.make(mCoverView, R.string.error_storage_not_writable,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        }
+
+        showProgress(true);
+        mTransFormTaskViewModel.startTask(
+                new TransFormTaskViewModel.Transformation(srcFile)
+                        .setRotate(angle));
+    }
+
+
+    private void onAfterTransform(@NonNull final TransFormTaskViewModel.TransformedData result) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            Log.d(TAG, "onAfterTransform"
+                       + "|returnCode=" + result.getReturnCode()
+                       + "|bitmap=" + (result.getBitmap() != null)
+                       + "|file=" + result.getFile().getAbsolutePath());
+        }
+
+        final Context context = mFragment.requireContext();
+
+        // The bitmap != null decides if the operation was successful.
+        if (result.getBitmap() != null) {
+            // sanity check: if the bitmap was good, the file will be good.
+            Objects.requireNonNull(result.getFile(), "file");
+
+            switch (result.getReturnCode()) {
+                case ACTION_CROP:
+                    mCropPictureLauncher.launch(result.getFile());
+                    break;
+
+                case ACTION_EDIT:
+                    editPicture(result.getFile());
+                    break;
+
+                case ACTION_DONE:
+                default:
+                    mBookViewModel.setCover(context, mCIdx, result.getFile());
+                    // must use a post to force the View to update.
+                    mCoverView.post(() -> {
+                        ImageUtils.setImageView(mCoverView, mMaxWidth, mMaxHeight,
+                                                result.getBitmap(), 0);
+                        mCoverView.setBackground(null);
+                    });
+                    break;
+            }
+
+        } else {
+            // transformation failed
+            mBookViewModel.setCover(context, mCIdx, null);
+            // must use a post to force the View to update.
+            mCoverView.post(() -> setPlaceholder(result.getFile()));
+        }
+    }
+
+
     /**
      * Put a placeholder on screen.
      *
@@ -706,7 +672,6 @@ public class CoverHandler {
      */
     @NonNull
     private File getTempFile() {
-        //noinspection ConstantConditions
         return AppDir.Cache.getFile(mFragment.getContext(), TEMP_COVER_FILENAME);
     }
 
@@ -717,16 +682,10 @@ public class CoverHandler {
         FileUtils.delete(getTempFile());
     }
 
-    public interface HostingFragment {
-
-        /**
-         * Prepare the fragment for results.
-         * This is needed as for example when we start the camera, we can't tell afterwards
-         * which index we're handling. So let the fragment know BEFORE.
-         *
-         * @param cIdx 0..n image index
-         */
-        void setCurrentCoverIndex(@IntRange(from = 0, to = 1) int cIdx);
+    private void showProgress(final boolean show) {
+        if (mProgressBar != null) {
+            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
     }
 
     @IntDef({ACTION_DONE, ACTION_CROP, ACTION_EDIT})

@@ -34,7 +34,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
@@ -68,8 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 public class EditBookFieldsFragment
-        extends EditBookBaseFragment
-        implements CoverHandler.HostingFragment {
+        extends EditBookBaseFragment {
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
@@ -111,10 +109,8 @@ public class EditBookFieldsFragment
         getChildFragmentManager()
                 .setFragmentResultListener(RK_EDIT_BOOKSHELVES, this, mOnCheckListListener);
 
-        //noinspection ConstantConditions
         mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
 
-        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
 
@@ -160,7 +156,6 @@ public class EditBookFieldsFragment
                               @Nullable final Bundle savedInstanceState) {
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         mBookViewModel.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
@@ -220,7 +215,6 @@ public class EditBookFieldsFragment
 
     @Override
     public void onResume() {
-        //noinspection ConstantConditions
         mBookViewModel.pruneAuthors(getContext());
         mBookViewModel.pruneSeries(getContext());
 
@@ -240,7 +234,6 @@ public class EditBookFieldsFragment
 
         final Context context = getContext();
 
-        //noinspection ConstantConditions
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
         fields.add(R.id.author, new TextViewAccessor<>(
@@ -295,14 +288,7 @@ public class EditBookFieldsFragment
             mCoverHandler[1].onPopulateView();
         }
         // hide unwanted and empty fields
-        //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
-    }
-
-    /** Called by the CoverHandler when a context menu is selected. */
-    @Override
-    public void setCurrentCoverIndex(@IntRange(from = 0, to = 1) final int cIdx) {
-        mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
     @Override
@@ -375,7 +361,6 @@ public class EditBookFieldsFragment
                 Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
                 mScannerModel.setScannerStarted(false);
                 if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
                     final String barCode =
                             mScannerModel.getScanner().getBarcode(getContext(), data);
                     if (barCode != null) {
@@ -387,29 +372,6 @@ public class EditBookFieldsFragment
             }
 
             default: {
-                // handle any cover image request codes
-                @IntRange(from = -1, to = 1)
-                final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
-                if (cIdx >= 0 && cIdx < mCoverHandler.length) {
-                    if (mCoverHandler[cIdx] != null) {
-                        if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
-                            break;
-                        }
-                    } else {
-                        // 2020-05-14: Can't explain it yet, but seen this to be null
-                        // in the emulator:
-                        // start device and app in normal portrait mode.
-                        // turn the device twice CW, i.e. the screen should be upside down.
-                        // The emulator will be upside down, but the app will be sideways.
-                        // Take picture... get here and see NULL mCoverHandler[cIdx].
-
-                        //noinspection ConstantConditions
-                        Logger.error(getContext(), TAG, new Throwable(),
-                                     "onActivityResult"
-                                     + "|mCoverHandler was NULL for cIdx=" + cIdx);
-                    }
-                }
-
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
             }

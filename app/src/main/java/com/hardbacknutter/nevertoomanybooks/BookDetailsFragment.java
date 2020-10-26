@@ -38,7 +38,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -104,8 +103,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
  * Do NOT assume fields are empty by default when populating them manually.
  */
 public class BookDetailsFragment
-        extends BookBaseFragment
-        implements CoverHandler.HostingFragment {
+        extends BookBaseFragment {
 
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
@@ -121,9 +119,6 @@ public class BookDetailsFragment
     private BookDetailsFragmentViewModel mFragmentVM;
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
-    private FragmentBookDetailsMergePublicationSectionBinding mVbPub;
-    private FragmentBookDetailsMergeTocSectionBinding mVbToc;
-    private FragmentBookDetailsMergeNotesSectionBinding mVbNotes;
 
     /** Listen for changes coming from child (dialog) fragments. */
     private final ChangeListener mChangeListener = (changes, data) -> {
@@ -143,7 +138,12 @@ public class BookDetailsFragment
             }
         }
     };
-
+    /** View Binding. */
+    private FragmentBookDetailsMergePublicationSectionBinding mVbPub;
+    /** View Binding. */
+    private FragmentBookDetailsMergeTocSectionBinding mVbToc;
+    /** View Binding. */
+    private FragmentBookDetailsMergeNotesSectionBinding mVbNotes;
     /** Goodreads send-book task. */
     private GrSendOneBookTask mGrSendOneBookTask;
 
@@ -161,7 +161,6 @@ public class BookDetailsFragment
                 .setFragmentResultListener(RK_EDIT_LENDER, this, mChangeListener);
 
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
-        //noinspection ConstantConditions
         mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -193,7 +192,6 @@ public class BookDetailsFragment
         mVbToc = FragmentBookDetailsMergeTocSectionBinding.bind(mVb.tocSection);
         mVbNotes = FragmentBookDetailsMergeNotesSectionBinding.bind(mVb.notesSection);
 
-        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // Anthology/TOC fields
@@ -238,7 +236,6 @@ public class BookDetailsFragment
         mGrSendOneBookTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
 
         // The FAB lives in the activity.
-        //noinspection ConstantConditions
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(v -> startEditBook());
 
@@ -263,28 +260,24 @@ public class BookDetailsFragment
         });
 
         if (savedInstanceState == null) {
-            //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_view_only_help, null);
         }
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (message.text != null) {
-            //noinspection ConstantConditions
             Snackbar.make(getView(), message.text, Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
-            //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 
     private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
-            //noinspection ConstantConditions
             Snackbar.make(getView(), GrStatus.getMessage(getContext(), message.result),
                           Snackbar.LENGTH_LONG).show();
         }
@@ -294,10 +287,8 @@ public class BookDetailsFragment
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-                //noinspection ConstantConditions
                 mGrAuthTask.prompt(getContext());
             } else {
-                //noinspection ConstantConditions
                 Snackbar.make(getView(), message.result.getMessage(getContext()),
                               Snackbar.LENGTH_LONG).show();
             }
@@ -309,7 +300,6 @@ public class BookDetailsFragment
 
         final Context context = getContext();
 
-        //noinspection ConstantConditions
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
@@ -423,14 +413,12 @@ public class BookDetailsFragment
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
 
-        //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).registerOnTouchListener(mOnTouchListener);
     }
 
     @Override
     @CallSuper
     public void onPause() {
-        //noinspection ConstantConditions
         ((BookDetailsActivity) getActivity()).unregisterOnTouchListener(mOnTouchListener);
 
         super.onPause();
@@ -477,39 +465,10 @@ public class BookDetailsFragment
                 break;
 
             default: {
-                // handle any cover image request codes
-                @IntRange(from = -1, to = 1)
-                final int cIdx = mFragmentVM.getAndClearCurrentCoverHandlerIndex();
-                if (cIdx >= 0 && cIdx < mCoverHandler.length) {
-                    if (mCoverHandler[cIdx] != null) {
-                        if (mCoverHandler[cIdx].onActivityResult(requestCode, resultCode, data)) {
-                            break;
-                        }
-                    } else {
-                        // 2020-05-14: Can't explain it yet, but seen this to be null
-                        // in the emulator:
-                        // start device and app in normal portrait mode.
-                        // turn the device twice CW, i.e. the screen should be upside down.
-                        // The emulator will be upside down, but the app will be sideways.
-                        // Take picture... get here and see NULL mCoverHandler[cIdx].
-
-                        //noinspection ConstantConditions
-                        Logger.error(getContext(), TAG, new Throwable(),
-                                     "onActivityResult"
-                                     + "|mCoverHandler was NULL for cIdx=" + cIdx);
-                    }
-                }
-
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
             }
         }
-    }
-
-    /** Called by the CoverHandler when a context menu is selected. */
-    @Override
-    public void setCurrentCoverIndex(@IntRange(from = 0, to = 1) final int cIdx) {
-        mFragmentVM.setCurrentCoverHandlerIndex(cIdx);
     }
 
     /**
@@ -524,7 +483,7 @@ public class BookDetailsFragment
     protected void onPopulateViews(@NonNull final Fields fields,
                                    @NonNull final Book book) {
         super.onPopulateViews(fields, book);
-        //noinspection ConstantConditions
+
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
@@ -543,7 +502,6 @@ public class BookDetailsFragment
         }
 
         // hide unwanted but keep empty fields
-        //noinspection ConstantConditions
         fields.setVisibility(getView(), true, false);
 
         // Hide the Publication section label if none of the publishing fields are shown.
@@ -624,7 +582,6 @@ public class BookDetailsFragment
                 final RowTocEntryWithAuthorBinding rowVb = RowTocEntryWithAuthorBinding
                         .inflate(getLayoutInflater(), mVbToc.toc, false);
 
-                //noinspection ConstantConditions
                 rowVb.title.setText(tocEntry.getLabel(context));
                 rowVb.author.setText(tocEntry.getPrimaryAuthor().getLabel(context));
 
@@ -687,7 +644,6 @@ public class BookDetailsFragment
                                     @NonNull final MenuInflater inflater) {
         // add the search action view
         inflater.inflate(R.menu.sav_search, menu);
-        //noinspection ConstantConditions
         MenuHelper.setupSearchActionView(getActivity(), menu);
 
         inflater.inflate(R.menu.book, menu);
@@ -698,7 +654,6 @@ public class BookDetailsFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         final Book book = mBookViewModel.getBook();
 
-        //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         final boolean isSaved = !book.isNew();
@@ -737,11 +692,9 @@ public class BookDetailsFragment
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
             final String title = book.getString(DBDefinitions.KEY_TITLE);
             final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-            //noinspection ConstantConditions
             StandardDialogs.deleteBook(getContext(), title, authors, () -> {
                 mBookViewModel.deleteBook(getContext());
 
-                //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
                 getActivity().finish();
             });
@@ -759,7 +712,6 @@ public class BookDetailsFragment
             final Field<Boolean, View> field = getField(R.id.icon_read);
             field.getAccessor().setValue(value);
             // Still call this, as it will handle related views (none for now, but future-proof)
-            //noinspection ConstantConditions
             field.setVisibility(getView(), true, false);
             return true;
 
@@ -774,7 +726,7 @@ public class BookDetailsFragment
             populateLendToField(null);
             return true;
 
-        } else if (itemId == R.id.MENU_SHARE) {//noinspection ConstantConditions
+        } else if (itemId == R.id.MENU_SHARE) {
             startActivity(book.getShareIntent(getContext()));
             return true;
 
@@ -827,7 +779,6 @@ public class BookDetailsFragment
 
             // make sure we're not getting a false-positive due to the user
             // swiping to open the navigation drawer.
-            //noinspection ConstantConditions
             if (((BaseActivity) getActivity()).isNavigationDrawerVisible()) {
                 return false;
             }
