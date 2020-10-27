@@ -52,7 +52,6 @@ import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
-import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
@@ -74,28 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
  */
 public class CropImageView
         extends AppCompatImageView {
-
-    /**
-     * 2020-05-29: this is an old comment from several years ago. The issue has not been
-     * seen in my limited testing. By default, we do not change the device internal
-     * setting, but allow the user to modify it in preferences.
-     * <p>
-     * We get 'unsupported feature' crashes if the option to always use GL is turned on.
-     * See:
-     * <a href="http://developer.android.com/guide/topics/graphics/hardware-accel.html>hardware</a>
-     * <a href="http://stackoverflow.com/questions/13676059">
-     * android-unsupportedoperationexception-at-canvas-clippath</a>
-     * <p>
-     * Actual system values:
-     * <p>
-     * View.LAYER_TYPE_SOFTWARE 1
-     * View.LAYER_TYPE_HARDWARE 2
-     * <p>
-     * We use 1 and 2; and 'abuse' -1 to mean 'leave it unset'
-     * <p>
-     * see {@link View#setLayerType(int, Paint)}
-     */
-    private static final int LAYER_TYPE_DEFAULT = -1;
 
     /** 400% zoom regardless of screen or image orientation. */
     private static final int ZOOM_FACTOR = 4;
@@ -167,12 +144,6 @@ public class CropImageView
      */
     public void initCropView(@NonNull final Bitmap bitmap) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-
-        final int type = Prefs.getIntListPref(prefs, Prefs.pk_image_cropper_layer_type,
-                                              LAYER_TYPE_DEFAULT);
-        if (type != LAYER_TYPE_DEFAULT) {
-            setLayerType(type, null);
-        }
 
         // Flag indicating if by default the crop rectangle should be the whole image.
         final boolean wholeImage = prefs.getBoolean(Prefs.pk_image_cropper_frame_whole, false);
@@ -556,25 +527,21 @@ public class CropImageView
         /** in image space. */
         final RectF mCropRect;
         final Matrix mMatrix;
-
+        final Rect mImageViewDrawingRect = new Rect();
+        final Path path = new Path();
         /** The View displaying the image. */
         private final CropImageView mImageView;
         /*** in image space. */
         private final RectF mImageRect;
-
         /** Drag handle. */
         private final Drawable mResizeHorizontal;
         /** Drag handle. */
         private final Drawable mResizeVertical;
-
         private final Paint mFocusPaint = new Paint();
         private final Paint mOutlinePaint = new Paint();
-
-        final Rect mImageViewDrawingRect = new Rect();
-        final Path path = new Path();
+        private final RectF mDrawRectF = new RectF();
         @NonNull
         private ModifyMode mMode = ModifyMode.None;
-        private final RectF mDrawRectF = new RectF();
         /** in screen space. */
         private Rect mDrawRect;
 
@@ -585,6 +552,7 @@ public class CropImageView
          * @param imageRect The Rect of that View
          * @param cropRect  The initial crop Rect
          */
+        @SuppressLint("UseCompatLoadingForDrawables")
         HighlightView(@NonNull final CropImageView imageView,
                       @NonNull final Rect imageRect,
                       @NonNull final RectF cropRect) {
