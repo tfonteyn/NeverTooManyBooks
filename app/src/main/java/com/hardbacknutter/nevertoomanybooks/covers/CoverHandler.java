@@ -529,7 +529,7 @@ public class CoverHandler {
      * Start the camera to get an image.
      *
      * @param alreadyGranted set to {@code true} if we already got granted access.
-     *                       i.e. when called from the {@link #mTakePictureLauncher}
+     *                       i.e. when called from the {@link #mCameraPermissionLauncher}
      */
     private void takePicture(final boolean alreadyGranted) {
         //noinspection ConstantConditions

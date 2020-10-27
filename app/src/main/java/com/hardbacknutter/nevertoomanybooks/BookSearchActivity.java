@@ -115,15 +115,11 @@ public class BookSearchActivity
                     model.setSiteList(sites);
                 }
 
-                // Reset the scanner if it was changed.
-                // Note this creates the scanner model even if it did not exist before.
-                // Other than using memory, this is fine.
-                // We assume if the user explicitly went to settings to change the scanner
-                // they want to use it.
+                // Get and reset the scanner if it was changed.
                 if (data.getBooleanExtra(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED, false)) {
-                    final ScannerViewModel model =
+                    final ScannerViewModel scannerModel =
                             new ViewModelProvider(this).get(ScannerViewModel.class);
-                    model.resetScanner();
+                    scannerModel.resetScanner();
                 }
             }
         }

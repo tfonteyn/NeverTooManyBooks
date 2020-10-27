@@ -30,6 +30,8 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -55,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
  *      ...
  *      public void onCreate(@Nullable final Bundle savedInstanceState) {
  *          mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
+ *          mScannerModel.init();
  *      }
  *      ...
  *      void doScan() {
@@ -67,7 +70,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
  *          case UniqueId.REQ_SCAN_BARCODE: {
  *              mScannerModel.setScannerStarted(false);
  *              if (resultCode == Activity.RESULT_OK) {*
- *                  String barCode = mScannerModel.getScanner().getBarcode(data);
+ *                  String barCode = mScannerModel.getBarcode(context, data);
  *                  if (barCode != null) {
  *                      // do something with the barCode
  *                  }
@@ -96,6 +99,7 @@ public class ScannerViewModel
     @Nullable
     private Scanner mScanner;
 
+
     /**
      * Get <strong>and clear</strong> the first-start flag.
      *
@@ -111,9 +115,10 @@ public class ScannerViewModel
         mScannerStarted = scannerStarted;
     }
 
-    @Nullable
-    public Scanner getScanner() {
-        return mScanner;
+    public String getBarcode(@NonNull final Context context,
+                             @Nullable final Intent data) {
+        Objects.requireNonNull(mScanner, "mScanner");
+        return mScanner.getBarcode(context, data);
     }
 
     public void resetScanner() {
@@ -141,7 +146,8 @@ public class ScannerViewModel
             }
 
             // this is really for the Google barcode library which is loaded on first access.
-            // We're very conservative/paranoid here, as we already triggered a load during startup.
+            // We're very conservative/paranoid here, as we already triggered
+            // a load when the user configured the google scanner in preferences
             int retry = SCANNER_RETRY;
             while (!mScanner.isOperational() && retry > 0) {
                 //noinspection ConstantConditions
@@ -200,7 +206,6 @@ public class ScannerViewModel
             SoundManager.playFile(context, R.raw.beep_low);
         }
     }
-
 
     /**
      * None of the scanners was available or working correctly.
