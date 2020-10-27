@@ -36,7 +36,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -65,9 +64,12 @@ public class GoogleBarcodeScanner
 
     /** The file name we'll use. */
     private static final String TEMP_COVER_FILENAME = "GoogleBarcodeScanner.jpg";
+
+    @NonNull
     private final BarcodeDetector mDetector;
-    @Nullable
-    private CameraHelper mCameraHelper;
+
+    private ActivityResultLauncher<String> mCameraPermissionLauncher;
+
 
     /**
      * Constructor.
@@ -107,6 +109,7 @@ public class GoogleBarcodeScanner
      *
      * <br><br>{@inheritDoc}
      */
+    @SuppressLint("MissingPermission")
     @Override
     public boolean startActivityForResult(@NonNull final Fragment fragment,
                                           final int requestCode) {
@@ -114,16 +117,45 @@ public class GoogleBarcodeScanner
             return false;
         }
 
-        if (mCameraHelper == null) {
-            mCameraHelper = new CameraHelper(fragment);
+        if (mCameraPermissionLauncher == null) {
+            mCameraPermissionLauncher = fragment.registerForActivityResult(
+                    new ActivityResultContracts.RequestPermission(), (isGranted) -> {
+                        if (isGranted) {
+                            takePicture(fragment, requestCode, true);
+                        }
+                    });
         }
 
-        //noinspection ConstantConditions
-        final File dstFile = getTempFile(fragment.getContext());
-        FileUtils.delete(dstFile);
-        mCameraHelper.startCamera(dstFile, requestCode);
-
+        takePicture(fragment, requestCode, false);
         return true;
+    }
+
+
+    /**
+     * Start the camera to get an image.
+     *
+     * @param alreadyGranted set to {@code true} if we already got granted access.
+     *                       i.e. when called from the {@link #mCameraPermissionLauncher}
+     */
+    private void takePicture(@NonNull final Fragment fragment,
+                             final int requestCode,
+                             final boolean alreadyGranted) {
+        //noinspection ConstantConditions
+        if (alreadyGranted ||
+            ContextCompat.checkSelfPermission(fragment.getContext(), Manifest.permission.CAMERA)
+            == PackageManager.PERMISSION_GRANTED) {
+
+            //noinspection ConstantConditions
+            final File dstFile = getTempFile(fragment.getContext());
+            FileUtils.delete(dstFile);
+            final Uri uri = GenericFileProvider.createUri(fragment.getContext(), dstFile);
+            final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                    .putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            fragment.startActivityForResult(intent, requestCode);
+
+        } else {
+            mCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
+        }
     }
 
     @Nullable
@@ -208,79 +240,6 @@ public class GoogleBarcodeScanner
                 // trigger the download if needed.
                 factory.getScanner(context);
             }
-        }
-    }
-
-    private static class CameraHelper {
-
-        @SuppressWarnings("FieldNotUsedInToString")
-        @NonNull
-        private final Fragment mFragment;
-
-        @SuppressWarnings("FieldNotUsedInToString")
-        @NonNull
-        private final ActivityResultLauncher<String> mRequestPermissionLauncher;
-
-        /** Set/returned with the activity result. */
-        private int mRequestCode;
-
-        /** The file the camera will write to. */
-        private File mFile;
-
-        /**
-         * Constructor.
-         *
-         * @param fragment hosting fragment
-         */
-        @SuppressLint("MissingPermission")
-        CameraHelper(@NonNull final Fragment fragment) {
-            mFragment = fragment;
-            mRequestPermissionLauncher = mFragment.registerForActivityResult(
-                    new ActivityResultContracts.RequestPermission(), (isGranted) -> {
-                        if (isGranted) {
-                            startCameraInternal();
-                        }
-                    });
-        }
-
-
-        /**
-         * Start the camera to get an image.
-         *
-         * @param file        for the camera to write to
-         * @param requestCode set/returned with the activity result
-         */
-        void startCamera(@NonNull final File file,
-                         final int requestCode) {
-            mRequestCode = requestCode;
-            mFile = file;
-
-            //noinspection ConstantConditions
-            if (ContextCompat
-                        .checkSelfPermission(mFragment.getContext(), Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED) {
-                startCameraInternal();
-            } else {
-                mRequestPermissionLauncher.launch(Manifest.permission.CAMERA);
-            }
-        }
-
-        @RequiresPermission(Manifest.permission.CAMERA)
-        private void startCameraInternal() {
-            //noinspection ConstantConditions
-            final Uri uri = GenericFileProvider.createUri(mFragment.getContext(), mFile);
-            final Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    .putExtra(MediaStore.EXTRA_OUTPUT, uri);
-            mFragment.startActivityForResult(intent, mRequestCode);
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "CameraHelper{"
-                   + ", mFile=" + mFile
-                   + ", mRequestCode=" + mRequestCode
-                   + '}';
         }
     }
 }
