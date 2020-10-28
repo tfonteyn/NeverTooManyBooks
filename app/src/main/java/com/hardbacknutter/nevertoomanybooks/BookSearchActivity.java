@@ -33,10 +33,8 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 /**
  * The hosting activity for searching for a book;
@@ -113,13 +111,6 @@ public class BookSearchActivity
                     final SearchCoordinator model =
                             new ViewModelProvider(this).get(SearchCoordinator.class);
                     model.setSiteList(sites);
-                }
-
-                // Get and reset the scanner if it was changed.
-                if (data.getBooleanExtra(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED, false)) {
-                    final ScannerViewModel scannerModel =
-                            new ViewModelProvider(this).get(ScannerViewModel.class);
-                    scannerModel.resetScanner();
                 }
             }
         }

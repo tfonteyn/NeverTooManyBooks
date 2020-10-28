@@ -382,7 +382,7 @@ public class GoodreadsManager {
             throws CredentialsException, Http404Exception, IOException {
 
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(grBookId, "grBookId");
+            SanityCheck.requireValue(grBookId, "grBookId");
         }
 
         if (mShowBookByIdApiHandler == null) {

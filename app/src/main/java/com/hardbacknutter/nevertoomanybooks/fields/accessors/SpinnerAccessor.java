@@ -80,7 +80,7 @@ public class SpinnerAccessor
             list.add(context.getString(id));
         }
         mAdapter = new ArrayAdapter<>(context, R.layout.dropdown_menu_popup_item, list);
-        SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");
+        SanityCheck.requireValue(mAdapter.getCount(), "mAdapter.getCount()");
     }
 
     @Override

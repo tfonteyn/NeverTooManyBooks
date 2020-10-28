@@ -43,7 +43,7 @@ import java.util.Objects;
  * <pre>
  *     {@code
  *
- *     private static final String RK_DATE_PICKER_SINGLE = "datePickerSingle";
+ *     private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:" + "datePickerSingle";
  *     private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener
  *         = new WrappedMaterialDatePicker.OnResultListener() {
  *         @Override

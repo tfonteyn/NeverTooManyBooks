@@ -101,8 +101,6 @@ public final class TipManager {
                 tip = new Tip(id, "book_list");
             } else if (id == R.string.tip_book_search_by_text) {
                 tip = new Tip(id, "book_search_by_text");
-            } else if (id == R.string.pt_cropper_layer_type_summary) {
-                tip = new Tip(id, "thumbnail_cropper_layer_type_summary");
             } else if (id == R.string.tip_update_fields_from_internet) {
                 tip = new Tip(id, "update_fields_from_internet");
             } else if (id == R.string.tip_authors_works) {

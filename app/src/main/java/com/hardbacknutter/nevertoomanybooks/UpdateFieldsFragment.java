@@ -195,7 +195,7 @@ public class UpdateFieldsFragment
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
             // no changes committed, we got data to use temporarily
-            case RequestCode.PREFERRED_SEARCH_SITES:
+            case RequestCode.EDIT_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     final ArrayList<Site> sites =
                             data.getParcelableArrayListExtra(Site.Type.Data.getBundleKey());
@@ -237,7 +237,7 @@ public class UpdateFieldsFragment
         if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
             final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
                     .putExtra(SearchAdminModel.BKEY_LIST, mUpdateFieldsModel.getSiteList());
-            startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
+            startActivityForResult(intent, RequestCode.EDIT_SEARCH_SITES);
             return true;
 
         } else if (itemId == R.id.MENU_RESET) {

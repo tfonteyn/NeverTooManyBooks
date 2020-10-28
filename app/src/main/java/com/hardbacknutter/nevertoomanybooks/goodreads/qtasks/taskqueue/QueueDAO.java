@@ -221,7 +221,7 @@ class QueueDAO
      */
     void enqueueTask(@NonNull final TQTask task,
                      @NonNull final String queueName) {
-        final long queueId = SanityCheck.requirePositiveValue(getQueueId(queueName), queueName);
+        final long queueId = SanityCheck.requireValue(getQueueId(queueName), queueName);
 
         final ContentValues cv = new ContentValues();
         cv.put(KEY_TASK, SerializationUtils.serializeObject(task));

@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
@@ -91,8 +90,6 @@ public final class DebugReport {
                .append("ID: ").append(Build.ID).append('\n')
 
                .append("Signed-By: ").append(info.getSignedBy()).append('\n')
-               .append("\nScanner info:\n")
-               .append(ScannerManager.collectDebugInfo(context))
                .append("\nDetails:\n\n")
                .append(context.getString(R.string.debug_body))
                .append("\n\n");

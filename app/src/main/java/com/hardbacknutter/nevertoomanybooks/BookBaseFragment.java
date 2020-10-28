@@ -68,8 +68,10 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 public abstract class BookBaseFragment
         extends Fragment {
 
+    private static final String TAG = "BookBaseFragment";
+
     /** FragmentResultListener request key. */
-    public static final String RK_COVER_BROWSER = CoverBrowserDialogFragment.TAG + ":rk:";
+    public static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDialogFragment.TAG;
 
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];

@@ -19,29 +19,23 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.os.AsyncTask;
+import android.hardware.camera2.CameraMetadata;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
+import androidx.preference.ListPreference;
+
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.scanner.GoogleBarcodeScanner;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
 
 /**
  * Used/defined in xml/preferences.xml
  */
 public class BarcodePreferenceFragment
         extends BasePreferenceFragment {
-
-    private static final String TAG = "BarcodePreferenceFrag";
-
-    /**
-     * The user modified the scanner in preferences (or not).
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_SCANNER_MODIFIED = TAG + ":scannerModified";
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -50,8 +44,46 @@ public class BarcodePreferenceFragment
 
         setPreferencesFromResource(R.xml.preferences_barcodes, rootKey);
 
-        // Start this as fire-and-forget runnable
-        // perhaps delay this until the user selects the google scanner?
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(new GoogleBarcodeScanner.PreloadGoogleScanner());
+        final ListPreference preference = findPreference(Prefs.pk_camera_id_scan_barcode);
+        if (preference != null) {
+            //noinspection ConstantConditions
+            final List<Pair<String, Integer>> list = CameraDetection.getCameras(getContext());
+            final int max = list.size() + 1;
+
+            // the camera lens-facing values in text
+            final CharSequence[] entries = new CharSequence[max];
+            // the camera id
+            final CharSequence[] entryValues = new CharSequence[max];
+
+            entries[0] = getString(R.string.system_default);
+            entryValues[0] = "-1";
+
+            for (int i = 1; i <= list.size(); i++) {
+                final Pair<String, Integer> camera = list.get(i - 1);
+                // the camera id
+                entryValues[i] = camera.first;
+                // We're assuming there will only be one front and/or one back camera.
+                switch (camera.second) {
+                    case CameraMetadata.LENS_FACING_FRONT:
+                        entries[i] = getString(R.string.camera_front);
+                        break;
+
+                    case CameraMetadata.LENS_FACING_BACK:
+                        entries[i] = getString(R.string.camera_back);
+                        break;
+
+                    case CameraMetadata.LENS_FACING_EXTERNAL:
+                    default:
+                        // append the id for all other cameras.
+                        entries[i] = getString(R.string.a_bracket_b_bracket,
+                                               getString(R.string.camera_other),
+                                               String.valueOf(i));
+                        break;
+                }
+            }
+
+            preference.setEntries(entries);
+            preference.setEntryValues(entryValues);
+        }
     }
 }

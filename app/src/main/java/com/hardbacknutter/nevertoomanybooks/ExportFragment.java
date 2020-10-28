@@ -60,7 +60,7 @@ public class ExportFragment
     /** Log tag. */
     public static final String TAG = "ExportFragment";
     /** FragmentResultListener request key. */
-    private static final String RK_EXPORT_HELPER = ExportHelperDialogFragment.TAG + ":rk:";
+    private static final String RK_EXPORT_HELPER = TAG + ":rk:" + ExportHelperDialogFragment.TAG;
     /** Export. */
     private ArchiveExportTask mArchiveExportTask;
     /** The launcher for picking a Uri. */

@@ -271,7 +271,7 @@ public class Book
      */
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final DAO db) {
-        SanityCheck.requirePositiveValue(bookId, "bookId");
+        SanityCheck.requireValue(bookId, "bookId");
 
         try (Cursor bookCursor = db.fetchBookById(bookId)) {
             if (bookCursor.moveToFirst()) {
@@ -291,7 +291,7 @@ public class Book
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final Cursor bookCursor,
                      @NonNull final DAO db) {
-        SanityCheck.requirePositiveValue(bookId, "bookId");
+        SanityCheck.requireValue(bookId, "bookId");
 
         clearData();
         putAll(bookCursor);

@@ -87,7 +87,7 @@ public class AuthorWorksFragment
     public static final String BKEY_WITH_BOOKS = TAG + ":books";
 
     /** FragmentResultListener request key. */
-    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
+    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
 
     /** the ViewModel. */
     private ResultDataModel mResultData;

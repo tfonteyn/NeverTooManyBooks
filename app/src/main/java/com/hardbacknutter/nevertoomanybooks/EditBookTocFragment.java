@@ -21,10 +21,8 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -97,11 +95,11 @@ public class EditBookTocFragment
     private static final String TAG = "EditBookTocFragment";
 
     /** FragmentResultListener request key. */
-    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
+    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_TOC = EditTocEntryDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_TOC = TAG + ":rk:" + EditTocEntryDialogFragment.TAG;
     /** FragmentResultListener request key. */
-    private static final String RK_CONFIRM_TOC = ConfirmTocDialogFragment.TAG + ":rk";
+    private static final String RK_CONFIRM_TOC = TAG + ":rk:" + ConfirmTocDialogFragment.TAG;
 
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
@@ -129,27 +127,10 @@ public class EditBookTocFragment
     /** Stores the item position in the list while we're editing that item. */
     @Nullable
     private Integer mEditPosition;
+
     /** Listen for the results of the entry edit-dialog. */
-    private final ChangeListener mOnChangeListener = (changes, data) -> {
-        Objects.requireNonNull(data, "data");
-
-        if ((changes & ChangeListener.TOC_ENTRY) != 0) {
-            final TocEntry tocEntry = Objects.requireNonNull(
-                    data.getParcelable(EditTocEntryDialogFragment.BKEY_TOC_ENTRY),
-                    "BKEY_TOC_ENTRY");
-            final boolean multipleAuthors = data
-                    .getBoolean(EditTocEntryDialogFragment.BKEY_HAS_MULTIPLE_AUTHORS);
-
-            onEntryUpdated(tocEntry, multipleAuthors);
-
-        } else {
-            // we don't expect/implement any others.
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "changes=0b" + Integer.toBinaryString(changes)
-                           + "|data=" + data);
-            }
-        }
-    };
+    private final EditTocEntryDialogFragment.OnResultListener mEditTocEntryListener =
+            this::onEntryUpdated;
 
     private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
     private IsfdbGetBookTask mIsfdbGetBookTask;
@@ -179,7 +160,7 @@ public class EditBookTocFragment
         super.onCreate(savedInstanceState);
 
         final FragmentManager fm = getChildFragmentManager();
-        fm.setFragmentResultListener(RK_EDIT_TOC, this, mOnChangeListener);
+        fm.setFragmentResultListener(RK_EDIT_TOC, this, mEditTocEntryListener);
         fm.setFragmentResultListener(RK_CONFIRM_TOC, this, mConfirmTocResultsListener);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
@@ -698,27 +679,18 @@ public class EditBookTocFragment
 
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                                 this::onCommitToc);
+                                 (d, which) -> OnResultListener
+                                         .sendResult(this, mRequestKey, mTocBitMask, mTocEntries));
             }
 
             // if we found multiple editions, allow a re-try with the next edition
             if (mHasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.action_retry),
-                                 this::onSearchNextEdition);
+                                 (d, which) -> OnResultListener
+                                         .searchNextEdition(this, mRequestKey));
             }
 
             return dialog;
-        }
-
-        private void onCommitToc(@SuppressWarnings("unused") @NonNull final DialogInterface d,
-                                 @SuppressWarnings("unused") final int which) {
-            OnResultListener.sendResult(this, mRequestKey, mTocBitMask, mTocEntries);
-        }
-
-        private void onSearchNextEdition(@SuppressWarnings("unused")
-                                         @NonNull final DialogInterface d,
-                                         @SuppressWarnings("unused") final int which) {
-            OnResultListener.searchNextEdition(this, mRequestKey);
         }
 
         public interface OnResultListener

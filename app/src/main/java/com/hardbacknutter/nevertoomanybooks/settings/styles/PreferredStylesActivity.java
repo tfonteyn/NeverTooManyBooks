@@ -77,7 +77,7 @@ public class PreferredStylesActivity
     private static final String TAG = "PreferredStylesActivity";
 
     /** FragmentResultListener request key. */
-    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
+    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
 
     /** The adapter for the list. */
     private BooklistStylesAdapter mListAdapter;

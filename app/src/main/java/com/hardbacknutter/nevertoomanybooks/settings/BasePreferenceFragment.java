@@ -55,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
-import com.hardbacknutter.nevertoomanybooks.scanner.ScannerManager;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -77,6 +76,7 @@ public abstract class BasePreferenceFragment
     private static final String TAG = "BasePreferenceFragment";
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
+    @SuppressWarnings("WeakerAccess")
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
 
     protected ResultDataModel mResultData;
@@ -147,7 +147,7 @@ public abstract class BasePreferenceFragment
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
                 final Intent intent = new Intent(getContext(), SearchAdminActivity.class);
-                startActivityForResult(intent, RequestCode.PREFERRED_SEARCH_SITES);
+                startActivityForResult(intent, RequestCode.EDIT_SEARCH_SITES);
                 return true;
             });
         }
@@ -329,17 +329,6 @@ public abstract class BasePreferenceFragment
                 mResultData.putResultData(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
                 break;
 
-            case Prefs.pk_scanner_preferred:
-                //noinspection ConstantConditions
-                ScannerManager.installScanner(getActivity(), success -> {
-                    if (!success) {
-                        //noinspection ConstantConditions
-                        ScannerManager.setDefaultScanner(getContext());
-                    }
-                });
-                mResultData.putResultData(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED, true);
-                break;
-
             case Prefs.pk_sounds_scan_found_barcode:
                 if (preferences.getBoolean(key, false)) {
                     //noinspection ConstantConditions
@@ -379,7 +368,7 @@ public abstract class BasePreferenceFragment
 
         //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            case RequestCode.PREFERRED_SEARCH_SITES:
+            case RequestCode.EDIT_SEARCH_SITES:
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mResultData.putResultData(data);
                 }

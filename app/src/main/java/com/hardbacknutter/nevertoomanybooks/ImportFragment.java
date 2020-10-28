@@ -59,7 +59,7 @@ public class ImportFragment
     /** Log tag. */
     public static final String TAG = "ImportFragment";
     /** FragmentResultListener request key. */
-    private static final String RK_IMPORT_HELPER = ImportHelperDialogFragment.TAG + ":rk:";
+    private static final String RK_IMPORT_HELPER = TAG + ":rk:" + ImportHelperDialogFragment.TAG;
     /**
      * The mime types accepted for importing files.
      * <p>

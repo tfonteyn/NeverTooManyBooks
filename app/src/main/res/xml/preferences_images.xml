@@ -22,7 +22,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/pg_camera">
+        android:title="@string/camera">
 
         <!-- default rotate 0 degrees -->
         <ListPreference
@@ -40,7 +40,7 @@
             android:entryValues="@array/pv_camera_next_action"
             android:icon="@drawable/ic_tune"
             android:key="camera.image.action"
-            android:title="@string/pt_camera_next_action" />
+            android:title="@string/camera_next_action" />
 
     </PreferenceCategory>
 
@@ -76,18 +76,4 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        android:title="@string/lbl_advanced_options">
-
-        <!-- default CropImageView.LAYER_TYPE_USE_DEFAULT == -1 -->
-        <ListPreference
-            android:defaultValue="-1"
-            android:dialogIcon="@drawable/ic_warning"
-            android:entries="@array/pe_thumbnails_cropper_layer_type"
-            android:entryValues="@array/pv_thumbnails_cropper_layer_type"
-            android:icon="@drawable/ic_manage"
-            android:key="compat.image.cropper.viewlayertype"
-            android:title="@string/pt_cropper_layer_type" />
-
-    </PreferenceCategory>
 </PreferenceScreen>

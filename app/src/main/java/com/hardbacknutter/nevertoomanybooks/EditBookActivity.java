@@ -49,11 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 /**
  * The hosting activity for editing a book.
@@ -149,13 +146,6 @@ public class EditBookActivity
                 //             new ViewModelProvider(this).get(SearchCoordinator.class);
                 //     model.setSiteList(sites);
                 // }
-
-                // Get and reset the scanner if it was changed.
-                if (data.getBooleanExtra(BarcodePreferenceFragment.BKEY_SCANNER_MODIFIED, false)) {
-                    final ScannerViewModel scannerModel =
-                            new ViewModelProvider(this).get(ScannerViewModel.class);
-                    scannerModel.resetScanner();
-                }
             }
         }
 
@@ -350,7 +340,7 @@ public class EditBookActivity
             if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
                 mTabs.add(new TabInfo(EditBookTocFragment.class, R.string.tab_lbl_content));
             }
-            if (Prefs.showEditBookTabExternalId(prefs)) {
+            if (EditBookExternalIdFragment.showEditBookTabExternalId(prefs)) {
                 mTabs.add(new TabInfo(EditBookExternalIdFragment.class, R.string.tab_lbl_ext_id));
             }
         }

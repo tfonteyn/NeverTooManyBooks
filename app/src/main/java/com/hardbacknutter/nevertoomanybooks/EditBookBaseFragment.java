@@ -71,7 +71,7 @@ public abstract class EditBookBaseFragment
 
     /** FragmentResultListener request key. */
     private static final String RK_DATE_PICKER_PARTIAL =
-            PartialDatePickerDialogFragment.TAG + ":rk";
+            TAG + ":rk:" + PartialDatePickerDialogFragment.TAG;
 
     /** Tag/requestKey for WrappedMaterialDatePicker. */
     private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:datePickerSingle";

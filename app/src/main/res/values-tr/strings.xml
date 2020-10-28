@@ -55,7 +55,6 @@
     <string name="action_add">Ekle</string>
     <string name="X_action_exit">Çıkış</string>
     <string name="action_merge">Birleşmek</string>
-    <string name="X_action_new">Yeni</string>
     <string name="action_save">Kaydet</string>
     <string name="X_btn_continue_edit">Düzenlemeyi sürdür</string>
     <string name="X_btn_customize">Kişiselleştir…</string>
@@ -95,7 +94,6 @@
     <string name="error_import_file_not_supported">Seçilen dosya içe aktarılamaz.</string>
     <string name="error_import_csv_column_is_blank">Sütun %1$s %2$d numaralı satırda boş</string>
     <string name="error_email_failed">E-posta gönderilemedi.</string>
-    <string name="error_google_play_store_missing">Google Play Store yüklü değil</string>
     <string name="error_if_the_problem_persists">Sorun devam ederse, ayarlar sayfasının altındaki “%1$s” seçeneğiyle desteğe başvurun.</string>
     <string name="error_import_csv_missing_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
@@ -172,14 +170,11 @@
     <string name="hint_not_set">(Ayarlanmadı)</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="info_site_authorization_successful">%1$s yetkilendirmesi başarılı</string>
-    <string name="error_bad_scanner">Görünüşe göre var olan barkod tarayıcı uygulamanız &APP_NAME;
-        ile uyumlu değil.</string>
     <string name="txt_cleanup_files">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “%2$s” düğmesini kullanmayı deneyin.</string>
     <string name="txt_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
     <string name="txt_export_backup_all">Tüm kitaplar, kapaklar, ayarlar ve kişiselleştirilmiş biçemler arşive aktarılacaktır.</string>
     <string name="txt_import_option_all_books">Yeni kitaplar eklenecek. Mevcut kitaplar güncellenecek.</string>
     <string name="txt_import_option_new_and_changed_books">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
-    <string name="txt_install_scanner_recommendation">Biz Zxing barkod tarayıcısını yüklemenizi öneriyoruz. Eğer zaten yüklüyse silip yeniden yüklemeniz yardımcı olabilir.</string>
     <string name="txt_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır. Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
@@ -187,18 +182,17 @@
     <string name="txt_share_book_im_reading">“%1$s” %2$s yazısını %3$s %4$s okuyorum</string>
     <string name="txt_tap_on_image_to_select">Seçmek için daha büyük resme dokunun.</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Daha büyük bir görüntü görüntülemek için bir küçük resme dokunun.</string>
-    <string name="txt_waiting_for_scanner">Tarayıcı / kamera bekleniyor</string>
     <string name="isfdb_menu_populate_toc">Kitap adlarını kendiliğinden doldur (DENEYSEL ÖZELLİK)</string>
     <string name="isfdb_warning_limited_to">(yalnızca ISFDB web sitesi tarafından desteklenir)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">İletişim:</string>
-    <string name="lbl_about_sourcecode">Kaynak kodu</string>
+    <string name="X_lbl_about_sourcecode">Kaynak kodu</string>
     <string name="X_lbl_about_special_thanks">Teşekkürlerimizle</string>
-    <string name="lbl_about_website">İnteret Sayfası</string>
+    <string name="X_lbl_about_website">İnteret Sayfası</string>
     <string name="lbl_added_day">Eklenen gün</string>
     <string name="lbl_added_month">Eklenen ay</string>
     <string name="lbl_added_year">Eklenen yıl</string>
-    <string name="lbl_advanced_options">Gelişmiş</string>
+    <string name="X_lbl_advanced_options">Gelişmiş</string>
     <string name="lbl_anthology">Seçmeler</string>
     <string name="lbl_archive_type_csv">Kitaplar (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Kitapların bir CSV dosyasına aktarılması</string>
@@ -237,7 +231,6 @@
     <string name="lbl_condition_good">İyi</string>
     <string name="lbl_condition_reading_copy">Kopya okunuyor</string>
     <string name="lbl_condition_very_good">Çok iyi</string>
-    <string name="lbl_copy_database">Veritabanını Ver</string>
 
     <string name="lbl_cover_front">Kitap kapağı</string>
     <string name="lbl_cover_back">Kitap arka kapağı</string>
@@ -399,16 +392,16 @@
     <string name="pe_bob_list_rebuild_state_preserve">Mevcut durumu koru</string>
     <string name="pe_thumbnails_cache_resized_each_time">Gerekli olduğunda her seferinde yeniden boyutlandır (daha az yer kaplar, kaydırma daha yavaş olacaktır)</string>
     <string name="pe_thumbnails_cache_resized_stored">Yeniden boyutlandırılmış ufak resimleri bellekte tut (daha fazla yer kaplar, dizelgeler daha hızlı kayar)</string>
-    <string name="pe_cropper_layer_type_hardware">Donanım</string>
-    <string name="pe_cropper_layer_type_software">Yazılım</string>
+    <string name="X_hardware">Donanım</string>
+    <string name="X_software">Yazılım</string>
     <string name="pe_ui_theme_dark">Karanlık</string>
     <string name="pe_ui_theme_day_night">Gündüz / Gece</string>
     <string name="pe_ui_theme_light">ışık</string>
-    <string name="pe_use_recommended_option">Önerilen seçeneği kullanın</string>
+    <string name="X_pe_use_recommended_option">Önerilen seçeneği kullanın</string>
     <string name="pg_barcode_scanner">Barkod okuyucu</string>
     <string name="pg_bob_show_details">Kitap detayları</string>
     <string name="pg_booklist">Kitap listeleri</string>
-    <string name="pg_camera">Kamera</string>
+    <string name="camera">Kamera</string>
     <string name="pg_filters">Kitap süzgeçleri</string>
     <string name="X_pg_general">Genel</string>
     <string name="pg_image_cache">Görüntüler önbelleği</string>
@@ -449,14 +442,13 @@
     <string name="pt_bob_list_state_expansion_level">Varsayılan Kitap listesi genişletme</string>
     <string name="pt_bob_cover_scale">Listelerdeki görüntü boyutu</string>
     <string name="pt_bob_cover_show">Ufak resimleri göster</string>
-    <string name="pt_camera_next_action">Fotoğraf çektikten sonraki eylem</string>
+    <string name="camera_next_action">Fotoğraf çektikten sonraki eylem</string>
     <string name="pt_collect_series_info_from_toc">Seri bilgilerini içindekiler tablosundan toplayın</string>
     <string name="pt_maintenance">Bakım</string>
     <string name="pt_primary_author_type">Tipo de autor principal</string>
     <string name="pt_scanning_beep_on_barcode_found">Bir barkod bulunduğunda bip sesi</string>
     <string name="pt_scanning_beep_on_invalid">Taranan ISBN geçerli değil ise biple</string>
     <string name="pt_scanning_beep_on_valid">Taranan ISBN geçerli ise biple</string>
-    <string name="pt_scanning_preferred_scanner">Yeğlenen Tarayıcı</string>
     <string name="pt_search_prefer_isbn10">Mümkün olduğunda ISBN-10 kullanın</string>
     <string name="pt_search_reformat_color">“Kitap rengi” adlarını standartlaştırma</string>
     <string name="pt_search_reformat_format">“Kitap formatı” adlarını standartlaştırın</string>
@@ -467,8 +459,6 @@
     <string name="pt_site_settings">Web sitesi ayarları</string>
     <string name="pt_sort_author_name_given_first">Yazar adı sıralama</string>
     <string name="pt_sort_title_reordered">Başlıkları sırala</string>
-    <string name="pt_cropper_layer_type">Küçük resmi kırp “Layer Type”</string>
-    <string name="pt_cropper_layer_type_summary">Görüntüleri kırparken çökmeler yaşamadığınız sürece bu ayarı Varsayılan değerde bırakın. Daha güvenli ancak daha yavaş ya da daha az güvenli olmak için “Donanım” için “Yazılım” deneyin, ancak daha hızlı</string>
     <string name="pt_thumbnails_cache_resized">Önbellek yeniden boyutlandırılmış küçük resimler</string>
     <string name="pt_cropper_frame_is_whole_image">Öntanımlı kırpma alanı bütün görseldir</string>
     <string name="pt_thumbnails_rotate_auto">Fotoğrafları döndür</string>
@@ -485,8 +475,6 @@
     <string name="pv_bob_header_filters">Kitap süzgeçleri</string>
     <string name="pv_bob_header_nr_of_books">Kitap sayısını göster</string>
     <string name="pv_bob_header_style_name">Stil adı</string>
-    <string name="pv_scanner_embedded">İç</string>
-    <string name="pv_scanner_zxing_compatible">Zxing Uyumlu Tarayıcı</string>
     <string name="action_retry">Tekrar dene</string>
     <string name="size_hidden">Gizli</string>
     <string name="size_large">Büyük</string>
@@ -568,9 +556,9 @@
     <string name="lbl_search_for_books">Kitap ara</string>
     <string name="lbl_search_isbn">ISBN arama</string>
     <string name="lbl_select_an_action">Bir eylem seçin</string>
-    <string name="lbl_select_image">Resim seç…</string>
+    <string name="X_lbl_select_image">Resim seç…</string>
     <string name="lbl_select_style">Biçem seç</string>
-    <string name="lbl_send_mail">E-posta…</string>
+    <string name="X_lbl_send_mail">E-posta…</string>
     <string name="unknownName">Bilinmiyor</string>
     <string name="unused">kullanılmamış</string>
     <string name="vldt_blank_required_for_x">“%1$s” için boş değer gerekli</string>
@@ -606,8 +594,6 @@
     <string name="warning_requires_at_least_one_field">En az bir alan boş bırakılmamalıdır.</string>
     <string name="warning_requires_isbn">Bu işlem geçerli bir ISBN gerektirir.</string>
     <string name="warning_requires_site_and_id">Bir web sitesi seçin ve bir kimlik girin.</string>
-    <string name="warning_scanner_failed_to_start">Tarayıcı başlatılamadı.</string>
-    <string name="warning_scanner_retry_install">Önce yeniden denemenizi öneririz, ancak devam ederse, lütfen tarayıcıyı yeniden yükleyin veya başka bir tarayıcı yükleyin.</string>
     <string name="warning_select_at_least_1_field">Güncellemek için en azından bir alan seçin.</string>
     <string name="warning_select_at_least_1_group">En az bir grup seçin.</string>
     <string name="X_warning_already_in_list_series">Seri zaten ekli</string>
@@ -674,9 +660,12 @@
     <string name="lbl_backup_and_export">Yedekleme ve Dışa Aktarma</string>
     <string name="lbl_export">İhracat</string>
     <string name="lbl_database">Veri tabanı</string>
-    <string name="lbl_archive_import_supported">İçe aktarma desteklenmektedir.</string>
     <string name="lbl_archive_format_db_info">SQLite veritabanı.</string>
     <string name="lbl_archive_type_db">Veritabanı dosyası (%1$s)</string>
     <string name="confirm_delete_bookshelf">Kitap rafı “%1$s” gerçekten silinsin mi? Kitapların kendileri silinmeyecektir. Diğer raflarda veya “%2$s” rafında bulunmaya devam edecekler.</string>
-
+    <string name="system">(Sistem)</string>
+    <string name="system_default">(Sistem varsayılanı)</string>
+    <string name="camera_other">Diğer</string>
+    <string name="camera_front">Ön kamera</string>
+    <string name="camera_back">Arka kamera</string>
 </resources>

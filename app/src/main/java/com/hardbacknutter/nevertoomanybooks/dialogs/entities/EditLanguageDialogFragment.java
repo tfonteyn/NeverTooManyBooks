@@ -23,7 +23,6 @@ import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.List;
@@ -95,15 +94,13 @@ public class EditLanguageDialogFragment
     }
 
     @Override
-    @Nullable
-    Bundle onSave(@NonNull final String originalText,
-                  @NonNull final String currentText) {
+    void onSave(@NonNull final String originalText,
+                @NonNull final String currentText) {
         //noinspection ConstantConditions
         final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
         final String iso = Languages.getInstance()
                                     .getISO3FromDisplayName(getContext(), userLocale, currentText);
         //noinspection ConstantConditions
         mDb.updateLanguage(originalText, iso);
-        return null;
     }
 }

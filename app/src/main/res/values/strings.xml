@@ -164,9 +164,7 @@
 
     <string name="error_auto_toc_population_failed">Automatic Population of Titles Failed.</string>
     <string name="error_no_image_editor">No image editor found.</string>
-    <string name="error_bad_scanner">It looks like your existing barcode scanner app is not compatible with &APP_NAME;.</string>
     <string name="error_email_failed">Failed to send the email.</string>
-    <string name="error_google_play_store_missing">Google Play Store is not installed.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
@@ -232,10 +230,6 @@
     <string name="warning_toc_confirm">Please confirm that these titles are (mostly) correct.</string>
     <string name="warning_backup_request">Would you like to backup your database to your sdcard?</string>
 
-    <!-- A scanner was installed and loaded, but refused to actually start. -->
-    <string name="warning_scanner_failed_to_start">The scanner failed to start.</string>
-    <string name="warning_scanner_retry_install">We suggest you retry first, but if it keeps failing please reinstall your scanner, or install another scanner.</string>
-
     <!-- ####################################################################################### -->
     <!-- ========== Info/help messages ========== -->
     <!-- ####################################################################################### -->
@@ -255,12 +249,6 @@
     <string name="txt_tap_on_image_to_select">Tap on the larger image to select it.</string>
 
     <string name="txt_select_fields_to_update">Selected fields will be updated from the internet. Unselected fields will remain unchanged.</string>
-
-    <string name="txt_waiting_for_scanner">Waiting for scanner/camera</string>
-
-    <!-- prompt to install a scanner. Shown above a menu of Scanners.
-        This is used after a previous scanner selection was not working. -->
-    <string name="txt_install_scanner_recommendation">We recommend installing the Zxing barcode scanner application, and if it is already installed, we recommend uninstalling it and reinstalling it.</string>
 
     <string name="txt_manage_fields">Selected fields are visible in the add/edit book screens. Unselected fields are hidden.</string>
 
@@ -627,9 +615,6 @@
     <!-- == Global preference settings - TODO: prune duplicate strings == -->
     <!-- ####################################################################################### -->
 
-    <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
-    <string name="pe_use_recommended_option">Use the recommended option</string>
-
     <!-- Preference Category -->
     <string name="pg_ui">User Interface</string>
 
@@ -682,10 +667,6 @@
 
     <!-- Preference Category -->
     <string name="pg_barcode_scanner">Barcode scanner</string>
-    <!-- ListPreference - the barcode scanner to use-->
-    <string name="pt_scanning_preferred_scanner">Preferred Scanner</string>
-    <string name="pv_scanner_zxing_compatible">Zxing Compatible Scanner</string>
-    <string name="pv_scanner_embedded">Internal</string>
     <!-- SwitchPreference - Embedded & ZXing only.-->
     <string name="pt_scanning_beep_on_barcode_found">Beep when a barcode is found</string>
     <!-- SwitchPreference -->
@@ -694,8 +675,19 @@
     <string name="pt_scanning_beep_on_invalid">Beep if scanned ISBN is invalid</string>
 
     <!-- [VERIFIED] Preference Category -->
-    <string name="pg_camera">Camera</string>
-    <string name="pt_camera_next_action">Action after taking a picture</string>
+    <string name="camera">Camera</string>
+    <string name="camera_next_action">Action after taking a picture</string>
+    <!-- [VERIFIED] -->
+    <string name="camera_front">Front Camera</string>
+    <!-- [VERIFIED] -->
+    <string name="camera_back">Back Camera</string>
+    <!-- [VERIFIED] -->
+    <string name="camera_other">Other</string>
+
+    <!-- [VERIFIED] -->
+    <string name="system">(System)</string>
+    <!-- [VERIFIED] -->
+    <string name="system_default">(System default)</string>
 
     <!-- Preference Category -->
     <string name="pg_image_cache">Image cache</string>
@@ -708,15 +700,6 @@
 
     <!-- SwitchPreference - start the cropper with the cropper frame set to the whole image -->
     <string name="pt_cropper_frame_is_whole_image">Default crop frame is whole image</string>
-    <!-- ListPreference - Compatibility / bug workaround for some devices -->
-    <string name="pt_cropper_layer_type">Cropping “Layer Type”</string>
-    <!-- TODO: “Use default”+“Software”+“Hardware”  should be parameters. But that means modifying the Tip class -->
-    <string name="pt_cropper_layer_type_summary">
-        Leave this setting on “Use default” unless you experience crashes while cropping images.
-        Try “Software” for safer but slower or force “Hardware” for less safe, but faster.
-    </string>
-    <string name="pe_cropper_layer_type_hardware">Hardware</string>
-    <string name="pe_cropper_layer_type_software">Software</string>
 
     <!-- category: search sites -->
     <string name="pt_website_order_and_enable">Reorder, enable &amp; disable</string>
@@ -876,11 +859,6 @@
     <string name="lbl_importing">Importing…</string>
     <!-- Progress Dialog title. -->
     <string name="lbl_backing_up">Backing up…</string>
-
-    <!-- Chooser title. -->
-    <string name="lbl_send_mail">Send email…</string>
-    <!-- Chooser title. -->
-    <string name="lbl_select_image">Select image…</string>
 
     <!-- ####################################################################################### -->
     <!-- == Booklist FAB menu options. == -->
@@ -1044,9 +1022,6 @@
     <string name="btn_disable_message">Disable Message</string>
 
     <string name="btn_this_book">This Book</string>
-
-
-    <string name="X_action_new">New</string>
 
     <!-- Hint text for the drag handle button in re-order-able lists -->
     <string name="hint_btn_drag_handle">Drag me to reorder this list</string>
@@ -1409,6 +1384,7 @@
 
     <!-- grouping headings in the booklist -->
     <string name="lbl_read">Read</string>
+    <!-- [VERIFIED] -->
     <string name="lbl_unread">Unread</string>
 
     <string name="lbl_barcode">Barcode</string>
@@ -1458,7 +1434,6 @@
     <!-- Label for the spinner where the user selects the format of the export file/archive. -->
     <string name="lbl_archive_format">Format</string>
 
-    <string name="lbl_archive_import_supported">Importing is supported.</string>
     <string name="lbl_archive_is_export_only">This is only for exporting data; importing is not supported.</string>
 
     <!-- Text in a spinner dropdown. Must be fairly short. -->
@@ -1487,15 +1462,10 @@
     <!-- 'import' option -->
     <string name="lbl_option_new_and_changed_books">New and updated books</string>
 
-
     <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
 
-
     <string name="lbl_websites">Websites</string>
-
-    <!-- [VERIFIED] Admin GROUP -->
-    <string name="lbl_advanced_options">Advanced</string>
 
     <!-- [VERIFIED] Admin advanced - collect debug information and prepare an email to the developers -->
     <string name="lbl_send_debug">Bug report</string>
@@ -1503,17 +1473,20 @@
     <string name="lbl_purge_files">Cleanup Files</string>
     <!-- Admin advanced - clear the cached images -->
     <string name="lbl_purge_image_cache">Clear images cache</string>
-    <!-- Admin advanced - make a copy of the internal database to a public folder -->
-    <string name="lbl_copy_database">Export Database</string>
 
     <!-- Headings in 'about' dialog -->
-    <string name="lbl_about_website">Web page</string>
-    <string name="lbl_about_sourcecode">Source Code</string>
+
     <string name="lbl_about_contact">Contact:</string>
 
     <!-- ####################################################################################### -->
     <!-- === Unused, but not removing as we have translations which might be useful later == -->
     <!-- ####################################################################################### -->
+
+    <!-- [VERIFIED] Admin GROUP -->
+    <string name="X_lbl_advanced_options">Advanced</string>
+
+    <string name="X_lbl_about_website">Web page</string>
+    <string name="X_lbl_about_sourcecode">Source Code</string>
 
     <string name="X_tip_booklist_global_properties">
         You can use this screen to set the default characteristics of all booklist styles.
@@ -1584,6 +1557,14 @@
     <!-- [VERIFIED] -->
     <string name="X_use_default_setting">Use default values</string>
     <string name="X_gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
+
+    <string name="X_lbl_send_mail">Send email…</string>
+    <string name="X_lbl_select_image">Select image…</string>
+    <string name="X_hardware">Hardware</string>
+    <string name="X_software">Software</string>
+
+    <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
+    <string name="X_pe_use_recommended_option">Use the recommended option</string>
 
 
     <!-- ####################################################################################### -->

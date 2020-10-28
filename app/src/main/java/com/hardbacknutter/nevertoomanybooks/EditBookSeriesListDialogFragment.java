@@ -72,7 +72,7 @@ public class EditBookSeriesListDialogFragment
     /** Fragment/Log tag. */
     static final String TAG = "EditBookSeriesListDlg";
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_SERIES = EditSeriesForBookDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesForBookDialogFragment.TAG;
 
     /** Database Access. */
     private DAO mDb;

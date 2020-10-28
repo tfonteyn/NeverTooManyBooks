@@ -119,7 +119,7 @@ public final class StyleDAO {
                                  @NonNull final BooklistStyle style) {
 
         SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
-        SanityCheck.requireNonZero(style.getId(), "A new Style cannot be updated");
+        SanityCheck.requireValue(style.getId(), "A new Style cannot be updated");
 
         if (db.update(style)) {
             if (style.isUserDefined()) {
@@ -171,7 +171,7 @@ public final class StyleDAO {
                                  @NonNull final BooklistStyle style) {
 
         SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
-        SanityCheck.requireNonZero(style.getId(), "A new Style cannot be deleted");
+        SanityCheck.requireValue(style.getId(), "A new Style cannot be deleted");
 
         // sanity check
         if (style.isBuiltin()) {

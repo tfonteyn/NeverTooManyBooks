@@ -19,19 +19,18 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    >
     <PreferenceCategory
         android:key="psk_barcode_scanner"
         android:title="@string/pg_barcode_scanner">
 
-        <!-- default ScannerManager.DEFAULT  -->
-        <!--        <ListPreference-->
-        <!--            android:defaultValue="0"-->
-        <!--            android:entries="@array/pe_scanning_preferred_scanner"-->
-        <!--            android:entryValues="@array/pv_scanning_preferred_scanner"-->
-        <!--            android:icon="@drawable/ic_barcode"-->
-        <!--            android:key="scanner.preferred"-->
-        <!--            android:title="@string/pt_scanning_preferred_scanner" />-->
+        <ListPreference
+            android:defaultValue="-1"
+            android:icon="@drawable/ic_photo_camera"
+            android:key="camera.id.scan.barcode"
+            android:title="@string/camera"
+            />
 
         <SwitchPreference
             android:defaultValue="true"

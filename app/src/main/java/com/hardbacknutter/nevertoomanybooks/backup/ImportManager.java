@@ -211,7 +211,7 @@ public class ImportManager
             throws InvalidArchiveException, IOException {
 
         // Validate the settings before going ahead.
-        SanityCheck.requirePositiveValue(mOptions & MASK, "mOptions");
+        SanityCheck.requireValue(mOptions & MASK, "mOptions");
 
         final ArchiveReader reader;
         switch (getContainer(context)) {

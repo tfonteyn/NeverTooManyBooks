@@ -31,22 +31,26 @@ import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -250,20 +254,16 @@ public class EditLenderDialogFragment
         }
 
         final boolean success;
-        final Bundle result = new Bundle(2);
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
             success = mDb.setLoanee(mBookId, mLoanee, true);
-            result.putString(DBDefinitions.KEY_LOANEE, mLoanee);
-
         } else {
             // return the book
             success = mDb.setLoanee(mBookId, null, true);
         }
 
         if (success) {
-            result.putLong(DBDefinitions.KEY_FK_BOOK, mBookId);
-            ChangeListener.update(this, mRequestKey, ChangeListener.BOOK_LOANEE, result);
+            OnResultListener.sendResult(this, mRequestKey, mBookId, mLoanee);
             return true;
         }
         return false;
@@ -293,5 +293,35 @@ public class EditLenderDialogFragment
             mDb.close();
         }
         super.onDestroy();
+    }
+
+    public interface OnResultListener
+            extends FragmentResultListener {
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               final long bookId,
+                               @NonNull final String loanee) {
+            final Bundle result = new Bundle(2);
+            result.putLong(DBDefinitions.KEY_FK_BOOK, bookId);
+            result.putString(DBDefinitions.KEY_LOANEE, loanee);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        @Override
+        default void onFragmentResult(@NonNull final String requestKey,
+                                      @NonNull final Bundle result) {
+            onResult(SanityCheck.requireValue(result.getLong(DBDefinitions.KEY_FK_BOOK)),
+                     Objects.requireNonNull(result.getString(DBDefinitions.KEY_LOANEE)));
+        }
+
+        /**
+         * Callback handler.
+         *
+         * @param bookId the id of the updated book
+         * @param loanee the name of the loanee, or {@code ""} for a returned book
+         */
+        void onResult(@IntRange(from = 1) long bookId,
+                      @NonNull String loanee);
     }
 }

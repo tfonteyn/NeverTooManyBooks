@@ -77,7 +77,7 @@ public class EditBookAuthorListDialogFragment
     /** Fragment/Log tag. */
     static final String TAG = "EditBookAuthorListDlg";
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_AUTHOR = EditAuthorForBookDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorForBookDialogFragment.TAG;
 
     /** Database Access. */
     private DAO mDb;

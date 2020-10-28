@@ -184,13 +184,6 @@
     <!-- Options menu, confirming the main action; e.g. Save/Add/Select/... -->
     <item name="MENU_ACTION_CONFIRM" type="id" />
 
-    <!-- Scanner pick list -->
-    <item name="MENU_SCANNER_EMBEDDED_ZXING" type="id" />
-    <item name="MENU_SCANNER_GOOGLE_PLAY" type="id" />
-    <item name="MENU_SCANNER_ZXING" type="id" />
-    <item name="MENU_SCANNER_ZXING_COMPATIBLE" type="id" />
-    <item name="MENU_SCANNER_PIC2SHOP" type="id" />
-
     <item name="MENU_SCAN_BARCODE" type="id" />
 
     <!-- debug options for the SQLite shell activity. -->

@@ -63,9 +63,9 @@ public class EditBookshelvesFragment
     static final String TAG = "EditBookshelvesFragment";
 
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_BOOKSHELF = EditBookshelfDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
     /** FragmentResultListener request key. */
-    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk";
+    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mModel;

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,12 +34,17 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LongNumberFormatter;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 public class EditBookExternalIdFragment
         extends EditBookBaseFragment {
 
     /** Log tag. */
     private static final String TAG = "EditBookExternalIdFrag";
+
+    static boolean showEditBookTabExternalId(@NonNull final SharedPreferences preferences) {
+        return preferences.getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
+    }
 
     @NonNull
     @Override

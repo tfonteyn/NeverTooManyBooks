@@ -92,7 +92,7 @@ public class CoverHandler {
     private static final String TAG = "CoverHandler";
 
     /** FragmentResultListener request key. Append the mCIdx value! */
-    private static final String RK_MENU_PICKER = MenuPickerDialogFragment.TAG + ":rk:";
+    private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
 
     /**
      * After taking a picture, do nothing. Never change the value.

@@ -803,6 +803,11 @@ public final class DBHelper
         // we should at the same time change DOM_UTC_LAST_SYNC_DATE_GOODREADS
         // See note in the DBDefinitions class.
 
+        //TODO:  prefs.edit()
+        // .remove("scanner.preferred")
+        // .remove("compat.image.cropper.viewlayertype")
+        // .apply();
+
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_your_engine_external_id);
@@ -828,7 +833,7 @@ public final class DBHelper
      * Not called yet, but this method collects ALL keys which were declared obsolete.
      * The issue being that some keys will be in backups and re-created.
      * <p>
-     * pro: good to clean up
+     * pro: good to clean up<br>
      * con: a handful of obsolete keys is not an issue
      *
      * @param context Current context
@@ -850,11 +855,13 @@ public final class DBHelper
           .remove("booklist.top.rowId")
           .remove("booklist.top.offset")
           .remove("compat.booklist.mode")
+          .remove("compat.image.cropper.viewlayertype")
           .remove("edit.book.tab.authSer")
           .remove("edit.book.tab.nativeId")
           .remove("fields.visibility.bookshelf")
           .remove("startup.lastVersion")
           .remove("tmp.edit.book.tab.authSer")
+          .remove("scanner.preferred")
           .apply();
     }
 

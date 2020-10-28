@@ -53,7 +53,7 @@ public abstract class EditStringBaseDialogFragment
     private final int mDialogTitleId;
     @StringRes
     private final int mLabelId;
-    @ChangeListener.Changes
+    @ChangeListener.Flags
     private final int mFieldChanges;
     /** Database Access. */
     @Nullable
@@ -72,11 +72,11 @@ public abstract class EditStringBaseDialogFragment
      *
      * @param titleId      for the dialog (i.e. the toolbar)
      * @param label        to use for the 'hint' of the input field
-     * @param fieldChanges one of the {@link ChangeListener.Changes} bits
+     * @param fieldChanges one of the {@link ChangeListener.Flags} bits
      */
     EditStringBaseDialogFragment(@StringRes final int titleId,
                                  @StringRes final int label,
-                                 @ChangeListener.Changes final int fieldChanges) {
+                                 @ChangeListener.Flags final int fieldChanges) {
         super(R.layout.dialog_edit_string);
 
         mDialogTitleId = titleId;
@@ -166,9 +166,9 @@ public abstract class EditStringBaseDialogFragment
             return true;
         }
 
-        final Bundle data = onSave(mOriginalText, mCurrentText);
+        onSave(mOriginalText, mCurrentText);
 
-        ChangeListener.update(this, mRequestKey, mFieldChanges, data);
+        ChangeListener.update(this, mRequestKey, mFieldChanges);
         return true;
     }
 
@@ -181,12 +181,9 @@ public abstract class EditStringBaseDialogFragment
      *
      * @param originalText the original text which was passed in to be edited
      * @param currentText  the modified text
-     *
-     * @return the bundle to pass back to
      */
-    @Nullable
-    abstract Bundle onSave(String originalText,
-                           String currentText);
+    abstract void onSave(String originalText,
+                         String currentText);
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {

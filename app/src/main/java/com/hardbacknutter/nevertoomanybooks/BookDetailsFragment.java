@@ -26,7 +26,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -109,7 +108,7 @@ public class BookDetailsFragment
     public static final String TAG = "BookDetailsFragment";
 
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_LENDER = EditLenderDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
 
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
@@ -120,24 +119,13 @@ public class BookDetailsFragment
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
 
-    /** Listen for changes coming from child (dialog) fragments. */
-    private final ChangeListener mChangeListener = (changes, data) -> {
-        if (data != null) {
-            if ((changes & ChangeListener.BOOK_LOANEE) != 0) {
-                final String loanee = Objects.requireNonNull(
-                        data.getString(DBDefinitions.KEY_LOANEE), "loanee");
+    private final EditLenderDialogFragment.OnResultListener mEditLenderListener =
+            (bookId, loanee) -> {
                 // the db was already updated, just update the book to avoid a reload.
                 mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
                 populateLendToField(loanee);
-            } else {
-                // we don't expect/implement any others.
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "changes=0b" + Integer.toBinaryString(changes)
-                               + "|data=" + data);
-                }
-            }
-        }
-    };
+            };
+
     /** View Binding. */
     private FragmentBookDetailsMergePublicationSectionBinding mVbPub;
     /** View Binding. */
@@ -158,7 +146,7 @@ public class BookDetailsFragment
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager()
-                .setFragmentResultListener(RK_EDIT_LENDER, this, mChangeListener);
+                .setFragmentResultListener(RK_EDIT_LENDER, this, mEditLenderListener);
 
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         //noinspection ConstantConditions

@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -33,22 +31,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.annotation.CallSuper;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -62,9 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatte
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
+import com.hardbacknutter.nevertoomanybooks.scanner.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ScannerViewModel;
 
 public class EditBookFieldsFragment
         extends EditBookBaseFragment {
@@ -73,7 +68,7 @@ public class EditBookFieldsFragment
     private static final String TAG = "EditBookFieldsFragment";
 
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_BOOKSHELVES = CheckListDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + CheckListDialogFragment.TAG;
 
     private final CheckListDialogFragment.OnResultListener mOnCheckListListener =
             (fieldId, selectedItems) -> {
@@ -90,9 +85,9 @@ public class EditBookFieldsFragment
     /** The level of checking the ISBN code. */
     @ISBN.Validity
     private int mIsbnValidityCheck;
-    /** The scanner. Must be in the Activity scope. */
-    @Nullable
-    private ScannerViewModel mScannerModel;
+
+    /** The scanner. */
+    private ActivityResultLauncher<Void> mScannerLauncher;
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
 
@@ -109,8 +104,12 @@ public class EditBookFieldsFragment
         getChildFragmentManager()
                 .setFragmentResultListener(RK_EDIT_BOOKSHELVES, this, mOnCheckListListener);
 
-        //noinspection ConstantConditions
-        mScannerModel = new ViewModelProvider(getActivity()).get(ScannerViewModel.class);
+        mScannerLauncher = registerForActivityResult(
+                new ScannerContract(this), barCode -> {
+                    if (barCode != null) {
+                        mBookViewModel.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
+                    }
+                });
 
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -173,10 +172,7 @@ public class EditBookFieldsFragment
             field.validate();
         });
 
-        mVb.btnScan.setOnClickListener(v -> {
-            Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
-            mScannerModel.scan(this, RequestCode.SCAN_BARCODE);
-        });
+        mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(null));
 
         mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
                 .newInstance()
@@ -350,37 +346,5 @@ public class EditBookFieldsFragment
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.SCAN_BARCODE: {
-                Objects.requireNonNull(mScannerModel, ScannerViewModel.TAG);
-                mScannerModel.setScannerStarted(false);
-                if (resultCode == Activity.RESULT_OK) {
-                    //noinspection ConstantConditions
-                    final String barCode = mScannerModel.getBarcode(getContext(), data);
-                    if (barCode != null) {
-                        mBookViewModel.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
-                        return;
-                    }
-                }
-                return;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-            }
-        }
     }
 }

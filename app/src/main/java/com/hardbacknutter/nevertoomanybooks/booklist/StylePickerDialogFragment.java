@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
@@ -239,20 +240,18 @@ public class StylePickerDialogFragment
     public interface OnResultListener
             extends FragmentResultListener {
 
-        /* private. */ String UUID = "uuid";
-
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
                                @NonNull final String uuid) {
             final Bundle result = new Bundle(1);
-            result.putString(UUID, uuid);
+            result.putString(DBDefinitions.KEY_FK_STYLE, uuid);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getString(UUID)));
+            onResult(Objects.requireNonNull(result.getString(DBDefinitions.KEY_FK_STYLE)));
         }
 
         /**

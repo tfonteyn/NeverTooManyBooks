@@ -34,10 +34,17 @@ import java.util.Map;
  */
 public class SanityCheck {
 
+    @SuppressWarnings("UnusedReturnValue")
+    public static long requireValue(final long value) {
+        if (value < 1) {
+            throw new MissingValueException();
+        }
+        return value;
+    }
 
     @SuppressWarnings("UnusedReturnValue")
-    public static long requirePositiveValue(final long value,
-                                            @Nullable final String message) {
+    public static long requireValue(final long value,
+                                    @Nullable final String message) {
         if (value < 1) {
             throw new MissingValueException(message);
         }
@@ -45,9 +52,13 @@ public class SanityCheck {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public static long requireNonZero(final long value,
+    @NonNull
+    public static String requireValue(@Nullable final String value,
                                       @Nullable final String message) {
-        if (value == 0) {
+        if (value == null) {
+            throw new NullPointerException(message);
+        }
+        if (value.isEmpty()) {
             throw new MissingValueException(message);
         }
         return value;
@@ -55,32 +66,28 @@ public class SanityCheck {
 
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public static String requireValue(@Nullable final String s,
-                                      @Nullable final String message) {
-        if (s == null || s.isEmpty()) {
-            throw new MissingValueException(message);
-        }
-        return s;
-    }
-
-    @SuppressWarnings("UnusedReturnValue")
-    @NonNull
-    public static <T extends Collection<?>> T requireValue(@Nullable final T s,
+    public static <T extends Collection<?>> T requireValue(@Nullable final T value,
                                                            @Nullable final String message) {
-        if (s == null || s.isEmpty()) {
+        if (value == null) {
+            throw new NullPointerException(message);
+        }
+        if (value.isEmpty()) {
             throw new MissingValueException(message);
         }
-        return s;
+        return value;
     }
 
     @SuppressWarnings("UnusedReturnValue")
     @NonNull
-    public static <T extends Map<?, ?>> T requireValue(@Nullable final T s,
+    public static <T extends Map<?, ?>> T requireValue(@Nullable final T value,
                                                        @Nullable final String message) {
-        if (s == null || s.isEmpty()) {
+        if (value == null) {
+            throw new NullPointerException(message);
+        }
+        if (value.isEmpty()) {
             throw new MissingValueException(message);
         }
-        return s;
+        return value;
     }
 
     public static class MissingValueException
@@ -88,8 +95,11 @@ public class SanityCheck {
 
         private static final long serialVersionUID = 4418513924924222373L;
 
-        public MissingValueException(@Nullable final String s) {
-            super(s);
+        public MissingValueException() {
+        }
+
+        public MissingValueException(@Nullable final String message) {
+            super(message);
         }
     }
 }

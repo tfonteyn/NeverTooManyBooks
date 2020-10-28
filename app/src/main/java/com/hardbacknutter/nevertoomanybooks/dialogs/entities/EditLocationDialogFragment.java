@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import java.util.List;
@@ -73,11 +72,9 @@ public class EditLocationDialogFragment
     }
 
     @Override
-    @Nullable
-    Bundle onSave(@NonNull final String originalText,
-                  @NonNull final String currentText) {
+    void onSave(@NonNull final String originalText,
+                @NonNull final String currentText) {
         //noinspection ConstantConditions
         mDb.updateLocation(originalText, currentText);
-        return null;
     }
 }

@@ -170,7 +170,7 @@ public class EditPublisherDialogFragment
                 success = mDb.update(context, mPublisher, bookLocale);
             }
             if (success) {
-                ChangeListener.update(this, mRequestKey, ChangeListener.PUBLISHER, null);
+                ChangeListener.update(this, mRequestKey, ChangeListener.PUBLISHER);
                 return true;
             }
         } else {
@@ -186,7 +186,7 @@ public class EditPublisherDialogFragment
                         try {
                             mDb.merge(context, mPublisher, existingId);
                             ChangeListener
-                                    .update(this, mRequestKey, ChangeListener.PUBLISHER, null);
+                                    .update(this, mRequestKey, ChangeListener.PUBLISHER);
                         } catch (@NonNull final DAO.DaoWriteException e) {
                             Logger.error(context, TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);

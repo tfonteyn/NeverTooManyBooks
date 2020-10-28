@@ -72,7 +72,8 @@ public class EditBookPublisherListDialogFragment
     /** Fragment/Log tag. */
     static final String TAG = "EditBookPubListDlg";
     /** FragmentResultListener request key. */
-    private static final String RK_EDIT_PUBLISHER = EditPublisherForBookDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_PUBLISHER =
+            TAG + ":rk:" + EditPublisherForBookDialogFragment.TAG;
     /** Database Access. */
     private DAO mDb;
     /** The book. Must be in the Activity scope. */

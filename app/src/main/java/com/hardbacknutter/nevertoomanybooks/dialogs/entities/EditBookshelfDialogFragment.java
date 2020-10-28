@@ -34,11 +34,11 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -171,7 +171,6 @@ public class EditBookshelfDialogFragment
                 success = mDb.update(getContext(), mBookshelf);
             }
             if (success) {
-                ChangeListener.update(this, mRequestKey, ChangeListener.BOOKSHELF, null);
                 OnResultListener.sendResult(this, mRequestKey, mBookshelf.getId());
                 return true;
             }
@@ -187,7 +186,6 @@ public class EditBookshelfDialogFragment
                         // move all books from the one being edited to the existing one
                         mDb.merge(mBookshelf, existingId);
 
-                        ChangeListener.update(this, mRequestKey, ChangeListener.BOOKSHELF, null);
                         OnResultListener.sendResult(this, mRequestKey, existingId);
                         dismiss();
                     })
@@ -225,20 +223,18 @@ public class EditBookshelfDialogFragment
     public interface OnResultListener
             extends FragmentResultListener {
 
-        /* private. */ String BOOKSHELF_ID = "bookshelfId";
-
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
                                final long bookshelfId) {
             final Bundle result = new Bundle(1);
-            result.putLong(BOOKSHELF_ID, bookshelfId);
+            result.putLong(DBDefinitions.KEY_FK_BOOKSHELF, bookshelfId);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onResult(result.getLong(BOOKSHELF_ID));
+            onResult(SanityCheck.requireValue(result.getLong(DBDefinitions.KEY_FK_BOOKSHELF)));
         }
 
         /**

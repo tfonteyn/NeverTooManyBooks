@@ -48,32 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
  */
 public final class Prefs {
 
-    /** User preference Key. */
-    public static final String pk_ui_locale = "ui.locale";
-    /** Not the actual theme, but the day/night part only. */
-    public static final String pk_ui_theme = "ui.theme";
-    public static final String pk_network_allow_metered = "network.allow.metered";
-    public static final String pk_scanner_preferred = "scanner.preferred";
-    public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
-    public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
-    public static final String pk_sounds_scan_found_barcode = "sounds.scan.barcode.found";
-    public static final String pk_search_reformat_format = "search.reformat.format";
-    public static final String pk_search_reformat_color = "search.reformat.color";
-    public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
-    public static final String pk_camera_image_autorotate = "camera.image.autorotate";
-    public static final String pk_camera_image_action = "camera.image.action";
-    public static final String pk_image_cache_resized = "image.cache.resized";
-    public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
-    public static final String pk_image_cropper_layer_type = "compat.image.cropper.viewlayertype";
-    public static final String pk_sort_title_reordered = "sort.title.reordered";
-    public static final String pk_show_title_reordered = "show.title.reordered";
-    public static final String pk_sort_author_name_given_first = "sort.author.name.given_first";
-    public static final String pk_show_author_name_given_first = "show.author.name.given_first";
-    public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
-    public static final String pk_booklist_fastscroller_overlay = "booklist.fastscroller.overlay";
-    public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
-
-
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_AUTHOR = "psk_style_author";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
@@ -82,22 +56,43 @@ public final class Prefs {
     public static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     public static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
-    /** Global - PreferenceScreen/PreferenceCategory Key. */
-    public static final String PSK_BARCODE_SCANNER = "psk_barcode_scanner";
 
+    /** User preference Key. */
+    public static final String pk_ui_locale = "ui.locale";
+    /** Not the actual theme, but the day/night part only. */
+    public static final String pk_ui_theme = "ui.theme";
+    public static final String pk_network_allow_metered = "network.allow.metered";
 
+    public static final String pk_sounds_scan_isbn_valid = "sounds.scan.isbn.valid";
+    public static final String pk_sounds_scan_isbn_invalid = "sounds.scan.isbn.invalid";
+    public static final String pk_sounds_scan_found_barcode = "sounds.scan.barcode.found";
+
+    public static final String pk_search_reformat_format = "search.reformat.format";
+    public static final String pk_search_reformat_color = "search.reformat.color";
+    public static final String pk_search_isbn_prefer_10 = "search.byIsbn.prefer.10";
+
+    public static final String pk_camera_image_autorotate = "camera.image.autorotate";
+    public static final String pk_camera_image_action = "camera.image.action";
+    public static final String pk_camera_id_scan_barcode = "camera.id.scan.barcode";
+
+    public static final String pk_image_cache_resized = "image.cache.resized";
+    public static final String pk_image_cropper_frame_whole = "image.cropper.frame.whole";
+
+    public static final String pk_sort_title_reordered = "sort.title.reordered";
+    public static final String pk_show_title_reordered = "show.title.reordered";
+    public static final String pk_sort_author_name_given_first = "sort.author.name.given_first";
+    public static final String pk_show_author_name_given_first = "show.author.name.given_first";
+    public static final String pk_booklist_rebuild_state = "booklist.rebuild.state";
+    public static final String pk_booklist_fastscroller_overlay = "booklist.fastscroller.overlay";
+
+    public static final String pk_edit_book_isbn_checks = "edit.book.isbn.checks";
     /** Whether to show the fragment that allows the user to edit the external id's. */
-    private static final String pk_edit_book_tabs_external_id = "edit.book.tab.externalId";
-
+    public static final String pk_edit_book_tabs_external_id = "edit.book.tab.externalId";
 
     /** Log tag. */
     private static final String TAG = "Prefs";
 
     private Prefs() {
-    }
-
-    public static boolean showEditBookTabExternalId(@NonNull final SharedPreferences preferences) {
-        return preferences.getBoolean(pk_edit_book_tabs_external_id, false);
     }
 
     /**
@@ -121,7 +116,8 @@ public final class Prefs {
      *
      * @param preferences SharedPreferences to read from
      * @param key         The name of the preference to retrieve.
-     * @param defValue    Value to return if this preference does not exist.
+     * @param defValue    Value to return if this preference does not exist,
+     *                    or if the stored value is somehow invalid
      *
      * @return int (stored as String) global preference
      */
@@ -132,7 +128,13 @@ public final class Prefs {
         if (value == null || value.isEmpty()) {
             return defValue;
         }
-        return Integer.parseInt(value);
+
+        // we should never have an invalid setting the in the prefs... flw
+        try {
+            return Integer.parseInt(value);
+        } catch (@NonNull final NumberFormatException ignore) {
+            return defValue;
+        }
     }
 
     /**
@@ -207,4 +209,5 @@ public final class Prefs {
             context.deleteSharedPreferences(source);
         }
     }
+
 }

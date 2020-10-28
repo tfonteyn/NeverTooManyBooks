@@ -45,12 +45,6 @@
     <string name="site_open_library" translatable="false">OpenLibrary</string>
     <string name="site_stripinfo_be" translatable="false">stripinfo.be</string>
 
-    <string name="google_play_services" translatable="false">Google Play Services</string>
-
-    <!-- Scanner names -->
-    <string name="pv_scanner_zxing" translatable="false">Zxing</string>
-    <string name="pv_scanner_pic2shop" translatable="false">Pic2Shop</string>
-
     <string name="brackets" translatable="false">(%1$s)</string>
 
     <!--&lt;!&ndash; Regular expression with all possible prefixes-->
@@ -63,7 +57,6 @@
     <!-- debug user visible strings, not normally seen; here to please lint. -->
     <string name="debug" translatable="false">Debug</string>
     <string name="debug_dump_prefs" translatable="false">Dump prefs to log</string>
-    <string name="debug_dump_temp_tables" translatable="false">Dump temp tables to log</string>
 
     <string name="debug_sq_shell" translatable="false">SQLite Shell</string>
     <string name="debug_sq_shell_run" translatable="false">Run</string>
@@ -154,22 +147,6 @@
         <item>0</item>
     </string-array>
 
-    <!-- ListPreference - the barcode scanner to use - NEWTHINGS: adding a scanner-->
-    <string-array name="pe_scanning_preferred_scanner">
-        <item>@string/pv_scanner_embedded</item>
-        <item>@string/google_play_services</item>
-        <item>@string/pv_scanner_zxing</item>
-        <item>@string/pv_scanner_zxing_compatible</item>
-        <!--        <item>@string/pv_scanner_pic2shop</item>-->
-    </string-array>
-    <string-array name="pv_scanning_preferred_scanner">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <!--        <item>4</item>-->
-    </string-array>
-
     <!-- ListPreference - Degrees by which to rotate camera images automatically -->
     <string-array name="pe_thumbnails_rotate_auto">
         <item>@string/menu_cover_rotate_automatic</item>
@@ -194,18 +171,6 @@
         <item>0</item>
         <item>1</item>
         <item>2</item>
-    </string-array>
-
-    <!-- ListPreference - Compatibility / bug workaround for some devices -->
-    <string-array name="pe_thumbnails_cropper_layer_type">
-        <item>@string/pe_use_recommended_option</item>
-        <item>@string/pe_cropper_layer_type_hardware</item>
-        <item>@string/pe_cropper_layer_type_software</item>
-    </string-array>
-    <string-array name="pv_thumbnails_cropper_layer_type">
-        <item>-1</item>
-        <item>2</item>
-        <item>1</item>
     </string-array>
 
     <!-- *************************************************************************************** -->
@@ -300,14 +265,6 @@
     <!-- SeekBarPreference - Summary text - Scale text. -->
     <string-array name="pe_bob_text_scale">
         <item>@string/size_x_small</item>
-        <item>@string/size_small</item>
-        <item>@string/size_medium</item>
-        <item>@string/size_large</item>
-        <item>@string/size_x_large</item>
-    </string-array>
-
-    <!-- SeekBarPreference - Summary text - Group row spacing. -->
-    <string-array name="pe_bob_group_row_scale">
         <item>@string/size_small</item>
         <item>@string/size_medium</item>
         <item>@string/size_large</item>

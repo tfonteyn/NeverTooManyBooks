@@ -82,10 +82,6 @@ public abstract class StyleBaseFragment
         if (mTemplateId != 0) {
             mResultData.putResultData(BKEY_TEMPLATE_ID, mTemplateId);
         }
-
-        // and the actual/current id+uuid
-        // mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE_ID, mStyle.getId());
-        // mResultDataModel.putResultData(BooklistStyle.BKEY_STYLE_UUID, mStyle.getUuid());
     }
 
     @Override

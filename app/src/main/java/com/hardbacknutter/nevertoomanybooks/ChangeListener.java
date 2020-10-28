@@ -23,12 +23,13 @@ import android.os.Bundle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 /**
  * Allows to be notified of changes made.
@@ -39,6 +40,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 public interface ChangeListener
         extends FragmentResultListener {
+
+    String REQUEST_KEY = "rk:ChangeListener";
 
     // Note that BOOK is missing here.
     // It's implied if a bookId is passed back, or if the context makes it clear anyhow.
@@ -68,45 +71,43 @@ public interface ChangeListener
     /** A book was deleted. */
     int BOOK_DELETED = 1 << 12;
 
-    /* private. */ String CHANGES = "changes";
-    /* private. */ String DATA = "data";
+    /* private. */ String FLAGS = "flags";
 
     /**
      * Notify changes where made.
      *
-     * @param changes flags
-     * @param data    (optional) data bundle with details
+     * @param requestKey for use with the FragmentResultListener
+     * @param flags      flags
      */
     static void update(@NonNull final Fragment fragment,
                        @NonNull final String requestKey,
-                       @Changes final int changes,
-                       @Nullable final Bundle data) {
-        final Bundle result = new Bundle(2);
-        result.putInt(CHANGES, changes);
-        result.putBundle(DATA, data);
+                       @Flags final int flags) {
+        final Bundle result = new Bundle(1);
+        result.putInt(FLAGS, flags);
+        // Currently not adding DBDefinitions.KEY_FK_BOOK as it's always 0
         fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
     }
 
     @Override
     default void onFragmentResult(@NonNull final String requestKey,
                                   @NonNull final Bundle result) {
-        onChange(result.getInt(CHANGES), result.getBundle(DATA));
+        onChange(result.getLong(DBDefinitions.KEY_FK_BOOK), result.getInt(FLAGS));
     }
 
     /**
      * Called if changes were made.
      *
-     * @param changes a bitmask build from the flags
-     * @param data    bundle with custom data, can be {@code null}
+     * @param bookId the book id being modified, or {@code 0} for a global change
+     * @param flags  bitmask
      */
-    void onChange(@Changes int changes,
-                  @Nullable Bundle data);
+    void onChange(long bookId,
+                  @Flags int flags);
 
     @IntDef(flag = true, value = {AUTHOR, SERIES, PUBLISHER, BOOKSHELF, TOC_ENTRY,
                                   FORMAT, COLOR, GENRE, LANGUAGE, LOCATION,
                                   BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
     @Retention(RetentionPolicy.SOURCE)
-    @interface Changes {
+    @interface Flags {
 
     }
 }

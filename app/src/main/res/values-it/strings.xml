@@ -55,7 +55,6 @@
     <string name="action_add">Aggiungi</string>
     <string name="X_action_exit">Esci</string>
     <string name="action_merge">Unire</string>
-    <string name="X_action_new">Nuovo</string>
     <string name="action_save">Salva</string>
     <string name="X_btn_continue_edit">Annulla</string>
     <string name="X_btn_customize">Personalizza…</string>
@@ -94,7 +93,6 @@
     <string name="error_import_file_not_supported">Il file selezionato non può essere importato.</string>
     <string name="error_import_csv_column_is_blank">La colonna %1$s è vuota alla riga %2$d</string>
     <string name="error_email_failed">L\'invio dell\'email non è riuscito.</string>
-    <string name="error_google_play_store_missing">Google Play Store non è installato</string>
     <string name="error_if_the_problem_persists">Se il problema persiste, contattare l\'assistenza tramite l\'opzione «%1$s» nella parte inferiore della pagina delle impostazioni.</string>
     <string name="error_import_csv_missing_columns_x">Il file deve contenere una colonna con uno dei seguenti nomi: %1$s</string>
     <string name="error_import_failed">Importazione fallita.</string>
@@ -172,13 +170,11 @@
     <string name="hint_not_set">(Non impostato)</string>
     <string name="hint_search_text">Testo e/o ISBN</string>
     <string name="info_site_authorization_successful">Autorizzazione %1$s concessa</string>
-    <string name="error_bad_scanner">L\'applicazione prescelta per la scansione dei codici a barre sembra incompatibile con &APP_NAME;.</string>
     <string name="txt_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l\'applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
     <string name="txt_displaying_n_books_in_m_entries">Visualizzati %1$d libri, in %2$d voci</string>
     <string name="txt_export_backup_all">Tutti i libri, copertine, impostazioni e stili personalizzati saranno esportati nell\'archivio.</string>
     <string name="txt_import_option_all_books">Verranno aggiunti nuovi libri. I libri esistenti verranno aggiornati.</string>
     <string name="txt_import_option_new_and_changed_books">Importa solo i libri nuovi, o che sono stati aggiornati più di recente nell\'archivio. Utile per sincronizzare due apparecchi.</string>
-    <string name="txt_install_scanner_recommendation">Ti raccomandiamo di utilizzare l\'applicazione Zxing, e, se è già installata, ti raccomandiamo di disinstallarla e installarla di nuovo.</string>
     <string name="txt_manage_fields">I campi selezionati sono visibili nella schermata aggiungi/modifica libro. Gli altri rimangono nascosti.</string>
     <string name="confirm_registration_benefits">Questa funzione beneficia della registrazione con %1$s. Desideri visualizzare ulteriori informazioni o disabilitare questo messaggio?\nPuoi trovare queste informazioni in un secondo momento nella sezione «%2$s» nelle impostazioni.</string>
     <string name="confirm_registration_required">Questa funzione richiede la registrazione con %1$s. Vuoi vedere maggiori informazioni?</string>
@@ -186,18 +182,17 @@
     <string name="txt_share_book_im_reading">Sto leggendo «%1$s» %2$s di %3$s %4$s</string>
     <string name="txt_tap_on_image_to_select">Tocca l\'immagine più grande per selezionarla.</string>
     <string name="txt_tap_on_thumbnail_to_zoom">Toccare una miniatura per visualizzare un\'immagine più grande.</string>
-    <string name="txt_waiting_for_scanner">In attesa di scanner / fotocamera</string>
     <string name="isfdb_menu_populate_toc">Inserisci titoli automaticamente (SPERIMENTALE)</string>
     <string name="isfdb_warning_limited_to">(supportato solo dal sito Web ISFDB)</string>
     <string name="kilobytes">%.2fkB</string>
     <string name="lbl_about_contact">Contatti:</string>
-    <string name="lbl_about_sourcecode">Codice sorgente:</string>
+    <string name="X_lbl_about_sourcecode">Codice sorgente:</string>
     <string name="X_lbl_about_special_thanks">Ringraziamenti speciali</string>
-    <string name="lbl_about_website">Pagina web:</string>
+    <string name="X_lbl_about_website">Pagina web:</string>
     <string name="lbl_added_day">Giorno di inserimento</string>
     <string name="lbl_added_month">Mese di inserimento</string>
     <string name="lbl_added_year">Anno di inserimento</string>
-    <string name="lbl_advanced_options">Avanzate</string>
+    <string name="X_lbl_advanced_options">Avanzate</string>
     <string name="lbl_anthology">Antologia</string>
     <string name="lbl_archive_type_csv">Libri (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Esportazione dei libri in un file CSV</string>
@@ -236,7 +231,6 @@
     <string name="lbl_condition_good">Buona</string>
     <string name="lbl_condition_reading_copy">Lettura copia</string>
     <string name="lbl_condition_very_good">Molto buona</string>
-    <string name="lbl_copy_database">Copia Archivio (per supporto tecnico)</string>
     <string name="lbl_cover_front">Copertina</string>
     <string name="lbl_cover_back">Copertina posteriore</string>
     <string name="lbl_covers_long">Immagini delle copertine</string>
@@ -317,7 +311,7 @@
     <string name="lbl_styles">Stili</string>
     <string name="lbl_table_of_content">Tabella dei contenuti</string>
     <string name="lbl_title">Titolo</string>
-    <string name="lbl_unread">Non letto</string>
+    <string name="lbl_unread">Da leggere</string>
     <string name="lbl_update_day">Giorno di aggiornamento</string>
     <string name="lbl_update_month">Mese di aggiornamento</string>
     <string name="lbl_update_year">Anno di aggiornamento</string>
@@ -395,16 +389,16 @@
     <string name="pe_bob_list_rebuild_state_preserve">Preserva lo stato corrente</string>
     <string name="pe_thumbnails_cache_resized_each_time">Ridimensiona ogni volta (richiede meno spazio di memorizzazione, ma lo scorrimento sarà più lento)</string>
     <string name="pe_thumbnails_cache_resized_stored">Memorizza le miniature ridimensionate (richiede più spazio di memorizzazione, ma gli elenchi scorreranno più velocemente)</string>
-    <string name="pe_cropper_layer_type_hardware">Hardware</string>
-    <string name="pe_cropper_layer_type_software">Software</string>
+    <string name="X_hardware">Hardware</string>
+    <string name="X_software">Software</string>
     <string name="pe_ui_theme_dark">Nero</string>
     <string name="pe_ui_theme_day_night">Giornata / Notte</string>
     <string name="pe_ui_theme_light">Chiaro</string>
-    <string name="pe_use_recommended_option">Utilizzare l\'opzione consigliata</string>
+    <string name="X_pe_use_recommended_option">Utilizzare l\'opzione consigliata</string>
     <string name="pg_barcode_scanner">Scanner di codici a barre</string>
     <string name="pg_bob_show_details">Dettagli del libro</string>
     <string name="pg_booklist">Elenchi di libri</string>
-    <string name="pg_camera">Fotocamera</string>
+    <string name="camera">Fotocamera</string>
     <string name="pg_filters">Filtra libri</string>
     <string name="X_pg_general">Generale</string>
     <string name="pg_image_cache">Cache di immagini</string>
@@ -445,14 +439,13 @@
     <string name="pt_bob_list_state_expansion_level">Espansione elenco libri predefinito</string>
     <string name="pt_bob_cover_scale">Dimensione miniature in elenchi</string>
     <string name="pt_bob_cover_show">Mostra miniature</string>
-    <string name="pt_camera_next_action">Azione dopo aver scattato una foto</string>
+    <string name="camera_next_action">Azione dopo aver scattato una foto</string>
     <string name="pt_collect_series_info_from_toc">Raccogli informazioni sulla serie da TOC</string>
     <string name="pt_maintenance">Συντήρηση</string>
     <string name="pt_primary_author_type">Tipo di autore principale</string>
     <string name="pt_scanning_beep_on_barcode_found">Segnale acustico quando viene trovato un codice a barre</string>
     <string name="pt_scanning_beep_on_invalid">Suona se il codice ISBN acquisito non è valido</string>
     <string name="pt_scanning_beep_on_valid">Suona se il codice ISBN acquisito è valido</string>
-    <string name="pt_scanning_preferred_scanner">Programma Preferito</string>
     <string name="pt_search_prefer_isbn10">Usa ISBN-10 quando possibile</string>
     <string name="pt_search_reformat_color">Standardizzare i nomi di «colore del libro»</string>
     <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
@@ -465,8 +458,6 @@
     <string name="pt_site_settings">Impostazioni del sito Web</string>
     <string name="pt_sort_author_name_given_first">Ordinamento dei nomi degli autori</string>
     <string name="pt_sort_title_reordered">Ordina titoli per</string>
-    <string name="pt_cropper_layer_type">Ritaglia «Layer Type»</string>
-    <string name="pt_cropper_layer_type_summary">Lasciare questa impostazione al valore predefinito a meno che non si verifichino arresti anomali durante il ritaglio delle immagini. Prova il «software» per «hardware» più sicuro ma più lento o forzato per meno sicuro, ma più veloce.</string>
     <string name="pt_thumbnails_cache_resized">Memorizza le miniature ridimensionate</string>
     <string name="pt_cropper_frame_is_whole_image">Area di ritaglio predefinita uguale all\'intera immagine</string>
     <string name="pt_thumbnails_rotate_auto">Ruota le immagini</string>
@@ -484,8 +475,6 @@
     <string name="pv_bob_header_nr_of_books">Mostra numero di libri</string>
     <string name="pv_bob_header_style_name">Nome dello stile</string>
     <string name="pv_reformat_titles_prefixes" tools:ignore="TypographyQuotes">il|lo|la|l\'|i||gli|le|un\'|uno|una|un</string>
-    <string name="pv_scanner_embedded">Interno</string>
-    <string name="pv_scanner_zxing_compatible">Programma Compatibile Zxing</string>
     <string name="action_retry">Riprova</string>
     <string name="size_hidden">Nascosto</string>
     <string name="size_large">Grande</string>
@@ -568,9 +557,9 @@
     <string name="lbl_search_for_books">Cerca per libro</string>
     <string name="lbl_search_isbn">Cerca ISBN</string>
     <string name="lbl_select_an_action">Seleziona un\'azione</string>
-    <string name="lbl_select_image">Seleziona immagine…</string>
+    <string name="X_lbl_select_image">Seleziona immagine…</string>
     <string name="lbl_select_style">Seleziona Stile</string>
-    <string name="lbl_send_mail">Invia una email…</string>
+    <string name="X_lbl_send_mail">Invia una email…</string>
     <string name="unknownName">Sconosciuto</string>
     <string name="unused">non usato</string>
     <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per «%1$s»</string>
@@ -606,8 +595,6 @@
     <string name="warning_requires_at_least_one_field">Almeno un campo non deve essere vuoto.</string>
     <string name="warning_requires_isbn">Questa azione richiede un codice ISBN valido.</string>
     <string name="warning_requires_site_and_id">Seleziona un sito Web e inserisci un ID.</string>
-    <string name="warning_scanner_failed_to_start">Lo scanner non si è avviato.</string>
-    <string name="warning_scanner_retry_install">Ti consigliamo di riprovare prima, ma se il problema persiste, reinstallare lo scanner o installare un altro scanner.</string>
     <string name="warning_select_at_least_1_field">Seleziona almeno un campo da aggiornare.</string>
     <string name="warning_select_at_least_1_group">Seleziona almeno un gruppo.</string>
     <string name="X_warning_already_in_list_series">La serie è già presente in elenco</string>
@@ -675,9 +662,12 @@
     <string name="lbl_backup_and_export">Backup ed esportazione</string>
     <string name="lbl_export">Esportare</string>
     <string name="lbl_database">Banca dati</string>
-    <string name="lbl_archive_import_supported">L\'importazione è supportata.</string>
     <string name="lbl_archive_format_db_info">Il database SQLite.</string>
     <string name="lbl_archive_type_db">File di database (%1$s)</string>
     <string name="confirm_delete_bookshelf">Eliminare davvero lo scaffale «%1$s»? I libri stessi non verranno eliminati. Saranno comunque presenti su qualsiasi altro scaffale o sullo scaffale «%2$s».</string>
-
+    <string name="system">(Sistema)</string>
+    <string name="system_default">(Predefinito)</string>
+    <string name="camera_other">Altro</string>
+    <string name="camera_front">Fotocamera frontale</string>
+    <string name="camera_back">Fotocamera posteriore</string>
 </resources>

@@ -39,13 +39,16 @@ public final class RequestCode {
     public static final int NAV_PANEL_GOODREADS = 1_005;
     /** navigation panel call to bring up the Settings. */
     public static final int NAV_PANEL_SETTINGS = 1_010;
-    /** <strong>non</strong>-navigation panel call to bring up the Settings. */
-    public static final int SETTINGS = 1_011;
+
 
     /** edit a Style. */
     public static final int EDIT_STYLE = 1_100;
     /** edit the Groups of a Style. */
     public static final int EDIT_STYLE_GROUPS = 1_101;
+
+    /** open the admin page to order and en/disable sites. */
+    public static final int EDIT_SEARCH_SITES = 1_102;
+
 
     /** open the book view screen. */
     public static final int BOOK_VIEW = 2_001;
@@ -60,17 +63,9 @@ public final class RequestCode {
     public static final int BOOK_SEARCH = 2_101;
     /** open the advanced (FTS) local search screen. */
     public static final int ADVANCED_LOCAL_SEARCH = 2_102;
-    /** open the scanner. */
-    public static final int SCAN_BARCODE = 2_103;
-
-    /** open the admin page to order and en/disable sites. */
-    public static final int PREFERRED_SEARCH_SITES = 2_201;
 
     /** open the author "all works" screen. */
-    public static final int AUTHOR_WORKS = 4_001;
-
-    /** system request to ask the user to install this stuff. */
-    public static final int UPDATE_GOOGLE_PLAY_SERVICES = 9_001;
+    public static final int AUTHOR_WORKS = 3_001;
 
     private RequestCode() {
     }

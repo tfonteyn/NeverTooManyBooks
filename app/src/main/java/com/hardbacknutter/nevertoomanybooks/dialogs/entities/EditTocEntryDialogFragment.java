@@ -26,10 +26,11 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ChangeListener;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -49,11 +50,10 @@ public class EditTocEntryDialogFragment
 
     /** Log tag. */
     public static final String TAG = "EditTocEntryDialogFrag";
-    public static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
-    public static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
+    private static final String BKEY_HAS_MULTIPLE_AUTHORS = TAG + ":hasMultipleAuthors";
+    private static final String BKEY_TOC_ENTRY = TAG + ":tocEntry";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
-    private static final String BKEY_BOOK_ID = TAG + ":bookId";
-    /** FragmentResultListener request key to use for our response. */
+
     private String mRequestKey;
     /** Database Access. */
     private DAO mDb;
@@ -62,7 +62,6 @@ public class EditTocEntryDialogFragment
 
     @Nullable
     private String mBookTitle;
-    private long mBookId;
 
     private DiacriticArrayAdapter<String> mAuthorAdapter;
 
@@ -105,7 +104,6 @@ public class EditTocEntryDialogFragment
         final Bundle args = new Bundle(5);
         args.putString(BKEY_REQUEST_KEY, requestKey);
         args.putString(DBDefinitions.KEY_TITLE, book.getTitle());
-        args.putLong(BKEY_BOOK_ID, book.getId());
         args.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
         args.putParcelable(BKEY_TOC_ENTRY, tocEntry);
         frag.setArguments(args);
@@ -121,7 +119,6 @@ public class EditTocEntryDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = args.getString(BKEY_REQUEST_KEY);
         mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
-        mBookId = args.getLong(BKEY_BOOK_ID);
         mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), "BKEY_TOC_ENTRY");
 
         if (savedInstanceState == null) {
@@ -213,12 +210,7 @@ public class EditTocEntryDialogFragment
 
         // We don't update/insert to the database here, but just send the data back.
         // TOCs are updated in bulk/list per Book
-        final Bundle result = new Bundle(3);
-        result.putParcelable(BKEY_TOC_ENTRY, mTocEntry);
-        result.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, mHasMultipleAuthors);
-        result.putLong(DBDefinitions.KEY_FK_BOOK, mBookId);
-
-        ChangeListener.update(this, mRequestKey, ChangeListener.TOC_ENTRY, result);
+        OnResultListener.sendResult(this, mRequestKey, mTocEntry, mHasMultipleAuthors);
         return true;
     }
 
@@ -253,5 +245,33 @@ public class EditTocEntryDialogFragment
             mDb.close();
         }
         super.onDestroy();
+    }
+
+    public interface OnResultListener
+            extends FragmentResultListener {
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               @NonNull final TocEntry tocEntry,
+                               final boolean hasMultipleAuthors) {
+
+            final Bundle result = new Bundle(2);
+            result.putParcelable(BKEY_TOC_ENTRY, tocEntry);
+            result.putBoolean(BKEY_HAS_MULTIPLE_AUTHORS, hasMultipleAuthors);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        @Override
+        default void onFragmentResult(@NonNull final String requestKey,
+                                      @NonNull final Bundle result) {
+            onResult(Objects.requireNonNull(result.getParcelable(BKEY_TOC_ENTRY)),
+                     result.getBoolean(BKEY_HAS_MULTIPLE_AUTHORS));
+        }
+
+        /**
+         * Callback handler.
+         */
+        void onResult(@NonNull TocEntry tocEntry,
+                      boolean hasMultipleAuthors);
     }
 }
