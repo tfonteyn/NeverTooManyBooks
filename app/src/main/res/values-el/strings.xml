@@ -192,7 +192,7 @@
     <string name="lbl_added_day">Ημέρα Πρόσθεσης</string>
     <string name="lbl_added_month">Μήνας Πρόσθεσης</string>
     <string name="lbl_added_year">Έτος Πρόσθεσης</string>
-    <string name="X_lbl_advanced_options">Για προχωρημένους</string>
+    <string name="lbl_advanced_options">Για προχωρημένους</string>
     <string name="lbl_anthology">Ανθολογία</string>
     <string name="lbl_archive_type_csv">βιβλία (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Εξαγωγή βιβλίων σε αρχείο CSV</string>

@@ -634,7 +634,7 @@
     <string name="X_lbl_about_sourcecode">Code source :</string>
     <string name="X_lbl_about_special_thanks">Remerciements particuliers </string>
     <string name="X_lbl_about_website">Site web :</string>
-    <string name="X_lbl_advanced_options">Paramètres avancés</string>
+    <string name="lbl_advanced_options">Paramètres avancés</string>
     <string name="X_lbl_by_author_s">par %1$s</string>
     <string name="X_lbl_clear_search_filters">Effacer les filtres</string>
     <string name="X_lbl_data_import_export">Sauvegarde et importation</string>

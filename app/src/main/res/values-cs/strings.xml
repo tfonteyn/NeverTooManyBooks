@@ -191,7 +191,7 @@
     <string name="lbl_added_day">Den přidání</string>
     <string name="lbl_added_month">Měsíc přidání</string>
     <string name="lbl_added_year">Rok přidání</string>
-    <string name="X_lbl_advanced_options">Rozšířené nastavení</string>
+    <string name="lbl_advanced_options">Rozšířené nastavení</string>
     <string name="lbl_anthology">Antologie</string>
     <string name="lbl_archive_type_csv">Knihy (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Export knih do souboru CSV</string>

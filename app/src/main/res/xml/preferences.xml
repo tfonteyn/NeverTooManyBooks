@@ -126,6 +126,13 @@
     <PreferenceCategory
         android:title="@string/action_edit">
 
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferenceFragment"
+            android:icon="@drawable/ic_image"
+            android:key="psk_thumbnails"
+            android:title="@string/lbl_covers_long"
+            />
+
         <ListPreference
             android:defaultValue="1"
             android:entries="@array/pe_edit_book_isbn_checks"
@@ -176,14 +183,8 @@
             android:title="@string/pt_enable_fast_scroller_overlay" />
     </PreferenceCategory>
 
-    <PreferenceCategory>
-
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferenceFragment"
-            android:icon="@drawable/ic_image"
-            android:key="psk_thumbnails"
-            android:title="@string/lbl_covers_long"
-            />
+    <PreferenceCategory
+        android:title="@string/lbl_advanced_options">
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment"

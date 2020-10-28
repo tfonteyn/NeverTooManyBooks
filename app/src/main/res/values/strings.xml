@@ -1483,7 +1483,7 @@
     <!-- ####################################################################################### -->
 
     <!-- [VERIFIED] Admin GROUP -->
-    <string name="X_lbl_advanced_options">Advanced</string>
+    <string name="lbl_advanced_options">Advanced</string>
 
     <string name="X_lbl_about_website">Web page</string>
     <string name="X_lbl_about_sourcecode">Source Code</string>

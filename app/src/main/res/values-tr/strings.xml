@@ -192,7 +192,7 @@
     <string name="lbl_added_day">Eklenen gün</string>
     <string name="lbl_added_month">Eklenen ay</string>
     <string name="lbl_added_year">Eklenen yıl</string>
-    <string name="X_lbl_advanced_options">Gelişmiş</string>
+    <string name="lbl_advanced_options">Gelişmiş</string>
     <string name="lbl_anthology">Seçmeler</string>
     <string name="lbl_archive_type_csv">Kitaplar (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Kitapların bir CSV dosyasına aktarılması</string>

@@ -632,7 +632,7 @@
     <string name="X_lbl_about_sourcecode">Quellcode:</string>
     <string name="X_lbl_about_special_thanks">Danksagung</string>
     <string name="X_lbl_about_website">Webseite:</string>
-    <string name="X_lbl_advanced_options">Erweitert</string>
+    <string name="lbl_advanced_options">Erweitert</string>
     <string name="X_lbl_by_author_s">von %1$s</string>
     <string name="X_lbl_clear_search_filters">Filter löschen</string>
     <string name="X_lbl_data_import_export">Sichern &amp; Importieren</string>

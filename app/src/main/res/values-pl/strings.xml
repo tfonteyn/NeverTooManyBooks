@@ -190,7 +190,7 @@
     <string name="lbl_added_day">Dodano dzień</string>
     <string name="lbl_added_month">Dodano miesiąc</string>
     <string name="lbl_added_year">Dodano rok</string>
-    <string name="X_lbl_advanced_options">Zaawansowane</string>
+    <string name="lbl_advanced_options">Zaawansowane</string>
     <string name="lbl_anthology">Antologia</string>
     <string name="lbl_archive_type_csv">Książki (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Eksport książek do pliku CSV</string>

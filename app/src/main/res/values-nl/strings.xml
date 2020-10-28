@@ -630,7 +630,7 @@
     <string name="X_lbl_about_sourcecode">Broncode:</string>
     <string name="X_lbl_about_special_thanks">Speciale dankbetuiging</string>
     <string name="X_lbl_about_website">Webpagina:</string>
-    <string name="X_lbl_advanced_options">Geavanceerd</string>
+    <string name="lbl_advanced_options">Geavanceerd</string>
     <string name="X_lbl_by_author_s">door %1$s</string>
     <string name="X_lbl_clear_search_filters">Filters verwijderen</string>
     <string name="X_lbl_data_import_export">Back-up &amp; import</string>

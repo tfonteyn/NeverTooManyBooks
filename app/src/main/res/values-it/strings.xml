@@ -192,7 +192,7 @@
     <string name="lbl_added_day">Giorno di inserimento</string>
     <string name="lbl_added_month">Mese di inserimento</string>
     <string name="lbl_added_year">Anno di inserimento</string>
-    <string name="X_lbl_advanced_options">Avanzate</string>
+    <string name="lbl_advanced_options">Avanzate</string>
     <string name="lbl_anthology">Antologia</string>
     <string name="lbl_archive_type_csv">Libri (%1$s)</string>
     <string name="lbl_archive_type_csv_info">Esportazione dei libri in un file CSV</string>
