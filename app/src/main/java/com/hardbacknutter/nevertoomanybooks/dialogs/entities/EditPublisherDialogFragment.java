@@ -33,7 +33,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.ChangeListener;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -170,7 +170,8 @@ public class EditPublisherDialogFragment
                 success = mDb.update(context, mPublisher, bookLocale);
             }
             if (success) {
-                ChangeListener.update(this, mRequestKey, ChangeListener.PUBLISHER);
+                BooksOnBookshelf.ChangeListener
+                        .update(this, mRequestKey, BooksOnBookshelf.ChangeListener.PUBLISHER);
                 return true;
             }
         } else {
@@ -185,8 +186,8 @@ public class EditPublisherDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             mDb.merge(context, mPublisher, existingId);
-                            ChangeListener
-                                    .update(this, mRequestKey, ChangeListener.PUBLISHER);
+                            BooksOnBookshelf.ChangeListener.update(
+                                    this, mRequestKey, BooksOnBookshelf.ChangeListener.PUBLISHER);
                         } catch (@NonNull final DAO.DaoWriteException e) {
                             Logger.error(context, TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);

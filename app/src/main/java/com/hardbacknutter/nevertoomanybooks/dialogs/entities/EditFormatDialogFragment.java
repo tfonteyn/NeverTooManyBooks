@@ -26,7 +26,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.ChangeListener;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -42,7 +42,7 @@ public class EditFormatDialogFragment
      * No-arg constructor for OS use.
      */
     public EditFormatDialogFragment() {
-        super(R.string.lbl_format, R.string.lbl_format, ChangeListener.FORMAT);
+        super(R.string.lbl_format, R.string.lbl_format, BooksOnBookshelf.ChangeListener.FORMAT);
     }
 
     /**

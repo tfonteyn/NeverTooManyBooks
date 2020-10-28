@@ -28,7 +28,7 @@ import androidx.fragment.app.DialogFragment;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.ChangeListener;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
@@ -50,7 +50,8 @@ public class EditLanguageDialogFragment
      * No-arg constructor for OS use.
      */
     public EditLanguageDialogFragment() {
-        super(R.string.lbl_language, R.string.lbl_language, ChangeListener.LANGUAGE);
+        super(R.string.lbl_language, R.string.lbl_language,
+              BooksOnBookshelf.ChangeListener.LANGUAGE);
     }
 
     /**

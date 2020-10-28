@@ -26,7 +26,7 @@ import androidx.fragment.app.DialogFragment;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.ChangeListener;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -42,7 +42,7 @@ public class EditColorDialogFragment
      * No-arg constructor for OS use.
      */
     public EditColorDialogFragment() {
-        super(R.string.lbl_color, R.string.lbl_color, ChangeListener.COLOR);
+        super(R.string.lbl_color, R.string.lbl_color, BooksOnBookshelf.ChangeListener.COLOR);
     }
 
     /**
