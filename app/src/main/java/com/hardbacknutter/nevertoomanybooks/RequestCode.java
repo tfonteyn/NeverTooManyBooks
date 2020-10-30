@@ -26,8 +26,6 @@ package com.hardbacknutter.nevertoomanybooks;
 public final class RequestCode {
 
     /** navigation panel. */
-    public static final int NAV_PANEL_ABOUT = 1_000;
-    /** navigation panel. */
     public static final int NAV_PANEL_MANAGE_BOOKSHELVES = 1_001;
     /** navigation panel. */
     public static final int NAV_PANEL_MANAGE_STYLES = 1_002;
@@ -59,7 +57,7 @@ public final class RequestCode {
     /** open the book internet-search screen. */
     public static final int BOOK_SEARCH = 2_101;
     /** open the advanced (FTS) local search screen. */
-    public static final int ADVANCED_LOCAL_SEARCH = 2_102;
+    public static final int NAV_PANEL_ADVANCED_LOCAL_SEARCH = 2_102;
 
     /** open the author "all works" screen. */
     public static final int AUTHOR_WORKS = 3_001;
