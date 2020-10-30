@@ -19,11 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 public class GoodreadsPreferencesFragment
@@ -37,5 +39,20 @@ public class GoodreadsPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
 
         setPreferencesFromResource(R.xml.preferences_site_goodreads, rootKey);
+    }
+
+    /**
+     * Hook up specific listeners/preferences.
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        //noinspection ConstantConditions
+        findPreference("pa_credentials")
+                .setOnPreferenceClickListener(p -> {
+                    startActivity(new Intent(getContext(), GoodreadsRegistrationActivity.class));
+                    return true;
+                });
     }
 }
