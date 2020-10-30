@@ -42,7 +42,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.navigation.NavigationView;
@@ -200,22 +199,6 @@ public abstract class BaseActivity
     }
 
     /**
-     * Manually load a fragment into the given container using add.
-     * <p>
-     * Not added to the BackStack.
-     * <strong>The activity extras bundle will be set as arguments.</strong>
-     *
-     * @param containerViewId to receive the fragment
-     * @param fragmentClass   the fragment; must be loadable with the current class loader.
-     * @param fragmentTag     tag for the fragment
-     */
-    protected void addFragment(@IdRes final int containerViewId,
-                               @NonNull final Class<? extends Fragment> fragmentClass,
-                               @NonNull final String fragmentTag) {
-        loadFragment(containerViewId, fragmentClass, fragmentTag, true);
-    }
-
-    /**
      * Manually load a fragment into the given container using replace.
      * <p>
      * Not added to the BackStack.
@@ -228,31 +211,9 @@ public abstract class BaseActivity
     protected void replaceFragment(@IdRes final int containerViewId,
                                    @NonNull final Class<? extends Fragment> fragmentClass,
                                    @NonNull final String fragmentTag) {
-        loadFragment(containerViewId, fragmentClass, fragmentTag, false);
-    }
-
-    /**
-     * Manually load a fragment into the given container.
-     * If the fragment is already present, this method does nothing.
-     *
-     * <p>
-     * Not added to the BackStack.
-     * <strong>The activity extras bundle will be set as arguments.</strong>
-     * <p>
-     * TODO: look into {@link androidx.fragment.app.FragmentFactory}
-     *
-     * @param containerViewId to receive the fragment
-     * @param fragmentClass   the fragment; must be loadable with the current class loader.
-     * @param tag             tag for the fragment
-     * @param isAdd           whether to use add or replace
-     */
-    private void loadFragment(@IdRes final int containerViewId,
-                              @NonNull final Class<? extends Fragment> fragmentClass,
-                              @NonNull final String tag,
-                              final boolean isAdd) {
 
         final FragmentManager fm = getSupportFragmentManager();
-        if (fm.findFragmentByTag(tag) == null) {
+        if (fm.findFragmentByTag(fragmentTag) == null) {
             final Fragment fragment;
             try {
                 fragment = fragmentClass.newInstance();
@@ -260,17 +221,12 @@ public abstract class BaseActivity
                 throw new IllegalStateException("Not a fragment: " + fragmentClass.getName());
             }
             fragment.setArguments(getIntent().getExtras());
-            final FragmentTransaction ft =
-                    fm.beginTransaction();
-            // FIXME: https://issuetracker.google.com/issues/169874632
-            //   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
-            if (isAdd) {
-                ft.add(containerViewId, fragment, tag);
-            } else {
-                ft.replace(containerViewId, fragment, tag);
-            }
-            ft.commit();
+            fm.beginTransaction()
+              // FIXME: https://issuetracker.google.com/issues/169874632
+              //   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              .replace(containerViewId, fragment, fragmentTag)
+              .commit();
         }
     }
 
