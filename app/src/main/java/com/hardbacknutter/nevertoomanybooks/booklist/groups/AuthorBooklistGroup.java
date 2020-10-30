@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
@@ -68,6 +67,9 @@ public class AuthorBooklistGroup
                     return new AuthorBooklistGroup[size];
                 }
             };
+
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    private static final String PSK_STYLE_AUTHOR = "psk_style_author";
 
     private static final String PK_PRIMARY_TYPE =
             "style.booklist.group.authors.primary.type";
@@ -211,7 +213,7 @@ public class AuthorBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_AUTHOR);
+        final PreferenceCategory category = screen.findPreference(PSK_STYLE_AUTHOR);
         if (category != null) {
             final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH,
                                    PK_PRIMARY_TYPE};

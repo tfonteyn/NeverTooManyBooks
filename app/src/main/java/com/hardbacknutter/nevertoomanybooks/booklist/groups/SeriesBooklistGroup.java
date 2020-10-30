@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE;
@@ -65,6 +64,9 @@ public class SeriesBooklistGroup
                     return new SeriesBooklistGroup[size];
                 }
             };
+
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    private static final String PSK_STYLE_SERIES = "psk_style_series";
 
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.series.show.all";
@@ -150,7 +152,7 @@ public class SeriesBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_SERIES);
+        final PreferenceCategory category = screen.findPreference(PSK_STYLE_SERIES);
         if (category != null) {
             final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH};
             setPreferenceVisibility(category, keys, visible);

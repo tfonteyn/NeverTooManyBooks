@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
@@ -69,6 +68,9 @@ public class BookshelfBooklistGroup
                     return new BookshelfBooklistGroup[size];
                 }
             };
+
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    private static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
 
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.bookshelf.show.all";
@@ -156,7 +158,7 @@ public class BookshelfBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_BOOKSHELF);
+        final PreferenceCategory category = screen.findPreference(PSK_STYLE_BOOKSHELF);
         if (category != null) {
             final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH};
             setPreferenceVisibility(category, keys, visible);

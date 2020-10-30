@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PUBLISHER_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
@@ -65,6 +64,9 @@ public class PublisherBooklistGroup
                     return new PublisherBooklistGroup[size];
                 }
             };
+
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    private static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
 
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.publisher.show.all";
@@ -152,7 +154,7 @@ public class PublisherBooklistGroup
     public void setPreferencesVisible(@NonNull final PreferenceScreen screen,
                                       final boolean visible) {
 
-        final PreferenceCategory category = screen.findPreference(Prefs.PSK_STYLE_PUBLISHER);
+        final PreferenceCategory category = screen.findPreference(PSK_STYLE_PUBLISHER);
         if (category != null) {
             final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH};
             setPreferenceVisibility(category, keys, visible);
