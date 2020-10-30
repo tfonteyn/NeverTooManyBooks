@@ -155,7 +155,7 @@
 
                 <TextView
                     android:id="@+id/lbl_archive_format"
-                    style="@style/Text.Header"
+                    style="@style/Field.Label"
                     android:layout_marginTop="@dimen/border2"
                     android:text="@string/lbl_archive_format"
                     app:layout_constraintStart_toStartOf="parent"
