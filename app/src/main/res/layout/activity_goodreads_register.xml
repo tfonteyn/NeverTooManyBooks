@@ -80,7 +80,8 @@
 
             <Button
                 android:id="@+id/btn_authorize"
-                style="@style/MenuButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="@string/info_authorized_needed"
                 app:icon="@drawable/ic_security"
@@ -96,7 +97,8 @@
 
             <Button
                 android:id="@+id/btn_delete_credentials"
-                style="@style/MenuButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="@string/action_clear_credentials"
                 android:visibility="gone"
