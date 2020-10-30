@@ -19,12 +19,41 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/nav_advanced_search"
+        android:icon="@drawable/ic_search"
+        android:title="@string/lbl_local_search" />
 
     <item
         android:id="@+id/nav_manage_bookshelves"
         android:icon="@drawable/ic_library_books"
         android:title="@string/lbl_bookshelves_long" />
+
+    <item
+        android:id="@+id/nav_manage_list_styles"
+        android:icon="@drawable/ic_details"
+        android:title="@string/lbl_styles_long" />
+
+    <item
+        android:id="@+id/nav_export"
+        android:icon="@drawable/ic_sd_storage"
+        android:title="@string/lbl_backup_and_export" />
+
+    <item
+        android:id="@+id/nav_import"
+        android:icon="@drawable/ic_file_download"
+        android:title="@string/lbl_import" />
+
+    <!-- visibility set from code. -->
+    <item
+        android:id="@+id/nav_goodreads"
+        android:icon="@drawable/ic_goodreads"
+        android:title="@string/site_goodreads"
+        android:visible="false"
+        tools:visible="true" />
 
     <item
         android:id="@+id/nav_settings"

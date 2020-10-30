@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +49,10 @@ public class GlobalPreferenceFragment
 
     /** Used to be able to reset this pref to what it was when this fragment started. */
     private boolean mCurrentSortTitleReordered;
+
+    private final ActivityResultLauncher<Void> mEditSitesLauncher =
+            registerForActivityResult(new SearchAdminActivity.AllListsContract(),
+                                      success -> { /* ignore */ });
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -82,7 +87,15 @@ public class GlobalPreferenceFragment
     public void onStart() {
         super.onStart();
 
-        final Preference preference;
+        Preference preference;
+
+        preference = findPreference("psk_search_site_order");
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                mEditSitesLauncher.launch(null);
+                return true;
+            });
+        }
 
         preference = findPreference(Prefs.pk_sort_title_reordered);
         if (preference != null) {

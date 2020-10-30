@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/screenBorder"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            style="@style/Text.Header"
+            android:layout_marginTop="@dimen/border2"
+            android:text="@string/pt_maintenance"
+            />
+
+        <Button
+            android:id="@+id/btn_reset_tips"
+            style="@style/MenuButton"
+            android:text="@string/tip_reset_all"
+            app:icon="@drawable/ic_undo"
+            />
+
+        <Button
+            android:id="@+id/btn_purge_files"
+            style="@style/MenuButton"
+            android:text="@string/lbl_purge_files"
+            app:icon="@drawable/ic_close"
+            />
+
+        <Button
+            android:id="@+id/btn_purge_blns"
+            style="@style/MenuButton"
+            android:text="@string/lbl_purge_blns"
+            app:icon="@drawable/ic_close"
+            />
+
+        <Button
+            android:id="@+id/btn_rebuild_fts"
+            style="@style/MenuButton"
+            android:text="@string/menu_rebuild_fts"
+            app:icon="@drawable/ic_manage"
+            />
+
+        <Button
+            android:id="@+id/btn_rebuild_index"
+            style="@style/MenuButton"
+            android:text="@string/menu_rebuild_index"
+            app:icon="@drawable/ic_manage"
+            />
+
+        <TextView
+            android:id="@+id/btn_debug"
+            style="@style/Text.Header"
+            android:text="@string/debug"
+            />
+
+        <Button
+            android:id="@+id/btn_debug_send_mail"
+            style="@style/MenuButton"
+            android:text="@string/lbl_send_debug"
+            app:icon="@drawable/ic_send"
+            />
+
+        <Button
+            android:id="@+id/btn_debug_dump_prefs"
+            style="@style/MenuButton"
+            android:text="@string/debug_dump_prefs"
+            android:visibility="gone"
+            app:icon="@drawable/ic_details"
+            tools:visibility="visible"
+            />
+
+        <Button
+            android:id="@+id/btn_debug_sq_shell"
+            style="@style/MenuButton"
+            android:text="@string/debug_sq_shell"
+            android:visibility="gone"
+            app:icon="@drawable/ic_keyboard"
+            tools:visibility="visible"
+            />
+
+        <Button
+            android:id="@+id/btn_debug_clear_db"
+            style="@style/MenuButton"
+            android:backgroundTint="?attr/colorError"
+            android:text="@string/action_clear_all_data"
+            android:textColor="?attr/colorOnError"
+            android:visibility="gone"
+            app:icon="@drawable/ic_delete"
+            tools:visibility="visible"
+            />
+
+        <TextView
+            android:id="@+id/debug_version"
+            style="@style/Field.Generic.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textStyle="italic"
+            tools:text="a7 d13 b2020-11-01"
+            />
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

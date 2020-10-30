@@ -141,13 +141,12 @@
             android:key="edit.book.isbn.checks"
             android:title="@string/pt_edit_book_isbn_checks" />
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:icon="@drawable/ic_tab"
-            android:key="edit.book.tab.externalId"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_allow_edit_external_id" />
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment"
+            android:icon="@drawable/ic_barcode"
+            android:key="psk_barcode"
+            android:title="@string/pg_barcode_scanner"
+            />
 
     </PreferenceCategory>
 
@@ -185,16 +184,16 @@
 
     <PreferenceCategory
         android:title="@string/lbl_advanced_options">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:icon="@drawable/ic_tab"
+            android:key="edit.book.tab.externalId"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/pt_allow_edit_external_id" />
 
         <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.BarcodePreferenceFragment"
-            android:icon="@drawable/ic_barcode"
-            android:key="psk_barcode"
-            android:title="@string/pg_barcode_scanner"
-            />
-
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.AdvancedPreferenceFragment"
+            android:fragment="com.hardbacknutter.nevertoomanybooks.MaintenanceFragment"
             android:icon="@drawable/ic_settings"
             android:key="psk_advanced_options"
             android:title="@string/pt_maintenance"

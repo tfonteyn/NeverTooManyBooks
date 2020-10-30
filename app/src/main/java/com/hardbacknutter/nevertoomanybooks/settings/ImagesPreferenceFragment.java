@@ -22,8 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.preference.Preference;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -37,5 +41,32 @@ public class ImagesPreferenceFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
 
         setPreferencesFromResource(R.xml.preferences_images, rootKey);
+    }
+
+
+    /**
+     * Hook up specific listeners/preferences.
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        // Purge image cache database table.
+        final Preference preference = findPreference("psk_purge_image_cache");
+        if (preference != null) {
+            preference.setOnPreferenceClickListener(p -> {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_warning)
+                        .setTitle(R.string.lbl_purge_image_cache)
+                        .setMessage(R.string.lbl_purge_image_cache)
+                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                        .setPositiveButton(android.R.string.ok, (d, w) ->
+                                CoversDAO.deleteAll(getContext()))
+                        .create()
+                        .show();
+                return true;
+            });
+        }
     }
 }

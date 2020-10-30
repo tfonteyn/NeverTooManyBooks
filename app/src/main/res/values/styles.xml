@@ -124,6 +124,7 @@
     </style>
 
     <style name="Text.Header">
+        <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
@@ -629,7 +630,6 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">start</item>
         <item name="headerLayout">@layout/nav_header_main</item>
-        <item name="menu">@menu/nav_view</item>
     </style>
 
     <!-- An Activity primary/top toolbar -->
@@ -652,11 +652,17 @@
         <item name="tabMode">scrollable</item>
     </style>
 
-    <!-- A button as wide as the screen. -->
-    <style name="MenuButton" parent="Widget.MaterialComponents.Button">
+    <!-- A button in a list of action-options. -->
+    <style name="MenuButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:layout_width">@dimen/large_menu_button</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/border2</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <!-- icon space is 48dp, minus the icon of 24dp, divided by 2 -->
+        <item name="iconPadding">12dp</item>
     </style>
 
     <!-- The switch on the book details screen to show/hide the TOC. -->

@@ -19,13 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,25 +36,11 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
-
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
-import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference;
 
 /**
@@ -76,18 +59,14 @@ public abstract class BasePreferenceFragment
     @SuppressWarnings("WeakerAccess")
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
 
-    private final ActivityResultLauncher<Void> mEditSitesLauncher =
-            registerForActivityResult(new SearchAdminActivity.AllListsContract(),
-                                      success -> { /* ignore */ });
-
     protected ResultDataModel mResultData;
     @Nullable
     private String mAutoScrollToKey;
 
     @Override
     @CallSuper
-    public void onCreatePreferences(final Bundle savedInstanceState,
-                                    final String rootKey) {
+    public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
+                                    @Nullable final String rootKey) {
         final Bundle args = getArguments();
         if (args != null) {
             mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
@@ -95,184 +74,6 @@ public abstract class BasePreferenceFragment
 
         //noinspection ConstantConditions
         mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
-    }
-
-    /**
-     * Hook up specific listeners/preferences.
-     */
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        Preference preference;
-
-        // there is overhead here in always trying to find all preferences listed,
-        // instead of doing this in the sub classes.
-        // For now, this allows us to move preferences (or even duplicate) easier.
-
-        preference = findPreference("psk_credentials_goodreads");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                startActivity(new Intent(getContext(), GoodreadsRegistrationActivity.class));
-                return true;
-            });
-        }
-
-        preference = findPreference("psk_credentials_library_thing");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                startActivity(new Intent(getContext(), LibraryThingRegistrationActivity.class));
-                return true;
-            });
-        }
-
-        // Purge image cache database table.
-        preference = findPreference("psk_purge_image_cache");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.lbl_purge_image_cache)
-                        .setMessage(R.string.lbl_purge_image_cache)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
-                                CoversDAO.deleteAll(getContext()))
-                        .create()
-                        .show();
-                return true;
-            });
-        }
-
-        preference = findPreference("psk_search_site_order");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                mEditSitesLauncher.launch(null);
-                return true;
-            });
-        }
-
-        // Purge BLNS database table.
-        preference = findPreference("psk_purge_blns");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.lbl_purge_blns)
-                        .setMessage(R.string.info_purge_blns_all)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) -> DAO.clearNodeStateData())
-                        .create()
-                        .show();
-                return true;
-            });
-        }
-
-        preference = findPreference("psk_tip_reset_all");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                //noinspection ConstantConditions
-                TipManager.reset(getContext());
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
-                return true;
-            });
-        }
-
-        preference = findPreference("psk_rebuild_fts");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.menu_rebuild_fts)
-                        .setMessage(R.string.confirm_rebuild_fts)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                            StartupViewModel.scheduleFtsRebuild(getContext(), false);
-                            p.setSummary(null);
-                        })
-                        .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            StartupViewModel.scheduleFtsRebuild(getContext(), true);
-                            p.setSummary(R.string.txt_rebuild_scheduled);
-                        })
-                        .create()
-                        .show();
-                return true;
-            });
-        }
-
-        preference = findPreference("psk_rebuild_index");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.menu_rebuild_index)
-                        .setMessage(R.string.confirm_rebuild_index)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                            StartupViewModel.scheduleIndexRebuild(getContext(), false);
-                            p.setSummary(null);
-                        })
-                        .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            StartupViewModel.scheduleIndexRebuild(getContext(), true);
-                            p.setSummary(R.string.txt_rebuild_scheduled);
-                        })
-                        .create()
-                        .show();
-                return true;
-            });
-        }
-
-        preference = findPreference("psk_purge_files");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                final Context context = getContext();
-                final ArrayList<String> bookUuidList;
-                try (DAO db = new DAO(TAG)) {
-                    bookUuidList = db.getBookUuidList();
-                }
-
-                //noinspection ConstantConditions
-                final long bytes = AppDir.purge(context, bookUuidList, false);
-                final String msg = getString(R.string.txt_cleanup_files,
-                                             FileUtils.formatFileSize(context, bytes),
-                                             getString(R.string.lbl_send_debug));
-
-                new MaterialAlertDialogBuilder(context)
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.lbl_purge_files)
-                        .setMessage(msg)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
-                                AppDir.purge(context, bookUuidList, true))
-                        .create()
-                        .show();
-                return true;
-            });
-        }
-
-        preference = findPreference("psk_send_debug_info");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.debug)
-                        .setMessage(R.string.debug_send_info_text)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            if (!DebugReport.sendDebugInfo(getContext())) {
-                                //noinspection ConstantConditions
-                                Snackbar.make(getView(), R.string.error_email_failed,
-                                              Snackbar.LENGTH_LONG).show();
-                            }
-                        })
-                        .create()
-                        .show();
-                return true;
-            });
-        }
     }
 
     @Override

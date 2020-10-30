@@ -57,8 +57,6 @@ public class BookDetailsActivity
         mBookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
         mBookViewModel.init(this, getIntent().getExtras(), false);
 
-        setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
-
         replaceFragment(R.id.main_fragment, BookDetailsFragment.class, BookDetailsFragment.TAG);
 
         // Popup the search widget when the user starts to type.

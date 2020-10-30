@@ -99,6 +99,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
@@ -406,11 +407,7 @@ public class BooksOnBookshelf
         mGrSendOneBookTask.onFailure().observe(this, this::onGrFailure);
         mGrSendOneBookTask.onFinished().observe(this, this::onGrFinished);
 
-        // enable the navigation menus
-        setNavigationItemVisibility(R.id.nav_manage_list_styles, true);
-        setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
-        setNavigationItemVisibility(R.id.nav_export, true);
-        setNavigationItemVisibility(R.id.nav_import, true);
+        // show/hide the Goodreads menu
         setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(prefs));
 
         // The booklist.
@@ -526,10 +523,9 @@ public class BooksOnBookshelf
         final int itemId = item.getItemId();
 
         if (itemId == R.id.nav_advanced_search) {
-            // overridden, so we can pass the current criteria
             final Intent intent = new Intent(this, FTSSearchActivity.class);
             mModel.getSearchCriteria().to(intent);
-            startActivityForResult(intent, RequestCode.ADVANCED_LOCAL_SEARCH);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_ADVANCED_LOCAL_SEARCH);
             return true;
 
         } else if (itemId == R.id.nav_manage_bookshelves) {
@@ -542,11 +538,28 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.nav_manage_list_styles) {
-            // overridden, so we can pass the current style uuid.
             final Intent intent = new Intent(this, PreferredStylesActivity.class)
                     .putExtra(BooklistStyle.BKEY_STYLE_UUID,
                               mModel.getCurrentStyle(this).getUuid());
             startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_STYLES);
+            return true;
+
+        } else if (itemId == R.id.nav_import) {
+            final Intent intent = new Intent(this, AdminActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_IMPORT);
+            return true;
+
+        } else if (itemId == R.id.nav_export) {
+            final Intent intent = new Intent(this, AdminActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
+            return true;
+
+        } else if (itemId == R.id.nav_goodreads) {
+            final Intent intent = new Intent(this, AdminActivity.class)
+                    .putExtra(BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
+            startActivityForResult(intent, RequestCode.NAV_PANEL_GOODREADS);
             return true;
         }
 
@@ -1133,15 +1146,6 @@ public class BooksOnBookshelf
         }
 
         switch (requestCode) {
-            case RequestCode.ADVANCED_LOCAL_SEARCH:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    if (mModel.setSearchCriteria(data.getExtras(), true)) {
-                        //URGENT: switch bookshelf? all-books?
-                        mModel.setForceRebuildInOnResume(true);
-                    }
-                }
-                break;
-
             case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
             case RequestCode.BOOK_VIEW:
             case RequestCode.BOOK_EDIT:
@@ -1176,6 +1180,17 @@ public class BooksOnBookshelf
                 }
                 break;
             }
+
+            case RequestCode.NAV_PANEL_ADVANCED_LOCAL_SEARCH: {
+                if (resultCode == Activity.RESULT_OK && data != null) {
+                    if (mModel.setSearchCriteria(data.getExtras(), true)) {
+                        //URGENT: switch bookshelf? all-books?
+                        mModel.setForceRebuildInOnResume(true);
+                    }
+                }
+                break;
+            }
+
             case RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     // the last edited/inserted shelf
@@ -1227,11 +1242,6 @@ public class BooksOnBookshelf
                 break;
             }
 
-            // from BaseActivity Nav Panel
-            case RequestCode.NAV_PANEL_EXPORT:
-                break;
-
-            // from BaseActivity Nav Panel
             case RequestCode.NAV_PANEL_IMPORT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     if (data.hasExtra(ImportResults.BKEY_IMPORT_RESULTS)) {
@@ -1255,12 +1265,9 @@ public class BooksOnBookshelf
                 break;
             }
 
-            // from BaseActivity Nav Panel
-            case RequestCode.NAV_PANEL_ABOUT:
-                if (resultCode == AboutActivity.RESULT_ALL_DATA_DESTROYED) {
-                    mModel.reloadSelectedBookshelf(this);
-                    mModel.setForceRebuildInOnResume(true);
-                }
+            case RequestCode.NAV_PANEL_EXPORT:
+            case RequestCode.NAV_PANEL_GOODREADS:
+                // no results returned for now.
                 break;
 
             default: {

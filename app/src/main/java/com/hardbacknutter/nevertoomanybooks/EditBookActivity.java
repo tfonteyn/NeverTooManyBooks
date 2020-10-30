@@ -91,8 +91,6 @@ public class EditBookActivity
         mBookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
         mBookViewModel.init(this, getIntent().getExtras(), true);
 
-        setNavigationItemVisibility(R.id.nav_manage_bookshelves, true);
-
         mViewPagerAdapter = new TabAdapter(this);
         mVb.pager.setAdapter(mViewPagerAdapter);
 

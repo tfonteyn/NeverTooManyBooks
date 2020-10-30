@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -47,7 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
@@ -74,6 +76,21 @@ public class BookSearchByTextFragment
     /** View Binding. */
     private FragmentBooksearchByTextBinding mVb;
 
+    /**
+     * Whether a search should (also) use the publisher name to search for books.
+     * <p>
+     * Hardcoded to ISFDB only for now, as that's the only site supporting this flag.
+     * This method will be refactored/moved/... at some point.
+     *
+     * @param context Current context
+     *
+     * @return flag
+     */
+    private boolean usePublisher(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(IsfdbSearchEngine.PREFS_USE_PUBLISHER, false);
+    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +112,7 @@ public class BookSearchByTextFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        mUsePublisher = Prefs.usePublisher(getContext());
+        mUsePublisher = usePublisher(getContext());
 
         if (mUsePublisher) {
             mVb.lblPublisher.setVisibility(View.VISIBLE);

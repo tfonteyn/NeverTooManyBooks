@@ -24,7 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,13 +50,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
@@ -315,7 +309,8 @@ public abstract class BaseActivity
      * @param itemId  menu item resource id
      * @param visible flag
      */
-    void setNavigationItemVisibility(@IdRes final int itemId,
+    void setNavigationItemVisibility(@SuppressWarnings("SameParameterValue")
+                                     @IdRes final int itemId,
                                      final boolean visible) {
         if (mNavigationView != null) {
             mNavigationView.getMenu().findItem(itemId).setVisible(visible);
@@ -328,44 +323,11 @@ public abstract class BaseActivity
 
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.nav_advanced_search) {
-            final Intent searchIntent = new Intent(this, FTSSearchActivity.class);
-            startActivityForResult(searchIntent, RequestCode.ADVANCED_LOCAL_SEARCH);
-            return true;
-
-        } else if (itemId == R.id.nav_manage_bookshelves) {
+        if (itemId == R.id.nav_manage_bookshelves) {
+            // child classes which have a 'current bookshelf' should override
             final Intent intent = new Intent(this, AdminActivity.class)
                     .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
             startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
-            return true;
-
-        } else if (itemId == R.id.nav_manage_list_styles) {
-            // Child classes should override if they have a 'current' style
-            // and/or a database to pass instead of the default and new instance here.
-            final Intent intent = new Intent(this, PreferredStylesActivity.class);
-            try (DAO db = new DAO(TAG)) {
-                intent.putExtra(BooklistStyle.BKEY_STYLE_UUID,
-                                StyleDAO.getDefault(this, db).getUuid());
-            }
-            startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_STYLES);
-            return true;
-
-        } else if (itemId == R.id.nav_import) {
-            final Intent intent = new Intent(this, AdminActivity.class)
-                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
-            startActivityForResult(intent, RequestCode.NAV_PANEL_IMPORT);
-            return true;
-
-        } else if (itemId == R.id.nav_export) {
-            final Intent intent = new Intent(this, AdminActivity.class)
-                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-            startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
-            return true;
-
-        } else if (itemId == R.id.nav_goodreads) {
-            final Intent intent = new Intent(this, AdminActivity.class)
-                    .putExtra(BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
-            startActivityForResult(intent, RequestCode.NAV_PANEL_GOODREADS);
             return true;
 
         } else if (itemId == R.id.nav_settings) {
@@ -374,8 +336,7 @@ public abstract class BaseActivity
             return true;
 
         } else if (itemId == R.id.nav_about) {
-            startActivityForResult(new Intent(this, AboutActivity.class),
-                                   RequestCode.NAV_PANEL_ABOUT);
+            startActivity(new Intent(this, AboutActivity.class));
             return true;
         }
         return false;
@@ -433,69 +394,28 @@ public abstract class BaseActivity
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
-        // generic actions & logging. Anything specific should be done in a child class.
         switch (requestCode) {
-            case RequestCode.NAV_PANEL_SETTINGS:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_SETTINGS");
-                }
+            case RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES:
+                // Nothing to do here, but see BooksOnBookshelf Activity
+                // where we override this one
+                break;
 
+            case RequestCode.NAV_PANEL_SETTINGS:
+                // Handle the generic return flag requiring a recreate of the current Activity
                 if (resultCode == Activity.RESULT_OK) {
                     Objects.requireNonNull(data, "data");
                     if (data.getBooleanExtra(BKEY_PREF_CHANGE_REQUIRES_RECREATE, false)) {
                         sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
                     }
                 }
-                break;
 
-            // logging only
-            case RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_BOOKSHELVES");
+                // unconditional exit of the app
+                if (resultCode == MaintenanceFragment.RESULT_ALL_DATA_DESTROYED) {
+                    finish();
                 }
                 break;
 
-            // logging only
-            case RequestCode.NAV_PANEL_MANAGE_STYLES:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EDIT_STYLES");
-                }
-                break;
-
-            // logging only
-            case RequestCode.NAV_PANEL_IMPORT:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_IMPORT");
-                }
-                break;
-
-            // logging only
-            case RequestCode.NAV_PANEL_EXPORT:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_EXPORT");
-                }
-                break;
-
-            // logging only
-            case RequestCode.NAV_PANEL_GOODREADS:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "BaseActivity.onActivityResult|REQ_NAV_PANEL_GOODREADS");
-                }
-                break;
-
-            // logging only
             default:
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    // codes for fragments have upper 16 bits in use, don't log those.
-                    // the super call will redirect those.
-                    if ((requestCode & 0xFF) != 0) {
-                        Logger.warn(this, TAG,
-                                    "BaseActivity.onActivityResult"
-                                    + "|NOT HANDLED"
-                                    + "|requestCode=" + requestCode
-                                    + "|resultCode=" + resultCode);
-                    }
-                }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
