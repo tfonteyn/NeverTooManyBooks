@@ -30,6 +30,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -65,6 +65,15 @@ public abstract class BookSearchBaseFragment
     /** Database Access. */
     DAO mDb;
     SearchCoordinator mCoordinator;
+
+    private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
+            registerForActivityResult(new SearchAdminActivity.SingleListContract(Site.Type.Data),
+                                      sites -> {
+                                          if (sites != null) {
+                                              // no changes committed, temporary usage only
+                                              mCoordinator.setSiteList(sites);
+                                          }
+                                      });
 
     @Nullable
     private ProgressDialogFragment mProgressDialog;
@@ -134,9 +143,7 @@ public abstract class BookSearchBaseFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
-            final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                    .putExtra(SearchAdminModel.BKEY_LIST, mCoordinator.getSiteList());
-            startActivityForResult(intent, RequestCode.EDIT_SEARCH_SITES);
+            mEditSitesLauncher.launch(mCoordinator.getSiteList());
             return true;
         }
 
@@ -303,18 +310,8 @@ public abstract class BookSearchBaseFragment
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
+        //noinspection SwitchStatementWithTooFewBranches
         switch (requestCode) {
-            // no changes committed, we got data to use temporarily
-            case RequestCode.EDIT_SEARCH_SITES: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    final ArrayList<Site> sites =
-                            data.getParcelableArrayListExtra(Site.Type.Data.getBundleKey());
-                    if (sites != null) {
-                        mCoordinator.setSiteList(sites);
-                    }
-                }
-                break;
-            }
             case RequestCode.BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
                     mResultData.putResultData(data);

@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,13 +48,11 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -79,6 +78,15 @@ public class UpdateFieldsFragment
     private ProgressDialogFragment mProgressDialog;
     /** View binding. */
     private FragmentUpdateFromInternetBinding mVb;
+
+    private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
+            registerForActivityResult(new SearchAdminActivity.SingleListContract(Site.Type.Data),
+                                      sites -> {
+                                          if (sites != null) {
+                                              // no changes committed, temporary usage only
+                                              mUpdateFieldsModel.setSiteList(sites);
+                                          }
+                                      });
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -186,33 +194,6 @@ public class UpdateFieldsFragment
 
     @Override
     @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            // no changes committed, we got data to use temporarily
-            case RequestCode.EDIT_SEARCH_SITES:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    final ArrayList<Site> sites =
-                            data.getParcelableArrayListExtra(Site.Type.Data.getBundleKey());
-                    if (sites != null) {
-                        mUpdateFieldsModel.setSiteList(sites);
-                    }
-                }
-                break;
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-        }
-    }
-
-    @Override
-    @CallSuper
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         final Resources r = getResources();
@@ -235,9 +216,7 @@ public class UpdateFieldsFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
-            final Intent intent = new Intent(getContext(), SearchAdminActivity.class)
-                    .putExtra(SearchAdminModel.BKEY_LIST, mUpdateFieldsModel.getSiteList());
-            startActivityForResult(intent, RequestCode.EDIT_SEARCH_SITES);
+            mEditSitesLauncher.launch(mUpdateFieldsModel.getSiteList());
             return true;
 
         } else if (itemId == R.id.MENU_RESET) {

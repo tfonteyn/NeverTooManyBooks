@@ -46,9 +46,6 @@ public final class RequestCode {
     /** edit the Groups of a Style. */
     public static final int EDIT_STYLE_GROUPS = 1_101;
 
-    /** open the admin page to order and en/disable sites. */
-    public static final int EDIT_SEARCH_SITES = 1_102;
-
 
     /** open the book view screen. */
     public static final int BOOK_VIEW = 2_001;

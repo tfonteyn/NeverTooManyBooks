@@ -19,13 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,10 +45,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
@@ -78,6 +75,10 @@ public abstract class BasePreferenceFragment
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
     @SuppressWarnings("WeakerAccess")
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
+
+    private final ActivityResultLauncher<Void> mEditSitesLauncher =
+            registerForActivityResult(new SearchAdminActivity.AllListsContract(),
+                                      success -> { /* ignore */ });
 
     protected ResultDataModel mResultData;
     @Nullable
@@ -146,8 +147,7 @@ public abstract class BasePreferenceFragment
         preference = findPreference("psk_search_site_order");
         if (preference != null) {
             preference.setOnPreferenceClickListener(p -> {
-                final Intent intent = new Intent(getContext(), SearchAdminActivity.class);
-                startActivityForResult(intent, RequestCode.EDIT_SEARCH_SITES);
+                mEditSitesLauncher.launch(null);
                 return true;
             });
         }
@@ -358,27 +358,6 @@ public abstract class BasePreferenceFragment
         updateSummary(key);
     }
 
-    @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.EDIT_SEARCH_SITES:
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultData.putResultData(data);
-                }
-                break;
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-        }
-    }
 
     /**
      * BitmaskPreference get a custom Dialog were the neutral button displays

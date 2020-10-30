@@ -424,52 +424,6 @@ public class BookDetailsFragment
         super.onPause();
     }
 
-    @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        switch (requestCode) {
-            case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
-            case RequestCode.BOOK_EDIT:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
-                        // pass the data up
-                        mBookViewModel.putResultData(data);
-                    }
-                    // onResume will display the changed book.
-                    mBookViewModel.reload();
-                }
-                break;
-
-            case RequestCode.BOOK_DUPLICATE:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
-                        // pass the data up
-                        mBookViewModel.putResultData(data);
-
-                        final long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
-                        if (id > 0) {
-                            mBookViewModel.loadBook(id);
-                        }
-                    }
-                    // onResume will display the new book
-                    mBookViewModel.reload();
-                    //TODO: swiping through the flattened booklist will not see
-                    // the duplicated book until we go back to BoB.
-                    // Easiest solution would be to remove the dup. option from this screen...
-                }
-                break;
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-            }
-        }
-    }
 
     /**
      * At this point we're told to load our local (to the fragment) fields from the Book.
@@ -766,6 +720,53 @@ public class BookDetailsFragment
         }
 
         return super.onContextItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(final int requestCode,
+                                 final int resultCode,
+                                 @Nullable final Intent data) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
+        }
+
+        switch (requestCode) {
+            case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
+            case RequestCode.BOOK_EDIT:
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
+                        // pass the data up
+                        mBookViewModel.putResultData(data);
+                    }
+                    // onResume will display the changed book.
+                    mBookViewModel.reload();
+                }
+                break;
+
+            case RequestCode.BOOK_DUPLICATE:
+                if (resultCode == Activity.RESULT_OK) {
+                    if (data != null) {
+                        // pass the data up
+                        mBookViewModel.putResultData(data);
+
+                        final long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
+                        if (id > 0) {
+                            mBookViewModel.loadBook(id);
+                        }
+                    }
+                    // onResume will display the new book
+                    mBookViewModel.reload();
+                    //TODO: swiping through the flattened booklist will not see
+                    // the duplicated book until we go back to BoB.
+                    // Easiest solution would be to remove the dup. option from this screen...
+                }
+                break;
+
+            default: {
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+            }
+        }
     }
 
     /**
