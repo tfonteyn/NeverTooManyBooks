@@ -22,7 +22,6 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     >
     <PreferenceCategory
-        android:key="psk_barcode_scanner"
         android:title="@string/pg_barcode_scanner">
 
         <ListPreference
