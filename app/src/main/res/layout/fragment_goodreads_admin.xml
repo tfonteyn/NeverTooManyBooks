@@ -29,51 +29,40 @@
     tools:context=".AdminActivity"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/screenBorder"
+        android:orientation="vertical"
         >
 
         <Button
             android:id="@+id/btn_sync"
             style="@style/MenuButton"
-            app:icon="@drawable/ic_autorenew"
             android:text="@string/gr_title_sync_with_goodreads"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:icon="@drawable/ic_autorenew"
             />
 
         <Button
             android:id="@+id/btn_import"
             style="@style/MenuButton"
-            app:icon="@drawable/ic_file_download"
             android:text="@string/gr_menu_import_all_from_goodreads"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_sync"
+            app:icon="@drawable/ic_file_download"
             />
 
         <Button
             android:id="@+id/btn_send_updated_books"
             style="@style/MenuButton"
-            app:icon="@drawable/ic_send"
             android:text="@string/gr_menu_send_updated"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_import"
+            app:icon="@drawable/ic_send"
             />
 
         <Button
             android:id="@+id/btn_send_all_books"
             style="@style/MenuButton"
-            app:icon="@drawable/ic_file_upload"
             android:text="@string/gr_menu_send_all"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_send_updated_books"
+            app:icon="@drawable/ic_file_upload"
             />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>
