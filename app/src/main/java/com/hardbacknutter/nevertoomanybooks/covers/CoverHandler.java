@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
@@ -558,12 +559,12 @@ public class CoverHandler {
 
                 // Should we apply an explicit rotation angle?
                 // (which would overrule the setWindowManager call)
-                final int angle = Prefs
+                final int angle = ParseUtils
                         .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
 
                 // What action (if any) should we take after we're done?
                 @NextAction
-                final int action = Prefs
+                final int action = ParseUtils
                         .getIntListPref(prefs, Prefs.pk_camera_image_action, ACTION_DONE);
 
                 showProgress(true);

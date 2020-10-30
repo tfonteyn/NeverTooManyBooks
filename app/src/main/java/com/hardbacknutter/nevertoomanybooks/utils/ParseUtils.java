@@ -19,8 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.ListPreference;
 
 import java.text.DecimalFormat;
 import java.text.Normalizer;
@@ -467,5 +470,32 @@ public final class ParseUtils {
     public static String toAscii(@NonNull final CharSequence text) {
         return ASCII_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                             .replaceAll("");
+    }
+
+    /**
+     * {@link ListPreference} stores the selected value as a String.
+     * But they are really Integer values. Hence this transmogrification....
+     *
+     * @param preferences SharedPreferences to read from
+     * @param key         The name of the preference to retrieve.
+     * @param defValue    Value to return if this preference does not exist,
+     *                    or if the stored value is somehow invalid
+     *
+     * @return int (stored as String) global preference
+     */
+    public static int getIntListPref(@NonNull final SharedPreferences preferences,
+                                     @NonNull final String key,
+                                     final int defValue) {
+        final String value = preferences.getString(key, null);
+        if (value == null || value.isEmpty()) {
+            return defValue;
+        }
+
+        // we should never have an invalid setting the in the prefs... flw
+        try {
+            return Integer.parseInt(value);
+        } catch (@NonNull final NumberFormatException ignore) {
+            return defValue;
+        }
     }
 }

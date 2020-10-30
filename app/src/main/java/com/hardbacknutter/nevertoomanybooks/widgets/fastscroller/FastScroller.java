@@ -40,6 +40,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
  * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
@@ -90,9 +91,9 @@ public final class FastScroller {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // Optional overlay
         @OverlayProvider.Style
-        final int overlayType = Prefs.getIntListPref(prefs,
-                                                     Prefs.pk_booklist_fastscroller_overlay,
-                                                     OverlayProvider.STYLE_DYNAMIC);
+        final int overlayType = ParseUtils.getIntListPref(prefs,
+                                                          Prefs.pk_booklist_fastscroller_overlay,
+                                                          OverlayProvider.STYLE_DYNAMIC);
         switch (overlayType) {
             case OverlayProvider.STYLE_DYNAMIC:
                 fastScroller.setOverlayProvider(new FastScrollerOverlay(

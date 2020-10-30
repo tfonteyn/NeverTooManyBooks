@@ -34,6 +34,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
+import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 public class ScannerContract
@@ -48,7 +49,7 @@ public class ScannerContract
                 .getDefaultSharedPreferences(fragment.getContext());
 
         // By default -1, which for the IntentIntegrator call means 'no preference'
-        final int cameraId = Prefs.getIntListPref(prefs, Prefs.pk_camera_id_scan_barcode, -1);
+        final int cameraId = ParseUtils.getIntListPref(prefs, Prefs.pk_camera_id_scan_barcode, -1);
 
         // Beep when a barcode was recognised
         final boolean beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
