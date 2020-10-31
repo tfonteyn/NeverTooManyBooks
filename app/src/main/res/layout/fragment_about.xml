@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/screenBorder"
+    tools:context=".AdminActivity"
+    >
+
+    <ImageView
+        android:id="@+id/app_icon"
+        android:layout_width="@dimen/app_logo"
+        android:layout_height="@dimen/app_logo"
+        android:contentDescription="@string/app_name"
+        android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:src="@drawable/ic_nevertoomanybooks_about"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/app_name"
+        style="@style/AppName"
+        android:text="@string/app_name"
+        app:layout_constraintBottom_toBottomOf="@id/app_icon"
+        app:layout_constraintStart_toEndOf="@id/app_icon"
+        app:layout_constraintTop_toTopOf="@id/app_icon"
+        tools:text="NeverTooManyBooks"
+        />
+
+    <TextView
+        android:id="@+id/version"
+        style="@style/AppVersion"
+        app:layout_constraintEnd_toEndOf="@id/app_name"
+        app:layout_constraintTop_toBottomOf="@id/app_name"
+        tools:ignore="SelectableText"
+        tools:text="a.b.c"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_header_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="app_icon,version"
+        />
+
+    <TextView
+        android:id="@+id/contacts"
+        style="@style/Text.Header"
+        android:layout_marginStart="@dimen/field_margin"
+        android:layout_marginTop="24dp"
+        android:text="@string/lbl_about_contact"
+        app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
+        />
+
+    <Button
+        android:id="@+id/btn_sourcecode_url"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/border2"
+        android:text="@string/lbl_sourcecode_url"
+        app:icon="@drawable/ic_link"
+        app:layout_constraintStart_toStartOf="@id/contacts"
+        app:layout_constraintTop_toBottomOf="@id/contacts"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

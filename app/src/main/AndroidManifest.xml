@@ -132,7 +132,6 @@
             android:name=".FTSSearchActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
-        <activity android:name=".AboutActivity" />
         <activity android:name=".AdminActivity" />
         <activity android:name=".settings.SettingsActivity" />
         <activity android:name=".settings.styles.PreferredStylesActivity" />

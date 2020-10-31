@@ -62,6 +62,10 @@ public class AdminActivity
                                  @IdRes final int containerViewId,
                                  @NonNull final String tag) {
         switch (tag) {
+            case AboutFragment.TAG:
+                replaceFragment(containerViewId, AboutFragment.class, tag);
+                return;
+
             case EditBookshelvesFragment.TAG:
                 replaceFragment(containerViewId, EditBookshelvesFragment.class, tag);
                 return;

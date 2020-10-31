@@ -336,7 +336,9 @@ public abstract class BaseActivity
             return true;
 
         } else if (itemId == R.id.nav_about) {
-            startActivity(new Intent(this, AboutActivity.class));
+            final Intent intent = new Intent(this, AdminActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, AboutFragment.TAG);
+            startActivity(intent);
             return true;
         }
         return false;

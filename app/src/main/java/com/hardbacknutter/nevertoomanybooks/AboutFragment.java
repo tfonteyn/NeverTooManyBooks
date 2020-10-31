@@ -22,32 +22,46 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
-import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdminAboutBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
-public class AboutActivity
-        extends BaseActivity {
+public class AboutFragment
+        extends Fragment {
 
-    private ActivityAdminAboutBinding mVb;
+    public static final String TAG = "AboutFragment";
 
+    private FragmentAboutBinding mVb;
+
+    @Nullable
     @Override
-    protected void onSetContentView() {
-        mVb = ActivityAdminAboutBinding.inflate(getLayoutInflater());
-        setContentView(mVb.getRoot());
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = FragmentAboutBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        final PackageInfoWrapper packageInfoWrapper = PackageInfoWrapper.create(this);
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.lbl_about);
+
+        //noinspection ConstantConditions
+        final PackageInfoWrapper packageInfoWrapper = PackageInfoWrapper.create(getContext());
         mVb.version.setText(packageInfoWrapper.getVersionName());
 
         mVb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
-
     }
 }
