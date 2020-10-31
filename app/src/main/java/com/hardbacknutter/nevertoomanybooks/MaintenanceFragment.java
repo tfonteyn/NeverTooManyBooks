@@ -108,6 +108,7 @@ public class MaintenanceFragment
             if (mDebugClicks >= DEBUG_CLICKS) {
                 mVb.btnDebugDumpPrefs.setVisibility(View.VISIBLE);
                 mVb.btnDebugSqShell.setVisibility(View.VISIBLE);
+                mVb.debugVersion.setVisibility(View.VISIBLE);
             }
 
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {

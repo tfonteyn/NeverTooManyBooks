@@ -124,8 +124,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
+            android:layout_marginStart="48dp"
             android:textStyle="italic"
+            android:visibility="gone"
             tools:text="a7 d13 b2020-11-01"
+            tools:visibility="visible"
             />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
