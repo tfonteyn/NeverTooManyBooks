@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="coverImage0,coverImage1,notes_section"
+            app:constraint_referenced_ids="coverImage0,coverImage1,personal_data_section"
             />
 
         <ImageView
@@ -234,17 +234,35 @@
             <!-- chips will be added here dynamically -->
         </com.google.android.material.chip.ChipGroup>
 
+        <TextView
+            android:id="@+id/lbl_notes"
+            style="@style/Field.Label"
+            android:text="@string/lbl_personal_notes"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/bookshelves"
+            />
+
+        <TextView
+            android:id="@+id/notes"
+            style="@style/Field.Notes"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_notes"
+            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
+            tools:ignore="SelectableText"
+            tools:text="The best book of all times."
+            />
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/notes_section"
+            android:id="@+id/personal_data_section"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/border2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
-            app:layout_constraintTop_toBottomOf="@id/bookshelves"
+            app:layout_constraintTop_toBottomOf="@id/notes"
             >
 
-            <include layout="@layout/fragment_book_details_merge_notes_section" />
+            <include layout="@layout/fragment_book_details_merge_personal_section" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView

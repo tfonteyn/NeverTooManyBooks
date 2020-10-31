@@ -34,7 +34,7 @@
         android:text="@string/lbl_table_of_content"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBaseline_toBaselineOf="@id/btn_show_toc"
         tools:visibility="visible"
         />
 
@@ -42,7 +42,7 @@
         android:id="@+id/btn_show_toc"
         style="@style/TocSwitch"
         android:layout_marginStart="@dimen/field_margin_inline"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_toc"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/lbl_toc"
         tools:checked="true"
         tools:visibility="visible"

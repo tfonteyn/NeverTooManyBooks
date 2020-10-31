@@ -40,7 +40,7 @@
             style="@style/Field.LendOutToBar"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@sample/data.json/lend_out_to/full"
             tools:visibility="visible"
@@ -59,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="coverImage0,coverImage1,publication_section"
+            app:constraint_referenced_ids="coverImage0,coverImage1,bookshelves"
             />
 
         <ImageView
@@ -68,8 +68,9 @@
             android:layout_width="@dimen/cover_details_0_width"
             android:layout_height="@dimen/cover_details_0_height"
             android:contentDescription="@string/lbl_cover_front"
+            app:layout_constraintEnd_toStartOf="@id/coverImage1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title"
+            app:layout_constraintTop_toTopOf="parent"
             tools:src="@sample/covers"
             />
         <!--
@@ -85,15 +86,14 @@
             tools:background="@drawable/outline_rounded"
             tools:src="@drawable/ic_add_a_photo"
         -->
-
         <ImageView
             android:id="@+id/coverImage1"
             style="@style/CoverImage"
             android:layout_width="@dimen/cover_details_1_width"
             android:layout_height="@dimen/cover_details_1_height"
             android:contentDescription="@string/lbl_cover_front"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/coverImage0"
+            app:layout_constraintStart_toEndOf="@id/coverImage0"
+            app:layout_constraintTop_toTopOf="@id/coverImage0"
             tools:src="@sample/covers"
             />
         <!--
@@ -142,7 +142,7 @@
             android:id="@+id/title"
             style="@style/Field.BookTitle.Large"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/lend_to"
             tools:ignore="SelectableText"
             tools:text="@sample/data.json/book/title"
@@ -158,25 +158,48 @@
             tools:text="@sample/data.json/author/full_name"
             />
 
-        <!-- The use of a nested ConstraintLayout here and in similar includes
-            is not efficient. The problem was that in the different layouts
-            (portrait/landscape, and the tablet layouts) the constraints (in particular
-            the layout_constraintStart_toEndOf) would need to be different depending
-            on the layout where they get included. It was deemed this payoff was easier
-            then keep maintaining 4 layouts with lots of duplication.
-            -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/publication_section"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/border2"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/personal_data_section"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/author"
             >
 
             <include layout="@layout/fragment_book_details_merge_publication_section" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/personal_data_section"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/publication_section"
+            app:layout_constraintTop_toTopOf="@id/publication_section"
+            >
+
+            <include layout="@layout/fragment_book_details_merge_personal_section" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/lbl_notes"
+            style="@style/Field.Label"
+            android:text="@string/lbl_personal_notes"
+            app:layout_constraintStart_toStartOf="@id/personal_data_section"
+            app:layout_constraintTop_toBottomOf="@id/personal_data_section"
+            />
+
+        <TextView
+            android:id="@+id/notes"
+            style="@style/Field.Notes"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/lbl_notes"
+            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
+            tools:ignore="SelectableText"
+            tools:text="The best book of all times."
+            />
 
         <TextView
             android:id="@+id/lbl_genre"
@@ -195,12 +218,21 @@
             tools:text="Science Fiction"
             />
 
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_genre_notes_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="genre,notes,personal_data_section,publication_section,author"
+            />
+
         <TextView
             android:id="@+id/lbl_series"
             style="@style/Field.Label"
             android:text="@string/lbl_series"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintTop_toBottomOf="@id/barrier_genre_notes_bottom"
             />
 
         <TextView
@@ -218,7 +250,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/series_title"
             >
 
@@ -229,7 +261,7 @@
             android:id="@+id/lbl_bookshelves"
             style="@style/Field.Label"
             android:text="@string/lbl_bookshelves_long"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/toc_section"
             />
 
@@ -243,42 +275,13 @@
         </com.google.android.material.chip.ChipGroup>
 
         <TextView
-            android:id="@+id/lbl_notes"
-            style="@style/Field.Label"
-            android:text="@string/lbl_personal_notes"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bookshelves"
-            />
-
-        <TextView
-            android:id="@+id/notes"
-            style="@style/Field.Notes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/lbl_notes"
-            app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-            tools:ignore="SelectableText"
-            tools:text="The best book of all times."
-            />
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/personal_data_section"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/notes"
-            >
-
-            <include layout="@layout/fragment_book_details_merge_personal_section" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
+            android:layout_marginStart="@dimen/field_margin_inline"
+            android:layout_marginEnd="@dimen/field_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/personal_data_section"
+            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
             />

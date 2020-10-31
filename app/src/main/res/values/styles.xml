@@ -82,8 +82,9 @@
         <item name="android:textSize">22sp</item>
     </style>
 
-    <style name="Field.Isbn" parent="Field.Generic">
-        <item name="android:textColor">?attr/colorSecondaryVariant</item>
+    <style name="Field.Isbn">
+        <item name="android:layout_marginStart">@dimen/field_margin</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <style name="Field.Isbn.Small">
@@ -120,7 +121,6 @@
     <style name="Text">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textIsSelectable">true</item>
     </style>
 
     <style name="Text.Header">
@@ -129,6 +129,7 @@
     </style>
 
     <style name="Text.Body">
+        <item name="android:textIsSelectable">true</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 

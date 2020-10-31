@@ -26,24 +26,6 @@
     tools:showIn="@layout/fragment_book_details"
     >
 
-    <TextView
-        android:id="@+id/lbl_notes"
-        style="@style/Field.Label"
-        android:text="@string/lbl_personal_notes"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
-
-    <TextView
-        android:id="@+id/notes"
-        style="@style/Field.Notes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/lbl_notes"
-        app:layout_constraintTop_toBottomOf="@id/lbl_notes"
-        tools:ignore="SelectableText"
-        tools:text="The best book of all times."
-        />
-
     <!-- note that the views used to set constraints are the data views.
       The labels are baseline'd to them.
       This is due to font size of the labels being smaller than the data.
@@ -55,7 +37,8 @@
         style="@style/Field.Label"
         android:text="@string/lbl_signed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/notes"
+        app:layout_constraintBottom_toBottomOf="@id/icon_signed"
+        app:layout_constraintTop_toTopOf="@id/icon_signed"
         />
 
     <ImageView
@@ -66,7 +49,7 @@
         android:src="@drawable/ic_check"
         app:tint="?attr/colorSecondaryVariant"
         app:layout_constraintStart_toEndOf="@id/lbl_signed"
-        app:layout_constraintTop_toBottomOf="@id/notes"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <TextView

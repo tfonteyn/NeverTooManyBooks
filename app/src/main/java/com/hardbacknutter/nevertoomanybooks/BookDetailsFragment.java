@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeNotesSectionBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePersonalSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeTocSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryWithAuthorBinding;
@@ -131,7 +131,7 @@ public class BookDetailsFragment
     /** View Binding. */
     private FragmentBookDetailsMergeTocSectionBinding mVbToc;
     /** View Binding. */
-    private FragmentBookDetailsMergeNotesSectionBinding mVbNotes;
+    private FragmentBookDetailsMergePersonalSectionBinding mVbNotes;
     /** Goodreads send-book task. */
     private GrSendOneBookTask mGrSendOneBookTask;
 
@@ -179,7 +179,7 @@ public class BookDetailsFragment
         mVb = FragmentBookDetailsBinding.inflate(inflater, container, false);
         mVbPub = FragmentBookDetailsMergePublicationSectionBinding.bind(mVb.publicationSection);
         mVbToc = FragmentBookDetailsMergeTocSectionBinding.bind(mVb.tocSection);
-        mVbNotes = FragmentBookDetailsMergeNotesSectionBinding.bind(mVb.notesSection);
+        mVbNotes = FragmentBookDetailsMergePersonalSectionBinding.bind(mVb.personalDataSection);
 
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -469,15 +469,6 @@ public class BookDetailsFragment
                              mVbPub.color,
                              mVbPub.language,
                              mVbPub.pages);
-        // Hide the "Personal notes" label if none of the notes fields are shown.
-        setSectionVisibility(mVbNotes.lblNotes,
-                             mVbNotes.notes,
-                             mVbNotes.iconSigned,
-                             mVbNotes.dateAcquired,
-                             mVbNotes.pricePaid,
-                             mVbNotes.readStart,
-                             mVbNotes.readEnd,
-                             mVbNotes.location);
     }
 
     /**
