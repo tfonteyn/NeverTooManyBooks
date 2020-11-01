@@ -81,6 +81,7 @@ public class ImportFragment
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
+                    getActivity().finish();
                 }
             };
 

@@ -30,7 +30,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Hosting activity for showing a book.
+ * Hosting activity for showing a book <strong>with</strong>
+ * a DrawerLayout/NavigationView side panel.
  */
 public class BookDetailsActivity
         extends BaseActivity {

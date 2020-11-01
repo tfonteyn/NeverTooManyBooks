@@ -287,7 +287,12 @@ public abstract class BaseActivity
     public void onBackPressed() {
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);
+
         } else {
+            // Will call any (enabled) registered OnBackPressedCallback handlers.
+            // If there are none registered, the system will call finish().
+            // However, if we do have an enabled/registered callback of our own,
+            // it is responsible to call finish()
             super.onBackPressed();
         }
     }

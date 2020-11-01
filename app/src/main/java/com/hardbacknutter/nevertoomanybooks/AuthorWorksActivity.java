@@ -19,16 +19,13 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
-
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
- * Hosting activity for showing an author.
+ * Hosting activity for showing an author <strong>with</strong>
+ * a DrawerLayout/NavigationView side panel.
  */
 public class AuthorWorksActivity
         extends BaseActivity {
@@ -43,15 +40,5 @@ public class AuthorWorksActivity
         super.onCreate(savedInstanceState);
 
         replaceFragment(R.id.main_fragment, AuthorWorksFragment.class, AuthorWorksFragment.TAG);
-
-        // Popup the search widget when the user starts to type.
-        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-    }
-
-    @Override
-    public void onBackPressed() {
-        final ResultDataModel resultData = new ViewModelProvider(this).get(ResultDataModel.class);
-        setResult(Activity.RESULT_OK, resultData.getResultIntent());
-        super.onBackPressed();
     }
 }

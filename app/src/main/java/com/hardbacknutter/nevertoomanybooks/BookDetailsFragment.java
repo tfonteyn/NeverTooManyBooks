@@ -115,6 +115,7 @@ public class BookDetailsFragment
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
+                    getActivity().finish();
                 }
             };
     /** Registered with the Activity to deliver us gestures. */

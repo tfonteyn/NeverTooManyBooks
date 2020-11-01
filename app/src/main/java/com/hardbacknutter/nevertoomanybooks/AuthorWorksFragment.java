@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -32,6 +34,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -97,6 +100,16 @@ public class AuthorWorksFragment
     private TocAdapter mAdapter;
     private ActionBar mActionBar;
 
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
+                    getActivity().finish();
+                }
+            };
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,16 +137,23 @@ public class AuthorWorksFragment
 
         final Context context = getContext();
 
+        // Popup the search widget when the user starts to type.
         //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        mResultData = new ViewModelProvider(this).get(ResultDataModel.class);
 
         mModel = new ViewModelProvider(this).get(AuthorWorksModel.class);
         //noinspection ConstantConditions
         mModel.init(context, requireArguments());
 
+        //noinspection ConstantConditions
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
-        mActionBar.setTitle(mModel.getScreenTitle(getContext()));
+        mActionBar.setTitle(mModel.getScreenTitle(context));
         mActionBar.setSubtitle(mModel.getScreenSubtitle());
 
         final RecyclerView listView = view.findViewById(R.id.author_works);
@@ -425,6 +445,7 @@ public class AuthorWorksFragment
             return holder;
         }
 
+        @SuppressLint("UseCompatTextViewDrawableApis")
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {

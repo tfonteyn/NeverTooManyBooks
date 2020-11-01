@@ -28,7 +28,8 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 
 /**
- * Hosting activity for generic fragments.
+ * Hosting activity for generic fragments <strong>without</strong>
+ * a DrawerLayout/NavigationView side panel.
  */
 public class HostingActivity
         extends BaseActivity {
