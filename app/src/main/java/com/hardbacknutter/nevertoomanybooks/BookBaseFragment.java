@@ -136,9 +136,6 @@ public abstract class BookBaseFragment
 
         getChildFragmentManager()
                 .setFragmentResultListener(RK_COVER_BROWSER, this, mOnCoverBrowserListener);
-
-        //noinspection ConstantConditions
-        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
     }
 
     @Override
@@ -223,10 +220,10 @@ public abstract class BookBaseFragment
         fields.setParentView(getView());
 
         fields.setAfterChangeListener(null);
-        mBookViewModel.getBook().lockStage();
+        book.lockStage();
         // make it so!
         onPopulateViews(fields, book);
-        mBookViewModel.getBook().unlockStage();
+        book.unlockStage();
         fields.setAfterChangeListener(mAfterChangeListener);
 
         // All views should now have proper visibility set, so fix their focus order.

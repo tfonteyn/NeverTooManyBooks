@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
 
@@ -120,12 +121,14 @@ public abstract class EditBookBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //noinspection ConstantConditions
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+
         final FragmentManager fm = getChildFragmentManager();
         fm.setFragmentResultListener(RK_DATE_PICKER_PARTIAL, this, mPartialDatePickerListener);
         fm.setFragmentResultListener(RK_DATE_PICKER_SINGLE, this, mDatePickerListener);
         fm.setFragmentResultListener(RK_DATE_PICKER_RANGE, this, mDatePickerListener);
 
-        //noinspection ConstantConditions
         mFragmentVM = new ViewModelProvider(getActivity())
                 .get(getFragmentId(), EditBookFragmentViewModel.class);
         //noinspection ConstantConditions

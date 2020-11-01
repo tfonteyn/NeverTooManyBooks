@@ -41,28 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * A {@link ChipGroup} where each {@link Chip} represents one {@link Entity} in a list.
  * <p>
  * A {@code null} value is always handled as an empty {@link ArrayList}.
- *
- * <pre>
- *     {@code
- *             <com.google.android.material.textfield.TextInputLayout
- *             android:id="@+id/lbl_bookshelves"
- *             style="@style/Envelope.EditText"
- *             android:hint="@string/lbl_bookshelves"
- *             app:endIconMode="none"
- *             app:layout_constraintEnd_toEndOf="parent"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_series"
- *             >
- *
- *             <com.google.android.material.textfield.TextInputEditText
- *                 android:id="@+id/bookshelves"
- *                 style="@style/EditText.ReadOnly"
- *                 android:layout_width="match_parent"
- *                 tools:text="@sample/data.json/shelves/name"
- *                 />
- *
- *         </com.google.android.material.textfield.TextInputLayout>}
- * </pre>
+ * <p>
+ * Relies on {@link R.attr#appChipActionStyle} and <br> {@link R.attr#appChipFilterStyle}
  */
 public class EntityListChipGroupAccessor
         extends BaseDataAccessor<ArrayList<Entity>, ChipGroup> {
@@ -70,7 +50,7 @@ public class EntityListChipGroupAccessor
     private final Supplier<List<Entity>> mListSupplier;
 
     @Nullable
-    private final View.OnClickListener mFilterChipListener;
+    private final View.OnClickListener mEditChipListener;
 
     /**
      * Constructor.
@@ -84,7 +64,7 @@ public class EntityListChipGroupAccessor
         mIsEditable = isEditable;
 
         if (mIsEditable) {
-            mFilterChipListener = view -> {
+            mEditChipListener = view -> {
                 final Entity current = (Entity) view.getTag();
                 if (((Checkable) view).isChecked()) {
                     //noinspection ConstantConditions
@@ -95,7 +75,7 @@ public class EntityListChipGroupAccessor
                 }
             };
         } else {
-            mFilterChipListener = null;
+            mEditChipListener = null;
         }
     }
 
@@ -119,7 +99,24 @@ public class EntityListChipGroupAccessor
                 final boolean isSet = mRawValue.contains(entity);
                 // if editable, all values; if not editable only the set values.
                 if (isSet || mIsEditable) {
-                    chipGroup.addView(createChip(context, entity, entity.getLabel(context), isSet));
+                    final Chip chip;
+                    if (mIsEditable) {
+                        chip = new Chip(context, null, R.attr.appChipFilterStyle);
+                        chip.setChecked(isSet);
+                        chip.setOnClickListener(mEditChipListener);
+                        addTouchSignalsDirty(chip);
+
+                    } else {
+                        chip = new Chip(context, null, R.attr.appChipActionStyle);
+                    }
+
+                    // RTL-friendly Chip Layout
+                    chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+
+                    chip.setTag(entity);
+                    chip.setText(entity.getLabel(context));
+
+                    chipGroup.addView(chip);
                 }
             }
         }
@@ -128,33 +125,6 @@ public class EntityListChipGroupAccessor
     @Override
     public void setValue(@NonNull final DataManager source) {
         setValue(new ArrayList<>(source.getParcelableArrayList(mField.getKey())));
-    }
-
-    private Chip createChip(@NonNull final Context context,
-                            @NonNull final Object tag,
-                            @NonNull final CharSequence label,
-                            final boolean initialState) {
-        final Chip chip;
-        if (mIsEditable) {
-            chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Filter);
-        } else {
-            chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Entry);
-        }
-        // RTL-friendly Chip Layout
-        chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-
-        chip.setTag(tag);
-        chip.setText(label);
-
-        if (mIsEditable) {
-            // reminder: the Filter style has checkable=true, but unless we explicitly set it
-            // here in code, it won't take effect.
-            chip.setCheckable(true);
-            chip.setChecked(initialState);
-            chip.setOnClickListener(mFilterChipListener);
-            addTouchSignalsDirty(chip);
-        }
-        return chip;
     }
 
     @Override

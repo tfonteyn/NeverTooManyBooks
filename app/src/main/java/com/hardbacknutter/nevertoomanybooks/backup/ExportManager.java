@@ -225,7 +225,7 @@ public class ExportManager
             throws InvalidArchiveException, IOException {
 
         // Validate the settings before going ahead.
-        SanityCheck.requireValue(mOptions & MASK, "mOptions");
+        SanityCheck.requirePositiveValue(mOptions & MASK, "mOptions");
         Objects.requireNonNull(mUri, "uri");
 
         if ((mOptions & Options.IS_SYNC) != 0) {

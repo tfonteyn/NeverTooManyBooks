@@ -39,19 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * A {@link ChipGroup} where each {@link Chip} represents one bit in a bitmask.
  * <p>
  * A {@code null} value is always handled as {@code 0}.
- *
- * <pre>
- *     {@code
- *             <com.google.android.material.chip.ChipGroup
- *             android:id="@+id/edition"
- *             android:layout_width="0dp"
- *             android:layout_height="wrap_content"
- *             app:chipSpacing="@dimen/edChipSpacing"
- *             app:layout_constraintEnd_toEndOf="parent"
- *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_edition"
- *             />}
- * </pre>
+ * <p>
+ * Relies on {@link R.attr#appChipActionStyle} and <br> {@link R.attr#appChipFilterStyle}
  */
 public class BitmaskChipGroupAccessor
         extends BaseDataAccessor<Integer, ChipGroup> {
@@ -60,7 +49,7 @@ public class BitmaskChipGroupAccessor
     private final Supplier<Map<Integer, String>> mListSupplier;
 
     @Nullable
-    private final View.OnClickListener mFilterChipListener;
+    private final View.OnClickListener mEditChipListener;
 
     /**
      * Constructor.
@@ -74,7 +63,7 @@ public class BitmaskChipGroupAccessor
         mIsEditable = isEditable;
 
         if (mIsEditable) {
-            mFilterChipListener = view -> {
+            mEditChipListener = view -> {
                 final Integer current = (Integer) view.getTag();
                 if (((Checkable) view).isChecked()) {
                     // add
@@ -85,7 +74,7 @@ public class BitmaskChipGroupAccessor
                 }
             };
         } else {
-            mFilterChipListener = null;
+            mEditChipListener = null;
         }
     }
 
@@ -109,7 +98,25 @@ public class BitmaskChipGroupAccessor
                 final boolean isSet = (entry.getKey() & mRawValue) != 0;
                 // if editable, all values; if not editable only the set values.
                 if (isSet || mIsEditable) {
-                    chipGroup.addView(createChip(context, entry.getKey(), entry.getValue(), isSet));
+
+                    final Chip chip;
+                    if (mIsEditable) {
+                        chip = new Chip(context, null, R.attr.appChipFilterStyle);
+                        chip.setChecked(isSet);
+                        chip.setOnClickListener(mEditChipListener);
+                        addTouchSignalsDirty(chip);
+
+                    } else {
+                        chip = new Chip(context, null, R.attr.appChipActionStyle);
+                    }
+
+                    // RTL-friendly Chip Layout
+                    chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+
+                    chip.setTag(entry.getKey());
+                    chip.setText(entry.getValue());
+
+                    chipGroup.addView(chip);
                 }
             }
         }
@@ -118,33 +125,6 @@ public class BitmaskChipGroupAccessor
     @Override
     public void setValue(@NonNull final DataManager source) {
         setValue(source.getInt(mField.getKey()));
-    }
-
-    private Chip createChip(@NonNull final Context context,
-                            @NonNull final Object tag,
-                            @NonNull final CharSequence label,
-                            final boolean initialState) {
-        final Chip chip;
-        if (mIsEditable) {
-            chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Filter);
-        } else {
-            chip = new Chip(context, null, R.style.Widget_MaterialComponents_Chip_Entry);
-        }
-        // RTL-friendly Chip Layout
-        chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
-
-        chip.setTag(tag);
-        chip.setText(label);
-
-        if (mIsEditable) {
-            // reminder: the Filter style has checkable=true, but unless we explicitly set it
-            // here in code, it won't take effect.
-            chip.setCheckable(true);
-            chip.setChecked(initialState);
-            chip.setOnClickListener(mFilterChipListener);
-            addTouchSignalsDirty(chip);
-        }
-        return chip;
     }
 
     @Override

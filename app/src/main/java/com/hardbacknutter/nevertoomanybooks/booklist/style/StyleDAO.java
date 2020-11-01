@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -73,7 +74,9 @@ public final class StyleDAO {
     public static boolean updateOrInsert(@NonNull final DAO db,
                                          @NonNull final BooklistStyle style) {
 
-        SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
+        }
 
         // resolve the id based on the UUID
         // e.g. we're might be importing a style with a known UUID
@@ -96,8 +99,11 @@ public final class StyleDAO {
      */
     public static boolean insert(@NonNull final DAO db,
                                  @NonNull final BooklistStyle style) {
-        if (style.isBuiltin()) {
-            throw new IllegalArgumentException("Builtin Style cannot be inserted");
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (style.isBuiltin()) {
+                throw new IllegalArgumentException("Builtin Style cannot be inserted");
+            }
         }
 
         if (db.insert(style) > 0) {
@@ -118,8 +124,10 @@ public final class StyleDAO {
     public static boolean update(@NonNull final DAO db,
                                  @NonNull final BooklistStyle style) {
 
-        SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
-        SanityCheck.requireValue(style.getId(), "A new Style cannot be updated");
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
+            SanityCheck.requireNonZero(style.getId(), "A new Style cannot be updated");
+        }
 
         if (db.update(style)) {
             if (style.isUserDefined()) {
@@ -170,8 +178,10 @@ public final class StyleDAO {
                                  @NonNull final DAO db,
                                  @NonNull final BooklistStyle style) {
 
-        SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
-        SanityCheck.requireValue(style.getId(), "A new Style cannot be deleted");
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
+            SanityCheck.requirePositiveValue(style.getId(), "A new Style cannot be deleted");
+        }
 
         // sanity check
         if (style.isBuiltin()) {

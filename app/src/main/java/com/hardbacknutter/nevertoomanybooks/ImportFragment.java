@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -74,6 +75,15 @@ public class ImportFragment
             registerForActivityResult(new ActivityResultContracts.OpenDocument(),
                                       this::onOpenDocument);
 
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
+                }
+            };
+
     /** Import. */
     private ArchiveImportTask mArchiveImportTask;
     private final FragmentResultListener mImportOptionsListener =
@@ -118,7 +128,9 @@ public class ImportFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_import);
 
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mResultData = new ViewModelProvider(this).get(ResultDataModel.class);
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
         mArchiveImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);

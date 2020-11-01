@@ -29,7 +29,6 @@
     land:  w640dp h336dp
 -->
 <resources>
-    <style name="EditText.Isbn">
-        <item name="android:textSize">22sp</item>
-    </style>
+    <!-- Material large text size. -->
+    <dimen name="editText_isbn_textSize">22sp</dimen>
 </resources>

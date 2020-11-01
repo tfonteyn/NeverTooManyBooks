@@ -139,11 +139,6 @@
     <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
     <dimen name="indent_radio_button">16dp</dimen>
 
-    <!-- Vertical Spacing for read-only chips in a ChipGroup -->
-    <dimen name="ro_vert_chip_spacing">2dp</dimen>
-    <!-- Vertical Spacing for edit-mode chips in a ChipGroup -->
-    <dimen name="ed_ver_chip_spacing">8dp</dimen>
-
     <!-- The width of an on-screen menu button.
           Intended to be 'almost' as wide as a phone screen in portrait mode.
           Should be overridden in bigger-screen dimen.xml files.
@@ -169,5 +164,7 @@
     <!-- specific fixed-width fields. -->
     <dimen name="field_external_id_width">280dp</dimen>
 
+    <!-- Material medium text size. -->
+    <dimen name="editText_isbn_textSize">18sp</dimen>
 
 </resources>

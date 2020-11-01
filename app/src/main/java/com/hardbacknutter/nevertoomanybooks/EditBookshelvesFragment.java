@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -73,6 +75,16 @@ public class EditBookshelvesFragment
             bookshelfId -> mModel.reloadListAndSetSelectedPosition(bookshelfId);
     /** ViewModel. */
     private ResultDataModel mResultData;
+
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
+                }
+            };
+
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
 
@@ -83,6 +95,7 @@ public class EditBookshelvesFragment
 
         getChildFragmentManager()
                 .setFragmentResultListener(RK_EDIT_BOOKSHELF, this, mOnEditBookshelfListener);
+
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             getChildFragmentManager().setFragmentResultListener(
                     RK_MENU_PICKER, this,
@@ -107,7 +120,9 @@ public class EditBookshelvesFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_bookshelves_long);
 
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        mResultData = new ViewModelProvider(this).get(ResultDataModel.class);
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mModel = new ViewModelProvider(this).get(EditBookshelvesModel.class);
         mModel.init(getArguments());

@@ -163,7 +163,9 @@ public abstract class BaseActivity
     }
 
     /**
-     * Wrapper for {@link #setContentView}. Called from onCreate after the theme was set.
+     * Wrapper for {@link #setContentView}.
+     * Called from {@link #onCreate} after the theme was set and
+     * before the DrawerLayout and Toolbar is setup.
      */
     protected void onSetContentView() {
         // no UI by default.
@@ -325,7 +327,7 @@ public abstract class BaseActivity
 
         if (itemId == R.id.nav_manage_bookshelves) {
             // child classes which have a 'current bookshelf' should override
-            final Intent intent = new Intent(this, AdminActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
                     .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
             startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
             return true;
@@ -336,7 +338,7 @@ public abstract class BaseActivity
             return true;
 
         } else if (itemId == R.id.nav_about) {
-            final Intent intent = new Intent(this, AdminActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
                     .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, AboutFragment.TAG);
             startActivity(intent);
             return true;

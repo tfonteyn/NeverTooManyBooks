@@ -530,7 +530,7 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.nav_manage_bookshelves) {
             // overridden, so we can pass the current bookshelf id.
-            final Intent intent = new Intent(this, AdminActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
                     .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG)
                     .putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF,
                               mModel.getSelectedBookshelf().getId());
@@ -545,19 +545,19 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.nav_import) {
-            final Intent intent = new Intent(this, AdminActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
                     .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
             startActivityForResult(intent, RequestCode.NAV_PANEL_IMPORT);
             return true;
 
         } else if (itemId == R.id.nav_export) {
-            final Intent intent = new Intent(this, AdminActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
                     .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
             startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
             return true;
 
         } else if (itemId == R.id.nav_goodreads) {
-            final Intent intent = new Intent(this, AdminActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
                     .putExtra(BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
             startActivityForResult(intent, RequestCode.NAV_PANEL_GOODREADS);
             return true;

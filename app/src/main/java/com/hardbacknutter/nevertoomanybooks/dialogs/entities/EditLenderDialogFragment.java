@@ -311,7 +311,7 @@ public class EditLenderDialogFragment
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onResult(SanityCheck.requireValue(result.getLong(DBDefinitions.KEY_FK_BOOK)),
+            onResult(SanityCheck.requirePositiveValue(result.getLong(DBDefinitions.KEY_FK_BOOK)),
                      Objects.requireNonNull(result.getString(DBDefinitions.KEY_LOANEE)));
         }
 

@@ -43,11 +43,6 @@
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
     </style>
 
-    <style name="Field.ChipGroup">
-        <item name="android:layout_marginStart">@dimen/field_margin</item>
-        <item name="chipSpacingVertical">@dimen/ro_vert_chip_spacing</item>
-    </style>
-
     <!-- 'medium' detail field; for example Series title, ...
         Set app:layout_constraintStart_toStartOf="@id/thisFieldsLabel"
         -->
@@ -111,6 +106,33 @@
         <item name="android:background">?attr/colorOnSurface</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
         <item name="android:textColor">?attr/colorSurface</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- Chips for view and edit mode -->
+    <!-- *************************************************************************************** -->
+    <style name="Field.ChipGroup" parent="Widget.MaterialComponents.ChipGroup">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin</item>
+    </style>
+
+    <!-- Read-Write style for Book-edit screen. -->
+    <style name="Field.Chip.Filter" parent="Widget.MaterialComponents.Chip.Filter">
+    </style>
+
+    <!-- Read-Only style for Book-view screen.
+         Defaults:
+        <item name="chipCornerRadius">24dp</item>
+        <item name="chipMinHeight">48dp</item>
+        <item name="android:textSize">14p</item>
+        <item name="ensureMinTouchTargetSize">true</item>
+        -->
+    <style name="Field.Chip.Action" parent="Widget.MaterialComponents.Chip.Action">
+        <item name="chipCornerRadius">12dp</item>
+        <item name="chipMinHeight">24dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="ensureMinTouchTargetSize">false</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -249,11 +271,13 @@
         <item name="android:singleLine">true</item>
     </style>
 
-    <!-- On bigger screens, we increase the text size: See the "w340dp-h330dp" styles.xml -->
+
     <style name="EditText.Isbn">
         <item name="android:digits">1234567890xX</item>
         <!-- the inputType is IGNORED when the field is a {@link EditIsbn} -->
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
+        <!-- On bigger screens, we increase the text size: See the "w340dp-h330dp" dimens.xml -->
+        <item name="android:textSize">@dimen/editText_isbn_textSize</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -503,18 +527,15 @@
     </style>
 
     <style name="BoB.Book.Text.Isbn">
-        <item name="android:textColor">?attr/colorSecondaryVariant</item>
     </style>
 
     <!-- the number has to fit inline -->
     <style name="BoB.Book.Text.SeriesNum">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:padding">@dimen/border1</item>
     </style>
 
     <!-- the title has its own style. -->
     <style name="BoB.Book.Text.Title">
-        <item name="android:padding">@dimen/border1</item>
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>

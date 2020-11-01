@@ -19,23 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.os.Bundle;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
 
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
- * Hosting activity for admin functions.
+ * Hosting activity for generic fragments.
  */
-public class AdminActivity
+public class HostingActivity
         extends BaseActivity {
 
     @Override
@@ -49,48 +44,30 @@ public class AdminActivity
 
         final String tag = Objects.requireNonNull(
                 getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG), "tag");
-        replaceFragment(R.id.main_fragment, tag);
-    }
 
-    /**
-     * Create a fragment based on the given tag.
-     *
-     * @param containerViewId to receive the fragment
-     * @param tag             for the required fragment
-     */
-    private void replaceFragment(@SuppressWarnings("SameParameterValue")
-                                 @IdRes final int containerViewId,
-                                 @NonNull final String tag) {
         switch (tag) {
             case AboutFragment.TAG:
-                replaceFragment(containerViewId, AboutFragment.class, tag);
+                replaceFragment(R.id.main_fragment, AboutFragment.class, tag);
                 return;
 
             case EditBookshelvesFragment.TAG:
-                replaceFragment(containerViewId, EditBookshelvesFragment.class, tag);
+                replaceFragment(R.id.main_fragment, EditBookshelvesFragment.class, tag);
                 return;
 
             case ImportFragment.TAG:
-                replaceFragment(containerViewId, ImportFragment.class, tag);
+                replaceFragment(R.id.main_fragment, ImportFragment.class, tag);
                 return;
 
             case ExportFragment.TAG:
-                replaceFragment(containerViewId, ExportFragment.class, tag);
+                replaceFragment(R.id.main_fragment, ExportFragment.class, tag);
                 return;
 
             case GoodreadsAdminFragment.TAG:
-                replaceFragment(containerViewId, GoodreadsAdminFragment.class, tag);
+                replaceFragment(R.id.main_fragment, GoodreadsAdminFragment.class, tag);
                 return;
 
             default:
                 throw new IllegalArgumentException(tag);
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        final ResultDataModel resultData = new ViewModelProvider(this).get(ResultDataModel.class);
-        setResult(Activity.RESULT_OK, resultData.getResultIntent());
-        super.onBackPressed();
     }
 }

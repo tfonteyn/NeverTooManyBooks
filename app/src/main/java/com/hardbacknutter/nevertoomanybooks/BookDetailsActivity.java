@@ -19,19 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
  * Hosting activity for showing a book.
@@ -42,9 +38,6 @@ public class BookDetailsActivity
     /** all registered listeners. */
     private final Collection<View.OnTouchListener> mOnTouchListeners = new ArrayList<>();
 
-    /** The book. Must be in the Activity scope. */
-    private BookViewModel mBookViewModel;
-
     @Override
     protected void onSetContentView() {
         setContentView(R.layout.activity_book_details);
@@ -54,19 +47,7 @@ public class BookDetailsActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
-        mBookViewModel.init(this, getIntent().getExtras(), false);
-
         replaceFragment(R.id.main_fragment, BookDetailsFragment.class, BookDetailsFragment.TAG);
-
-        // Popup the search widget when the user starts to type.
-        setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
-    }
-
-    @Override
-    public void onBackPressed() {
-        setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
-        super.onBackPressed();
     }
 
     public void registerOnTouchListener(@NonNull final View.OnTouchListener listener) {

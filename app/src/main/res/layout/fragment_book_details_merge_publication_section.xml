@@ -179,6 +179,18 @@
         app:layout_constraintTop_toBottomOf="@id/lbl_edition"
         >
         <!-- chips will be added here dynamically -->
+        <!--         <com.google.android.material.chip.Chip-->
+        <!--             style="?attr/appChipActionStyle"-->
+        <!--             android:layout_width="wrap_content"-->
+        <!--             android:layout_height="wrap_content"-->
+        <!--             android:text="@string/lbl_edition_first_edition"-->
+        <!--            />-->
+        <!--         <com.google.android.material.chip.Chip-->
+        <!--             style="?attr/appChipActionStyle"-->
+        <!--             android:layout_width="wrap_content"-->
+        <!--             android:layout_height="wrap_content"-->
+        <!--             android:text="@string/lbl_edition_first_impression"-->
+        <!--            />-->
     </com.google.android.material.chip.ChipGroup>
 
 </merge>

@@ -3200,7 +3200,7 @@ public class DAO
      */
     @Nullable
     private String getBookUuid(final long bookId) {
-        SanityCheck.requireValue(bookId, "bookId");
+        SanityCheck.requirePositiveValue(bookId, "bookId");
 
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_GET_BOOK_UUID, () -> DAOSql.SqlGet.BOOK_UUID_BY_ID);

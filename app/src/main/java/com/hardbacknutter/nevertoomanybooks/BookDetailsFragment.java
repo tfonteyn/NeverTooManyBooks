@@ -36,6 +36,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigator;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
-import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePersonalSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeTocSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowTocEntryWithAuthorBinding;
@@ -93,6 +93,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
@@ -106,10 +107,16 @@ public class BookDetailsFragment
 
     /** Log tag. */
     public static final String TAG = "BookDetailsFragment";
-
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
-
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
+                }
+            };
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
@@ -118,20 +125,16 @@ public class BookDetailsFragment
     private BookDetailsFragmentViewModel mFragmentVM;
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
-
     private final EditLenderDialogFragment.OnResultListener mEditLenderListener =
             (bookId, loanee) -> {
                 // the db was already updated, just update the book to avoid a reload.
                 mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
                 populateLendToField(loanee);
             };
-
     /** View Binding. */
     private FragmentBookDetailsMergePublicationSectionBinding mVbPub;
     /** View Binding. */
     private FragmentBookDetailsMergeTocSectionBinding mVbToc;
-    /** View Binding. */
-    private FragmentBookDetailsMergePersonalSectionBinding mVbNotes;
     /** Goodreads send-book task. */
     private GrSendOneBookTask mGrSendOneBookTask;
 
@@ -145,11 +148,18 @@ public class BookDetailsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Popup the search widget when the user starts to type.
+        //noinspection ConstantConditions
+        getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
+
+        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+        //noinspection ConstantConditions
+        mBookViewModel.init(getContext(), getArguments(), false);
+
         getChildFragmentManager()
                 .setFragmentResultListener(RK_EDIT_LENDER, this, mEditLenderListener);
 
         mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
-        //noinspection ConstantConditions
         mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -179,7 +189,6 @@ public class BookDetailsFragment
         mVb = FragmentBookDetailsBinding.inflate(inflater, container, false);
         mVbPub = FragmentBookDetailsMergePublicationSectionBinding.bind(mVb.publicationSection);
         mVbToc = FragmentBookDetailsMergeTocSectionBinding.bind(mVb.tocSection);
-        mVbNotes = FragmentBookDetailsMergePersonalSectionBinding.bind(mVb.personalDataSection);
 
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -219,6 +228,10 @@ public class BookDetailsFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //noinspection ConstantConditions
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
         mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
         mGrSendOneBookTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mGrSendOneBookTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
@@ -226,7 +239,6 @@ public class BookDetailsFragment
         mGrSendOneBookTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
 
         // The FAB lives in the activity.
-        //noinspection ConstantConditions
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setOnClickListener(v -> startEditBook());
 
