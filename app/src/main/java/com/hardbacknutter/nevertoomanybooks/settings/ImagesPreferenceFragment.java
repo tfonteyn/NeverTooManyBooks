@@ -39,17 +39,7 @@ public class ImagesPreferenceFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         setPreferencesFromResource(R.xml.preferences_images, rootKey);
-    }
-
-
-    /**
-     * Hook up specific listeners/preferences.
-     */
-    @Override
-    public void onStart() {
-        super.onStart();
 
         // Purge image cache database table.
         final Preference preference = findPreference("psk_purge_image_cache");

@@ -37,7 +37,6 @@ public class StyleBookDetailsFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         setPreferencesFromResource(R.xml.preferences_style_book_details, rootKey);
     }
 }

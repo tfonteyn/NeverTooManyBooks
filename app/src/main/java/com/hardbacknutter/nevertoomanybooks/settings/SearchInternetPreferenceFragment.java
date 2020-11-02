@@ -37,7 +37,6 @@ public class SearchInternetPreferenceFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
 
         final Preference site = findPreference("psk_search_site_library_thing");
