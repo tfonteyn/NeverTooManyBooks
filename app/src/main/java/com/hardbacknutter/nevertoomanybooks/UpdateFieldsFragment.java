@@ -76,7 +76,7 @@ public class UpdateFieldsFragment
     private UpdateFieldsModel mUpdateFieldsModel;
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-    /** View binding. */
+    /** View Binding. */
     private FragmentUpdateFromInternetBinding mVb;
 
     private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =

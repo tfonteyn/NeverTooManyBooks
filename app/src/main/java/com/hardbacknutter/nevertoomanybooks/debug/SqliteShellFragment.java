@@ -66,7 +66,7 @@ public class SqliteShellFragment
 
     private boolean mAllowUpdates;
 
-    /** View binding. */
+    /** View Binding. */
     private FragmentSqliteShellBinding mVb;
 
     private DAO mDb;

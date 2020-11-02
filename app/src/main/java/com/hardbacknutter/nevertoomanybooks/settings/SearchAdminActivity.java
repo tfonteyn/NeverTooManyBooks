@@ -51,7 +51,7 @@ public class SearchAdminActivity
 
     private SearchAdminModel mModel;
 
-    /** View binding. */
+    /** View Binding. */
     private ActivityAdminSearchBinding mVb;
 
     @Override

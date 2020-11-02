@@ -74,6 +74,7 @@ public class GoodreadsSearchActivity
 
     private WorksAdapter mWorksAdapter;
 
+    /** View Binding. */
     private ActivityGoodreadsSearchBinding mVb;
 
     /**

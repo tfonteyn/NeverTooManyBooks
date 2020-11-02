@@ -60,7 +60,7 @@ public class EditSeriesDialogFragment
 
     /** Database Access. */
     private DAO mDb;
-    /** View binding. */
+    /** View Binding. */
     private DialogEditSeriesBinding mVb;
 
     /** The Series we're editing. */

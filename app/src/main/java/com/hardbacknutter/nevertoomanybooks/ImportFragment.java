@@ -102,7 +102,7 @@ public class ImportFragment
             };
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-    /** ViewModel. */
+    /** The Activity results. */
     private ResultDataModel mResultData;
 
     @Override

@@ -75,7 +75,7 @@ public class ProgressDialogFragment
     @Nullable
     private String mText;
 
-    /** View binding. */
+    /** View Binding. */
     private DialogTaskProgressBinding mVb;
 
     /**

@@ -182,7 +182,7 @@ public class BooksOnBookshelf
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
-    /** View binding. */
+    /** View Binding. */
     private BooksonbookshelfBinding mVb;
 
     /** List layout manager. */

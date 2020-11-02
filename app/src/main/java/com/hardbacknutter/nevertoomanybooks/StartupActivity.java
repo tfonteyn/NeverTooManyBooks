@@ -57,7 +57,7 @@ public class StartupActivity
 
     /** The Activity ViewModel. */
     private StartupViewModel mModel;
-    /** The View binding. */
+    /** View Binding. */
     private ActivityStartupBinding mVb;
 
     /**

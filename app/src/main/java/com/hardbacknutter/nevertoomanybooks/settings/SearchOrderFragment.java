@@ -73,7 +73,7 @@ public class SearchOrderFragment
     @SuppressWarnings("FieldCanBeLocal")
     private SearchAdminModel mModel;
 
-    /** View binding. */
+    /** View Binding. */
     private FragmentEditSearchOrderBinding mVb;
 
     /** The type of list we're handling in this fragment (tab). */

@@ -77,7 +77,7 @@ public abstract class BookSearchBaseFragment
 
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-    /** the ViewModel. */
+    /** The Activity results. */
     private ResultDataModel mResultData;
 
     @Override

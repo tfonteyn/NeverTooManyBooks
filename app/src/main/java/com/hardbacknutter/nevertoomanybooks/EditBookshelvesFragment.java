@@ -73,7 +73,7 @@ public class EditBookshelvesFragment
     private EditBookshelvesModel mModel;
     private final EditBookshelfDialogFragment.OnResultListener mOnEditBookshelfListener =
             bookshelfId -> mModel.reloadListAndSetSelectedPosition(bookshelfId);
-    /** ViewModel. */
+    /** The Activity results. */
     private ResultDataModel mResultData;
 
     private final OnBackPressedCallback mOnBackPressedCallback =

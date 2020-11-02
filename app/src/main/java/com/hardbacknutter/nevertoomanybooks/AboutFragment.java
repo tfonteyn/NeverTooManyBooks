@@ -38,6 +38,7 @@ public class AboutFragment
 
     public static final String TAG = "AboutFragment";
 
+    /** View Binding. */
     private FragmentAboutBinding mVb;
 
     @Nullable

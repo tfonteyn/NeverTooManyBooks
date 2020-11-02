@@ -99,7 +99,7 @@ public class CropImageActivity
     /** The destination URI where to write the result to. */
     private Uri mDestinationUri;
 
-    /** View binding. */
+    /** View Binding. */
     private ActivityCropimageBinding mVb;
 
     @Override

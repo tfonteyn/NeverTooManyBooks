@@ -74,8 +74,9 @@ public class MaintenanceFragment
     private static final int DEBUG_CLICKS_ALLOW_DELETE_ALL = 9;
     private int mDebugClicks;
     private boolean mDebugSqLiteAllowsUpdates;
-    private FragmentMaintenanceBinding mVb;
 
+    /** View Binding. */
+    private FragmentMaintenanceBinding mVb;
 
     @Nullable
     @Override

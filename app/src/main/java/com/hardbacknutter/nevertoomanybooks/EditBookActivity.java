@@ -71,7 +71,7 @@ public class EditBookActivity
 
     /** Track the currently displayed tab so we can survive recreations. {@link #BKEY_TAB}. */
     private int mCurrentTab;
-    /** View binding. */
+    /** View Binding. */
     private ActivityEditBookBinding mVb;
 
     @Override

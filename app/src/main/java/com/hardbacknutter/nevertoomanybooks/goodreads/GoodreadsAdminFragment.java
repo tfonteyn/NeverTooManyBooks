@@ -64,7 +64,7 @@ public class GoodreadsAdminFragment
     private ImportTask mImportTask;
     private SendBooksTask mSendBooksTask;
 
-    /** View binding. */
+    /** View Binding. */
     private FragmentGoodreadsAdminBinding mVb;
 
     @Override

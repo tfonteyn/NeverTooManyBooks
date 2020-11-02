@@ -92,7 +92,7 @@ public class AuthorWorksFragment
     /** FragmentResultListener request key. */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
 
-    /** the ViewModel. */
+    /** The Activity results. */
     private ResultDataModel mResultData;
     /** The Fragment ViewModel. */
     private AuthorWorksModel mModel;
