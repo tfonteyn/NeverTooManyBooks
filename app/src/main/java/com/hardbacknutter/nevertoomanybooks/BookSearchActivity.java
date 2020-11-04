@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * The hosting activity for searching for a book;
@@ -101,13 +100,6 @@ public class BookSearchActivity
         }
 
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onBackPressed() {
-        final ResultDataModel resultData = new ViewModelProvider(this).get(ResultDataModel.class);
-        setResult(Activity.RESULT_OK, resultData.getResultIntent());
-        super.onBackPressed();
     }
 
     @Override

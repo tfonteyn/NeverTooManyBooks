@@ -24,12 +24,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchViewModel;
 
 public abstract class BookSearchBaseFragment
         extends Fragment {
@@ -78,7 +78,19 @@ public abstract class BookSearchBaseFragment
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** The Activity results. */
-    private ResultDataModel mResultData;
+    private BookSearchViewModel mBookSearchViewModel;
+
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            mBookSearchViewModel.getResultIntent());
+                    getActivity().finish();
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -93,7 +105,10 @@ public abstract class BookSearchBaseFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        mBookSearchViewModel = new ViewModelProvider(this).get(BookSearchViewModel.class);
 
         // Activity scope!
         mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
@@ -314,20 +329,12 @@ public abstract class BookSearchBaseFragment
         switch (requestCode) {
             case RequestCode.BOOK_EDIT: {
                 if (resultCode == Activity.RESULT_OK && data != null) {
-                    mResultData.putResultData(data);
+                    mBookSearchViewModel.putResultData(data);
                 }
                 break;
             }
-            // case UniqueId.REQ_NAV_PANEL_SETTINGS: {
-            //     mSearchCoordinator.setSiteList(sites);
-            // }
 
             default: {
-                if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                    Log.d(TAG, "onActivityResult|NOT HANDLED"
-                               + "|requestCode=" + requestCode
-                               + "|resultCode=" + resultCode, new Throwable());
-                }
                 super.onActivityResult(requestCode, resultCode, data);
                 break;
             }

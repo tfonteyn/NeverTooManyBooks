@@ -25,13 +25,7 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
-/**
- * A model that allows multiple fragments and the activity all
- * to share a single data Intent to calling {@link android.app.Activity#setResult(int, Intent)}.
- *
- * <strong>Note:</strong> should always be created in the Activity scope.
- */
-public class ResultDataModel
+public class BookSearchViewModel
         extends ViewModel
         implements ActivityResultDataModel {
 
