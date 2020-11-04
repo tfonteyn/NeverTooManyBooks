@@ -124,7 +124,6 @@
         <activity
             android:name=".EditBookActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity android:name=".AuthorWorksActivity" />
         <activity
             android:name=".covers.CropImageActivity"
             android:theme="@style/Theme.App.FullScreen" />

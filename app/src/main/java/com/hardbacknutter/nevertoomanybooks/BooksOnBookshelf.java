@@ -975,7 +975,8 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_AUTHOR_WORKS) {
-            final Intent intent = new Intent(this, AuthorWorksActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, AuthorWorksFragment.TAG)
                     .putExtra(DBDefinitions.KEY_PK_ID,
                               rowData.getLong(DBDefinitions.KEY_FK_AUTHOR))
                     .putExtra(DBDefinitions.KEY_FK_BOOKSHELF,

@@ -53,6 +53,10 @@ public class HostingActivity
                 addFirstFragment(R.id.main_fragment, AboutFragment.class, tag);
                 return;
 
+            case AuthorWorksFragment.TAG:
+                addFirstFragment(R.id.main_fragment, AuthorWorksFragment.class, tag);
+                return;
+
             case EditBookshelvesFragment.TAG:
                 addFirstFragment(R.id.main_fragment, EditBookshelvesFragment.class, tag);
                 return;

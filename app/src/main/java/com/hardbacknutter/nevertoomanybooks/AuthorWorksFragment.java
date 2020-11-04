@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  * Display all TocEntry's for an Author.
  * Selecting an entry will take you to the book(s) that contain that entry.
  *
- * <strong>Note:</strong> when an item is click we start a <strong>NEW</strong> Activity.
+ * <strong>Note:</strong> when an item is clicked, we start a <strong>NEW</strong> Activity.
  * Doing a 'back' will then get the user back here.
  * This is intentionally different from the behaviour of {@link FTSSearchActivity}.
  */
@@ -164,24 +164,6 @@ public class AuthorWorksFragment
             TipManager.display(context, R.string.tip_authors_works, null);
         }
     }
-
-    //    @Override
-//    @CallSuper
-//    public void onResume() {
-//        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-//            Log.d(TAG, "ENTER|onResume");
-//        }
-//        super.onResume();
-//        if (getActivity() instanceof BaseActivity) {
-//            final BaseActivity activity = (BaseActivity) getActivity();
-//            if (activity.maybeRecreate()) {
-//                return;
-//            }
-//        }
-//        if (BuildConfig.DEBUG && DEBUG_SWITCHES.TRACK) {
-//            Log.d(TAG, "EXIT|onResume");
-//        }
-//    }
 
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
