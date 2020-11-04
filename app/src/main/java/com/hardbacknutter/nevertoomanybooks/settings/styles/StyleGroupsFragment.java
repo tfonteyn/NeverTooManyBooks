@@ -202,8 +202,8 @@ public class StyleGroupsFragment
         void onItemCheckChanged(@NonNull final Holder holder) {
             final int position = holder.getBindingAdapterPosition();
             final StyleViewModel.WrappedGroup wrappedGroup = getItem(position);
-            final boolean newStatus = !wrappedGroup.isPresent;
-            wrappedGroup.isPresent = newStatus;
+            final boolean newStatus = !wrappedGroup.isPresent();
+            wrappedGroup.setPresent(newStatus);
             //noinspection ConstantConditions
             holder.mCheckableButton.setChecked(newStatus);
             notifyItemChanged(position);
@@ -216,9 +216,9 @@ public class StyleGroupsFragment
 
             final StyleViewModel.WrappedGroup wrappedGroup = getItem(position);
 
-            holder.nameView.setText(wrappedGroup.group.getLabel(getContext()));
+            holder.nameView.setText(wrappedGroup.getGroup().getLabel(getContext()));
             //noinspection ConstantConditions
-            holder.mCheckableButton.setChecked(wrappedGroup.isPresent);
+            holder.mCheckableButton.setChecked(wrappedGroup.isPresent());
         }
     }
 

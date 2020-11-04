@@ -124,7 +124,7 @@ public class StyleViewModel
     boolean hasGroupsSelected() {
         Objects.requireNonNull(mWrappedGroupList);
 
-        return mWrappedGroupList.stream().anyMatch(wrappedGroup -> wrappedGroup.isPresent);
+        return mWrappedGroupList.stream().anyMatch(WrappedGroup::isPresent);
     }
 
     /**
@@ -136,8 +136,8 @@ public class StyleViewModel
         final Groups styleGroups = mStyle.getGroups();
         styleGroups.clear();
         mWrappedGroupList.stream()
-                         .filter(wrappedGroup -> wrappedGroup.isPresent)
-                         .map(wrappedGroup -> wrappedGroup.group)
+                         .filter(WrappedGroup::isPresent)
+                         .map(WrappedGroup::getGroup)
                          .forEach(styleGroups::add);
     }
 
@@ -148,10 +148,10 @@ public class StyleViewModel
 
         /** The actual group. */
         @NonNull
-        final BooklistGroup group;
+        private final BooklistGroup mBooklistGroup;
 
         /** Whether this group is present in the style. */
-        boolean isPresent;
+        private boolean mIsPresent;
 
         /**
          * Constructor.
@@ -161,8 +161,21 @@ public class StyleViewModel
          */
         WrappedGroup(@NonNull final BooklistGroup group,
                      final boolean isPresent) {
-            this.group = group;
-            this.isPresent = isPresent;
+            mBooklistGroup = group;
+            mIsPresent = isPresent;
+        }
+
+        @NonNull
+        public BooklistGroup getGroup() {
+            return mBooklistGroup;
+        }
+
+        public boolean isPresent() {
+            return mIsPresent;
+        }
+
+        public void setPresent(final boolean present) {
+            mIsPresent = present;
         }
     }
 }
