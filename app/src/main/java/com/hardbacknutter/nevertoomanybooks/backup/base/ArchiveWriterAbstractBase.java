@@ -28,7 +28,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -50,10 +49,10 @@ public abstract class ArchiveWriterAbstractBase
 
     /** export configuration. */
     @NonNull
-    protected final ExportManager mHelper;
+    protected final ExportHelper mHelper;
     /** The accumulated results. */
     @NonNull
-    protected final ExportResults mResults = new ExportResults();
+    final ExportResults mResults = new ExportResults();
     /** Database Access. */
     @NonNull
     protected final DAO mDb;
@@ -64,8 +63,8 @@ public abstract class ArchiveWriterAbstractBase
      * @param context Current context
      * @param helper  export configuration
      */
-    protected ArchiveWriterAbstractBase(@SuppressWarnings("unused") @NonNull final Context context,
-                                        @NonNull final ExportManager helper) {
+    ArchiveWriterAbstractBase(@NonNull final Context context,
+                              @NonNull final ExportHelper helper) {
         mHelper = helper;
         mDb = new DAO(TAG);
     }
@@ -98,6 +97,7 @@ public abstract class ArchiveWriterAbstractBase
         mDb.purge();
 
         // keep track of what we wrote to the archive
+        @Options.Bits
         int entitiesWritten = Options.NOTHING;
 
         // All writers must support books.
@@ -233,5 +233,4 @@ public abstract class ArchiveWriterAbstractBase
             throws IOException {
         mDb.close();
     }
-
 }

@@ -32,30 +32,27 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
-import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
-public class ImportHelperDialogFragment
-        extends OptionsDialogBase<ImportManager> {
+public class ImportOptionsDialogFragment
+        extends OptionsDialogBase {
 
     /** Log tag. */
-    public static final String TAG = "ImportHelperDialogFragment";
-    static final String BKEY_IMPORT_MANAGER = TAG + ":helper";
+    public static final String TAG = "ImportOptionsDialogFragment";
 
-    private ImportHelperViewModel mModel;
+    private ImportViewModel mImportViewModel;
     /** View Binding. */
     private DialogImportOptionsBinding mVb;
-    /** Indicates if we're importing from a file only containing books. */
-    private boolean mIsBooksOnly;
     private boolean mAllowSetEnableOnBooksGroup;
 
     /**
      * No-arg constructor for OS use.
      */
-    public ImportHelperDialogFragment() {
+    public ImportOptionsDialogFragment() {
         super(R.layout.dialog_import_options);
         setFloatingDialogWidth(R.dimen.floating_dialogs_import_options_width);
     }
@@ -64,18 +61,14 @@ public class ImportHelperDialogFragment
      * Constructor.
      *
      * @param requestKey for use with the FragmentResultListener
-     * @param helper     import configuration; must have a valid Uri set.
      *
      * @return instance
      */
     @NonNull
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final ImportManager helper) {
-        final DialogFragment frag = new ImportHelperDialogFragment();
-        final Bundle args = new Bundle(2);
+    public static DialogFragment newInstance(@NonNull final String requestKey) {
+        final DialogFragment frag = new ImportOptionsDialogFragment();
+        final Bundle args = new Bundle(1);
         args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putParcelable(BKEY_IMPORT_MANAGER, helper);
         frag.setArguments(args);
         return frag;
     }
@@ -86,38 +79,28 @@ public class ImportHelperDialogFragment
         super.onViewCreated(view, savedInstanceState);
         mVb = DialogImportOptionsBinding.bind(view);
 
-        mModel = new ViewModelProvider(this).get(ImportHelperViewModel.class);
+        //noinspection ConstantConditions
+        mImportViewModel = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
         try {
-            //noinspection ConstantConditions
-            mModel.init(getContext(), requireArguments());
+            setupOptions();
 
         } catch (@NonNull final InvalidArchiveException e) {
             finishActivityWithErrorMessage(mVb.bodyFrame, R.string.error_import_file_not_supported);
-            return;
 
         } catch (@NonNull final IOException e) {
             finishActivityWithErrorMessage(mVb.bodyFrame, R.string.error_import_failed);
-            return;
         }
-
-        mIsBooksOnly = mModel.isBooksOnlyContainer(getContext());
-
-        setupOptions();
     }
 
     @Override
     protected void onToolbarNavigationClick(@NonNull final View v) {
-        onCancelled();
+        sendResult(false);
     }
 
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            if (mModel.getHelper().hasEntityOption()) {
-                onOptionsSet(mModel.getHelper());
-            } else {
-                onCancelled();
-            }
+            sendResult(mImportViewModel.getImportHelper().hasEntityOption());
             return true;
         }
         return false;
@@ -125,11 +108,19 @@ public class ImportHelperDialogFragment
 
     /**
      * Set the checkboxes/radio-buttons from the options.
+     *
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException             on other failures
      */
-    private void setupOptions() {
-        final ImportManager helper = mModel.getHelper();
+    private void setupOptions()
+            throws InvalidArchiveException, IOException {
+        final ImportHelper helper = mImportViewModel.getImportHelper();
 
-        if (mIsBooksOnly) {
+        // Indicates if we're importing from a file only containing books.
+        //noinspection ConstantConditions
+        final boolean isBooksOnly = helper.isBooksOnlyContainer(getContext());
+
+        if (isBooksOnly) {
             // CSV files don't have options other than the books.
             mVb.cbxGroup.setVisibility(View.GONE);
 
@@ -156,10 +147,9 @@ public class ImportHelperDialogFragment
                     });
         }
 
-        //noinspection ConstantConditions
-        final LocalDateTime archiveCreationDate = mModel.getArchiveCreationDate(getContext());
+        final LocalDateTime archiveCreationDate = helper.getArchiveCreationDate(getContext());
         // enable or disable the sync option
-        if (mIsBooksOnly || archiveCreationDate != null) {
+        if (isBooksOnly || archiveCreationDate != null) {
             mAllowSetEnableOnBooksGroup = true;
             final boolean allBooks = !helper.isOptionSet(Options.IS_SYNC);
             mVb.rbBooksAll.setChecked(allBooks);

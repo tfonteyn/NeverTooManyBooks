@@ -28,24 +28,24 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
-import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
 
-public class ExportHelperDialogFragment
-        extends OptionsDialogBase<ExportManager> {
+public class ExportOptionsDialogFragment
+        extends OptionsDialogBase {
 
     /** Log tag. */
     public static final String TAG = "ExportHelperDialogFrag";
 
-    private ExportHelperViewModel mModel;
+    private ExportViewModel mExportViewModel;
     /** View Binding. */
     private DialogExportOptionsBinding mVb;
     /** prevent first-time {@link AdapterView.OnItemSelectedListener#onItemSelected} call. */
@@ -54,7 +54,7 @@ public class ExportHelperDialogFragment
     /**
      * No-arg constructor for OS use.
      */
-    public ExportHelperDialogFragment() {
+    public ExportOptionsDialogFragment() {
         super(R.layout.dialog_export_options);
         setFloatingDialogWidth(R.dimen.floating_dialogs_export_options_width);
     }
@@ -67,21 +67,12 @@ public class ExportHelperDialogFragment
      * @return instance
      */
     @NonNull
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey) {
-        final DialogFragment frag = new ExportHelperDialogFragment();
+    public static DialogFragment newInstance(@NonNull final String requestKey) {
+        final DialogFragment frag = new ExportOptionsDialogFragment();
         final Bundle args = new Bundle(1);
         args.putString(BKEY_REQUEST_KEY, requestKey);
         frag.setArguments(args);
         return frag;
-    }
-
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mModel = new ViewModelProvider(this).get(ExportHelperViewModel.class);
-        mModel.init();
     }
 
     @Override
@@ -90,22 +81,21 @@ public class ExportHelperDialogFragment
         super.onViewCreated(view, savedInstanceState);
         mVb = DialogExportOptionsBinding.bind(view);
 
+        //noinspection ConstantConditions
+        mExportViewModel = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
+
         setupOptions();
     }
 
     @Override
     protected void onToolbarNavigationClick(@NonNull final View v) {
-        onCancelled();
+        sendResult(false);
     }
 
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            if (mModel.getHelper().hasEntityOption()) {
-                onOptionsSet(mModel.getHelper());
-            } else {
-                onCancelled();
-            }
+            sendResult(mExportViewModel.getExportHelper().hasEntityOption());
             return true;
         }
         return false;
@@ -115,7 +105,7 @@ public class ExportHelperDialogFragment
      * Set the checkboxes/radio-buttons from the options.
      */
     private void setupOptions() {
-        final ExportManager helper = mModel.getHelper();
+        final ExportHelper helper = mExportViewModel.getExportHelper();
 
         mVb.cbxBooks.setChecked(helper.isOptionSet(Options.BOOKS));
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -153,7 +143,6 @@ public class ExportHelperDialogFragment
         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
         mVb.archiveFormatInfoLong.setText("");
         requireConfirmButton().setText(R.string.lbl_backup);
-
 
         //noinspection ConstantConditions
         final ArrayAdapter<String> archiveFormatAdapter =
@@ -274,24 +263,4 @@ public class ExportHelperDialogFragment
         });
     }
 
-    public static class ExportHelperViewModel
-            extends ViewModel {
-
-        /** export configuration. */
-        private ExportManager mHelper;
-
-        /**
-         * Pseudo constructor.
-         */
-        public void init() {
-            if (mHelper == null) {
-                mHelper = new ExportManager(Options.ENTITIES);
-            }
-        }
-
-        @NonNull
-        ExportManager getHelper() {
-            return mHelper;
-        }
-    }
 }

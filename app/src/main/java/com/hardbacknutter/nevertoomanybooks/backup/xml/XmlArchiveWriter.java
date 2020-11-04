@@ -34,9 +34,9 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
@@ -71,7 +71,7 @@ public class XmlArchiveWriter
      * @throws IOException on failure to create / and write the header
      */
     public XmlArchiveWriter(@NonNull final Context context,
-                            @NonNull final ExportManager helper)
+                            @NonNull final ExportHelper helper)
             throws IOException {
         super(context, helper);
 

@@ -29,10 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
@@ -48,9 +48,9 @@ public class CsvArchiveReader
 
     /** import configuration. */
     @NonNull
-    private final ImportManager mHelper;
+    private final ImportHelper mHelper;
 
-    public CsvArchiveReader(@NonNull final ImportManager helper) {
+    public CsvArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
     }
 

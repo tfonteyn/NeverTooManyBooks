@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 
 /**
  * Value class to report back what was imported.
@@ -57,7 +56,7 @@ public class ImportResults
     };
 
     /**
-     * The resulting {@link ImportManager} options flags after an import.
+     * The resulting {@link ImportHelper} options flags after an import.
      * <p>
      * <br>type: {@code int} (bitmask)
      * setResult

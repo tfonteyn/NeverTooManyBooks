@@ -30,24 +30,23 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 /**
- * Input: {@link ExportManager}.
- * Output: the updated {@link ExportManager} with the {@link ExportResults}.
+ * Input: {@link ExportHelper}.
+ * Output: the updated {@link ExportHelper} with the {@link ExportResults}.
  */
 public class ArchiveExportTask
-        extends VMTask<ExportManager> {
+        extends VMTask<Boolean> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveExportTask";
 
     /** export configuration. */
     @Nullable
-    private ExportManager mHelper;
+    private ExportHelper mHelper;
 
-    public void setHelper(@NonNull final ExportManager helper) {
+    public void setHelper(@NonNull final ExportHelper helper) {
         mHelper = helper;
     }
 
@@ -59,7 +58,7 @@ public class ArchiveExportTask
 
     /**
      * Start the task.
-     * {@link #setHelper(ExportManager)} must have been called before.
+     * {@link #setHelper(ExportHelper)} must have been called before.
      *
      * @param uri to write to
      */
@@ -72,7 +71,7 @@ public class ArchiveExportTask
     @NonNull
     @Override
     @WorkerThread
-    protected ExportManager doWork(@NonNull final Context context)
+    protected Boolean doWork(@NonNull final Context context)
             throws IOException, InvalidArchiveException {
         Thread.currentThread().setName(TAG);
 
@@ -97,6 +96,6 @@ public class ArchiveExportTask
             mHelper.onSuccess(context);
         }
 
-        return mHelper;
+        return true;
     }
 }

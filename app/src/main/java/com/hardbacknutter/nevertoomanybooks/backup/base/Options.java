@@ -19,6 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
+import androidx.annotation.IntDef;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.StringJoiner;
 
 /**
@@ -87,5 +91,11 @@ public final class Options {
             sj.add("IS_SYNC");
         }
         return sj.toString();
+    }
+
+    @IntDef(flag = true, value = {INFO, BOOKS, COVERS, PREFS, STYLES, IS_SYNC})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface Bits {
+
     }
 }

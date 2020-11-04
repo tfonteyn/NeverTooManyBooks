@@ -25,8 +25,8 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
@@ -41,14 +41,14 @@ public class CsvArchiveWriter
     protected static final int VERSION = 1;
 
     @NonNull
-    private final ExportManager mHelper;
+    private final ExportHelper mHelper;
 
     /**
      * Constructor.
      *
      * @param helper export configuration
      */
-    public CsvArchiveWriter(@NonNull final ExportManager helper) {
+    public CsvArchiveWriter(@NonNull final ExportHelper helper) {
         mHelper = helper;
     }
 

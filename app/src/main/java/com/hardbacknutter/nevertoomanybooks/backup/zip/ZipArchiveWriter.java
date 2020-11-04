@@ -36,9 +36,9 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -70,7 +70,7 @@ public class ZipArchiveWriter
      * @throws FileNotFoundException on failure
      */
     public ZipArchiveWriter(@NonNull final Context context,
-                            @NonNull final ExportManager helper)
+                            @NonNull final ExportHelper helper)
             throws FileNotFoundException {
         super(context, helper);
 

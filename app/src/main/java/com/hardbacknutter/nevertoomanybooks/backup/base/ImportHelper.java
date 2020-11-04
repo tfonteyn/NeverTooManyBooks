@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 import android.net.Uri;
@@ -28,32 +28,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
-public class ImportManager
+public class ImportHelper
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<ImportManager> CREATOR = new Creator<ImportManager>() {
+    public static final Creator<ImportHelper> CREATOR = new Creator<ImportHelper>() {
         @Override
-        public ImportManager createFromParcel(@NonNull final Parcel source) {
-            return new ImportManager(source);
+        public ImportHelper createFromParcel(@NonNull final Parcel source) {
+            return new ImportHelper(source);
         }
 
         @Override
-        public ImportManager[] newArray(final int size) {
-            return new ImportManager[size];
+        public ImportHelper[] newArray(final int size) {
+            return new ImportHelper[size];
         }
     };
 
@@ -72,6 +68,7 @@ public class ImportManager
      * Contains the user selected options before doing the import/export.
      * After the import/export, reflects the entities actually imported/exported.
      */
+    @Options.Bits
     private int mOptions;
     @Nullable
     private ImportResults mResults;
@@ -81,7 +78,7 @@ public class ImportManager
      *
      * @param uri to read from
      */
-    public ImportManager(@NonNull final Uri uri) {
+    public ImportHelper(@NonNull final Uri uri) {
         mUri = uri;
     }
 
@@ -90,7 +87,7 @@ public class ImportManager
      *
      * @param in Parcel to construct the object from
      */
-    private ImportManager(@NonNull final Parcel in) {
+    private ImportHelper(@NonNull final Parcel in) {
         mOptions = in.readInt();
         //noinspection ConstantConditions
         mUri = in.readParcelable(getClass().getClassLoader());
@@ -121,6 +118,7 @@ public class ImportManager
         }
     }
 
+
     /**
      * Get the Uri for the user location to read from.
      *
@@ -139,11 +137,18 @@ public class ImportManager
      * @return container
      */
     @NonNull
-    ArchiveContainer getContainer(@NonNull final Context context) {
+    public ArchiveContainer getContainer(@NonNull final Context context) {
         if (mArchiveContainer == null) {
             mArchiveContainer = ArchiveContainer.create(context, mUri);
         }
         return mArchiveContainer;
+    }
+
+    // TODO: split this up into one check for each entity we could import.
+    public boolean isBooksOnlyContainer(@NonNull final Context context) {
+        final ArchiveContainer container = getContainer(context);
+        return ArchiveContainer.CsvBooks == container
+               || ArchiveContainer.SqLiteDb == container;
     }
 
     /**
@@ -170,6 +175,28 @@ public class ImportManager
     }
 
     /**
+     * Get the archive creation date.
+     *
+     * @param context Current context
+     *
+     * @return the date, or {@code null} if none present
+     *
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException             on other failures
+     */
+    @Nullable
+    public LocalDateTime getArchiveCreationDate(@NonNull final Context context)
+            throws InvalidArchiveException, IOException {
+
+        final ArchiveInfo info = getInfo(context);
+        if (info == null) {
+            return null;
+        } else {
+            return info.getCreationDate(context);
+        }
+    }
+
+    /**
      * Create an {@link ArchiveReader} for the specified Uri.
      *
      * @param context Current context
@@ -180,7 +207,7 @@ public class ImportManager
      * @throws IOException             on other failures
      */
     @NonNull
-    public ArchiveReader getArchiveReader(@NonNull final Context context)
+    ArchiveReader getArchiveReader(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
         // Validate the settings before going ahead.
@@ -230,8 +257,8 @@ public class ImportManager
      * @param optionBit bit or combination of bits
      * @param isSet     bit value
      */
-    void setOption(final int optionBit,
-                   final boolean isSet) {
+    public void setOption(@Options.Bits final int optionBit,
+                          final boolean isSet) {
         if (isSet) {
             mOptions |= optionBit;
         } else {
@@ -240,10 +267,11 @@ public class ImportManager
     }
 
 
-    boolean isOptionSet(final int optionBit) {
+    public boolean isOptionSet(@Options.Bits final int optionBit) {
         return (mOptions & optionBit) != 0;
     }
 
+    @Options.Bits
     public int getOptions() {
         return mOptions;
     }
@@ -254,7 +282,7 @@ public class ImportManager
      *
      * @param options set
      */
-    public void setOptions(final int options) {
+    public void setOptions(@Options.Bits final int options) {
         mOptions = options;
     }
 
@@ -263,7 +291,7 @@ public class ImportManager
      *
      * @return {@code true} if something will be imported
      */
-    boolean hasEntityOption() {
+    public boolean hasEntityOption() {
         return (mOptions & Options.ENTITIES) != 0;
     }
 

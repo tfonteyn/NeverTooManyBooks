@@ -45,11 +45,12 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
-import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -61,7 +62,7 @@ public class ImportFragment
     /** Log tag. */
     public static final String TAG = "ImportFragment";
     /** FragmentResultListener request key. */
-    private static final String RK_IMPORT_HELPER = TAG + ":rk:" + ImportHelperDialogFragment.TAG;
+    private static final String RK_IMPORT_OPTIONS = TAG + ":rk:" + ImportOptionsDialogFragment.TAG;
     /**
      * The mime types accepted for importing files.
      * <p>
@@ -71,29 +72,16 @@ public class ImportFragment
                                                 "application/x-tar",
                                                 "text/csv",
                                                 "application/x-sqlite3"};
+
+    /**
+     * The ViewModel and the {@link #mArchiveImportTask} could be folded into one object,
+     * but we're trying to keep task logic separate for now.
+     */
+    private ImportViewModel mImportViewModel;
     /** The launcher for picking a Uri. */
     private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.OpenDocument(),
                                       this::onOpenDocument);
-    /** Import. */
-    private ArchiveImportTask mArchiveImportTask;
-    private final FragmentResultListener mImportOptionsListener =
-            new OptionsDialogBase.OnOptionsListener<ImportManager>() {
-                @Override
-                public void onOptionsSet(@NonNull final ImportManager options) {
-                    mArchiveImportTask.startImport(options);
-                }
-
-                @Override
-                public void onCancelled() {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
-                }
-            };
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
-    /** The Activity results. */
-    private ImportViewModel mImportViewModel;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -104,13 +92,28 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
+    private ArchiveImportTask mArchiveImportTask;
+    private final FragmentResultListener mImportOptionsListener =
+            new OptionsDialogBase.OnResultsListener() {
+                @Override
+                public void onResult(final boolean success) {
+                    if (success) {
+                        mArchiveImportTask.startImport(mImportViewModel.getImportHelper());
+                    } else {
+                        //noinspection ConstantConditions
+                        getActivity().finish();
+                    }
+                }
+            };
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager()
-                .setFragmentResultListener(RK_IMPORT_HELPER, this, mImportOptionsListener);
+                .setFragmentResultListener(RK_IMPORT_OPTIONS, this, mImportOptionsListener);
     }
 
     @Nullable
@@ -160,10 +163,10 @@ public class ImportFragment
             getActivity().finish();
 
         } else {
-            final ImportManager helper = new ImportManager(uri);
+            final ImportHelper importHelper = mImportViewModel.createImportManager(uri);
 
             //noinspection ConstantConditions
-            if (!helper.isSupported(getContext())) {
+            if (!importHelper.isSupported(getContext())) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_error)
@@ -174,11 +177,11 @@ public class ImportFragment
                 return;
             }
 
-            final ArchiveContainer container = helper.getContainer(getContext());
+            final ArchiveContainer container = importHelper.getContainer(getContext());
             //noinspection EnumSwitchStatementWhichMissesCases
             switch (container) {
                 case CsvBooks:
-                    helper.setOptions(Options.BOOKS | Options.IS_SYNC);
+                    importHelper.setOptions(Options.BOOKS | Options.IS_SYNC);
 
                     //URGENT: make a backup before ANY csv import!
                     //noinspection ConstantConditions
@@ -189,10 +192,10 @@ public class ImportFragment
                             .setNegativeButton(android.R.string.cancel,
                                                (d, w) -> getActivity().finish())
                             .setPositiveButton(android.R.string.ok, (d, w) ->
-                                    ImportHelperDialogFragment
-                                            .newInstance(RK_IMPORT_HELPER, helper)
+                                    ImportOptionsDialogFragment
+                                            .newInstance(RK_IMPORT_OPTIONS)
                                             .show(getChildFragmentManager(),
-                                                  ImportHelperDialogFragment.TAG))
+                                                  ImportOptionsDialogFragment.TAG))
                             .create()
                             .show();
 
@@ -201,10 +204,10 @@ public class ImportFragment
                 case Zip:
                 case Tar:
                 case SqLiteDb:
-                    helper.setOptions(Options.ENTITIES | Options.IS_SYNC);
-                    ImportHelperDialogFragment
-                            .newInstance(RK_IMPORT_HELPER, helper)
-                            .show(getChildFragmentManager(), ImportHelperDialogFragment.TAG);
+                    importHelper.setOptions(Options.ENTITIES | Options.IS_SYNC);
+                    ImportOptionsDialogFragment
+                            .newInstance(RK_IMPORT_OPTIONS)
+                            .show(getChildFragmentManager(), ImportOptionsDialogFragment.TAG);
                     break;
 
                 default:
@@ -263,6 +266,7 @@ public class ImportFragment
         }
     }
 
+    @NonNull
     private String createErrorReport(@Nullable final Exception e) {
         String msg = null;
 
@@ -287,12 +291,12 @@ public class ImportFragment
         return msg;
     }
 
-    private void onImportCancelled(@NonNull final FinishedMessage<ImportManager> message) {
+    private void onImportCancelled(@NonNull final FinishedMessage<Boolean> message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
             if (message.result != null) {
-                onImportFinished(R.string.progress_end_import_partially_complete,
-                                 message.result);
+                // message.result is always 'true'
+                onImportFinished(R.string.progress_end_import_partially_complete);
             } else {
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
@@ -308,33 +312,29 @@ public class ImportFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final FinishedMessage<ImportManager> message) {
+    private void onImportFinished(@NonNull final FinishedMessage<Boolean> message) {
         closeProgressDialog();
-
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            onImportFinished(R.string.progress_end_import_complete, message.result);
+            onImportFinished(R.string.progress_end_import_complete);
         }
     }
 
     /**
      * Import finished: Step 2: Inform the user.
      *
-     * @param titleId       for the dialog title; reports success or cancelled.
-     * @param importManager details of the import
+     * @param titleId for the dialog title; reports success or cancelled.
      */
-    private void onImportFinished(@StringRes final int titleId,
-                                  @NonNull final ImportManager importManager) {
-
+    private void onImportFinished(@StringRes final int titleId) {
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
-                .setMessage(importManager.getResults().createReport(getContext()))
+                .setMessage(mImportViewModel.getImportHelper().getResults()
+                                            .createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
-                    mImportViewModel.setImportResults(importManager.getOptions());
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mImportViewModel.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            mImportViewModel.onImportFinished());
                     getActivity().finish();
                 })
                 .create()

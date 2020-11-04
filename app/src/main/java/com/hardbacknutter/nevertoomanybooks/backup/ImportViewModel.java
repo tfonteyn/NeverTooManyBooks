@@ -21,10 +21,15 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
+import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 
@@ -36,13 +41,30 @@ public class ImportViewModel
     @NonNull
     private final Intent mResultData = new Intent();
 
+    @Nullable
+    private ImportHelper mImportHelper;
+
     @Override
     @NonNull
     public Intent getResultIntent() {
         return mResultData;
     }
 
-    void setImportResults(final int options) {
-        mResultData.putExtra(ImportResults.BKEY_IMPORT_RESULTS, options);
+    @NonNull
+    ImportHelper createImportManager(@NonNull final Uri uri) {
+        mImportHelper = new ImportHelper(uri);
+        return mImportHelper;
+    }
+
+    @NonNull
+    ImportHelper getImportHelper() {
+        return Objects.requireNonNull(mImportHelper);
+    }
+
+    @NonNull
+    Intent onImportFinished() {
+        Objects.requireNonNull(mImportHelper);
+        mResultData.putExtra(ImportResults.BKEY_IMPORT_RESULTS, mImportHelper.getOptions());
+        return mResultData;
     }
 }

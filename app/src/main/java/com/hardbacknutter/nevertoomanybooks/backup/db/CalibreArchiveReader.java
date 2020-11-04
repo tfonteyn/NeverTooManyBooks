@@ -35,9 +35,9 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
@@ -151,7 +151,7 @@ class CalibreArchiveReader
      * @param calibreDb <strong>OPEN</strong> (read-only) database
      */
     CalibreArchiveReader(@NonNull final Context context,
-                         @NonNull final ImportManager helper,
+                         @NonNull final ImportHelper helper,
                          @NonNull final SQLiteDatabase calibreDb) {
         mCalibreDb = calibreDb;
         mDb = new DAO(TAG);

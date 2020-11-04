@@ -36,9 +36,9 @@ import java.time.Instant;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -70,7 +70,7 @@ public class TarArchiveWriter
      * @throws FileNotFoundException on failure
      */
     public TarArchiveWriter(@NonNull final Context context,
-                            @NonNull final ExportManager helper)
+                            @NonNull final ExportHelper helper)
             throws FileNotFoundException {
         super(context, helper);
 

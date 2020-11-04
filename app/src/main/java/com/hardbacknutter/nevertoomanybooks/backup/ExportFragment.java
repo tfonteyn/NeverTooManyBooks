@@ -19,9 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.system.ErrnoException;
+import android.system.OsConstants;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,20 +42,20 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveExportTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
-import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 public class ExportFragment
         extends Fragment {
@@ -60,22 +63,22 @@ public class ExportFragment
     /** Log tag. */
     public static final String TAG = "ExportFragment";
     /** FragmentResultListener request key. */
-    private static final String RK_EXPORT_HELPER = TAG + ":rk:" + ExportHelperDialogFragment.TAG;
-    /** Export. */
+    private static final String RK_EXPORT_OPTIONS = TAG + ":rk:" + ExportOptionsDialogFragment.TAG;
+    /**
+     * The ViewModel and the {@link #mArchiveExportTask} could be folded into one object,
+     * but we're trying to keep task logic separate for now.
+     */
+    private ExportViewModel mExportViewModel;
     private ArchiveExportTask mArchiveExportTask;
     /** The launcher for picking a Uri. */
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
                                       this::onCreateDocument);
     private final FragmentResultListener mExportOptionsListener =
-            new OptionsDialogBase.OnOptionsListener<ExportManager>() {
-                @Override
-                public void onOptionsSet(@NonNull final ExportManager options) {
-                    exportPickUri(options);
-                }
-
-                @Override
-                public void onCancelled() {
+            (OptionsDialogBase.OnResultsListener) success -> {
+                if (success) {
+                    exportPickUri();
+                } else {
                     //noinspection ConstantConditions
                     getActivity().finish();
                 }
@@ -88,7 +91,7 @@ public class ExportFragment
         super.onCreate(savedInstanceState);
 
         getChildFragmentManager()
-                .setFragmentResultListener(RK_EXPORT_HELPER, this, mExportOptionsListener);
+                .setFragmentResultListener(RK_EXPORT_OPTIONS, this, mExportOptionsListener);
     }
 
     @Nullable
@@ -106,6 +109,8 @@ public class ExportFragment
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_backup);
+
+        mExportViewModel = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
 
         mArchiveExportTask = new ViewModelProvider(this).get(ArchiveExportTask.class);
         mArchiveExportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
@@ -164,25 +169,21 @@ public class ExportFragment
                 .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                 .setNeutralButton(R.string.btn_options, (d, w) -> {
                     d.dismiss();
-                    ExportHelperDialogFragment
-                            .newInstance(RK_EXPORT_HELPER)
-                            .show(getChildFragmentManager(), ExportHelperDialogFragment.TAG);
+                    ExportOptionsDialogFragment
+                            .newInstance(RK_EXPORT_OPTIONS)
+                            .show(getChildFragmentManager(), ExportOptionsDialogFragment.TAG);
                 })
-                .setPositiveButton(android.R.string.ok, (d, w) ->
-                        exportPickUri(new ExportManager(Options.ENTITIES)))
+                .setPositiveButton(android.R.string.ok, (d, w) -> exportPickUri())
                 .create()
                 .show();
     }
 
     /**
      * Export Step 2: prompt the user for a uri to export to.
-     *
-     * @param helper export configuration
      */
-    private void exportPickUri(@NonNull final ExportManager helper) {
-        // save the configured helper
-        mArchiveExportTask.setHelper(helper);
-
+    private void exportPickUri() {
+        // set it now, as we need it for mArchiveExportTask.getDefaultUriName call just below
+        mArchiveExportTask.setHelper(mExportViewModel.getExportHelper());
         //noinspection ConstantConditions
         mCreateDocumentLauncher.launch(mArchiveExportTask.getDefaultUriName(getContext()));
     }
@@ -212,14 +213,46 @@ public class ExportFragment
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_error)
                     .setTitle(R.string.error_backup_failed)
-                    .setMessage(ExportManager.createErrorReport(getContext(), message.result))
+                    .setMessage(createErrorReport(getContext(), message.result))
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
         }
     }
 
-    private void onExportCancelled(@NonNull final LiveDataEvent message) {
+    @NonNull
+    private String createErrorReport(@NonNull final Context context,
+                                     @Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof IOException) {
+            // see if we can find the exact cause
+            if (e.getCause() instanceof ErrnoException) {
+                final int errno = ((ErrnoException) e.getCause()).errno;
+                // write failed: ENOSPC (No space left on device)
+                if (errno == OsConstants.ENOSPC) {
+                    msg = context.getString(R.string.error_storage_no_space_left);
+                } else {
+                    // write to logfile for future reporting enhancements.
+                    Logger.warn(context, TAG, "onExportFailed|errno=" + errno);
+                }
+            }
+
+            // generic IOException message
+            if (msg == null) {
+                msg = StandardDialogs.createBadError(context, R.string.error_storage_not_writable);
+            }
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = context.getString(R.string.error_unknown_long);
+        }
+
+        return msg;
+    }
+
+    private void onExportCancelled(@NonNull final FinishedMessage<Boolean> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
@@ -235,11 +268,11 @@ public class ExportFragment
      *
      * @param message to process
      */
-    private void onExportFinished(@NonNull final FinishedMessage<ExportManager> message) {
+    private void onExportFinished(@NonNull final FinishedMessage<Boolean> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final ExportHelper exportHelper = mExportViewModel.getExportHelper();
 
             //noinspection ConstantConditions
             final MaterialAlertDialogBuilder dialogBuilder =
@@ -248,10 +281,10 @@ public class ExportFragment
                             .setTitle(R.string.progress_end_backup_success)
                             .setPositiveButton(R.string.done, (d, which) -> getActivity().finish());
 
-            final Uri uri = message.result.getUri();
+            final Uri uri = exportHelper.getUri();
             final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
-            final String report = message.result.getResults().createReport(getContext(), uriInfo);
-            if (message.result.offerEmail(uriInfo)) {
+            final String report = exportHelper.getResults().createReport(getContext(), uriInfo);
+            if (exportHelper.offerEmail(uriInfo)) {
                 dialogBuilder
                         .setMessage(report + "\n\n" + getString(R.string.confirm_email_export))
                         .setNeutralButton(R.string.btn_email, (d, which) ->

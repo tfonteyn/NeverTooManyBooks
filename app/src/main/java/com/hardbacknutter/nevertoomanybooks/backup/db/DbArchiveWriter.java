@@ -25,8 +25,8 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -39,14 +39,14 @@ public class DbArchiveWriter
         implements ArchiveWriter {
 
     @NonNull
-    private final ExportManager mHelper;
+    private final ExportHelper mHelper;
 
     /**
      * Constructor.
      *
      * @param helper export configuration
      */
-    public DbArchiveWriter(@NonNull final ExportManager helper) {
+    public DbArchiveWriter(@NonNull final ExportHelper helper) {
         mHelper = helper;
     }
 

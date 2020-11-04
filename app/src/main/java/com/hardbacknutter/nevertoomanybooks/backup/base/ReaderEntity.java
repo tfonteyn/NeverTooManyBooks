@@ -24,8 +24,6 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
-
 /**
  * Interface provided by every entity read from an archive file.
  * This class effectively should wrap an archive format specific entry in a format agnostic entry.

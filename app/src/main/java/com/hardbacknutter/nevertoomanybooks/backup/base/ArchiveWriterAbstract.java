@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 
@@ -34,12 +34,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstractBase;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlExporter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -84,7 +78,7 @@ public abstract class ArchiveWriterAbstract
      * @param helper  export configuration
      */
     protected ArchiveWriterAbstract(@NonNull final Context context,
-                                    @NonNull final ExportManager helper) {
+                                    @NonNull final ExportHelper helper) {
         super(context, helper);
     }
 

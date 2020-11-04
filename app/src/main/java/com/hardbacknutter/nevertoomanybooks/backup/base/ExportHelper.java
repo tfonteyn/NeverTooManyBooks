@@ -17,14 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.system.ErrnoException;
-import android.system.OsConstants;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,37 +37,30 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
-public class ExportManager
+public class ExportHelper
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<ExportManager> CREATOR = new Creator<ExportManager>() {
+    public static final Creator<ExportHelper> CREATOR = new Creator<ExportHelper>() {
         @Override
-        public ExportManager createFromParcel(@NonNull final Parcel source) {
-            return new ExportManager(source);
+        public ExportHelper createFromParcel(@NonNull final Parcel source) {
+            return new ExportHelper(source);
         }
 
         @Override
-        public ExportManager[] newArray(final int size) {
-            return new ExportManager[size];
+        public ExportHelper[] newArray(final int size) {
+            return new ExportHelper[size];
         }
     };
 
@@ -90,6 +81,7 @@ public class ExportManager
      * Contains the user selected options before doing the import/export.
      * After the import/export, reflects the entities actually imported/exported.
      */
+    @Options.Bits
     private int mOptions;
     @Nullable
     private Uri mUri;
@@ -101,12 +93,13 @@ public class ExportManager
     @Nullable
     private LocalDateTime mFromUtcDateTime;
 
+
     /**
      * Constructor.
      *
      * @param options to export
      */
-    public ExportManager(final int options) {
+    public ExportHelper(@Options.Bits final int options) {
         mOptions = options;
     }
 
@@ -115,7 +108,7 @@ public class ExportManager
      *
      * @param in Parcel to construct the object from
      */
-    private ExportManager(@NonNull final Parcel in) {
+    private ExportHelper(@NonNull final Parcel in) {
         mOptions = in.readInt();
         final long epochMilli = in.readLong();
         if (epochMilli != 0) {
@@ -127,40 +120,9 @@ public class ExportManager
         mResults = in.readParcelable(getClass().getClassLoader());
     }
 
-    public static String createErrorReport(@NonNull final Context context,
-                                           @Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof IOException) {
-            // see if we can find the exact cause
-            if (e.getCause() instanceof ErrnoException) {
-                final int errno = ((ErrnoException) e.getCause()).errno;
-                // write failed: ENOSPC (No space left on device)
-                if (errno == OsConstants.ENOSPC) {
-                    msg = context.getString(R.string.error_storage_no_space_left);
-                } else {
-                    // write to logfile for future reporting enhancements.
-                    Logger.warn(context, TAG, "onExportFailed|errno=" + errno);
-                }
-            }
-
-            // generic IOException message
-            if (msg == null) {
-                msg = StandardDialogs.createBadError(context, R.string.error_storage_not_writable);
-            }
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = context.getString(R.string.error_unknown_long);
-        }
-
-        return msg;
-    }
-
     /** Called from the dialog via its View listeners. */
-    void setOption(final int optionBit,
-                   final boolean isSet) {
+    public void setOption(@Options.Bits final int optionBit,
+                          final boolean isSet) {
         if (isSet) {
             mOptions |= optionBit;
         } else {
@@ -169,7 +131,7 @@ public class ExportManager
     }
 
     @NonNull
-    public ArchiveContainer getArchiveContainer() {
+    ArchiveContainer getArchiveContainer() {
         if (mArchiveContainer == null) {
             // use the default
             return ArchiveContainer.Zip;
@@ -177,7 +139,7 @@ public class ExportManager
         return mArchiveContainer;
     }
 
-    void setArchiveContainer(@NonNull final ArchiveContainer archiveContainer) {
+    public void setArchiveContainer(@NonNull final ArchiveContainer archiveContainer) {
         mArchiveContainer = archiveContainer;
     }
 
@@ -221,7 +183,7 @@ public class ExportManager
      * @throws IOException             on failure
      */
     @NonNull
-    public ArchiveWriter getArchiveWriter(@NonNull final Context context)
+    ArchiveWriter getArchiveWriter(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
         // Validate the settings before going ahead.
@@ -303,7 +265,7 @@ public class ExportManager
      *
      * @param context Current context
      */
-    public void onCleanup(@NonNull final Context context) {
+    void onCleanup(@NonNull final Context context) {
         FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
     }
 
@@ -356,10 +318,11 @@ public class ExportManager
     }
 
 
-    public boolean isOptionSet(final int optionBit) {
+    public boolean isOptionSet(@Options.Bits final int optionBit) {
         return (mOptions & optionBit) != 0;
     }
 
+    @Options.Bits
     public int getOptions() {
         return mOptions;
     }
@@ -369,7 +332,7 @@ public class ExportManager
      *
      * @param options set
      */
-    public void setOptions(final int options) {
+    public void setOptions(@Options.Bits final int options) {
         mOptions = options;
     }
 
@@ -378,7 +341,7 @@ public class ExportManager
      *
      * @return {@code true} if something will be exported
      */
-    boolean hasEntityOption() {
+    public boolean hasEntityOption() {
         return (mOptions & Options.ENTITIES) != 0;
     }
 

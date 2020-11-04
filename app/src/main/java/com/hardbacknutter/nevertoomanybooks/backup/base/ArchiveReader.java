@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 public interface ArchiveReader

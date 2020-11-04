@@ -34,10 +34,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
@@ -73,7 +73,7 @@ public class ZipArchiveReader
      * @param helper  import configuration
      */
     public ZipArchiveReader(@NonNull final Context context,
-                            @NonNull final ImportManager helper) {
+                            @NonNull final ImportHelper helper) {
         super(context, helper);
         mContentResolver = context.getContentResolver();
     }

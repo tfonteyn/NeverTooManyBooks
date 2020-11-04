@@ -17,28 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.os.Bundle;
-
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModel;
 
-/**
- * Hosting activity for showing an author <strong>with</strong>
- * a DrawerLayout/NavigationView side panel.
- */
-public class AuthorWorksActivity
-        extends BaseActivity {
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 
-    @Override
-    protected void onSetContentView() {
-        setContentView(R.layout.activity_main);
-    }
+public class ExportViewModel
+        extends ViewModel {
 
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @Nullable
+    private ExportHelper mExportHelper;
 
-        addFirstFragment(R.id.main_fragment, AuthorWorksFragment.class, AuthorWorksFragment.TAG);
+    @NonNull
+    ExportHelper getExportHelper() {
+        if (mExportHelper == null) {
+            mExportHelper = new ExportHelper(Options.ENTITIES);
+        }
+        return mExportHelper;
     }
 }

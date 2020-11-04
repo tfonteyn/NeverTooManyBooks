@@ -31,10 +31,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -48,7 +48,7 @@ public class DbArchiveReader
             "SELECT tbl_name FROM sqlite_master WHERE type='table'";
 
     @NonNull
-    private final ImportManager mHelper;
+    private final ImportHelper mHelper;
 
     @Nullable
     private final SQLiteDatabase mSQLiteDatabase;
@@ -65,7 +65,7 @@ public class DbArchiveReader
      * @throws IOException on failure to copy the database file
      */
     public DbArchiveReader(@NonNull final Context context,
-                           @NonNull final ImportManager helper)
+                           @NonNull final ImportHelper helper)
             throws IOException {
 
         mHelper = helper;

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 import android.net.Uri;
@@ -31,14 +31,6 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -75,7 +67,7 @@ public abstract class ArchiveReaderAbstract
 
     /** import configuration. */
     @NonNull
-    private final ImportManager mHelper;
+    private final ImportHelper mHelper;
     /** The accumulated results. */
     @NonNull
     private final ImportResults mResults = new ImportResults();
@@ -87,7 +79,7 @@ public abstract class ArchiveReaderAbstract
      * @param helper  import configuration
      */
     protected ArchiveReaderAbstract(@NonNull final Context context,
-                                    @NonNull final ImportManager helper) {
+                                    @NonNull final ImportHelper helper) {
         mDb = new DAO(TAG);
         mHelper = helper;
 
@@ -114,6 +106,7 @@ public abstract class ArchiveReaderAbstract
             throws IOException, ImportException, InvalidArchiveException {
 
         // keep track of what we read from the archive
+        @Options.Bits
         int entitiesRead = Options.NOTHING;
 
         boolean readStyles = mHelper.isOptionSet(Options.STYLES);
@@ -126,8 +119,7 @@ public abstract class ArchiveReaderAbstract
 
         try {
             // get the archive info; the helper will read it from the concrete archive.
-            final ArchiveInfo info = Objects.requireNonNull(mHelper.getInfo(context),
-                                                            "info");
+            final ArchiveInfo info = Objects.requireNonNull(mHelper.getInfo(context), "info");
             estimatedSteps += info.getBookCount();
             if (readCovers) {
                 if (info.hasCoverCount()) {

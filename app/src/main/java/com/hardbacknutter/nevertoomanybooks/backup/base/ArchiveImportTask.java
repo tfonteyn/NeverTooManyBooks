@@ -28,21 +28,20 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 /**
- * Input: {@link ImportManager}.
- * Output: the updated {@link ImportManager} with the {@link ImportResults }.
+ * Input: {@link ImportHelper}.
+ * Output: the updated {@link ImportHelper} with the {@link ImportResults }.
  */
 public class ArchiveImportTask
-        extends VMTask<ImportManager> {
+        extends VMTask<Boolean> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveImportTask";
 
     /** import configuration. */
-    private ImportManager mHelper;
+    private ImportHelper mHelper;
 
     /**
      * Start the task.
@@ -50,7 +49,7 @@ public class ArchiveImportTask
      * @param helper import configuration
      */
     @UiThread
-    public void startImport(@NonNull final ImportManager helper) {
+    public void startImport(@NonNull final ImportHelper helper) {
         mHelper = helper;
         execute(R.id.TASK_ID_IMPORT);
     }
@@ -58,7 +57,7 @@ public class ArchiveImportTask
     @NonNull
     @Override
     @WorkerThread
-    protected ImportManager doWork(@NonNull final Context context)
+    protected Boolean doWork(@NonNull final Context context)
             throws IOException, ImportException, InvalidArchiveException {
         Thread.currentThread().setName(TAG);
 
@@ -66,6 +65,6 @@ public class ArchiveImportTask
             mHelper.setResults(reader.read(context, this));
 
         }
-        return mHelper;
+        return true;
     }
 }

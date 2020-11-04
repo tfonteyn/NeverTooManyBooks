@@ -33,10 +33,10 @@ import java.io.InputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderAbstract;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
@@ -72,7 +72,7 @@ public class TarArchiveReader
      * @param helper  import configuration
      */
     public TarArchiveReader(@NonNull final Context context,
-                            @NonNull final ImportManager helper) {
+                            @NonNull final ImportHelper helper) {
         super(context, helper);
         mContentResolver = context.getContentResolver();
     }

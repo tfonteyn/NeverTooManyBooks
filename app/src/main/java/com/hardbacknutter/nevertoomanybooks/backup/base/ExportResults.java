@@ -117,7 +117,7 @@ public class ExportResults
         return mCoversExported.size();
     }
 
-    public List<String> getCoverFileNames() {
+    List<String> getCoverFileNames() {
         return mCoversExported;
     }
 
