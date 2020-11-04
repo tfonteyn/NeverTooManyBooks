@@ -1578,6 +1578,5 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
     <string name="pt_enable_fast_scroller_overlay">Scrolling information overlay.</string>
-    <string name="lbl_images">Images</string>
 
 </resources>

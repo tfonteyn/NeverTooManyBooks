@@ -69,6 +69,6 @@ public class ImagesPreferenceFragment
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
         actionBar.setTitle(R.string.lbl_settings);
-        actionBar.setSubtitle(R.string.lbl_images);
+        actionBar.setSubtitle(R.string.lbl_covers_long);
     }
 }
