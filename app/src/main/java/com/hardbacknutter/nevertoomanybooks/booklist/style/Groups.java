@@ -56,8 +56,8 @@ public class Groups
      * @param context Current context
      * @param style   the style
      */
-    public Groups(@NonNull final Context context,
-                  @NonNull final BooklistStyle style) {
+    Groups(@NonNull final Context context,
+           @NonNull final BooklistStyle style) {
         super(style.getStyleSharedPreferences(), style.isUserDefined(), PK_STYLE_GROUPS);
 
         // load the group ID's from the SharedPreference and populates the Group object list.
@@ -90,22 +90,6 @@ public class Groups
 
     /**
      * Get the group for the given id.
-     * <p>
-     * Dev note: we want this call to ALWAYS return a valid group.
-     * We had (have?) a bug in the past:
-     * <p>
-     * at BooklistStyle.getGroupById(BooklistStyle.java:1152)
-     * at BooklistAdapter.onCreateViewHolder(BooklistAdapter.java:247)
-     * at BooklistAdapter.onCreateViewHolder(BooklistAdapter.java:96)
-     * <p>
-     * the STYLE is the wrong one...
-     * 2020-09-11: java.lang.IllegalArgumentException: Group was NULL: id=14
-     * 14 is READ_YEAR
-     * but the style dumped was "Books - Author, Series"
-     * so it's the STYLE itself which was wrong...
-     * TEST: We're using newListCursor everywhere now.
-     * Seems 'get' -> existing cursor, with link to builder with link to style
-     * while elsewhere we already have a new builder/style.
      *
      * @param id to get
      *
@@ -115,6 +99,23 @@ public class Groups
      */
     @NonNull
     public BooklistGroup getGroupByIdOrCrash(final int id) {
+        /* Dev note: we want this call to ALWAYS return a valid group.
+         * We had (have?) a bug in the past:
+         * <p>
+         * at BooklistStyle.getGroupById(BooklistStyle.java:1152)
+         * at BooklistAdapter.onCreateViewHolder(BooklistAdapter.java:247)
+         * at BooklistAdapter.onCreateViewHolder(BooklistAdapter.java:96)
+         * <p>
+         * the STYLE was the wrong one...
+         * 2020-09-11: java.lang.IllegalArgumentException: Group was NULL: id=14
+         * 14 is READ_YEAR
+         * but the style dumped was "Books - Author, Series"
+         * so it's the STYLE itself which was wrong...
+         * TEST: We're using newListCursor everywhere now.
+         * Seems 'get' -> existing cursor, with link to builder with link to style
+         * while elsewhere we already have a new builder/style.
+         */
+
         // note the use of a Supplier
         return Objects.requireNonNull(mGroupMap.get(id), ()
                 -> "Group was NULL: id=" + id + ", " + this.toString());
@@ -183,6 +184,12 @@ public class Groups
     public void add(@NonNull final Integer element) {
         // we need the actual group to add it to mGroups
         throw new IllegalStateException("use add(BooklistGroup) instead");
+    }
+
+    @Override
+    public void clear() {
+        mGroupMap.clear();
+        super.clear();
     }
 
     /**

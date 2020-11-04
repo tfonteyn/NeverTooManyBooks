@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
@@ -48,30 +47,5 @@ public class ResultDataModel
 
     public void putResultData(@NonNull final Intent data) {
         mResultData.putExtras(data);
-    }
-
-    public void putResultData(@NonNull final String name,
-                              final boolean value) {
-        mResultData.putExtra(name, value);
-    }
-
-    public void putResultData(@NonNull final String name,
-                              final int value) {
-        mResultData.putExtra(name, value);
-    }
-
-    public void putResultData(@NonNull final String name,
-                              final long value) {
-        mResultData.putExtra(name, value);
-    }
-
-    public void putResultData(@NonNull final String name,
-                              @NonNull final String value) {
-        mResultData.putExtra(name, value);
-    }
-
-    public void putResultData(@NonNull final String name,
-                              @NonNull final Parcelable value) {
-        mResultData.putExtra(name, value);
     }
 }

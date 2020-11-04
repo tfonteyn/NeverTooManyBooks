@@ -24,6 +24,10 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
+/**
+ * Really just a 'marker' interface forcing classes to use the same method name
+ * as a reminder to the developer.
+ */
 public interface ActivityResultDataModel {
 
     /**

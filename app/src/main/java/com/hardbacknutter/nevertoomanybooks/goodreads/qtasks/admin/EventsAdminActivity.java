@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -54,7 +55,10 @@ public class EventsAdminActivity
         // Once we have the task id, call the parent
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.gr_tq_title_task_errors);
+        final ActionBar actionBar = getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.site_goodreads);
+        actionBar.setSubtitle(R.string.gr_tq_title_task_errors);
 
         //When any event is added/changed/deleted, we'll update the Cursor.
         QueueManager.getInstance().registerEventListener(mOnChangeListener);

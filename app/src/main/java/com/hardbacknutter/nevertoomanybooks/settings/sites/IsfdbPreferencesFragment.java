@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.settings.sites;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
@@ -34,5 +36,15 @@ public class IsfdbPreferencesFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_isfdb, rootKey);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_settings);
+        actionBar.setSubtitle(R.string.site_isfdb);
     }
 }

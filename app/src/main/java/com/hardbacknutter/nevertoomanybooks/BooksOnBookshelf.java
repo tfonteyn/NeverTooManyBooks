@@ -65,6 +65,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
@@ -315,7 +317,7 @@ public class BooksOnBookshelf
     /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
     private final MenuPickerDialogFragment.OnResultListener mMenuPickerListener =
             this::onContextItemSelected;
-
+    /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.OnResultListener mEditBookshelfListener =
             bookshelfId -> {
                 if (bookshelfId != mModel.getSelectedBookshelf().getId()) {
@@ -323,7 +325,7 @@ public class BooksOnBookshelf
                     buildBookList();
                 }
             };
-
+    /** Accept the result from the dialog. */
     private final EditLenderDialogFragment.OnResultListener mEditLenderListener =
             (bookId, loanee) -> {
                 saveListPosition();
@@ -1725,6 +1727,7 @@ public class BooksOnBookshelf
     private static class BookshelfSpinnerAdapter
             extends ArrayAdapter<Bookshelf> {
 
+        /** Cached inflater. */
         @NonNull
         private final LayoutInflater mInflater;
 

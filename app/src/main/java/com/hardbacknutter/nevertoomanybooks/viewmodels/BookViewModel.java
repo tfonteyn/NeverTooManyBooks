@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +52,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  * Holds a {@link Book}.
  */
 public class BookViewModel
-        extends ResultDataModel {
+        extends ViewModel
+        implements ActivityResultDataModel {
 
     /** Log tag. */
     private static final String TAG = "BookViewModel";
@@ -94,6 +97,11 @@ public class BookViewModel
      */
     private Book mBook;
 
+
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private final Intent mResultData = new Intent();
+
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Override
     public void onCleared() {
@@ -101,6 +109,22 @@ public class BookViewModel
             mDb.close();
         }
     }
+
+    @NonNull
+    @Override
+    public Intent getResultIntent() {
+        // always set the *current* book, so the BoB list can reposition correctly.
+        if (mBook != null) {
+            mResultData.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
+        }
+
+        return mResultData;
+    }
+
+    public void addResultData(@NonNull final Intent data) {
+        mResultData.putExtras(data);
+    }
+
 
     /**
      * Pseudo constructor.
@@ -288,7 +312,7 @@ public class BookViewModel
      */
     public boolean toggleRead() {
         if (mBook.toggleRead(mDb)) {
-            putResultData(BKEY_BOOK_MODIFIED, true);
+            mResultData.putExtra(BKEY_BOOK_MODIFIED, true);
             return true;
         } else {
             return false;
@@ -335,7 +359,7 @@ public class BookViewModel
     @SuppressWarnings("UnusedReturnValue")
     public boolean deleteBook(@NonNull final Context context) {
         if (mDb.delete(context, mBook)) {
-            putResultData(BKEY_BOOK_DELETED, true);
+            mResultData.putExtra(BKEY_BOOK_DELETED, true);
             mBook = null;
             return true;
         } else {
@@ -355,14 +379,14 @@ public class BookViewModel
 
         if (mBook.isNew()) {
             mDb.insert(context, mBook, 0);
-            putResultData(BKEY_BOOK_CREATED, true);
+            mResultData.putExtra(BKEY_BOOK_CREATED, true);
         } else {
             mDb.update(context, mBook, 0);
-            putResultData(BKEY_BOOK_MODIFIED, true);
+            mResultData.putExtra(BKEY_BOOK_MODIFIED, true);
         }
         mBook.setStage(EntityStage.Stage.Clean);
 
-        putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
+        mResultData.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
     }
 
 
@@ -474,17 +498,5 @@ public class BookViewModel
     public void updatePublishers(@NonNull final ArrayList<Publisher> list) {
         mBook.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
         mPublisherList.setValue(list);
-    }
-
-
-    @NonNull
-    @Override
-    public Intent getResultIntent() {
-        // always set the *current* book, so the BoB list can reposition correctly.
-        if (mBook != null) {
-            putResultData(DBDefinitions.KEY_PK_ID, mBook.getId());
-        }
-
-        return super.getResultIntent();
     }
 }

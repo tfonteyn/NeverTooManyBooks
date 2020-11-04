@@ -21,12 +21,12 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
@@ -41,74 +41,52 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 public abstract class StyleBaseFragment
         extends BasePreferenceFragment {
 
-    /** Log tag. */
-    private static final String TAG = "StyleBaseFragment";
-    public static final String BKEY_TEMPLATE_ID = TAG + ":templateId";
-
     /** Style we are editing. */
-    BooklistStyle mStyle;
-
-    private long mTemplateId;
+    StyleViewModel mStyleViewModel;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
 
-        final Bundle args = getArguments();
-        if (args != null) {
-            mStyle = args.getParcelable(BooklistStyle.BKEY_STYLE);
-            mTemplateId = args.getLong(BKEY_TEMPLATE_ID);
-        }
+        //noinspection ConstantConditions
+        mStyleViewModel = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
+        //noinspection ConstantConditions
+        mStyleViewModel.init(getContext(), requireArguments());
 
-        if (mStyle != null) {
-            // a user-style, set the correct UUID SharedPreferences to use
-            getPreferenceManager().setSharedPreferencesName(mStyle.getUuid());
-        } else {
-            // we're doing the global preferences, create a placeholder style with an empty uuid
-            // and let it use the standard SharedPreferences
-            //noinspection ConstantConditions
-            mStyle = new BooklistStyle(getContext());
-        }
-
-        // always pass the non-global style back; whether existing or new.
-        // so even if the user makes no changes, we still send it back!
-        // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
-        if (!mStyle.isGlobal()) {
-            mResultData.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
-        }
-
-        // always pass the template id back if we had one.
-        if (mTemplateId != 0) {
-            mResultData.putResultData(BKEY_TEMPLATE_ID, mTemplateId);
+        final BooklistStyle style = mStyleViewModel.getStyle();
+        if (!style.isGlobal()) {
+            // non-global, set the correct UUID SharedPreferences to use
+            getPreferenceManager().setSharedPreferencesName(style.getUuid());
         }
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view,
-                              @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onResume() {
+        super.onResume();
+
+        final BooklistStyle style = mStyleViewModel.getStyle();
 
         //noinspection ConstantConditions
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (mStyle.getId() == 0) {
+        if (style.getId() == 0) {
             //noinspection ConstantConditions
             actionBar.setTitle(R.string.lbl_clone_style);
         } else {
             //noinspection ConstantConditions
             actionBar.setTitle(R.string.lbl_edit_style);
         }
+
         //noinspection ConstantConditions
-        actionBar.setSubtitle(mStyle.getLabel(getContext()));
+        actionBar.setSubtitle(style.getLabel(getContext()));
     }
 
     @Override
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
-        super.onSharedPreferenceChanged(preferences, key);
-
         // set the result (and again and again...)
-        mResultData.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
-        mResultData.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
+        mStyleViewModel.setModified();
+
+        super.onSharedPreferenceChanged(preferences, key);
     }
 }

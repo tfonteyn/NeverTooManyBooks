@@ -19,14 +19,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.app.Activity;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AttrRes;
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.SwitchPreference;
 
@@ -39,16 +46,31 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 /**
  * Global settings page.
  */
-public class GlobalPreferenceFragment
+public class SettingsFragment
         extends BasePreferenceFragment {
 
     /** Fragment manager tag. */
-    public static final String TAG = "GlobalPreferenceFragment";
+    public static final String TAG = "SettingsFragment";
     /** savedInstanceState key. */
     private static final String SIS_CURRENT_SORT_TITLE_REORDERED = TAG + ":cSTR";
 
     /** Used to be able to reset this pref to what it was when this fragment started. */
     private boolean mCurrentSortTitleReordered;
+
+    /** The Activity results. */
+    private SettingsViewModel mSettingsViewModel;
+
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            mSettingsViewModel.getResultIntent());
+                    getActivity().finish();
+                }
+            };
 
     private final ActivityResultLauncher<Void> mEditSitesLauncher =
             registerForActivityResult(new SearchAdminActivity.AllListsContract(),
@@ -58,8 +80,10 @@ public class GlobalPreferenceFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         setPreferencesFromResource(R.xml.preferences, rootKey);
+
+        //noinspection ConstantConditions
+        mSettingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         final SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
 
@@ -75,17 +99,6 @@ public class GlobalPreferenceFragment
 
         setVisualIndicator(findPreference(Prefs.pk_sort_title_reordered),
                            StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putBoolean(SIS_CURRENT_SORT_TITLE_REORDERED, mCurrentSortTitleReordered);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
 
         Preference preference;
 
@@ -123,6 +136,51 @@ public class GlobalPreferenceFragment
                 return false;
             });
         }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_settings);
+        actionBar.setSubtitle("");
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SIS_CURRENT_SORT_TITLE_REORDERED, mCurrentSortTitleReordered);
+    }
+
+    @Override
+    @CallSuper
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
+                                          @NonNull final String key) {
+        switch (key) {
+            case Prefs.pk_ui_locale:
+            case Prefs.pk_ui_theme:
+            case Prefs.pk_sort_title_reordered:
+            case Prefs.pk_show_title_reordered:
+                mSettingsViewModel.setRequiresActivityRecreation();
+                break;
+
+            default:
+                break;
+        }
+
+        super.onSharedPreferenceChanged(preferences, key);
     }
 
     /**

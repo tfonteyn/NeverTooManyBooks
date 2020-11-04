@@ -22,6 +22,8 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -43,5 +45,15 @@ public class SearchInternetPreferenceFragment
         if (site != null) {
             site.setVisible(BuildConfig.ENABLE_LIBRARY_THING);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_settings);
+        actionBar.setSubtitle(R.string.X_pg_internet_search);
     }
 }

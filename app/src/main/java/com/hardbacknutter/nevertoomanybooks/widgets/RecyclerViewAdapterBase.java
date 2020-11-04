@@ -53,6 +53,7 @@ public abstract class RecyclerViewAdapterBase<Item, VHT extends ItemTouchHelperV
     /** Optional. */
     @Nullable
     private final StartDragListener mDragStartListener;
+    /** Cached inflater. */
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull

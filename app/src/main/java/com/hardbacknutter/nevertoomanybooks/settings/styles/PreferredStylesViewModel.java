@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.viewmodels;
+package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.content.Context;
 import android.content.Intent;
@@ -38,17 +38,13 @@ public class PreferredStylesViewModel
         extends ViewModel {
 
     /** Log tag. */
-    private static final String TAG = "PreferredStylesViewMode";
-
+    private static final String TAG = "PreferredStylesVM";
     /** Database Access. */
     private DAO mDb;
-
     /** the selected style at onCreate time. */
     private String mInitialStyleUuid;
-
     /** Flag set when anything is changed. Includes moving styles up/down, on/off, ... */
     private boolean mIsDirty;
-
     /** The *in-memory* list of styles. */
     private ArrayList<BooklistStyle> mStyleList;
 
@@ -65,8 +61,8 @@ public class PreferredStylesViewModel
      * @param context Current context
      * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @NonNull final Bundle args) {
+    void init(@NonNull final Context context,
+              @NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO(TAG);
             mStyleList = StyleDAO.getStyles(context, mDb, true);
@@ -81,12 +77,12 @@ public class PreferredStylesViewModel
      *
      * @return {@code true} if changes made
      */
-    public boolean isDirty() {
+    boolean isDirty() {
         return mIsDirty;
     }
 
 
-    public void setDirty(final boolean isDirty) {
+    void setDirty(@SuppressWarnings("SameParameterValue") final boolean isDirty) {
         mIsDirty = isDirty;
     }
 
@@ -96,12 +92,12 @@ public class PreferredStylesViewModel
      * @return UUID
      */
     @NonNull
-    public String getInitialStyleUuid() {
+    String getInitialStyleUuid() {
         return mInitialStyleUuid;
     }
 
     @NonNull
-    public ArrayList<BooklistStyle> getList() {
+    ArrayList<BooklistStyle> getList() {
         return mStyleList;
     }
 
@@ -114,8 +110,8 @@ public class PreferredStylesViewModel
      *
      * @return position of the style in the list
      */
-    public int onStyleEdited(@NonNull final BooklistStyle style,
-                             final long templateId) {
+    int onStyleEdited(@NonNull final BooklistStyle style,
+                      final long templateId) {
         mIsDirty = true;
 
         // Always save/update a new style to the database first.
@@ -208,7 +204,7 @@ public class PreferredStylesViewModel
      *
      * @param style to update
      */
-    public void updateStyle(@NonNull final BooklistStyle style) {
+    void updateStyle(@NonNull final BooklistStyle style) {
         StyleDAO.update(mDb, style);
     }
 
@@ -218,8 +214,8 @@ public class PreferredStylesViewModel
      * @param context Current context
      * @param style   to delete
      */
-    public void deleteStyle(@NonNull final Context context,
-                            @NonNull final BooklistStyle style) {
+    void deleteStyle(@NonNull final Context context,
+                     @NonNull final BooklistStyle style) {
         StyleDAO.delete(context, mDb, style);
         mStyleList.remove(style);
     }
@@ -227,7 +223,7 @@ public class PreferredStylesViewModel
     /**
      * Save the preferred style menu list.
      */
-    public void updateMenuOrder() {
+    void updateMenuOrder() {
         StyleDAO.updateMenuOrder(mDb, mStyleList);
     }
 
@@ -236,7 +232,7 @@ public class PreferredStylesViewModel
      *
      * @param styleId to purge
      */
-    public void purgeBLNS(final long styleId) {
+    void purgeBLNS(final long styleId) {
         mDb.purgeNodeStatesByStyle(styleId);
     }
 }

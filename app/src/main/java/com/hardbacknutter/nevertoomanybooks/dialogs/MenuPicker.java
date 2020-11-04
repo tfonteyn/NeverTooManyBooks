@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -161,6 +162,7 @@ public class MenuPicker {
         private final Drawable mSubMenuPointer;
         @NonNull
         private final List<MenuItem> mList = new ArrayList<>();
+        /** Cached inflater. */
         @NonNull
         private final LayoutInflater mInflater;
 
@@ -170,6 +172,7 @@ public class MenuPicker {
          * @param context Current context
          * @param menu    Menu (list of items) to display
          */
+        @SuppressLint("UseCompatLoadingForDrawables")
         MenuItemListAdapter(@NonNull final Context context,
                             @NonNull final Menu menu) {
 

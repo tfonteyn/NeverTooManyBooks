@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -43,7 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class AuthorWorksModel
-        extends ViewModel {
+        extends ViewModel
+        implements ActivityResultDataModel {
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksModel";
@@ -61,11 +63,21 @@ public class AuthorWorksModel
     /** Show all shelves, or only the initially selected shelf. */
     private boolean mAllBookshelves;
 
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private final Intent mResultData = new Intent();
+
     @Override
     protected void onCleared() {
         if (mDb != null) {
             mDb.close();
         }
+    }
+
+    @NonNull
+    @Override
+    public Intent getResultIntent() {
+        return mResultData;
     }
 
     /**
@@ -155,8 +167,8 @@ public class AuthorWorksModel
 
         if (success) {
             work.setId(0);
-
             mWorkList.remove(work);
+            mResultData.putExtra(BookViewModel.BKEY_BOOK_DELETED, true);
         }
         return success;
     }

@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,10 +37,12 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesModel
-        extends ViewModel {
+        extends ViewModel
+        implements ActivityResultDataModel {
 
     /** Log tag. */
     private static final String TAG = "EditBookshelvesModel";
@@ -47,6 +50,10 @@ public class EditBookshelvesModel
     public static final String BKEY_CURRENT_BOOKSHELF = TAG + ":current";
     private final MutableLiveData<Pair<Integer, Integer>> mSelectedPositionLD =
             new MutableLiveData<>();
+
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private final Intent mResultData = new Intent();
 
     /** Database Access. */
     private DAO mDb;
@@ -64,6 +71,12 @@ public class EditBookshelvesModel
         }
     }
 
+    @NonNull
+    @Override
+    public Intent getResultIntent() {
+        return mResultData;
+    }
+
     /**
      * Pseudo constructor.
      * <p>
@@ -76,7 +89,10 @@ public class EditBookshelvesModel
             mDb = new DAO(TAG);
             mList = mDb.getBookshelves();
             if (args != null) {
-                mSelectedPosition = findSelectedPosition(args.getLong(BKEY_CURRENT_BOOKSHELF));
+                final long bookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
+                mSelectedPosition = findSelectedPosition(bookshelfId);
+                // set as the initial result
+                mResultData.putExtra(DBDefinitions.KEY_PK_ID, bookshelfId);
             }
         }
     }
@@ -114,7 +130,10 @@ public class EditBookshelvesModel
     public void setSelectedPosition(final int position) {
         final int oldPos = mSelectedPosition;
         mSelectedPosition = position;
+        // update the fragment -> it will update the adapter
         mSelectedPositionLD.setValue(new Pair<>(oldPos, mSelectedPosition));
+        // update the activity result.
+        mResultData.putExtra(DBDefinitions.KEY_PK_ID, getBookshelf(mSelectedPosition).getId());
     }
 
     @NonNull

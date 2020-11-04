@@ -195,18 +195,17 @@ public abstract class BaseActivity
     }
 
     /**
-     * Manually load a fragment into the given container using replace.
+     * Manually add the first fragment for the given container. Not added to the BackStack.
      * <p>
-     * Not added to the BackStack.
      * <strong>The activity extras bundle will be set as arguments.</strong>
      *
      * @param containerViewId to receive the fragment
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
      * @param fragmentTag     tag for the fragment
      */
-    protected void replaceFragment(@IdRes final int containerViewId,
-                                   @NonNull final Class<? extends Fragment> fragmentClass,
-                                   @NonNull final String fragmentTag) {
+    protected void addFirstFragment(@IdRes final int containerViewId,
+                                    @NonNull final Class<? extends Fragment> fragmentClass,
+                                    @NonNull final String fragmentTag) {
 
         final FragmentManager fm = getSupportFragmentManager();
         if (fm.findFragmentByTag(fragmentTag) == null) {
@@ -221,7 +220,7 @@ public abstract class BaseActivity
             fm.beginTransaction()
               // FIXME: https://issuetracker.google.com/issues/169874632
               //   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(containerViewId, fragment, fragmentTag)
+              .add(containerViewId, fragment, fragmentTag)
               .commit();
         }
     }
@@ -257,7 +256,7 @@ public abstract class BaseActivity
      * @return {@code true} if a recreate was triggered.
      */
     @SuppressWarnings("UnusedReturnValue")
-    protected boolean recreateIfNeeded() {
+    public boolean recreateIfNeeded() {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (sActivityRecreateStatus == ACTIVITY_REQUIRES_RECREATE

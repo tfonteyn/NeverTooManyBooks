@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -42,8 +42,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelperDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportManager;
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveExportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;

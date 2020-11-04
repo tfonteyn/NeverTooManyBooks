@@ -34,6 +34,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -54,8 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.PreferredStylesViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -142,7 +141,8 @@ public class PreferredStylesActivity
         super.onCreate(savedInstanceState);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            getSupportFragmentManager().setFragmentResultListener(
+            final FragmentManager fm = getSupportFragmentManager();
+            fm.setFragmentResultListener(
                     RK_MENU_PICKER, this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
@@ -222,7 +222,7 @@ public class PreferredStylesActivity
                             // id of the original style we cloned (different from current)
                             // or edited (same as current).
                             final long templateId = data.getLongExtra(
-                                    StyleBaseFragment.BKEY_TEMPLATE_ID, style.getId());
+                                    StyleViewModel.BKEY_TEMPLATE_ID, style.getId());
 
                             // save/update the style, and calculate the (new) position in the list
                             final int position = mModel.onStyleEdited(style, templateId);
@@ -377,10 +377,9 @@ public class PreferredStylesActivity
     private void editStyle(@NonNull final BooklistStyle style,
                            final long templateStyleId) {
 
-        final Intent intent = new Intent(this, SettingsActivity.class)
-                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
+        final Intent intent = new Intent(this, EditStyleActivity.class)
                 .putExtra(BooklistStyle.BKEY_STYLE, style)
-                .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateStyleId);
+                .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, templateStyleId);
 
         startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }

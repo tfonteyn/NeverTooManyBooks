@@ -49,7 +49,7 @@ public class SearchAdminActivity
 
     private TabAdapter mTabAdapter;
 
-    private SearchAdminModel mModel;
+    private SearchAdminViewModel mModel;
 
     /** View Binding. */
     private ActivityAdminSearchBinding mVb;
@@ -64,7 +64,7 @@ public class SearchAdminActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = new ViewModelProvider(this).get(SearchAdminModel.class);
+        mModel = new ViewModelProvider(this).get(SearchAdminViewModel.class);
         mModel.init(getIntent().getExtras());
 
         if (mModel.isSingleListMode()) {
@@ -204,7 +204,7 @@ public class SearchAdminActivity
         public Intent createIntent(@NonNull final Context context,
                                    @Nullable final ArrayList<Site> input) {
             return new Intent(context, SearchAdminActivity.class)
-                    .putExtra(SearchAdminModel.BKEY_LIST, input);
+                    .putExtra(SearchAdminViewModel.BKEY_LIST, input);
         }
 
         @Nullable

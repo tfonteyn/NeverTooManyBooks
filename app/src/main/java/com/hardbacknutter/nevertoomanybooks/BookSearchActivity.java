@@ -23,12 +23,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
@@ -55,37 +54,24 @@ public class BookSearchActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String tag = getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG);
-        if (tag == null) {
-            tag = BookSearchByIsbnFragment.TAG;
-        }
-        replaceFragment(R.id.main_fragment, tag);
-    }
+        final String tag = Objects.requireNonNull(
+                getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG), "tag");
 
-    /**
-     * Create a fragment based on the given tag.
-     *
-     * @param containerViewId to receive the fragment
-     * @param tag             for the required fragment
-     */
-    private void replaceFragment(@SuppressWarnings("SameParameterValue")
-                                 @IdRes final int containerViewId,
-                                 @NonNull final String tag) {
         switch (tag) {
             case BookSearchByIsbnFragment.TAG:
-                replaceFragment(containerViewId, BookSearchByIsbnFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, BookSearchByIsbnFragment.class, tag);
                 return;
 
             case BookSearchByTextFragment.TAG:
-                replaceFragment(containerViewId, BookSearchByTextFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, BookSearchByTextFragment.class, tag);
                 return;
 
             case BookSearchByExternalIdFragment.TAG:
-                replaceFragment(containerViewId, BookSearchByExternalIdFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, BookSearchByExternalIdFragment.class, tag);
                 return;
 
             case UpdateFieldsFragment.TAG:
-                replaceFragment(containerViewId, UpdateFieldsFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, UpdateFieldsFragment.class, tag);
                 return;
 
             default:
@@ -101,7 +87,6 @@ public class BookSearchActivity
             Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
         }
 
-        // Settings initiated from the navigation panel.
         if (requestCode == RequestCode.NAV_PANEL_SETTINGS) {
             if (resultCode == Activity.RESULT_OK && data != null) {
                 // update the search sites list.

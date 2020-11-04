@@ -17,27 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.debug;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
 
-public class SqliteShellActivity
-        extends BaseActivity {
+public class ImportViewModel
+        extends ViewModel
+        implements ActivityResultDataModel {
+
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private final Intent mResultData = new Intent();
 
     @Override
-    protected void onSetContentView() {
-        setContentView(R.layout.activity_main);
+    @NonNull
+    public Intent getResultIntent() {
+        return mResultData;
     }
 
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        addFirstFragment(R.id.main_fragment, SqliteShellFragment.class, SqliteShellFragment.TAG);
+    void setImportResults(final int options) {
+        mResultData.putExtra(ImportResults.BKEY_IMPORT_RESULTS, options);
     }
 }

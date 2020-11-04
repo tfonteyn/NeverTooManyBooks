@@ -109,6 +109,8 @@ public class BookDetailsFragment
     public static final String TAG = "BookDetailsFragment";
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
+
+    /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
@@ -740,7 +742,7 @@ public class BookDetailsFragment
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
                         // pass the data up
-                        mBookViewModel.putResultData(data);
+                        mBookViewModel.addResultData(data);
                     }
                     // onResume will display the changed book.
                     mBookViewModel.reload();
@@ -751,7 +753,7 @@ public class BookDetailsFragment
                 if (resultCode == Activity.RESULT_OK) {
                     if (data != null) {
                         // pass the data up
-                        mBookViewModel.putResultData(data);
+                        mBookViewModel.addResultData(data);
 
                         final long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
                         if (id > 0) {

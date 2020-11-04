@@ -19,8 +19,7 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
         android:title="@string/pg_barcode_scanner">
 

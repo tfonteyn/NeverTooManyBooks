@@ -37,12 +37,12 @@ import com.hardbacknutter.nevertoomanybooks.searches.Site;
 /**
  * Shared between ALL tabs (fragments) and the hosting Activity.
  */
-public class SearchAdminModel
+public class SearchAdminViewModel
         extends ViewModel {
 
     private static final String ERROR_NOT_IN_SINGLE_LIST_MODE = "NOT in single-list mode";
     /** Log tag. */
-    private static final String TAG = "SearchAdminModel";
+    private static final String TAG = "SearchAdminViewModel";
     /** Single-list/tab mode parameter. */
     static final String BKEY_LIST = TAG + ":list";
 

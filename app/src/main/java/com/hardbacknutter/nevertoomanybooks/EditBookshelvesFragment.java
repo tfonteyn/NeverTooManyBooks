@@ -36,6 +36,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,7 +46,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 /**
  * Lists all bookshelves and can add/delete/edit them.
@@ -71,17 +70,17 @@ public class EditBookshelvesFragment
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mModel;
+    /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.OnResultListener mOnEditBookshelfListener =
             bookshelfId -> mModel.reloadListAndSetSelectedPosition(bookshelfId);
-    /** The Activity results. */
-    private ResultDataModel mResultData;
 
+    /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, mModel.getResultIntent());
                     getActivity().finish();
                 }
             };
@@ -94,11 +93,11 @@ public class EditBookshelvesFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getChildFragmentManager()
-                .setFragmentResultListener(RK_EDIT_BOOKSHELF, this, mOnEditBookshelfListener);
+        final FragmentManager fm = getChildFragmentManager();
+        fm.setFragmentResultListener(RK_EDIT_BOOKSHELF, this, mOnEditBookshelfListener);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            getChildFragmentManager().setFragmentResultListener(
+            fm.setFragmentResultListener(
                     RK_MENU_PICKER, this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
@@ -121,7 +120,6 @@ public class EditBookshelvesFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_bookshelves_long);
 
-        mResultData = new ViewModelProvider(this).get(ResultDataModel.class);
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
@@ -132,9 +130,6 @@ public class EditBookshelvesFragment
             mAdapter.notifyItemChanged(positionPair.first);
             // current/new position
             mAdapter.notifyItemChanged(positionPair.second);
-            // update the activity result.
-            mResultData.putResultData(DBDefinitions.KEY_PK_ID,
-                                      mModel.getBookshelf(positionPair.second).getId());
         });
 
         // The FAB lives in the activity.
@@ -292,6 +287,7 @@ public class EditBookshelvesFragment
     private class BookshelfAdapter
             extends RecyclerView.Adapter<Holder> {
 
+        /** Cached inflater. */
         @NonNull
         private final LayoutInflater mInflater;
 

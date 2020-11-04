@@ -41,8 +41,6 @@ public final class RequestCode {
 
     /** edit a Style. */
     public static final int EDIT_STYLE = 1_100;
-    /** edit the Groups of a Style. */
-    public static final int EDIT_STYLE_GROUPS = 1_101;
 
 
     /** open the book view screen. */

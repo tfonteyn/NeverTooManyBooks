@@ -30,21 +30,22 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin.TasksAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.ImportTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.SendBooksTask;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.sites.GoodreadsPreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -61,7 +62,9 @@ public class GoodreadsAdminFragment
 
     /** Goodreads authorization task. */
     private GrAuthTask mGrAuthTask;
+    /** ViewModel with task. */
     private ImportTask mImportTask;
+    /** ViewModel with task. */
     private SendBooksTask mSendBooksTask;
 
     /** View Binding. */
@@ -87,9 +90,6 @@ public class GoodreadsAdminFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //noinspection ConstantConditions
-        getActivity().setTitle(R.string.site_goodreads);
-
         mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
         mGrAuthTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
         mGrAuthTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
@@ -112,6 +112,16 @@ public class GoodreadsAdminFragment
         mVb.btnImport.setOnClickListener(v -> importBooks(false));
         mVb.btnSendUpdatedBooks.setOnClickListener(v -> sendBooks(true));
         mVb.btnSendAllBooks.setOnClickListener(v -> sendBooks(false));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.site_goodreads);
+        actionBar.setSubtitle(R.string.pt_maintenance);
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
@@ -174,9 +184,14 @@ public class GoodreadsAdminFragment
             return true;
 
         } else if (itemId == R.id.MENU_GOODREADS_SETTINGS) {
-            final Intent intent = new Intent(getContext(), SettingsActivity.class)
-                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, GoodreadsPreferencesFragment.TAG);
-            startActivity(intent);
+            final FragmentManager fm = getParentFragmentManager();
+            fm.beginTransaction()
+              .addToBackStack(GoodreadsPreferencesFragment.TAG)
+              // FIXME: https://issuetracker.google.com/issues/169874632
+              //   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+              .replace(R.id.main_fragment, new GoodreadsPreferencesFragment(),
+                       GoodreadsPreferencesFragment.TAG)
+              .commit();
             return true;
         }
 

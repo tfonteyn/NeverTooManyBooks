@@ -36,6 +36,7 @@
         >
 
         <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleGroupsFragment"
             android:icon="@drawable/ic_format_list_bulleted"
             android:key="style.booklist.groups"
             android:title="@string/pg_style_groups"

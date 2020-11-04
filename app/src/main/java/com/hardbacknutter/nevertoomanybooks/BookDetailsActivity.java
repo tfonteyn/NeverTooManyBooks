@@ -48,7 +48,7 @@ public class BookDetailsActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        replaceFragment(R.id.main_fragment, BookDetailsFragment.class, BookDetailsFragment.TAG);
+        addFirstFragment(R.id.main_fragment, BookDetailsFragment.class, BookDetailsFragment.TAG);
     }
 
     public void registerOnTouchListener(@NonNull final View.OnTouchListener listener) {

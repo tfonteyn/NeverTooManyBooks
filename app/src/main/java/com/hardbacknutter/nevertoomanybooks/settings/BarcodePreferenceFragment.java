@@ -19,10 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.SharedPreferences;
 import android.hardware.camera2.CameraMetadata;
 import android.os.Bundle;
 
+import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 import androidx.preference.ListPreference;
 
@@ -30,6 +35,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -41,7 +47,6 @@ public class BarcodePreferenceFragment
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         setPreferencesFromResource(R.xml.preferences_barcodes, rootKey);
 
         final ListPreference preference = findPreference(Prefs.pk_camera_id_scan_barcode);
@@ -85,5 +90,48 @@ public class BarcodePreferenceFragment
             preference.setEntries(entries);
             preference.setEntryValues(entryValues);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_settings);
+        actionBar.setSubtitle(R.string.pg_barcode_scanner);
+    }
+
+    @Override
+    @CallSuper
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
+                                          @NonNull final String key) {
+        switch (key) {
+            case Prefs.pk_sounds_scan_found_barcode:
+                if (preferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.zxing_beep);
+                }
+                break;
+
+            case Prefs.pk_sounds_scan_isbn_valid:
+                if (preferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.beep_high);
+                }
+                break;
+
+            case Prefs.pk_sounds_scan_isbn_invalid:
+                if (preferences.getBoolean(key, false)) {
+                    //noinspection ConstantConditions
+                    SoundManager.playFile(getContext(), R.raw.beep_low);
+                }
+                break;
+
+            default:
+                break;
+        }
+
+        super.onSharedPreferenceChanged(preferences, key);
     }
 }

@@ -160,7 +160,7 @@
         <!--  android:icon="@drawable/ic_details"-->
         <!--  android:key="psk_styles"-->
         <!--  android:title="@string/lbl_styles"-->
-        <!--  android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment"-->
+        <!--  android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleFragmentment"-->
         <!--  />-->
 
         <!-- the state of the list when starting the app. -->

@@ -23,6 +23,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.searches.librarything.LibraryThingRegistrationActivity;
@@ -43,5 +45,15 @@ public class LibraryThingPreferencesFragment
                     startActivity(new Intent(getContext(), LibraryThingRegistrationActivity.class));
                     return true;
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_settings);
+        actionBar.setSubtitle(R.string.site_library_thing);
     }
 }

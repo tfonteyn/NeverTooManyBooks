@@ -27,7 +27,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -36,17 +35,17 @@ import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
 import androidx.preference.PreferenceScreen;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference;
 
 /**
- * Base settings page.
- * <p>
- * Uses OnSharedPreferenceChangeListener to dynamically update the summary for each preference.
+ * Base settings page. This handles:
+ * <ul>
+ *     <li>Summaries</li>
+ *     <li>custom preference dialogs</li>
+ *     <li>auto-scroll key</li>
+ * </ul>
  */
 public abstract class BasePreferenceFragment
         extends PreferenceFragmentCompat
@@ -59,7 +58,6 @@ public abstract class BasePreferenceFragment
     @SuppressWarnings("WeakerAccess")
     public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
 
-    protected ResultDataModel mResultData;
     @Nullable
     private String mAutoScrollToKey;
 
@@ -71,9 +69,6 @@ public abstract class BasePreferenceFragment
         if (args != null) {
             mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
         }
-
-        //noinspection ConstantConditions
-        mResultData = new ViewModelProvider(getActivity()).get(ResultDataModel.class);
     }
 
     @Override
@@ -122,39 +117,6 @@ public abstract class BasePreferenceFragment
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
-        switch (key) {
-            case Prefs.pk_ui_locale:
-            case Prefs.pk_ui_theme:
-            case Prefs.pk_sort_title_reordered:
-            case Prefs.pk_show_title_reordered:
-                mResultData.putResultData(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
-                break;
-
-            case Prefs.pk_sounds_scan_found_barcode:
-                if (preferences.getBoolean(key, false)) {
-                    //noinspection ConstantConditions
-                    SoundManager.playFile(getContext(), R.raw.zxing_beep);
-                }
-                break;
-
-            case Prefs.pk_sounds_scan_isbn_valid:
-                if (preferences.getBoolean(key, false)) {
-                    //noinspection ConstantConditions
-                    SoundManager.playFile(getContext(), R.raw.beep_high);
-                }
-                break;
-
-            case Prefs.pk_sounds_scan_isbn_invalid:
-                if (preferences.getBoolean(key, false)) {
-                    //noinspection ConstantConditions
-                    SoundManager.playFile(getContext(), R.raw.beep_low);
-                }
-                break;
-
-            default:
-                break;
-        }
-
         // Update the summary after a change.
         updateSummary(key);
     }
@@ -174,13 +136,11 @@ public abstract class BasePreferenceFragment
             // as the latter insists on using setTargetFragment to communicate back.
             final FragmentManager fm = getParentFragmentManager();
             // check if dialog is already showing
-            if (fm.findFragmentByTag(fragmentTag) != null) {
-                return;
+            if (fm.findFragmentByTag(fragmentTag) == null) {
+                BitmaskPreference.BitmaskPreferenceDialogFragment
+                        .newInstance(this, (BitmaskPreference) preference)
+                        .show(fm, fragmentTag);
             }
-
-            BitmaskPreference.BitmaskPreferenceDialogFragment
-                    .newInstance(this, (BitmaskPreference) preference)
-                    .show(fm, fragmentTag);
             return;
         }
 

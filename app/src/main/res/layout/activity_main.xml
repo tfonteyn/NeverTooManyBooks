@@ -47,6 +47,17 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:elevation="@dimen/progress_z"
+        android:visibility="gone"
+        tools:visibility="visible"
+        />
+
     <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
         android:id="@+id/fab"
         style="@style/FAB"

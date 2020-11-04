@@ -17,30 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.settings;
+package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * Hosting activity for top-level Preference editing.
+ * Hosting activity for Style editing.
  */
-public class SettingsActivity
+public class EditStyleActivity
         extends BaseActivity
-        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
-                   SharedPreferences.OnSharedPreferenceChangeListener {
+        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
 
     @Override
     protected void onSetContentView() {
@@ -51,8 +47,7 @@ public class SettingsActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addFirstFragment(R.id.main_fragment, SettingsFragment.class,
-                         SettingsFragment.TAG);
+        addFirstFragment(R.id.main_fragment, EditStyleFragment.class, EditStyleFragment.TAG);
     }
 
     @Override
@@ -78,7 +73,6 @@ public class SettingsActivity
         }
         fragment.setArguments(args);
 
-        // Replace the existing Fragment with the new Fragment
         fm.beginTransaction()
           .addToBackStack(fragment.getTag())
           // FIXME: https://issuetracker.google.com/issues/169874632
@@ -86,35 +80,5 @@ public class SettingsActivity
           .replace(R.id.main_fragment, fragment)
           .commit();
         return true;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        PreferenceManager.getDefaultSharedPreferences(this)
-                         .registerOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override
-    public void onPause() {
-        PreferenceManager.getDefaultSharedPreferences(this)
-                         .unregisterOnSharedPreferenceChangeListener(this);
-        super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
-                                          @NonNull final String key) {
-        switch (key) {
-            // Trigger a recreate of this activity, if one of these settings have changed.
-            case Prefs.pk_ui_theme:
-            case Prefs.pk_ui_locale:
-                recreateIfNeeded();
-                break;
-
-            default:
-                break;
-        }
     }
 }

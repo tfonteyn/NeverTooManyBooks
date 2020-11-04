@@ -32,6 +32,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -57,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 /**
  * Handles the order of sites to search, and the individual site being enabled or not.
  * <p>
- * Persistence is handled in {@link SearchAdminActivity} / {@link SearchAdminModel}.
+ * Persistence is handled in {@link SearchAdminActivity} / {@link SearchAdminViewModel}.
  */
 public class SearchOrderFragment
         extends Fragment {
@@ -71,7 +73,7 @@ public class SearchOrderFragment
 
     /* The View model. */
     @SuppressWarnings("FieldCanBeLocal")
-    private SearchAdminModel mModel;
+    private SearchAdminViewModel mModel;
 
     /** View Binding. */
     private FragmentEditSearchOrderBinding mVb;
@@ -107,7 +109,7 @@ public class SearchOrderFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        mModel = new ViewModelProvider(getActivity()).get(SearchAdminModel.class);
+        mModel = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
         mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), "BKEY_TYPE");
         mSiteList = mModel.getList(mType);
 
@@ -124,6 +126,16 @@ public class SearchOrderFragment
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
         mItemTouchHelper.attachToRecyclerView(mVb.siteList);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_settings);
+        actionBar.setSubtitle(R.string.lbl_websites);
     }
 
     @Override

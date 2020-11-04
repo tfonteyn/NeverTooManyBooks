@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,16 +26,12 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
@@ -49,7 +43,7 @@ public class ImportHelperDialogFragment
 
     /** Log tag. */
     public static final String TAG = "ImportHelperDialogFragment";
-    private static final String BKEY_OPTIONS = TAG + ":options";
+    static final String BKEY_IMPORT_MANAGER = TAG + ":helper";
 
     private ImportHelperViewModel mModel;
     /** View Binding. */
@@ -70,18 +64,18 @@ public class ImportHelperDialogFragment
      * Constructor.
      *
      * @param requestKey for use with the FragmentResultListener
-     * @param manager    import configuration; must have a valid Uri set.
+     * @param helper     import configuration; must have a valid Uri set.
      *
      * @return instance
      */
     @NonNull
     public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
                                              @NonNull final String requestKey,
-                                             @NonNull final ImportManager manager) {
+                                             @NonNull final ImportManager helper) {
         final DialogFragment frag = new ImportHelperDialogFragment();
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putParcelable(BKEY_OPTIONS, manager);
+        args.putParcelable(BKEY_IMPORT_MANAGER, helper);
         frag.setArguments(args);
         return frag;
     }
@@ -191,62 +185,4 @@ public class ImportHelperDialogFragment
         }
     }
 
-    public static class ImportHelperViewModel
-            extends ViewModel {
-
-        /** import configuration. */
-        private ImportManager mHelper;
-
-        @Nullable
-        private ArchiveInfo mInfo;
-
-        /**
-         * Pseudo constructor.
-         *
-         * @param context Current context
-         * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
-         *
-         * @throws InvalidArchiveException on failure to recognise a supported archive
-         * @throws IOException             on other failures
-         */
-        public void init(@NonNull final Context context,
-                         @NonNull final Bundle args)
-                throws InvalidArchiveException, IOException {
-            mHelper = Objects.requireNonNull(args.getParcelable(BKEY_OPTIONS), "mHelper");
-            mInfo = mHelper.getInfo(context);
-        }
-
-        @NonNull
-        ImportManager getHelper() {
-            return mHelper;
-        }
-
-        @Nullable
-        ArchiveInfo getInfo() {
-            return mInfo;
-        }
-
-        /**
-         * Get the archive creation date.
-         *
-         * @param context Current context
-         *
-         * @return the date, or {@code null} if none present
-         */
-        @Nullable
-        LocalDateTime getArchiveCreationDate(@NonNull final Context context) {
-            if (mInfo == null) {
-                return null;
-            } else {
-                return mInfo.getCreationDate(context);
-            }
-        }
-
-        // TODO: split this up into one check for each entity we could import.
-        boolean isBooksOnlyContainer(@NonNull final Context context) {
-            final ArchiveContainer container = mHelper.getContainer(context);
-            return ArchiveContainer.CsvBooks == container
-                   || ArchiveContainer.SqLiteDb == container;
-        }
-    }
 }

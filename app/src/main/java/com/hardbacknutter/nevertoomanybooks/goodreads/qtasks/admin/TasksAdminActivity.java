@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -48,7 +49,10 @@ public class TasksAdminActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setTitle(R.string.gr_tq_menu_background_tasks);
+        final ActionBar actionBar = getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.site_goodreads);
+        actionBar.setSubtitle(R.string.gr_tq_menu_background_tasks);
 
         //When any task is added/changed/deleted, we'll update the Cursor.
         QueueManager.getInstance().registerTaskListener(mOnChangeListener);

@@ -52,6 +52,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -65,9 +66,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -91,24 +90,22 @@ public class AuthorWorksFragment
 
     /** FragmentResultListener request key. */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
-
-    /** The Activity results. */
-    private ResultDataModel mResultData;
     /** The Fragment ViewModel. */
     private AuthorWorksModel mModel;
-    /** The Adapter. */
-    private TocAdapter mAdapter;
-    private ActionBar mActionBar;
-
+    /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, mModel.getResultIntent());
                     getActivity().finish();
                 }
             };
+    /** The Adapter. */
+    private TocAdapter mAdapter;
+    private ActionBar mActionBar;
+    private FragmentAuthorWorksBinding mVb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -127,7 +124,8 @@ public class AuthorWorksFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_author_works, container, false);
+        mVb = FragmentAuthorWorksBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -144,26 +142,23 @@ public class AuthorWorksFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mResultData = new ViewModelProvider(this).get(ResultDataModel.class);
-
         mModel = new ViewModelProvider(this).get(AuthorWorksModel.class);
         //noinspection ConstantConditions
         mModel.init(context, requireArguments());
 
-        //noinspection ConstantConditions
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
         mActionBar.setTitle(mModel.getScreenTitle(context));
         mActionBar.setSubtitle(mModel.getScreenSubtitle());
 
-        final RecyclerView listView = view.findViewById(R.id.author_works);
-        listView.setHasFixedSize(true);
-        listView.addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
+        mVb.authorWorks.setHasFixedSize(true);
+        mVb.authorWorks
+                .addItemDecoration(new DividerItemDecoration(context, RecyclerView.VERTICAL));
 
-        FastScroller.attach(listView);
+        FastScroller.attach(mVb.authorWorks);
 
         mAdapter = new TocAdapter(context);
-        listView.setAdapter(mAdapter);
+        mVb.authorWorks.setAdapter(mAdapter);
 
         if (savedInstanceState == null) {
             TipManager.display(context, R.string.tip_authors_works, null);
@@ -313,7 +308,6 @@ public class AuthorWorksFragment
                     Collections.singletonList(work.getPrimaryAuthor()), () -> {
                         mModel.delete(getContext(), work);
                         mAdapter.notifyItemRemoved(position);
-                        mResultData.putResultData(BookViewModel.BKEY_BOOK_DELETED, true);
                     });
         } else {
             throw new IllegalArgumentException(String.valueOf(work));
@@ -392,7 +386,7 @@ public class AuthorWorksFragment
             extends RecyclerView.Adapter<Holder>
             implements FastScroller.PopupTextProvider {
 
-        /** Caching the inflater. */
+        /** Cached inflater. */
         private final LayoutInflater mInflater;
         /** Row indicator icon. */
         private final ColorStateList mDrawableOn;

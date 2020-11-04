@@ -20,10 +20,11 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,28 +33,22 @@ import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
 
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 
 /**
- * Settings editor for a Style.
+ * Main fragment to edit a Style.
  * <p>
  * Passing in a style with a valid UUID, settings are read/written to the style specific file.
  * If the uuid is {@code null}, then we're editing the global defaults.
  */
-public class StyleFragment
+public class EditStyleFragment
         extends StyleBaseFragment {
 
     /** Fragment manager tag. */
@@ -64,11 +59,21 @@ public class StyleFragment
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_FILTERS = "psk_style_filters";
 
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mStyleViewModel.getResultIntent());
+                    getActivity().finish();
+                }
+            };
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
-
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
 
         // Cover on LIST screen
@@ -91,21 +96,13 @@ public class StyleFragment
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        final Preference preference;
-
-        // the 'groups' in use.
-        preference = findPreference(Groups.PK_STYLE_GROUPS);
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                final Intent intent = new Intent(getContext(), StyleGroupsActivity.class)
-                        .putExtra(BooklistStyle.BKEY_STYLE, mStyle);
-                startActivityForResult(intent, RequestCode.EDIT_STYLE_GROUPS);
-                return true;
-            });
-        }
+        //noinspection ConstantConditions
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
     }
 
     @Override
@@ -116,7 +113,7 @@ public class StyleFragment
         // Use the global style to get the groups.
         //noinspection ConstantConditions
         final BooklistStyle style = new BooklistStyle(getContext());
-        final Groups styleGroups = mStyle.getGroups();
+        final Groups styleGroups = mStyleViewModel.getStyle().getGroups();
 
         for (final BooklistGroup group : BooklistGroup.getAllGroups(getContext(), style)) {
             group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
@@ -148,21 +145,18 @@ public class StyleFragment
         super.onSharedPreferenceChanged(preferences, key);
     }
 
-    /**
-     * Update summary texts.
-     * <p>
-     * Reminder: prefs lookups can return {@code null} as the screen swaps in and out sub screens.
-     */
     @Override
     protected void updateSummary(@NonNull final String key) {
+
+        final BooklistStyle style = mStyleViewModel.getStyle();
 
         switch (key) {
             case TextScale.PK_TEXT_SCALE: {
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    preference.setSummary(mStyle.getTextScale()
-                                                .getFontScaleSummaryText(getContext()));
+                    preference.setSummary(style.getTextScale()
+                                               .getFontScaleSummaryText(getContext()));
                 }
                 break;
             }
@@ -171,8 +165,8 @@ public class StyleFragment
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    preference.setSummary(mStyle.getListScreenBookFields()
-                                                .getCoverScaleSummaryText(getContext()));
+                    preference.setSummary(style.getListScreenBookFields()
+                                               .getCoverScaleSummaryText(getContext()));
                 }
                 break;
             }
@@ -180,9 +174,10 @@ public class StyleFragment
             case BooklistStyle.PK_LEVELS_EXPANSION: {
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
-                    preference.setMax(mStyle.getGroups().size());
+                    preference.setMax(style.getGroups().size());
                     //noinspection ConstantConditions
-                    preference.setSummary(String.valueOf(mStyle.getTopLevel(getContext())));
+                    preference.setSummary(String.valueOf(
+                            style.getTopLevel(getContext())));
                 }
                 break;
             }
@@ -192,7 +187,8 @@ public class StyleFragment
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    preference.setSummary(mStyle.getGroups().getSummaryText(getContext()));
+                    preference.setSummary(
+                            style.getGroups().getSummaryText(getContext()));
                 }
                 break;
             }
@@ -203,8 +199,8 @@ public class StyleFragment
                 final Preference preference = findPreference(PSK_STYLE_SHOW_DETAILS);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    preference.setSummary(mStyle.getListScreenBookFields()
-                                                .getSummaryText(getContext()));
+                    preference.setSummary(style.getListScreenBookFields()
+                                               .getSummaryText(getContext()));
                 }
                 break;
             }
@@ -213,43 +209,13 @@ public class StyleFragment
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    preference.setSummary(mStyle.getFilters().getSummaryText(getContext(), false));
+                    preference.setSummary(style.getFilters().getSummaryText(getContext(), false));
                 }
                 break;
             }
 
             default:
                 super.updateSummary(key);
-                break;
-        }
-    }
-
-    @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.EDIT_STYLE_GROUPS:
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, "data");
-                    // replace the current style with the edited copy;
-                    // do NOT save to the database yet/here
-                    mStyle = Objects.requireNonNull(
-                            data.getParcelableExtra(BooklistStyle.BKEY_STYLE),
-                            "BKEY_STYLE");
-
-                    mResultData.putResultData(BooklistStyle.BKEY_STYLE_MODIFIED, true);
-                    mResultData.putResultData(BooklistStyle.BKEY_STYLE, mStyle);
-                }
-                break;
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
                 break;
         }
     }

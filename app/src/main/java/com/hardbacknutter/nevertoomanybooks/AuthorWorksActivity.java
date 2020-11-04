@@ -32,13 +32,13 @@ public class AuthorWorksActivity
 
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_main_nav);
+        setContentView(R.layout.activity_main);
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        replaceFragment(R.id.main_fragment, AuthorWorksFragment.class, AuthorWorksFragment.TAG);
+        addFirstFragment(R.id.main_fragment, AuthorWorksFragment.class, AuthorWorksFragment.TAG);
     }
 }

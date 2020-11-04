@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
         extends RecyclerView.Adapter<RadioGroupRecyclerAdapter.Holder> {
 
+    /** Cached inflater. */
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull

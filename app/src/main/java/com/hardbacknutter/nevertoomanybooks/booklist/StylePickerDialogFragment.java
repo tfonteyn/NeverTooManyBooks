@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
@@ -46,9 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBaseFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.EditStyleActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
 
 public class StylePickerDialogFragment
@@ -202,10 +200,9 @@ public class StylePickerDialogFragment
 
         // use the activity so we get the results there.
         final Activity activity = getActivity();
-        final Intent intent = new Intent(activity, SettingsActivity.class)
-                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
+        final Intent intent = new Intent(activity, EditStyleActivity.class)
                 .putExtra(BooklistStyle.BKEY_STYLE, selectedStyle)
-                .putExtra(StyleBaseFragment.BKEY_TEMPLATE_ID, templateId);
+                .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, templateId);
         //noinspection ConstantConditions
         activity.startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }

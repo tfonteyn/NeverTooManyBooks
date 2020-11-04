@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
         extends RecyclerView.Adapter<ChecklistRecyclerAdapter.Holder> {
 
+    /** Cached inflater. */
     @NonNull
     private final LayoutInflater mInflater;
     @NonNull

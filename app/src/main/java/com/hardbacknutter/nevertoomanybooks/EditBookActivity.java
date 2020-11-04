@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
@@ -29,7 +28,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -126,68 +124,17 @@ public class EditBookActivity
     }
 
     @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        // Settings initiated from the navigation panel.
-        if (requestCode == RequestCode.NAV_PANEL_SETTINGS) {
-            if (resultCode == Activity.RESULT_OK && data != null) {
-                // update the search sites list.
-                // ArrayList<Site> sites = data.getParcelableArrayListExtra(
-                //                                      Site.Type.Data.getBundleKey());
-                // if (sites != null) {
-                //     SearchCoordinator model =
-                //             new ViewModelProvider(this).get(SearchCoordinator.class);
-                //     model.setSiteList(sites);
-                // }
-            }
-        }
-
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void onBackPressed() {
 
-        final FragmentManager fm = getSupportFragmentManager();
-        //TODO: this might no longer be needed since we use DialogFragment for authors/series
-        final int backStackEntryCount = fm.getBackStackEntryCount();
-
-        // 1. Check for the current (i.e. in resumed state) fragment having unfinished edits
-        if (backStackEntryCount > 0) {
-            final String tag = fm.getBackStackEntryAt(backStackEntryCount - 1).getName();
-            final Fragment frag = fm.findFragmentByTag(tag);
-            if (frag instanceof DataEditor && frag.isResumed()) {
-                //noinspection unchecked
-                final DataEditor<Book> dataEditor = (DataEditor<Book>) frag;
-                if (dataEditor.hasUnfinishedEdits()) {
-                    StandardDialogs.unsavedEdits(this, null, super::onBackPressed);
-                    return;
-                }
-            }
-        }
-
-        // 2. If we're at the top level, check if the book was changed.
-        if (backStackEntryCount == 0
-            && mBookViewModel.getBook().getStage() == EntityStage.Stage.Dirty) {
-
+        // Warn the user if the book was changed
+        if (mBookViewModel.getBook().getStage() == EntityStage.Stage.Dirty) {
             StandardDialogs.unsavedEdits(this,
                                          () -> prepareSave(true),
                                          this::setResultsAndFinish);
             return;
         }
 
-        // Once here, we have no unfinished edits; and if we're on the top level,
-        // the book data was saved (or never changed)
-        if (backStackEntryCount == 0) {
-            setResultsAndFinish();
-        }
-
-        super.onBackPressed();
+        setResultsAndFinish();
     }
 
     /**
@@ -300,6 +247,7 @@ public class EditBookActivity
         }
     }
 
+    /** Single point of exit for this Activity. */
     void setResultsAndFinish() {
         // The result data will contain the re-position book id.
         setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());

@@ -28,6 +28,8 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
@@ -94,7 +96,10 @@ public class MaintenanceFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.pt_maintenance);
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_settings);
+        actionBar.setSubtitle(R.string.pt_maintenance);
 
         // show the full version + build date
         //noinspection ConstantConditions

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -40,19 +40,20 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ArchiveContainer;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelperDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportManager;
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.OptionsDialogBase;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultDataModel;
 
 public class ImportFragment
         extends Fragment {
@@ -74,17 +75,6 @@ public class ImportFragment
     private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.OpenDocument(),
                                       this::onOpenDocument);
-
-    private final OnBackPressedCallback mOnBackPressedCallback =
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
-                    getActivity().finish();
-                }
-            };
-
     /** Import. */
     private ArchiveImportTask mArchiveImportTask;
     private final FragmentResultListener mImportOptionsListener =
@@ -103,7 +93,17 @@ public class ImportFragment
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** The Activity results. */
-    private ResultDataModel mResultData;
+    private ImportViewModel mImportViewModel;
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mImportViewModel.getResultIntent());
+                    getActivity().finish();
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -129,9 +129,10 @@ public class ImportFragment
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_import);
 
-        mResultData = new ViewModelProvider(this).get(ResultDataModel.class);
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        mImportViewModel = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
 
         mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
         mArchiveImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
@@ -255,11 +256,35 @@ public class ImportFragment
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_error)
                     .setTitle(R.string.error_import_failed)
-                    .setMessage(ImportManager.createErrorReport(getContext(), message.result))
+                    .setMessage(createErrorReport(message.result))
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
         }
+    }
+
+    private String createErrorReport(@Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof InvalidArchiveException) {
+            msg = getString(R.string.error_import_file_not_supported);
+
+        } else if (e instanceof ImportException) {
+            msg = e.getLocalizedMessage();
+
+        } else if (e instanceof IOException) {
+            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
+            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
+            //noinspection ConstantConditions
+            msg = StandardDialogs.createBadError(getContext(), R.string.error_storage_not_readable);
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = getString(R.string.error_unknown_long);
+        }
+
+        return msg;
     }
 
     private void onImportCancelled(@NonNull final FinishedMessage<ImportManager> message) {
@@ -307,10 +332,9 @@ public class ImportFragment
                 .setTitle(titleId)
                 .setMessage(importManager.getResults().createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
-                    mResultData.putResultData(ImportResults.BKEY_IMPORT_RESULTS,
-                                              importManager.getOptions());
+                    mImportViewModel.setImportResults(importManager.getOptions());
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mResultData.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, mImportViewModel.getResultIntent());
                     getActivity().finish();
                 })
                 .create()

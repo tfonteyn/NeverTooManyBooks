@@ -25,6 +25,8 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 
 /**
@@ -48,23 +50,23 @@ public class HostingActivity
 
         switch (tag) {
             case AboutFragment.TAG:
-                replaceFragment(R.id.main_fragment, AboutFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, AboutFragment.class, tag);
                 return;
 
             case EditBookshelvesFragment.TAG:
-                replaceFragment(R.id.main_fragment, EditBookshelvesFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, EditBookshelvesFragment.class, tag);
                 return;
 
             case ImportFragment.TAG:
-                replaceFragment(R.id.main_fragment, ImportFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, ImportFragment.class, tag);
                 return;
 
             case ExportFragment.TAG:
-                replaceFragment(R.id.main_fragment, ExportFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, ExportFragment.class, tag);
                 return;
 
             case GoodreadsAdminFragment.TAG:
-                replaceFragment(R.id.main_fragment, GoodreadsAdminFragment.class, tag);
+                addFirstFragment(R.id.main_fragment, GoodreadsAdminFragment.class, tag);
                 return;
 
             default:
