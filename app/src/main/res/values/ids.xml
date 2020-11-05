@@ -52,4 +52,7 @@
     <!-- generic ids for the Goodreads taskqueue component. -->
     <item name="LEGACY_VIEW_1" type="id" />
     <item name="LEGACY_VIEW_2" type="id" />
+
+    <!-- The 'name' field on the edit-style fragment. -->
+    <item name="STYLE_NAME_VIEW" type="id" />
 </resources>

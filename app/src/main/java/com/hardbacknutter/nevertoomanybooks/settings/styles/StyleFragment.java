@@ -32,6 +32,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
@@ -53,12 +54,12 @@ public class StyleFragment
 
     /** Fragment manager tag. */
     public static final String TAG = "StylePreferenceFragment";
+    private static final String SIS_NAME_SET = TAG + ":nameSet";
 
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_SHOW_DETAILS = "psk_style_show_details";
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_FILTERS = "psk_style_filters";
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -70,11 +71,18 @@ public class StyleFragment
                 }
             };
 
+    /** Flag: prompt for the name of cloned styles. */
+    private boolean mNameSet;
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_style, rootKey);
+
+        if (savedInstanceState != null) {
+            mNameSet = savedInstanceState.getBoolean(SIS_NAME_SET);
+        }
 
         // Cover on LIST screen
         final Preference thumbScale = findPreference(ListScreenBookFields.PK_COVER_SCALE);
@@ -112,10 +120,10 @@ public class StyleFragment
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
         //noinspection ConstantConditions
-        final BooklistStyle style = new BooklistStyle(getContext());
+        final BooklistStyle globalStyle = new BooklistStyle(getContext());
         final Groups styleGroups = mStyleViewModel.getStyle().getGroups();
 
-        for (final BooklistGroup group : BooklistGroup.getAllGroups(getContext(), style)) {
+        for (final BooklistGroup group : BooklistGroup.getAllGroups(getContext(), globalStyle)) {
             group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
         }
 
@@ -124,6 +132,36 @@ public class StyleFragment
         // These keys are never physically present in the SharedPreferences; so handle explicitly.
         updateSummary(PSK_STYLE_SHOW_DETAILS);
         updateSummary(PSK_STYLE_FILTERS);
+
+        // for new (i.e. cloned) styles, auto-popup the name field for the user to change it.
+        if (mStyleViewModel.getStyle().getId() == 0) {
+            //noinspection ConstantConditions
+            findPreference(BooklistStyle.PK_STYLE_NAME).setViewId(R.id.STYLE_NAME_VIEW);
+            // We need this convoluted approach as the view we want to click
+            // will only exist after the RecyclerView has bound it.
+            getListView().addOnChildAttachStateChangeListener(
+                    new RecyclerView.OnChildAttachStateChangeListener() {
+                        @Override
+                        public void onChildViewAttachedToWindow(@NonNull final View view) {
+                            if (view.getId() == R.id.STYLE_NAME_VIEW && !mNameSet) {
+                                // We only do this once. It IS legal to use the same name.
+                                mNameSet = true;
+                                view.performClick();
+                            }
+                        }
+
+                        @Override
+                        public void onChildViewDetachedFromWindow(@NonNull final View view) {
+                        }
+                    });
+        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(SIS_NAME_SET, mNameSet);
     }
 
     @Override
