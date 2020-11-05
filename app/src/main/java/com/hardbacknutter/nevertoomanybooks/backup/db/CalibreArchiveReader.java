@@ -35,7 +35,6 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
@@ -54,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * Copies the standard fields (book, author, publisher, series).
+ * <p>
  * Supports custom columns:
  * <ul>
  *     <li>read (boolean)</li>
@@ -168,7 +168,7 @@ class CalibreArchiveReader
             throws InvalidArchiveException {
         // Older versions might work, but no testing was done so we reject them.
         if (mCalibreDb.getVersion() < 23) {
-            throw new InvalidArchiveException(ArchiveContainer.IMPORT_NOT_SUPPORTED);
+            throw new InvalidArchiveException(ImportHelper.IMPORT_NOT_SUPPORTED);
         }
     }
 

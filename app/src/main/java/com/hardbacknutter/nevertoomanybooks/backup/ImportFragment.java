@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -65,13 +66,19 @@ public class ImportFragment
     private static final String RK_IMPORT_OPTIONS = TAG + ":rk:" + ImportOptionsDialogFragment.TAG;
     /**
      * The mime types accepted for importing files.
+     * This is the list how it SHOULD be set...
+     * {"application/zip",
+     * "application/x-tar",
+     * "text/csv",
+     * "application/x-sqlite3"};
      * <p>
-     * These do not allow multiple saved files like "foo.zip (1)", "foo.zip (2)"
+     * As it turns out the mime types are not an Android feature, but support for them
+     * is specific to whatever application is responding to {@link Intent#ACTION_OPEN_DOCUMENT}
+     * which in practice is extremely limited.
+     * e.g. "text/*" does not even allow csv files in the standard Files app.
+     * So we have no choice but to accept simply all files and deal with invalid ones later.
      */
-    private static final String[] MIME_TYPES = {"application/zip",
-                                                "application/x-tar",
-                                                "text/csv",
-                                                "application/x-sqlite3"};
+    private static final String[] MIME_TYPES = {"*/*"};
 
     /**
      * The ViewModel and the {@link #mArchiveImportTask} could be folded into one object,

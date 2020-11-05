@@ -21,8 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,7 +29,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -48,21 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
-public class ExportHelper
-        implements Parcelable {
-
-    /** {@link Parcelable}. */
-    public static final Creator<ExportHelper> CREATOR = new Creator<ExportHelper>() {
-        @Override
-        public ExportHelper createFromParcel(@NonNull final Parcel source) {
-            return new ExportHelper(source);
-        }
-
-        @Override
-        public ExportHelper[] newArray(final int size) {
-            return new ExportHelper[size];
-        }
-    };
+public class ExportHelper {
 
     /**
      * all defined flags.
@@ -101,23 +84,6 @@ public class ExportHelper
      */
     public ExportHelper(@Options.Bits final int options) {
         mOptions = options;
-    }
-
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private ExportHelper(@NonNull final Parcel in) {
-        mOptions = in.readInt();
-        final long epochMilli = in.readLong();
-        if (epochMilli != 0) {
-            // parcel from the epoch
-            mFromUtcDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMilli),
-                                                       ZoneOffset.UTC);
-        }
-        mUri = in.readParcelable(getClass().getClassLoader());
-        mResults = in.readParcelable(getClass().getClassLoader());
     }
 
     /** Called from the dialog via its View listeners. */
@@ -343,26 +309,6 @@ public class ExportHelper
      */
     public boolean hasEntityOption() {
         return (mOptions & Options.ENTITIES) != 0;
-    }
-
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(mOptions);
-        if (mFromUtcDateTime != null) {
-            // parcel to the epoch
-            dest.writeLong(mFromUtcDateTime.toInstant(ZoneOffset.UTC).toEpochMilli());
-        } else {
-            dest.writeLong(0);
-        }
-        dest.writeParcelable(mUri, flags);
-        dest.writeParcelable(mResults, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @Override

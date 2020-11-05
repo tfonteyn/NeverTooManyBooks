@@ -21,37 +21,27 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
-public class ImportHelper
-        implements Parcelable {
+public class ImportHelper {
 
-    /** {@link Parcelable}. */
-    public static final Creator<ImportHelper> CREATOR = new Creator<ImportHelper>() {
-        @Override
-        public ImportHelper createFromParcel(@NonNull final Parcel source) {
-            return new ImportHelper(source);
-        }
-
-        @Override
-        public ImportHelper[] newArray(final int size) {
-            return new ImportHelper[size];
-        }
-    };
+    public static final String IMPORT_NOT_SUPPORTED = "Type not supported here";
 
     /**
      * all defined flags.
@@ -82,17 +72,6 @@ public class ImportHelper
         mUri = uri;
     }
 
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private ImportHelper(@NonNull final Parcel in) {
-        mOptions = in.readInt();
-        //noinspection ConstantConditions
-        mUri = in.readParcelable(getClass().getClassLoader());
-        mResults = in.readParcelable(getClass().getClassLoader());
-    }
 
 
     /**
@@ -118,7 +97,6 @@ public class ImportHelper
         }
     }
 
-
     /**
      * Get the Uri for the user location to read from.
      *
@@ -139,10 +117,78 @@ public class ImportHelper
     @NonNull
     public ArchiveContainer getContainer(@NonNull final Context context) {
         if (mArchiveContainer == null) {
-            mArchiveContainer = ArchiveContainer.create(context, mUri);
+            mArchiveContainer = getContainer(context, mUri);
         }
         return mArchiveContainer;
     }
+
+    /**
+     * Guess/Create an {@link ArchiveContainer} based on the type of the input Uri.
+     *
+     * @param context Current context
+     * @param uri     to read
+     *
+     * @return ArchiveContainer
+     */
+    private ArchiveContainer getContainer(@NonNull final Context context,
+                                          @NonNull final Uri uri) {
+
+        try (InputStream is = context.getContentResolver().openInputStream(uri)) {
+            if (is != null) {
+                // read the "magic bytes": https://en.wikipedia.org/wiki/List_of_file_signatures
+                final byte[] b = new byte[0x200];
+                final int len = is.read(b);
+
+                // zip file, offset 0, "PK{3}{4}"
+                if (len > 4
+                    && b[0] == 0x50 && b[1] == 0x4B && b[2] == 0x03 && b[3] == 0x04) {
+                    return ArchiveContainer.Zip;
+                }
+
+                // xml file, offset 0, the string "<?xml "
+                if (len > 5
+                    && b[0] == 0x3c && b[1] == 0x3f && b[2] == 0x78 && b[3] == 0x6d
+                    && b[4] == 0x6c && b[5] == 0x20) {
+                    return ArchiveContainer.Xml;
+                }
+
+                // tar file: offset 0x101, the string "ustar"
+                if (len > 0x110
+                    && b[0x101] == 0x75 && b[0x102] == 0x73 && b[0x103] == 0x74
+                    && b[0x104] == 0x61 && b[0x105] == 0x72) {
+                    return ArchiveContainer.Tar;
+                }
+
+                // sqlite v3, offset 0, 53 51 4c 69 74 65 20 66 6f 72 6d 61 74 20 33 00
+                // the string "SQLite format 3"
+                if (len > 16
+                    && b[0] == 0x53 && b[1] == 0x51 && b[2] == 0x4c && b[3] == 0x69
+                    && b[4] == 0x74 && b[5] == 0x65 && b[6] == 0x20 && b[7] == 0x66
+                    && b[8] == 0x6f && b[9] == 0x72 && b[10] == 0x6d && b[11] == 0x61
+                    && b[12] == 0x74 && b[13] == 0x20 && b[14] == 0x33 && b[15] == 0x00) {
+                    return ArchiveContainer.SqLiteDb;
+                }
+            }
+        } catch (@NonNull final IOException ignore) {
+            // ignore
+        }
+
+        // If the magic bytes check did not work out,
+        // we check for it being a CSV by looking at the extension.
+        // Allow some name variations:"file.csv", "file.csv (1)" etc
+        final Pair<String, Long> uriInfo = FileUtils.getUriInfo(context, uri);
+        if (uriInfo != null && uriInfo.first != null) {
+            final Pattern csvFilePattern =
+                    Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
+                                    Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+            if (csvFilePattern.matcher(uriInfo.first).find()) {
+                return ArchiveContainer.CsvBooks;
+            }
+        }
+        // give up.
+        return ArchiveContainer.Unknown;
+    }
+
 
     // TODO: split this up into one check for each entity we could import.
     public boolean isBooksOnlyContainer(@NonNull final Context context) {
@@ -234,7 +280,7 @@ public class ImportHelper
             case Xml:
             case Unknown:
             default:
-                throw new InvalidArchiveException(ArchiveContainer.IMPORT_NOT_SUPPORTED);
+                throw new InvalidArchiveException(IMPORT_NOT_SUPPORTED);
         }
 
         reader.validate(context);
@@ -266,7 +312,6 @@ public class ImportHelper
         }
     }
 
-
     public boolean isOptionSet(@Options.Bits final int optionBit) {
         return (mOptions & optionBit) != 0;
     }
@@ -293,20 +338,6 @@ public class ImportHelper
      */
     public boolean hasEntityOption() {
         return (mOptions & Options.ENTITIES) != 0;
-    }
-
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(mOptions);
-        dest.writeParcelable(mUri, flags);
-        dest.writeParcelable(mResults, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
     }
 
     @Override
