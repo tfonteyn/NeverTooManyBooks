@@ -56,7 +56,7 @@
 
     <!-- debug user visible strings, not normally seen; here to please lint. -->
     <string name="debug" translatable="false">Debug</string>
-    <string name="debug_dump_prefs" translatable="false">Dump prefs to log</string>
+    <string name="debug_dump_prefs" translatable="false">Copy preferences to the log</string>
 
     <string name="debug_sq_shell" translatable="false">SQLite Shell</string>
     <string name="debug_sq_shell_run" translatable="false">Run</string>

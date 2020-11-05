@@ -35,9 +35,11 @@
         android:orientation="vertical"
         >
 
+        <!-- 52dp to make the text align with the button texts -->
         <TextView
             style="@style/Text.Header"
             android:layout_marginTop="@dimen/border2"
+            android:layout_marginStart="52dp"
             android:text="@string/pt_maintenance"
             />
 
@@ -79,6 +81,7 @@
         <TextView
             android:id="@+id/btn_debug"
             style="@style/Text.Header"
+            android:layout_marginStart="52dp"
             android:text="@string/debug"
             />
 
@@ -86,7 +89,7 @@
             android:id="@+id/btn_debug_send_mail"
             style="@style/MenuButton"
             android:text="@string/lbl_send_debug"
-            app:icon="@drawable/ic_send"
+            app:icon="@drawable/ic_baseline_bug_report"
             />
 
         <Button

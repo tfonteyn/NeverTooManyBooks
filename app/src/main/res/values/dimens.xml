@@ -141,9 +141,10 @@
 
     <!-- The width of an on-screen menu button.
           Intended to be 'almost' as wide as a phone screen in portrait mode.
-          Should be overridden in bigger-screen dimen.xml files.
+          The 296 value is based on 4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
+          Should/can be overridden in bigger-screen dimen.xml files.
     -->
-    <dimen name="large_menu_button">320dp</dimen>
+    <dimen name="large_menu_button">296dp</dimen>
 
     <!-- the width for a Button displaying an icon (24dp) and no text. -->
     <dimen name="icon_button_width">48dp</dimen>
