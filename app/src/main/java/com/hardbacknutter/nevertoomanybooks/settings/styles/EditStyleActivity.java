@@ -47,7 +47,7 @@ public class EditStyleActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        addFirstFragment(R.id.main_fragment, EditStyleFragment.class, EditStyleFragment.TAG);
+        addFirstFragment(R.id.main_fragment, StyleFragment.class, StyleFragment.TAG);
     }
 
     @Override

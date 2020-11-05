@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
  * Passing in a style with a valid UUID, settings are read/written to the style specific file.
  * If the uuid is {@code null}, then we're editing the global defaults.
  */
-public class EditStyleFragment
+public class StyleFragment
         extends StyleBaseFragment {
 
     /** Fragment manager tag. */
