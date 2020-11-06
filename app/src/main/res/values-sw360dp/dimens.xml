@@ -20,9 +20,10 @@
   -->
 
 <!--
-    Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
-    port: w411dp h659dp
-    land: w683dp h387dp
+    Samsung A5-2017 - 5.2" (1080 x 1920) - 480dpi - sw360dp
+    port:  w360dp h616dp
+    land:  w640dp h336dp
 -->
 <resources>
+    <dimen name="fixed_screen_width">360dp</dimen>
 </resources>

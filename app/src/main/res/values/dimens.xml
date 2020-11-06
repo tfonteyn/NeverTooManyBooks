@@ -120,6 +120,24 @@
         <item>1.22</item>
     </array>
 
+
+    <!-- Some screens are set to a fixed
+            android:layout_width="fixed_screen_width"
+         based on the minimum screen size supported
+         4WVGA 4.0" (480 x 800) - 240dpi - sw320dp -->
+    <dimen name="fixed_screen_width">320dp</dimen>
+
+    <!-- The width of an on-screen menu button.
+         Intended to be 'almost' as wide as a phone screen in portrait mode.
+         The 296 value is based on 4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
+         Should/can be overridden in bigger-screen dimen.xml files.
+    -->
+    <dimen name="large_menu_button">296dp</dimen>
+
+    <!-- specific fixed-width fields. -->
+    <dimen name="field_external_id_width">280dp</dimen>
+
+
     <!-- elevation for a progress bar. -->
     <dimen name="progress_z">10dp</dimen>
 
@@ -139,19 +157,11 @@
     <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
     <dimen name="indent_radio_button">16dp</dimen>
 
-    <!-- The width of an on-screen menu button.
-          Intended to be 'almost' as wide as a phone screen in portrait mode.
-          The 296 value is based on 4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
-          Should/can be overridden in bigger-screen dimen.xml files.
-    -->
-    <dimen name="large_menu_button">296dp</dimen>
-
     <!-- the width for a Button displaying an icon (24dp) and no text. -->
     <dimen name="icon_button_width">48dp</dimen>
 
     <!-- generic drawable padding. -->
     <dimen name="drawable_padding1">4dp</dimen>
-
 
     <!-- Margin applied around all TextInputLayout fields. -->
     <dimen name="envelope_edit_text_margin">2dp</dimen>
@@ -161,9 +171,6 @@
     <dimen name="field_margin_large">16dp</dimen>
     <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->
     <dimen name="field_margin_inline">12dp</dimen>
-
-    <!-- specific fixed-width fields. -->
-    <dimen name="field_external_id_width">280dp</dimen>
 
     <!-- Material medium text size. -->
     <dimen name="editText_isbn_textSize">18sp</dimen>

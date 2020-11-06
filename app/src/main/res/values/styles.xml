@@ -276,7 +276,6 @@
         <item name="android:digits">1234567890xX</item>
         <!-- the inputType is IGNORED when the field is a {@link EditIsbn} -->
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
-        <!-- On bigger screens, we increase the text size: See the "w340dp-h330dp" dimens.xml -->
         <item name="android:textSize">@dimen/editText_isbn_textSize</item>
     </style>
 
