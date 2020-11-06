@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -221,7 +222,7 @@ public class IsfdbSearchEngine
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
+    @Keep
     public IsfdbSearchEngine(@NonNull final Context appContext,
                              final int engineId) {
         super(appContext, engineId, IsfdbSearchEngine.CHARSET_DECODE_PAGE);

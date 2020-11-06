@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -89,7 +90,7 @@ public class KbNlSearchEngine
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
+    @Keep
     public KbNlSearchEngine(@NonNull final Context appContext,
                             final int engineId) {
         super(appContext, engineId);

@@ -23,6 +23,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -37,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 /**
  * Used/defined in xml/preferences.xml
  */
+@Keep
 public class FieldVisibilityPreferenceFragment
         extends BasePreferenceFragment {
 

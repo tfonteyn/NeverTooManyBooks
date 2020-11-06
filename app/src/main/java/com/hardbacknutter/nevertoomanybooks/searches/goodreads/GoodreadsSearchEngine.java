@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -79,7 +80,7 @@ public class GoodreadsSearchEngine
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
+    @Keep
     public GoodreadsSearchEngine(@NonNull final Context appContext,
                                  final int engineId) {
         super(appContext, engineId);

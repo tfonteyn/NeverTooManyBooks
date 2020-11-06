@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
@@ -75,7 +76,7 @@ public class GoogleBooksSearchEngine
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
+    @Keep
     public GoogleBooksSearchEngine(@NonNull final Context appContext,
                                    final int engineId) {
         super(appContext, engineId);

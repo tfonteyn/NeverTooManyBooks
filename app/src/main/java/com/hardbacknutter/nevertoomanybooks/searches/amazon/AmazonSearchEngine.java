@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.IntRange;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -143,7 +144,7 @@ public class AmazonSearchEngine
      *
      * @param appContext Application context
      */
-    @SuppressWarnings("WeakerAccess")
+    @Keep
     public AmazonSearchEngine(@NonNull final Context appContext,
                               final int engineId) {
         super(appContext, engineId);

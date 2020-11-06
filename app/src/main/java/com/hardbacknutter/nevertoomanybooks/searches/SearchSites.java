@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *     <li>Implement {@link SearchEngine} to create the new engine class
  *          extending {@link SearchEngineBase} or {@link JsoupSearchEngineBase}
  *          or a similar setup.<br>
+ *          Don't forget the "@Keep" annotation on the required constructor.<br>
  *          Configure the engine using {@link SearchEngineRegistry.Config}.
  *      </li>
  *

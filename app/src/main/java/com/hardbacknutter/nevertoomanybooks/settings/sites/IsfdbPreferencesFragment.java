@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
 import android.os.Bundle;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +29,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
+@Keep
 public class IsfdbPreferencesFragment
         extends BasePreferenceFragment {
 

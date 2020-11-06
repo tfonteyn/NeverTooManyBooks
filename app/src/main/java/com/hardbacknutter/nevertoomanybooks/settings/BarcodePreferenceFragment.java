@@ -24,6 +24,7 @@ import android.hardware.camera2.CameraMetadata;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 /**
  * Used/defined in xml/preferences.xml
  */
+@Keep
 public class BarcodePreferenceFragment
         extends BasePreferenceFragment {
 

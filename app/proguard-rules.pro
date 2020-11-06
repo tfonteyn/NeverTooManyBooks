@@ -20,12 +20,14 @@
 -renamesourcefileattribute SourceFile
 
 
-# Implementation of Interface
+# The below and more is now done with the "@Keep" annotation.
+# Keeping for reference for now.
+
+# fragments only referenced from xml and started by
 # androidx.preference.PreferenceFragmentCompat.OnPreferenceStartFragmentCallback
-# was getting removed.
--keep public class * extends androidx.preference.PreferenceFragmentCompat
+#-keep public class * extends androidx.preference.PreferenceFragmentCompat
 
 # SearchEngine constructors are called using reflection
--keepclassmembers public class * extends com.hardbacknutter.nevertoomanybooks.searches.SearchEngine {
-   public <init>(...);
-   }
+#-keepclassmembers public class * extends com.hardbacknutter.nevertoomanybooks.searches.SearchEngine {
+#   public <init>(...);
+#   }

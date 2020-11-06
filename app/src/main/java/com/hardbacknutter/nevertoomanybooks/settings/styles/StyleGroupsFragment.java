@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
@@ -53,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
  * Note this is NOT extending BasePreferenceFragment, so we must handle the base
  * functionality (e.g. StyleViewModel) ourselves.
  */
+@Keep
 public class StyleGroupsFragment
         extends Fragment {
 

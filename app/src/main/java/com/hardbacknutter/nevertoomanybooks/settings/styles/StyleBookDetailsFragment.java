@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.settings.styles;
 import android.os.Bundle;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -29,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 /**
  * Used/defined in xml/preferences_styles.xml
  */
+@Keep
 public class StyleBookDetailsFragment
         extends StyleBaseFragment {
 

@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.os.Bundle;
 
+import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,6 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 /**
  * Used/defined in xml/preferences.xml
  */
+@Keep
 public class SearchInternetPreferenceFragment
         extends BasePreferenceFragment {
 
