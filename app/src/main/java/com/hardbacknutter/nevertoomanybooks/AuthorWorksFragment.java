@@ -91,14 +91,15 @@ public class AuthorWorksFragment
     /** FragmentResultListener request key. */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** The Fragment ViewModel. */
-    private AuthorWorksModel mModel;
+    private AuthorWorksModel mAuthorWorksModel;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mModel.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK,
+                                            mAuthorWorksModel.getResultIntent());
                     getActivity().finish();
                 }
             };
@@ -142,14 +143,15 @@ public class AuthorWorksFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mModel = new ViewModelProvider(this).get(AuthorWorksModel.class);
+        mAuthorWorksModel = new ViewModelProvider(this).get(AuthorWorksModel.class);
         //noinspection ConstantConditions
-        mModel.init(context, requireArguments());
+        mAuthorWorksModel.init(context, requireArguments());
 
+        //noinspection ConstantConditions
         mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
-        mActionBar.setTitle(mModel.getScreenTitle(context));
-        mActionBar.setSubtitle(mModel.getScreenSubtitle());
+        mActionBar.setTitle(mAuthorWorksModel.getScreenTitle(context));
+        mActionBar.setSubtitle(mAuthorWorksModel.getScreenSubtitle());
 
         mVb.authorWorks.setHasFixedSize(true);
         mVb.authorWorks
@@ -178,9 +180,9 @@ public class AuthorWorksFragment
         final MenuItem all = menu.findItem(R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES);
         // show if we got here with a specific bookshelf selected.
         // hide if the that bookshelf was set to Bookshelf.ALL_BOOKS.
-        all.setVisible(mModel.getBookshelfId() != Bookshelf.ALL_BOOKS);
+        all.setVisible(mAuthorWorksModel.getBookshelfId() != Bookshelf.ALL_BOOKS);
 
-        all.setChecked(mModel.isAllBookshelves());
+        all.setChecked(mAuthorWorksModel.isAllBookshelves());
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -191,31 +193,31 @@ public class AuthorWorksFragment
 
         if (itemId == R.id.MENU_AUTHOR_WORKS_ALL) {
             item.setChecked(true);
-            mModel.reloadWorkList(true, true);
+            mAuthorWorksModel.reloadWorkList(true, true);
             mAdapter.notifyDataSetChanged();
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_WORKS_TOC) {
             item.setChecked(true);
-            mModel.reloadWorkList(true, false);
+            mAuthorWorksModel.reloadWorkList(true, false);
             mAdapter.notifyDataSetChanged();
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_WORKS_BOOKS) {
             item.setChecked(true);
-            mModel.reloadWorkList(false, true);
+            mAuthorWorksModel.reloadWorkList(false, true);
             mAdapter.notifyDataSetChanged();
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_WORKS_ALL_BOOKSHELVES) {
             final boolean checked = !item.isChecked();
             item.setChecked(checked);
-            mModel.setAllBookshelves(checked);
-            mModel.reloadWorkList();
+            mAuthorWorksModel.setAllBookshelves(checked);
+            mAuthorWorksModel.reloadWorkList();
             mAdapter.notifyDataSetChanged();
             //noinspection ConstantConditions
-            mActionBar.setTitle(mModel.getScreenTitle(getContext()));
-            mActionBar.setSubtitle(mModel.getScreenSubtitle());
+            mActionBar.setTitle(mAuthorWorksModel.getScreenTitle(getContext()));
+            mActionBar.setSubtitle(mAuthorWorksModel.getScreenSubtitle());
             return true;
         }
 
@@ -229,7 +231,7 @@ public class AuthorWorksFragment
      */
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
-        final AuthorWork item = mModel.getWorks().get(position);
+        final AuthorWork item = mAuthorWorksModel.getWorks().get(position);
         //noinspection ConstantConditions
         final String title = item.getLabel(getContext());
 
@@ -263,7 +265,7 @@ public class AuthorWorksFragment
      */
     private boolean onContextItemSelected(@IdRes final int menuItem,
                                           final int position) {
-        final AuthorWork work = mModel.getWorks().get(position);
+        final AuthorWork work = mAuthorWorksModel.getWorks().get(position);
 
         if (menuItem == R.id.MENU_DELETE) {
             deleteWork(position, work);
@@ -279,7 +281,7 @@ public class AuthorWorksFragment
             StandardDialogs.deleteTocEntry(
                     getContext(), work.getLabel(getContext()),
                     work.getPrimaryAuthor(), () -> {
-                        mModel.delete(getContext(), work);
+                        mAuthorWorksModel.delete(getContext(), work);
                         mAdapter.notifyItemRemoved(position);
                     });
 
@@ -288,7 +290,7 @@ public class AuthorWorksFragment
             StandardDialogs.deleteBook(
                     getContext(), work.getLabel(getContext()),
                     Collections.singletonList(work.getPrimaryAuthor()), () -> {
-                        mModel.delete(getContext(), work);
+                        mAuthorWorksModel.delete(getContext(), work);
                         mAdapter.notifyItemRemoved(position);
                     });
         } else {
@@ -302,11 +304,11 @@ public class AuthorWorksFragment
      * @param position in the list
      */
     private void gotoBook(final int position) {
-        final AuthorWork work = mModel.getWorks().get(position);
+        final AuthorWork work = mAuthorWorksModel.getWorks().get(position);
 
         if (work instanceof TocEntry) {
             final TocEntry tocEntry = (TocEntry) work;
-            final ArrayList<Long> bookIdList = mModel.getBookIds(tocEntry);
+            final ArrayList<Long> bookIdList = mAuthorWorksModel.getBookIds(tocEntry);
             if (bookIdList.size() == 1) {
                 // open new activity to show the book, 'back' will return to this one.
                 final Intent intent = new Intent(getContext(), BookDetailsActivity.class)
@@ -323,7 +325,7 @@ public class AuthorWorksFragment
                         .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
                                   Booklist.PREF_REBUILD_EXPANDED);
 
-                if (mModel.isAllBookshelves()) {
+                if (mAuthorWorksModel.isAllBookshelves()) {
                     intent.putExtra(BooksOnBookshelfModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);
                 }
 
@@ -427,7 +429,7 @@ public class AuthorWorksFragment
                                      final int position) {
             final Context context = getContext();
 
-            final AuthorWork work = mModel.getWorks().get(position);
+            final AuthorWork work = mAuthorWorksModel.getWorks().get(position);
             //noinspection ConstantConditions
             holder.titleView.setText(work.getLabel(context));
 
@@ -463,19 +465,19 @@ public class AuthorWorksFragment
 
         @Override
         public int getItemViewType(final int position) {
-            return mModel.getWorks().get(position).getType();
+            return mAuthorWorksModel.getWorks().get(position).getType();
         }
 
         @Override
         public int getItemCount() {
-            return mModel.getWorks().size();
+            return mAuthorWorksModel.getWorks().size();
         }
 
         @NonNull
         @Override
         public String[] getPopupText(final int position) {
-            final String title = mModel.getWorks().get(position)
-                                       .getLabel(mInflater.getContext());
+            final String title = mAuthorWorksModel.getWorks().get(position)
+                                                  .getLabel(mInflater.getContext());
             return new String[]{title};
         }
     }
