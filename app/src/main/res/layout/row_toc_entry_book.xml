@@ -39,6 +39,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@sample/data.json/book/title"
+        tools:ignore="UseCompatTextViewDrawableXml"
         />
 
     <TextView
