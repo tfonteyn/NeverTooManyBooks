@@ -19,7 +19,15 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
+<!--
+    Screens 'just' larger than this.
+    Pixel2 - 5.0" (1080 x 1920) - 420dpi - sw411dp
+    port: w411dp h659dp
+    land: w683dp h387dp
+-->
 <resources>
+    <dimen name="fixed_screen_width">420dp</dimen>
+
     <!-- Material large text size is 22sp. -->
     <dimen name="editText_isbn_textSize">22sp</dimen>
 </resources>
