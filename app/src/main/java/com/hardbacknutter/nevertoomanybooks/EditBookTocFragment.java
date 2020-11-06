@@ -641,7 +641,8 @@ public class EditBookTocFragment
             super.onCreate(savedInstanceState);
 
             final Bundle args = requireArguments();
-            mRequestKey = args.getString(BKEY_REQUEST_KEY);
+            mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                                 "BKEY_REQUEST_KEY");
             mTocEntries = Objects.requireNonNull(args.getParcelableArrayList(Book.BKEY_TOC_LIST),
                                                  "BKEY_TOC_LIST");
 

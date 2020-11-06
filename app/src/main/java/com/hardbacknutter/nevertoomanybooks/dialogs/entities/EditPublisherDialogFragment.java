@@ -102,7 +102,8 @@ public class EditPublisherDialogFragment
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mPublisher = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_PUBLISHER),
                                             "KEY_FK_PUBLISHER");
 

@@ -140,7 +140,8 @@ public class CoverBrowserDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
 
         final Resources res = getResources();
         mPreviewMaxWidth = res.getDimensionPixelSize(R.dimen.cover_browser_preview_width);

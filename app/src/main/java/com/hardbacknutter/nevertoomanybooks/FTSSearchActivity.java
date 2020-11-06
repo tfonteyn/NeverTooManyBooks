@@ -74,14 +74,19 @@ public class FTSSearchActivity
     /** Database Access. */
     private DAO mDb;
     /** User entered search text. */
+    @Nullable
     private String mAuthorSearchText;
     /** User entered search text. */
+    @Nullable
     private String mTitleSearchText;
     /** User entered search text. */
+    @Nullable
     private String mSeriesTitleSearchText;
     /** User entered search text. */
+    @Nullable
     private String mPublisherNameSearchText;
     /** User entered search text. */
+    @Nullable
     private String mKeywordsSearchText;
     /** Indicates user has changed something since the last search. */
     private boolean mSearchIsDirty;

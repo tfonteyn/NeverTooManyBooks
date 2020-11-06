@@ -32,6 +32,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
@@ -62,6 +63,7 @@ public class GrSearchTask
     private String mIsbnText;
     private String mAuthorText;
     private String mTitleText;
+    @Nullable
     private String mSearchText;
 
     /** Observable. */
@@ -152,6 +154,7 @@ public class GrSearchTask
     protected List<GoodreadsWork> doWork(@NonNull final Context context)
             throws Http404Exception, CredentialsException, IOException {
         Thread.currentThread().setName(TAG);
+        Objects.requireNonNull(mSearchText, "mSearchText");
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         final SearchWorksApiHandler searchApi = new SearchWorksApiHandler(context, grAuth);

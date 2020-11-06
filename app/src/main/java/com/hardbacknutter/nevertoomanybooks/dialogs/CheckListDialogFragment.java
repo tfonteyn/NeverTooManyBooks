@@ -106,7 +106,8 @@ public class CheckListDialogFragment
         super.onCreate(savedInstanceState);
 
         Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
                                       getString(R.string.action_edit));
         mFieldId = args.getInt(BKEY_FIELD_ID);

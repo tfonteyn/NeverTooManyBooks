@@ -120,6 +120,7 @@ public class PartialDate
         mYearSet = in.readByte() != 0;
         mMonthSet = in.readByte() != 0;
         mDaySet = in.readByte() != 0;
+        //noinspection ConstantConditions
         mLocalDate = (LocalDate) in.readSerializable();
     }
 

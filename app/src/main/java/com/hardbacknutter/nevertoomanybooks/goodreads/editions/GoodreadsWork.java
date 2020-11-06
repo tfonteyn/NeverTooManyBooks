@@ -215,7 +215,7 @@ public class GoodreadsWork {
      * Called in UI thread by background task when it has finished.
      */
     @UiThread
-    private void onGetImageTaskFinished(@NonNull final byte[] bytes) {
+    private void onGetImageTaskFinished(@Nullable final byte[] bytes) {
         mImageBytes = bytes;
         if (mImageView != null) {
             final ImageView imageView = mImageView.get();
@@ -224,7 +224,7 @@ public class GoodreadsWork {
                 synchronized (imageView) {
                     // Make sure our view is still associated with us
                     if (this.equals(imageView.getTag(R.id.TAG_GR_WORK))) {
-                        if (mImageBytes.length != 0) {
+                        if (mImageBytes != null && mImageBytes.length != 0) {
                             final Bitmap bitmap = BitmapFactory
                                     .decodeByteArray(mImageBytes, 0, mImageBytes.length,
                                                      new BitmapFactory.Options());
@@ -279,6 +279,7 @@ public class GoodreadsWork {
          */
         @Override
         @WorkerThread
+        @Nullable
         protected byte[] doInBackground(@Nullable final Void... voids) {
             Thread.currentThread().setName(TAG);
             final Context context = App.getTaskContext();
@@ -291,7 +292,7 @@ public class GoodreadsWork {
          */
         @Override
         @UiThread
-        protected void onPostExecute(final byte[] result) {
+        protected void onPostExecute(@Nullable final byte[] result) {
             mWork.onGetImageTaskFinished(result);
         }
     }

@@ -45,6 +45,7 @@ abstract class KbNlHandlerBase
     private boolean inData;
     private boolean inLine;
     private boolean inText;
+    @Nullable
     private String mCurrentLabel;
 
     protected abstract void processEntry(@NonNull String currentLabel,

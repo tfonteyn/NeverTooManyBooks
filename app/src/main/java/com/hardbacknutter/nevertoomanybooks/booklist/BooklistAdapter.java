@@ -1389,6 +1389,7 @@ public class BooklistAdapter
          * @param columnKey Column name to use for the boolean status
          * @param icon      to use for the checkable column
          */
+        @SuppressLint("UseCompatLoadingForDrawables")
         CheckableStringHolder(@NonNull final BooklistAdapter adapter,
                               @NonNull final View itemView,
                               @NonNull final BooklistGroup group,

@@ -106,7 +106,8 @@ public class StylePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mCurrentStyleUuid = Objects.requireNonNull(args.getString(BooklistStyle.BKEY_STYLE_UUID),
                                                    "BKEY_STYLE_UUID");
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);

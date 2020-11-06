@@ -35,6 +35,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
@@ -57,6 +58,7 @@ final class PopupStyles {
     @AttrRes
     private static final int TEXT_COLOR = R.attr.colorOnPrimary;
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     static final Consumer<TextView> MD = popupView -> {
         final Resources res = popupView.getResources();
         final int minimumSize = res.getDimensionPixelSize(R.dimen.afs_popup_min_size);
@@ -103,6 +105,7 @@ final class PopupStyles {
                               res.getDimensionPixelSize(R.dimen.afs_md2_popup_text_size));
     };
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     static final Consumer<TextView> CLASSIC = popupView -> {
         final Resources res = popupView.getResources();
         final int minimumSize = res.getDimensionPixelSize(R.dimen.afs_popup_min_size);

@@ -72,6 +72,7 @@ public class ExtGroup
     private OnClickListener mOnClickListener;
     @Nullable
     private OnLongClickListener mOnLongClickListener;
+    @Nullable
     private Object mTag;
     private SparseArray<Object> mKeyedTags;
 

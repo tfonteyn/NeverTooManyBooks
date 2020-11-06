@@ -45,6 +45,7 @@ import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -176,7 +177,8 @@ public class PartialDatePickerDialogFragment
         super.onCreate(savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE);
         mFieldId = args.getInt(BKEY_FIELD_ID);
 

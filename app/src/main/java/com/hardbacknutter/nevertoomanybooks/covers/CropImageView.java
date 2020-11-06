@@ -96,6 +96,7 @@ public class CropImageView
     private final float[] mMatrixValues = new float[9];
 
     /** The bitmap currently being displayed. */
+    @Nullable
     private Bitmap mBitmap;
 
     private int mLeft;
@@ -186,7 +187,7 @@ public class CropImageView
      */
     @Nullable
     public Bitmap getCroppedBitmap() {
-        if (mHighlightView == null) {
+        if (mHighlightView == null || mBitmap == null) {
             return null;
         }
 

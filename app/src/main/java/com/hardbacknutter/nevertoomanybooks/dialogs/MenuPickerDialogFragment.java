@@ -151,7 +151,8 @@ public class MenuPickerDialogFragment
         super.onViewCreated(view, savedInstanceState);
 
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mPosition = args.getInt(BKEY_POSITION);
 
         final Iterable<Pick> menu = args.getParcelableArrayList(BKEY_MENU);

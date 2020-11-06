@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.xml.sax.helpers.DefaultHandler;
@@ -134,11 +135,11 @@ public abstract class ShowBookApiHandler
      * Generic handlers.
      */
     private final Consumer<ElementContext> mHandleText = ec -> {
-        final String name = (String) ec.getUserArg();
+        final String name = Objects.requireNonNull((String) ec.getUserArg());
         mBookData.putString(name, ec.getBody());
     };
     private final Consumer<ElementContext> mHandleLong = ec -> {
-        final String name = (String) ec.getUserArg();
+        final String name = Objects.requireNonNull((String) ec.getUserArg());
         try {
             long l = Long.parseLong(ec.getBody());
             mBookData.putLong(name, l);
@@ -147,7 +148,7 @@ public abstract class ShowBookApiHandler
         }
     };
     private final Consumer<ElementContext> mHandleDouble = ec -> {
-        final String name = (String) ec.getUserArg();
+        final String name = Objects.requireNonNull((String) ec.getUserArg());
         try {
             double d = ParseUtils.parseDouble(ec.getBody(), GoodreadsManager.SITE_LOCALE);
             mBookData.putDouble(name, d);
@@ -156,7 +157,7 @@ public abstract class ShowBookApiHandler
         }
     };
     private final Consumer<ElementContext> mHandleBoolean = ec -> {
-        final String name = (String) ec.getUserArg();
+        final String name = Objects.requireNonNull((String) ec.getUserArg());
         try {
             final boolean b = ParseUtils.parseBoolean(ec.getBody(), true);
             mBookData.putBoolean(name, b);

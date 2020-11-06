@@ -100,7 +100,8 @@ public class EditBookshelfDialogFragment
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mBookshelf = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_BOOKSHELF),
                                             "KEY_FK_BOOKSHELF");
 
@@ -234,8 +235,8 @@ public class EditBookshelfDialogFragment
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onResult(SanityCheck
-                             .requirePositiveValue(result.getLong(DBDefinitions.KEY_FK_BOOKSHELF)));
+            onResult(SanityCheck.requirePositiveValue(
+                    result.getLong(DBDefinitions.KEY_FK_BOOKSHELF)));
         }
 
         /**

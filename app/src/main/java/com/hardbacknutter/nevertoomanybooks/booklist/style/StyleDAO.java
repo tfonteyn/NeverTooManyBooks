@@ -54,7 +54,7 @@ public final class StyleDAO {
      */
     private static final String PREF_BL_STYLE_CURRENT_DEFAULT = "bookList.style.current";
 
-    private static final String ERROR_MISSING_UUID = "Missing UUID";
+    private static final String ERROR_MISSING_UUID = "style.getUuid()";
 
     private StyleDAO() {
     }

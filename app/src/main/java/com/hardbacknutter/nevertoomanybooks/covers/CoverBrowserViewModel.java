@@ -145,9 +145,10 @@ public class CoverBrowserViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (mBaseIsbn == null) {
-            mBaseIsbn = args.getString(DBDefinitions.KEY_ISBN);
+            mBaseIsbn = SanityCheck.requireValue(args.getString(DBDefinitions.KEY_ISBN),
+                                                 "KEY_ISBN");
             mCIdx = args.getInt(BKEY_FILE_INDEX);
-            SanityCheck.requireValue(mBaseIsbn, "mBaseIsbn");
+
             // optional
             List<Site> sites = args.getParcelableArrayList(Site.Type.Covers.getBundleKey());
             if (sites == null) {

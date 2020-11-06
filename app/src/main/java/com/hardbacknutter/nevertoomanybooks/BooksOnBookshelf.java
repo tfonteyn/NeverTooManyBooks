@@ -413,6 +413,7 @@ public class BooksOnBookshelf
         setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(prefs));
 
         // The booklist.
+        //noinspection ConstantConditions
         mLayoutManager = (LinearLayoutManager) mVb.list.getLayoutManager();
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.attach(mVb.list);

@@ -66,6 +66,7 @@ public abstract class VMTask<Result>
     @Nullable
     private Boolean mIndeterminate;
 
+    @Nullable
     private Executor mExecutor;
 
     /**

@@ -143,6 +143,7 @@ public class SearchCoordinator
      */
     private ArrayList<Site> mAllSites;
     /** Base message for progress updates. */
+    @Nullable
     private String mBaseMessage;
     /** Flag indicating at least one search is currently running. */
     private boolean mIsSearchActive;
@@ -1126,6 +1127,7 @@ public class SearchCoordinator
      *
      * @return the error message
      */
+    @Nullable
     private String accumulateErrors(@NonNull final Context context) {
         String errorMessage = null;
         // no synchronized needed, at this point all other threads have finished.

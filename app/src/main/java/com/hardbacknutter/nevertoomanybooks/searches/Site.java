@@ -83,6 +83,7 @@ public class Site
     private boolean mEnabled;
 
     /** the class which implements the search engine for a specific site. */
+    @Nullable
     private SearchEngine mSearchEngine;
 
     /**

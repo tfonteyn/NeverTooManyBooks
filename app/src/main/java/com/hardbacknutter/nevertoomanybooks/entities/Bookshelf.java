@@ -300,9 +300,8 @@ public class Bookshelf
     public void setStyle(@NonNull final Context context,
                          @NonNull final DAO db,
                          @NonNull final BooklistStyle style) {
-        if (style.getId() == 0) {
-            throw new SanityCheck.MissingValueException("style.getId()");
-        }
+        SanityCheck.requireNonZero(style.getId(), "style.getId()");
+
         mStyleUuid = style.getUuid();
         db.update(context, this);
 

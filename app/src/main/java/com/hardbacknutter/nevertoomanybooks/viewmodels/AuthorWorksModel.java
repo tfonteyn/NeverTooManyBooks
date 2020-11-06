@@ -94,13 +94,11 @@ public class AuthorWorksModel
 
             final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");
-
             mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId), String.valueOf(authorId));
 
             final long bookshelfId = args.getLong(DBDefinitions.KEY_FK_BOOKSHELF,
                                                   Bookshelf.ALL_BOOKS);
             mBookshelf = Bookshelf.getBookshelf(context, mDb, bookshelfId, Bookshelf.ALL_BOOKS);
-
             mAllBookshelves = mBookshelf.getId() == Bookshelf.ALL_BOOKS;
 
             mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, mWithTocEntries);

@@ -43,7 +43,8 @@ public class SimpleXmlFilter {
 
     @NonNull
     private static final Consumer<ElementContext> mHandleStart = elementContext -> {
-        BuilderContext bc = (BuilderContext) elementContext.getUserArg();
+        final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
+        //noinspection ConstantConditions
         if (bc.isArray()) {
             bc.initArray();
         }
@@ -71,6 +72,7 @@ public class SimpleXmlFilter {
     @NonNull
     private static final Consumer<ElementContext> mHandleFinish = elementContext -> {
         final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
+        //noinspection ConstantConditions
         if (bc.finishHandler != null) {
             bc.finishHandler.accept(elementContext);
         }
@@ -88,13 +90,15 @@ public class SimpleXmlFilter {
 
     @NonNull
     private static final Consumer<ElementContext> mTextHandler = elementContext -> {
-        final BuilderContext c = (BuilderContext) elementContext.getUserArg();
-        c.getData().putString(c.collectField, elementContext.getBody());
+        final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
+        //noinspection ConstantConditions
+        bc.getData().putString(bc.collectField, elementContext.getBody());
     };
 
     @NonNull
     private static final Consumer<ElementContext> mLongHandler = elementContext -> {
         final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
+        //noinspection ConstantConditions
         final String name = bc.collectField;
         try {
             final long l = Long.parseLong(elementContext.getBody());
@@ -106,6 +110,7 @@ public class SimpleXmlFilter {
     @NonNull
     private static final Consumer<ElementContext> mBooleanHandler = elementContext -> {
         final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
+        //noinspection ConstantConditions
         final String name = bc.collectField;
         try {
             final boolean b = ParseUtils.parseBoolean(elementContext.getBody(), true);
@@ -140,6 +145,7 @@ public class SimpleXmlFilter {
         // defined here due to compiler wanting mLocale to be defined.
         mDoubleHandler = elementContext -> {
             final BuilderContext bc = (BuilderContext) elementContext.getUserArg();
+            //noinspection ConstantConditions
             final String name = bc.collectField;
             try {
                 final double d = ParseUtils.parseDouble(elementContext.getBody(), mLocale);
@@ -284,9 +290,9 @@ public class SimpleXmlFilter {
 
     private void setCollector(@NonNull final Consumer<ElementContext> handler,
                               @NonNull final String fieldName) {
-        final BuilderContext c = mContexts.get(mContexts.size() - 1);
-        c.collectField = fieldName;
-        c.finishHandler = handler;
+        final BuilderContext bc = mContexts.get(mContexts.size() - 1);
+        bc.collectField = fieldName;
+        bc.finishHandler = handler;
     }
 
     @SuppressWarnings("unused")
@@ -349,12 +355,12 @@ public class SimpleXmlFilter {
     public interface XmlListener {
 
         default void onStart(@NonNull final SimpleXmlFilter.BuilderContext bc,
-                             @NonNull final ElementContext c) {
+                             @NonNull final ElementContext ec) {
 
         }
 
         void onFinish(@NonNull SimpleXmlFilter.BuilderContext bc,
-                      @NonNull ElementContext c);
+                      @NonNull ElementContext ec);
     }
 
     interface DataStoreProvider {

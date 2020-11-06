@@ -125,7 +125,7 @@ public class RadioGroupRecyclerAdapter<ID, CS extends CharSequence>
 
     public interface SelectionListener<ID> {
 
-        void onSelected(ID id);
+        void onSelected(@Nullable ID id);
     }
 
     /**

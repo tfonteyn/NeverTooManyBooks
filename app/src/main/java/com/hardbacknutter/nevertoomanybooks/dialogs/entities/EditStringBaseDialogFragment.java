@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -90,7 +91,8 @@ public abstract class EditStringBaseDialogFragment
 
         mDb = new DAO(TAG);
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mOriginalText = args.getString(BKEY_TEXT, "");
 
         if (savedInstanceState == null) {

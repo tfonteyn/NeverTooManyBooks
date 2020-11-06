@@ -168,9 +168,10 @@ public class EditLenderDialogFragment
         mPeople = mDb.getLoanees();
 
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
-        mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
+        mBookTitle = Objects.requireNonNull(args.getString(DBDefinitions.KEY_TITLE), "KEY_TITLE");
 
         if (savedInstanceState == null) {
             mOriginalLoanee = mDb.getLoaneeByBookId(mBookId);

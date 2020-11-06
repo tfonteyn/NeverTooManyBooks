@@ -117,7 +117,8 @@ public class EditTocEntryDialogFragment
         mDb = new DAO(TAG);
 
         final Bundle args = requireArguments();
-        mRequestKey = args.getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
         mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
         mTocEntry = Objects.requireNonNull(args.getParcelable(BKEY_TOC_ENTRY), "BKEY_TOC_ENTRY");
 

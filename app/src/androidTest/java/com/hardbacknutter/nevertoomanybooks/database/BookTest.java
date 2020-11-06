@@ -153,6 +153,7 @@ public class BookTest {
      * @return array of picture files
      */
     private File[] initPicturesDirectory(final Context context) {
+        //noinspection ConstantConditions
         mExternalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         assertNotNull(NEED_A_PICTURES_DIRECTORY, mExternalFilesDir);
         final File[] files = mExternalFilesDir.listFiles(mJpgFilter);
@@ -167,6 +168,7 @@ public class BookTest {
      * @param context Current context
      */
     private void initCacheDirectory(final Context context) {
+        //noinspection ConstantConditions
         mExternalCacheDir = context.getExternalCacheDir();
         assertNotNull(NEED_A_CACHE_DIRECTORY, mExternalCacheDir);
         final File[] cachedFiles = mExternalCacheDir.listFiles(mJpgFilter);

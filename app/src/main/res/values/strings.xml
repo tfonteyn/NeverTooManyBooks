@@ -145,7 +145,7 @@
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
     <!-- The user selected a file to import that was not recognised as a valid archive. -->
-    <string name="error_import_file_not_recognized">The file selected is not recognized.</string>
+    <string name="error_import_file_not_recognized">The selected file is not recognized.</string>
     <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
     <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
     <!-- Displayed when a CSV import fails -->

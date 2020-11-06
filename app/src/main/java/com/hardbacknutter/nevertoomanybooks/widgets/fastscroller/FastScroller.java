@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -60,6 +61,7 @@ public final class FastScroller {
      *
      * @param recyclerView the View to hook up
      */
+    @SuppressLint("UseCompatLoadingForDrawables")
     public static void attach(@NonNull final RecyclerView recyclerView) {
 
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {

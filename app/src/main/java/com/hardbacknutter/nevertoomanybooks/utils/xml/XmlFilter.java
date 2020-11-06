@@ -55,11 +55,13 @@ public class XmlFilter {
     @Nullable
     private Consumer<ElementContext> mStartAction;
     /** Optional parameter put in context before action is called. */
+    @Nullable
     private Object mStartArg;
     /** Action to perform, if any, when the associated tag is finished. */
     @Nullable
     private Consumer<ElementContext> mEndAction;
     /** Optional parameter put in context before action is called. */
+    @Nullable
     private Object mEndArg;
 
     /**

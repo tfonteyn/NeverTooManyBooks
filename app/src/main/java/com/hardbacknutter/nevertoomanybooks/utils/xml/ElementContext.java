@@ -65,6 +65,7 @@ public class ElementContext {
      * the user argument fed into the {@link XmlFilter#setStartAction(Consumer, Object)}
      * and {@link XmlFilter#setEndAction(Consumer, Object)}.
      */
+    @Nullable
     private Object mUserArg;
 
     /**
@@ -143,7 +144,7 @@ public class ElementContext {
         mBody = body.trim();
     }
 
-    @NonNull
+    @Nullable
     public Object getUserArg() {
         return mUserArg;
     }

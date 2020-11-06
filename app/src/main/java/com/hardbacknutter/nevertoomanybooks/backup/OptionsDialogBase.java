@@ -27,6 +27,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 
 public abstract class OptionsDialogBase
@@ -47,7 +49,8 @@ public abstract class OptionsDialogBase
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mRequestKey = requireArguments().getString(BKEY_REQUEST_KEY);
+        mRequestKey = Objects.requireNonNull(requireArguments().getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
     }
 
     protected void sendResult(final boolean startTask) {

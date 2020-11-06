@@ -49,6 +49,7 @@ class Queue
     private final String mName;
 
     /** Currently running task. */
+    @Nullable
     private WeakReference<TQTask> mTask;
 
     /** Flag to indicate process is terminating. */
@@ -189,6 +190,7 @@ class Queue
                 }
                 queueDAO.setTaskFailed(task, "Unhandled exception while running task: " + msg);
             }
+            //noinspection ConstantConditions
             mTask.clear();
             mTask = null;
         }

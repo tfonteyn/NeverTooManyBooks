@@ -114,6 +114,7 @@ public class DiacriticArrayAdapter<T>
     private ArrayFilter mFilter;
 
     /** Layout inflater used for {@link #getDropDownView(int, View, ViewGroup)}. */
+    @Nullable
     private LayoutInflater mDropDownInflater;
 
     /**
