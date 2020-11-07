@@ -23,9 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    style="@style/TopNestedScroller"
     tools:context=".BookSearchActivity"
     >
 
@@ -41,8 +39,8 @@
             android:layout_marginStart="@dimen/indent2"
             android:layout_marginEnd="@dimen/indent2"
             android:text="@string/txt_select_fields_to_update"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
 

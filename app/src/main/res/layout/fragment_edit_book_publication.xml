@@ -23,9 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    style="@style/TopNestedScroller"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,8 +44,8 @@
             <AutoCompleteTextView
                 android:id="@+id/format"
                 style="@style/autoCompleteTextEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="Hardcover"
                 />
@@ -66,8 +64,8 @@
             <AutoCompleteTextView
                 android:id="@+id/color"
                 style="@style/autoCompleteTextEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 tools:text="Black &amp; White"
                 />
@@ -106,8 +104,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/print_run"
                 style="@style/notesTextEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="limited to 150 copies"
                 />
@@ -171,8 +169,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/pages"
                 style="@style/genericTextEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="999"
                 />

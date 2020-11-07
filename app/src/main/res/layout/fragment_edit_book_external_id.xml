@@ -23,9 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    style="@style/TopNestedScroller"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -38,9 +36,9 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_goodreads"
             style="@style/Envelope.EditText"
+            android:layout_width="@dimen/field_external_id_width"
             android:layout_marginTop="@dimen/border2"
             android:hint="@string/site_goodreads"
-            android:layout_width="@dimen/field_external_id_width"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -49,8 +47,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_goodreads"
                 style="@style/genericNumberEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="123456"
                 />
@@ -60,8 +58,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_isfdb"
             style="@style/Envelope.EditText"
-            android:hint="@string/site_isfdb"
             android:layout_width="@dimen/field_external_id_width"
+            android:hint="@string/site_isfdb"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_goodreads"
@@ -70,8 +68,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_isfdb"
                 style="@style/genericNumberEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="123456"
                 />
@@ -81,8 +79,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_library_thing"
             style="@style/Envelope.EditText"
-            android:hint="@string/site_library_thing"
             android:layout_width="@dimen/field_external_id_width"
+            android:hint="@string/site_library_thing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_isfdb"
@@ -91,8 +89,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_library_thing"
                 style="@style/genericNumberEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="123456"
                 />
@@ -102,8 +100,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_open_library"
             style="@style/Envelope.EditText"
-            android:hint="@string/site_open_library"
             android:layout_width="@dimen/field_external_id_width"
+            android:hint="@string/site_open_library"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_library_thing"
@@ -123,8 +121,8 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_strip_info_be"
             style="@style/Envelope.EditText"
-            android:hint="@string/site_stripinfo_be"
             android:layout_width="@dimen/field_external_id_width"
+            android:hint="@string/site_stripinfo_be"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_site_open_library"
@@ -133,8 +131,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/site_strip_info_be"
                 style="@style/genericNumberEntry"
-                android:imeOptions="actionDone"
                 android:layout_width="match_parent"
+                android:imeOptions="actionDone"
                 tools:ignore="Autofill"
                 tools:text="123456"
                 />
