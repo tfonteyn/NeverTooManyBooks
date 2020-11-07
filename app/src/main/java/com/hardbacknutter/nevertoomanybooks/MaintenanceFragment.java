@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellActivity;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -96,12 +95,6 @@ public class MaintenanceFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.lbl_settings);
-        actionBar.setSubtitle(R.string.pt_maintenance);
 
         // show the full version + build date
         //noinspection ConstantConditions
@@ -218,9 +211,16 @@ public class MaintenanceFragment
         mVb.btnDebugDumpPrefs.setOnClickListener(v -> logPreferences());
 
         mVb.btnDebugSqShell.setOnClickListener(v -> {
-            final Intent intent = new Intent(v.getContext(), SqliteShellActivity.class)
-                    .putExtra(SqliteShellFragment.BKEY_ALLOW_UPDATES, mDebugSqLiteAllowsUpdates);
-            startActivity(intent);
+            final Bundle args = new Bundle();
+            args.putBoolean(SqliteShellFragment.BKEY_ALLOW_UPDATES, mDebugSqLiteAllowsUpdates);
+            final Fragment fragment = new SqliteShellFragment();
+            fragment.setArguments(args);
+
+            final FragmentManager fm = getParentFragmentManager();
+            fm.beginTransaction()
+              .addToBackStack(SqliteShellFragment.TAG)
+              .replace(R.id.main_fragment, fragment, SqliteShellFragment.TAG)
+              .commit();
         });
 
         mVb.btnDebugClearDb.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
@@ -231,6 +231,17 @@ public class MaintenanceFragment
                 .setPositiveButton(R.string.action_delete, (d, w) -> onDeleteAll())
                 .create()
                 .show());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_settings);
+        actionBar.setSubtitle(R.string.pt_maintenance);
     }
 
     /**
