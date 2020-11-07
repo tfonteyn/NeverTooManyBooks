@@ -31,13 +31,16 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 
 /**
- * Hosting activity for top-level Preference editing.
+ * Hosting activity for Preference fragments.
  */
-public class SettingsActivity
+public class SettingsHostingActivity
         extends BaseActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
                    SharedPreferences.OnSharedPreferenceChangeListener {
@@ -50,40 +53,37 @@ public class SettingsActivity
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final String tag = Objects.requireNonNull(
+                getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG), "tag");
 
-        addFirstFragment(R.id.main_fragment, SettingsFragment.class,
-                         SettingsFragment.TAG);
+        switch (tag) {
+            case SettingsFragment.TAG:
+                addFirstFragment(R.id.main_fragment, SettingsFragment.class, tag);
+                return;
+
+            case StyleFragment.TAG:
+                addFirstFragment(R.id.main_fragment, StyleFragment.class, tag);
+                return;
+
+            default:
+                throw new IllegalArgumentException(tag);
+        }
     }
 
     @Override
-    public boolean onPreferenceStartFragment(@NonNull final PreferenceFragmentCompat caller,
-                                             @NonNull final Preference pref) {
+    @CallSuper
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
+                                          @NonNull final String key) {
+        switch (key) {
+            // Trigger a recreate of this activity, if one of these settings have changed.
+            case Prefs.pk_ui_theme:
+            case Prefs.pk_ui_locale:
+                recreateIfNeeded();
+                break;
 
-        final FragmentManager fm = getSupportFragmentManager();
-
-        /* Instantiate the new Fragment
-         *
-         * Proguard rule needed:
-         * -keep public class * extends androidx.preference.PreferenceFragmentCompat
-         */
-        final Fragment fragment =
-                fm.getFragmentFactory().instantiate(getClassLoader(), pref.getFragment());
-
-        // combine the original extras with any new ones (the latter can override the former)
-        Bundle args = getIntent().getExtras();
-        if (args == null) {
-            args = pref.getExtras();
-        } else {
-            args.putAll(pref.getExtras());
+            default:
+                break;
         }
-        fragment.setArguments(args);
-
-        // Replace the existing Fragment with the new Fragment
-        fm.beginTransaction()
-          .addToBackStack(fragment.getTag())
-          .replace(R.id.main_fragment, fragment)
-          .commit();
-        return true;
     }
 
     @Override
@@ -101,18 +101,33 @@ public class SettingsActivity
     }
 
     @Override
-    @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
-                                          @NonNull final String key) {
-        switch (key) {
-            // Trigger a recreate of this activity, if one of these settings have changed.
-            case Prefs.pk_ui_theme:
-            case Prefs.pk_ui_locale:
-                recreateIfNeeded();
-                break;
+    public boolean onPreferenceStartFragment(@NonNull final PreferenceFragmentCompat caller,
+                                             @NonNull final Preference pref) {
 
-            default:
-                break;
+        final FragmentManager fm = getSupportFragmentManager();
+
+        /* Instantiate the new Fragment
+         *
+         * Proguard rule needed:
+         * -keep public class * extends androidx.preference.PreferenceFragmentCompat
+         * or use @Keep annotation on individual fragments
+         */
+        final Fragment fragment =
+                fm.getFragmentFactory().instantiate(getClassLoader(), pref.getFragment());
+
+        // combine the original extras with any new ones (the latter can override the former)
+        Bundle args = getIntent().getExtras();
+        if (args == null) {
+            args = pref.getExtras();
+        } else {
+            args.putAll(pref.getExtras());
         }
+        fragment.setArguments(args);
+
+        fm.beginTransaction()
+          .addToBackStack(fragment.getTag())
+          .replace(R.id.main_fragment, fragment)
+          .commit();
+        return true;
     }
 }

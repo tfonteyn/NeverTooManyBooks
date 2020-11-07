@@ -51,7 +51,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostingActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
@@ -341,7 +342,9 @@ public abstract class BaseActivity
             return true;
 
         } else if (itemId == R.id.nav_settings) {
-            final Intent intent = new Intent(this, SettingsActivity.class);
+            final Intent intent = new Intent(this, SettingsHostingActivity.class)
+                    .putExtra(BKEY_FRAGMENT_TAG, SettingsFragment.TAG);
+            ;
             startActivityForResult(intent, RequestCode.NAV_PANEL_SETTINGS);
             return true;
 

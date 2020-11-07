@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -59,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostingActivity;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -408,7 +410,8 @@ public class PreferredStylesFragment
     private void editStyle(@NonNull final BooklistStyle style,
                            final long templateStyleId) {
 
-        final Intent intent = new Intent(getContext(), EditStyleActivity.class)
+        final Intent intent = new Intent(getContext(), SettingsHostingActivity.class)
+                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
                 .putExtra(BooklistStyle.BKEY_STYLE, style)
                 .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, templateStyleId);
 
