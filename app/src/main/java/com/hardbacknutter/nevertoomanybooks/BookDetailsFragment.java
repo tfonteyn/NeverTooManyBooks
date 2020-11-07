@@ -243,6 +243,8 @@ public class BookDetailsFragment
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_edit);
+        fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> startEditBook());
 
         // ENHANCE: should be replaced by a ViewPager2/FragmentStateAdapter
