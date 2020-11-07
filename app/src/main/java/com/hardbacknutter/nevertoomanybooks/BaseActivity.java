@@ -203,7 +203,8 @@ public abstract class BaseActivity
      * @param fragmentClass   the fragment; must be loadable with the current class loader.
      * @param fragmentTag     tag for the fragment
      */
-    protected void addFirstFragment(@IdRes final int containerViewId,
+    protected void addFirstFragment(@SuppressWarnings("SameParameterValue")
+                                    @IdRes final int containerViewId,
                                     @NonNull final Class<? extends Fragment> fragmentClass,
                                     @NonNull final String fragmentTag) {
 
@@ -319,7 +320,10 @@ public abstract class BaseActivity
                                      @IdRes final int itemId,
                                      final boolean visible) {
         if (mNavigationView != null) {
-            mNavigationView.getMenu().findItem(itemId).setVisible(visible);
+            final MenuItem item = mNavigationView.getMenu().findItem(itemId);
+            if (item != null) {
+                item.setVisible(visible);
+            }
         }
     }
 
