@@ -28,6 +28,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
@@ -50,18 +51,6 @@ public class HostingActivity
                 getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG), "tag");
 
         switch (tag) {
-            case AuthorWorksFragment.TAG:
-                addFirstFragment(R.id.main_fragment, AuthorWorksFragment.class, tag);
-                return;
-
-            case FTSSearchFragment.TAG:
-                addFirstFragment(R.id.main_fragment, FTSSearchFragment.class, tag);
-                return;
-
-            case EditBookshelvesFragment.TAG:
-                addFirstFragment(R.id.main_fragment, EditBookshelvesFragment.class, tag);
-                return;
-
             case BookSearchByIsbnFragment.TAG:
                 addFirstFragment(R.id.main_fragment, BookSearchByIsbnFragment.class, tag);
                 return;
@@ -74,9 +63,24 @@ public class HostingActivity
                 addFirstFragment(R.id.main_fragment, BookSearchByExternalIdFragment.class, tag);
                 return;
 
+
+            case FTSSearchFragment.TAG:
+                addFirstFragment(R.id.main_fragment, FTSSearchFragment.class, tag);
+                return;
+
+
+            case AuthorWorksFragment.TAG:
+                addFirstFragment(R.id.main_fragment, AuthorWorksFragment.class, tag);
+                return;
+
             case UpdateFieldsFragment.TAG:
                 addFirstFragment(R.id.main_fragment, UpdateFieldsFragment.class, tag);
                 return;
+
+            case EditBookshelvesFragment.TAG:
+                addFirstFragment(R.id.main_fragment, EditBookshelvesFragment.class, tag);
+                return;
+
 
             case ImportFragment.TAG:
                 addFirstFragment(R.id.main_fragment, ImportFragment.class, tag);
@@ -84,6 +88,11 @@ public class HostingActivity
 
             case ExportFragment.TAG:
                 addFirstFragment(R.id.main_fragment, ExportFragment.class, tag);
+                return;
+
+
+            case PreferredStylesFragment.TAG:
+                addFirstFragment(R.id.main_fragment, PreferredStylesFragment.class, tag);
                 return;
 
             case GoodreadsAdminFragment.TAG:
