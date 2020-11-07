@@ -126,8 +126,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  * Notes on the local-search:
  * <ol>Advanced:
  *     <li>User clicks navigation panel menu search option</li>
- *     <li>FTSSearch Activity is started</li>
- *     <li>FTS activity returns an id-list and the fts search terms</li>
+ *     <li>FTSSearchFragment is started</li>
+ *     <li>FTSSearchFragment returns an id-list and the fts search terms</li>
  *     <li>#onActivityResult sets the incoming fts criteria</li>
  *     <li>#onResume builds the list</li>
  * </ol>
@@ -526,7 +526,8 @@ public class BooksOnBookshelf
         final int itemId = item.getItemId();
 
         if (itemId == R.id.nav_advanced_search) {
-            final Intent intent = new Intent(this, FTSSearchActivity.class);
+            final Intent intent = new Intent(this, HostingActivity.class)
+                    .putExtra(BKEY_FRAGMENT_TAG, FTSSearchFragment.TAG);
             mModel.getSearchCriteria().to(intent);
             startActivityForResult(intent, RequestCode.NAV_PANEL_ADVANCED_LOCAL_SEARCH);
             return true;
@@ -1270,8 +1271,17 @@ public class BooksOnBookshelf
                 break;
             }
 
-            case RequestCode.NAV_PANEL_EXPORT:
             case RequestCode.NAV_PANEL_GOODREADS:
+            case RequestCode.NAV_PANEL_SETTINGS: {
+                // We don't (need to) get feedback from the these activities,
+                // we just check and act here.
+                final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+                setNavigationItemVisibility(R.id.nav_goodreads,
+                                            GoodreadsManager.isShowSyncMenus(prefs));
+                break;
+            }
+
+            case RequestCode.NAV_PANEL_EXPORT:
                 // no results returned for now.
                 break;
 
