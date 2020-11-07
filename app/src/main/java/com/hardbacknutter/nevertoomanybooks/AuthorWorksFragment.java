@@ -75,7 +75,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  *
  * <strong>Note:</strong> when an item is clicked, we start a <strong>NEW</strong> Activity.
  * Doing a 'back' will then get the user back here.
- * This is intentionally different from the behaviour of {@link FTSSearchActivity}.
+ * This is intentionally different from the behaviour of {@link FTSSearchFragment}.
  */
 public class AuthorWorksFragment
         extends Fragment {

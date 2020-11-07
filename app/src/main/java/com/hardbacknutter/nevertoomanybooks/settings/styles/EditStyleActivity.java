@@ -75,8 +75,6 @@ public class EditStyleActivity
 
         fm.beginTransaction()
           .addToBackStack(fragment.getTag())
-          // FIXME: https://issuetracker.google.com/issues/169874632
-          // .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
           .replace(R.id.main_fragment, fragment)
           .commit();
         return true;

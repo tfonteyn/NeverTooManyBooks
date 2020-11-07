@@ -184,13 +184,11 @@ public class GoodreadsAdminFragment
             return true;
 
         } else if (itemId == R.id.MENU_GOODREADS_SETTINGS) {
+            final Fragment fragment = new GoodreadsPreferencesFragment();
             final FragmentManager fm = getParentFragmentManager();
             fm.beginTransaction()
               .addToBackStack(GoodreadsPreferencesFragment.TAG)
-              // FIXME: https://issuetracker.google.com/issues/169874632
-              //   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
-              .replace(R.id.main_fragment, new GoodreadsPreferencesFragment(),
-                       GoodreadsPreferencesFragment.TAG)
+              .replace(R.id.main_fragment, fragment, GoodreadsPreferencesFragment.TAG)
               .commit();
             return true;
         }
