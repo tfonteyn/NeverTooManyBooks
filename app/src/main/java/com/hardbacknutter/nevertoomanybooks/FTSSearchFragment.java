@@ -27,10 +27,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.Timer;
@@ -38,7 +42,7 @@ import java.util.TimerTask;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.databinding.ActivityAdvancedSearchBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
@@ -56,11 +60,11 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
  * to the {@link BooksOnBookshelf} Activity.
  * This is intentionally different from the behaviour of {@link AuthorWorksFragment}.
  */
-public class FTSSearchActivity
-        extends BaseActivity {
+public class FTSSearchFragment
+        extends Fragment {
 
     /** Log tag. */
-    private static final String TAG = "FTSSearchActivity";
+    public static final String TAG = "FTSSearchFragment";
 
     /** create timer to tick every 250ms. */
     private static final int TIMER_TICK_MS = 250;
@@ -119,15 +123,8 @@ public class FTSSearchActivity
     };
 
     /** View Binding. */
-    private ActivityAdvancedSearchBinding mVb;
+    private FragmentAdvancedSearchBinding mVb;
 
-    @Override
-    protected void onSetContentView() {
-        mVb = ActivityAdvancedSearchBinding.inflate(getLayoutInflater());
-        setContentView(mVb.getRoot());
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,7 +132,7 @@ public class FTSSearchActivity
         mDb = new DAO(TAG);
 
         final Bundle args = savedInstanceState != null ? savedInstanceState
-                                                       : getIntent().getExtras();
+                                                       : getArguments();
         if (args != null) {
             mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE);
             mSeriesTitleSearchText = args.getString(DBDefinitions.KEY_SERIES_TITLE);
@@ -147,6 +144,25 @@ public class FTSSearchActivity
             mKeywordsSearchText = args.getString(
                     BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
         }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = FragmentAdvancedSearchBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.lbl_local_search);
 
         if (mTitleSearchText != null) {
             mVb.title.setText(mTitleSearchText);
@@ -193,8 +209,8 @@ public class FTSSearchActivity
                               mKeywordsSearchText)
                     // pass the book ID's for the list
                     .putExtra(Book.BKEY_BOOK_ID_LIST, mBookIdList);
-            setResult(Activity.RESULT_OK, data);
-            finish();
+            getActivity().setResult(Activity.RESULT_OK, data);
+            getActivity().finish();
         });
 
         // Timer will be started in OnResume().
@@ -205,7 +221,7 @@ public class FTSSearchActivity
      */
     @Override
     @CallSuper
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
         userIsActive(true);
     }
@@ -215,7 +231,7 @@ public class FTSSearchActivity
      */
     @Override
     @CallSuper
-    protected void onPause() {
+    public void onPause() {
         stopIdleTimer();
         // Get search criteria
         viewToModel();
@@ -247,7 +263,7 @@ public class FTSSearchActivity
      *
      * @param dirty Indicates the user action made the last search invalid
      */
-    void userIsActive(final boolean dirty) {
+    private void userIsActive(final boolean dirty) {
         synchronized (this) {
             // Mark search dirty if necessary
             mSearchIsDirty = mSearchIsDirty || dirty;
@@ -261,7 +277,7 @@ public class FTSSearchActivity
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);

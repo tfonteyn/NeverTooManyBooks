@@ -49,12 +49,12 @@ public class HostingActivity
                 getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG), "tag");
 
         switch (tag) {
-            case AboutFragment.TAG:
-                addFirstFragment(R.id.main_fragment, AboutFragment.class, tag);
-                return;
-
             case AuthorWorksFragment.TAG:
                 addFirstFragment(R.id.main_fragment, AuthorWorksFragment.class, tag);
+                return;
+
+            case FTSSearchFragment.TAG:
+                addFirstFragment(R.id.main_fragment, FTSSearchFragment.class, tag);
                 return;
 
             case EditBookshelvesFragment.TAG:
@@ -71,6 +71,10 @@ public class HostingActivity
 
             case GoodreadsAdminFragment.TAG:
                 addFirstFragment(R.id.main_fragment, GoodreadsAdminFragment.class, tag);
+                return;
+
+            case AboutFragment.TAG:
+                addFirstFragment(R.id.main_fragment, AboutFragment.class, tag);
                 return;
 
             default:

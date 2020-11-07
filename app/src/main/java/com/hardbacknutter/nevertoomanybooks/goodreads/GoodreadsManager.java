@@ -79,7 +79,7 @@ public class GoodreadsManager {
     /** Log tag. */
     private static final String TAG = "GoodreadsManager";
     /** Whether to show any Goodreads sync menus at all. */
-    private static final String PREFS_SHOW_MENUS = PREF_KEY + ".showMenu";
+    public static final String PREFS_SHOW_MENUS = PREF_KEY + ".showMenu";
     /** Whether to collect genre string from the popular bookshelves. */
     private static final String PREFS_COLLECT_GENRE = PREF_KEY + ".search.collect.genre";
     /** last id we send to Goodreads. */

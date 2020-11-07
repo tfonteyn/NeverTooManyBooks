@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FTSSearchActivity;
+import com.hardbacknutter.nevertoomanybooks.FTSSearchFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
@@ -988,7 +988,7 @@ public class BooksOnBookshelfModel
 
         /**
          * List of book ID's to display.
-         * The RESULT of a search with {@link FTSSearchActivity}
+         * The RESULT of a search with {@link FTSSearchFragment}
          * which can be re-used for the builder.
          */
         @Nullable
@@ -996,21 +996,21 @@ public class BooksOnBookshelfModel
 
         /**
          * Author to use in FTS search query.
-         * Supported in the builder and {@link FTSSearchActivity}.
+         * Supported in the builder and {@link FTSSearchFragment}.
          */
         @Nullable
         String ftsAuthor;
 
         /**
          * Publisher to use in FTS search query.
-         * Supported in the builder and {@link FTSSearchActivity}.
+         * Supported in the builder and {@link FTSSearchFragment}.
          */
         @Nullable
         String ftsPublisher;
 
         /**
          * Title to use in FTS search query.
-         * Supported in the builder and {@link FTSSearchActivity}.
+         * Supported in the builder and {@link FTSSearchFragment}.
          */
         @Nullable
         String ftsTitle;
@@ -1031,7 +1031,7 @@ public class BooksOnBookshelfModel
 
         /**
          * Keywords to use in FTS search query.
-         * Supported in the builder and {@link FTSSearchActivity}.
+         * Supported in the builder and {@link FTSSearchFragment}.
          * <p>
          * Always use the setter as we need to intercept the "." character.
          */
