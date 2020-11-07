@@ -641,7 +641,7 @@ public class BooksOnBookshelf
             // IMPORTANT: this is from an options menu selection.
             // We pass the book ID's for the currently displayed list.
             final ArrayList<Long> bookIdList = mModel.getCurrentBookIdList();
-            final Intent intent = new Intent(this, BookSearchActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
                     .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
                     .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList);
             startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
@@ -894,7 +894,7 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             // IMPORTANT: this is from a context click on a row.
             // We pass the book ID's which are suited for that row.
-            final Intent intent = new Intent(this, BookSearchActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
                     .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG);
 
             switch (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP)) {
@@ -1375,13 +1375,13 @@ public class BooksOnBookshelf
     }
 
     private void addBySearch(@NonNull final String tag) {
-        final Intent intent = new Intent(this, BookSearchActivity.class)
+        final Intent intent = new Intent(this, HostingActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, tag);
         startActivityForResult(intent, RequestCode.BOOK_SEARCH);
     }
 
     private void addByIsbn(final boolean scanMode) {
-        final Intent intent = new Intent(this, BookSearchActivity.class)
+        final Intent intent = new Intent(this, HostingActivity.class)
                 .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
                 .putExtra(BookSearchByIsbnFragment.BKEY_SCAN_MODE, scanMode);
         startActivityForResult(intent, RequestCode.BOOK_SEARCH);

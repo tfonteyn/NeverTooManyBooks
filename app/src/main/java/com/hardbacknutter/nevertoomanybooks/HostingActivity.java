@@ -28,6 +28,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * Hosting activity for generic fragments <strong>without</strong>
@@ -61,6 +62,22 @@ public class HostingActivity
                 addFirstFragment(R.id.main_fragment, EditBookshelvesFragment.class, tag);
                 return;
 
+            case BookSearchByIsbnFragment.TAG:
+                addFirstFragment(R.id.main_fragment, BookSearchByIsbnFragment.class, tag);
+                return;
+
+            case BookSearchByTextFragment.TAG:
+                addFirstFragment(R.id.main_fragment, BookSearchByTextFragment.class, tag);
+                return;
+
+            case BookSearchByExternalIdFragment.TAG:
+                addFirstFragment(R.id.main_fragment, BookSearchByExternalIdFragment.class, tag);
+                return;
+
+            case UpdateFieldsFragment.TAG:
+                addFirstFragment(R.id.main_fragment, UpdateFieldsFragment.class, tag);
+                return;
+
             case ImportFragment.TAG:
                 addFirstFragment(R.id.main_fragment, ImportFragment.class, tag);
                 return;
@@ -80,5 +97,13 @@ public class HostingActivity
             default:
                 throw new IllegalArgumentException(tag);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        // This is a good time to cleanup the cache.
+        // Out of precaution we only trash jpg files
+        AppDir.Cache.purge(App.getTaskContext(), true, file -> file.getName().endsWith(".jpg"));
+        super.onDestroy();
     }
 }

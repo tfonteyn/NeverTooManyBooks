@@ -24,7 +24,6 @@
 <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
 <!--    xmlns:tools="http://schemas.android.com/tools"-->
 <!--    style="@style/TopNestedScroller"-->
-<!--    tools:context=".BookSearchActivity"-->
 <!--    >-->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -35,7 +34,6 @@
     android:layout_gravity="center_horizontal"
     android:maxWidth="@dimen/isbn_key_pad_max_width"
     android:maxHeight="@dimen/isbn_key_pad_max_height"
-    tools:context=".BookSearchActivity"
     >
 
     <com.google.android.material.textfield.TextInputLayout

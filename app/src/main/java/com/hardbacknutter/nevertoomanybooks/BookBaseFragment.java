@@ -300,7 +300,7 @@ public abstract class BookBaseFragment
         if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
             final ArrayList<Long> bookIdList = new ArrayList<>();
             bookIdList.add(book.getId());
-            final Intent intent = new Intent(context, BookSearchActivity.class)
+            final Intent intent = new Intent(context, HostingActivity.class)
                     .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
                     .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
                     // pass the title for displaying to the user

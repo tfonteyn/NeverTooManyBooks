@@ -119,12 +119,8 @@
         </activity>
         <activity android:name=".BookDetailsActivity" />
         <activity
-            android:name=".BookSearchActivity"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-        <activity
             android:name=".EditBookActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
-
 
         <activity
             android:name=".covers.CropImageActivity"
