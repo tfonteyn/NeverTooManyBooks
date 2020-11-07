@@ -128,11 +128,14 @@
         <item name="android:textSize">14p</item>
         <item name="ensureMinTouchTargetSize">true</item>
         -->
-    <style name="Field.Chip.Action" parent="Widget.MaterialComponents.Chip.Action">
+    <style name="Field.Chip.Display" parent="Base.Widget.MaterialComponents.Chip">
         <item name="chipCornerRadius">12dp</item>
         <item name="chipMinHeight">24dp</item>
         <item name="android:textSize">12sp</item>
         <item name="ensureMinTouchTargetSize">false</item>
+        <item name="closeIconVisible">false</item>
+        <item name="android:checkable">false</item>
+        <item name="android:clickable">false</item>
     </style>
 
     <!-- *************************************************************************************** -->

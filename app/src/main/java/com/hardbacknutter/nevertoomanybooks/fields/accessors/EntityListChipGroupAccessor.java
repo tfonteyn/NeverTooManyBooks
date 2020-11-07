@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
  * <p>
  * A {@code null} value is always handled as an empty {@link ArrayList}.
  * <p>
- * Relies on {@link R.attr#appChipActionStyle} and <br> {@link R.attr#appChipFilterStyle}
+ * Relies on {@link R.attr#appChipDisplayStyle} and <br> {@link R.attr#appChipFilterStyle}
  */
 public class EntityListChipGroupAccessor
         extends BaseDataAccessor<ArrayList<Entity>, ChipGroup> {
@@ -107,7 +107,7 @@ public class EntityListChipGroupAccessor
                         addTouchSignalsDirty(chip);
 
                     } else {
-                        chip = new Chip(context, null, R.attr.appChipActionStyle);
+                        chip = new Chip(context, null, R.attr.appChipDisplayStyle);
                     }
 
                     // RTL-friendly Chip Layout

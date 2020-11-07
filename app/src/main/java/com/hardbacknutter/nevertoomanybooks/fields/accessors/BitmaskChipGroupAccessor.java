@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  * <p>
  * A {@code null} value is always handled as {@code 0}.
  * <p>
- * Relies on {@link R.attr#appChipActionStyle} and <br> {@link R.attr#appChipFilterStyle}
+ * Relies on {@link R.attr#appChipDisplayStyle} and <br> {@link R.attr#appChipFilterStyle}
  */
 public class BitmaskChipGroupAccessor
         extends BaseDataAccessor<Integer, ChipGroup> {
@@ -107,7 +107,7 @@ public class BitmaskChipGroupAccessor
                         addTouchSignalsDirty(chip);
 
                     } else {
-                        chip = new Chip(context, null, R.attr.appChipActionStyle);
+                        chip = new Chip(context, null, R.attr.appChipDisplayStyle);
                     }
 
                     // RTL-friendly Chip Layout

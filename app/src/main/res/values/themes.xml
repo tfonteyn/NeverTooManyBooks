@@ -80,7 +80,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
     <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
 
-        <item name="appChipActionStyle">@style/Field.Chip.Action</item>
+        <item name="appChipDisplayStyle">@style/Field.Chip.Display</item>
         <item name="appChipFilterStyle">@style/Field.Chip.Filter</item>
 
         <!-- MaterialComponents overrides. -->
