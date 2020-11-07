@@ -107,7 +107,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -541,7 +541,8 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.nav_manage_list_styles) {
-            final Intent intent = new Intent(this, PreferredStylesActivity.class)
+            final Intent intent = new Intent(this, HostingActivity.class)
+                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, PreferredStylesFragment.TAG)
                     .putExtra(BooklistStyle.BKEY_STYLE_UUID,
                               mModel.getCurrentStyle(this).getUuid());
             startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_STYLES);
@@ -1726,68 +1727,6 @@ public class BooksOnBookshelf
         }
     }
 
-    private static class BookshelfSpinnerAdapter
-            extends ArrayAdapter<Bookshelf> {
-
-        /** Cached inflater. */
-        @NonNull
-        private final LayoutInflater mInflater;
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         * @param list    of bookshelves
-         */
-        BookshelfSpinnerAdapter(@NonNull final Context context,
-                                @NonNull final List<Bookshelf> list) {
-            // 0: see getView() below.
-            super(context, 0, list);
-            mInflater = LayoutInflater.from(context);
-        }
-
-        @Override
-        public long getItemId(final int position) {
-            //noinspection ConstantConditions
-            return getItem(position).getId();
-        }
-
-        @NonNull
-        @Override
-        public View getView(final int position,
-                            @Nullable final View convertView,
-                            @NonNull final ViewGroup parent) {
-            return getPopulatedView(position, convertView, parent,
-                                    R.layout.bookshelf_spinner_selected);
-        }
-
-        @Override
-        @NonNull
-        public View getDropDownView(final int position,
-                                    @Nullable final View convertView,
-                                    @NonNull final ViewGroup parent) {
-            return getPopulatedView(position, convertView, parent,
-                                    R.layout.dropdown_menu_popup_item);
-        }
-
-        @NonNull
-        private View getPopulatedView(final int position,
-                                      @Nullable final View convertView,
-                                      @NonNull final ViewGroup parent,
-                                      @LayoutRes final int layoutId) {
-            final View view;
-            if (convertView == null) {
-                view = mInflater.inflate(layoutId, parent, false);
-            } else {
-                view = convertView;
-            }
-
-            //noinspection ConstantConditions
-            ((TextView) view).setText(getItem(position).getLabel(getContext()));
-            return view;
-        }
-    }
-
     /**
      * Allows to be notified of changes made.
      * The bit number are not stored and can be changed.
@@ -1866,6 +1805,68 @@ public class BooksOnBookshelf
         @Retention(RetentionPolicy.SOURCE)
         @interface Flags {
 
+        }
+    }
+
+    private static class BookshelfSpinnerAdapter
+            extends ArrayAdapter<Bookshelf> {
+
+        /** Cached inflater. */
+        @NonNull
+        private final LayoutInflater mInflater;
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         * @param list    of bookshelves
+         */
+        BookshelfSpinnerAdapter(@NonNull final Context context,
+                                @NonNull final List<Bookshelf> list) {
+            // 0: see getView() below.
+            super(context, 0, list);
+            mInflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public long getItemId(final int position) {
+            //noinspection ConstantConditions
+            return getItem(position).getId();
+        }
+
+        @NonNull
+        @Override
+        public View getView(final int position,
+                            @Nullable final View convertView,
+                            @NonNull final ViewGroup parent) {
+            return getPopulatedView(position, convertView, parent,
+                                    R.layout.bookshelf_spinner_selected);
+        }
+
+        @Override
+        @NonNull
+        public View getDropDownView(final int position,
+                                    @Nullable final View convertView,
+                                    @NonNull final ViewGroup parent) {
+            return getPopulatedView(position, convertView, parent,
+                                    R.layout.dropdown_menu_popup_item);
+        }
+
+        @NonNull
+        private View getPopulatedView(final int position,
+                                      @Nullable final View convertView,
+                                      @NonNull final ViewGroup parent,
+                                      @LayoutRes final int layoutId) {
+            final View view;
+            if (convertView == null) {
+                view = mInflater.inflate(layoutId, parent, false);
+            } else {
+                view = convertView;
+            }
+
+            //noinspection ConstantConditions
+            ((TextView) view).setText(getItem(position).getLabel(getContext()));
+            return view;
         }
     }
 }

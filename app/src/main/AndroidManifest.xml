@@ -134,7 +134,6 @@
         <activity android:name=".HostingActivity" />
         <activity android:name=".settings.SettingsActivity" />
 
-        <activity android:name=".settings.styles.PreferredStylesActivity" />
         <activity android:name=".settings.styles.EditStyleActivity" />
         <activity
             android:name=".settings.SearchAdminActivity"

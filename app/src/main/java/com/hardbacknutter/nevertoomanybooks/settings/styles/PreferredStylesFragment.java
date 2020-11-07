@@ -24,16 +24,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -44,12 +48,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -62,27 +66,27 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.SimpleItemTouchHel
 import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
- * Activity to edit the list of styles.
+ * Edit the list of styles.
  * <ul>
  *      <li>Enable/disable their presence in the styles menu</li>
  *      <li>Individual context menus allow cloning/editing/deleting of styles</li>
  * </ul>
  * All changes are saved immediately.
  */
-public class PreferredStylesActivity
-        extends BaseActivity {
+public class PreferredStylesFragment
+        extends Fragment {
 
     /** Log tag. */
-    private static final String TAG = "PreferredStylesActivity";
+    public static final String TAG = "PreferredStylesFragment";
 
     /** FragmentResultListener request key. */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
 
+    /** View Binding. */
+    private FragmentEditStylesBinding mVb;
+
     /** The adapter for the list. */
     private BooklistStylesAdapter mListAdapter;
-    /** The View for the list. */
-    @SuppressWarnings("FieldCanBeLocal")
-    private RecyclerView mListView;
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
@@ -131,69 +135,90 @@ public class PreferredStylesActivity
                 }
             };
 
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    final Intent resultData = new Intent();
+
+                    // Return the currently selected style UUID, so the caller can apply it.
+                    // This is independent from any modification to this or another style,
+                    // or the order of the styles.
+                    final BooklistStyle selectedStyle = mListAdapter.getSelectedStyle();
+                    if (selectedStyle != null) {
+                        resultData.putExtra(BooklistStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
+                    }
+
+                    // Same here, this is independent from the returned style
+                    resultData.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
+
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().finish();
+                }
+            };
+
     @Override
-    protected void onSetContentView() {
-        setContentView(R.layout.activity_edit_preferred_styles);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull final LayoutInflater inflater,
+                             @Nullable final ViewGroup container,
+                             @Nullable final Bundle savedInstanceState) {
+        mVb = FragmentEditStylesBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            final FragmentManager fm = getSupportFragmentManager();
+            final FragmentManager fm = getParentFragmentManager();
             fm.setFragmentResultListener(
                     RK_MENU_PICKER, this,
                     (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
         }
 
-        mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
-        mModel.init(this, Objects.requireNonNull(getIntent().getExtras(),
-                                                 "getIntent().getExtras()"));
+        //noinspection ConstantConditions
+        getActivity().setTitle(R.string.lbl_styles_long);
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mListView = findViewById(R.id.stylesList);
-        mListView.addItemDecoration(new DividerItemDecoration(this, RecyclerView.VERTICAL));
-        mListView.setHasFixedSize(true);
+        mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
+        //noinspection ConstantConditions
+        mModel.init(getContext(), requireArguments());
+
+        mVb.stylesList.addItemDecoration(
+                new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
+        mVb.stylesList.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = new BooklistStylesAdapter(this, mModel.getList(),
+        mListAdapter = new BooklistStylesAdapter(getContext(), mModel.getList(),
                                                  mModel.getInitialStyleUuid(),
                                                  vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
-        mListView.setAdapter(mListAdapter);
+        mVb.stylesList.setAdapter(mListAdapter);
 
         final SimpleItemTouchHelperCallback sitHelperCallback =
                 new SimpleItemTouchHelperCallback(mListAdapter);
         mItemTouchHelper = new ItemTouchHelper(sitHelperCallback);
-        mItemTouchHelper.attachToRecyclerView(mListView);
+        mItemTouchHelper.attachToRecyclerView(mVb.stylesList);
 
         if (savedInstanceState == null) {
-            TipManager.display(this, R.string.tip_booklist_styles_editor, null);
+            //noinspection ConstantConditions
+            TipManager.display(getContext(), R.string.tip_booklist_styles_editor, null);
         }
     }
 
     @Override
-    public void onBackPressed() {
-
-        final Intent resultData = new Intent();
-
-        // Return the currently selected style UUID, so the caller can apply it.
-        // This is independent from any modification to this or another style,
-        // or the order of the styles.
-        final BooklistStyle selectedStyle = mListAdapter.getSelectedStyle();
-        if (selectedStyle != null) {
-            resultData.putExtra(BooklistStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
-        }
-
-        // Same here, this is independent from the returned style
-        resultData.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
-
-        setResult(Activity.RESULT_OK, resultData);
-        super.onBackPressed();
-    }
-
-    @Override
-    protected void onPause() {
+    public void onPause() {
         if (mModel.isDirty()) {
             mModel.updateMenuOrder();
         }
@@ -236,7 +261,8 @@ public class PreferredStylesActivity
                         // The style was not modified. If this was a cloned (new) style,
                         // discard it by deleting the SharedPreferences file
                         if (style != null && style.getId() == 0) {
-                            deleteSharedPreferences(style.getUuid());
+                            //noinspection ConstantConditions
+                            getContext().deleteSharedPreferences(style.getUuid());
                         }
                     }
                 }
@@ -249,21 +275,22 @@ public class PreferredStylesActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
             .setIcon(R.drawable.ic_delete)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
-        return super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         // only enable if a style is selected
         menu.findItem(R.id.MENU_PURGE_BLNS)
             .setEnabled(mListAdapter.getSelectedStyle() != null);
 
-        return super.onPrepareOptionsMenu(menu);
+        super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -273,7 +300,8 @@ public class PreferredStylesActivity
         if (itemId == R.id.MENU_PURGE_BLNS) {
             final BooklistStyle selected = mListAdapter.getSelectedStyle();
             if (selected != null) {
-                StandardDialogs.purgeBLNS(this, R.string.lbl_style, selected, () ->
+                //noinspection ConstantConditions
+                StandardDialogs.purgeBLNS(getContext(), R.string.lbl_style, selected, () ->
                         mModel.purgeBLNS(selected.getId()));
             }
             return true;
@@ -285,7 +313,8 @@ public class PreferredStylesActivity
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
         final BooklistStyle style = mModel.getList().get(position);
-        final String title = style.getLabel(this);
+        //noinspection ConstantConditions
+        final String title = style.getLabel(getContext());
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
@@ -307,10 +336,10 @@ public class PreferredStylesActivity
                     R.drawable.ic_content_copy));
 
             MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
-                                    .show(getSupportFragmentManager(),
+                                    .show(getParentFragmentManager(),
                                           MenuPickerDialogFragment.TAG);
         } else {
-            final Menu menu = MenuPicker.createMenu(this);
+            final Menu menu = MenuPicker.createMenu(getContext());
             if (style.isUserDefined()) {
                 menu.add(Menu.NONE, R.id.MENU_EDIT,
                          res.getInteger(R.integer.MENU_ORDER_EDIT),
@@ -327,7 +356,7 @@ public class PreferredStylesActivity
                      R.string.action_duplicate)
                 .setIcon(R.drawable.ic_content_copy);
 
-            new MenuPicker(this, title, menu, position, this::onContextItemSelected)
+            new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
                     .show();
         }
     }
@@ -356,13 +385,15 @@ public class PreferredStylesActivity
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
-            mModel.deleteStyle(this, style);
+            //noinspection ConstantConditions
+            mModel.deleteStyle(getContext(), style);
             mListAdapter.notifyItemRemoved(position);
             return true;
 
         } else if (itemId == R.id.MENU_DUPLICATE) {
             // pass the style id of the template style
-            editStyle(style.clone(this), style.getId());
+            //noinspection ConstantConditions
+            editStyle(style.clone(getContext()), style.getId());
             return true;
         }
         return false;
@@ -377,7 +408,7 @@ public class PreferredStylesActivity
     private void editStyle(@NonNull final BooklistStyle style,
                            final long templateStyleId) {
 
-        final Intent intent = new Intent(this, EditStyleActivity.class)
+        final Intent intent = new Intent(getContext(), EditStyleActivity.class)
                 .putExtra(BooklistStyle.BKEY_STYLE, style)
                 .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, templateStyleId);
 
