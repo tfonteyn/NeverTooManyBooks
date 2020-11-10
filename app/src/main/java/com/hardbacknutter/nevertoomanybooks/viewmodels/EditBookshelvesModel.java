@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesModel
         extends ViewModel
-        implements ActivityResultDataModel {
+        implements ResultIntent {
 
     /** Log tag. */
     private static final String TAG = "EditBookshelvesModel";
@@ -71,6 +71,9 @@ public class EditBookshelvesModel
         }
     }
 
+    /**
+     * {@link DBDefinitions#KEY_PK_ID} the selected bookshelf id, can be {@code 0} for none.
+     */
     @NonNull
     @Override
     public Intent getResultIntent() {

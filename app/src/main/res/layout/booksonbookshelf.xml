@@ -107,7 +107,7 @@
             />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab4"
+            android:id="@+id/fab4_search_external_id"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_external_id"
             app:icon="@drawable/ic_find_in_page"
@@ -117,7 +117,7 @@
             />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab3"
+            android:id="@+id/fab3_add_manually"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_manually"
             app:icon="@drawable/ic_keyboard"
@@ -127,7 +127,7 @@
             />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab2"
+            android:id="@+id/fab2_search_text"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_internet_search"
             app:icon="@drawable/ic_search"
@@ -137,7 +137,7 @@
             />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab1"
+            android:id="@+id/fab1_search_isbn"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_isbn"
             app:icon="@drawable/ic_apps"
@@ -148,7 +148,7 @@
 
         <!-- reminder: this is an MaterialButton, and NOT an ImageButton -->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/fab0"
+            android:id="@+id/fab0_scan_barcode"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_barcode_scan"
             app:icon="@drawable/ic_photo_camera"

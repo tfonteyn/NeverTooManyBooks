@@ -44,7 +44,7 @@ public class SearchAdminViewModel
     /** Log tag. */
     private static final String TAG = "SearchAdminViewModel";
     /** Single-list/tab mode parameter. */
-    static final String BKEY_LIST = TAG + ":list";
+    public static final String BKEY_LIST = TAG + ":list";
 
     private final Map<Site.Type, ArrayList<Site>> mSiteListMap = new EnumMap<>(Site.Type.class);
 

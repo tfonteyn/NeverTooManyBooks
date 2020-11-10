@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Menu;
@@ -45,41 +44,21 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
 
 public abstract class BookSearchBaseFragment
         extends Fragment {
 
-    /** Log tag. */
-    private static final String TAG = "BookSearchBaseFrag";
-    /** Database Access. */
-    DAO mDb;
-    SearchCoordinator mCoordinator;
-
-    private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
-            registerForActivityResult(new SearchAdminActivity.SingleListContract(Site.Type.Data),
-                                      sites -> {
-                                          if (sites != null) {
-                                              // no changes committed, temporary usage only
-                                              mCoordinator.setSiteList(sites);
-                                          }
-                                      });
-
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
-    /** The Activity results. */
-    private BookSearchViewModel mBookSearchViewModel;
-
+    private final ActivityResultLauncher<Bundle> mEditBookFoundLauncher = registerForActivityResult(
+            new EditBookFromBundleContract(), this::onBookEditingDone);
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -87,16 +66,28 @@ public abstract class BookSearchBaseFragment
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK,
-                                            mBookSearchViewModel.getResultIntent());
+                                            getActivityResultViewModel().getResultIntent());
                     getActivity().finish();
                 }
             };
+    SearchCoordinator mCoordinator;
+    private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
+            registerForActivityResult(new SearchSitesSingleListContract(),
+                                      sites -> {
+                                          if (sites != null) {
+                                              // no changes committed, temporary usage only
+                                              mCoordinator.setSiteList(sites);
+                                          }
+                                      });
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
 
-    @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    @NonNull
+    public abstract ActivityResultViewModel getActivityResultViewModel();
 
-        mDb = new DAO(TAG);
+    @CallSuper
+    void onBookEditingDone(@Nullable final Bundle data) {
+        getActivityResultViewModel().putResultData(data);
     }
 
     @Override
@@ -107,8 +98,6 @@ public abstract class BookSearchBaseFragment
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        mBookSearchViewModel = new ViewModelProvider(this).get(BookSearchViewModel.class);
 
         // Activity scope!
         mCoordinator = new ViewModelProvider(getActivity()).get(SearchCoordinator.class);
@@ -128,14 +117,6 @@ public abstract class BookSearchBaseFragment
             Snackbar.make(view, R.string.error_network_please_connect,
                           Snackbar.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     @Override
@@ -305,9 +286,7 @@ public abstract class BookSearchBaseFragment
      * @param bookData Bundle with the results
      */
     void onSearchResults(@NonNull final Bundle bookData) {
-        final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                .putExtra(Book.BKEY_DATA_BUNDLE, bookData);
-        startActivityForResult(intent, RequestCode.BOOK_EDIT);
+        mEditBookFoundLauncher.launch(bookData);
         onClearPreviousSearchCriteria();
     }
 
@@ -315,29 +294,5 @@ public abstract class BookSearchBaseFragment
                              @NonNull final CharSequence error) {
         til.setError(error);
         til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
-    }
-
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.BOOK_EDIT: {
-                if (resultCode == Activity.RESULT_OK && data != null) {
-                    mBookSearchViewModel.putResultData(data);
-                }
-                break;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-            }
-        }
     }
 }

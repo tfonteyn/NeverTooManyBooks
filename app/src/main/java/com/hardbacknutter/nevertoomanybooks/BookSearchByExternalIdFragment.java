@@ -29,6 +29,7 @@ import android.widget.RadioButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -39,6 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExte
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchByExternalIdViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup;
 
 public class BookSearchByExternalIdFragment
@@ -55,13 +58,19 @@ public class BookSearchByExternalIdFragment
     private int mSisSelectedRbId = View.NO_ID;
     /** The current external id text used by onPause/onSaveInstanceState. */
     private String mSisUserInput;
-
     /** View Binding. */
     private FragmentBooksearchByExternalIdBinding mVb;
-
     /** Set when the user selects a site. */
     @Nullable
     private SearchEngine.ByExternalId mSelectedSearchEngine;
+
+    private BookSearchByExternalIdViewModel mVm;
+
+    @NonNull
+    @Override
+    public ActivityResultViewModel getActivityResultViewModel() {
+        return mVm;
+    }
 
     @Override
     @Nullable
@@ -76,6 +85,9 @@ public class BookSearchByExternalIdFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mVm = new ViewModelProvider(this)
+                .get(BookSearchByExternalIdViewModel.class);
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_external_id);
@@ -105,63 +117,6 @@ public class BookSearchByExternalIdFragment
             }
             return false;
         });
-    }
-
-    @Override
-    boolean onPreSearch() {
-        //sanity check
-        //noinspection ConstantConditions
-        if (mVb.externalId.getText().toString().trim().isEmpty()
-            || mVb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
-            showError(mVb.lblExternalId, getString(R.string.warning_requires_site_and_id));
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    boolean onSearch() {
-        //noinspection ConstantConditions
-        final String externalId = mVb.externalId.getText().toString().trim();
-        //noinspection ConstantConditions
-        return mCoordinator.searchByExternalId(getContext(), mSelectedSearchEngine, externalId);
-    }
-
-    @Override
-    void onSearchResults(@NonNull final Bundle bookData) {
-        // A non-empty result will have a title, or at least 3 fields:
-        // The external id field for the site should be present as we searched on one.
-        // The title field, *might* be there but *might* be empty.
-        // So a valid result means we either need a title, or a third field.
-        final String title = bookData.getString(DBDefinitions.KEY_TITLE);
-        if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
-            Snackbar.make(mVb.externalId, R.string.warning_no_matching_book_found,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        }
-        // edit book
-        super.onSearchResults(bookData);
-    }
-
-    @Override
-    void onClearPreviousSearchCriteria() {
-        super.onClearPreviousSearchCriteria();
-        mVb.externalId.setText("");
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mSisSelectedRbId = mVb.sitesGroup.getCheckedRadioButtonId();
-        //noinspection ConstantConditions
-        mSisUserInput = mVb.externalId.getText().toString().trim();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(SIS_SELECTED_RB_ID, mSisSelectedRbId);
-        outState.putString(SIS_USER_INPUT, mSisUserInput);
     }
 
     private void onSiteSelect(@NonNull final ConstraintRadioGroup group,
@@ -227,5 +182,62 @@ public class BookSearchByExternalIdFragment
         mVb.externalId.setInputType(inputType);
         mVb.externalId.setCompoundDrawablesRelativeWithIntrinsicBounds(keyboardIcon, 0, 0, 0);
         mVb.externalId.setEnabled(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mSisSelectedRbId = mVb.sitesGroup.getCheckedRadioButtonId();
+        //noinspection ConstantConditions
+        mSisUserInput = mVb.externalId.getText().toString().trim();
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(SIS_SELECTED_RB_ID, mSisSelectedRbId);
+        outState.putString(SIS_USER_INPUT, mSisUserInput);
+    }
+
+    @Override
+    boolean onPreSearch() {
+        //sanity check
+        //noinspection ConstantConditions
+        if (mVb.externalId.getText().toString().trim().isEmpty()
+            || mVb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
+            showError(mVb.lblExternalId, getString(R.string.warning_requires_site_and_id));
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    boolean onSearch() {
+        //noinspection ConstantConditions
+        final String externalId = mVb.externalId.getText().toString().trim();
+        //noinspection ConstantConditions
+        return mCoordinator.searchByExternalId(getContext(), mSelectedSearchEngine, externalId);
+    }
+
+    @Override
+    void onSearchResults(@NonNull final Bundle bookData) {
+        // A non-empty result will have a title, or at least 3 fields:
+        // The external id field for the site should be present as we searched on one.
+        // The title field, *might* be there but *might* be empty.
+        // So a valid result means we either need a title, or a third field.
+        final String title = bookData.getString(DBDefinitions.KEY_TITLE);
+        if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
+            Snackbar.make(mVb.externalId, R.string.warning_no_matching_book_found,
+                          Snackbar.LENGTH_LONG).show();
+            return;
+        }
+        // edit book
+        super.onSearchResults(bookData);
+    }
+
+    @Override
+    void onClearPreviousSearchCriteria() {
+        super.onClearPreviousSearchCriteria();
+        mVb.externalId.setText("");
     }
 }

@@ -3126,6 +3126,7 @@ public class DAO
      *
      * @return list with book ID's
      */
+    @NonNull
     public ArrayList<Long> getBookIdsByIsbn(@NonNull final ISBN isbn) {
         final ArrayList<Long> list = new ArrayList<>();
         // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,

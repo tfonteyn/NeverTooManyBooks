@@ -23,23 +23,18 @@ import android.app.Activity;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModel;
 
-public class BookSearchViewModel
-        extends ViewModel
-        implements ActivityResultDataModel {
+/**
+ * Really just a 'marker' interface forcing classes to use the same method name
+ * as a reminder to the developer.
+ */
+public interface ResultIntent {
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    /**
+     * Get the data intent to pass to {@link Activity#setResult}.
+     *
+     * @return intent
+     */
     @NonNull
-    private final Intent mResultData = new Intent();
-
-    @Override
-    @NonNull
-    public Intent getResultIntent() {
-        return mResultData;
-    }
-
-    public void putResultData(@NonNull final Intent data) {
-        mResultData.putExtras(data);
-    }
+    Intent getResultIntent();
 }

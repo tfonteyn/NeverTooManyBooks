@@ -35,12 +35,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
@@ -57,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatte
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.CsvFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.LanguageFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
-import com.hardbacknutter.nevertoomanybooks.scanner.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
@@ -77,6 +78,13 @@ public class EditBookFieldsFragment
                 field.getAccessor().setValue(selectedItems);
                 field.onChanged(true);
             };
+    /** The scanner. */
+    private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
+            new ScannerContract(), barCode -> {
+                if (barCode != null) {
+                    mBookViewModel.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
+                }
+            });
 
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
@@ -85,9 +93,6 @@ public class EditBookFieldsFragment
     /** The level of checking the ISBN code. */
     @ISBN.Validity
     private int mIsbnValidityCheck;
-
-    /** The scanner. */
-    private ActivityResultLauncher<Void> mScannerLauncher;
     /** View Binding. */
     private FragmentEditBookFieldsBinding mVb;
 
@@ -104,25 +109,18 @@ public class EditBookFieldsFragment
         getChildFragmentManager()
                 .setFragmentResultListener(RK_EDIT_BOOKSHELVES, this, mOnCheckListListener);
 
-        mScannerLauncher = registerForActivityResult(
-                new ScannerContract(this), barCode -> {
-                    if (barCode != null) {
-                        mBookViewModel.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
-                    }
-                });
-
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
 
-        if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
+        if (mVm.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
                     this, mBookViewModel, 0,
                     res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
                     res.getDimensionPixelSize(R.dimen.cover_edit_0_height));
         }
 
-        if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
+        if (mVm.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
                     this, mBookViewModel, 1,
                     res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
@@ -172,7 +170,7 @@ public class EditBookFieldsFragment
             field.validate();
         });
 
-        mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(null));
+        mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
         mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
                 .newInstance()
@@ -190,7 +188,7 @@ public class EditBookFieldsFragment
         if (getField(R.id.bookshelves).isUsed(prefs)) {
             mVb.bookshelves.setOnClickListener(v -> {
                 final ArrayList<Entity> allItems =
-                        new ArrayList<>(mFragmentVM.getAllBookshelves());
+                        new ArrayList<>(mVm.getAllBookshelves());
                 final ArrayList<Entity> selectedItems =
                         new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
                                 Book.BKEY_BOOKSHELF_LIST));
@@ -223,8 +221,10 @@ public class EditBookFieldsFragment
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        addAutocomplete(prefs, getField(R.id.genre), () -> mFragmentVM.getAllGenres());
-        addAutocomplete(prefs, getField(R.id.language), () -> mFragmentVM.getAllLanguagesCodes());
+        addAutocomplete(prefs, getField(R.id.genre), () -> mVm
+                .getAllGenres());
+        addAutocomplete(prefs, getField(R.id.language), () -> mVm
+                .getAllLanguagesCodes());
     }
 
     @Override

@@ -38,6 +38,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 public class HostingActivity
         extends BaseActivity {
 
+    private static final String TAG = "HostingActivity";
+    public static final String BKEY_FRAGMENT_TAG = TAG + ":fragment";
+
     @Override
     protected void onSetContentView() {
         setContentView(R.layout.activity_main);
@@ -48,7 +51,7 @@ public class HostingActivity
         super.onCreate(savedInstanceState);
 
         final String tag = Objects.requireNonNull(
-                getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG), "tag");
+                getIntent().getStringExtra(BKEY_FRAGMENT_TAG), "tag");
 
         switch (tag) {
             case BookSearchByIsbnFragment.TAG:
@@ -115,4 +118,5 @@ public class HostingActivity
         AppDir.Cache.purge(App.getTaskContext(), true, file -> file.getName().endsWith(".jpg"));
         super.onDestroy();
     }
+
 }

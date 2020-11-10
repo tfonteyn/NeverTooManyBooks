@@ -85,36 +85,13 @@ public abstract class EditBookBaseFragment
     private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener =
             this::onDateSet;
     /** The view model. */
-    EditBookFragmentViewModel mFragmentVM;
+    EditBookFragmentViewModel mVm;
 
-    /**
-     * Convert a LocalDate to an Instant in time.
-     *
-     * @param field       to extract from
-     * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
-     *
-     * @return instant
-     */
-    @Nullable
-    private Instant getInstant(@NonNull final Field<String, TextView> field,
-                               final boolean todayIfNone) {
-        //noinspection ConstantConditions
-        final LocalDateTime date = DateParser.getInstance(getContext())
-                                             .parse(field.getAccessor().getValue());
-        if (date == null && !todayIfNone) {
-            return null;
-        }
-
-        if (date != null) {
-            return date.toInstant(ZoneOffset.UTC);
-        }
-        return Instant.now();
-    }
 
     @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields(getFragmentId());
+        return mVm.getFields(getFragmentId());
     }
 
     @Override
@@ -123,16 +100,13 @@ public abstract class EditBookBaseFragment
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+        mVm = new ViewModelProvider(getActivity())
+                .get(getFragmentId(), EditBookFragmentViewModel.class);
 
         final FragmentManager fm = getChildFragmentManager();
         fm.setFragmentResultListener(RK_DATE_PICKER_PARTIAL, this, mPartialDatePickerListener);
         fm.setFragmentResultListener(RK_DATE_PICKER_SINGLE, this, mDatePickerListener);
         fm.setFragmentResultListener(RK_DATE_PICKER_RANGE, this, mDatePickerListener);
-
-        mFragmentVM = new ViewModelProvider(getActivity())
-                .get(getFragmentId(), EditBookFragmentViewModel.class);
-        //noinspection ConstantConditions
-        mFragmentVM.init(getContext(), getArguments());
     }
 
     @Override
@@ -184,7 +158,7 @@ public abstract class EditBookBaseFragment
         if (mBookViewModel.getBook().getStage() == EntityStage.Stage.Dirty) {
             onSaveFields(mBookViewModel.getBook());
 
-            mBookViewModel.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
+            mVm.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
         }
         super.onPause();
     }
@@ -371,6 +345,30 @@ public abstract class EditBookBaseFragment
         if (fieldId == R.id.read_end) {
             getField(R.id.cbx_read).getAccessor().setValue(true);
         }
+    }
+
+    /**
+     * Convert a LocalDate to an Instant in time.
+     *
+     * @param field       to extract from
+     * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
+     *
+     * @return instant
+     */
+    @Nullable
+    private Instant getInstant(@NonNull final Field<String, TextView> field,
+                               final boolean todayIfNone) {
+        //noinspection ConstantConditions
+        final LocalDateTime date = DateParser.getInstance(getContext())
+                                             .parse(field.getAccessor().getValue());
+        if (date == null && !todayIfNone) {
+            return null;
+        }
+
+        if (date != null) {
+            return date.toInstant(ZoneOffset.UTC);
+        }
+        return Instant.now();
     }
 
     public interface OnResultListener<T extends Parcelable>

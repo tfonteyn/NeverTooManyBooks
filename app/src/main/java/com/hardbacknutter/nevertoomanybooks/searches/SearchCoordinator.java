@@ -61,6 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -75,7 +76,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
  * Co-ordinate multiple {@link SearchTask}.
@@ -283,10 +283,10 @@ public class SearchCoordinator
                 mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
 
                 mAuthorSearchText = args.getString(
-                        BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
+                        SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
 
                 mPublisherSearchText = args.getString(
-                        BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, "");
+                        SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, "");
             }
         }
     }

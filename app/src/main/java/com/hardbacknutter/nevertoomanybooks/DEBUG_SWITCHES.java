@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import androidx.activity.result.contract.ActivityResultContract;
+
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
@@ -60,7 +62,7 @@ public final class DEBUG_SWITCHES {
     /** {@link BooksOnBookshelfModel} Display the position and node id. Adds a View from code. */
     public static final boolean BOB_NODE_ID = false;
 
-    /** track the flow & values on startActivityForResult & onActivityResult. */
+    /** track results from {@link ActivityResultContract#parseResult}. */
     public static final boolean ON_ACTIVITY_RESULT = false;
 
     /** all things related to cover image handling. */

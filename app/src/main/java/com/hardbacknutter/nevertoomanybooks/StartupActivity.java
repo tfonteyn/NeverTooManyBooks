@@ -24,6 +24,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -57,7 +58,11 @@ public class StartupActivity
     private static WeakReference<StartupActivity> sStartupActivity;
 
     /** The Activity ViewModel. */
-    private StartupViewModel mModel;
+    private StartupViewModel mVm;
+    /** Make a backup; when done, move to the next startup stage. */
+    private final ActivityResultLauncher<Void> mExportLauncher = registerForActivityResult(
+            new ExportFragment.ResultContract(), success -> nextStage());
+
     /** View Binding. */
     private ActivityStartupBinding mVb;
 
@@ -101,14 +106,14 @@ public class StartupActivity
         final PackageInfoWrapper info = PackageInfoWrapper.create(this);
         mVb.version.setText(info.getVersionName());
 
-        mModel = new ViewModelProvider(this).get(StartupViewModel.class);
-        mModel.init(this);
-        mModel.onProgressUpdate().observe(this, message ->
+        mVm = new ViewModelProvider(this).get(StartupViewModel.class);
+        mVm.init(this);
+        mVm.onProgressUpdate().observe(this, message ->
                 mVb.progressMessage.setText(message.text));
         // when all tasks are done, move on to next startup-stage
-        mModel.onFinished().observe(this, aVoid -> nextStage());
+        mVm.onFinished().observe(this, aVoid -> nextStage());
         // any error, notify the user and die.
-        mModel.onFailure().observe(this, e -> {
+        mVm.onFailure().observe(this, e -> {
             if (e.result != null) {
                 showFatalErrorAndFinish(e.result.getLocalizedMessage());
             }
@@ -122,7 +127,7 @@ public class StartupActivity
      */
     private void nextStage() {
 
-        switch (mModel.getNextStartupStage()) {
+        switch (mVm.getNextStartupStage()) {
             case 1:
                 startTasks();
                 break;
@@ -136,7 +141,7 @@ public class StartupActivity
                 break;
 
             default:
-                throw new IllegalArgumentException(String.valueOf(mModel.getStartupStage()));
+                throw new IllegalArgumentException(String.valueOf(mVm.getStartupStage()));
         }
     }
 
@@ -147,8 +152,8 @@ public class StartupActivity
      * If the tasks are not allowed to start, simply move to the next startup stage.
      */
     private void startTasks() {
-        if (mModel.isStartTasks()) {
-            mModel.startTasks(this);
+        if (mVm.isStartTasks()) {
+            mVm.startTasks(this);
         } else {
             nextStage();
         }
@@ -158,17 +163,13 @@ public class StartupActivity
      * Prompt the user to make a backup.
      */
     private void backupRequired() {
-        if (mModel.isProposeBackup()) {
+        if (mVm.isProposeBackup()) {
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                    .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        final Intent intent = new Intent(this, HostingActivity.class)
-                                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
-                        startActivityForResult(intent, RequestCode.NAV_PANEL_EXPORT);
-                    })
+                    .setPositiveButton(android.R.string.ok, (d, w) -> mExportLauncher.launch(null))
                     .setOnDismissListener(d -> nextStage())
                     .create()
                     .show();
@@ -177,20 +178,6 @@ public class StartupActivity
         }
     }
 
-    @Override
-    protected void onActivityResult(final int requestCode,
-                                    final int resultCode,
-                                    @Nullable final Intent data) {
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.NAV_PANEL_EXPORT:
-                nextStage();
-                break;
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
 
     /**
      * Last steps:

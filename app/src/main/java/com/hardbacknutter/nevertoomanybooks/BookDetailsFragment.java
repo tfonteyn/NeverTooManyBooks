@@ -37,6 +37,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,7 +54,11 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigator;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
@@ -120,12 +126,20 @@ public class BookDetailsFragment
                     getActivity().finish();
                 }
             };
+
+    private final ActivityResultLauncher<Long> mEditByIdLauncher = registerForActivityResult(
+            new EditBookByIdContract(), this::onBookEditingDone);
+    private final ActivityResultLauncher<Bundle> mDuplicateLauncher = registerForActivityResult(
+            new EditBookFromBundleContract(), this::onBookEditingDone);
+    private final ActivityResultLauncher<Book> mUpdateBookLauncher = registerForActivityResult(
+            new UpdateBookContract(), this::onBookEditingDone);
+
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
     /** The details helper View model. */
-    private BookDetailsFragmentViewModel mFragmentVM;
+    private BookDetailsFragmentViewModel mVm;
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
     private final EditLenderDialogFragment.OnResultListener mEditLenderListener =
@@ -144,7 +158,7 @@ public class BookDetailsFragment
     @NonNull
     @Override
     Fields getFields() {
-        return mFragmentVM.getFields(TAG);
+        return mVm.getFields();
     }
 
     @Override
@@ -162,20 +176,20 @@ public class BookDetailsFragment
         getChildFragmentManager()
                 .setFragmentResultListener(RK_EDIT_LENDER, this, mEditLenderListener);
 
-        mFragmentVM = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
-        mFragmentVM.init(getContext(), getArguments(), mBookViewModel.getBook());
+        mVm = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
+        mVm.init(getContext(), getArguments(), mBookViewModel.getBook());
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
 
-        if (mFragmentVM.isCoverUsed(getContext(), prefs, 0)) {
+        if (mVm.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
                     this, mBookViewModel, 0,
                     res.getDimensionPixelSize(R.dimen.cover_details_0_width),
                     res.getDimensionPixelSize(R.dimen.cover_details_0_height));
         }
 
-        if (mFragmentVM.isCoverUsed(getContext(), prefs, 1)) {
+        if (mVm.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
                     this, mBookViewModel, 1,
                     res.getDimensionPixelSize(R.dimen.cover_details_1_width),
@@ -245,7 +259,7 @@ public class BookDetailsFragment
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_edit);
         fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> startEditBook());
+        fab.setOnClickListener(v -> mEditByIdLauncher.launch(mBookViewModel.getBook().getId()));
 
         // ENHANCE: should be replaced by a ViewPager2/FragmentStateAdapter
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
@@ -372,7 +386,7 @@ public class BookDetailsFragment
 
         // Personal fields
         fields.add(R.id.bookshelves, new EntityListChipGroupAccessor(
-                           () -> new ArrayList<>(mFragmentVM.getAllBookshelves()),
+                           () -> new ArrayList<>(mVm.getAllBookshelves()),
                            false), Book.BKEY_BOOKSHELF_LIST,
                    DBDefinitions.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
@@ -554,7 +568,7 @@ public class BookDetailsFragment
                 if (isSet) {
                     rowVb.cbxMultipleBooks.setVisibility(View.VISIBLE);
                     rowVb.cbxMultipleBooks.setOnClickListener(v -> {
-                        final String titles = mFragmentVM
+                        final String titles = mVm
                                 .getBookTitles(tocEntry)
                                 .stream()
                                 .map(bt -> context.getString(R.string.list_element, bt.second))
@@ -633,7 +647,7 @@ public class BookDetailsFragment
         //TODO: swiping through the flattened booklist will not see
         // the duplicated book until we go back to BoB.
         // Temporary solution is removing the 'duplicate' option from this screen...
-        menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
+        menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(true);
 
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
             .setVisible(GoodreadsManager.isShowSyncMenus(prefs));
@@ -653,7 +667,7 @@ public class BookDetailsFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_BOOK_EDIT) {
-            startEditBook();
+            mEditByIdLauncher.launch(mBookViewModel.getBook().getId());
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
@@ -670,13 +684,11 @@ public class BookDetailsFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
-            final Intent dupIntent = new Intent(getContext(), EditBookActivity.class)
-                    .putExtra(Book.BKEY_DATA_BUNDLE, book.duplicate());
-            startActivityForResult(dupIntent, RequestCode.BOOK_DUPLICATE);
+            mDuplicateLauncher.launch(book.duplicate());
             return true;
 
-        } else if (itemId == R.id.MENU_BOOK_READ
-                   || itemId == R.id.MENU_BOOK_UNREAD) {// toggle 'read' status of the book
+        } else if (itemId == R.id.MENU_BOOK_READ || itemId == R.id.MENU_BOOK_UNREAD) {
+            // toggle 'read' status of the book
             final boolean value = mBookViewModel.toggleRead();
             final Field<Boolean, View> field = getField(R.id.icon_read);
             field.getAccessor().setValue(value);
@@ -706,14 +718,13 @@ public class BookDetailsFragment
                           Snackbar.LENGTH_LONG).show();
             mGrSendOneBookTask.startTask(book.getId());
             return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
-    private void startEditBook() {
-        final Intent editIntent = new Intent(getContext(), EditBookActivity.class)
-                .putExtra(DBDefinitions.KEY_PK_ID, mBookViewModel.getBook().getId());
-        startActivityForResult(editIntent, RequestCode.BOOK_EDIT);
+        } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
+            mUpdateBookLauncher.launch(book);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -730,49 +741,84 @@ public class BookDetailsFragment
         return super.onContextItemSelected(item);
     }
 
-    @Override
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
+
+    /**
+     * Called when the user has finished (and saved) editing a Book.
+     *
+     * @param data returned from the editor Activity
+     */
+    private void onBookEditingDone(@Nullable final Bundle data) {
+        if (data != null) {
+            // pass the data up
+            mBookViewModel.putResultData(data);
+
+            // deal with 'duplicate book'
+            //TODO: swiping through the flattened booklist will not see
+            // the duplicated book until we go back to BoB.
+            // Easiest solution would be to remove the dup. option from this screen...
+            final long id = data.getLong(DBDefinitions.KEY_PK_ID, 0);
+            if (id > 0 && id != mBookViewModel.getBook().getId()) {
+                mBookViewModel.loadBook(id);
+            }
+        }
+        // onResume will display the changed book.
+        mBookViewModel.reload();
+    }
+
+    public static class ResultContract
+            extends ActivityResultContract<ResultContract.Input, Bundle> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @NonNull final ResultContract.Input input) {
+            return new Intent(context, BookDetailsActivity.class)
+                    // the book to display
+                    .putExtra(DBDefinitions.KEY_PK_ID, input.bookId)
+                    // the current list table, so the user can swipe
+                    // to the next/previous book
+                    .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_NAME,
+                              input.listTableName)
+                    // The row id in the list table of the given book.
+                    // Keep in mind a book can occur multiple times,
+                    // so we need to pass the specific one.
+                    .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_ROW_ID,
+                              input.listTableRowId)
+                    // some style elements are applicable for the details screen
+                    .putExtra(BooklistStyle.BKEY_STYLE_UUID, input.styleUuid);
         }
 
-        switch (requestCode) {
-            case RequestCode.UPDATE_FIELDS_FROM_INTERNET:
-            case RequestCode.BOOK_EDIT:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
-                        // pass the data up
-                        mBookViewModel.addResultData(data);
-                    }
-                    // onResume will display the changed book.
-                    mBookViewModel.reload();
-                }
-                break;
+        @Override
+        @Nullable
+        public Bundle parseResult(final int resultCode,
+                                  @Nullable final Intent intent) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            }
 
-            case RequestCode.BOOK_DUPLICATE:
-                if (resultCode == Activity.RESULT_OK) {
-                    if (data != null) {
-                        // pass the data up
-                        mBookViewModel.addResultData(data);
+            if (intent == null || resultCode != Activity.RESULT_OK) {
+                return null;
+            }
+            return intent.getExtras();
+        }
 
-                        final long id = data.getLongExtra(DBDefinitions.KEY_PK_ID, 0);
-                        if (id > 0) {
-                            mBookViewModel.loadBook(id);
-                        }
-                    }
-                    // onResume will display the new book
-                    mBookViewModel.reload();
-                    //TODO: swiping through the flattened booklist will not see
-                    // the duplicated book until we go back to BoB.
-                    // Easiest solution would be to remove the dup. option from this screen...
-                }
-                break;
+        public static class Input {
 
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
+            final long bookId;
+            @NonNull
+            final String styleUuid;
+            @NonNull
+            final String listTableName;
+            final long listTableRowId;
+
+            public Input(final long bookId,
+                         @NonNull final String listTableName,
+                         final long listTableRowId,
+                         @NonNull final String styleUuid) {
+                this.bookId = bookId;
+                this.styleUuid = styleUuid;
+                this.listTableName = listTableName;
+                this.listTableRowId = listTableRowId;
             }
         }
     }
@@ -803,14 +849,14 @@ public class BookDetailsFragment
             }
 
             if ((e1.getX() - e2.getX()) > SENSITIVITY) {
-                if (mFragmentVM.move(mBookViewModel.getBook(),
-                                     BooklistNavigator.Direction.Next)) {
+                if (mVm.move(mBookViewModel.getBook(),
+                             BooklistNavigator.Direction.Next)) {
                     populateViews();
                     return true;
                 }
             } else if ((e2.getX() - e1.getX()) > SENSITIVITY) {
-                if (mFragmentVM.move(mBookViewModel.getBook(),
-                                     BooklistNavigator.Direction.Previous)) {
+                if (mVm.move(mBookViewModel.getBook(),
+                             BooklistNavigator.Direction.Previous)) {
                     populateViews();
                     return true;
                 }

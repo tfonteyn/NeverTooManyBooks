@@ -59,8 +59,7 @@ public class GoodreadsAuthorizationActivity
         }
 
         // Bring our app back to the top
-        final Intent intent = new Intent(this, BooksOnBookshelf.class);
-        startActivity(intent);
+        startActivity(new Intent(this, BooksOnBookshelf.class));
         finish();
     }
 

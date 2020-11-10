@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 
 /**
  * The hosting activity for editing a book.
@@ -58,17 +59,13 @@ public class EditBookActivity
 
     /** Log tag. */
     private static final String TAG = "EditBookActivity";
-    /** Currently displayed tab. */
-    private static final String BKEY_TAB = TAG + ":tab";
 
     /** Host for the tabbed fragments. */
     private TabAdapter mViewPagerAdapter;
-
     /** The book. Must be in the Activity scope. */
     private BookViewModel mBookViewModel;
-
-    /** Track the currently displayed tab so we can survive recreations. {@link #BKEY_TAB}. */
-    private int mCurrentTab;
+    /** Other editing related stuff. Must be in the Activity scope. */
+    private EditBookFragmentViewModel mVm;
     /** View Binding. */
     private ActivityEditBookBinding mVb;
 
@@ -82,12 +79,11 @@ public class EditBookActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (savedInstanceState != null) {
-            mCurrentTab = savedInstanceState.getInt(BKEY_TAB);
-        }
-
         mBookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
         mBookViewModel.init(this, getIntent().getExtras(), true);
+
+        mVm = new ViewModelProvider(this).get(EditBookFragmentViewModel.class);
+        mVm.init(this, getIntent().getExtras());
 
         mViewPagerAdapter = new TabAdapter(this);
         mVb.pager.setAdapter(mViewPagerAdapter);
@@ -100,11 +96,14 @@ public class EditBookActivity
     @Override
     public void onResume() {
         super.onResume();
+
+        int currentTab = mVm.getCurrentTab();
         // sanity check
-        if (mCurrentTab >= mViewPagerAdapter.getItemCount()) {
-            mCurrentTab = 0;
+        if (currentTab >= mViewPagerAdapter.getItemCount()) {
+            currentTab = 0;
+            mVm.setCurrentTab(0);
         }
-        mVb.pager.setCurrentItem(mCurrentTab);
+        mVb.pager.setCurrentItem(currentTab);
 
         //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
         // and its re-use strategy.
@@ -114,13 +113,7 @@ public class EditBookActivity
     @Override
     public void onPause() {
         super.onPause();
-        mCurrentTab = mVb.pager.getCurrentItem();
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(BKEY_TAB, mCurrentTab);
+        mVm.setCurrentTab(mVb.pager.getCurrentItem());
     }
 
     @Override
@@ -154,9 +147,8 @@ public class EditBookActivity
      */
     public void prepareSave(final boolean checkUnfinishedEdits) {
         final Book book = mBookViewModel.getBook();
-        // this will normally only contain 1 element maximum but is designed (and proven
-        // to work) with multiple.
-        final Collection<String> unfinishedEdits = mBookViewModel.getUnfinishedEdits();
+        // list of fragment tags
+        final Collection<String> unfinishedEdits = mVm.getUnfinishedEdits();
 
         final List<Fragment> fragments = getSupportFragmentManager().getFragments();
         for (int i = 0; i < fragments.size(); i++) {

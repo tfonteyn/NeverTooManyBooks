@@ -35,8 +35,6 @@ import androidx.lifecycle.ViewModel;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -53,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  */
 public class BookViewModel
         extends ViewModel
-        implements ActivityResultDataModel {
+        implements ActivityResultViewModel {
 
     /** Log tag. */
     private static final String TAG = "BookViewModel";
@@ -67,14 +65,6 @@ public class BookViewModel
     public static final String BKEY_BOOK_CREATED = TAG + ":created";
 
     /**
-     * One <strong>or more</strong> books and/or global data (author etc) was modified (or not).
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_BOOK_MODIFIED = TAG + ":modified";
-
-    /**
      * One <strong>or more</strong> books were deleted (or not).
      * <p>
      * <br>type: {@code boolean}
@@ -82,25 +72,27 @@ public class BookViewModel
      */
     public static final String BKEY_BOOK_DELETED = TAG + ":deleted";
 
+    /**
+     * One <strong>or more books and/or global data</strong> (author etc) was modified (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_DATA_MODIFIED = TAG + ":modified";
+
     private final MutableLiveData<ArrayList<Author>> mAuthorList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
-
-    /** key: fragmentTag. */
-    private final Collection<String> mFragmentsWithUnfinishedEdits = new HashSet<>();
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private final Intent mResultData = new Intent();
     /** Database Access. */
     private DAO mDb;
-
     /**
      * The Book this model represents. The only time this can be {@code null}
      * is when this model is just initialized, or when the Book was deleted.
      */
     private Book mBook;
-
-
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultData = new Intent();
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Override
@@ -110,6 +102,14 @@ public class BookViewModel
         }
     }
 
+    /**
+     * <ul>
+     * <li>{@link DBDefinitions#KEY_PK_ID}  current book id</li>
+     * <li>{@link #BKEY_BOOK_CREATED}       boolean</li>
+     * <li>{@link #BKEY_BOOK_DELETED}       boolean</li>
+     * <li>{@link #BKEY_DATA_MODIFIED}      boolean</li>
+     * </ul>
+     */
     @NonNull
     @Override
     public Intent getResultIntent() {
@@ -119,10 +119,6 @@ public class BookViewModel
         }
 
         return mResultData;
-    }
-
-    public void addResultData(@NonNull final Intent data) {
-        mResultData.putExtras(data);
     }
 
 
@@ -197,32 +193,6 @@ public class BookViewModel
         }
 
         mBook.ensureBookshelf(context, mDb);
-    }
-
-    /**
-     * Get the list of fragments (their tags) which have unfinished edits.
-     *
-     * @return list
-     */
-    @NonNull
-    public Collection<String> getUnfinishedEdits() {
-        return mFragmentsWithUnfinishedEdits;
-    }
-
-    /**
-     * Add or remove the given fragment tag from the list of unfinished edits.
-     *
-     * @param tag                of fragment
-     * @param hasUnfinishedEdits flag
-     */
-    public void setUnfinishedEdits(@NonNull final String tag,
-                                   final boolean hasUnfinishedEdits) {
-        if (hasUnfinishedEdits) {
-            // Flag up this fragment as having unfinished edits.
-            mFragmentsWithUnfinishedEdits.add(tag);
-        } else {
-            mFragmentsWithUnfinishedEdits.remove(tag);
-        }
     }
 
     @NonNull
@@ -312,7 +282,7 @@ public class BookViewModel
      */
     public boolean toggleRead() {
         if (mBook.toggleRead(mDb)) {
-            mResultData.putExtra(BKEY_BOOK_MODIFIED, true);
+            mResultData.putExtra(BKEY_DATA_MODIFIED, true);
             return true;
         } else {
             return false;
@@ -382,11 +352,9 @@ public class BookViewModel
             mResultData.putExtra(BKEY_BOOK_CREATED, true);
         } else {
             mDb.update(context, mBook, 0);
-            mResultData.putExtra(BKEY_BOOK_MODIFIED, true);
+            mResultData.putExtra(BKEY_DATA_MODIFIED, true);
         }
         mBook.setStage(EntityStage.Stage.Clean);
-
-        mResultData.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
     }
 
 

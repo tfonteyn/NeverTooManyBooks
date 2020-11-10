@@ -20,12 +20,10 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -36,8 +34,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -163,59 +159,6 @@ public class SearchAdminActivity
             } else {
                 return Site.Type.values()[position];
             }
-        }
-    }
-
-    public static class AllListsContract
-            extends ActivityResultContract<Void, Boolean> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @Nullable final Void input) {
-            return new Intent(context, SearchAdminActivity.class);
-        }
-
-        @NonNull
-        @Override
-        public Boolean parseResult(final int resultCode,
-                                   @Nullable final Intent intent) {
-            return intent != null && resultCode == Activity.RESULT_OK;
-        }
-    }
-
-    public static class SingleListContract
-            extends ActivityResultContract<ArrayList<Site>, ArrayList<Site>> {
-
-        @NonNull
-        private final Site.Type mType;
-
-        /**
-         * Constructor.
-         *
-         * @param type of list to edit
-         */
-        public SingleListContract(@NonNull final Site.Type type) {
-            mType = type;
-        }
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @Nullable final ArrayList<Site> input) {
-            return new Intent(context, SearchAdminActivity.class)
-                    .putExtra(SearchAdminViewModel.BKEY_LIST, input);
-        }
-
-        @Nullable
-        @Override
-        public ArrayList<Site> parseResult(final int resultCode,
-                                           @Nullable final Intent intent) {
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return null;
-            }
-
-            return intent.getParcelableArrayListExtra(mType.getBundleKey());
         }
     }
 }

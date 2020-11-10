@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -31,6 +32,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,8 +45,8 @@ import java.util.TimerTask;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
@@ -131,18 +133,13 @@ public class FTSSearchFragment
 
         mDb = new DAO(TAG);
 
-        final Bundle args = savedInstanceState != null ? savedInstanceState
-                                                       : getArguments();
+        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
             mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE);
             mSeriesTitleSearchText = args.getString(DBDefinitions.KEY_SERIES_TITLE);
-
-            mAuthorSearchText = args.getString(
-                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
-            mPublisherNameSearchText = args.getString(
-                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
-            mKeywordsSearchText = args.getString(
-                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
+            mAuthorSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+            mPublisherNameSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
+            mKeywordsSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
         }
     }
 
@@ -201,11 +198,11 @@ public class FTSSearchFragment
                     .putExtra(DBDefinitions.KEY_TITLE, mTitleSearchText)
                     .putExtra(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText)
 
-                    .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
+                    .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
                               mAuthorSearchText)
-                    .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
+                    .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
                               mPublisherNameSearchText)
-                    .putExtra(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
+                    .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
                               mKeywordsSearchText)
                     // pass the book ID's for the list
                     .putExtra(Book.BKEY_BOOK_ID_LIST, mBookIdList);
@@ -282,12 +279,9 @@ public class FTSSearchFragment
 
         outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
         outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText);
-        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                           mAuthorSearchText);
-        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
-                           mPublisherNameSearchText);
-        outState.putString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
-                           mKeywordsSearchText);
+        outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, mAuthorSearchText);
+        outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, mPublisherNameSearchText);
+        outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS, mKeywordsSearchText);
     }
 
     @Override
@@ -329,6 +323,34 @@ public class FTSSearchFragment
         }
         if (timer != null) {
             timer.cancel();
+        }
+    }
+
+    public static class ResultContract
+            extends ActivityResultContract<SearchCriteria, Bundle> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @NonNull final SearchCriteria criteria) {
+            final Intent intent = new Intent(context, HostingActivity.class)
+                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, FTSSearchFragment.TAG);
+            criteria.to(intent);
+            return intent;
+        }
+
+        @Override
+        @Nullable
+        public Bundle parseResult(final int resultCode,
+                                  @Nullable final Intent intent) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            }
+
+            if (intent == null || resultCode != Activity.RESULT_OK) {
+                return null;
+            }
+            return intent.getExtras();
         }
     }
 

@@ -34,6 +34,7 @@ import androidx.preference.PreferenceManager;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 
@@ -54,7 +55,7 @@ public class SettingsHostingActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final String tag = Objects.requireNonNull(
-                getIntent().getStringExtra(BaseActivity.BKEY_FRAGMENT_TAG), "tag");
+                getIntent().getStringExtra(HostingActivity.BKEY_FRAGMENT_TAG), "tag");
 
         switch (tag) {
             case SettingsFragment.TAG:

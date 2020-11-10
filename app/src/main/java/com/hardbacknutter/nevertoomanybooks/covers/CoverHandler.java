@@ -128,7 +128,8 @@ public class CoverHandler {
     @NonNull
     private final ActivityResultLauncher<Uri> mTakePictureLauncher;
     @NonNull
-    private final ActivityResultLauncher<File> mCropPictureLauncher;
+    private final ActivityResultLauncher<CropImageActivity.ResultContract.Input>
+            mCropPictureLauncher;
     @NonNull
     private final ActivityResultLauncher<String> mGetFromFileLauncher;
     @NonNull
@@ -188,7 +189,7 @@ public class CoverHandler {
                 new ActivityResultContracts.StartActivityForResult(), this::onEditPictureResult);
 
         mCropPictureLauncher = mFragment.registerForActivityResult(
-                new CropImageActivity.ResultContract(getTempFile()), this::onGetContentResult);
+                new CropImageActivity.ResultContract(), this::onGetContentResult);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             mFragment.getChildFragmentManager().setFragmentResultListener(
@@ -351,7 +352,9 @@ public class CoverHandler {
 
         } else if (itemId == R.id.MENU_THUMB_CROP) {
             try {
-                mCropPictureLauncher.launch(mBookViewModel.createTempCoverFile(context, mCIdx));
+                mCropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
+                        mBookViewModel.createTempCoverFile(context, mCIdx),
+                        getTempFile()));
 
             } catch (@NonNull final IOException e) {
                 Snackbar.make(mCoverView, R.string.error_storage_not_writable,
@@ -622,7 +625,9 @@ public class CoverHandler {
 
             switch (result.getReturnCode()) {
                 case ACTION_CROP:
-                    mCropPictureLauncher.launch(result.getFile());
+                    mCropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
+                            result.getFile(),
+                            getTempFile()));
                     break;
 
                 case ACTION_EDIT:

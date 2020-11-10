@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FTSSearchFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -137,7 +137,7 @@ public class BooksOnBookshelfModel
     /** Database Access. */
     private DAO mDb;
     /**
-     * Flag (potentially) set in {@link BooksOnBookshelf} #onActivityResult.
+     * Flag (potentially) set when coming back from another Activity.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      */
     private boolean mForceRebuildInOnResume;
@@ -486,8 +486,7 @@ public class BooksOnBookshelfModel
 
     /**
      * This is used to re-display the list in onResume.
-     * i.e. {@link #mDesiredCentralBookId} was set in #onActivityResult
-     * but a rebuild was not needed.
+     * i.e. {@link #mDesiredCentralBookId} was set, but a rebuild was not needed.
      *
      * @return the node(s), or {@code null} if none
      */
@@ -825,23 +824,23 @@ public class BooksOnBookshelfModel
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_RATING)));
             }
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
                 Log.d(TAG, "mSearchCriteria=" + mSearchCriteria);
             }
 
             // if we have a list of ID's, ignore other criteria
             if (mSearchCriteria.hasIdList()) {
-                builder.setFilterOnBookIdList(mSearchCriteria.bookIdList);
+                builder.setFilterOnBookIdList(mSearchCriteria.getBookIdList());
 
             } else {
                 // Criteria supported by FTS
-                builder.setFilter(mSearchCriteria.ftsAuthor,
-                                  mSearchCriteria.ftsTitle,
-                                  mSearchCriteria.ftsSeries,
-                                  mSearchCriteria.ftsPublisher,
-                                  mSearchCriteria.ftsKeywords);
+                builder.setFilter(mSearchCriteria.getFtsAuthor(),
+                                  mSearchCriteria.getFtsTitle(),
+                                  mSearchCriteria.getFtsSeries(),
+                                  mSearchCriteria.getFtsPublisher(),
+                                  mSearchCriteria.getFtsKeywords());
 
-                builder.setFilterOnLoanee(mSearchCriteria.loanee);
+                builder.setFilterOnLoanee(mSearchCriteria.getLoanee());
             }
 
             // if we have any criteria set at all, the build should expand the book list.
@@ -962,222 +961,4 @@ public class BooksOnBookshelfModel
         return mDb.deleteBook(context, bookId);
     }
 
-    /**
-     * Holder class for search criteria with some methods to bulk manipulate them.
-     */
-    public static class SearchCriteria {
-
-        /** Log tag. */
-        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
-        private static final String TAG = "SearchCriteria";
-
-        /** Bundle key for generic search text. */
-        public static final String BKEY_SEARCH_TEXT_KEYWORDS = TAG + ":keywords";
-
-        /**
-         * Bundle key for Author search text
-         * (all DB KEY's and the ARRAY key is for authors with verified names).
-         */
-        public static final String BKEY_SEARCH_TEXT_AUTHOR = TAG + ":author";
-
-        /**
-         * Bundle key for Publisher search text
-         * (all DB KEY's and the ARRAY key is for publishers with verified names).
-         */
-        public static final String BKEY_SEARCH_TEXT_PUBLISHER = TAG + ":publisher";
-
-        /**
-         * List of book ID's to display.
-         * The RESULT of a search with {@link FTSSearchFragment}
-         * which can be re-used for the builder.
-         */
-        @Nullable
-        ArrayList<Long> bookIdList;
-
-        /**
-         * Author to use in FTS search query.
-         * Supported in the builder and {@link FTSSearchFragment}.
-         */
-        @Nullable
-        String ftsAuthor;
-
-        /**
-         * Publisher to use in FTS search query.
-         * Supported in the builder and {@link FTSSearchFragment}.
-         */
-        @Nullable
-        String ftsPublisher;
-
-        /**
-         * Title to use in FTS search query.
-         * Supported in the builder and {@link FTSSearchFragment}.
-         */
-        @Nullable
-        String ftsTitle;
-
-        /**
-         * Series to use in FTS search query.
-         * Supported in the builder, but not yet user-settable.
-         */
-        @Nullable
-        String ftsSeries;
-
-        /**
-         * Name of the person we lend books to, to use in search query.
-         * Supported in the builder, but not yet user-settable.
-         */
-        @Nullable
-        String loanee;
-
-        /**
-         * Keywords to use in FTS search query.
-         * Supported in the builder and {@link FTSSearchFragment}.
-         * <p>
-         * Always use the setter as we need to intercept the "." character.
-         */
-        @Nullable
-        String ftsKeywords;
-
-        public void clear() {
-            ftsKeywords = null;
-            ftsAuthor = null;
-            ftsPublisher = null;
-            ftsTitle = null;
-
-            ftsSeries = null;
-            loanee = null;
-
-            bookIdList = null;
-        }
-
-        /**
-         * Get a single string with all FTS search words, for displaying.
-         *
-         * @return csv string, can be empty, but never {@code null}.
-         */
-        @NonNull
-        String getFtsSearchText() {
-            final Collection<String> list = new ArrayList<>();
-
-            if (ftsAuthor != null && !ftsAuthor.isEmpty()) {
-                list.add(ftsAuthor);
-            }
-            if (ftsPublisher != null && !ftsPublisher.isEmpty()) {
-                list.add(ftsPublisher);
-            }
-            if (ftsTitle != null && !ftsTitle.isEmpty()) {
-                list.add(ftsTitle);
-            }
-            if (ftsSeries != null && !ftsSeries.isEmpty()) {
-                list.add(ftsSeries);
-            }
-            if (ftsKeywords != null && !ftsKeywords.isEmpty()) {
-                list.add(ftsKeywords);
-            }
-            return TextUtils.join(",", list);
-        }
-
-        public void setKeywords(@Nullable final String keywords) {
-            if (keywords == null || keywords.isEmpty() || ".".equals(keywords)) {
-                ftsKeywords = null;
-            } else {
-                ftsKeywords = keywords.trim();
-            }
-        }
-
-        /**
-         * Only copies the criteria which are set.
-         * Criteria not set in the bundle, are preserved!
-         *
-         * @param bundle     with criteria.
-         * @param clearFirst Flag to force clearing all before loading the new criteria
-         *
-         * @return {@code true} if at least one criteria was set
-         */
-        public boolean from(@NonNull final Bundle bundle,
-                            final boolean clearFirst) {
-            if (clearFirst) {
-                clear();
-            }
-            boolean isSet = false;
-
-            if (bundle.containsKey(BKEY_SEARCH_TEXT_KEYWORDS)) {
-                setKeywords(bundle.getString(BKEY_SEARCH_TEXT_KEYWORDS));
-                isSet = true;
-            }
-            if (bundle.containsKey(BKEY_SEARCH_TEXT_AUTHOR)) {
-                ftsAuthor = bundle.getString(BKEY_SEARCH_TEXT_AUTHOR);
-                isSet = true;
-            }
-            if (bundle.containsKey(BKEY_SEARCH_TEXT_PUBLISHER)) {
-                ftsPublisher = bundle.getString(BKEY_SEARCH_TEXT_PUBLISHER);
-                isSet = true;
-            }
-            if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
-                ftsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
-                isSet = true;
-            }
-            if (bundle.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
-                ftsSeries = bundle.getString(DBDefinitions.KEY_SERIES_TITLE);
-                isSet = true;
-            }
-
-            if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
-                loanee = bundle.getString(DBDefinitions.KEY_LOANEE);
-                isSet = true;
-            }
-            if (bundle.containsKey(Book.BKEY_BOOK_ID_LIST)) {
-                //noinspection unchecked
-                bookIdList = (ArrayList<Long>) bundle.getSerializable(Book.BKEY_BOOK_ID_LIST);
-                isSet = true;
-            }
-
-            return isSet;
-        }
-
-        /**
-         * Put the search criteria as extras in the Intent.
-         *
-         * @param intent which will be used for a #startActivityForResult call
-         */
-        public void to(@NonNull final Intent intent) {
-            intent.putExtra(BKEY_SEARCH_TEXT_KEYWORDS, ftsKeywords)
-                  .putExtra(BKEY_SEARCH_TEXT_AUTHOR, ftsAuthor)
-                  .putExtra(BKEY_SEARCH_TEXT_PUBLISHER, ftsPublisher)
-                  .putExtra(DBDefinitions.KEY_TITLE, ftsTitle)
-                  .putExtra(DBDefinitions.KEY_SERIES_TITLE, ftsSeries)
-
-                  .putExtra(DBDefinitions.KEY_LOANEE, loanee)
-                  .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList);
-        }
-
-        public boolean isEmpty() {
-            return (ftsKeywords == null || ftsKeywords.isEmpty())
-                   && (ftsAuthor == null || ftsAuthor.isEmpty())
-                   && (ftsPublisher == null || ftsPublisher.isEmpty())
-                   && (ftsTitle == null || ftsTitle.isEmpty())
-                   && (ftsSeries == null || ftsSeries.isEmpty())
-
-                   && (loanee == null || loanee.isEmpty())
-                   && (bookIdList == null || bookIdList.isEmpty());
-        }
-
-        boolean hasIdList() {
-            return bookIdList != null && !bookIdList.isEmpty();
-        }
-
-        @Override
-        @NonNull
-        public String toString() {
-            return "SearchCriteria{"
-                   + "ftsAuthor=`" + ftsAuthor + '`'
-                   + ", ftsTitle=`" + ftsTitle + '`'
-                   + ", ftsSeries=`" + ftsSeries + '`'
-                   + ", ftsPublisher=`" + ftsPublisher + '`'
-                   + ", loanee=`" + loanee + '`'
-                   + ", ftsKeywords=`" + ftsKeywords + '`'
-                   + ", bookList=" + bookIdList
-                   + '}';
-        }
-    }
 }

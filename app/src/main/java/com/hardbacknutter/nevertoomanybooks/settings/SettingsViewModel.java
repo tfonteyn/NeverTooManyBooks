@@ -26,11 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class SettingsViewModel
         extends ViewModel
-        implements ActivityResultDataModel {
+        implements ResultIntent {
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull

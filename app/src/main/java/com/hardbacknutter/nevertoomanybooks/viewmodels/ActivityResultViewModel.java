@@ -19,22 +19,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.app.Activity;
-import android.content.Intent;
+import android.os.Bundle;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-/**
- * Really just a 'marker' interface forcing classes to use the same method name
- * as a reminder to the developer.
- */
-public interface ActivityResultDataModel {
+public interface ActivityResultViewModel
+        extends ResultIntent {
 
     /**
-     * Get the data intent to pass to {@link Activity#setResult}.
+     * Add the <strong>content</strong> of the bundle.
      *
-     * @return intent
+     * @param data with name/value pairs to add
      */
-    @NonNull
-    Intent getResultIntent();
+    default void putResultData(@Nullable final Bundle data) {
+        if (data != null) {
+            getResultIntent().putExtras(data);
+        }
+    }
 }

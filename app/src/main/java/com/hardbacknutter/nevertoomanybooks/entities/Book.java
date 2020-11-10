@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -61,7 +62,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
  * Represents the underlying data for a book.
@@ -1407,10 +1407,10 @@ public class Book
         // which would contain whatever the user searched for.
         if (authors.isEmpty()) {
             final String searchText = getString(
-                    BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+                    SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             if (!searchText.isEmpty()) {
                 authors.add(Author.from(searchText));
-                remove(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
+                remove(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
                 mStage.setStage(EntityStage.Stage.Dirty);
             }
         }

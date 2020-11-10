@@ -61,6 +61,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityCropimageBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -182,42 +183,21 @@ public class CropImageActivity
     }
 
     public static class ResultContract
-            extends ActivityResultContract<File, Uri> {
+            extends ActivityResultContract<ResultContract.Input, Uri> {
 
-        @Nullable
         private File mDstFile;
-
-        /**
-         * Constructor.
-         * <p>
-         * The destination file name will be auto-generated.
-         */
-        public ResultContract() {
-        }
-
-        /**
-         * Constructor.
-         *
-         * @param dstFile destination file to write to
-         */
-        @SuppressWarnings("WeakerAccess")
-        public ResultContract(@NonNull final File dstFile) {
-            mDstFile = dstFile;
-        }
 
         @CallSuper
         @NonNull
         @Override
         public Intent createIntent(@NonNull final Context context,
-                                   @NonNull final File input) {
+                                   @NonNull final ResultContract.Input input) {
 
-            if (mDstFile == null) {
-                mDstFile = AppDir.Cache.getFile(context, System.nanoTime() + ".jpg");
-            }
+            mDstFile = input.dstFile;
             FileUtils.delete(mDstFile);
 
             return new Intent(context, CropImageActivity.class)
-                    .putExtra(CropImageActivity.BKEY_SOURCE, input.getAbsolutePath())
+                    .putExtra(CropImageActivity.BKEY_SOURCE, input.srcFile.getAbsolutePath())
                     .putExtra(CropImageActivity.BKEY_DESTINATION, mDstFile.getAbsolutePath());
         }
 
@@ -225,11 +205,29 @@ public class CropImageActivity
         @Override
         public final Uri parseResult(final int resultCode,
                                      @Nullable final Intent intent) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            }
+
             if (intent == null || resultCode != Activity.RESULT_OK) {
                 FileUtils.delete(mDstFile);
                 return null;
             }
             return intent.getData();
+        }
+
+        static class Input {
+
+            @NonNull
+            final File srcFile;
+            @NonNull
+            final File dstFile;
+
+            Input(@NonNull final File srcFile,
+                  @NonNull final File dstFile) {
+                this.srcFile = srcFile;
+                this.dstFile = dstFile;
+            }
         }
     }
 }

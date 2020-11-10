@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -30,21 +29,27 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.scanner.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
+import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchByIsbnViewModel;
 
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
@@ -55,28 +60,28 @@ public class BookSearchByIsbnFragment
     /** Log tag. */
     public static final String TAG = "BookSearchByIsbnFrag";
 
-    static final String BKEY_SCAN_MODE = TAG + ":scanMode";
-
+    public static final String BKEY_SCAN_MODE = TAG + ":scanMode";
     private static final String BKEY_FIRST_START = TAG + ":firstStart";
     private static final String BKEY_STARTED = TAG + ":started";
 
     /** {@code true} if we are in scan mode. */
     private boolean mInScanMode;
-
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean mFirstStart = true;
-
     /** flag indicating the scanner is already started. */
     private boolean mScannerStarted;
     /** The scanner. */
-    private ActivityResultLauncher<Void> mScannerLauncher;
-
+    private ActivityResultLauncher<Fragment> mScannerLauncher;
+    /** After a successful scan/search, the data is offered for editing. */
+    private final ActivityResultLauncher<Long> mEditExistingBookLauncher =
+            registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
     /** View Binding. */
     private FragmentBooksearchByIsbnBinding mVb;
-
     /** manage the validation check next to the field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
+
+    private BookSearchByIsbnViewModel mVm;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -90,14 +95,19 @@ public class BookSearchByIsbnFragment
             mScannerStarted = args.getBoolean(BKEY_STARTED, false);
         }
 
-        mScannerLauncher = registerForActivityResult(
-                new ScannerContract(this), barCode -> {
-                    mScannerStarted = false;
-                    if (barCode != null) {
-                        mVb.isbn.setText(barCode);
-                        prepareSearch(barCode);
-                    }
-                });
+        mScannerLauncher = registerForActivityResult(new ScannerContract(), barCode -> {
+            mScannerStarted = false;
+            if (barCode != null) {
+                mVb.isbn.setText(barCode);
+                prepareSearch(barCode);
+            }
+        });
+    }
+
+    @NonNull
+    @Override
+    public ActivityResultViewModel getActivityResultViewModel() {
+        return mVm;
     }
 
     @Override
@@ -113,6 +123,9 @@ public class BookSearchByIsbnFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        mVm = new ViewModelProvider(this).get(BookSearchByIsbnViewModel.class);
+        mVm.init();
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_isbn);
@@ -165,16 +178,6 @@ public class BookSearchByIsbnFragment
         if (mInScanMode && mFirstStart) {
             mFirstStart = false;
             scan();
-        }
-    }
-
-    /**
-     * Start scanner activity.
-     */
-    public void scan() {
-        if (!mScannerStarted) {
-            mScannerStarted = true;
-            mScannerLauncher.launch(null);
         }
     }
 
@@ -232,45 +235,14 @@ public class BookSearchByIsbnFragment
         outState.putBoolean(BKEY_STARTED, mScannerStarted);
     }
 
-    @Override
-    void onSearchCancelled() {
-        super.onSearchCancelled();
-        // Leave scan mode until the user manually starts it again
-        mInScanMode = false;
-    }
-
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
+    /**
+     * Start scanner activity.
+     */
+    public void scan() {
+        if (!mScannerStarted) {
+            mScannerStarted = true;
+            mScannerLauncher.launch(this);
         }
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.BOOK_EDIT: {
-                // first do the common action when the user has saved the data for the book.
-                super.onActivityResult(requestCode, resultCode, data);
-                // go scan next book until the user cancels scanning.
-                if (mInScanMode) {
-                    scan();
-                }
-                break;
-            }
-
-            default: {
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-            }
-        }
-    }
-
-    @Override
-    void onClearPreviousSearchCriteria() {
-        super.onClearPreviousSearchCriteria();
-        mVb.isbn.setText("");
     }
 
     /**
@@ -286,8 +258,7 @@ public class BookSearchByIsbnFragment
         // not a valid code ?
         if (!code.isValid(strictIsbn)) {
             if (mInScanMode) {
-                //noinspection ConstantConditions
-                ScannerContract.onInvalidBarcodeBeep(getContext());
+                onInvalidBarcodeBeep();
             }
 
             showError(mVb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code, userEntry));
@@ -302,12 +273,11 @@ public class BookSearchByIsbnFragment
         mCoordinator.setIsbnSearchText(code.asText());
 
         if (strictIsbn && mInScanMode) {
-            //noinspection ConstantConditions
-            ScannerContract.onValidBarcodeBeep(getContext());
+            onValidBarcodeBeep();
         }
 
         // See if ISBN already exists in our database, if not then start the search.
-        final ArrayList<Long> existingIds = mDb.getBookIdsByIsbn(code);
+        final ArrayList<Long> existingIds = mVm.getBookIdsByIsbn(code);
         if (existingIds.isEmpty()) {
             startSearch();
         } else {
@@ -328,11 +298,8 @@ public class BookSearchByIsbnFragment
                         }
                     })
                     // User wants to review the existing book
-                    .setNeutralButton(R.string.action_edit, (d, w) -> {
-                        final Intent intent = new Intent(getContext(), EditBookActivity.class)
-                                .putExtra(DBDefinitions.KEY_PK_ID, firstFound);
-                        startActivityForResult(intent, RequestCode.BOOK_EDIT);
-                    })
+                    .setNeutralButton(R.string.action_edit, (d, w)
+                            -> mEditExistingBookLauncher.launch(firstFound))
                     // User wants to add regardless
                     .setPositiveButton(R.string.action_add, (d, w) -> startSearch())
                     .create()
@@ -354,5 +321,49 @@ public class BookSearchByIsbnFragment
         }
         // edit book
         super.onSearchResults(bookData);
+    }
+
+    @Override
+    void onSearchCancelled() {
+        super.onSearchCancelled();
+        // Leave scan mode until the user manually starts it again
+        mInScanMode = false;
+    }
+
+    @Override
+    void onClearPreviousSearchCriteria() {
+        super.onClearPreviousSearchCriteria();
+        mVb.isbn.setText("");
+    }
+
+    @Override
+    void onBookEditingDone(@Nullable final Bundle data) {
+        super.onBookEditingDone(data);
+        // go scan next book until the user cancels scanning.
+        if (mInScanMode) {
+            scan();
+        }
+    }
+
+    /**
+     * Optionally beep if the scan succeeded.
+     */
+    private void onValidBarcodeBeep() {
+        //noinspection ConstantConditions
+        if (PreferenceManager.getDefaultSharedPreferences(getContext())
+                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
+            SoundManager.playFile(getContext(), R.raw.beep_high);
+        }
+    }
+
+    /**
+     * Optionally beep if the scan failed.
+     */
+    private void onInvalidBarcodeBeep() {
+        //noinspection ConstantConditions
+        if (PreferenceManager.getDefaultSharedPreferences(getContext())
+                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
+            SoundManager.playFile(getContext(), R.raw.beep_low);
+        }
     }
 }

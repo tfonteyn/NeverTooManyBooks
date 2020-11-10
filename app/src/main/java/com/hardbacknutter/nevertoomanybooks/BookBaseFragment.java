@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,7 +38,6 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
@@ -120,7 +118,7 @@ public abstract class BookBaseFragment
     /**
      * Init all Fields, and add them the fields collection.
      * <p>
-     * Note that Field views are <strong>NOT AVAILABLE</strong>.
+     * Note that Field views are <strong>NOT AVAILABLE</strong> at this time.
      * <p>
      * Called from {@link #onViewCreated}.
      * The fields will be populated in {@link #onPopulateViews}
@@ -297,21 +295,7 @@ public abstract class BookBaseFragment
         final Book book = mBookViewModel.getBook();
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            final ArrayList<Long> bookIdList = new ArrayList<>();
-            bookIdList.add(book.getId());
-            final Intent intent = new Intent(context, HostingActivity.class)
-                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
-                    .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
-                    // pass the title for displaying to the user
-                    .putExtra(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE))
-                    // pass the author for displaying to the user
-                    .putExtra(DBDefinitions.KEY_AUTHOR_FORMATTED,
-                              book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED));
-            startActivityForResult(intent, RequestCode.UPDATE_FIELDS_FROM_INTERNET);
-            return true;
-
-        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
+        if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
             final Author author = book.getPrimaryAuthor();
             if (author != null) {
                 //noinspection ConstantConditions

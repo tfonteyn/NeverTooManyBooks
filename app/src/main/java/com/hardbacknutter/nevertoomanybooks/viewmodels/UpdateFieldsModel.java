@@ -658,7 +658,7 @@ public class UpdateFieldsModel
             // One or more books were changed.
             // Technically speaking when doing a list of books, the task might have been
             // cancelled before the first book was done. We disregard this fringe case.
-            results.putBoolean(BookViewModel.BKEY_BOOK_MODIFIED, true);
+            results.putBoolean(BookViewModel.BKEY_DATA_MODIFIED, true);
 
             // if applicable, pass the first book for repositioning the list on screen
             if (mBookIdList != null && !mBookIdList.isEmpty()) {

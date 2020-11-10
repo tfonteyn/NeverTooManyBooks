@@ -115,7 +115,7 @@ public class EditBookTocFragment
      */
     @NonNull
     private final List<Edition> mIsfdbEditions = new ArrayList<>();
-    /** the rows. */
+    /** the rows. A reference to the parcelled list in the Book. */
     private ArrayList<TocEntry> mList;
     /** View Binding. */
     private FragmentEditBookTocBinding mVb;
@@ -124,7 +124,10 @@ public class EditBookTocFragment
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
     private DiacriticArrayAdapter<String> mAuthorAdapter;
-    /** Stores the item position in the list while we're editing that item. */
+    /**
+     * Stores the item position in the list while we're editing that item.
+     * Editing is done using a dialog, so no need to store it more permanently.
+     */
     @Nullable
     private Integer mEditPosition;
 
@@ -262,7 +265,7 @@ public class EditBookTocFragment
 
     @Override
     void onInitFields(@NonNull final Fields fields) {
-
+        // no fields as such in this fragment
     }
 
     @Override
@@ -419,7 +422,7 @@ public class EditBookTocFragment
         StandardDialogs.deleteTocEntry(getContext(),
                                        tocEntry.getTitle(),
                                        tocEntry.getPrimaryAuthor(), () -> {
-                    if (mFragmentVM.deleteTocEntry(getContext(), tocEntry)) {
+                    if (mVm.deleteTocEntry(getContext(), tocEntry)) {
                         mList.remove(tocEntry);
                         mListAdapter.notifyItemRemoved(position);
                     }
@@ -439,7 +442,7 @@ public class EditBookTocFragment
                 //noinspection ConstantConditions
                 mAuthorAdapter = new DiacriticArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
-                        mFragmentVM.getAllAuthorNames());
+                        mVm.getAllAuthorNames());
                 mVb.author.setAdapter(mAuthorAdapter);
             }
 

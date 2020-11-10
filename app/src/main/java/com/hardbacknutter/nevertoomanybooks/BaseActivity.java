@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -29,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
@@ -48,11 +48,9 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostingActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
@@ -88,13 +86,6 @@ public abstract class BaseActivity
     private static final String TAG = "BaseActivity";
 
     /**
-     * tag of fragment to display if an Activity supports multiple.
-     * <p>
-     * <br>type: {@code String}
-     */
-    public static final String BKEY_FRAGMENT_TAG = TAG + ":fragment";
-
-    /**
      * Something changed (or not) that warrants a recreation of the caller to be needed.
      * This is normally/always set by one of the settings components if they decide the
      * use changed some setting that required the caller to be recreated.
@@ -120,22 +111,41 @@ public abstract class BaseActivity
      */
     @ActivityStatus
     private static int sActivityRecreateStatus = ACTIVITY_IS_RUNNING;
-
+    private final ActivityResultLauncher<Long> mManageBookshelvesBaseLauncher =
+            registerForActivityResult(new EditBookshelvesFragment.ResultContract(), bookshelfId -> {
+                // Nothing to do here, but see BooksOnBookshelf Activity
+                // where we override this one
+            });
     /** Locale at {@link #onCreate} time. */
     private String mInitialLocaleSpec;
-
     /** Night-mode at {@link #onCreate} time. */
     @NightMode.NightModeId
     private int mInitialNightModeId;
-
     /** Optional - The side/navigation panel. */
     @Nullable
     private DrawerLayout mDrawerLayout;
-
     /** Optional - The side/navigation menu. */
     @Nullable
     private NavigationView mNavigationView;
 
+    private final ActivityResultLauncher<Void> mSettingsLauncher = registerForActivityResult(
+            new SettingsFragment.ResultContract(), data -> {
+
+                setGoodreadsMenuVisibility();
+
+                if (data != null) {
+                    // Handle the generic return flag requiring a recreate of the current Activity
+                    if (data.getBoolean(BKEY_PREF_CHANGE_REQUIRES_RECREATE, false)) {
+                        sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
+                    }
+
+                    // unconditional exit of the app
+                    if (data.getBoolean(MaintenanceFragment.BKEY_RESTART_APP, false)) {
+                        finish();
+                    }
+                }
+
+            });
     /** Flag indicating this Activity is a self-proclaimed root Activity. */
     private boolean mHomeIsRootMenu;
 
@@ -328,6 +338,11 @@ public abstract class BaseActivity
         }
     }
 
+    public void setGoodreadsMenuVisibility() {
+        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(prefs));
+    }
+
     @CallSuper
     boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         closeNavigationDrawer();
@@ -335,22 +350,18 @@ public abstract class BaseActivity
         final int itemId = item.getItemId();
 
         if (itemId == R.id.nav_manage_bookshelves) {
-            // child classes which have a 'current bookshelf' should override
-            final Intent intent = new Intent(this, HostingActivity.class)
-                    .putExtra(BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
-            startActivityForResult(intent, RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES);
+            // child classes which have a 'current bookshelf' should
+            // override and pass the current bookshelf id
+            mManageBookshelvesBaseLauncher.launch(0L);
             return true;
 
         } else if (itemId == R.id.nav_settings) {
-            final Intent intent = new Intent(this, SettingsHostingActivity.class)
-                    .putExtra(BKEY_FRAGMENT_TAG, SettingsFragment.TAG);
-            ;
-            startActivityForResult(intent, RequestCode.NAV_PANEL_SETTINGS);
+            mSettingsLauncher.launch(null);
             return true;
 
         } else if (itemId == R.id.nav_about) {
             final Intent intent = new Intent(this, HostingActivity.class)
-                    .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, AboutFragment.TAG);
+                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, AboutFragment.TAG);
             startActivity(intent);
             return true;
         }
@@ -397,42 +408,6 @@ public abstract class BaseActivity
 
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        switch (requestCode) {
-            case RequestCode.NAV_PANEL_MANAGE_BOOKSHELVES:
-                // Nothing to do here, but see BooksOnBookshelf Activity
-                // where we override this one
-                break;
-
-            case RequestCode.NAV_PANEL_SETTINGS:
-                // Handle the generic return flag requiring a recreate of the current Activity
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, "data");
-                    if (data.getBooleanExtra(BKEY_PREF_CHANGE_REQUIRES_RECREATE, false)) {
-                        sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
-                    }
-                }
-
-                // unconditional exit of the app
-                if (resultCode == MaintenanceFragment.RESULT_ALL_DATA_DESTROYED) {
-                    finish();
-                }
-                break;
-
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
         }
     }
 

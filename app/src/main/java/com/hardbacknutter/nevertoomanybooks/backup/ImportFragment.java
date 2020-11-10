@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import android.view.ViewGroup;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,13 +47,18 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
@@ -348,4 +355,29 @@ public class ImportFragment
                 .show();
     }
 
+    public static class ResultContract
+            extends ActivityResultContract<Void, Integer> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @Nullable final Void aVoid) {
+            return new Intent(context, HostingActivity.class)
+                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+        }
+
+        @Override
+        @NonNull
+        public Integer parseResult(final int resultCode,
+                                   @Nullable final Intent intent) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            }
+
+            if (intent == null || resultCode != Activity.RESULT_OK) {
+                return Options.NOTHING;
+            }
+            return intent.getIntExtra(ImportResults.BKEY_IMPORT_RESULTS, Options.NOTHING);
+        }
+    }
 }

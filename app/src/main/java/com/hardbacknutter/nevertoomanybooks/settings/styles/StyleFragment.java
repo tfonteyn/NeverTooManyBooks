@@ -20,11 +20,14 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,6 +37,9 @@ import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
@@ -41,7 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookField
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostingActivity;
 
 /**
  * Main fragment to edit a Style.
@@ -255,6 +263,47 @@ public class StyleFragment
             default:
                 super.updateSummary(key);
                 break;
+        }
+    }
+
+    public static class ResultContract
+            extends ActivityResultContract<ResultContract.Input, Bundle> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @NonNull final Input input) {
+            return new Intent(context, SettingsHostingActivity.class)
+                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
+                    .putExtra(BooklistStyle.BKEY_STYLE, input.style)
+                    .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, input.templateStyleId);
+        }
+
+        @Override
+        @Nullable
+        public Bundle parseResult(final int resultCode,
+                                  @Nullable final Intent intent) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            }
+
+            if (intent == null || resultCode != Activity.RESULT_OK) {
+                return null;
+            }
+            return intent.getExtras();
+        }
+
+        public static class Input {
+
+            @NonNull
+            final BooklistStyle style;
+            final long templateStyleId;
+
+            public Input(@NonNull final BooklistStyle style,
+                         final long templateStyleId) {
+                this.style = style;
+                this.templateStyleId = templateStyleId;
+            }
         }
     }
 }

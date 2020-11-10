@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,7 +48,9 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -69,10 +73,10 @@ public class EditBookshelvesFragment
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
-    private EditBookshelvesModel mModel;
+    private EditBookshelvesModel mVm;
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.OnResultListener mOnEditBookshelfListener =
-            bookshelfId -> mModel.reloadListAndSetSelectedPosition(bookshelfId);
+            bookshelfId -> mVm.reloadListAndSetSelectedPosition(bookshelfId);
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
@@ -80,7 +84,7 @@ public class EditBookshelvesFragment
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mModel.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
                     getActivity().finish();
                 }
             };
@@ -123,9 +127,9 @@ public class EditBookshelvesFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mModel = new ViewModelProvider(this).get(EditBookshelvesModel.class);
-        mModel.init(getArguments());
-        mModel.onSelectedPositionChanged().observe(getViewLifecycleOwner(), positionPair -> {
+        mVm = new ViewModelProvider(this).get(EditBookshelvesModel.class);
+        mVm.init(getArguments());
+        mVm.onSelectedPositionChanged().observe(getViewLifecycleOwner(), positionPair -> {
             // old position
             mAdapter.notifyItemChanged(positionPair.first);
             // current/new position
@@ -137,7 +141,7 @@ public class EditBookshelvesFragment
         fab.setImageResource(R.drawable.ic_add);
         fab.setVisibility(View.VISIBLE);
         //noinspection ConstantConditions
-        fab.setOnClickListener(v -> editItem(mModel.createNewBookshelf(getContext())));
+        fab.setOnClickListener(v -> editItem(mVm.createNewBookshelf(getContext())));
 
         //noinspection ConstantConditions
         mAdapter = new BookshelfAdapter(getContext());
@@ -161,7 +165,7 @@ public class EditBookshelvesFragment
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
         // only enable if a shelf is selected
         menu.findItem(R.id.MENU_PURGE_BLNS)
-            .setEnabled(mModel.getSelectedPosition() != RecyclerView.NO_POSITION);
+            .setEnabled(mVm.getSelectedPosition() != RecyclerView.NO_POSITION);
 
         super.onPrepareOptionsMenu(menu);
     }
@@ -171,12 +175,12 @@ public class EditBookshelvesFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_PURGE_BLNS) {
-            final int position = mModel.getSelectedPosition();
+            final int position = mVm.getSelectedPosition();
             if (position != RecyclerView.NO_POSITION) {
                 //noinspection ConstantConditions
                 StandardDialogs.purgeBLNS(getContext(), R.string.lbl_bookshelf,
-                                          mModel.getBookshelf(position),
-                                          () -> mModel.purgeBLNS());
+                                          mVm.getBookshelf(position),
+                                          () -> mVm.purgeBLNS());
             }
             return true;
         }
@@ -186,7 +190,7 @@ public class EditBookshelvesFragment
 
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
-        final Bookshelf bookshelf = mModel.getBookshelf(position);
+        final Bookshelf bookshelf = mVm.getBookshelf(position);
         final String title = bookshelf.getName();
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
@@ -230,7 +234,7 @@ public class EditBookshelvesFragment
     private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
 
-        final Bookshelf bookshelf = mModel.getBookshelf(position);
+        final Bookshelf bookshelf = mVm.getBookshelf(position);
 
         if (itemId == R.id.MENU_EDIT) {
             editItem(bookshelf);
@@ -238,7 +242,7 @@ public class EditBookshelvesFragment
 
         } else if (itemId == R.id.MENU_DELETE) {
             if (bookshelf.getId() > Bookshelf.DEFAULT) {
-                mModel.deleteBookshelf(position);
+                mVm.deleteBookshelf(position);
                 mAdapter.notifyItemRemoved(position);
 
             } else {
@@ -279,6 +283,38 @@ public class EditBookshelvesFragment
         }
     }
 
+    public static class ResultContract
+            extends ActivityResultContract<Long, Long> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @NonNull final Long bookshelfId) {
+            final Intent intent = new Intent(context, HostingActivity.class)
+                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
+            if (bookshelfId != 0) {
+                intent.putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF, bookshelfId);
+            }
+            return intent;
+        }
+
+        @NonNull
+        @Override
+        public Long parseResult(final int resultCode,
+                                @Nullable final Intent intent) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            }
+
+            if (intent == null || resultCode != Activity.RESULT_OK) {
+                return 0L;
+            }
+
+            // the last edited/inserted shelf
+            return intent.getLongExtra(DBDefinitions.KEY_PK_ID, Bookshelf.DEFAULT);
+        }
+    }
+
     /**
      * Adapter and row Holder for a {@link Bookshelf}.
      * <p>
@@ -309,7 +345,7 @@ public class EditBookshelvesFragment
 
             // click -> set the row as 'selected'.
             holder.nameView.setOnClickListener(
-                    v -> mModel.setSelectedPosition(holder.getBindingAdapterPosition()));
+                    v -> mVm.setSelectedPosition(holder.getBindingAdapterPosition()));
 
             holder.nameView.setOnLongClickListener(v -> {
                 onCreateContextMenu(holder.getBindingAdapterPosition());
@@ -322,15 +358,15 @@ public class EditBookshelvesFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            final Bookshelf bookshelf = mModel.getBookshelf(position);
+            final Bookshelf bookshelf = mVm.getBookshelf(position);
 
             holder.nameView.setText(bookshelf.getName());
-            holder.itemView.setSelected(position == mModel.getSelectedPosition());
+            holder.itemView.setSelected(position == mVm.getSelectedPosition());
         }
 
         @Override
         public int getItemCount() {
-            return mModel.getBookshelves().size();
+            return mVm.getBookshelves().size();
         }
     }
 }

@@ -33,7 +33,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.CallSuper;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -46,13 +47,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -60,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostingActivity;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -161,6 +159,39 @@ public class PreferredStylesFragment
                 }
             };
 
+    private final ActivityResultLauncher<StyleFragment.ResultContract.Input> mEditStyleContract =
+            registerForActivityResult(new StyleFragment.ResultContract(), data -> {
+                if (data != null) {
+                    // We get the ACTUAL style back.
+                    @Nullable
+                    final BooklistStyle style = data.getParcelable(BooklistStyle.BKEY_STYLE);
+                    if (data.getBoolean(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                        if (style != null) {
+                            // id of the original style we cloned (different from current)
+                            // or edited (same as current).
+                            final long templateId = data.getLong(
+                                    StyleViewModel.BKEY_TEMPLATE_ID, style.getId());
+
+                            // save/update the style, and calculate the (new) position in the list
+                            final int position = mModel.onStyleEdited(style, templateId);
+                            mListAdapter.setSelectedPosition(position);
+                        }
+
+                        // always update all rows as the order might have changed
+                        mListAdapter.notifyDataSetChanged();
+
+                    } else {
+                        // The style was not modified. If this was a cloned (new) style,
+                        // discard it by deleting the SharedPreferences file
+                        if (style != null && style.getId() == 0) {
+                            //noinspection ConstantConditions
+                            getContext().deleteSharedPreferences(style.getUuid());
+                        }
+                    }
+                }
+            });
+
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -225,55 +256,6 @@ public class PreferredStylesFragment
             mModel.updateMenuOrder();
         }
         super.onPause();
-    }
-
-    @Override
-    @CallSuper
-    public void onActivityResult(final int requestCode,
-                                 final int resultCode,
-                                 @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.enterOnActivityResult(TAG, requestCode, resultCode, data);
-        }
-
-        //noinspection SwitchStatementWithTooFewBranches
-        switch (requestCode) {
-            case RequestCode.EDIT_STYLE: {
-                if (resultCode == Activity.RESULT_OK) {
-                    Objects.requireNonNull(data, "data");
-                    // We get the ACTUAL style back.
-                    @Nullable
-                    final BooklistStyle style = data.getParcelableExtra(BooklistStyle.BKEY_STYLE);
-                    if (data.getBooleanExtra(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
-                        if (style != null) {
-                            // id of the original style we cloned (different from current)
-                            // or edited (same as current).
-                            final long templateId = data.getLongExtra(
-                                    StyleViewModel.BKEY_TEMPLATE_ID, style.getId());
-
-                            // save/update the style, and calculate the (new) position in the list
-                            final int position = mModel.onStyleEdited(style, templateId);
-                            mListAdapter.setSelectedPosition(position);
-                        }
-
-                        // always update all rows as the order might have changed
-                        mListAdapter.notifyDataSetChanged();
-
-                    } else {
-                        // The style was not modified. If this was a cloned (new) style,
-                        // discard it by deleting the SharedPreferences file
-                        if (style != null && style.getId() == 0) {
-                            //noinspection ConstantConditions
-                            getContext().deleteSharedPreferences(style.getUuid());
-                        }
-                    }
-                }
-                break;
-            }
-            default:
-                super.onActivityResult(requestCode, resultCode, data);
-                break;
-        }
     }
 
     @Override
@@ -383,7 +365,7 @@ public class PreferredStylesFragment
                     throw new IllegalStateException("can't edit a builtin style");
                 }
             }
-            editStyle(style, style.getId());
+            mEditStyleContract.launch(new StyleFragment.ResultContract.Input(style, style.getId()));
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
@@ -395,27 +377,11 @@ public class PreferredStylesFragment
         } else if (itemId == R.id.MENU_DUPLICATE) {
             // pass the style id of the template style
             //noinspection ConstantConditions
-            editStyle(style.clone(getContext()), style.getId());
+            mEditStyleContract.launch(new StyleFragment.ResultContract.Input(
+                    style.clone(getContext()), style.getId()));
             return true;
         }
         return false;
-    }
-
-    /**
-     * Start the edit process.
-     *
-     * @param style           to edit
-     * @param templateStyleId the id of the style we're cloning from, or the style itself
-     */
-    private void editStyle(@NonNull final BooklistStyle style,
-                           final long templateStyleId) {
-
-        final Intent intent = new Intent(getContext(), SettingsHostingActivity.class)
-                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
-                .putExtra(BooklistStyle.BKEY_STYLE, style)
-                .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, templateStyleId);
-
-        startActivityForResult(intent, RequestCode.EDIT_STYLE);
     }
 
     /**
@@ -437,6 +403,33 @@ public class PreferredStylesFragment
             nameView = itemView.findViewById(R.id.name);
             groupsView = itemView.findViewById(R.id.groups);
             typeView = itemView.findViewById(R.id.type);
+        }
+    }
+
+    public static class ResultContract
+            extends ActivityResultContract<String, Bundle> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @NonNull final String styleUuid) {
+            return new Intent(context, HostingActivity.class)
+                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, PreferredStylesFragment.TAG)
+                    .putExtra(BooklistStyle.BKEY_STYLE_UUID, styleUuid);
+        }
+
+        @Override
+        @Nullable
+        public Bundle parseResult(final int resultCode,
+                                  @Nullable final Intent intent) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            }
+
+            if (intent == null || resultCode != Activity.RESULT_OK) {
+                return null;
+            }
+            return intent.getExtras();
         }
     }
 

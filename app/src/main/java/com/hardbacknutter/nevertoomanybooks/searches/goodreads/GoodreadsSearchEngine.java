@@ -136,8 +136,7 @@ public class GoodreadsSearchEngine
 
         return showRegistrationDialog(context, required, callerIdString, action -> {
             if (action == RegistrationAction.Register) {
-                final Intent intent = new Intent(context, GoodreadsRegistrationActivity.class);
-                context.startActivity(intent);
+                context.startActivity(new Intent(context, GoodreadsRegistrationActivity.class));
 
             } else if (onResult != null) {
                 onResult.accept(action);

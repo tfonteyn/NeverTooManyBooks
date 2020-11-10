@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,18 +35,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.RequestCode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostingActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
 
 public class StylePickerDialogFragment
@@ -202,14 +196,8 @@ public class StylePickerDialogFragment
         selectedStyle.setPreferred(true);
 
         // use the activity so we get the results there.
-        final Activity activity = getActivity();
-
-        final Intent intent = new Intent(activity, SettingsHostingActivity.class)
-                .putExtra(BaseActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
-                .putExtra(BooklistStyle.BKEY_STYLE, selectedStyle)
-                .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, templateId);
         //noinspection ConstantConditions
-        activity.startActivityForResult(intent, RequestCode.EDIT_STYLE);
+        ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle, templateId);
     }
 
     /**

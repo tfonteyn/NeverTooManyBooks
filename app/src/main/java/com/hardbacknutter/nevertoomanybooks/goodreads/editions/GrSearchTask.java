@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -43,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 
 /**
  * Used by {@link GoodreadsSearchActivity} only. Limited testing.
@@ -108,9 +108,7 @@ public class GrSearchTask
             }
         }
         final Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
-        mSearchText = currentArgs
-                .getString(BooksOnBookshelfModel.SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
-                           mSearchText);
+        mSearchText = currentArgs.getString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS, mSearchText);
     }
 
     public long getBookId() {

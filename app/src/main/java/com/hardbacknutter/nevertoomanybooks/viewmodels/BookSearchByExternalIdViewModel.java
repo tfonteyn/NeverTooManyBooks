@@ -17,54 +17,28 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
-
-public class ImportViewModel
+public class BookSearchByExternalIdViewModel
         extends ViewModel
-        implements ResultIntent {
+        implements ActivityResultViewModel {
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultData = new Intent();
 
-    @Nullable
-    private ImportHelper mImportHelper;
-
+    /**
+     * Inherits the result from {@link com.hardbacknutter.nevertoomanybooks.EditBookActivity}.
+     */
     @Override
     @NonNull
     public Intent getResultIntent() {
-        return mResultData;
-    }
-
-    @NonNull
-    ImportHelper createImportManager(@NonNull final Uri uri) {
-        mImportHelper = new ImportHelper(uri);
-        return mImportHelper;
-    }
-
-    @NonNull
-    ImportHelper getImportHelper() {
-        return Objects.requireNonNull(mImportHelper);
-    }
-
-    @NonNull
-    Intent onImportFinished() {
-        Objects.requireNonNull(mImportHelper);
-        mResultData.putExtra(ImportResults.BKEY_IMPORT_RESULTS, mImportHelper.getOptions());
         return mResultData;
     }
 }

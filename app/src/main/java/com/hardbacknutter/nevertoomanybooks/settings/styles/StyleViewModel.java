@@ -35,16 +35,16 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultDataModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class StyleViewModel
         extends ViewModel
-        implements ActivityResultDataModel {
+        implements ResultIntent {
 
     /** Log tag. */
     private static final String TAG = "StyleViewModel";
     /** The template style (id) the style we're editing is based on. */
-    public static final String BKEY_TEMPLATE_ID = TAG + ":templateId";
+    static final String BKEY_TEMPLATE_ID = TAG + ":templateId";
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultData = new Intent();

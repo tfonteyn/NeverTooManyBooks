@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class AuthorWorksModel
         extends ViewModel
-        implements ActivityResultDataModel {
+        implements ResultIntent {
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksModel";
@@ -74,6 +74,9 @@ public class AuthorWorksModel
         }
     }
 
+    /**
+     * {@link BookViewModel#BKEY_BOOK_DELETED}
+     */
     @NonNull
     @Override
     public Intent getResultIntent() {

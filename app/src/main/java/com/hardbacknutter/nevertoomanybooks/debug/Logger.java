@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.debug;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -44,7 +43,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -306,21 +304,6 @@ public final class Logger {
             }
         } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
-        }
-    }
-
-    /**
-     * Dump all information from an onActivityResult method.
-     */
-    public static void enterOnActivityResult(@NonNull final String tag,
-                                             final int requestCode,
-                                             final int resultCode,
-                                             @Nullable final Intent data) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            d(tag, "onActivityResult", "ENTER"
-                                       + "|requestCode=" + requestCode
-                                       + "|resultCode=" + resultCode
-                                       + "|data=" + data);
         }
     }
 

@@ -35,6 +35,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -45,6 +47,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
@@ -52,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -72,21 +74,23 @@ public class UpdateFieldsFragment
     /** Log tag. */
     public static final String TAG = "UpdateFieldsFragment";
 
+    public static final String BKEY_SCREEN_TITLE = TAG + ":title";
+    public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
+
     /** The extended SearchCoordinator. */
-    private UpdateFieldsModel mUpdateFieldsModel;
+    private UpdateFieldsModel mVm;
+    private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
+            registerForActivityResult(new SearchSitesSingleListContract(),
+                                      sites -> {
+                                          if (sites != null) {
+                                              // no changes committed, temporary usage only
+                                              mVm.setSiteList(sites);
+                                          }
+                                      });
     @Nullable
     private ProgressDialogFragment mProgressDialog;
     /** View Binding. */
     private FragmentUpdateFromInternetBinding mVb;
-
-    private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
-            registerForActivityResult(new SearchAdminActivity.SingleListContract(Site.Type.Data),
-                                      sites -> {
-                                          if (sites != null) {
-                                              // no changes committed, temporary usage only
-                                              mUpdateFieldsModel.setSiteList(sites);
-                                          }
-                                      });
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -110,26 +114,33 @@ public class UpdateFieldsFragment
 
         final Bundle args = getArguments();
 
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         // optional activity title
-        if (args != null && args.containsKey(StandardDialogs.BKEY_DIALOG_TITLE)) {
+        if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
             //noinspection ConstantConditions
-            getActivity().setTitle(args.getString(StandardDialogs.BKEY_DIALOG_TITLE));
+            actionBar.setTitle(args.getString(BKEY_SCREEN_TITLE));
         } else {
             //noinspection ConstantConditions
-            getActivity().setTitle(R.string.lbl_select_fields);
+            actionBar.setTitle(R.string.lbl_select_fields);
         }
 
-        mUpdateFieldsModel = new ViewModelProvider(this).get(UpdateFieldsModel.class);
+        // optional activity subtitle
+        if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
+            actionBar.setTitle(args.getString(BKEY_SCREEN_SUBTITLE));
+        }
+
+        mVm = new ViewModelProvider(this).get(UpdateFieldsModel.class);
         //noinspection ConstantConditions
-        mUpdateFieldsModel.init(getContext(), args);
+        mVm.init(getContext(), args);
 
         // Progress from individual searches AND overall progress
-        mUpdateFieldsModel.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
+        mVm.onProgress().observe(getViewLifecycleOwner(), this::onProgress);
         // An individual book search finished.
-        mUpdateFieldsModel.onSearchFinished().observe(getViewLifecycleOwner(), message ->
-                mUpdateFieldsModel.processSearchResults(getContext(), message.result));
+        mVm.onSearchFinished().observe(getViewLifecycleOwner(), message ->
+                mVm.processSearchResults(getContext(), message.result));
         // User cancelled the update
-        mUpdateFieldsModel.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
+        mVm.onSearchCancelled().observe(getViewLifecycleOwner(), message -> {
             // Unlikely to be seen...
             Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
                     .show();
@@ -137,9 +148,9 @@ public class UpdateFieldsFragment
             onAllDone(message);
         });
         // The full list was processed
-        mUpdateFieldsModel.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
+        mVm.onAllDone().observe(getViewLifecycleOwner(), this::onAllDone);
         // Something really bad happened and we're aborting
-        mUpdateFieldsModel.onCatastrophe().observe(getViewLifecycleOwner(), this::onCatastrophe);
+        mVm.onCatastrophe().observe(getViewLifecycleOwner(), this::onCatastrophe);
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
@@ -151,7 +162,7 @@ public class UpdateFieldsFragment
 
         if (savedInstanceState == null) {
             TipManager.display(getContext(), R.string.tip_update_fields_from_internet, () ->
-                    Site.promptToRegister(getContext(), mUpdateFieldsModel.getSiteList(),
+                    Site.promptToRegister(getContext(), mVm.getSiteList(),
                                           "update_from_internet", this::afterOnViewCreated));
         } else {
             afterOnViewCreated();
@@ -171,7 +182,7 @@ public class UpdateFieldsFragment
      * Display the list of fields.
      */
     private void populateFields() {
-        for (final FieldUsage usage : mUpdateFieldsModel.getFieldUsages()) {
+        for (final FieldUsage usage : mVm.getFieldUsages()) {
             final RowUpdateFromInternetBinding rowVb = RowUpdateFromInternetBinding
                     .inflate(getLayoutInflater(), mVb.fieldList, false);
 
@@ -216,12 +227,12 @@ public class UpdateFieldsFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_PREFS_SEARCH_SITES) {
-            mEditSitesLauncher.launch(mUpdateFieldsModel.getSiteList());
+            mEditSitesLauncher.launch(mVm.getSiteList());
             return true;
 
         } else if (itemId == R.id.MENU_RESET) {
             //noinspection ConstantConditions
-            mUpdateFieldsModel.resetPreferences(getContext());
+            mVm.resetPreferences(getContext());
             mVb.fieldList.removeAllViews();
             populateFields();
             return true;
@@ -270,7 +281,7 @@ public class UpdateFieldsFragment
         }
 
         // If the user has selected to overwrite thumbnails...
-        if (mUpdateFieldsModel.isShowWarningAboutCovers()) {
+        if (mVm.isShowWarningAboutCovers()) {
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
@@ -278,19 +289,19 @@ public class UpdateFieldsFragment
                     .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setNegativeButton(R.string.lbl_field_usage_copy_if_blank, (d, w) -> {
-                        mUpdateFieldsModel
+                        mVm
                                 .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".0",
                                                   FieldUsage.Usage.CopyIfBlank);
-                        mUpdateFieldsModel
+                        mVm
                                 .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".1",
                                                   FieldUsage.Usage.CopyIfBlank);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.lbl_field_usage_overwrite, (d, w) -> {
-                        mUpdateFieldsModel
+                        mVm
                                 .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".0",
                                                   FieldUsage.Usage.Overwrite);
-                        mUpdateFieldsModel
+                        mVm
                                 .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".1",
                                                   FieldUsage.Usage.Overwrite);
                         startUpdate();
@@ -304,9 +315,9 @@ public class UpdateFieldsFragment
 
     private void startUpdate() {
         //noinspection ConstantConditions
-        mUpdateFieldsModel.writePreferences(getContext());
+        mVm.writePreferences(getContext());
 
-        if (!mUpdateFieldsModel.startSearch(getContext())) {
+        if (!mVm.startSearch(getContext())) {
             Snackbar.make(mVb.getRoot(), R.string.warning_no_search_data_for_active_sites,
                           Snackbar.LENGTH_LONG).show();
         }
@@ -384,7 +395,7 @@ public class UpdateFieldsFragment
         }
 
         // hook the task up.
-        dialog.setCanceller(mUpdateFieldsModel);
+        dialog.setCanceller(mVm);
 
         return dialog;
     }

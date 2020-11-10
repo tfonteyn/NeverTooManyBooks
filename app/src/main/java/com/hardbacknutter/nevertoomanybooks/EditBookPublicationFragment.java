@@ -101,10 +101,12 @@ public class EditBookPublicationFragment
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        addAutocomplete(prefs, getField(R.id.format), () -> mFragmentVM.getAllFormats());
-        addAutocomplete(prefs, getField(R.id.color), () -> mFragmentVM.getAllColors());
+        addAutocomplete(prefs, getField(R.id.format), () -> mVm
+                .getAllFormats());
+        addAutocomplete(prefs, getField(R.id.color), () -> mVm
+                .getAllColors());
         addAutocomplete(prefs, getField(R.id.price_listed_currency),
-                        () -> mFragmentVM.getAllListPriceCurrencyCodes());
+                        () -> mVm.getAllListPriceCurrencyCodes());
 
         addPartialDatePicker(prefs, getField(R.id.date_published),
                              R.string.lbl_date_published, false);
