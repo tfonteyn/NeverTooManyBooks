@@ -45,7 +45,7 @@ public class SearchAdminActivity
 
     private TabAdapter mTabAdapter;
 
-    private SearchAdminViewModel mModel;
+    private SearchAdminViewModel mVm;
 
     /** View Binding. */
     private ActivityAdminSearchBinding mVb;
@@ -60,11 +60,11 @@ public class SearchAdminActivity
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mModel = new ViewModelProvider(this).get(SearchAdminViewModel.class);
-        mModel.init(getIntent().getExtras());
+        mVm = new ViewModelProvider(this).get(SearchAdminViewModel.class);
+        mVm.init(getIntent().getExtras());
 
-        if (mModel.isSingleListMode()) {
-            final Site.Type type = mModel.getType();
+        if (mVm.isSingleListMode()) {
+            final Site.Type type = mVm.getType();
             //noinspection ConstantConditions
             getSupportActionBar().setSubtitle(type.getLabelId());
             mVb.tabPanel.setVisibility(View.GONE);
@@ -86,16 +86,16 @@ public class SearchAdminActivity
 
     @Override
     public void onBackPressed() {
-        final boolean hasSites = mModel.validate();
+        final boolean hasSites = mVm.validate();
         if (hasSites) {
-            if (mModel.isSingleListMode()) {
+            if (mVm.isSingleListMode()) {
                 // single-list is NOT persisted, just returned for temporary usage.
                 final Intent resultData = new Intent()
-                        .putExtra(mModel.getType().getBundleKey(), mModel.getList());
+                        .putExtra(mVm.getType().getBundleKey(), mVm.getList());
                 setResult(Activity.RESULT_OK, resultData);
 
             } else {
-                mModel.persist(this);
+                mVm.persist(this);
             }
             super.onBackPressed();
 

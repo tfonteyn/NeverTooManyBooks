@@ -38,8 +38,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -57,6 +55,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -132,14 +131,29 @@ public class EditBookTocFragment
     private Integer mEditPosition;
 
     /** Listen for the results of the entry edit-dialog. */
-    private final EditTocEntryDialogFragment.OnResultListener mEditTocEntryListener =
-            this::onEntryUpdated;
+    private final EditTocEntryDialogFragment.Launcher mEditTocEntryLauncher =
+            new EditTocEntryDialogFragment.Launcher() {
+                @Override
+                public void onResult(@NonNull final TocEntry tocEntry,
+                                     final boolean hasMultipleAuthors) {
+                    onEntryUpdated(tocEntry, hasMultipleAuthors);
+                }
+            };
+
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int menuItemId,
+                                        final int position) {
+                    return onContextItemSelected(menuItemId, position);
+                }
+            };
 
     private IsfdbGetEditionsTask mIsfdbGetEditionsTask;
     private IsfdbGetBookTask mIsfdbGetBookTask;
 
-    private final FragmentResultListener mConfirmTocResultsListener =
-            new ConfirmTocDialogFragment.OnResultListener() {
+    private final ConfirmTocDialogFragment.Launcher mConfirmTocResultsLauncher =
+            new ConfirmTocDialogFragment.Launcher() {
                 @Override
                 public void onResult(@Book.TocBits final long tocBitMask,
                                      @NonNull final List<TocEntry> tocEntries) {
@@ -162,14 +176,11 @@ public class EditBookTocFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final FragmentManager fm = getChildFragmentManager();
-        fm.setFragmentResultListener(RK_EDIT_TOC, this, mEditTocEntryListener);
-        fm.setFragmentResultListener(RK_CONFIRM_TOC, this, mConfirmTocResultsListener);
+        mEditTocEntryLauncher.register(this, RK_EDIT_TOC);
+        mConfirmTocResultsLauncher.register(this, RK_CONFIRM_TOC);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            fm.setFragmentResultListener(
-                    RK_MENU_PICKER, this,
-                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+            mMenuLauncher.register(this, RK_MENU_PICKER);
         }
     }
 
@@ -357,8 +368,7 @@ public class EditBookTocFragment
                     getString(R.string.action_delete),
                     R.drawable.ic_delete));
 
-            MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
-                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            mMenuLauncher.launch(title, menu, position);
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());
             menu.add(Menu.NONE, R.id.MENU_EDIT,
@@ -405,10 +415,9 @@ public class EditBookTocFragment
         mEditPosition = position;
 
         final TocEntry tocEntry = mList.get(position);
-        EditTocEntryDialogFragment
-                .newInstance(RK_EDIT_TOC, mBookViewModel.getBook(),
-                             tocEntry, mVb.cbxMultipleAuthors.isChecked())
-                .show(getChildFragmentManager(), EditTocEntryDialogFragment.TAG);
+        mEditTocEntryLauncher.launch(mBookViewModel.getBook(),
+                                     tocEntry,
+                                     mVb.cbxMultipleAuthors.isChecked());
     }
 
     /**
@@ -567,9 +576,7 @@ public class EditBookTocFragment
 
             // finally the TOC itself:  display it for the user to approve
             // If there are more editions, the neutral button will allow to fetch the next one.
-            ConfirmTocDialogFragment
-                    .newInstance(RK_CONFIRM_TOC, message.result, !mIsfdbEditions.isEmpty())
-                    .show(getChildFragmentManager(), ConfirmTocDialogFragment.TAG);
+            mConfirmTocResultsLauncher.launch(message.result, !mIsfdbEditions.isEmpty());
         }
     }
 
@@ -620,25 +627,6 @@ public class EditBookTocFragment
         private long mTocBitMask;
         private ArrayList<TocEntry> mTocEntries;
 
-        /**
-         * Constructor.
-         *
-         * @param requestKey       for use with the FragmentResultListener
-         * @param hasOtherEditions flag
-         *
-         * @return instance
-         */
-        static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                          @NonNull final String requestKey,
-                                          @NonNull final Bundle bookData,
-                                          final boolean hasOtherEditions) {
-            final DialogFragment frag = new ConfirmTocDialogFragment();
-            bookData.putString(BKEY_REQUEST_KEY, requestKey);
-            bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
-            frag.setArguments(bookData);
-            return frag;
-        }
-
         @Override
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -683,33 +671,25 @@ public class EditBookTocFragment
 
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                                 (d, which) -> OnResultListener
-                                         .sendResult(this, mRequestKey, mTocBitMask, mTocEntries));
+                                 (d, which) -> Launcher.sendResult(this, mRequestKey,
+                                                                   mTocBitMask, mTocEntries));
             }
 
             // if we found multiple editions, allow a re-try with the next edition
             if (mHasOtherEditions) {
                 dialog.setButton(AlertDialog.BUTTON_NEUTRAL, getString(R.string.action_retry),
-                                 (d, which) -> OnResultListener
-                                         .searchNextEdition(this, mRequestKey));
+                                 (d, which) -> Launcher.searchNextEdition(this, mRequestKey));
             }
 
             return dialog;
         }
 
-        public interface OnResultListener
-                extends FragmentResultListener {
+        public abstract static class Launcher
+                extends DialogFragmentLauncherBase {
 
-            /* private. */ String SEARCH_NEXT_EDITION = "searchNextEdition";
-            /* private. */ String TOC_BIT_MASK = "tocBitMask";
-            /* private. */ String TOC_LIST = "tocEntries";
-
-            static void searchNextEdition(@NonNull final Fragment fragment,
-                                          @NonNull final String requestKey) {
-                final Bundle result = new Bundle(1);
-                result.putBoolean(SEARCH_NEXT_EDITION, true);
-                fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
-            }
+            private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
+            private static final String TOC_BIT_MASK = "tocBitMask";
+            private static final String TOC_LIST = "tocEntries";
 
             static void sendResult(@NonNull final Fragment fragment,
                                    @NonNull final String requestKey,
@@ -721,9 +701,33 @@ public class EditBookTocFragment
                 fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
             }
 
+            static void searchNextEdition(@NonNull final Fragment fragment,
+                                          @NonNull final String requestKey) {
+                final Bundle result = new Bundle(1);
+                result.putBoolean(SEARCH_NEXT_EDITION, true);
+                fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+            }
+
+            /**
+             * Launch the dialog.
+             *
+             * @param bookData         the result of the search
+             * @param hasOtherEditions flag
+             */
+            public void launch(@NonNull final Bundle bookData,
+                               final boolean hasOtherEditions) {
+
+                bookData.putString(BKEY_REQUEST_KEY, RK_CONFIRM_TOC);
+                bookData.putBoolean(BKEY_HAS_OTHER_EDITIONS, hasOtherEditions);
+
+                final DialogFragment frag = new ConfirmTocDialogFragment();
+                frag.setArguments(bookData);
+                frag.show(mFragmentManager, TAG);
+            }
+
             @Override
-            default void onFragmentResult(@NonNull final String requestKey,
-                                          @NonNull final Bundle result) {
+            public void onFragmentResult(@NonNull final String requestKey,
+                                         @NonNull final Bundle result) {
                 if (result.getBoolean(SEARCH_NEXT_EDITION)) {
                     searchNextEdition();
                 } else {
@@ -732,13 +736,20 @@ public class EditBookTocFragment
                 }
             }
 
+            /**
+             * Callback handler.
+             *
+             * @param tocBitMask bit flags
+             * @param tocEntries the list of entries
+             */
+            public abstract void onResult(@Book.TocBits long tocBitMask,
+                                          @NonNull List<TocEntry> tocEntries);
 
-            void onResult(@Book.TocBits long tocBitMask,
-                          @NonNull List<TocEntry> tocEntries);
-
-            void searchNextEdition();
+            /**
+             * Callback handler.
+             */
+            public abstract void searchNextEdition();
         }
-
     }
 
     /**

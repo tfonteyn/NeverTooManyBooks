@@ -38,7 +38,6 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -79,13 +78,16 @@ public class ExportFragment
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
                                       this::onCreateDocument);
-    private final FragmentResultListener mExportOptionsListener =
-            (OptionsDialogBase.OnResultsListener) success -> {
-                if (success) {
-                    exportPickUri();
-                } else {
-                    //noinspection ConstantConditions
-                    getActivity().finish();
+    private final ExportOptionsDialogFragment.Launcher mExportOptionsLauncher =
+            new ExportOptionsDialogFragment.Launcher() {
+                @Override
+                public void onResult(final boolean startTask) {
+                    if (startTask) {
+                        exportPickUri();
+                    } else {
+                        //noinspection ConstantConditions
+                        getActivity().finish();
+                    }
                 }
             };
     @Nullable
@@ -95,8 +97,7 @@ public class ExportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager()
-                .setFragmentResultListener(RK_EXPORT_OPTIONS, this, mExportOptionsListener);
+        mExportOptionsLauncher.register(this, RK_EXPORT_OPTIONS);
     }
 
     @Nullable
@@ -174,9 +175,7 @@ public class ExportFragment
                 .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
                 .setNeutralButton(R.string.btn_options, (d, w) -> {
                     d.dismiss();
-                    ExportOptionsDialogFragment
-                            .newInstance(RK_EXPORT_OPTIONS)
-                            .show(getChildFragmentManager(), ExportOptionsDialogFragment.TAG);
+                    mExportOptionsLauncher.launch();
                 })
                 .setPositiveButton(android.R.string.ok, (d, w) -> exportPickUri())
                 .create()

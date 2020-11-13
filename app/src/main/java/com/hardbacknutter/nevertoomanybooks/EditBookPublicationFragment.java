@@ -85,10 +85,8 @@ public class EditBookPublicationFragment
             field.validate();
         });
 
-        mVb.publisher.setOnClickListener(v -> EditBookPublisherListDialogFragment
-                .newInstance()
-                // no listener/callback. We share the book view model in the Activity scope
-                .show(getChildFragmentManager(), EditBookPublisherListDialogFragment.TAG));
+        // no listener/callback. We share the book view model in the Activity scope
+        mVb.publisher.setOnClickListener(v -> EditBookPublisherListDialogFragment.launch(this));
     }
 
     @Override
@@ -101,10 +99,8 @@ public class EditBookPublicationFragment
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        addAutocomplete(prefs, getField(R.id.format), () -> mVm
-                .getAllFormats());
-        addAutocomplete(prefs, getField(R.id.color), () -> mVm
-                .getAllColors());
+        addAutocomplete(prefs, getField(R.id.format), () -> mVm.getAllFormats());
+        addAutocomplete(prefs, getField(R.id.color), () -> mVm.getAllColors());
         addAutocomplete(prefs, getField(R.id.price_listed_currency),
                         () -> mVm.getAllListPriceCurrencyCodes());
 

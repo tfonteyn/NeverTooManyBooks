@@ -154,10 +154,16 @@ public class EditBookActivity
         for (int i = 0; i < fragments.size(); i++) {
             final Fragment fragment = fragments.get(i);
             // Nor really needed to check for being a DataEditor,
-            // but this leave the possibility to add non-DataEditor fragments.
+            // but this leaves the possibility to add non-DataEditor fragments.
             if (fragment instanceof DataEditor) {
                 //noinspection unchecked
                 final DataEditor<Book> dataEditor = (DataEditor<Book>) fragment;
+
+//                Log.d(TAG, "checkUnfinishedEdits=" + checkUnfinishedEdits
+//                           + "|tag=" + dataEditor.getFragmentId()
+//                           + "|isResumed=" + dataEditor.isResumed()
+//                           + "|unfinishedEdits= " + unfinishedEdits
+//                                   .contains(dataEditor.getFragmentId()));
 
                 // 1. Fragments which went through onPause (i.e. are NOT resumed)
                 // have saved their *confirmed* data, but might have unfinished edits

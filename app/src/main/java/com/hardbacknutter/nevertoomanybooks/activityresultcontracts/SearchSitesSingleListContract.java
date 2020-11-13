@@ -39,17 +39,18 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminViewModel;
 public class SearchSitesSingleListContract
         extends ActivityResultContract<ArrayList<Site>, ArrayList<Site>> {
 
+    /** Log tag. */
     private static final String TAG = "SearchSitesSingleList";
-    private Site.Type mType;
+    /** The key (list type) to retrieve the result. */
+    private String mListKey;
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final ArrayList<Site> list) {
 
-        // All sites in a list are always of the same type.
-        // Remember the type for re-use when parsing the result
-        mType = list.get(0).getType();
+        // All sites in a list are always of the same type; just grab it from the first entry
+        mListKey = list.get(0).getType().getBundleKey();
 
         return new Intent(context, SearchAdminActivity.class)
                 .putExtra(SearchAdminViewModel.BKEY_LIST, list);
@@ -60,13 +61,15 @@ public class SearchSitesSingleListContract
     public ArrayList<Site> parseResult(final int resultCode,
                                        @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode
+                                         + "|intent=" + intent
+                                         + "|mListKey=" + mListKey);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
 
-        return intent.getParcelableArrayListExtra(mType.getBundleKey());
+        return intent.getParcelableArrayListExtra(mListKey);
     }
 }

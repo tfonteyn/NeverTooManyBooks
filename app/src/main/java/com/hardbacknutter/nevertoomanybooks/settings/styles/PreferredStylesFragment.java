@@ -39,7 +39,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -191,6 +190,14 @@ public class PreferredStylesFragment
                 }
             });
 
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int menuItemId,
+                                        final int position) {
+                    return onContextItemSelected(menuItemId, position);
+                }
+            };
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -213,10 +220,7 @@ public class PreferredStylesFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            final FragmentManager fm = getParentFragmentManager();
-            fm.setFragmentResultListener(
-                    RK_MENU_PICKER, this,
-                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+            mMenuLauncher.register(this, RK_MENU_PICKER);
         }
 
         //noinspection ConstantConditions
@@ -319,9 +323,8 @@ public class PreferredStylesFragment
                     getString(R.string.action_duplicate),
                     R.drawable.ic_content_copy));
 
-            MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
-                                    .show(getParentFragmentManager(),
-                                          MenuPickerDialogFragment.TAG);
+            mMenuLauncher.launch(title, menu, position);
+
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());
             if (style.isUserDefined()) {

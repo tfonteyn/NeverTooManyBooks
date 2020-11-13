@@ -38,7 +38,6 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -75,8 +74,22 @@ public class EditBookshelvesFragment
     private BookshelfAdapter mAdapter;
     private EditBookshelvesModel mVm;
     /** Accept the result from the dialog. */
-    private final EditBookshelfDialogFragment.OnResultListener mOnEditBookshelfListener =
-            bookshelfId -> mVm.reloadListAndSetSelectedPosition(bookshelfId);
+    private final EditBookshelfDialogFragment.Launcher mOnEditBookshelfLauncher =
+            new EditBookshelfDialogFragment.Launcher() {
+                @Override
+                public void onResult(final long bookshelfId) {
+                    mVm.reloadListAndSetSelectedPosition(bookshelfId);
+                }
+            };
+
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int menuItemId,
+                                        final int position) {
+                    return onContextItemSelected(menuItemId, position);
+                }
+            };
 
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
@@ -89,6 +102,7 @@ public class EditBookshelvesFragment
                 }
             };
 
+
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
 
@@ -97,13 +111,10 @@ public class EditBookshelvesFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        final FragmentManager fm = getChildFragmentManager();
-        fm.setFragmentResultListener(RK_EDIT_BOOKSHELF, this, mOnEditBookshelfListener);
+        mOnEditBookshelfLauncher.register(this, RK_EDIT_BOOKSHELF);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            fm.setFragmentResultListener(
-                    RK_MENU_PICKER, this,
-                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+            mMenuLauncher.register(this, RK_MENU_PICKER);
         }
     }
 
@@ -204,8 +215,7 @@ public class EditBookshelvesFragment
                     getString(R.string.action_delete),
                     R.drawable.ic_delete));
 
-            MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
-                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            mMenuLauncher.launch(title, menu, position);
         } else {
             //noinspection ConstantConditions
             final Menu menu = MenuPicker.createMenu(getContext());
@@ -263,9 +273,7 @@ public class EditBookshelvesFragment
      * @param bookshelf to edit
      */
     private void editItem(@NonNull final Bookshelf bookshelf) {
-        EditBookshelfDialogFragment
-                .newInstance(RK_EDIT_BOOKSHELF, bookshelf)
-                .show(getChildFragmentManager(), EditBookshelfDialogFragment.TAG);
+        mOnEditBookshelfLauncher.launch(bookshelf);
     }
 
     /**

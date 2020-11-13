@@ -73,8 +73,19 @@ final class MenuHelper {
     static void prepareOptionalMenus(@NonNull final Menu menu,
                                      @NonNull final DataHolder rowData) {
 
-        final boolean hasAuthor = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
-        final boolean hasSeries = rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+        final boolean hasAuthor;
+        if (rowData.contains(DBDefinitions.KEY_FK_AUTHOR)) {
+            hasAuthor = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR) > 0;
+        } else {
+            hasAuthor = false;
+        }
+
+        final boolean hasSeries;
+        if (rowData.contains(DBDefinitions.KEY_FK_SERIES)) {
+            hasSeries = rowData.getLong(DBDefinitions.KEY_FK_SERIES) > 0;
+        } else {
+            hasSeries = false;
+        }
 
         prepareSearchOnAmazonMenu(menu, hasAuthor, hasSeries);
     }

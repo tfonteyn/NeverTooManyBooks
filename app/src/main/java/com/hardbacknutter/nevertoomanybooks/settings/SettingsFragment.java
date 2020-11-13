@@ -67,15 +67,14 @@ public class SettingsFragment
     /** Used to be able to reset this pref to what it was when this fragment started. */
     private boolean mCurrentSortTitleReordered;
     /** The Activity results. */
-    private SettingsViewModel mSettingsViewModel;
+    private SettingsViewModel mVm;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            mSettingsViewModel.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
                     getActivity().finish();
                 }
             };
@@ -87,7 +86,7 @@ public class SettingsFragment
         setPreferencesFromResource(R.xml.preferences, rootKey);
 
         //noinspection ConstantConditions
-        mSettingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
         final SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
 
@@ -177,7 +176,7 @@ public class SettingsFragment
             case Prefs.pk_ui_theme:
             case Prefs.pk_sort_title_reordered:
             case Prefs.pk_show_title_reordered:
-                mSettingsViewModel.setRequiresActivityRecreation();
+                mVm.setRequiresActivityRecreation();
                 break;
 
             default:

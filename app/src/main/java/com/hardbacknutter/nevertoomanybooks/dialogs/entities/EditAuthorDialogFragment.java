@@ -27,6 +27,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -81,22 +82,19 @@ public class EditAuthorDialogFragment
     }
 
     /**
-     * Constructor.
+     * Launch the dialog.
      *
-     * @param requestKey for use with the FragmentResultListener
-     * @param author     to edit.
-     *
-     * @return instance
+     * @param author to edit.
      */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final Author author) {
-        final DialogFragment frag = new EditAuthorDialogFragment();
+    public static void launch(@NonNull final FragmentActivity activity,
+                              @NonNull final Author author) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
+        args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
         args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
+
+        final DialogFragment frag = new EditAuthorDialogFragment();
         frag.setArguments(args);
-        return frag;
+        frag.show(activity.getSupportFragmentManager(), TAG);
     }
 
     @Override
@@ -116,7 +114,9 @@ public class EditAuthorDialogFragment
             mGivenNames = mAuthor.getGivenNames();
             mIsComplete = mAuthor.isComplete();
         } else {
+            //noinspection ConstantConditions
             mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+            //noinspection ConstantConditions
             mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
                                                         false);
@@ -192,8 +192,9 @@ public class EditAuthorDialogFragment
                 success = mDb.update(context, mAuthor);
             }
             if (success) {
-                BooksOnBookshelf.ChangeListener
-                        .update(this, mRequestKey, BooksOnBookshelf.ChangeListener.AUTHOR);
+                BooksOnBookshelf.RowChangeListener
+                        .sendResult(this, mRequestKey,
+                                    BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());
                 return true;
             }
         } else {
@@ -208,8 +209,10 @@ public class EditAuthorDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             mDb.merge(context, mAuthor, existingId);
-                            BooksOnBookshelf.ChangeListener.update(
-                                    this, mRequestKey, BooksOnBookshelf.ChangeListener.AUTHOR);
+                            BooksOnBookshelf.RowChangeListener.sendResult(
+                                    this, mRequestKey,
+                                    // return the author who 'lost' their books
+                                    BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());
                         } catch (@NonNull final DAO.DaoWriteException e) {
                             Logger.error(context, TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);

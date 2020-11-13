@@ -259,7 +259,9 @@ public class BitmaskPreference
                 //noinspection ConstantConditions
                 mNewValues.addAll(savedInstanceState.getStringArrayList(SAVE_STATE_VALUES));
                 mPreferenceChanged = savedInstanceState.getBoolean(SAVE_STATE_CHANGED, false);
+                //noinspection ConstantConditions
                 mEntries = savedInstanceState.getCharSequenceArray(SAVE_STATE_ENTRIES);
+                //noinspection ConstantConditions
                 mEntryValues = savedInstanceState.getCharSequenceArray(SAVE_STATE_ENTRY_VALUES);
             }
         }

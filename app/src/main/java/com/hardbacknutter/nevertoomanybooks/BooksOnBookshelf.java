@@ -74,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookli
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
-import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
@@ -166,12 +165,16 @@ public class BooksOnBookshelf
     private static final String RK_EDIT_LENDER = EditLenderDialogFragment.TAG + ":rk";
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = EditBookshelfDialogFragment.TAG + ":rk";
+
+
     /** Bring up the Goodreads synchronization options. */
     private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
             new GoodreadsAdminFragment.ResultContract(), data -> setGoodreadsMenuVisibility());
     /** Make a backup. */
     private final ActivityResultLauncher<Void> mExportLauncher = registerForActivityResult(
             new ExportFragment.ResultContract(), success -> {});
+
+
     /** Goodreads authorization task. */
     private GrAuthTask mGrAuthTask;
     /** Goodreads send-book task. */
@@ -289,6 +292,23 @@ public class BooksOnBookshelf
                     }
                 }
             });
+
+    /**
+     * Full progress dialog to show while running a task.
+     * Note that the {@link #mVm} does not use this dialog (i.e. never sends progress messages)
+     * but just the light weight ProgressBar.
+     */
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
+    /** Encapsulates the FAB button/menu. */
+    private FabMenu mFabMenu;
+    /** The adapter used to fill the mBookshelfSpinner. */
+    private BookshelfSpinnerAdapter mBookshelfSpinnerAdapter;
+    /** View Binding. */
+    private BooksonbookshelfBinding mVb;
+    /** List layout manager. */
+    private LinearLayoutManager mLayoutManager;
+
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
             new SpinnerInteractionListener() {
@@ -324,10 +344,10 @@ public class BooksOnBookshelf
                     }
                 }
             };
-    /** View Binding. */
-    private BooksonbookshelfBinding mVb;
-    /** List layout manager. */
-    private LinearLayoutManager mLayoutManager;
+
+    /** React to row changes made. */
+    private final RowChangeListener mRowChangeListener = this::onRowChange;
+
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -335,23 +355,36 @@ public class BooksOnBookshelf
      * We do NOT come here when the user decided to EDIT a style,
      * which is handled {@link #mEditStyleLauncher}.
      */
-    private final StylePickerDialogFragment.OnResultListener mOnStylePickerListener = uuid -> {
-        saveListPosition();
-        mVm.onStyleChanged(this, uuid);
-        // Set the rebuild state like this is the first time in,
-        // which it sort of is, given we are changing style.
-        mVm.setPreferredListRebuildState(this);
-        // and do a rebuild
-        buildBookList();
-    };
-    /** React to row changes made. */
-    private final ChangeListener mChangeListener = this::onBookChange;
-    /** Accept the result from the dialog. */
-    private final EditBookshelfDialogFragment.OnResultListener mEditBookshelfListener =
-            bookshelfId -> {
-                if (bookshelfId != mVm.getSelectedBookshelf().getId()) {
+    private final StylePickerDialogFragment.Launcher mOnStylePickerLauncher =
+            new StylePickerDialogFragment.Launcher() {
+                @Override
+                public void onResult(@NonNull final String uuid) {
                     saveListPosition();
+                    mVm.onStyleChanged(BooksOnBookshelf.this, uuid);
+                    mVm.resetPreferredListRebuildState(BooksOnBookshelf.this);
+                    // and do a rebuild
                     buildBookList();
+                }
+            };
+
+    /** Accept the result from the dialog. */
+    private final EditBookshelfDialogFragment.Launcher mEditBookshelfLauncher =
+            new EditBookshelfDialogFragment.Launcher() {
+                @Override
+                public void onResult(final long bookshelfId) {
+                    if (bookshelfId != mVm.getSelectedBookshelf().getId()) {
+                        onRowChange(RowChangeListener.BOOKSHELF, bookshelfId);
+                    }
+                }
+            };
+
+    /** Accept the result from the dialog. */
+    private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
+            new EditLenderDialogFragment.Launcher() {
+                @Override
+                public void onResult(@IntRange(from = 1) final long bookId,
+                                     @NonNull final String loanee) {
+                    onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
     /** Listener for clicks on the list. */
@@ -378,7 +411,12 @@ public class BooksOnBookshelf
 
                     // If it's a book, open the details screen.
                     if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        openBookDetails(rowData);
+                        mDisplayBookLauncher.launch(new BookDetailsFragment.ResultContract.Input(
+                                rowData.getLong(DBDefinitions.KEY_FK_BOOK),
+                                mVm.getBooklistTableName(),
+                                rowData.getLong(DBDefinitions.KEY_PK_ID),
+                                mVm.getCurrentStyle(BooksOnBookshelf.this).getUuid()
+                        ));
 
                     } else {
                         // it's a level, expand/collapse.
@@ -400,7 +438,6 @@ public class BooksOnBookshelf
 
                     final DataHolder rowData = new CursorRow(cursor);
 
-                    // build the menu for this row
                     final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
                     if (onCreateContextMenu(menu, rowData)) {
                         // we have a menu to show, set the title according to the level.
@@ -408,10 +445,7 @@ public class BooksOnBookshelf
                         final String title = mAdapter.getLevelText(position, level);
 
                         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-                            MenuPickerDialogFragment
-                                    .newInstance(RK_MENU_PICKER, title, menu, position)
-                                    .show(getSupportFragmentManager(),
-                                          MenuPickerDialogFragment.TAG);
+                            mMenuLauncher.launch(title, menu, position);
                         } else {
                             new MenuPicker(BooksOnBookshelf.this, title, menu, position,
                                            BooksOnBookshelf.this::onContextItemSelected)
@@ -422,39 +456,14 @@ public class BooksOnBookshelf
                 }
             };
     /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.OnResultListener mMenuPickerListener =
-            this::onContextItemSelected;
-    /**
-     * Full progress dialog to show while running a task.
-     * Note that the {@link #mVm} does not use this dialog (i.e. never sends progress messages)
-     * but just the light weight ProgressBar.
-     */
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
-    /** Accept the result from the dialog. */
-    private final EditLenderDialogFragment.OnResultListener mEditLenderListener =
-            (bookId, loanee) -> {
-                saveListPosition();
-                buildBookList();
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
+                }
             };
-    /** Encapsulates the FAB button/menu. */
-    private FabMenu mFabMenu;
-    /** The adapter used to fill the mBookshelfSpinner. */
-    private BookshelfSpinnerAdapter mBookshelfSpinnerAdapter;
-
-    /**
-     * Open the {@link BookDetailsActivity} for the given book.
-     *
-     * @param rowData with book data
-     */
-    public void openBookDetails(@NonNull final DataHolder rowData) {
-        mDisplayBookLauncher.launch(new BookDetailsFragment.ResultContract.Input(
-                rowData.getLong(DBDefinitions.KEY_FK_BOOK),
-                mVm.getBooklistTableName(),
-                rowData.getLong(DBDefinitions.KEY_PK_ID),
-                mVm.getCurrentStyle(this).getUuid()
-        ));
-    }
 
     @Override
     protected void onSetContentView() {
@@ -478,19 +487,20 @@ public class BooksOnBookshelf
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
 
-        final FragmentManager fm = getSupportFragmentManager();
-        fm.setFragmentResultListener(ChangeListener.REQUEST_KEY, this, mChangeListener);
+        getSupportFragmentManager()
+                .setFragmentResultListener(RowChangeListener.REQUEST_KEY, this, mRowChangeListener);
 
-        fm.setFragmentResultListener(RK_EDIT_BOOKSHELF, this, mEditBookshelfListener);
-        fm.setFragmentResultListener(RK_EDIT_LENDER, this, mEditLenderListener);
-        fm.setFragmentResultListener(RK_STYLE_PICKER, this, mOnStylePickerListener);
+        mEditBookshelfLauncher.register(this, RK_EDIT_BOOKSHELF);
+        mEditLenderLauncher.register(this, RK_EDIT_LENDER);
+        mOnStylePickerLauncher.register(this, RK_STYLE_PICKER);
+
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            fm.setFragmentResultListener(RK_MENU_PICKER, this, mMenuPickerListener);
+            mMenuLauncher.register(this, RK_MENU_PICKER);
         }
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
         mVm = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
-        mVm.init(this, getIntent().getExtras(), savedInstanceState);
+        mVm.init(this, getIntent().getExtras());
         mVm.onCancelled().observe(this, this::onBuildFailed);
         mVm.onFailure().observe(this, this::onBuildFailed);
         mVm.onFinished().observe(this, this::onBuildFinished);
@@ -523,7 +533,7 @@ public class BooksOnBookshelf
 
 
         // initialise adapter without a cursor.
-        // Not creating and setting it in here, creates issues with Android internals.
+        // Not creating the adapter here creates issues with Android internals.
         createAdapter(null);
 
 
@@ -538,7 +548,7 @@ public class BooksOnBookshelf
 
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(this::onFabMenuItemSelected);
-        // mVb.fab4
+        // mVb.fab4SearchExternalId
         mFabMenu.getItem(4).setEnabled(EditBookExternalIdFragment.showEditBookTabExternalId(prefs));
 
         // Popup the search widget when the user starts to type.
@@ -700,10 +710,8 @@ public class BooksOnBookshelf
 
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.MENU_SORT) {
-            StylePickerDialogFragment
-                    .newInstance(RK_STYLE_PICKER, mVm.getCurrentStyle(this), false)
-                    .show(getSupportFragmentManager(), StylePickerDialogFragment.TAG);
+        if (itemId == R.id.MENU_STYLE_PICKER) {
+            mOnStylePickerLauncher.launch(mVm.getCurrentStyle(this), false);
             return true;
 
         } else if (itemId == R.id.MENU_LEVEL_PREFERRED_COLLAPSE) {
@@ -910,7 +918,7 @@ public class BooksOnBookshelf
             final List<Author> authors = mVm.getAuthorsByBookId(bookId);
             StandardDialogs.deleteBook(this, title, authors, () -> {
                 if (mVm.deleteBook(this, bookId)) {
-                    onBookChange(bookId, ChangeListener.BOOK_DELETED);
+                    onBookChange(RowChangeListener.BOOK_DELETED, bookId);
                 }
             });
             return true;
@@ -928,7 +936,7 @@ public class BooksOnBookshelf
             final boolean status = !rowData.getBoolean(DBDefinitions.KEY_READ);
             final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
             if (mVm.setBookRead(bookId, status)) {
-                onBookChange(bookId, ChangeListener.BOOK_READ);
+                onBookChange(RowChangeListener.BOOK_READ, bookId);
             }
             return true;
 
@@ -936,16 +944,13 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
             final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-            EditLenderDialogFragment
-                    .newInstance(RK_EDIT_LENDER,
-                                 bookId, rowData.getString(DBDefinitions.KEY_TITLE))
-                    .show(getSupportFragmentManager(), EditLenderDialogFragment.TAG);
+            mEditLenderLauncher.launch(bookId, rowData.getString(DBDefinitions.KEY_TITLE));
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
             final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
             mVm.lendBook(bookId, null);
-            onBookChange(bookId, ChangeListener.BOOK_LOANEE);
+            onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
             return true;
 
             /* ********************************************************************************** */
@@ -999,7 +1004,7 @@ public class BooksOnBookshelf
                 default: {
                     if (BuildConfig.DEBUG /* always */) {
                         Log.d(TAG, "onContextItemSelected"
-                                   + "|MENU_BOOK_UPDATE_FROM_INTERNET not supported"
+                                   + "|MENU_UPDATE_FROM_INTERNET not supported"
                                    + "|Group=" + rowData
                                            .getInt(DBDefinitions.KEY_BL_NODE_GROUP));
                     }
@@ -1013,9 +1018,7 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_SERIES_EDIT) {
             final Series series = mVm.getSeries(rowData);
             if (series != null) {
-                EditSeriesDialogFragment
-                        .newInstance(ChangeListener.REQUEST_KEY, series)
-                        .show(getSupportFragmentManager(), EditSeriesDialogFragment.TAG);
+                EditSeriesDialogFragment.launch(this, series);
             }
             return true;
 
@@ -1025,7 +1028,7 @@ public class BooksOnBookshelf
             // toggle the complete status
             final boolean status = !rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
             if (mVm.setSeriesComplete(seriesId, status)) {
-                onBookChange(0, ChangeListener.SERIES);
+                onRowChange(RowChangeListener.SERIES, seriesId);
             }
             return true;
 
@@ -1034,7 +1037,7 @@ public class BooksOnBookshelf
             if (series != null) {
                 StandardDialogs.deleteSeries(this, series, () -> {
                     mVm.delete(this, series);
-                    onBookChange(0, ChangeListener.SERIES);
+                    onRowChange(RowChangeListener.SERIES, series.getId());
                 });
             }
             return true;
@@ -1049,9 +1052,7 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
             final Author author = mVm.getAuthor(rowData);
             if (author != null) {
-                EditAuthorDialogFragment
-                        .newInstance(ChangeListener.REQUEST_KEY, author)
-                        .show(getSupportFragmentManager(), EditAuthorDialogFragment.TAG);
+                EditAuthorDialogFragment.launch(this, author);
             }
             return true;
 
@@ -1061,7 +1062,7 @@ public class BooksOnBookshelf
             // toggle the complete status
             final boolean status = !rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
             if (mVm.setAuthorComplete(authorId, status)) {
-                onBookChange(0, ChangeListener.AUTHOR);
+                onRowChange(RowChangeListener.AUTHOR, authorId);
             }
             return true;
 
@@ -1069,9 +1070,7 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_PUBLISHER_EDIT) {
             final Publisher publisher = mVm.getPublisher(rowData);
             if (publisher != null) {
-                EditPublisherDialogFragment
-                        .newInstance(ChangeListener.REQUEST_KEY, publisher)
-                        .show(getSupportFragmentManager(), EditPublisherDialogFragment.TAG);
+                EditPublisherDialogFragment.launch(this, publisher);
             }
             return true;
 
@@ -1080,7 +1079,7 @@ public class BooksOnBookshelf
             if (publisher != null) {
                 StandardDialogs.deletePublisher(this, publisher, () -> {
                     mVm.delete(this, publisher);
-                    onBookChange(0, ChangeListener.PUBLISHER);
+                    onRowChange(RowChangeListener.PUBLISHER, publisher.getId());
                 });
             }
             return true;
@@ -1089,9 +1088,7 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_BOOKSHELF_EDIT) {
             final Bookshelf bookshelf = mVm.getBookshelf(rowData);
             if (bookshelf != null) {
-                EditBookshelfDialogFragment
-                        .newInstance(RK_EDIT_BOOKSHELF, bookshelf)
-                        .show(getSupportFragmentManager(), EditBookshelfDialogFragment.TAG);
+                mEditBookshelfLauncher.launch(bookshelf);
             }
             return true;
 
@@ -1100,45 +1097,30 @@ public class BooksOnBookshelf
             if (bookshelf != null) {
                 StandardDialogs.deleteBookshelf(this, bookshelf, () -> {
                     mVm.delete(bookshelf);
-                    onBookChange(0, ChangeListener.BOOKSHELF);
+                    onRowChange(RowChangeListener.BOOKSHELF, bookshelf.getId());
                 });
             }
             return true;
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_FORMAT_EDIT) {
-            EditFormatDialogFragment
-                    .newInstance(ChangeListener.REQUEST_KEY,
-                                 rowData.getString(DBDefinitions.KEY_FORMAT))
-                    .show(getSupportFragmentManager(), EditFormatDialogFragment.TAG);
+            EditFormatDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_FORMAT));
             return true;
 
         } else if (itemId == R.id.MENU_COLOR_EDIT) {
-            EditColorDialogFragment
-                    .newInstance(ChangeListener.REQUEST_KEY,
-                                 rowData.getString(DBDefinitions.KEY_COLOR))
-                    .show(getSupportFragmentManager(), EditColorDialogFragment.TAG);
+            EditColorDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_COLOR));
             return true;
 
         } else if (itemId == R.id.MENU_GENRE_EDIT) {
-            EditGenreDialogFragment
-                    .newInstance(ChangeListener.REQUEST_KEY,
-                                 rowData.getString(DBDefinitions.KEY_GENRE))
-                    .show(getSupportFragmentManager(), EditGenreDialogFragment.TAG);
+            EditGenreDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_GENRE));
             return true;
 
         } else if (itemId == R.id.MENU_LANGUAGE_EDIT) {
-            EditLanguageDialogFragment
-                    .newInstance(ChangeListener.REQUEST_KEY, this,
-                                 rowData.getString(DBDefinitions.KEY_LANGUAGE))
-                    .show(getSupportFragmentManager(), EditLanguageDialogFragment.TAG);
+            EditLanguageDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_LANGUAGE));
             return true;
 
         } else if (itemId == R.id.MENU_LOCATION_EDIT) {
-            EditLocationDialogFragment
-                    .newInstance(ChangeListener.REQUEST_KEY,
-                                 rowData.getString(DBDefinitions.KEY_LOCATION))
-                    .show(getSupportFragmentManager(), EditLocationDialogFragment.TAG);
+            EditLocationDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_LOCATION));
             return true;
 
             /* ********************************************************************************** */
@@ -1164,6 +1146,7 @@ public class BooksOnBookshelf
             }
             return true;
 
+            /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
             setNode(rowData, BooklistNode.NEXT_STATE_EXPANDED,
                     mVm.getCurrentStyle(this).getGroups().size());
@@ -1183,17 +1166,38 @@ public class BooksOnBookshelf
         return MenuHelper.handleViewBookOnWebsiteMenu(this, itemId, rowData);
     }
 
+    public void editStyle(@NonNull final BooklistStyle style,
+                          final long templateId) {
+        mEditStyleLauncher.launch(new StyleFragment.ResultContract.Input(style, templateId));
+    }
+
     /**
-     * React to row changes made. ENHANCE: update the modified row without a rebuild.
+     * React to row changes made.
      *
-     * @param flags bitmask
+     * @param change type of item that was modified
+     * @param id     of the <strong>item</strong> changed,
+     *               or {@code 0} for a global change or for an books-table inline item
+     *               (example of the latter: format/location/...)
      */
-    public void onBookChange(final long bookId,
-                             @ChangeListener.Flags final int flags) {
+    public void onRowChange(@RowChangeListener.Change final int change,
+                            @IntRange(from = 0) final long id) {
+        // ENHANCE: update the modified row without a rebuild.
         saveListPosition();
         buildBookList();
     }
 
+    /**
+     * React to book changes made.
+     *
+     * @param change one of the BookChange flags
+     * @param bookId the book that was changed
+     */
+    public void onBookChange(@RowChangeListener.BookChange final int change,
+                             @IntRange(from = 1) final long bookId) {
+        // ENHANCE: update the modified row without a rebuild.
+        saveListPosition();
+        buildBookList();
+    }
 
     /**
      * Called when the user has finished (and saved) editing a Book.
@@ -1203,24 +1207,21 @@ public class BooksOnBookshelf
     private void onBookEditingDone(@Nullable final Bundle data) {
         if (data != null) {
             // If any of these is set, we need a rebuild.
-            if (data.getBoolean(BookViewModel.BKEY_BOOK_CREATED, false)) {
-                mVm.setForceRebuildInOnResume(true);
-            }
-            if (data.getBoolean(BookViewModel.BKEY_DATA_MODIFIED, false)) {
-                mVm.setForceRebuildInOnResume(true);
-            }
-            if (data.getBoolean(BookViewModel.BKEY_BOOK_DELETED, false)) {
+            if (data.getBoolean(BookViewModel.BKEY_BOOK_CREATED, false)
+                || data.getBoolean(BookViewModel.BKEY_DATA_MODIFIED, false)
+                || data.getBoolean(BookViewModel.BKEY_BOOK_DELETED, false)) {
+
                 mVm.setForceRebuildInOnResume(true);
             }
 
             // We might have a specific state to use for rebuilding,
             // if so, apply and schedule the rebuild.
-            if (data.containsKey(BooksOnBookshelfModel.BKEY_LIST_STATE)) {
-                final int state = data.getInt(BooksOnBookshelfModel.BKEY_LIST_STATE,
-                                              Booklist.PREF_REBUILD_SAVED_STATE);
-                mVm.setRebuildState(state);
-                mVm.setForceRebuildInOnResume(true);
-            }
+//            if (data.containsKey(BooksOnBookshelfModel.BKEY_LIST_STATE)) {
+//                final int state = data.getInt(BooksOnBookshelfModel.BKEY_LIST_STATE,
+//                                              Booklist.PREF_REBUILD_SAVED_STATE);
+//                mVm.setRebuildState(state);
+//                mVm.setForceRebuildInOnResume(true);
+//            }
 
             // If we got an id back, make any (potential) rebuild re-position to it.
             final long bookId = data.getLong(DBDefinitions.KEY_PK_ID, 0);
@@ -1255,15 +1256,13 @@ public class BooksOnBookshelf
 
         // don't build the list needlessly
         if (isRecreating() || isFinishing() || isDestroyed()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Log.d(TAG, "onResume|don't build the list needlessly");
-            }
             return;
         }
 
         // If we have search criteria enabled (i.e. we're filtering the current list)
         // then we should display the 'up' indicator. See #onBackPressed.
         updateActionBar(mVm.getSearchCriteria().isEmpty());
+
 
         // Initialize/Update the list of bookshelves
         mVm.reloadBookshelfList(this);
@@ -1277,33 +1276,15 @@ public class BooksOnBookshelf
         // always reset for next iteration.
         mVm.setForceRebuildInOnResume(false);
 
-        // This if/else is to be able to debug/log *why* we're rebuilding
-        if (!mVm.isListLoaded()) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Log.d(TAG, "onResume|initial load");
-            }
-            buildBookList();
-
-        } else if (forceRebuildInOnResume) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Log.d(TAG, "onResume|isForceRebuildInOnResume");
-            }
+        if (forceRebuildInOnResume || !mVm.isListLoaded()) {
             buildBookList();
 
         } else {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_INIT_BOOK_LIST) {
-                Log.d(TAG, "onResume|reusing existing list");
-            }
             // no rebuild needed/done, just let the system redisplay the list state
             displayList(mVm.getTargetNodes());
         }
     }
 
-    /**
-     * Save position when paused.
-     *
-     * <br><br>{@inheritDoc}
-     */
     @Override
     @CallSuper
     public void onPause() {
@@ -1657,10 +1638,6 @@ public class BooksOnBookshelf
         }
     }
 
-    public void editStyle(@NonNull final BooklistStyle style,
-                          final long templateId) {
-        mEditStyleLauncher.launch(new StyleFragment.ResultContract.Input(style, templateId));
-    }
 
     /**
      * Allows to be notified of changes made.
@@ -1669,10 +1646,10 @@ public class BooksOnBookshelf
      * If a book id is passed back, it should be available
      * in {@code data.getLong(DBDefinitions.KEY_FK_BOOK)}.
      */
-    public interface ChangeListener
+    public interface RowChangeListener
             extends FragmentResultListener {
 
-        String REQUEST_KEY = "rk:ChangeListener";
+        String REQUEST_KEY = "rk:RowChangeListener";
 
         // Note that BOOK is missing here.
         // It's implied if a bookId is passed back, or if the context makes it clear anyhow.
@@ -1702,43 +1679,52 @@ public class BooksOnBookshelf
         /** A book was deleted. */
         int BOOK_DELETED = 1 << 12;
 
-        /* private. */ String FLAGS = "flags";
+        /* private. */ String ITEM_ID = "item";
+        /* private. */ String CHANGE = "change";
 
         /**
          * Notify changes where made.
          *
          * @param requestKey for use with the FragmentResultListener
-         * @param flags      flags
+         * @param change     what changed
+         * @param id         the item being modified,
+         *                   or {@code 0} for a global change or for an books-table inline item
          */
-        static void update(@NonNull final Fragment fragment,
-                           @NonNull final String requestKey,
-                           @Flags final int flags) {
-            final Bundle result = new Bundle(1);
-            result.putInt(FLAGS, flags);
-            // Currently not adding DBDefinitions.KEY_FK_BOOK as it's always 0
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               @Change final int change,
+                               final long id) {
+            final Bundle result = new Bundle(2);
+            result.putInt(CHANGE, change);
+            result.putLong(ITEM_ID, id);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onChange(result.getLong(DBDefinitions.KEY_FK_BOOK), result.getInt(FLAGS));
+            onChange(result.getInt(CHANGE), result.getLong(ITEM_ID));
         }
 
         /**
          * Called if changes were made.
          *
-         * @param bookId the book id being modified, or {@code 0} for a global change
-         * @param flags  bitmask
+         * @param change what changed
+         * @param id     the item being modified, or {@code 0} for a global change
          */
-        void onChange(long bookId,
-                      @Flags int flags);
+        void onChange(@Change int change,
+                      @IntRange(from = 0) long id);
 
-        @IntDef(flag = true, value = {AUTHOR, SERIES, PUBLISHER, BOOKSHELF, TOC_ENTRY,
-                                      FORMAT, COLOR, GENRE, LANGUAGE, LOCATION,
-                                      BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
+        @IntDef({AUTHOR, SERIES, PUBLISHER, BOOKSHELF, TOC_ENTRY,
+                 FORMAT, COLOR, GENRE, LANGUAGE, LOCATION})
         @Retention(RetentionPolicy.SOURCE)
-        @interface Flags {
+        @interface Change {
+
+        }
+
+        @IntDef({BOOK_READ, BOOK_LOANEE, BOOK_DELETED})
+        @Retention(RetentionPolicy.SOURCE)
+        @interface BookChange {
 
         }
     }

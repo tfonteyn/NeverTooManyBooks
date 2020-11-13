@@ -64,7 +64,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -94,6 +93,9 @@ public class CoverHandler {
 
     /** FragmentResultListener request key. Append the mCIdx value! */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
+
+    /** FragmentResultListener request key. Append the mCIdx value! */
+    private static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDialogFragment.TAG;
 
     /**
      * After taking a picture, do nothing. Never change the value.
@@ -134,6 +136,24 @@ public class CoverHandler {
     private final ActivityResultLauncher<String> mGetFromFileLauncher;
     @NonNull
     private final ActivityResultLauncher<Intent> mEditPictureLauncher;
+
+    @NonNull
+    private final CoverBrowserDialogFragment.Launcher mCoverBrowserLauncher =
+            new CoverBrowserDialogFragment.Launcher() {
+                @Override
+                public void onResult(@NonNull final String fileSpec) {
+                    onFileSelected(fileSpec);
+                }
+            };
+
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int menuItemId,
+                                        final int position) {
+                    return onContextItemSelected(menuItemId, position);
+                }
+            };
 
     /** The view for this handler. */
     private ImageView mCoverView;
@@ -191,10 +211,10 @@ public class CoverHandler {
         mCropPictureLauncher = mFragment.registerForActivityResult(
                 new CropImageActivity.ResultContract(), this::onGetContentResult);
 
+        mCoverBrowserLauncher.register(mFragment, RK_COVER_BROWSER + mCIdx);
+
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mFragment.getChildFragmentManager().setFragmentResultListener(
-                    RK_MENU_PICKER + mCIdx, mFragment,
-                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+            mMenuLauncher.register(mFragment, RK_MENU_PICKER + mCIdx);
         }
 
         mTransFormTaskViewModel = new ViewModelProvider(mFragment)
@@ -301,9 +321,7 @@ public class CoverHandler {
         menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(mCIdx == 0);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            MenuPickerDialogFragment
-                    .newInstance(RK_MENU_PICKER + mCIdx, title, menu, mCIdx)
-                    .show(mFragment.getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            mMenuLauncher.launch(title, menu, mCIdx);
         } else {
             new MenuPicker(context, title, menu, mCIdx, this::onContextItemSelected)
                     .show();
@@ -392,16 +410,14 @@ public class CoverHandler {
      * Use the isbn to fetch other possible images from the internet
      * and present to the user to choose one.
      * <p>
-     * The results comes back in {@link #onFileSelected(int, String)}
+     * The results comes back in {@link #onFileSelected(String)}
      */
     private void startCoverBrowser() {
         final String isbnStr = mIsbnView.getText().toString();
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = ISBN.createISBN(isbnStr);
             if (isbn.isValid(true)) {
-                CoverBrowserDialogFragment
-                        .newInstance(BookBaseFragment.RK_COVER_BROWSER, isbn.asText(), mCIdx)
-                        .show(mFragment.getChildFragmentManager(), CoverBrowserDialogFragment.TAG);
+                mCoverBrowserLauncher.launch(isbn.asText(), mCIdx);
                 return;
             }
         }
@@ -413,20 +429,15 @@ public class CoverHandler {
     /**
      * Called when the user clicks the large preview in the {@link CoverBrowserDialogFragment}.
      *
-     * @param cIdx     0..n image index
      * @param fileSpec the selected image
      */
-    public void onFileSelected(@IntRange(from = 0, to = 1) final int cIdx,
-                               @NonNull final String fileSpec) {
-        if (cIdx != mCIdx) {
-            throw new IllegalStateException("cIdx=" + cIdx + "|mCIdx=" + mCIdx);
-        }
+    private void onFileSelected(@NonNull final String fileSpec) {
         SanityCheck.requireValue(fileSpec, "fileSpec");
 
         final Context context = mFragment.requireContext();
         File srcFile = new File(fileSpec);
         if (srcFile.exists()) {
-            srcFile = mBookViewModel.setCover(context, cIdx, srcFile);
+            srcFile = mBookViewModel.setCover(context, mCIdx, srcFile);
             if (srcFile != null) {
                 new ImageLoader(mCoverView, mMaxWidth, mMaxHeight, srcFile, null)
                         .execute();
@@ -435,7 +446,7 @@ public class CoverHandler {
             }
         }
 
-        mBookViewModel.setCover(context, cIdx, null);
+        mBookViewModel.setCover(context, mCIdx, null);
         setPlaceholder();
     }
 

@@ -32,6 +32,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
@@ -71,12 +72,16 @@ public class EditBookFieldsFragment
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + CheckListDialogFragment.TAG;
 
-    private final CheckListDialogFragment.OnResultListener mOnCheckListListener =
-            (fieldId, selectedItems) -> {
-                final Field<List<Entity>, TextView> field = getField(fieldId);
-                mBookViewModel.getBook().putParcelableArrayList(field.getKey(), selectedItems);
-                field.getAccessor().setValue(selectedItems);
-                field.onChanged(true);
+    private final CheckListDialogFragment.Launcher mEditBookshelvesLauncher =
+            new CheckListDialogFragment.Launcher() {
+                @Override
+                public void onResult(@IdRes final int fieldId,
+                                     @NonNull final ArrayList<Entity> selectedItems) {
+                    final Field<List<Entity>, TextView> field = getField(fieldId);
+                    mBookViewModel.getBook().putParcelableArrayList(field.getKey(), selectedItems);
+                    field.getAccessor().setValue(selectedItems);
+                    field.onChanged(true);
+                }
             };
     /** The scanner. */
     private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
@@ -106,8 +111,7 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager()
-                .setFragmentResultListener(RK_EDIT_BOOKSHELVES, this, mOnCheckListListener);
+        mEditBookshelvesLauncher.register(this, RK_EDIT_BOOKSHELVES);
 
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -172,16 +176,12 @@ public class EditBookFieldsFragment
 
         mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
-        mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
-                .newInstance()
-                // no listener/callback. We share the book view model in the Activity scope
-                .show(getChildFragmentManager(), EditBookAuthorListDialogFragment.TAG));
+        // no listener/callback. We share the book view model in the Activity scope
+        mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment.launch(this));
 
         if (getField(R.id.series_title).isUsed(prefs)) {
-            mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
-                    .newInstance()
-                    // no listener/callback. We share the book view model in the Activity scope
-                    .show(getChildFragmentManager(), EditBookSeriesListDialogFragment.TAG));
+            // no listener/callback. We share the book view model in the Activity scope
+            mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment.launch(this));
         }
 
         // Bookshelves editor (dialog)
@@ -192,12 +192,9 @@ public class EditBookFieldsFragment
                 final ArrayList<Entity> selectedItems =
                         new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
                                 Book.BKEY_BOOKSHELF_LIST));
-                CheckListDialogFragment
-                        .newInstance(RK_EDIT_BOOKSHELVES,
-                                     getString(R.string.lbl_bookshelves_long),
-                                     R.id.bookshelves,
-                                     allItems, selectedItems)
-                        .show(getChildFragmentManager(), CheckListDialogFragment.TAG);
+
+                mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves_long),
+                                                R.id.bookshelves, allItems, selectedItems);
             });
         }
 

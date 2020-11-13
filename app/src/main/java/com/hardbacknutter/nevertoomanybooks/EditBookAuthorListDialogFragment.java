@@ -33,6 +33,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -75,7 +76,7 @@ public class EditBookAuthorListDialogFragment
         extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
-    static final String TAG = "EditBookAuthorListDlg";
+    private static final String TAG = "EditBookAuthorListDlg";
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_AUTHOR = TAG + ":rk:" + EditAuthorForBookDialogFragment.TAG;
 
@@ -98,8 +99,14 @@ public class EditBookAuthorListDialogFragment
     /** The adapter for the list itself. */
     private AuthorListAdapter mListAdapter;
 
-    private final EditBookBaseFragment.OnResultListener<Author> mOnEditAuthorListener =
-            this::processChanges;
+    private final EditBookBaseFragment.EditItemLauncher<Author> mOnEditAuthorLauncher =
+            new EditBookBaseFragment.EditItemLauncher<Author>() {
+                @Override
+                public void onResult(@NonNull final Author original,
+                                     @NonNull final Author modified) {
+                    processChanges(original, modified);
+                }
+            };
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
@@ -115,18 +122,18 @@ public class EditBookAuthorListDialogFragment
     /**
      * Constructor.
      *
-     * @return instance
+     * @param fragment hosting fragment
      */
-    public static DialogFragment newInstance() {
-        return new EditBookAuthorListDialogFragment();
+    public static void launch(@NonNull final Fragment fragment) {
+        new EditBookAuthorListDialogFragment()
+                .show(fragment.getChildFragmentManager(), TAG);
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager()
-                .setFragmentResultListener(RK_EDIT_AUTHOR, this, mOnEditAuthorListener);
+        mOnEditAuthorLauncher.register(this, RK_EDIT_AUTHOR);
 
         mDb = new DAO(TAG);
     }
@@ -468,7 +475,9 @@ public class EditBookAuthorListDialogFragment
                 mIsComplete = mAuthor.isComplete();
                 mType = mAuthor.getType();
             } else {
+                //noinspection ConstantConditions
                 mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+                //noinspection ConstantConditions
                 mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
                 mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
                                                             false);
@@ -579,7 +588,8 @@ public class EditBookAuthorListDialogFragment
                 tmpAuthor.setType(Author.TYPE_UNKNOWN);
             }
 
-            EditBookBaseFragment.OnResultListener.sendResult(this, mRequestKey, mAuthor, tmpAuthor);
+            EditBookBaseFragment.EditItemLauncher
+                    .sendResult(this, mRequestKey, mAuthor, tmpAuthor);
             return true;
         }
 

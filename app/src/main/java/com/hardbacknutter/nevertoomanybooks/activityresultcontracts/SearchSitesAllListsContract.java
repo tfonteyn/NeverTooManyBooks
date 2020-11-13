@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 public class SearchSitesAllListsContract
         extends ActivityResultContract<Void, Boolean> {
 
+    /** Log tag. */
     private static final String TAG = "SearchSitesAllLists";
 
     @NonNull

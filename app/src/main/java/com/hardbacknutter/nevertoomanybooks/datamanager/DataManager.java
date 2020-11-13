@@ -107,22 +107,11 @@ public class DataManager
         mRawData = rawData;
     }
 
-
     /**
      * Clear all data in this instance.
      */
     public void clearData() {
         mRawData.clear();
-    }
-
-    /**
-     * Clear all Validator related data in this instance.
-     */
-    public void clearValidators() {
-        mValidatorsMap.clear();
-        mValidatorErrorIdMap.clear();
-        mCrossValidators.clear();
-        mValidationExceptions.clear();
     }
 
     /**

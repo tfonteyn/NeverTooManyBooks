@@ -27,6 +27,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -79,22 +80,19 @@ public class EditSeriesDialogFragment
     }
 
     /**
-     * Constructor.
+     * Launch the dialog.
      *
-     * @param requestKey for use with the FragmentResultListener
-     * @param series     to edit.
-     *
-     * @return instance
+     * @param series to edit.
      */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final Series series) {
-        final DialogFragment frag = new EditSeriesDialogFragment();
+    public static void launch(@NonNull final FragmentActivity activity,
+                              @NonNull final Series series) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
+        args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
         args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
+
+        final DialogFragment frag = new EditSeriesDialogFragment();
         frag.setArguments(args);
-        return frag;
+        frag.show(activity.getSupportFragmentManager(), TAG);
     }
 
     @Override
@@ -113,6 +111,7 @@ public class EditSeriesDialogFragment
             mTitle = mSeries.getTitle();
             mIsComplete = mSeries.isComplete();
         } else {
+            //noinspection ConstantConditions
             mTitle = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
             mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE,
                                                         false);
@@ -179,8 +178,9 @@ public class EditSeriesDialogFragment
                 success = mDb.update(context, mSeries, bookLocale);
             }
             if (success) {
-                BooksOnBookshelf.ChangeListener
-                        .update(this, mRequestKey, BooksOnBookshelf.ChangeListener.SERIES);
+                BooksOnBookshelf.RowChangeListener
+                        .sendResult(this, mRequestKey,
+                                    BooksOnBookshelf.RowChangeListener.SERIES, mSeries.getId());
                 return true;
             }
         } else {
@@ -195,8 +195,10 @@ public class EditSeriesDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             mDb.merge(context, mSeries, existingId);
-                            BooksOnBookshelf.ChangeListener.update(
-                                    this, mRequestKey, BooksOnBookshelf.ChangeListener.SERIES);
+                            BooksOnBookshelf.RowChangeListener.sendResult(
+                                    this, mRequestKey,
+                                    // return the series who 'lost' it's books
+                                    BooksOnBookshelf.RowChangeListener.SERIES, mSeries.getId());
                         } catch (@NonNull final DAO.DaoWriteException e) {
                             Logger.error(context, TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);

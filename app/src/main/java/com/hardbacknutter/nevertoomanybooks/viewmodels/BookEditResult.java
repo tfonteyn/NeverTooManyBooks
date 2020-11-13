@@ -17,27 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModel;
+public class BookEditResult {
 
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
+    public static final int NOT_SET = 0;
+    public static final int CREATED = 1;
+    public static final int MODIFIED = 2;
+    public static final int DELETED = 3;
 
-public class ExportViewModel
-        extends ViewModel {
+    public final long id;
+    public final int status;
 
-    /** The export configuration. */
-    @Nullable
-    private ExportHelper mExportHelper;
+    private BookEditResult(final long id,
+                           final int status) {
+        this.id = id;
+        this.status = status;
+    }
 
-    @NonNull
-    ExportHelper getExportHelper() {
-        if (mExportHelper == null) {
-            mExportHelper = new ExportHelper(Options.ENTITIES);
-        }
-        return mExportHelper;
+    public static BookEditResult created(final long id) {
+        return new BookEditResult(id, CREATED);
+    }
+
+    public static BookEditResult modified(final long id) {
+        return new BookEditResult(id, MODIFIED);
+    }
+
+    public static BookEditResult deleted(final long id) {
+        return new BookEditResult(id, DELETED);
     }
 }

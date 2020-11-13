@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -71,35 +70,6 @@ public class CheckListDialogFragment
     private ArrayList<Entity> mAllItems;
     /** The list of selected items. */
     private ArrayList<Entity> mSelectedItems;
-
-    /**
-     * Constructor.
-     *
-     * @param requestKey    for use with the FragmentResultListener
-     * @param dialogTitle   the dialog title
-     * @param fieldId       this dialog operates on
-     * @param allItems      list of all possible items
-     * @param selectedItems list of item which are currently selected
-     *
-     * @return instance
-     */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final String dialogTitle,
-                                             @IdRes final int fieldId,
-                                             @NonNull final ArrayList<Entity> allItems,
-                                             @NonNull final ArrayList<Entity> selectedItems) {
-
-        final DialogFragment frag = new CheckListDialogFragment();
-        final Bundle args = new Bundle(5);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putString(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitle);
-        args.putInt(BKEY_FIELD_ID, fieldId);
-        args.putParcelableArrayList(BKEY_ALL, allItems);
-        args.putParcelableArrayList(BKEY_SELECTED, selectedItems);
-        frag.setArguments(args);
-        return frag;
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -153,7 +123,7 @@ public class CheckListDialogFragment
     }
 
     private void saveChanges() {
-        OnResultListener.sendResult(this, mRequestKey, mFieldId, mSelectedItems);
+        Launcher.sendResult(this, mRequestKey, mFieldId, mSelectedItems);
     }
 
     @Override
@@ -163,11 +133,11 @@ public class CheckListDialogFragment
         outState.putParcelableArrayList(BKEY_SELECTED, mSelectedItems);
     }
 
-    public interface OnResultListener
-            extends FragmentResultListener {
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
 
-        /* private. */ String FIELD_ID = "fieldId";
-        /* private. */ String SELECTED_ITEMS = "selectedItems";
+        private static final String FIELD_ID = "fieldId";
+        private static final String SELECTED_ITEMS = "selectedItems";
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
@@ -179,9 +149,35 @@ public class CheckListDialogFragment
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        /**
+         * Launch the dialog.
+         *
+         * @param dialogTitle   the dialog title
+         * @param fieldId       this dialog operates on
+         *                      (one launcher can serve multiple fields)
+         * @param allItems      list of all possible items
+         * @param selectedItems list of item which are currently selected
+         */
+        public void launch(@NonNull final String dialogTitle,
+                           @IdRes final int fieldId,
+                           @NonNull final ArrayList<Entity> allItems,
+                           @NonNull final ArrayList<Entity> selectedItems) {
+
+            final Bundle args = new Bundle(5);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitle);
+            args.putInt(BKEY_FIELD_ID, fieldId);
+            args.putParcelableArrayList(BKEY_ALL, allItems);
+            args.putParcelableArrayList(BKEY_SELECTED, selectedItems);
+
+            final DialogFragment frag = new CheckListDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, CheckListDialogFragment.TAG);
+        }
+
         @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
             onResult(result.getInt(FIELD_ID),
                      Objects.requireNonNull(result.getParcelableArrayList(SELECTED_ITEMS)));
         }
@@ -189,9 +185,10 @@ public class CheckListDialogFragment
         /**
          * Callback handler with the user's selection.
          *
+         * @param fieldId       this destination field id
          * @param selectedItems the list of <strong>checked</strong> items
          */
-        void onResult(@IdRes int fieldId,
-                      @NonNull ArrayList<Entity> selectedItems);
+        public abstract void onResult(@IdRes int fieldId,
+                                      @NonNull ArrayList<Entity> selectedItems);
     }
 }

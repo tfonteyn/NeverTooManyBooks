@@ -37,7 +37,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -91,34 +90,34 @@ public class ImportFragment
      * The ViewModel and the {@link #mArchiveImportTask} could be folded into one object,
      * but we're trying to keep task logic separate for now.
      */
-    private ImportViewModel mImportViewModel;
-    /** The launcher for picking a Uri. */
-    private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
-            registerForActivityResult(new ActivityResultContracts.OpenDocument(),
-                                      this::onOpenDocument);
+    private ImportViewModel mVm;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mImportViewModel.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
                     getActivity().finish();
                 }
             };
     private ArchiveImportTask mArchiveImportTask;
-    private final FragmentResultListener mImportOptionsListener =
-            new OptionsDialogBase.OnResultsListener() {
+    private final ImportOptionsDialogFragment.Launcher mImportOptionsLauncher =
+            new ImportOptionsDialogFragment.Launcher() {
                 @Override
-                public void onResult(final boolean success) {
-                    if (success) {
-                        mArchiveImportTask.startImport(mImportViewModel.getImportHelper());
+                public void onResult(final boolean startTask) {
+                    if (startTask) {
+                        mArchiveImportTask.startImport(mVm.getImportHelper());
                     } else {
                         //noinspection ConstantConditions
                         getActivity().finish();
                     }
                 }
             };
+    /** The launcher for picking a Uri. */
+    private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+                                      this::onOpenDocument);
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
@@ -126,8 +125,7 @@ public class ImportFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getChildFragmentManager()
-                .setFragmentResultListener(RK_IMPORT_OPTIONS, this, mImportOptionsListener);
+        mImportOptionsLauncher.register(this, RK_IMPORT_OPTIONS);
     }
 
     @Nullable
@@ -149,7 +147,7 @@ public class ImportFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mImportViewModel = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
 
         mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
         mArchiveImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
@@ -177,7 +175,7 @@ public class ImportFragment
             getActivity().finish();
 
         } else {
-            final ImportHelper importHelper = mImportViewModel.createImportManager(uri);
+            final ImportHelper importHelper = mVm.createImportManager(uri);
 
             //noinspection ConstantConditions
             if (!importHelper.isSupported(getContext())) {
@@ -206,10 +204,7 @@ public class ImportFragment
                             .setNegativeButton(android.R.string.cancel,
                                                (d, w) -> getActivity().finish())
                             .setPositiveButton(android.R.string.ok, (d, w) ->
-                                    ImportOptionsDialogFragment
-                                            .newInstance(RK_IMPORT_OPTIONS)
-                                            .show(getChildFragmentManager(),
-                                                  ImportOptionsDialogFragment.TAG))
+                                    mImportOptionsLauncher.launch())
                             .create()
                             .show();
 
@@ -219,9 +214,7 @@ public class ImportFragment
                 case Tar:
                 case SqLiteDb:
                     importHelper.setOptions(Options.ENTITIES | Options.IS_SYNC);
-                    ImportOptionsDialogFragment
-                            .newInstance(RK_IMPORT_OPTIONS)
-                            .show(getChildFragmentManager(), ImportOptionsDialogFragment.TAG);
+                    mImportOptionsLauncher.launch();
                     break;
 
                 default:
@@ -343,12 +336,12 @@ public class ImportFragment
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
-                .setMessage(mImportViewModel.getImportHelper().getResults()
-                                            .createReport(getContext()))
+                .setMessage(mVm.getImportHelper().getResults()
+                               .createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK,
-                                            mImportViewModel.onImportFinished());
+                                            mVm.onImportFinished());
                     getActivity().finish();
                 })
                 .create()

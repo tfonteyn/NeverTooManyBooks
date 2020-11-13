@@ -100,11 +100,20 @@ public class AuthorWorksFragment
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            mVm.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
                     getActivity().finish();
                 }
             };
+
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int menuItemId,
+                                        final int position) {
+                    return onContextItemSelected(menuItemId, position);
+                }
+            };
+
     /** The Adapter. */
     private TocAdapter mAdapter;
     private ActionBar mActionBar;
@@ -116,9 +125,7 @@ public class AuthorWorksFragment
         setHasOptionsMenu(true);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            getChildFragmentManager().setFragmentResultListener(
-                    RK_MENU_PICKER, this,
-                    (MenuPickerDialogFragment.OnResultListener) this::onContextItemSelected);
+            mMenuLauncher.register(this, RK_MENU_PICKER);
         }
     }
 
@@ -243,8 +250,8 @@ public class AuthorWorksFragment
                                                        res.getInteger(R.integer.MENU_ORDER_DELETE),
                                                        getString(R.string.action_delete),
                                                        R.drawable.ic_delete));
-            MenuPickerDialogFragment.newInstance(RK_MENU_PICKER, title, menu, position)
-                                    .show(getChildFragmentManager(), MenuPickerDialogFragment.TAG);
+            mMenuLauncher.launch(title, menu, position);
+
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());
             menu.add(Menu.NONE, R.id.MENU_DELETE,

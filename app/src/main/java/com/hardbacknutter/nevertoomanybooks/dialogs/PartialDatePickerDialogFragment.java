@@ -36,7 +36,6 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.material.snackbar.Snackbar;
 
@@ -136,41 +135,6 @@ public class PartialDatePickerDialogFragment
         super(R.layout.dialog_partial_date_picker);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param requestKey    for use with the FragmentResultListener
-     * @param dialogTitleId resource id for the dialog title
-     * @param fieldId       this dialog operates on
-     * @param currentValue  the current value of the field
-     * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
-     *
-     * @return instance
-     */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @StringRes final int dialogTitleId,
-                                             @IdRes final int fieldId,
-                                             @Nullable final String currentValue,
-                                             final boolean todayIfNone) {
-        final String dateStr;
-        if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
-            dateStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
-        } else if (currentValue != null) {
-            dateStr = currentValue;
-        } else {
-            dateStr = "";
-        }
-
-        final DialogFragment frag = new PartialDatePickerDialogFragment();
-        final Bundle args = new Bundle(4);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
-        args.putInt(BKEY_FIELD_ID, fieldId);
-        args.putString(BKEY_DATE, dateStr);
-        frag.setArguments(args);
-        return frag;
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -257,7 +221,7 @@ public class PartialDatePickerDialogFragment
                           Snackbar.LENGTH_LONG).show();
 
         } else {
-            OnResultListener.sendResult(this, mRequestKey, mFieldId, mYear, mMonth, mDay);
+            Launcher.sendResult(this, mRequestKey, mFieldId, mYear, mMonth, mDay);
             return true;
         }
 
@@ -427,16 +391,13 @@ public class PartialDatePickerDialogFragment
         mDay = dd;
     }
 
-    /**
-     * Listener interface to receive notifications a date was picked.
-     */
-    public interface OnResultListener
-            extends FragmentResultListener {
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
 
-        /* private. */ String FIELD_ID = "fieldId";
-        /* private. */ String YEAR = "year";
-        /* private. */ String MONTH = "month";
-        /* private. */ String DAY = "day";
+        private static final String FIELD_ID = "fieldId";
+        private static final String YEAR = "year";
+        private static final String MONTH = "month";
+        private static final String DAY = "day";
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
@@ -453,9 +414,42 @@ public class PartialDatePickerDialogFragment
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        /**
+         * Launch the dialog.
+         *
+         * @param dialogTitleId resource id for the dialog title
+         * @param fieldId       this dialog operates on
+         *                      (one launcher can serve multiple fields)
+         * @param currentValue  the current value of the field
+         * @param todayIfNone   {@code true} if we should use 'today' if the field was empty.
+         */
+        public void launch(@StringRes final int dialogTitleId,
+                           @IdRes final int fieldId,
+                           @Nullable final String currentValue,
+                           final boolean todayIfNone) {
+            final String dateStr;
+            if (todayIfNone && (currentValue == null || currentValue.isEmpty())) {
+                dateStr = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
+            } else if (currentValue != null) {
+                dateStr = currentValue;
+            } else {
+                dateStr = "";
+            }
+
+            final Bundle args = new Bundle(4);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
+            args.putInt(BKEY_FIELD_ID, fieldId);
+            args.putString(BKEY_DATE, dateStr);
+
+            final DialogFragment frag = new PartialDatePickerDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, PartialDatePickerDialogFragment.TAG);
+        }
+
         @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
 
             onResult(result.getInt(FIELD_ID), new PartialDate(result.getInt(YEAR),
                                                               result.getInt(MONTH),
@@ -468,7 +462,7 @@ public class PartialDatePickerDialogFragment
          * @param fieldId this destination field id
          * @param date    the picked date
          */
-        void onResult(@IdRes int fieldId,
-                      @NonNull PartialDate date);
+        public abstract void onResult(@IdRes int fieldId,
+                                      @NonNull PartialDate date);
     }
 }

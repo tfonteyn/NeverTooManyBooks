@@ -186,6 +186,7 @@ public final class DBHelper
      * @return {@code true} if case-sensitive (i.e. up to "you" to add lower/upper calls)
      */
     public static boolean isCollationCaseSensitive() {
+        //noinspection ConstantConditions
         return sIsCollationCaseSensitive;
     }
 
@@ -714,6 +715,7 @@ public final class DBHelper
                         pubId = syncedDb.insert(TBL_PUBLISHERS.getName(), null, cv);
                         pubs.put(publisherName, pubId);
                     } else {
+                        //noinspection ConstantConditions
                         pubId = pubs.get(publisherName);
                     }
 

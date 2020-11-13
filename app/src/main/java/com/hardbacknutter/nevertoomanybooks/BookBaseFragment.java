@@ -40,7 +40,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.covers.CoverBrowserDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -66,17 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 public abstract class BookBaseFragment
         extends Fragment {
 
-    private static final String TAG = "BookBaseFragment";
-
-    /** FragmentResultListener request key. */
-    public static final String RK_COVER_BROWSER = TAG + ":rk:" + CoverBrowserDialogFragment.TAG;
-
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
-
-    /** Forwarding listener; send the selected image to the correct handler. */
-    private final CoverBrowserDialogFragment.OnResultListener mOnCoverBrowserListener =
-            (cIdx, fileSpec) -> mCoverHandler[cIdx].onFileSelected(cIdx, fileSpec);
 
     /** Goodreads authorization task. */
     GrAuthTask mGrAuthTask;
@@ -131,9 +121,6 @@ public abstract class BookBaseFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-        getChildFragmentManager()
-                .setFragmentResultListener(RK_COVER_BROWSER, this, mOnCoverBrowserListener);
     }
 
     @Override

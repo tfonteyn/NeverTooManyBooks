@@ -221,10 +221,6 @@ public class CoverBrowserViewModel
         return mBaseIsbn;
     }
 
-    int getImageIndex() {
-        return mCIdx;
-    }
-
     @NonNull
     public ArrayList<String> getEditions() {
         return mEditions;
@@ -248,7 +244,11 @@ public class CoverBrowserViewModel
     }
 
     void setSelectedFile(@Nullable final File file) {
-        mSelectedFileAbsolutePath = file != null ? file.getAbsolutePath() : null;
+        if (file != null) {
+            mSelectedFileAbsolutePath = file.getAbsolutePath();
+        } else {
+            mSelectedFileAbsolutePath = null;
+        }
     }
 
     /**

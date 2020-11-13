@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
@@ -70,7 +71,7 @@ public class EditBookSeriesListDialogFragment
         extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
-    static final String TAG = "EditBookSeriesListDlg";
+    private static final String TAG = "EditBookSeriesListDlg";
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_SERIES = TAG + ":rk:" + EditSeriesForBookDialogFragment.TAG;
 
@@ -93,8 +94,14 @@ public class EditBookSeriesListDialogFragment
     /** The adapter for the list itself. */
     private SeriesListAdapter mListAdapter;
 
-    private final EditBookBaseFragment.OnResultListener<Series> mOnEditSeriesListener =
-            this::processChanges;
+    private final EditBookBaseFragment.EditItemLauncher<Series> mOnEditSeriesLauncher =
+            new EditBookBaseFragment.EditItemLauncher<Series>() {
+                @Override
+                public void onResult(@NonNull final Series original,
+                                     @NonNull final Series modified) {
+                    processChanges(original, modified);
+                }
+            };
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
@@ -110,18 +117,18 @@ public class EditBookSeriesListDialogFragment
     /**
      * Constructor.
      *
-     * @return instance
+     * @param fragment hosting fragment
      */
-    public static DialogFragment newInstance() {
-        return new EditBookSeriesListDialogFragment();
+    public static void launch(@NonNull final Fragment fragment) {
+        new EditBookSeriesListDialogFragment()
+                .show(fragment.getChildFragmentManager(), TAG);
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager()
-                .setFragmentResultListener(RK_EDIT_SERIES, this, mOnEditSeriesListener);
+        mOnEditSeriesLauncher.register(this, RK_EDIT_SERIES);
 
         mDb = new DAO(TAG);
     }
@@ -437,9 +444,11 @@ public class EditBookSeriesListDialogFragment
                 mIsComplete = mSeries.isComplete();
                 mNumber = mSeries.getNumber();
             } else {
+                //noinspection ConstantConditions
                 mTitle = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
                 mIsComplete = savedInstanceState
                         .getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, false);
+                //noinspection ConstantConditions
                 mNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
             }
         }
@@ -488,7 +497,8 @@ public class EditBookSeriesListDialogFragment
             tmpSeries.setComplete(mIsComplete);
             tmpSeries.setNumber(mNumber);
 
-            EditBookBaseFragment.OnResultListener.sendResult(this, mRequestKey, mSeries, tmpSeries);
+            EditBookBaseFragment.EditItemLauncher
+                    .sendResult(this, mRequestKey, mSeries, tmpSeries);
             return true;
         }
 

@@ -30,6 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 /**
  * Read-only interface that allows a method to take both a custom {@link Cursor}
  * and a {@link DataManager} as an argument without having to distinguish between them.
+ * <p>
+ * URGENT: if no mapping of the desired type exists for the given key.... INCORRECT for CursorRow
  */
 public interface DataHolder {
 

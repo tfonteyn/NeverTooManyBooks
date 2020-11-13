@@ -28,22 +28,30 @@ import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 
 public class ExportOptionsDialogFragment
-        extends OptionsDialogBase {
+        extends BaseDialogFragment {
 
     /** Log tag. */
     public static final String TAG = "ExportHelperDialogFrag";
+    protected static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
 
     private ExportViewModel mExportViewModel;
     /** View Binding. */
@@ -59,20 +67,13 @@ public class ExportOptionsDialogFragment
         setFloatingDialogWidth(R.dimen.floating_dialogs_export_options_width);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param requestKey for use with the FragmentResultListener
-     *
-     * @return instance
-     */
-    @NonNull
-    public static DialogFragment newInstance(@NonNull final String requestKey) {
-        final DialogFragment frag = new ExportOptionsDialogFragment();
-        final Bundle args = new Bundle(1);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        frag.setArguments(args);
-        return frag;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mRequestKey = Objects.requireNonNull(requireArguments().getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
     }
 
     @Override
@@ -263,4 +264,48 @@ public class ExportOptionsDialogFragment
         });
     }
 
+    protected void sendResult(final boolean startTask) {
+        Launcher.sendResult(this, mRequestKey, startTask);
+        dismiss();
+    }
+
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
+
+        private static final String START_TASK = "startTask";
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               final boolean startTask) {
+            final Bundle result = new Bundle(1);
+            result.putBoolean(START_TASK, startTask);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        /**
+         * Launch the dialog.
+         */
+        public void launch() {
+            final Bundle args = new Bundle(1);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+
+            final DialogFragment frag = new ExportOptionsDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, ExportOptionsDialogFragment.TAG);
+        }
+
+        @Override
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
+            onResult(result.getBoolean(START_TASK));
+        }
+
+        /**
+         * Callback handler.
+         *
+         * @param startTask {@code true} if the user confirmed the dialog.
+         *                  i.e. if the export task should be started
+         */
+        public abstract void onResult(boolean startTask);
+    }
 }

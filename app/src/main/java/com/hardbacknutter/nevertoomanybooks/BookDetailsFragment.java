@@ -106,6 +106,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
  * Class for representing read-only book details.
  * <p>
  * Keep in mind the fragment can be re-used.
+ * <p>
  * Do NOT assume fields are empty by default when populating them manually.
  */
 public class BookDetailsFragment
@@ -115,7 +116,10 @@ public class BookDetailsFragment
     public static final String TAG = "BookDetailsFragment";
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
-
+    //FIXME: swiping through the flattened booklist will not see
+    // the duplicated book until we go back to BoB.
+    // Temporary solution is removing the 'duplicate' option from this screen...
+    private static final boolean ENABLE_BOOK_DUPLICATE_OPTION = false;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -127,12 +131,12 @@ public class BookDetailsFragment
                 }
             };
 
-    private final ActivityResultLauncher<Long> mEditByIdLauncher = registerForActivityResult(
-            new EditBookByIdContract(), this::onBookEditingDone);
-    private final ActivityResultLauncher<Bundle> mDuplicateLauncher = registerForActivityResult(
-            new EditBookFromBundleContract(), this::onBookEditingDone);
-    private final ActivityResultLauncher<Book> mUpdateBookLauncher = registerForActivityResult(
-            new UpdateBookContract(), this::onBookEditingDone);
+    private final ActivityResultLauncher<Long> mEditBookLauncher =
+            registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
+    private final ActivityResultLauncher<Bundle> mDuplicateBookLauncher =
+            registerForActivityResult(new EditBookFromBundleContract(), this::onBookEditingDone);
+    private final ActivityResultLauncher<Book> mUpdateBookLauncher =
+            registerForActivityResult(new UpdateBookContract(), this::onBookEditingDone);
 
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
@@ -142,11 +146,16 @@ public class BookDetailsFragment
     private BookDetailsFragmentViewModel mVm;
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
-    private final EditLenderDialogFragment.OnResultListener mEditLenderListener =
-            (bookId, loanee) -> {
-                // the db was already updated, just update the book to avoid a reload.
-                mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
-                populateLendToField(loanee);
+    /** Process the result from the dialog. */
+    private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
+            new EditLenderDialogFragment.Launcher() {
+                @Override
+                public void onResult(final long bookId,
+                                     @NonNull final String loanee) {
+                    // the db was already updated, just update the book to avoid a reload.
+                    mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
+                    populateLendToField(loanee);
+                }
             };
     /** View Binding. */
     private FragmentBookDetailsMergePublicationSectionBinding mVbPub;
@@ -173,8 +182,7 @@ public class BookDetailsFragment
         //noinspection ConstantConditions
         mBookViewModel.init(getContext(), getArguments(), false);
 
-        getChildFragmentManager()
-                .setFragmentResultListener(RK_EDIT_LENDER, this, mEditLenderListener);
+        mEditLenderLauncher.register(this, RK_EDIT_LENDER);
 
         mVm = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
         mVm.init(getContext(), getArguments(), mBookViewModel.getBook());
@@ -259,7 +267,7 @@ public class BookDetailsFragment
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_edit);
         fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> mEditByIdLauncher.launch(mBookViewModel.getBook().getId()));
+        fab.setOnClickListener(v -> mEditBookLauncher.launch(mBookViewModel.getBook().getId()));
 
         // ENHANCE: should be replaced by a ViewPager2/FragmentStateAdapter
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
@@ -537,6 +545,8 @@ public class BookDetailsFragment
 
     /**
      * Show or hide the Table Of Content section.
+     *
+     * @param book to load from
      */
     private void populateToc(@NonNull final Book book) {
         final boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
@@ -644,10 +654,7 @@ public class BookDetailsFragment
         menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
 
-        //TODO: swiping through the flattened booklist will not see
-        // the duplicated book until we go back to BoB.
-        // Temporary solution is removing the 'duplicate' option from this screen...
-        menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(true);
+        menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(ENABLE_BOOK_DUPLICATE_OPTION);
 
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
             .setVisible(GoodreadsManager.isShowSyncMenus(prefs));
@@ -667,7 +674,7 @@ public class BookDetailsFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_BOOK_EDIT) {
-            mEditByIdLauncher.launch(mBookViewModel.getBook().getId());
+            mEditBookLauncher.launch(mBookViewModel.getBook().getId());
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
@@ -684,7 +691,7 @@ public class BookDetailsFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DUPLICATE) {
-            mDuplicateLauncher.launch(book.duplicate());
+            mDuplicateBookLauncher.launch(book.duplicate());
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_READ || itemId == R.id.MENU_BOOK_UNREAD) {
@@ -698,9 +705,7 @@ public class BookDetailsFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
-            EditLenderDialogFragment
-                    .newInstance(RK_EDIT_LENDER, book)
-                    .show(getChildFragmentManager(), EditLenderDialogFragment.TAG);
+            mEditLenderLauncher.launch(book);
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
@@ -826,7 +831,7 @@ public class BookDetailsFragment
     /**
      * Listener to handle 'fling' events to move to the next/previous book.
      */
-    class FlingHandler
+    private class FlingHandler
             extends GestureDetector.SimpleOnGestureListener {
 
         private static final float SENSITIVITY = 100;

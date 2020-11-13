@@ -41,6 +41,7 @@ public class ImportViewModel
     @NonNull
     private final Intent mResultData = new Intent();
 
+    /** The import configuration. */
     @Nullable
     private ImportHelper mImportHelper;
 

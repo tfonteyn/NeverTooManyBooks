@@ -146,14 +146,11 @@ public class BooksOnBookshelfModel
     /** Currently selected bookshelf. */
     @Nullable
     private Bookshelf mBookshelf;
-
     /** The row id we want the new list to display more-or-less in the center. */
     private long mDesiredCentralBookId;
-
     /** Preferred booklist state in next rebuild. */
     @Booklist.ListRebuildMode
     private int mRebuildState;
-
     /** Current displayed list. */
     @Nullable
     private Booklist mBooklist;
@@ -178,22 +175,32 @@ public class BooksOnBookshelfModel
      * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
-                     @Nullable final Bundle args,
-                     @Nullable final Bundle savedInstanceState) {
+                     @Nullable final Bundle args) {
 
         if (mDb == null) {
             mDb = new DAO(TAG);
 
+            // first start of the activity, read from user preference
+            mRebuildState = getPreferredListRebuildState(context);
+
             if (args != null) {
+                // extract search criteria if any are present
                 mSearchCriteria.from(args, true);
+
+                // allow the caller to override the user preference
+                if (args.containsKey(BKEY_LIST_STATE)) {
+                    mRebuildState = args.getInt(BKEY_LIST_STATE);
+                }
 
                 // check for an explicit bookshelf set
                 if (args.containsKey(BKEY_BOOKSHELF)) {
-                    final int exShelfId = args.getInt(BKEY_BOOKSHELF);
                     // might be null, that's ok.
-                    mBookshelf = Bookshelf.getBookshelf(context, mDb, exShelfId);
+                    mBookshelf = Bookshelf.getBookshelf(context, mDb, args.getInt(BKEY_BOOKSHELF));
                 }
             }
+        } else {
+            // always preserve the state when the hosting fragment was revived
+            mRebuildState = Booklist.PREF_REBUILD_SAVED_STATE;
         }
 
         // Set the last/preferred bookshelf if not explicitly set above
@@ -202,23 +209,9 @@ public class BooksOnBookshelfModel
                                                 // or use the default == first start
                                                 Bookshelf.DEFAULT);
         }
-
-
-        final Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
-
-        if (currentArgs == null) {
-            // Get preferred booklist state to use from preferences;
-            // always do this here in init, as the prefs might have changed anytime.
-            mRebuildState = getPreferredListRebuildState(context);
-        } else {
-            // Unless set by the caller, preserve state when rebuilding/recreating etc
-            mRebuildState = currentArgs.getInt(BKEY_LIST_STATE,
-                                               Booklist.PREF_REBUILD_SAVED_STATE);
-        }
     }
 
-
-    public void setPreferredListRebuildState(@NonNull final Context context) {
+    public void resetPreferredListRebuildState(@NonNull final Context context) {
         mRebuildState = getPreferredListRebuildState(context);
     }
 
@@ -239,7 +232,7 @@ public class BooksOnBookshelfModel
         return Booklist.PREF_REBUILD_SAVED_STATE;
     }
 
-    public void setRebuildState(final int rebuildState) {
+    public void setRebuildState(@Booklist.ListRebuildMode final int rebuildState) {
         mRebuildState = rebuildState;
     }
 

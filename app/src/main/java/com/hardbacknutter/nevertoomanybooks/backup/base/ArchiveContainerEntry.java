@@ -72,18 +72,15 @@ public enum ArchiveContainerEntry {
     private static final String PREFERENCES_XML = "preferences.xml";
     /** {@link #BooklistStylesXml}. */
     private static final String STYLES_XML = "styles.xml";
-
     /** {@link #BooksCsv}. */
     private static final String BOOKS_CSV = "books.csv";
     /** {@link #BooksCsv}. */
     private static final Pattern BOOKS_CSV_PATTERN =
             Pattern.compile("^books.*\\.csv$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-
     /** {@link #BooksXml}. */
     private static final String BOOKS_XML = "books.xml";
-
-    /** Legacy BookCatalogue. */
+    /** {@link #Database}. */
     private static final Pattern DB_FILE_PATTERN =
             Pattern.compile(".*\\.db$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
@@ -134,8 +131,7 @@ public enum ArchiveContainerEntry {
             return LegacyBooklistStyles;
 
         } else {
-            Logger.warn(App.getAppContext(), TAG,
-                        "getEntryType|Unknown file=" + entityName);
+            Logger.warn(App.getAppContext(), TAG, "getEntryType|Unknown file=" + entityName);
             return Unknown;
         }
     }

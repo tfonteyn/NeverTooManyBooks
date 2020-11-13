@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
@@ -70,7 +71,7 @@ public class EditBookPublisherListDialogFragment
         extends BaseDialogFragment {
 
     /** Fragment/Log tag. */
-    static final String TAG = "EditBookPubListDlg";
+    private static final String TAG = "EditBookPubListDlg";
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_PUBLISHER =
             TAG + ":rk:" + EditPublisherForBookDialogFragment.TAG;
@@ -92,8 +93,14 @@ public class EditBookPublisherListDialogFragment
     private ArrayList<Publisher> mList;
     /** The adapter for the list itself. */
     private PublisherListAdapter mListAdapter;
-    private final EditBookBaseFragment.OnResultListener<Publisher> mOnEditPublisherListener =
-            this::processChanges;
+    private final EditBookBaseFragment.EditItemLauncher<Publisher> mOnEditPublisherLauncher =
+            new EditBookBaseFragment.EditItemLauncher<Publisher>() {
+                @Override
+                public void onResult(@NonNull final Publisher original,
+                                     @NonNull final Publisher modified) {
+                    processChanges(original, modified);
+                }
+            };
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
@@ -109,18 +116,18 @@ public class EditBookPublisherListDialogFragment
     /**
      * Constructor.
      *
-     * @return instance
+     * @param fragment hosting fragment
      */
-    public static DialogFragment newInstance() {
-        return new EditBookPublisherListDialogFragment();
+    public static void launch(@NonNull final Fragment fragment) {
+        new EditBookPublisherListDialogFragment()
+                .show(fragment.getChildFragmentManager(), TAG);
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getParentFragmentManager()
-                .setFragmentResultListener(RK_EDIT_PUBLISHER, this, mOnEditPublisherListener);
+        mOnEditPublisherLauncher.register(this, RK_EDIT_PUBLISHER);
 
         mDb = new DAO(TAG);
     }
@@ -415,6 +422,7 @@ public class EditBookPublisherListDialogFragment
             if (savedInstanceState == null) {
                 mName = mPublisher.getName();
             } else {
+                //noinspection ConstantConditions
                 mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER_NAME);
             }
         }
@@ -458,8 +466,8 @@ public class EditBookPublisherListDialogFragment
             // Create a new Publisher as a holder for all changes.
             final Publisher tmpPublisher = Publisher.from(mName);
 
-            EditBookBaseFragment.OnResultListener.sendResult(
-                    this, mRequestKey, mPublisher, tmpPublisher);
+            EditBookBaseFragment.EditItemLauncher
+                    .sendResult(this, mRequestKey, mPublisher, tmpPublisher);
             return true;
         }
 

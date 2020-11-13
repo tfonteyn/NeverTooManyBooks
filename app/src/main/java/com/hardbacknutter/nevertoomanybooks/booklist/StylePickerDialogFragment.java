@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
 
 public class StylePickerDialogFragment
@@ -75,27 +75,6 @@ public class StylePickerDialogFragment
         setFloatingDialogHeight(R.dimen.floating_dialogs_styles_picker_height);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param requestKey   for use with the FragmentResultListener
-     * @param currentStyle the currently active style
-     * @param all          if {@code true} show all styles, otherwise only the preferred ones.
-     *
-     * @return instance
-     */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final BooklistStyle currentStyle,
-                                             final boolean all) {
-        final DialogFragment frag = new StylePickerDialogFragment();
-        final Bundle args = new Bundle(3);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putString(BooklistStyle.BKEY_STYLE_UUID, currentStyle.getUuid());
-        args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
-        frag.setArguments(args);
-        return frag;
-    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -163,7 +142,7 @@ public class StylePickerDialogFragment
             return;
         }
 
-        OnResultListener.sendResult(this, mRequestKey, mCurrentStyleUuid);
+        Launcher.sendResult(this, mRequestKey, mCurrentStyleUuid);
 
         dismiss();
     }
@@ -227,8 +206,8 @@ public class StylePickerDialogFragment
         }
     }
 
-    public interface OnResultListener
-            extends FragmentResultListener {
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
@@ -238,9 +217,28 @@ public class StylePickerDialogFragment
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        /**
+         * Launch the dialog.
+         *
+         * @param currentStyle the currently active style
+         * @param all          if {@code true} show all styles, otherwise only the preferred ones.
+         */
+        public void launch(@NonNull final BooklistStyle currentStyle,
+                           final boolean all) {
+
+            final Bundle args = new Bundle(3);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(BooklistStyle.BKEY_STYLE_UUID, currentStyle.getUuid());
+            args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
+
+            final DialogFragment frag = new StylePickerDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, StylePickerDialogFragment.TAG);
+        }
+
         @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
             onResult(Objects.requireNonNull(result.getString(DBDefinitions.KEY_FK_STYLE)));
         }
 
@@ -249,6 +247,6 @@ public class StylePickerDialogFragment
          *
          * @param uuid the selected style
          */
-        void onResult(@NonNull String uuid);
+        public abstract void onResult(@NonNull String uuid);
     }
 }

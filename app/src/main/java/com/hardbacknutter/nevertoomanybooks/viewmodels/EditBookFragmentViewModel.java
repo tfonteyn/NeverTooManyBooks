@@ -49,14 +49,10 @@ public class EditBookFragmentViewModel
 
     /** Log tag. */
     private static final String TAG = "EditBookFragmentVM";
-    /**
-     * The fields collection handled in this model. The key is the fragment tag.
-     */
+    /** The fields collection handled in this model. The key is the fragment tag. */
     private final Map<String, Fields> mFieldsMap = new HashMap<>();
-
-    /** key: fragmentTag. */
+    /** The key is the fragment tag. */
     private final Collection<String> mFragmentsWithUnfinishedEdits = new HashSet<>();
-
     /** Database Access. */
     private DAO mDb;
     /** <strong>Optionally</strong> passed in via the arguments. */

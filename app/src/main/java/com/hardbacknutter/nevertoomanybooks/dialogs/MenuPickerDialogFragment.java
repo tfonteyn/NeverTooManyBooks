@@ -39,7 +39,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.reflect.Field;
@@ -65,7 +64,6 @@ public class MenuPickerDialogFragment
     /** Log tag. */
     public static final String TAG = "MenuPickerDialogFrag";
 
-
     private static final String BKEY_MENU = TAG + ":menu";
     private static final String BKEY_POSITION = TAG + ":pos";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
@@ -81,68 +79,6 @@ public class MenuPickerDialogFragment
      */
     public MenuPickerDialogFragment() {
         super(R.layout.dialog_popupmenu);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param requestKey for use with the FragmentResultListener
-     * @param title      (optional) for the dialog/menu
-     * @param pickList   the menu options to show
-     * @param position   of the item in a list where the context menu was initiated
-     *
-     * @return instance
-     */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @Nullable final String title,
-                                             @NonNull final ArrayList<Pick> pickList,
-                                             final int position) {
-        final DialogFragment frag = new MenuPickerDialogFragment();
-        final Bundle args = new Bundle(4);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
-        args.putParcelableArrayList(BKEY_MENU, pickList);
-        args.putInt(BKEY_POSITION, position);
-        frag.setArguments(args);
-        return frag;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param requestKey for use with the FragmentResultListener
-     * @param title      (optional) for the dialog/menu
-     * @param menu       the menu options to show
-     * @param position   of the item in a list where the context menu was initiated
-     *
-     * @return instance
-     */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @Nullable final String title,
-                                             @NonNull final Menu menu,
-                                             final int position) {
-        return newInstance(requestKey, title, convert(menu), position);
-    }
-
-    private static ArrayList<Pick> convert(@NonNull final Menu menu) {
-        final ArrayList<Pick> pickList = new ArrayList<>();
-        ArrayList<Pick> subPickList;
-
-        for (int i = 0; i < menu.size(); i++) {
-            final MenuItem item = menu.getItem(i);
-            final SubMenu itemSubMenu = item.getSubMenu();
-            if (itemSubMenu != null) {
-                subPickList = convert(itemSubMenu);
-            } else {
-                subPickList = null;
-            }
-
-            pickList.add(new Pick(item, subPickList));
-        }
-
-        return pickList;
     }
 
     @Override
@@ -173,11 +109,11 @@ public class MenuPickerDialogFragment
         listView.setAdapter(adapter);
     }
 
-    public interface OnResultListener
-            extends FragmentResultListener {
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
 
-        /* private. */ String MENU_ITEM = "menuItem";
-        /* private. */ String POSITION = "position";
+        private static final String MENU_ITEM = "menuItem";
+        private static final String POSITION = "position";
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
@@ -189,9 +125,63 @@ public class MenuPickerDialogFragment
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        private static ArrayList<Pick> convert(@NonNull final Menu menu) {
+            final ArrayList<Pick> pickList = new ArrayList<>();
+            ArrayList<Pick> subPickList;
+
+            for (int i = 0; i < menu.size(); i++) {
+                final MenuItem item = menu.getItem(i);
+                final SubMenu itemSubMenu = item.getSubMenu();
+                if (itemSubMenu != null) {
+                    subPickList = convert(itemSubMenu);
+                } else {
+                    subPickList = null;
+                }
+
+                pickList.add(new Pick(item, subPickList));
+            }
+
+            return pickList;
+        }
+
+        /**
+         * Launch the dialog.
+         *
+         * @param title    (optional) for the dialog/menu
+         * @param menu     the menu options to show
+         * @param position of the item in a list where the context menu was initiated
+         */
+        public void launch(@Nullable final String title,
+                           @NonNull final ArrayList<Pick> menu,
+                           final int position) {
+
+            final Bundle args = new Bundle(4);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
+            args.putParcelableArrayList(BKEY_MENU, menu);
+            args.putInt(BKEY_POSITION, position);
+
+            final DialogFragment frag = new MenuPickerDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, MenuPickerDialogFragment.TAG);
+        }
+
+        /**
+         * Launch the dialog.
+         *
+         * @param title    (optional) for the dialog/menu
+         * @param menu     the menu options to show
+         * @param position of the item in a list where the context menu was initiated
+         */
+        public void launch(@Nullable final String title,
+                           @NonNull final Menu menu,
+                           final int position) {
+            launch(title, convert(menu), position);
+        }
+
         @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
             onResult(result.getInt(MENU_ITEM), result.getInt(POSITION));
         }
 
@@ -204,8 +194,8 @@ public class MenuPickerDialogFragment
          * @return {@code true} if handled (not used here, but needed for compatibility)
          */
         @SuppressWarnings("UnusedReturnValue")
-        boolean onResult(@IdRes int menuItemId,
-                         int position);
+        public abstract boolean onResult(@IdRes int menuItemId,
+                                         int position);
     }
 
     /** An incomplete, but "just enough", implementation of a {@code MenuItem}. */
@@ -488,8 +478,8 @@ public class MenuPickerDialogFragment
                     setMenu(item.getSubMenu());
                 } else {
                     dismiss();
-                    OnResultListener.sendResult(MenuPickerDialogFragment.this,
-                                                mRequestKey, item.getItemId(), mPosition);
+                    Launcher.sendResult(MenuPickerDialogFragment.this,
+                                        mRequestKey, item.getItemId(), mPosition);
                 }
             }
         }

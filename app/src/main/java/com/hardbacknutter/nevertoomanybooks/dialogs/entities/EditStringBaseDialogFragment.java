@@ -54,8 +54,8 @@ public abstract class EditStringBaseDialogFragment
     private final int mDialogTitleId;
     @StringRes
     private final int mLabelId;
-    @BooksOnBookshelf.ChangeListener.Flags
-    private final int mFieldChanges;
+    @BooksOnBookshelf.RowChangeListener.Change
+    private final int mFieldFlag;
     /** Database Access. */
     @Nullable
     DAO mDb;
@@ -71,18 +71,18 @@ public abstract class EditStringBaseDialogFragment
     /**
      * Constructor; only used by the child class no-args constructor.
      *
-     * @param titleId      for the dialog (i.e. the toolbar)
-     * @param label        to use for the 'hint' of the input field
-     * @param fieldChanges one of the {@link BooksOnBookshelf.ChangeListener.Flags} bits
+     * @param titleId   for the dialog (i.e. the toolbar)
+     * @param label     to use for the 'hint' of the input field
+     * @param fieldFlag one of the {@link BooksOnBookshelf.RowChangeListener.Change} bits
      */
     EditStringBaseDialogFragment(@StringRes final int titleId,
                                  @StringRes final int label,
-                                 @BooksOnBookshelf.ChangeListener.Flags final int fieldChanges) {
+                                 @BooksOnBookshelf.RowChangeListener.Change final int fieldFlag) {
         super(R.layout.dialog_edit_string);
 
         mDialogTitleId = titleId;
         mLabelId = label;
-        mFieldChanges = fieldChanges;
+        mFieldFlag = fieldFlag;
     }
 
     @Override
@@ -170,7 +170,7 @@ public abstract class EditStringBaseDialogFragment
 
         onSave(mOriginalText, mCurrentText);
 
-        BooksOnBookshelf.ChangeListener.update(this, mRequestKey, mFieldChanges);
+        BooksOnBookshelf.RowChangeListener.sendResult(this, mRequestKey, mFieldFlag, 0);
         return true;
     }
 

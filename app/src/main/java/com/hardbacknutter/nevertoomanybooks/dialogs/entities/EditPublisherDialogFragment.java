@@ -27,6 +27,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -77,22 +78,19 @@ public class EditPublisherDialogFragment
     }
 
     /**
-     * Constructor.
+     * Launch the dialog.
      *
-     * @param requestKey for use with the FragmentResultListener
-     * @param publisher  to edit.
-     *
-     * @return instance
+     * @param publisher to edit.
      */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final Publisher publisher) {
-        final DialogFragment frag = new EditPublisherDialogFragment();
+    public static void launch(@NonNull final FragmentActivity activity,
+                              @NonNull final Publisher publisher) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
+        args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
         args.putParcelable(DBDefinitions.KEY_FK_PUBLISHER, publisher);
+
+        final DialogFragment frag = new EditPublisherDialogFragment();
         frag.setArguments(args);
-        return frag;
+        frag.show(activity.getSupportFragmentManager(), TAG);
     }
 
     @Override
@@ -110,6 +108,7 @@ public class EditPublisherDialogFragment
         if (savedInstanceState == null) {
             mName = mPublisher.getName();
         } else {
+            //noinspection ConstantConditions
             mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER_NAME);
         }
     }
@@ -171,8 +170,10 @@ public class EditPublisherDialogFragment
                 success = mDb.update(context, mPublisher, bookLocale);
             }
             if (success) {
-                BooksOnBookshelf.ChangeListener
-                        .update(this, mRequestKey, BooksOnBookshelf.ChangeListener.PUBLISHER);
+                BooksOnBookshelf.RowChangeListener
+                        .sendResult(this, mRequestKey,
+                                    BooksOnBookshelf.RowChangeListener.PUBLISHER,
+                                    mPublisher.getId());
                 return true;
             }
         } else {
@@ -187,8 +188,11 @@ public class EditPublisherDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             mDb.merge(context, mPublisher, existingId);
-                            BooksOnBookshelf.ChangeListener.update(
-                                    this, mRequestKey, BooksOnBookshelf.ChangeListener.PUBLISHER);
+                            BooksOnBookshelf.RowChangeListener.sendResult(
+                                    this, mRequestKey,
+                                    // return the publisher who 'lost' it's books
+                                    BooksOnBookshelf.RowChangeListener.PUBLISHER,
+                                    mPublisher.getId());
                         } catch (@NonNull final DAO.DaoWriteException e) {
                             Logger.error(context, TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);

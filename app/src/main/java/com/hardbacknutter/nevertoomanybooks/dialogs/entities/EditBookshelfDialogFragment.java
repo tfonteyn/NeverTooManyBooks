@@ -24,11 +24,11 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
@@ -74,25 +75,6 @@ public class EditBookshelfDialogFragment
         super(R.layout.dialog_edit_bookshelf);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param requestKey for use with the FragmentResultListener
-     * @param bookshelf  to edit.
-     *
-     * @return instance
-     */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final Bookshelf bookshelf) {
-        final DialogFragment frag = new EditBookshelfDialogFragment();
-        final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putParcelable(DBDefinitions.KEY_FK_BOOKSHELF, bookshelf);
-        frag.setArguments(args);
-        return frag;
-    }
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,6 +90,7 @@ public class EditBookshelfDialogFragment
         if (savedInstanceState == null) {
             mName = mBookshelf.getName();
         } else {
+            //noinspection ConstantConditions
             mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
         }
     }
@@ -172,7 +155,7 @@ public class EditBookshelfDialogFragment
                 success = mDb.update(getContext(), mBookshelf);
             }
             if (success) {
-                OnResultListener.sendResult(this, mRequestKey, mBookshelf.getId());
+                Launcher.sendResult(this, mRequestKey, mBookshelf.getId());
                 return true;
             }
         } else {
@@ -187,7 +170,7 @@ public class EditBookshelfDialogFragment
                         // move all books from the one being edited to the existing one
                         mDb.merge(mBookshelf, existingId);
 
-                        OnResultListener.sendResult(this, mRequestKey, existingId);
+                        Launcher.sendResult(this, mRequestKey, existingId);
                         dismiss();
                     })
                     .create()
@@ -221,20 +204,36 @@ public class EditBookshelfDialogFragment
         super.onDestroy();
     }
 
-    public interface OnResultListener
-            extends FragmentResultListener {
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
-                               final long bookshelfId) {
+                               @IntRange(from = 1) final long bookshelfId) {
             final Bundle result = new Bundle(1);
             result.putLong(DBDefinitions.KEY_FK_BOOKSHELF, bookshelfId);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        /**
+         * Launch the dialog.
+         *
+         * @param bookshelf to edit.
+         */
+        public void launch(@NonNull final Bookshelf bookshelf) {
+
+            final Bundle args = new Bundle(2);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putParcelable(DBDefinitions.KEY_FK_BOOKSHELF, bookshelf);
+
+            final DialogFragment frag = new EditBookshelfDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, TAG);
+        }
+
         @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
             onResult(SanityCheck.requirePositiveValue(
                     result.getLong(DBDefinitions.KEY_FK_BOOKSHELF)));
         }
@@ -244,6 +243,6 @@ public class EditBookshelfDialogFragment
          *
          * @param bookshelfId the id of the updated shelf, or of the newly inserted shelf.
          */
-        void onResult(long bookshelfId);
+        public abstract void onResult(long bookshelfId);
     }
 }

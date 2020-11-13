@@ -33,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
@@ -110,29 +110,6 @@ public class CoverBrowserDialogFragment
     }
 
     /**
-     * Constructor.
-     *
-     * @param requestKey for use with the FragmentResultListener
-     * @param isbn       ISBN of book
-     * @param cIdx       0..n image index
-     *
-     * @return instance
-     */
-    @NonNull
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final String isbn,
-                                             @IntRange(from = 0, to = 1) final int cIdx) {
-        final DialogFragment frag = new CoverBrowserDialogFragment();
-        final Bundle args = new Bundle(3);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putString(DBDefinitions.KEY_ISBN, isbn);
-        args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
-        frag.setArguments(args);
-        return frag;
-    }
-
-    /**
      * ENHANCE: pass in a {@link Site.Type#Covers} list / set it on the fly.
      */
     @Override
@@ -178,8 +155,7 @@ public class CoverBrowserDialogFragment
             }
 
             if (mModel.getSelectedFileAbsPath() != null) {
-                OnResultListener.sendResult(this, mRequestKey, mModel.getImageIndex(),
-                                            mModel.getSelectedFileAbsPath());
+                Launcher.sendResult(this, mRequestKey, mModel.getSelectedFileAbsPath());
             }
             // close the CoverBrowserDialogFragment
             dismiss();
@@ -359,37 +335,50 @@ public class CoverBrowserDialogFragment
 
     }
 
-    public interface OnResultListener
-            extends FragmentResultListener {
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
 
-        /* private. */ String COVER_INDEX = "cIdx";
-        /* private. */ String COVER_FILE_SPEC = "fileSpec";
+        private static final String COVER_FILE_SPEC = "fileSpec";
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
-                               @IntRange(from = 0, to = 1) final int cIdx,
                                @NonNull final String fileSpec) {
-            final Bundle result = new Bundle(2);
-            result.putInt(COVER_INDEX, cIdx);
+            final Bundle result = new Bundle(1);
             result.putString(COVER_FILE_SPEC, fileSpec);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        /**
+         * Launch the dialog.
+         *
+         * @param isbn ISBN of book
+         * @param cIdx 0..n image index
+         */
+        public void launch(@NonNull final String isbn,
+                           @IntRange(from = 0, to = 1) final int cIdx) {
+
+            final Bundle args = new Bundle(3);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(DBDefinitions.KEY_ISBN, isbn);
+            args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
+
+            final DialogFragment frag = new CoverBrowserDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, TAG);
+        }
+
         @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
-            onResult(result.getInt(COVER_INDEX),
-                     Objects.requireNonNull(result.getString(COVER_FILE_SPEC)));
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
+            onResult(Objects.requireNonNull(result.getString(COVER_FILE_SPEC)));
         }
 
         /**
          * Callback handler with the user's selection.
          *
-         * @param cIdx     0..n image index
          * @param fileSpec for the selected file
          */
-        void onResult(@IntRange(from = 0, to = 1) int cIdx,
-                      @NonNull String fileSpec);
+        public abstract void onResult(@NonNull String fileSpec);
     }
 
     /**

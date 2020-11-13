@@ -38,7 +38,6 @@ import androidx.annotation.RequiresPermission;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
@@ -66,7 +66,7 @@ public class EditLenderDialogFragment
 
     /** Fragment/Log tag. */
     public static final String TAG = "LendBookDialogFrag";
-    private static final String BKEY_REQUEST_KEY = TAG + ":rk";
+    public static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** savedInstanceState key for the newly entered loanee name. */
     private static final String SIS_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
     /** FragmentResultListener request key to use for our response. */
@@ -115,48 +115,6 @@ public class EditLenderDialogFragment
      */
     public EditLenderDialogFragment() {
         super(R.layout.dialog_edit_loan);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param requestKey for use with the FragmentResultListener
-     * @param bookId     to lend
-     * @param bookTitle  displayed for info only
-     *
-     * @return instance
-     */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             final long bookId,
-                                             @NonNull final String bookTitle) {
-        final DialogFragment frag = new EditLenderDialogFragment();
-        final Bundle args = new Bundle(3);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putLong(DBDefinitions.KEY_PK_ID, bookId);
-        args.putString(DBDefinitions.KEY_TITLE, bookTitle);
-        frag.setArguments(args);
-        return frag;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param requestKey for use with the FragmentResultListener
-     * @param book       to lend
-     *
-     * @return instance
-     */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final Book book) {
-        final DialogFragment frag = new EditLenderDialogFragment();
-        final Bundle args = new Bundle(3);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
-        args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
-        frag.setArguments(args);
-        return frag;
     }
 
     @Override
@@ -264,7 +222,7 @@ public class EditLenderDialogFragment
         }
 
         if (success) {
-            OnResultListener.sendResult(this, mRequestKey, mBookId, mLoanee);
+            Launcher.sendResult(this, mRequestKey, mBookId, mLoanee);
             return true;
         }
         return false;
@@ -296,12 +254,12 @@ public class EditLenderDialogFragment
         super.onDestroy();
     }
 
-    public interface OnResultListener
-            extends FragmentResultListener {
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
 
         static void sendResult(@NonNull final Fragment fragment,
                                @NonNull final String requestKey,
-                               final long bookId,
+                               @IntRange(from = 1) final long bookId,
                                @NonNull final String loanee) {
             final Bundle result = new Bundle(2);
             result.putLong(DBDefinitions.KEY_FK_BOOK, bookId);
@@ -309,9 +267,45 @@ public class EditLenderDialogFragment
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        /**
+         * Launch the dialog.
+         *
+         * @param book to lend
+         */
+        public void launch(@NonNull final Book book) {
+
+            final Bundle args = new Bundle(3);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
+            args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
+
+            final DialogFragment frag = new EditLenderDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, TAG);
+        }
+
+        /**
+         * Launch the dialog.
+         *
+         * @param bookId    to lend
+         * @param bookTitle displayed for info only
+         */
+        public void launch(@IntRange(from = 1) final long bookId,
+                           @NonNull final String bookTitle) {
+
+            final Bundle args = new Bundle(3);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putLong(DBDefinitions.KEY_PK_ID, bookId);
+            args.putString(DBDefinitions.KEY_TITLE, bookTitle);
+
+            final DialogFragment frag = new EditLenderDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, TAG);
+        }
+
         @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
             onResult(SanityCheck.requirePositiveValue(result.getLong(DBDefinitions.KEY_FK_BOOK)),
                      Objects.requireNonNull(result.getString(DBDefinitions.KEY_LOANEE)));
         }
@@ -322,7 +316,7 @@ public class EditLenderDialogFragment
          * @param bookId the id of the updated book
          * @param loanee the name of the loanee, or {@code ""} for a returned book
          */
-        void onResult(@IntRange(from = 1) long bookId,
-                      @NonNull String loanee);
+        public abstract void onResult(@IntRange(from = 1) long bookId,
+                                      @NonNull String loanee);
     }
 }

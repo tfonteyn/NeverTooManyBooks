@@ -23,6 +23,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.List;
 
@@ -42,26 +43,23 @@ public class EditColorDialogFragment
      * No-arg constructor for OS use.
      */
     public EditColorDialogFragment() {
-        super(R.string.lbl_color, R.string.lbl_color, BooksOnBookshelf.ChangeListener.COLOR);
+        super(R.string.lbl_color, R.string.lbl_color, BooksOnBookshelf.RowChangeListener.COLOR);
     }
 
     /**
-     * Constructor.
+     * Launch the dialog.
      *
-     * @param requestKey for use with the FragmentResultListener
-     * @param text       to edit.
-     *
-     * @return instance
+     * @param text to edit.
      */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final String text) {
-        final DialogFragment frag = new EditColorDialogFragment();
+    public static void launch(@NonNull final FragmentActivity activity,
+                              @NonNull final String text) {
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
+        args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
         args.putString(BKEY_TEXT, text);
+
+        final DialogFragment frag = new EditColorDialogFragment();
         frag.setArguments(args);
-        return frag;
+        frag.show(activity.getSupportFragmentManager(), TAG);
     }
 
     @NonNull

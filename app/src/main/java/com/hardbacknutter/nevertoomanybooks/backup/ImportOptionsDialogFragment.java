@@ -26,23 +26,31 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
+import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
 public class ImportOptionsDialogFragment
-        extends OptionsDialogBase {
+        extends BaseDialogFragment {
 
     /** Log tag. */
     public static final String TAG = "ImportOptionsDialogFragment";
+    protected static final String BKEY_REQUEST_KEY = TAG + ":rk";
+
+    /** FragmentResultListener request key to use for our response. */
+    private String mRequestKey;
 
     private ImportViewModel mImportViewModel;
     /** View Binding. */
@@ -57,20 +65,13 @@ public class ImportOptionsDialogFragment
         setFloatingDialogWidth(R.dimen.floating_dialogs_import_options_width);
     }
 
-    /**
-     * Constructor.
-     *
-     * @param requestKey for use with the FragmentResultListener
-     *
-     * @return instance
-     */
-    @NonNull
-    public static DialogFragment newInstance(@NonNull final String requestKey) {
-        final DialogFragment frag = new ImportOptionsDialogFragment();
-        final Bundle args = new Bundle(1);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
-        frag.setArguments(args);
-        return frag;
+
+    @Override
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        mRequestKey = Objects.requireNonNull(requireArguments().getString(BKEY_REQUEST_KEY),
+                                             "BKEY_REQUEST_KEY");
     }
 
     @Override
@@ -175,4 +176,48 @@ public class ImportOptionsDialogFragment
         }
     }
 
+    protected void sendResult(final boolean startTask) {
+        Launcher.sendResult(this, mRequestKey, startTask);
+        dismiss();
+    }
+
+    public abstract static class Launcher
+            extends DialogFragmentLauncherBase {
+
+        private static final String START_TASK = "startTask";
+
+        static void sendResult(@NonNull final Fragment fragment,
+                               @NonNull final String requestKey,
+                               final boolean startTask) {
+            final Bundle result = new Bundle(1);
+            result.putBoolean(START_TASK, startTask);
+            fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
+        }
+
+        /**
+         * Launch the dialog.
+         */
+        public void launch() {
+            final Bundle args = new Bundle(1);
+            args.putString(BKEY_REQUEST_KEY, mRequestKey);
+
+            final DialogFragment frag = new ImportOptionsDialogFragment();
+            frag.setArguments(args);
+            frag.show(mFragmentManager, ImportOptionsDialogFragment.TAG);
+        }
+
+        @Override
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
+            onResult(result.getBoolean(START_TASK));
+        }
+
+        /**
+         * Callback handler.
+         *
+         * @param startTask {@code true} if the user confirmed the dialog.
+         *                  i.e. if the import task should be started
+         */
+        public abstract void onResult(boolean startTask);
+    }
 }

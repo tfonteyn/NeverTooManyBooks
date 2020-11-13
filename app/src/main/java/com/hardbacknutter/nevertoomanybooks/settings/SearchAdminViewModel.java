@@ -61,7 +61,6 @@ public class SearchAdminViewModel
             // single-list mode ?
             final ArrayList<Site> singleList;
             if (args != null) {
-                // will be null if not present
                 singleList = args.getParcelableArrayList(BKEY_LIST);
             } else {
                 singleList = null;

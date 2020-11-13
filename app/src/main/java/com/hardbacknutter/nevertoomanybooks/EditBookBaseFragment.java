@@ -34,13 +34,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
-
-import com.google.android.material.datepicker.MaterialDatePicker;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -52,6 +47,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
+import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -59,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
@@ -78,12 +75,24 @@ public abstract class EditBookBaseFragment
     private static final String RK_DATE_PICKER_SINGLE = TAG + ":rk:datePickerSingle";
     /** Tag/requestKey for WrappedMaterialDatePicker. */
     private static final String RK_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
-    /** Dialog listener (strong reference). */
-    private final PartialDatePickerDialogFragment.OnResultListener mPartialDatePickerListener =
-            (fieldId, date) -> onDateSet(fieldId, date.getIsoString());
-    /** Dialog listener (strong reference). */
-    private final WrappedMaterialDatePicker.OnResultListener mDatePickerListener =
-            this::onDateSet;
+
+    private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
+            new PartialDatePickerDialogFragment.Launcher() {
+                @Override
+                public void onResult(@IdRes final int fieldId,
+                                     @NonNull final PartialDate date) {
+                    onDateSet(fieldId, date.getIsoString());
+                }
+            };
+
+    private final WrappedMaterialDatePicker.Launcher mDatePickerLauncher =
+            new WrappedMaterialDatePicker.Launcher() {
+                @Override
+                public void onResult(@NonNull final int[] fieldIds,
+                                     @NonNull final long[] selections) {
+                    onDateSet(fieldIds, selections);
+                }
+            };
     /** The view model. */
     EditBookFragmentViewModel mVm;
 
@@ -100,13 +109,12 @@ public abstract class EditBookBaseFragment
 
         //noinspection ConstantConditions
         mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        mVm = new ViewModelProvider(getActivity())
-                .get(getFragmentId(), EditBookFragmentViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
 
-        final FragmentManager fm = getChildFragmentManager();
-        fm.setFragmentResultListener(RK_DATE_PICKER_PARTIAL, this, mPartialDatePickerListener);
-        fm.setFragmentResultListener(RK_DATE_PICKER_SINGLE, this, mDatePickerListener);
-        fm.setFragmentResultListener(RK_DATE_PICKER_RANGE, this, mDatePickerListener);
+        mPartialDatePickerLauncher.register(this, RK_DATE_PICKER_PARTIAL);
+
+        mDatePickerLauncher.register(this, RK_DATE_PICKER_SINGLE);
+        mDatePickerLauncher.register(this, RK_DATE_PICKER_RANGE);
     }
 
     @Override
@@ -155,10 +163,10 @@ public abstract class EditBookBaseFragment
     @Override
     @CallSuper
     public void onPause() {
+        mVm.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
+
         if (mBookViewModel.getBook().getStage() == EntityStage.Stage.Dirty) {
             onSaveFields(mBookViewModel.getBook());
-
-            mVm.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
         }
         super.onPause();
     }
@@ -211,113 +219,90 @@ public abstract class EditBookBaseFragment
      * Clicking on the start-date field will allow the user to set just the start-date.
      * Clicking on the end-date will prompt to select both the start and end dates.
      * <p>
-     * If only one field is used, this method diverts to {@link #addDatePicker}.
+     * If only one field is used, we just display a single date picker.
      *
-     * @param preferences        Global preferences
-     * @param dialogTitleIdSpan  title of the dialog box if both start and end-dates are used.
-     * @param dialogTitleIdStart title of the dialog box if the end-date is not in use
-     * @param fieldStartDate     to setup for the start-date
-     * @param dialogTitleIdEnd   title of the dialog box if the start-date is not in use
-     * @param fieldEndDate       to setup for the end-date
-     * @param todayIfNone        if true, and if the field was empty, we'll default to today's date.
+     * @param preferences      Global preferences
+     * @param dateSpanTitleId  title of the dialog box if both start and end-dates are used.
+     * @param startDateTitleId title of the dialog box if the end-date is not in use
+     * @param fieldStartDate   to setup for the start-date
+     * @param endDateTitleId   title of the dialog box if the start-date is not in use
+     * @param fieldEndDate     to setup for the end-date
+     * @param todayIfNone      if true, and if the field was empty, we'll default to today's date.
      */
     @SuppressWarnings("SameParameterValue")
     void addDateRangePicker(@NonNull final SharedPreferences preferences,
-                            @StringRes final int dialogTitleIdSpan,
-                            @StringRes final int dialogTitleIdStart,
+                            @StringRes final int dateSpanTitleId,
+                            @StringRes final int startDateTitleId,
                             @NonNull final Field<String, TextView> fieldStartDate,
-                            @StringRes final int dialogTitleIdEnd,
+                            @StringRes final int endDateTitleId,
                             @NonNull final Field<String, TextView> fieldEndDate,
                             final boolean todayIfNone) {
 
-        if (fieldStartDate.isUsed(preferences) && fieldEndDate.isUsed(preferences)) {
-
+        final boolean startUsed = fieldStartDate.isUsed(preferences);
+        if (startUsed) {
             // single date picker for the start-date
-            addDatePicker(preferences, fieldStartDate, dialogTitleIdStart, true);
-
-            // date-span for the end-date
             //noinspection ConstantConditions
-            fieldEndDate.getAccessor().getView().setOnClickListener(v -> {
-                final Instant timeStart = getInstant(fieldStartDate, todayIfNone);
-                Long startSelection = timeStart != null ? timeStart.toEpochMilli() : null;
+            fieldStartDate.getAccessor().getView().setOnClickListener(v -> mDatePickerLauncher
+                    .launch(startDateTitleId,
+                            fieldStartDate.getId(), getInstant(fieldStartDate, todayIfNone)));
+        }
 
-                final Instant timeEnd = getInstant(fieldEndDate, todayIfNone);
-                Long endSelection = timeEnd != null ? timeEnd.toEpochMilli() : null;
-
-                // sanity check
-                if (startSelection != null && endSelection != null
-                    && startSelection > endSelection) {
-                    final Long tmp = startSelection;
-                    startSelection = endSelection;
-                    endSelection = tmp;
-                }
-
-                new WrappedMaterialDatePicker<>(
-                        MaterialDatePicker.Builder
-                                .dateRangePicker()
-                                .setTitleText(dialogTitleIdSpan)
-                                .setSelection(new Pair<>(startSelection, endSelection))
-                                .build(),
-                        fieldStartDate.getId(), fieldEndDate.getId()
-                ).show(getChildFragmentManager(), RK_DATE_PICKER_RANGE);
-            });
-
-        } else {
-            addDatePicker(preferences, fieldStartDate, dialogTitleIdStart, todayIfNone);
-            addDatePicker(preferences, fieldEndDate, dialogTitleIdEnd, todayIfNone);
+        if (fieldEndDate.isUsed(preferences)) {
+            final TextView view = fieldEndDate.getAccessor().getView();
+            if (startUsed) {
+                // date-span picker for the end-date
+                //noinspection ConstantConditions
+                view.setOnClickListener(v -> mDatePickerLauncher
+                        .launch(dateSpanTitleId,
+                                fieldStartDate.getId(), getInstant(fieldStartDate, todayIfNone),
+                                fieldEndDate.getId(), getInstant(fieldEndDate, todayIfNone)));
+            } else {
+                // without using a start-date, single date picker for the end-date
+                //noinspection ConstantConditions
+                view.setOnClickListener(v -> mDatePickerLauncher
+                        .launch(endDateTitleId, fieldEndDate.getId(), getInstant(fieldEndDate,
+                                                                                 todayIfNone)));
+            }
         }
     }
 
     /**
      * Setup a date picker for selecting a single, full date.
      *
-     * @param preferences   Global preferences
-     * @param field         to setup
-     * @param dialogTitleId title of the dialog box.
-     * @param todayIfNone   if true, and if the field was empty, we'll default to today's date.
+     * @param preferences Global preferences
+     * @param field       to setup
+     * @param titleId     title for the picker window
+     * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
      */
+    @SuppressWarnings("SameParameterValue")
     void addDatePicker(@NonNull final SharedPreferences preferences,
                        @NonNull final Field<String, TextView> field,
-                       @StringRes final int dialogTitleId,
+                       @StringRes final int titleId,
                        final boolean todayIfNone) {
         if (field.isUsed(preferences)) {
             //noinspection ConstantConditions
-            field.getAccessor().getView().setOnClickListener(v -> {
-                final Instant time = getInstant(field, todayIfNone);
-                final Long selection = time != null ? time.toEpochMilli() : null;
-
-                new WrappedMaterialDatePicker<>(
-                        MaterialDatePicker.Builder
-                                .datePicker()
-                                .setTitleText(dialogTitleId)
-                                .setSelection(selection)
-                                .build(),
-                        field.getId())
-                        .show(getChildFragmentManager(), RK_DATE_PICKER_SINGLE);
-            });
+            field.getAccessor().getView().setOnClickListener(v -> mDatePickerLauncher
+                    .launch(titleId, field.getId(), getInstant(field, todayIfNone)));
         }
     }
 
     /**
      * Setup a date picker for selecting a partial date.
      *
-     * @param preferences   Global preferences
-     * @param field         to setup
-     * @param dialogTitleId title of the dialog box.
-     * @param todayIfNone   if true, and if the field was empty, we'll default to today's date.
+     * @param preferences Global preferences
+     * @param field       to setup
+     * @param titleId     title for the picker window
+     * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
      */
     @SuppressWarnings("SameParameterValue")
     void addPartialDatePicker(@NonNull final SharedPreferences preferences,
                               @NonNull final Field<String, TextView> field,
-                              @StringRes final int dialogTitleId,
+                              @StringRes final int titleId,
                               final boolean todayIfNone) {
         if (field.isUsed(preferences)) {
             //noinspection ConstantConditions
-            field.getAccessor().getView().setOnClickListener(v -> PartialDatePickerDialogFragment
-                    .newInstance(RK_DATE_PICKER_PARTIAL, dialogTitleId,
-                                 field.getId(),
-                                 field.getAccessor().getValue(), todayIfNone)
-                    .show(getChildFragmentManager(), PartialDatePickerDialogFragment.TAG));
+            field.getAccessor().getView().setOnClickListener(v -> mPartialDatePickerLauncher
+                    .launch(titleId, field.getId(), field.getAccessor().getValue(), todayIfNone));
         }
     }
 
@@ -348,7 +333,7 @@ public abstract class EditBookBaseFragment
     }
 
     /**
-     * Convert a LocalDate to an Instant in time.
+     * Convert a Field value (String) to an Instant in time.
      *
      * @param field       to extract from
      * @param todayIfNone if set, and the incoming date is null, use 'today' for the date
@@ -371,11 +356,11 @@ public abstract class EditBookBaseFragment
         return Instant.now();
     }
 
-    public interface OnResultListener<T extends Parcelable>
-            extends FragmentResultListener {
+    public abstract static class EditItemLauncher<T extends Parcelable>
+            extends DialogFragmentLauncherBase {
 
-        /* private. */ String ORIGINAL = "original";
-        /* private. */ String MODIFIED = "modified";
+        private static final String ORIGINAL = "original";
+        private static final String MODIFIED = "modified";
 
         static <T extends Parcelable> void sendResult(@NonNull final Fragment fragment,
                                                       @NonNull final String requestKey,
@@ -388,16 +373,19 @@ public abstract class EditBookBaseFragment
         }
 
         @Override
-        default void onFragmentResult(@NonNull final String requestKey,
-                                      @NonNull final Bundle result) {
+        public void onFragmentResult(@NonNull final String requestKey,
+                                     @NonNull final Bundle result) {
             onResult(Objects.requireNonNull(result.getParcelable(ORIGINAL)),
                      Objects.requireNonNull(result.getParcelable(MODIFIED)));
         }
 
         /**
          * Callback handler.
+         *
+         * @param original the original item
+         * @param modified the modified item
          */
-        void onResult(@NonNull T original,
-                      @NonNull T modified);
+        public abstract void onResult(@NonNull T original,
+                                      @NonNull T modified);
     }
 }

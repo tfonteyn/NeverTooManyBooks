@@ -33,7 +33,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@id/MENU_SORT"
+        android:id="@id/MENU_STYLE_PICKER"
         android:icon="@drawable/ic_sort_by_alpha"
         android:orderInCategory="@integer/MENU_ORDER_SORT"
         android:title="@string/lbl_sort_and_style_ellipsis"

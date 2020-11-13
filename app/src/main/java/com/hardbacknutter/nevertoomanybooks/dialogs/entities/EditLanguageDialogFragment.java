@@ -19,11 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.dialogs.entities;
 
-import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.List;
 import java.util.Locale;
@@ -51,27 +51,21 @@ public class EditLanguageDialogFragment
      */
     public EditLanguageDialogFragment() {
         super(R.string.lbl_language, R.string.lbl_language,
-              BooksOnBookshelf.ChangeListener.LANGUAGE);
+              BooksOnBookshelf.RowChangeListener.LANGUAGE);
     }
 
     /**
-     * Constructor.
+     * Launch the dialog.
      *
-     * @param requestKey for use with the FragmentResultListener
-     * @param context    Current context
-     * @param text       to edit.
-     *
-     * @return instance
+     * @param text to edit.
      */
-    public static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                             @NonNull final String requestKey,
-                                             @NonNull final Context context,
-                                             @NonNull final String text) {
+    public static void launch(@NonNull final FragmentActivity activity,
+                              @NonNull final String text) {
         final String editLang;
         if (text.length() > 3) {
             editLang = text;
         } else {
-            final Locale locale = AppLocale.getInstance().getLocale(context, text);
+            final Locale locale = AppLocale.getInstance().getLocale(activity, text);
             if (locale == null) {
                 editLang = text;
             } else {
@@ -79,12 +73,13 @@ public class EditLanguageDialogFragment
             }
         }
 
-        final DialogFragment frag = new EditLanguageDialogFragment();
         final Bundle args = new Bundle(2);
-        args.putString(BKEY_REQUEST_KEY, requestKey);
+        args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
         args.putString(BKEY_TEXT, editLang);
+
+        final DialogFragment frag = new EditLanguageDialogFragment();
         frag.setArguments(args);
-        return frag;
+        frag.show(activity.getSupportFragmentManager(), TAG);
     }
 
     @NonNull
