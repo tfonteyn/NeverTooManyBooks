@@ -31,7 +31,7 @@ public class BookSearchByExternalIdViewModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultData = new Intent();
+    private final Intent mResultIntent = new Intent();
 
     /**
      * Inherits the result from {@link com.hardbacknutter.nevertoomanybooks.EditBookActivity}.
@@ -39,6 +39,6 @@ public class BookSearchByExternalIdViewModel
     @Override
     @NonNull
     public Intent getResultIntent() {
-        return mResultData;
+        return mResultIntent;
     }
 }

@@ -440,7 +440,7 @@ public class BooksOnBookshelfModel
      *
      * @param bookId to use
      */
-    public void setDesiredCentralBookId(final long bookId) {
+    public void setDesiredCentralBookId(@IntRange(from = 1) final long bookId) {
         mDesiredCentralBookId = bookId;
     }
 
@@ -895,36 +895,36 @@ public class BooksOnBookshelfModel
         return mBooklist.getNewListCursor();
     }
 
-    public List<Author> getAuthorsByBookId(final long bookId) {
+    public List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
         return mDb.getAuthorsByBookId(bookId);
     }
 
     @NonNull
-    public ArrayList<Long> getBookIdsByAuthor(final long authorId) {
+    public ArrayList<Long> getBookIdsByAuthor(@IntRange(from = 1) final long authorId) {
         return mDb.getBookIdsByAuthor(authorId);
     }
 
     @NonNull
-    public ArrayList<Long> getBookIdsBySeries(final long seriesId) {
+    public ArrayList<Long> getBookIdsBySeries(@IntRange(from = 1) final long seriesId) {
         return mDb.getBookIdsBySeries(seriesId);
     }
 
     @NonNull
-    public ArrayList<Long> getBookIdsByPublisher(final long publisherId) {
+    public ArrayList<Long> getBookIdsByPublisher(@IntRange(from = 1) final long publisherId) {
         return mDb.getBookIdsByPublisher(publisherId);
     }
 
-    public boolean setAuthorComplete(final long authorId,
+    public boolean setAuthorComplete(@IntRange(from = 1) final long authorId,
                                      final boolean isComplete) {
         return mDb.setAuthorComplete(authorId, isComplete);
     }
 
-    public boolean setSeriesComplete(final long seriesId,
+    public boolean setSeriesComplete(@IntRange(from = 1) final long seriesId,
                                      final boolean isComplete) {
         return mDb.setSeriesComplete(seriesId, isComplete);
     }
 
-    public boolean setBookRead(final long bookId,
+    public boolean setBookRead(@IntRange(from = 1) final long bookId,
                                final boolean isRead) {
         return mDb.setBookRead(bookId, isRead);
     }
@@ -944,7 +944,7 @@ public class BooksOnBookshelfModel
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public boolean lendBook(final long bookId,
+    public boolean lendBook(@IntRange(from = 1) final long bookId,
                             @Nullable final String loanee) {
         return mDb.setLoanee(bookId, loanee, true);
     }

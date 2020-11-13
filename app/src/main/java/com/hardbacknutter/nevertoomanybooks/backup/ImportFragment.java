@@ -340,8 +340,7 @@ public class ImportFragment
                                .createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK,
-                                            mVm.onImportFinished());
+                    getActivity().setResult(Activity.RESULT_OK, mVm.onImportFinished());
                     getActivity().finish();
                 })
                 .create()

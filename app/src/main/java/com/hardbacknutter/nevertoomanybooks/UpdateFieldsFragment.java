@@ -331,9 +331,9 @@ public class UpdateFieldsFragment
             // UpdateFieldsModel.BKEY_LAST_BOOK_ID, long
             // UniqueId.BKEY_BOOK_MODIFIED, boolean
             // DBDefinitions.KEY_PK_ID, long (can be absent)
-            final Intent data = new Intent().putExtras(message.result);
+            final Intent resultIntent = new Intent().putExtras(message.result);
             //noinspection ConstantConditions
-            getActivity().setResult(Activity.RESULT_OK, data);
+            getActivity().setResult(Activity.RESULT_OK, resultIntent);
         }
 
         //noinspection ConstantConditions

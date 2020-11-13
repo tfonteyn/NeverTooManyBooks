@@ -37,7 +37,7 @@ public class BookSearchByIsbnViewModel
     private static final String TAG = "BookSearchByIsbnViewModel";
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultData = new Intent();
+    private final Intent mResultIntent = new Intent();
     /** Database Access. */
     private DAO mDb;
 
@@ -47,7 +47,7 @@ public class BookSearchByIsbnViewModel
     @Override
     @NonNull
     public Intent getResultIntent() {
-        return mResultData;
+        return mResultIntent;
     }
 
     @Override

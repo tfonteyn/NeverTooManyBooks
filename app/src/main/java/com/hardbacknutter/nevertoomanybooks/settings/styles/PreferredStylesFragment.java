@@ -139,21 +139,22 @@ public class PreferredStylesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Intent resultData = new Intent();
+                    final Intent resultIntent = new Intent();
 
                     // Return the currently selected style UUID, so the caller can apply it.
                     // This is independent from any modification to this or another style,
                     // or the order of the styles.
                     final BooklistStyle selectedStyle = mListAdapter.getSelectedStyle();
                     if (selectedStyle != null) {
-                        resultData.putExtra(BooklistStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
+                        resultIntent
+                                .putExtra(BooklistStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
                     }
 
                     // Same here, this is independent from the returned style
-                    resultData.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
+                    resultIntent.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
 
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultData);
+                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
                     getActivity().finish();
                 }
             };

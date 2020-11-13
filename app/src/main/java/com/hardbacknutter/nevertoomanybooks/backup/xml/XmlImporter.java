@@ -922,7 +922,7 @@ public class XmlImporter
                 // if the style is currently not-preferred,
                 if (!mStyle.isPreferred()) {
                     // use the obsoleted preference entry to set the state
-                    final PPref<?> p = mStylePrefs.get(
+                    final PPref p = mStylePrefs.get(
                             BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED);
                     if (p != null) {
                         final Object o = p.getValue(mContext);

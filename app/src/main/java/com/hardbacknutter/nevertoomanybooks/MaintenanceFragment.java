@@ -280,10 +280,10 @@ public class MaintenanceFragment
                 SearchEngineRegistry.create(getContext());
                 //FIXME: restore all preferences.
 
-                final Intent resultData = new Intent()
+                final Intent resultIntent = new Intent()
                         .putExtra(BKEY_RESTART_APP, true);
                 //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, resultData);
+                getActivity().setResult(Activity.RESULT_OK, resultIntent);
             }
         }
 

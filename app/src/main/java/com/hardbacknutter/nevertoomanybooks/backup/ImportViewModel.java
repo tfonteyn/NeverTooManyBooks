@@ -39,7 +39,7 @@ public class ImportViewModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultData = new Intent();
+    private final Intent mResultIntent = new Intent();
 
     /** The import configuration. */
     @Nullable
@@ -48,7 +48,7 @@ public class ImportViewModel
     @Override
     @NonNull
     public Intent getResultIntent() {
-        return mResultData;
+        return mResultIntent;
     }
 
     @NonNull
@@ -65,7 +65,7 @@ public class ImportViewModel
     @NonNull
     Intent onImportFinished() {
         Objects.requireNonNull(mImportHelper);
-        mResultData.putExtra(ImportResults.BKEY_IMPORT_RESULTS, mImportHelper.getOptions());
-        return mResultData;
+        mResultIntent.putExtra(ImportResults.BKEY_IMPORT_RESULTS, mImportHelper.getOptions());
+        return mResultIntent;
     }
 }

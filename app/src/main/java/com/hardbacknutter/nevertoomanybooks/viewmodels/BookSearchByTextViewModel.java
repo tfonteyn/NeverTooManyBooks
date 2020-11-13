@@ -44,7 +44,7 @@ public class BookSearchByTextViewModel
     private static final String TAG = "BookSearchByTextViewModel";
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultData = new Intent();
+    private final Intent mResultIntent = new Intent();
     /**
      * A list of author names we have already searched for in this session.
      */
@@ -66,7 +66,7 @@ public class BookSearchByTextViewModel
     @Override
     @NonNull
     public Intent getResultIntent() {
-        return mResultData;
+        return mResultIntent;
     }
 
     @Override

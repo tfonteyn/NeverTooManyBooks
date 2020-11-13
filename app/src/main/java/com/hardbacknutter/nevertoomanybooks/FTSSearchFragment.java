@@ -193,7 +193,7 @@ public class FTSSearchFragment
 
         // When the show results buttons is tapped, go show the resulting booklist.
         mVb.btnSearch.setOnClickListener(v -> {
-            final Intent data = new Intent()
+            final Intent resultIntent = new Intent()
                     // pass these for displaying to the user
                     .putExtra(DBDefinitions.KEY_TITLE, mTitleSearchText)
                     .putExtra(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText)
@@ -206,7 +206,7 @@ public class FTSSearchFragment
                               mKeywordsSearchText)
                     // pass the book ID's for the list
                     .putExtra(Book.BKEY_BOOK_ID_LIST, mBookIdList);
-            getActivity().setResult(Activity.RESULT_OK, data);
+            getActivity().setResult(Activity.RESULT_OK, resultIntent);
             getActivity().finish();
         });
 

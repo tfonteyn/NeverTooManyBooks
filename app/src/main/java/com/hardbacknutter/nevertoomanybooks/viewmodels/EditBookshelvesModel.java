@@ -53,7 +53,7 @@ public class EditBookshelvesModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultData = new Intent();
+    private final Intent mResultIntent = new Intent();
 
     /** Database Access. */
     private DAO mDb;
@@ -77,7 +77,7 @@ public class EditBookshelvesModel
     @NonNull
     @Override
     public Intent getResultIntent() {
-        return mResultData;
+        return mResultIntent;
     }
 
     /**
@@ -95,7 +95,7 @@ public class EditBookshelvesModel
                 final long bookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
                 mSelectedPosition = findSelectedPosition(bookshelfId);
                 // set as the initial result
-                mResultData.putExtra(DBDefinitions.KEY_PK_ID, bookshelfId);
+                mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, bookshelfId);
             }
         }
     }
@@ -136,7 +136,7 @@ public class EditBookshelvesModel
         // update the fragment -> it will update the adapter
         mSelectedPositionLD.setValue(new Pair<>(oldPos, mSelectedPosition));
         // update the activity result.
-        mResultData.putExtra(DBDefinitions.KEY_PK_ID, getBookshelf(mSelectedPosition).getId());
+        mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, getBookshelf(mSelectedPosition).getId());
     }
 
     @NonNull

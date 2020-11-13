@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.util.Log;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.time.LocalDateTime;
@@ -538,7 +539,7 @@ class CalibreArchiveReader
     private boolean isImportNewer(@NonNull final Context context,
                                   @NonNull final DAO db,
                                   @NonNull final Book book,
-                                  final long bookId) {
+                                  @IntRange(from = 1) final long bookId) {
         final LocalDateTime utcImportDate =
                 DateParser.getInstance(context)
                           .parseISO(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));

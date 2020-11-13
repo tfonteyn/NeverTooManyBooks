@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -85,7 +86,7 @@ public class GoodreadsSearchActivity
      * @param bookId  the book to search for
      */
     public static void open(@NonNull final Context context,
-                            final long bookId) {
+                            @IntRange(from = 1) final long bookId) {
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         if (!grAuth.hasCredentials(context)) {
             context.startActivity(new Intent(context, GoodreadsRegistrationActivity.class));

@@ -387,6 +387,15 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
+                }
+            };
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -453,15 +462,6 @@ public class BooksOnBookshelf
                         }
                     }
                     return true;
-                }
-            };
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
                 }
             };
 
@@ -1213,15 +1213,6 @@ public class BooksOnBookshelf
 
                 mVm.setForceRebuildInOnResume(true);
             }
-
-            // We might have a specific state to use for rebuilding,
-            // if so, apply and schedule the rebuild.
-//            if (data.containsKey(BooksOnBookshelfModel.BKEY_LIST_STATE)) {
-//                final int state = data.getInt(BooksOnBookshelfModel.BKEY_LIST_STATE,
-//                                              Booklist.PREF_REBUILD_SAVED_STATE);
-//                mVm.setRebuildState(state);
-//                mVm.setForceRebuildInOnResume(true);
-//            }
 
             // If we got an id back, make any (potential) rebuild re-position to it.
             final long bookId = data.getLong(DBDefinitions.KEY_PK_ID, 0);

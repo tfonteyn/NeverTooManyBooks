@@ -47,7 +47,7 @@ public class StyleViewModel
     static final String BKEY_TEMPLATE_ID = TAG + ":templateId";
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultData = new Intent();
+    private final Intent mResultIntent = new Intent();
     /** The style we're editing. */
     private BooklistStyle mStyle;
     /** The list of groups with a boolean flag for when the user is editing the groups. */
@@ -67,7 +67,7 @@ public class StyleViewModel
             // The templateId is not actually used here, but it MUST always be passed back.
             final long templateId = args.getLong(BKEY_TEMPLATE_ID);
             if (templateId != 0) {
-                mResultData.putExtra(BKEY_TEMPLATE_ID, templateId);
+                mResultIntent.putExtra(BKEY_TEMPLATE_ID, templateId);
             }
 
             final BooklistStyle style = args.getParcelable(BooklistStyle.BKEY_STYLE);
@@ -76,7 +76,7 @@ public class StyleViewModel
                 // always pass a non-global style back; whether existing or new.
                 // so even if the user makes no changes, we still send it back!
                 // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
-                mResultData.putExtra(BooklistStyle.BKEY_STYLE, mStyle);
+                mResultIntent.putExtra(BooklistStyle.BKEY_STYLE, mStyle);
 
             } else {
                 // we're doing the global preferences, create a placeholder style with an empty uuid
@@ -92,13 +92,13 @@ public class StyleViewModel
     }
 
     void setModified() {
-        mResultData.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, true);
+        mResultIntent.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, true);
     }
 
     @NonNull
     @Override
     public Intent getResultIntent() {
-        return mResultData;
+        return mResultIntent;
     }
 
     @NonNull

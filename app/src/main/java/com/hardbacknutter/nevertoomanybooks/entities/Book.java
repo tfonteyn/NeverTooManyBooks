@@ -181,12 +181,12 @@ public class Book
     /**
      * Constructor. Load the book details from the database.
      *
-     * @param bookId of book (may be 0 for new, in which case we do nothing)
+     * @param bookId of book
      * @param db     Database Access
      *
      * @return new instance
      */
-    public static Book from(final long bookId,
+    public static Book from(@IntRange(from = 1) final long bookId,
                             @NonNull final DAO db) {
         final Book book = new Book();
         book.load(bookId, db);

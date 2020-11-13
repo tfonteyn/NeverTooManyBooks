@@ -65,7 +65,7 @@ public class AuthorWorksModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultData = new Intent();
+    private final Intent mResultIntent = new Intent();
 
     @Override
     protected void onCleared() {
@@ -75,12 +75,15 @@ public class AuthorWorksModel
     }
 
     /**
-     * {@link BookViewModel#BKEY_BOOK_DELETED}
+     * <ul>
+     * <li>{@link DBDefinitions#KEY_PK_ID}          book id</li>
+     * <li>{@link BookViewModel#BKEY_BOOK_DELETED}  boolean</li>
+     * </ul>
      */
     @NonNull
     @Override
     public Intent getResultIntent() {
-        return mResultData;
+        return mResultIntent;
     }
 
     /**
@@ -161,6 +164,10 @@ public class AuthorWorksModel
 
         } else if (work instanceof BookAsWork) {
             success = mDb.deleteBook(context, work.getId());
+            if (success) {
+                mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, work.getId());
+                mResultIntent.putExtra(BookViewModel.BKEY_BOOK_DELETED, true);
+            }
 
         } else {
             throw new IllegalArgumentException(String.valueOf(work));
@@ -169,7 +176,6 @@ public class AuthorWorksModel
         if (success) {
             work.setId(0);
             mWorkList.remove(work);
-            mResultData.putExtra(BookViewModel.BKEY_BOOK_DELETED, true);
         }
         return success;
     }

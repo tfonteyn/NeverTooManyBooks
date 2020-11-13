@@ -635,7 +635,7 @@ public class DAO
      *
      * @return {@code true} on success
      */
-    private boolean touchBook(final long bookId) {
+    private boolean touchBook(@IntRange(from = 1) final long bookId) {
 
         try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlUpdate.TOUCH)) {
@@ -1038,7 +1038,7 @@ public class DAO
      * @throws TransactionException a transaction must be started before calling this method
      */
     void insertBookAuthors(@NonNull final Context context,
-                           final long bookId,
+                           @IntRange(from = 1) final long bookId,
                            @NonNull final Collection<Author> list,
                            final boolean lookupLocale,
                            @NonNull final Locale bookLocale)
@@ -1124,7 +1124,7 @@ public class DAO
      * @throws TransactionException a transaction must be started before calling this method
      */
     void insertBookSeries(@NonNull final Context context,
-                          final long bookId,
+                          @IntRange(from = 1) final long bookId,
                           @NonNull final Collection<Series> list,
                           final boolean lookupLocale,
                           @NonNull final Locale bookLocale)
@@ -1210,7 +1210,7 @@ public class DAO
      * @throws TransactionException a transaction must be started before calling this method
      */
     void insertBookPublishers(@NonNull final Context context,
-                              final long bookId,
+                              @IntRange(from = 1) final long bookId,
                               @NonNull final Collection<Publisher> list,
                               final boolean lookupLocale,
                               @NonNull final Locale bookLocale)
@@ -1756,7 +1756,7 @@ public class DAO
      * @throws TransactionException a transaction must be started before calling this method
      */
     void saveTocList(@NonNull final Context context,
-                     final long bookId,
+                     @IntRange(from = 1) final long bookId,
                      @NonNull final Collection<TocEntry> list,
                      final boolean lookupLocale,
                      @NonNull final Locale bookLocale)
@@ -1955,7 +1955,7 @@ public class DAO
      *
      * @return {@code true} for success.
      */
-    public boolean setLoanee(final long bookId,
+    public boolean setLoanee(@IntRange(from = 1) final long bookId,
                              @Nullable final String loanee,
                              final boolean updateBook) {
 
@@ -2023,7 +2023,7 @@ public class DAO
      * @return Who the book is lend to, or {@code null} when not lend out
      */
     @Nullable
-    public String getLoaneeByBookId(final long bookId) {
+    public String getLoaneeByBookId(@IntRange(from = 1) final long bookId) {
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_GET_LOANEE_BY_BOOK_ID, () -> DAOSql.SqlGet.LOANEE_BY_BOOK_ID);
 
@@ -2856,7 +2856,7 @@ public class DAO
      * @return the list
      */
     @NonNull
-    public ArrayList<Bookshelf> getBookshelvesByBookId(final long bookId) {
+    public ArrayList<Bookshelf> getBookshelvesByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Bookshelf> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOKSHELVES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
@@ -3163,6 +3163,7 @@ public class DAO
      *
      * @return id of the book, or 0 'new' if not found
      */
+    @IntRange(from = 0)
     public long getBookIdFromKey(@NonNull final String key,
                                  @NonNull final String value) {
         final String sql = "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
@@ -3181,6 +3182,7 @@ public class DAO
      *
      * @return id of the book, or 0 'new' if not found
      */
+    @IntRange(from = 0)
     public long getBookIdFromUuid(@NonNull final String uuid) {
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_GET_BOOK_ID_FROM_UUID, () -> DAOSql.SqlGetId.BY_UUID);
@@ -3200,7 +3202,7 @@ public class DAO
      * @return the book UUID, or {@code null} if not found/failure
      */
     @Nullable
-    private String getBookUuid(final long bookId) {
+    private String getBookUuid(@IntRange(from = 1) final long bookId) {
         SanityCheck.requirePositiveValue(bookId, "bookId");
 
         final SynchronizedStatement stmt = mSqlStatementManager.get(
@@ -3221,7 +3223,7 @@ public class DAO
      * @return the title, or {@code null} if not found
      */
     @Nullable
-    public String getBookTitle(final long bookId) {
+    public String getBookTitle(@IntRange(from = 1) final long bookId) {
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_GET_BOOK_TITLE, () -> DAOSql.SqlGet.BOOK_TITLE_BY_BOOK_ID);
 
@@ -3240,7 +3242,7 @@ public class DAO
      * @return the ISBN, or {@code null} if not found
      */
     @Nullable
-    public String getBookIsbn(final long bookId) {
+    public String getBookIsbn(@IntRange(from = 1) final long bookId) {
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_GET_BOOK_ISBN, () -> DAOSql.SqlGet.BOOK_ISBN_BY_BOOK_ID);
 
@@ -3260,7 +3262,7 @@ public class DAO
      * @return list of authors
      */
     @NonNull
-    public ArrayList<Author> getAuthorsByBookId(final long bookId) {
+    public ArrayList<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Author> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.AUTHORS_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
@@ -3280,7 +3282,7 @@ public class DAO
      * @return list of Series
      */
     @NonNull
-    public ArrayList<Series> getSeriesByBookId(final long bookId) {
+    public ArrayList<Series> getSeriesByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Series> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.SERIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
@@ -3300,7 +3302,7 @@ public class DAO
      * @return list of Publisher
      */
     @NonNull
-    public ArrayList<Publisher> getPublishersByBookId(final long bookId) {
+    public ArrayList<Publisher> getPublishersByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Publisher> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.PUBLISHER_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
@@ -3320,7 +3322,7 @@ public class DAO
      * @return list
      */
     @NonNull
-    public ArrayList<TocEntry> getTocEntryByBookId(final long bookId) {
+    public ArrayList<TocEntry> getTocEntryByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<TocEntry> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.TOC_ENTRIES_BY_BOOK_ID,
                                                 new String[]{String.valueOf(bookId)})) {
@@ -3531,7 +3533,7 @@ public class DAO
      */
     @Nullable
     public LocalDateTime getBookLastUpdateUtcDate(@NonNull final Context context,
-                                                  final long bookId) {
+                                                  @IntRange(from = 1) final long bookId) {
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_GET_BOOK_UPDATE_DATE, () -> DAOSql.SqlGet.LAST_UPDATE_DATE_BY_BOOK_ID);
 
@@ -3551,7 +3553,7 @@ public class DAO
      * @return {@code true} if exists
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    public boolean bookExistsById(final long bookId) {
+    public boolean bookExistsById(@IntRange(from = 1) final long bookId) {
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_CHECK_BOOK_EXISTS, () -> DAOSql.SqlCount.BOOK_EXISTS);
 
@@ -3586,7 +3588,7 @@ public class DAO
      *
      * @return {@code true} for success.
      */
-    public boolean setBookRead(final long bookId,
+    public boolean setBookRead(@IntRange(from = 1) final long bookId,
                                final boolean isRead) {
         final String now;
         if (isRead) {
@@ -3675,7 +3677,7 @@ public class DAO
      *
      * @param bookId the book
      */
-    public void setGoodreadsSyncDate(final long bookId) {
+    public void setGoodreadsSyncDate(@IntRange(from = 1) final long bookId) {
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_UPDATE_GOODREADS_SYNC_DATE, () -> DAOSql.SqlUpdate.GOODREADS_LAST_SYNC_DATE);
 
@@ -3692,7 +3694,7 @@ public class DAO
      * @param bookId          the/our book id
      * @param goodreadsBookId the Goodreads book id
      */
-    public void setGoodreadsBookId(final long bookId,
+    public void setGoodreadsBookId(@IntRange(from = 1) final long bookId,
                                    final long goodreadsBookId) {
 
         final SynchronizedStatement stmt = mSqlStatementManager.get(
@@ -3958,7 +3960,7 @@ public class DAO
      * @return Cursor containing all records, if any
      */
     @NonNull
-    public Cursor fetchBookForGoodreadsExport(final long bookId) {
+    public Cursor fetchBookForGoodreadsExport(@IntRange(from = 1) final long bookId) {
         return mSyncedDb.rawQuery(DAOSql.SqlGoodreadsSendBook.SINGLE_BOOK,
                                   new String[]{String.valueOf(bookId)});
     }
@@ -4110,7 +4112,7 @@ public class DAO
      * @throws TransactionException a transaction must be started before calling this method
      */
     private void ftsInsert(@NonNull final Context context,
-                           final long bookId) {
+                           @IntRange(from = 1) final long bookId) {
 
         if (!mSyncedDb.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);
@@ -4141,7 +4143,7 @@ public class DAO
      * @throws TransactionException a transaction must be started before calling this method
      */
     private void ftsUpdate(@NonNull final Context context,
-                           final long bookId) {
+                           @IntRange(from = 1) final long bookId) {
 
         if (!mSyncedDb.inTransaction()) {
             throw new TransactionException(TransactionException.REQUIRED);

@@ -40,6 +40,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -150,13 +151,14 @@ public class BookDetailsFragment
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
             new EditLenderDialogFragment.Launcher() {
                 @Override
-                public void onResult(final long bookId,
+                public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
                     // the db was already updated, just update the book to avoid a reload.
                     mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
                     populateLendToField(loanee);
                 }
             };
+
     /** View Binding. */
     private FragmentBookDetailsMergePublicationSectionBinding mVbPub;
     /** View Binding. */
@@ -809,6 +811,7 @@ public class BookDetailsFragment
 
         public static class Input {
 
+            @IntRange(from = 1)
             final long bookId;
             @NonNull
             final String styleUuid;
@@ -816,7 +819,7 @@ public class BookDetailsFragment
             final String listTableName;
             final long listTableRowId;
 
-            public Input(final long bookId,
+            public Input(@IntRange(from = 1) final long bookId,
                          @NonNull final String listTableName,
                          final long listTableRowId,
                          @NonNull final String styleUuid) {

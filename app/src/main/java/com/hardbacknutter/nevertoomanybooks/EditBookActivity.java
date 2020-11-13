@@ -247,7 +247,6 @@ public class EditBookActivity
 
     /** Single point of exit for this Activity. */
     void setResultsAndFinish() {
-        // The result data will contain the re-position book id.
         setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
         finish();
     }

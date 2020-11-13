@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.qtasks;
 
 import android.content.Context;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
@@ -179,7 +180,7 @@ public abstract class SendBooksGrTaskBase
         private static final long serialVersionUID = -5466960636472729577L;
 
         GrNoIsbnEvent(@NonNull final Context context,
-                      final long bookId) {
+                      @IntRange(from = 1) final long bookId) {
             super(context.getString(R.string.warning_no_isbn_stored_for_book), bookId);
         }
 
@@ -200,7 +201,7 @@ public abstract class SendBooksGrTaskBase
         private static final long serialVersionUID = -8047306486727741746L;
 
         GrNoMatchEvent(@NonNull final Context context,
-                       final long bookId) {
+                       @IntRange(from = 1) final long bookId) {
             super(context.getString(R.string.warning_no_matching_book_found), bookId);
         }
 

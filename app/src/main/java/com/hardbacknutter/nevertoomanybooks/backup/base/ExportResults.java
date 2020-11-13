@@ -23,6 +23,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -100,7 +101,7 @@ public class ExportResults
         preferences += results.preferences;
     }
 
-    public void addBook(final long bookId) {
+    public void addBook(@IntRange(from = 1) final long bookId) {
         mBooksExported.add(bookId);
     }
 

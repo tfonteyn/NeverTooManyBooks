@@ -34,15 +34,15 @@ public class SettingsViewModel
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    private final Intent mResultData = new Intent();
+    private final Intent mResultIntent = new Intent();
 
     @Override
     @NonNull
     public Intent getResultIntent() {
-        return mResultData;
+        return mResultIntent;
     }
 
     void setRequiresActivityRecreation() {
-        mResultData.putExtra(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
+        mResultIntent.putExtra(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
     }
 }

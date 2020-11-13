@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.tasks;
 import android.content.Context;
 import android.database.Cursor;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -62,7 +63,7 @@ public class GrSendOneBookTask
      *
      * @param bookId the book to send
      */
-    public void startTask(final long bookId) {
+    public void startTask(@IntRange(from = 1) final long bookId) {
         mBookId = bookId;
         execute(R.id.TASK_ID_GR_SEND_ONE_BOOK);
     }

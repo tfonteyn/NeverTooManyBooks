@@ -90,9 +90,9 @@ public class SearchAdminActivity
         if (hasSites) {
             if (mVm.isSingleListMode()) {
                 // single-list is NOT persisted, just returned for temporary usage.
-                final Intent resultData = new Intent()
+                final Intent resultIntent = new Intent()
                         .putExtra(mVm.getType().getBundleKey(), mVm.getList());
-                setResult(Activity.RESULT_OK, resultData);
+                setResult(Activity.RESULT_OK, resultIntent);
 
             } else {
                 mVm.persist(this);

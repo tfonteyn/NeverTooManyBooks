@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.util.List;
@@ -53,7 +54,7 @@ public class SendBookEvent
      * @param bookId      the book this event is for
      */
     protected SendBookEvent(@NonNull final String description,
-                            final long bookId) {
+                            @IntRange(from = 1) final long bookId) {
         super(description);
         mBookId = bookId;
     }
@@ -63,6 +64,7 @@ public class SendBookEvent
      *
      * @return id of related book.
      */
+    @IntRange(from = 1)
     public long getBookId() {
         return mBookId;
     }

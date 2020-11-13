@@ -515,7 +515,7 @@ public class Booklist
      * @return the node(s), or {@code null} if none
      */
     @Nullable
-    public ArrayList<BooklistNode> getBookNodes(final long bookId) {
+    public ArrayList<BooklistNode> getBookNodes(@IntRange(from = 0) final long bookId) {
         // sanity check
         if (bookId == 0) {
             return null;

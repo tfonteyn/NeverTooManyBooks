@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import android.database.sqlite.SQLiteStatement;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
 import java.io.Closeable;
@@ -68,6 +69,7 @@ public class BooklistNavigator
     /** Current position; used to navigate around with next/prev. */
     private long mRowId;
     /** Book id at the currently selected row. */
+    @IntRange(from = 0)
     private long mBookId;
     /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
@@ -89,6 +91,7 @@ public class BooklistNavigator
      *
      * @return bookId, or {@code 0} if the last move operation failed.
      */
+    @IntRange(from = 0)
     public long getBookId() {
         return mBookId;
     }
