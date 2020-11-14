@@ -125,6 +125,8 @@ public abstract class VMTask<Result>
     }
 
     /**
+     * Execute the task.
+     *
      * @param taskId identifier, must be unique
      *
      * @return {@code true} if the task was started;

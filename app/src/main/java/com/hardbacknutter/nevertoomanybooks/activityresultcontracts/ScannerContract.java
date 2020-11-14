@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 public class ScannerContract
         extends ActivityResultContract<Fragment, String> {
 
+    /** Log tag. */
     private static final String TAG = "ScannerContract";
 
     @NonNull

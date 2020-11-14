@@ -79,7 +79,9 @@ public class DateFieldFormatter
     }
 
     /**
-     * Extract as an ISO date (full or partial)
+     * Extract as an ISO date (full or partial).
+     *
+     * @return a (partial) date
      */
     @Override
     @NonNull

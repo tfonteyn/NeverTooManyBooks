@@ -33,7 +33,9 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQItem;
 public class LegacyViewHolder
         extends BaseViewHolder {
 
+    @NonNull
     private final TextView tv1;
+    @NonNull
     private final TextView tv2;
 
     LegacyViewHolder(@NonNull final View itemView) {

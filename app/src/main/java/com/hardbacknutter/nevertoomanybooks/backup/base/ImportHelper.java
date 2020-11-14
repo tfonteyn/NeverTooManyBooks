@@ -256,7 +256,6 @@ public class ImportHelper {
     ArchiveReader getArchiveReader(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
-        // Validate the settings before going ahead.
         SanityCheck.requirePositiveValue(mOptions & MASK, "mOptions");
 
         final ArchiveReader reader;

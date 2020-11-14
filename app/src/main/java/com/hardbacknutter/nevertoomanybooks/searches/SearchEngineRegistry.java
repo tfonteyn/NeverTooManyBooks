@@ -123,9 +123,17 @@ public final class SearchEngineRegistry {
                                .findFirst();
     }
 
+    /**
+     * Create a SearchEngine instance.
+     *
+     * @param context  Current context
+     * @param engineId the search engine id
+     *
+     * @return the instance
+     */
     @NonNull
     public static SearchEngine createSearchEngine(@NonNull final Context context,
-                                                  final int engineId) {
+                                                  @SearchSites.EngineId final int engineId) {
         //noinspection ConstantConditions
         return SITE_CONFIGS_MAP.get(engineId).createSearchEngine(context);
     }

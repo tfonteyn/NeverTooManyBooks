@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  */
 public interface DataCrossValidator {
 
-    void validate(@NonNull final Context context,
+    void validate(@NonNull Context context,
                   @NonNull DataManager data)
             throws ValidatorException;
 }

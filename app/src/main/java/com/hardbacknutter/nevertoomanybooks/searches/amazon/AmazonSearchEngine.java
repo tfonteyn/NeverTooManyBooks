@@ -143,10 +143,11 @@ public class AmazonSearchEngine
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
+     * @param engineId   the search engine id
      */
     @Keep
     public AmazonSearchEngine(@NonNull final Context appContext,
-                              final int engineId) {
+                              @SearchSites.EngineId final int engineId) {
         super(appContext, engineId);
 
         final String baseUrl = getSiteUrl();

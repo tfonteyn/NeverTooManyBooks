@@ -66,9 +66,10 @@ public abstract class JsoupSearchEngineBase
      * Constructor.
      *
      * @param appContext Application context
+     * @param engineId   the search engine id
      */
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
-                                    final int engineId) {
+                                    @SearchSites.EngineId final int engineId) {
         super(appContext, engineId);
         mJsoupLoader = new JsoupLoader();
     }
@@ -77,10 +78,11 @@ public abstract class JsoupSearchEngineBase
      * Constructor.
      *
      * @param appContext  Application context
+     * @param engineId the search engine id
      * @param charSetName to use
      */
     protected JsoupSearchEngineBase(@NonNull final Context appContext,
-                                    final int engineId,
+                                    @SearchSites.EngineId final int engineId,
                                     @NonNull final String charSetName) {
         this(appContext, engineId);
         mJsoupLoader.setCharSetName(charSetName);

@@ -451,9 +451,10 @@ public class PartialDatePickerDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
 
-            onResult(result.getInt(FIELD_ID), new PartialDate(result.getInt(YEAR),
-                                                              result.getInt(MONTH),
-                                                              result.getInt(DAY)));
+            onResult(result.getInt(FIELD_ID),
+                     new PartialDate(result.getInt(YEAR),
+                                     result.getInt(MONTH),
+                                     result.getInt(DAY)));
         }
 
         /**

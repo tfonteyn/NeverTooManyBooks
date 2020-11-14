@@ -170,7 +170,7 @@ public class ImportResults
                + ", booksUpdated=" + booksUpdated
                + ", booksSkipped=" + booksSkipped
 
-               + ", coversSkipped=" + coversProcessed
+               + ", coversProcessed=" + coversProcessed
                + ", coversCreated=" + coversCreated
                + ", coversUpdated=" + coversUpdated
                + ", coversSkipped=" + coversSkipped

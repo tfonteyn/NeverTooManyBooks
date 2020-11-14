@@ -221,10 +221,11 @@ public class IsfdbSearchEngine
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
+     * @param engineId   the search engine id
      */
     @Keep
     public IsfdbSearchEngine(@NonNull final Context appContext,
-                             final int engineId) {
+                             @SearchSites.EngineId final int engineId) {
         super(appContext, engineId, IsfdbSearchEngine.CHARSET_DECODE_PAGE);
     }
 

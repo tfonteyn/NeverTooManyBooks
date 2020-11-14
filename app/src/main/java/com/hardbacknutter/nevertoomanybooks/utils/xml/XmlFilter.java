@@ -207,7 +207,9 @@ public class XmlFilter {
     }
 
     /**
-     * @return the tag that this filter will match
+     * Get the name of the tag that this filter will match.
+     *
+     * @return name
      */
     @NonNull
     private String getTagName() {

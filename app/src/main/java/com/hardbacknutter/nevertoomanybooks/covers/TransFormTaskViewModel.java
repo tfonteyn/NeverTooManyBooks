@@ -318,6 +318,8 @@ public class TransFormTaskViewModel
         private final int mReturnCode;
 
         /**
+         * Constructor.
+         *
          * @param bitmap     resulting bitmap; or {@code null} on failure
          * @param file       If the bitmap is set, the transformed file.
          *                   If the bitmap is {@code null}, the file value MUST BE IGNORED.

@@ -273,7 +273,7 @@ public class BooklistCursor
         // Note that the super class will already have checked the newPosition.
 
         // Get the id we use for the cursor at the new position
-        final int cursorId = (newPosition / PAGE_SIZE);
+        final int cursorId = newPosition / PAGE_SIZE;
         // Determine the actual start position offset
         final int offset = cursorId * PAGE_SIZE;
 

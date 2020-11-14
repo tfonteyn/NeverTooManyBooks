@@ -32,7 +32,10 @@ import java.util.Map;
  * Meanwhile (2020-10-15) it seems the latest Android build tools CAN solve the assert issue.
  * To be investigated.
  */
-public class SanityCheck {
+public final class SanityCheck {
+
+    private SanityCheck() {
+    }
 
     @SuppressWarnings("UnusedReturnValue")
     public static long requireNonZero(final long value,

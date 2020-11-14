@@ -410,7 +410,7 @@ class LibraryThingHandler
     private static final String XML_FIELD_23_SERIES = "series";
     private static final String XML_FIELD_40_PUB_SERIES = "publisherseries";
     //    private static final String XML_FIELD_02_PLACES = "placesmentioned";
-//    private static final String XML_FIELD_03_CHARACTERS = "characternames";
+    //    private static final String XML_FIELD_03_CHARACTERS = "characternames";
     private static final String XML_FIELD_14_DESCRIPTION = "description";
     private static final String XML_FIELD_16_ORIG_PUB_DATE = "originalpublicationdate";
     private static final String XML_FIELD_58_ORIG_LANG = "originallanguage";

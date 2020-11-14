@@ -52,6 +52,8 @@ public class SqlStatementManager
     /** The underlying database. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
+    /** Name to use in log messages. */
+    @NonNull
     private final String mInstanceName;
 
     /**
@@ -61,7 +63,7 @@ public class SqlStatementManager
      * @param name instance name; used for logging
      */
     public SqlStatementManager(@NonNull final SynchronizedDb db,
-                               final String name) {
+                               @NonNull final String name) {
         mSyncedDb = db;
         mInstanceName = name;
     }

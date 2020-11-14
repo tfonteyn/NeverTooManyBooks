@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 public class ValidateKeyTask
         extends VMTask<Integer> {
 
+    /** Log tag. */
     private static final String TAG = "ValidateKeyTask";
 
     public void startTask() {

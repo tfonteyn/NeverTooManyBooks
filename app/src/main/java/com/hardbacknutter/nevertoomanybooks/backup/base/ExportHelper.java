@@ -152,7 +152,6 @@ public class ExportHelper {
     ArchiveWriter getArchiveWriter(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
-        // Validate the settings before going ahead.
         SanityCheck.requirePositiveValue(mOptions & MASK, "mOptions");
         Objects.requireNonNull(mUri, "uri");
 

@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public class EditBookFromBundleContract
         extends ActivityResultContract<Bundle, Bundle> {
 
+    /** Log tag. */
     private static final String TAG = "EditBookFromBundle";
 
     @NonNull

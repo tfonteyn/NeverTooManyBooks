@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -104,7 +105,7 @@ public class EditLenderDialogFragment
     @SuppressLint("MissingPermission")
     private final ActivityResultLauncher<String> mRequestPermissionLauncher =
             registerForActivityResult(
-                    new ActivityResultContracts.RequestPermission(), (isGranted) -> {
+                    new ActivityResultContracts.RequestPermission(), isGranted -> {
                         if (isGranted) {
                             addContacts();
                         }
@@ -169,7 +170,7 @@ public class EditLenderDialogFragment
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     private void addContacts() {
         // LinkedHashSet to remove duplicates
-        final LinkedHashSet<String> contacts = new LinkedHashSet<>(mPeople);
+        final Set<String> contacts = new LinkedHashSet<>(mPeople);
         //noinspection ConstantConditions
         final ContentResolver cr = getContext().getContentResolver();
         try (Cursor cursor = cr.query(ContactsContract.Contacts.CONTENT_URI,

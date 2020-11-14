@@ -33,8 +33,9 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
-public class CameraDetection {
+public final class CameraDetection {
 
+    /** Log tag. */
     private static final String TAG = "CameraDetection";
 
     /**
@@ -68,5 +69,8 @@ public class CameraDetection {
         }
 
         return list;
+    }
+
+    private CameraDetection() {
     }
 }

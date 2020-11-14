@@ -53,6 +53,8 @@ public interface ProgressListener {
      * Optional to use/override: the interval to send progress updates in milliseconds.
      * <p>
      * Default: 200ms. i.e. 5x a second.
+     *
+     * @return interval in ms
      */
     default int getUpdateIntervalInMs() {
         return 200;

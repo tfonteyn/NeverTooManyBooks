@@ -61,6 +61,8 @@ public class ImageFileInfo
 
     /**
      * Constructor. No file.
+     *
+     * @param isbn of the book for this cover
      */
     ImageFileInfo(@NonNull final String isbn) {
         mIsbn = isbn;
@@ -71,6 +73,11 @@ public class ImageFileInfo
 
     /**
      * Constructor.
+     *
+     * @param isbn     of the book for this cover
+     * @param fileSpec (optional) of the cover file
+     * @param size     (optional) size
+     * @param engineId the search engine id
      */
     ImageFileInfo(@NonNull final String isbn,
                   @Nullable final String fileSpec,
@@ -150,8 +157,9 @@ public class ImageFileInfo
                + "isbn=`" + mIsbn + '`'
                + ", size=" + mSize
                + ", engineId=" + mEngineId
-               + ", fileSpec=`" + (mFileSpec == null ? "" :
-                                   mFileSpec.substring(mFileSpec.lastIndexOf('/'))) + '`'
+               + ", fileSpec=`"
+               + (mFileSpec == null ? "" : mFileSpec.substring(mFileSpec.lastIndexOf('/')))
+               + '`'
                + '}';
     }
 

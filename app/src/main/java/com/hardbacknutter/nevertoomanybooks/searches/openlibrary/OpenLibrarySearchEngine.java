@@ -148,10 +148,11 @@ public class OpenLibrarySearchEngine
      * Constructor. Called using reflection, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
+     * @param engineId   the search engine id
      */
     @Keep
     public OpenLibrarySearchEngine(@NonNull final Context appContext,
-                                   final int engineId) {
+                                   @SearchSites.EngineId final int engineId) {
         super(appContext, engineId);
     }
 

@@ -78,6 +78,9 @@ final class XmlUtils {
     private static final Pattern GT_LITERAL = Pattern.compile("&gt;", Pattern.LITERAL);
     private static final Pattern AMP_LITERAL = Pattern.compile("&amp;", Pattern.LITERAL);
 
+    private XmlUtils() {
+    }
+
     /**
      * Generic tag with (optional) name and value attribute, empty body.
      * String values are automatically encoded.

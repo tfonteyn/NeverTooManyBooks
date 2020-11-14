@@ -182,7 +182,8 @@ public class MenuPickerDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(result.getInt(MENU_ITEM), result.getInt(POSITION));
+            onResult(result.getInt(MENU_ITEM),
+                     result.getInt(POSITION));
         }
 
         /**

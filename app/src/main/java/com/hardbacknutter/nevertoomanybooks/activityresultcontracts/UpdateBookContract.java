@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public class UpdateBookContract
         extends ActivityResultContract<Book, Bundle> {
 
+    /** Log tag. */
     private static final String TAG = "UpdateBookContract";
 
     @NonNull

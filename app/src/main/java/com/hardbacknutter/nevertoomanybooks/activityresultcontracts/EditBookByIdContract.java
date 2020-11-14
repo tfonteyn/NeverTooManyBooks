@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 public class EditBookByIdContract
         extends ActivityResultContract<Long, Bundle> {
 
+    /** Log tag. */
     private static final String TAG = "EditBookByIdContract";
 
     @NonNull

@@ -197,7 +197,7 @@ public class ProgressDialogFragment
         }
 
         // if we have no new text, we leave mVb.progressMessage text untouched.
-        if (text != null && !text.equals((mVb.progressMessage.getText()))) {
+        if (text != null && !text.equals(mVb.progressMessage.getText())) {
             mVb.progressMessage.setText(text);
         }
     }

@@ -284,7 +284,7 @@ public final class CoversDAO
      * <p>
      * The original code also had a 2nd 'delete' method with a different where clause:
      * // We use encodeString here because it's possible a user screws up the data and imports
-     * // bad UUID's...this has happened.
+     * // bad UUID's... this has happened.
      * // String whereClause = CKEY_CACHE_ID + " GLOB '" + DAO.encodeString(uuid) + ".*'";
      * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
      *

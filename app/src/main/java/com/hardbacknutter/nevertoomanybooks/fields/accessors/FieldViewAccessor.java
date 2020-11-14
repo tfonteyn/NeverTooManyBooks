@@ -30,6 +30,7 @@ import java.util.Collection;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
 
 /**
  * Handles interactions between the value and the View (with optional {@link FieldFormatter}).
@@ -152,7 +153,7 @@ public interface FieldViewAccessor<T, V extends View> {
     }
 
     /**
-     * Convenience method to facilitate creating a non-empty FieldValidator
+     * Convenience method to facilitate creating a non-empty {@link FieldValidator}.
      *
      * @param errorText to display if the field is empty.
      */

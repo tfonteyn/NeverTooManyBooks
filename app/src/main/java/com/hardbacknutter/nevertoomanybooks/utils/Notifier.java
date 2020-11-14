@@ -40,7 +40,7 @@ import java.lang.annotation.RetentionPolicy;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
-public class Notifier
+public final class Notifier
         implements AppLocale.OnLocaleChangedListener {
 
     public static final int ID_GENERIC = 0;

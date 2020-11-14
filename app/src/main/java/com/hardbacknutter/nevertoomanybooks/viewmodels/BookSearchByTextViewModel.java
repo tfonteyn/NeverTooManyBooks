@@ -100,7 +100,7 @@ public class BookSearchByTextViewModel
     }
 
     /**
-     * Build a combined list of the passed in Authors + the database
+     * Build a combined list of the passed in Authors + the database.
      *
      * @param context Current context
      *
@@ -164,7 +164,7 @@ public class BookSearchByTextViewModel
     }
 
     /**
-     * Build a combined list of the passed in Publishers + the database
+     * Build a combined list of the passed in Publishers + the database.
      *
      * @param context Current context
      *

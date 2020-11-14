@@ -79,10 +79,11 @@ public class GoodreadsSearchEngine
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
      * @param appContext Application context
+     * @param engineId   the search engine id
      */
     @Keep
     public GoodreadsSearchEngine(@NonNull final Context appContext,
-                                 final int engineId) {
+                                 @SearchSites.EngineId final int engineId) {
         super(appContext, engineId);
         mGoodreadsAuth = new GoodreadsAuth(mAppContext);
     }

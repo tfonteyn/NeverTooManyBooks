@@ -49,10 +49,10 @@ public abstract class SearchEngineBase
      * Constructor.
      *
      * @param appContext Application context
-     * @param engineId   id
+     * @param engineId   the search engine id
      */
     public SearchEngineBase(@NonNull final Context appContext,
-                            final int engineId) {
+                            @SearchSites.EngineId final int engineId) {
         mAppContext = appContext;
         mId = engineId;
     }

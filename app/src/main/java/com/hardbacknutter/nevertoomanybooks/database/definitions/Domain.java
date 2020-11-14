@@ -54,7 +54,7 @@ public class Domain
         }
     };
 
-    /** standard SQL keyword **/
+    /** standard SQL keyword. **/
     private static final String CURRENT_TIMESTAMP = "current_timestamp";
 
     @NonNull

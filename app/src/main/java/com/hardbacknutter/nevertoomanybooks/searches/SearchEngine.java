@@ -181,6 +181,8 @@ public interface SearchEngine {
     /**
      * Get the name for this engine.
      *
+     * @param context Current context
+     *
      * @return name
      */
     @AnyThread
