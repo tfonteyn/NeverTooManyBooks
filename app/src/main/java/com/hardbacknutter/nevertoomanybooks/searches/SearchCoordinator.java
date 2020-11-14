@@ -372,13 +372,13 @@ public class SearchCoordinator
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(taskId);
-                Log.d(TAG, "mSearchTaskListener.onFinished|finished=" +
-                           appContext.getString(config.getNameResId()));
+                Log.d(TAG, "mSearchTaskListener.onFinished"
+                           + "|finished=" + appContext.getString(config.getNameResId()));
 
                 for (final SearchTask searchTask : mActiveTasks) {
                     config = SearchEngineRegistry.getByEngineId(searchTask.getTaskId());
-                    Log.d(TAG, "mSearchTaskListener.onFinished|running=" +
-                               appContext.getString(config.getNameResId()));
+                    Log.d(TAG, "mSearchTaskListener.onFinished"
+                               + "|running=" + appContext.getString(config.getNameResId()));
                 }
             }
 
@@ -717,6 +717,8 @@ public class SearchCoordinator
     /**
      * Start all searches which have not been run yet.
      *
+     * @param context Current context
+     *
      * @return {@code true} if at least one search was started, {@code false} if none
      */
     private boolean startSearch(@NonNull final Context context) {
@@ -735,6 +737,8 @@ public class SearchCoordinator
 
     /**
      * Start a single task.
+     *
+     * @param context Current context
      *
      * @return {@code true} if a search was started, {@code false} if not
      */
@@ -1160,8 +1164,9 @@ public class SearchCoordinator
     /**
      * Prepare an error message to show after the task finishes.
      *
-     * @param context   Localized context
-     * @param exception to process
+     * @param context    Localized context
+     * @param engineName the site where the error happened
+     * @param exception  to process
      *
      * @return user-friendly error message for the given site
      */

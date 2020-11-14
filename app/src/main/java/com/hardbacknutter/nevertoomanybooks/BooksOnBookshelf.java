@@ -160,11 +160,11 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
-    private static final String RK_STYLE_PICKER = StylePickerDialogFragment.TAG + ":rk";
+    private static final String RK_STYLE_PICKER = TAG + ":rk:" + StylePickerDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
-    private static final String RK_EDIT_LENDER = EditLenderDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
     /** {@link FragmentResultListener} request key. */
-    private static final String RK_EDIT_BOOKSHELF = EditBookshelfDialogFragment.TAG + ":rk";
+    private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
 
 
     /** Bring up the Goodreads synchronization options. */
@@ -1201,16 +1201,15 @@ public class BooksOnBookshelf
 
     /**
      * Called when the user has finished (and saved) editing a Book.
+     * <p>
+     * This method is called from a ActivityResultContract after the result intent is parsed.
+     * After this method is executed, the flow will take us to #onResume.
      *
      * @param data returned from the editor Activity
      */
     private void onBookEditingDone(@Nullable final Bundle data) {
         if (data != null) {
-            // If any of these is set, we need a rebuild.
-            if (data.getBoolean(BookViewModel.BKEY_BOOK_CREATED, false)
-                || data.getBoolean(BookViewModel.BKEY_DATA_MODIFIED, false)
-                || data.getBoolean(BookViewModel.BKEY_BOOK_DELETED, false)) {
-
+            if (data.getBoolean(BookViewModel.BKEY_DATA_MODIFIED, false)) {
                 mVm.setForceRebuildInOnResume(true);
             }
 
@@ -1694,7 +1693,8 @@ public class BooksOnBookshelf
         @Override
         default void onFragmentResult(@NonNull final String requestKey,
                                       @NonNull final Bundle result) {
-            onChange(result.getInt(CHANGE), result.getLong(ITEM_ID));
+            onChange(result.getInt(CHANGE),
+                     result.getLong(ITEM_ID));
         }
 
         /**

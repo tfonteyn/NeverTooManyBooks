@@ -177,11 +177,13 @@ public class EditBookFieldsFragment
         mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
         // no listener/callback. We share the book view model in the Activity scope
-        mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment.launch(this));
+        mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
+                .launch(getChildFragmentManager()));
 
         if (getField(R.id.series_title).isUsed(prefs)) {
             // no listener/callback. We share the book view model in the Activity scope
-            mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment.launch(this));
+            mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
+                    .launch(getChildFragmentManager()));
         }
 
         // Bookshelves editor (dialog)

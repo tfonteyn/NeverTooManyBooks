@@ -37,10 +37,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
@@ -57,22 +55,6 @@ public class BookViewModel
 
     /** Log tag. */
     private static final String TAG = "BookViewModel";
-
-    /**
-     * One <strong>or more</strong> books were created (or not).
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_BOOK_CREATED = TAG + ":created";
-
-    /**
-     * One <strong>or more</strong> books were deleted (or not).
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_BOOK_DELETED = TAG + ":deleted";
 
     /**
      * One <strong>or more books and/or global data</strong> (author etc) was modified (or not).
@@ -107,19 +89,15 @@ public class BookViewModel
     /**
      * <ul>
      * <li>{@link DBDefinitions#KEY_PK_ID}  book id</li>
-     * <li>{@link #BKEY_BOOK_CREATED}       boolean</li>
-     * <li>{@link #BKEY_BOOK_DELETED}       boolean</li>
      * <li>{@link #BKEY_DATA_MODIFIED}      boolean</li>
      * </ul>
      */
     @NonNull
     @Override
     public Intent getResultIntent() {
-        if (BuildConfig.DEBUG /* always */) {
-            // We should always set the *current* book, so the BoB list can reposition correctly.
-            if (mResultIntent.getLongExtra(DBDefinitions.KEY_PK_ID, -1) == -1) {
-                throw new SanityCheck.MissingValueException("KEY_PK_ID");
-            }
+        // always set the *current* book, so the BoB list can reposition correctly.
+        if (mBook != null) {
+            mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
         }
         return mResultIntent;
     }
@@ -284,7 +262,6 @@ public class BookViewModel
      */
     public boolean toggleRead() {
         if (mBook.toggleRead(mDb)) {
-            mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
             mResultIntent.putExtra(BKEY_DATA_MODIFIED, true);
             return true;
         } else {
@@ -331,12 +308,10 @@ public class BookViewModel
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean deleteBook(@NonNull final Context context) {
-        final long id = mBook.getId();
         if (mDb.delete(context, mBook)) {
-            mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, id);
-            mResultIntent.putExtra(BKEY_BOOK_DELETED, true);
             //noinspection ConstantConditions
             mBook = null;
+            mResultIntent.putExtra(BKEY_DATA_MODIFIED, true);
             return true;
         } else {
             return false;
@@ -355,13 +330,10 @@ public class BookViewModel
 
         if (mBook.isNew()) {
             mDb.insert(context, mBook, 0);
-            mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
-            mResultIntent.putExtra(BKEY_BOOK_CREATED, true);
         } else {
             mDb.update(context, mBook, 0);
-            mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
-            mResultIntent.putExtra(BKEY_DATA_MODIFIED, true);
         }
+        mResultIntent.putExtra(BKEY_DATA_MODIFIED, true);
         mBook.setStage(EntityStage.Stage.Clean);
     }
 

@@ -30,7 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
@@ -117,11 +117,11 @@ public class EditBookSeriesListDialogFragment
     /**
      * Constructor.
      *
-     * @param fragment hosting fragment
+     * @param fm The FragmentManager this fragment will be added to.
      */
-    public static void launch(@NonNull final Fragment fragment) {
+    public static void launch(@NonNull final FragmentManager fm) {
         new EditBookSeriesListDialogFragment()
-                .show(fragment.getChildFragmentManager(), TAG);
+                .show(fm, TAG);
     }
 
     @Override
@@ -404,25 +404,26 @@ public class EditBookSeriesListDialogFragment
         }
 
         /**
-         * Constructor.
+         * Launch the dialog.
          *
+         * @param fm         The FragmentManager this fragment will be added to.
          * @param requestKey for use with the FragmentResultListener
          * @param bookTitle  displayed for info only
          * @param series     to edit
-         *
-         * @return instance
          */
-        static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                          @NonNull final String requestKey,
-                                          @NonNull final String bookTitle,
-                                          @NonNull final Series series) {
-            final DialogFragment frag = new EditSeriesForBookDialogFragment();
+        static void launch(@NonNull final FragmentManager fm,
+                           @SuppressWarnings("SameParameterValue")
+                           @NonNull final String requestKey,
+                           @NonNull final String bookTitle,
+                           @NonNull final Series series) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBDefinitions.KEY_TITLE, bookTitle);
             args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
+
+            final DialogFragment frag = new EditSeriesForBookDialogFragment();
             frag.setArguments(args);
-            return frag;
+            frag.show(fm, EditSeriesForBookDialogFragment.TAG);
         }
 
         @Override
@@ -557,9 +558,9 @@ public class EditBookSeriesListDialogFragment
             final Holder holder = new Holder(view);
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditSeriesForBookDialogFragment
-                    .newInstance(RK_EDIT_SERIES, mBookViewModel.getBook().getTitle(),
-                                 getItem(holder.getBindingAdapterPosition()))
-                    .show(getParentFragmentManager(), EditSeriesForBookDialogFragment.TAG));
+                    .launch(getParentFragmentManager(),
+                            RK_EDIT_SERIES, mBookViewModel.getBook().getTitle(),
+                            getItem(holder.getBindingAdapterPosition())));
             return holder;
         }
 

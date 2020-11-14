@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -86,8 +85,7 @@ public class GrSearchTask
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Bundle args,
-                     @Nullable final Bundle savedInstanceState) {
+    public void init(@NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO(TAG);
 
@@ -107,8 +105,6 @@ public class GrSearchTask
                 mSearchText = mAuthorText + ' ' + mTitleText + ' ' + mIsbnText + ' ';
             }
         }
-        final Bundle currentArgs = savedInstanceState != null ? savedInstanceState : args;
-        mSearchText = currentArgs.getString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS, mSearchText);
     }
 
     public long getBookId() {

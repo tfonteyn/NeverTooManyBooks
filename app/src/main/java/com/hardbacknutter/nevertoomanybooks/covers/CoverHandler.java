@@ -194,7 +194,7 @@ public class CoverHandler {
         mMaxHeight = maxHeight;
 
         mCameraPermissionLauncher = mFragment.registerForActivityResult(
-                new ActivityResultContracts.RequestPermission(), (isGranted) -> {
+                new ActivityResultContracts.RequestPermission(), isGranted -> {
                     if (isGranted) {
                         takePicture(true);
                     }
@@ -257,9 +257,8 @@ public class CoverHandler {
             final File uuidCoverFile = mBookViewModel.getCoverFile(mFragment.requireContext(),
                                                                    mCIdx);
             if (uuidCoverFile != null) {
-                ZoomedImageDialogFragment
-                        .newInstance(uuidCoverFile)
-                        .show(mFragment.getChildFragmentManager(), ZoomedImageDialogFragment.TAG);
+                ZoomedImageDialogFragment.launch(mFragment.getChildFragmentManager(),
+                                                 uuidCoverFile);
             }
             //else {
             // If there is no actual image, bring up the context menu instead.

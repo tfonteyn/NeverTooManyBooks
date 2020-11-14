@@ -129,20 +129,6 @@ public class Site
         mEnabled = in.readByte() != 0;
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(engineId);
-        dest.writeParcelable(mType, flags);
-        dest.writeByte((byte) (mEnabled ? 1 : 0));
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     /**
      * Get the enabled sites in the <strong>given</strong> list.
      *
@@ -227,9 +213,25 @@ public class Site
         }
     }
 
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(engineId);
+        dest.writeParcelable(mType, flags);
+        dest.writeByte((byte) (mEnabled ? 1 : 0));
+    }
+
+    @SuppressWarnings("SameReturnValue")
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
     /**
      * Get the {@link SearchEngine} instance for this site.
      * If the engine was cached, it will be reset before being returned.
+     *
+     * @param context Current context
      *
      * @return (cached) instance
      */
@@ -247,7 +249,8 @@ public class Site
      * Convenience method to get the {@link SearchEngine} instance for this site,
      * and set the caller.
      *
-     * @param caller to set
+     * @param context Current context
+     * @param caller  to set
      *
      * @return (cached) instance
      */
@@ -291,7 +294,6 @@ public class Site
     private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
         editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
-
 
 
     @Override
@@ -498,7 +500,7 @@ public class Site
          *
          * @param engineId the search engine id
          */
-        public void addSite(final int engineId) {
+        public void addSite(@SearchSites.EngineId final int engineId) {
             mList.add(new Site(this, engineId, true));
         }
 
@@ -508,7 +510,7 @@ public class Site
          * @param engineId the search engine id
          * @param enabled  flag
          */
-        public void addSite(final int engineId,
+        public void addSite(@SearchSites.EngineId final int engineId,
                             final boolean enabled) {
             mList.add(new Site(this, engineId, enabled));
         }

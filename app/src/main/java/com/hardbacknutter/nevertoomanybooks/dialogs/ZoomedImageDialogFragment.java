@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
@@ -61,16 +62,18 @@ public class ZoomedImageDialogFragment
     /**
      * Constructor.
      *
+     * @param fm    The FragmentManager this fragment will be added to.
      * @param image to display
-     *
-     * @return instance
      */
-    public static DialogFragment newInstance(@NonNull final File image) {
-        final DialogFragment frag = new ZoomedImageDialogFragment();
+    public static void launch(@NonNull final FragmentManager fm,
+                              @NonNull final File image) {
+
         final Bundle args = new Bundle(1);
         args.putString(BKEY_IMAGE_PATH, image.getPath());
+
+        final DialogFragment frag = new ZoomedImageDialogFragment();
         frag.setArguments(args);
-        return frag;
+        frag.show(fm, TAG);
     }
 
     @Override

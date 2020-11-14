@@ -46,7 +46,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsSearchBinding;
@@ -112,8 +111,7 @@ public class GoodreadsSearchActivity
 
         mGrSearchTask = new ViewModelProvider(this).get(GrSearchTask.class);
         mGrSearchTask.init(Objects.requireNonNull(getIntent().getExtras(),
-                                                  "getIntent().getExtras()"),
-                           savedInstanceState);
+                                                  "getIntent().getExtras()"));
         mGrSearchTask.onProgressUpdate().observe(this, message -> {
             if (message.text != null) {
                 Snackbar.make(mVb.getRoot(), message.text, Snackbar.LENGTH_LONG).show();
@@ -191,12 +189,6 @@ public class GoodreadsSearchActivity
         super.onPause();
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull final Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
-                           mGrSearchTask.getSearchText());
-    }
 
     /**
      * Start the search.

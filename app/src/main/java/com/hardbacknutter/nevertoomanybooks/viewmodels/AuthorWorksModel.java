@@ -77,7 +77,7 @@ public class AuthorWorksModel
     /**
      * <ul>
      * <li>{@link DBDefinitions#KEY_PK_ID}          book id</li>
-     * <li>{@link BookViewModel#BKEY_BOOK_DELETED}  boolean</li>
+     * <li>{@link BookViewModel#BKEY_DATA_MODIFIED}  boolean</li>
      * </ul>
      */
     @NonNull
@@ -165,8 +165,7 @@ public class AuthorWorksModel
         } else if (work instanceof BookAsWork) {
             success = mDb.deleteBook(context, work.getId());
             if (success) {
-                mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, work.getId());
-                mResultIntent.putExtra(BookViewModel.BKEY_BOOK_DELETED, true);
+                mResultIntent.putExtra(BookViewModel.BKEY_DATA_MODIFIED, true);
             }
 
         } else {

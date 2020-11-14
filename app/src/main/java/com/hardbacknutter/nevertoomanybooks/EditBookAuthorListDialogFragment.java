@@ -33,7 +33,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -122,11 +122,11 @@ public class EditBookAuthorListDialogFragment
     /**
      * Constructor.
      *
-     * @param fragment hosting fragment
+     * @param fm The FragmentManager this fragment will be added to.
      */
-    public static void launch(@NonNull final Fragment fragment) {
+    public static void launch(@NonNull final FragmentManager fm) {
         new EditBookAuthorListDialogFragment()
-                .show(fragment.getChildFragmentManager(), TAG);
+                .show(fm, TAG);
     }
 
     @Override
@@ -434,25 +434,26 @@ public class EditBookAuthorListDialogFragment
         }
 
         /**
-         * Constructor.
+         * Launch the dialog.
          *
+         * @param fm         The FragmentManager this fragment will be added to.
          * @param requestKey for use with the FragmentResultListener
          * @param bookTitle  displayed for info only
          * @param author     to edit
-         *
-         * @return instance
          */
-        static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                          @NonNull final String requestKey,
-                                          @NonNull final String bookTitle,
-                                          @NonNull final Author author) {
-            final DialogFragment frag = new EditAuthorForBookDialogFragment();
+        static void launch(@NonNull final FragmentManager fm,
+                           @SuppressWarnings("SameParameterValue")
+                           @NonNull final String requestKey,
+                           @NonNull final String bookTitle,
+                           @NonNull final Author author) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBDefinitions.KEY_TITLE, bookTitle);
             args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
+
+            final DialogFragment frag = new EditAuthorForBookDialogFragment();
             frag.setArguments(args);
-            return frag;
+            frag.show(fm, TAG);
         }
 
         @Override
@@ -660,9 +661,9 @@ public class EditBookAuthorListDialogFragment
             final Holder holder = new Holder(view);
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditAuthorForBookDialogFragment
-                    .newInstance(RK_EDIT_AUTHOR, mBookViewModel.getBook().getTitle(),
-                                 getItem(holder.getBindingAdapterPosition()))
-                    .show(getParentFragmentManager(), EditAuthorForBookDialogFragment.TAG));
+                    .launch(getParentFragmentManager(),
+                            RK_EDIT_AUTHOR, mBookViewModel.getBook().getTitle(),
+                            getItem(holder.getBindingAdapterPosition())));
             return holder;
         }
 

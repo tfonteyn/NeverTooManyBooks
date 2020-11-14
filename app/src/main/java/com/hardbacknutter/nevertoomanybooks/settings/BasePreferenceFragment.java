@@ -26,7 +26,6 @@ import android.text.TextUtils;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.FragmentManager;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -131,15 +130,14 @@ public abstract class BasePreferenceFragment
     @Override
     public void onDisplayPreferenceDialog(@NonNull final Preference preference) {
         if (preference instanceof BitmaskPreference) {
-            final String fragmentTag = "BitmaskPreferenceDialog";
-            // getParentFragmentManager required by PreferenceDialogFragmentCompat
+            // getParentFragmentManager is required by PreferenceDialogFragmentCompat
             // as the latter insists on using setTargetFragment to communicate back.
-            final FragmentManager fm = getParentFragmentManager();
+
             // check if dialog is already showing
-            if (fm.findFragmentByTag(fragmentTag) == null) {
+            if (getParentFragmentManager().findFragmentByTag(
+                    BitmaskPreference.BitmaskPreferenceDialogFragment.TAG) == null) {
                 BitmaskPreference.BitmaskPreferenceDialogFragment
-                        .newInstance(this, (BitmaskPreference) preference)
-                        .show(fm, fragmentTag);
+                        .launch(this, (BitmaskPreference) preference);
             }
             return;
         }

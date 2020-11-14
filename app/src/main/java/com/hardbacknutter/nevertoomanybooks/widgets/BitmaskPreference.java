@@ -194,7 +194,7 @@ public class BitmaskPreference
     public static class BitmaskPreferenceDialogFragment
             extends PreferenceDialogFragmentCompat {
 
-        private static final String TAG = "BitmaskPreferenceDialog";
+        public static final String TAG = "BitmaskPreferenceDialog";
 
         private static final String SAVE_STATE_VALUES = TAG + ":values";
         private static final String SAVE_STATE_CHANGED = TAG + ":changed";
@@ -220,20 +220,20 @@ public class BitmaskPreference
          *
          * @param hostFragment the fragment which is hosting the preference.
          * @param preference   for this dialog
-         *
-         * @return instance
          */
-        public static DialogFragment newInstance(@NonNull final Fragment hostFragment,
-                                                 @NonNull final BitmaskPreference preference) {
-            final DialogFragment frag = new BitmaskPreferenceDialogFragment();
+        public static void launch(@NonNull final Fragment hostFragment,
+                                  @NonNull final BitmaskPreference preference) {
             final Bundle args = new Bundle(1);
             args.putString(ARG_KEY, preference.getKey());
-            frag.setArguments(args);
 
-            // required by PreferenceDialogFragmentCompat
+            final DialogFragment frag = new BitmaskPreferenceDialogFragment();
+            frag.setArguments(args);
+            // Using setTargetFragment + getParentFragmentManager
+            // which is required by PreferenceDialogFragmentCompat
+            // as the latter insists on using this to communicate the results back to us.
             //noinspection deprecation
             frag.setTargetFragment(hostFragment, 0);
-            return frag;
+            frag.show(hostFragment.getParentFragmentManager(), TAG);
         }
 
         @Override

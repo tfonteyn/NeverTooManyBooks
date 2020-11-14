@@ -30,7 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
@@ -116,11 +116,11 @@ public class EditBookPublisherListDialogFragment
     /**
      * Constructor.
      *
-     * @param fragment hosting fragment
+     * @param fm The FragmentManager this fragment will be added to.
      */
-    public static void launch(@NonNull final Fragment fragment) {
+    public static void launch(@NonNull final FragmentManager fm) {
         new EditBookPublisherListDialogFragment()
-                .show(fragment.getChildFragmentManager(), TAG);
+                .show(fm, TAG);
     }
 
     @Override
@@ -384,25 +384,26 @@ public class EditBookPublisherListDialogFragment
         }
 
         /**
-         * Constructor.
+         * Launch the dialog.
          *
+         * @param fm         The FragmentManager this fragment will be added to.
          * @param requestKey for use with the FragmentResultListener
          * @param bookTitle  displayed for info only
          * @param publisher  to edit
-         *
-         * @return instance
          */
-        static DialogFragment newInstance(@SuppressWarnings("SameParameterValue")
-                                          @NonNull final String requestKey,
-                                          @NonNull final String bookTitle,
-                                          @NonNull final Publisher publisher) {
-            final DialogFragment frag = new EditPublisherForBookDialogFragment();
+        static void launch(@NonNull final FragmentManager fm,
+                           @SuppressWarnings("SameParameterValue")
+                           @NonNull final String requestKey,
+                           @NonNull final String bookTitle,
+                           @NonNull final Publisher publisher) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, requestKey);
             args.putString(DBDefinitions.KEY_TITLE, bookTitle);
             args.putParcelable(DBDefinitions.KEY_FK_PUBLISHER, publisher);
+
+            final DialogFragment frag = new EditPublisherForBookDialogFragment();
             frag.setArguments(args);
-            return frag;
+            frag.show(fm, EditPublisherForBookDialogFragment.TAG);
         }
 
         @Override
@@ -522,9 +523,9 @@ public class EditBookPublisherListDialogFragment
             final Holder holder = new Holder(view);
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditPublisherForBookDialogFragment
-                    .newInstance(RK_EDIT_PUBLISHER, mBookViewModel.getBook().getTitle(),
-                                 getItem(holder.getBindingAdapterPosition()))
-                    .show(getParentFragmentManager(), EditPublisherForBookDialogFragment.TAG));
+                    .launch(getParentFragmentManager(),
+                            RK_EDIT_PUBLISHER, mBookViewModel.getBook().getTitle(),
+                            getItem(holder.getBindingAdapterPosition())));
 
             return holder;
         }

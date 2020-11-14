@@ -93,8 +93,8 @@ public class WrappedMaterialDatePicker<S>
     /** key to use for the FragmentResultListener. */
     private String mRequestKey;
 
-    public WrappedMaterialDatePicker(@NonNull final MaterialDatePicker<S> picker,
-                                     @NonNull @IdRes final int... fieldIds) {
+    private WrappedMaterialDatePicker(@NonNull final MaterialDatePicker<S> picker,
+                                      @NonNull @IdRes final int... fieldIds) {
         mPicker = picker;
         mFieldIds = fieldIds;
     }
@@ -102,17 +102,17 @@ public class WrappedMaterialDatePicker<S>
     /**
      * Wrapper to {@link MaterialDatePicker#show(FragmentManager, String)}.
      *
-     * @param manager    The FragmentManager this fragment will be added to.
+     * @param fm         The FragmentManager this fragment will be added to.
      * @param requestKey The key to use for the FragmentResultListener.
      *                   Will ALSO be used as the regular tag for this fragment, as per
      *                   {@link FragmentTransaction#add(Fragment, String) FragmentTransaction.add}.
      */
-    public void show(@NonNull final FragmentManager manager,
+    public void show(@NonNull final FragmentManager fm,
                      @NonNull final String requestKey) {
         mRequestKey = requestKey;
 
         mPicker.addOnPositiveButtonClickListener(this);
-        mPicker.show(manager, requestKey);
+        mPicker.show(fm, requestKey);
     }
 
     @Override
@@ -152,6 +152,13 @@ public class WrappedMaterialDatePicker<S>
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
+        /**
+         * Launch the dialog to select a single date.
+         *
+         * @param titleId for the dialog screen
+         * @param fieldId field this dialog is bound to
+         * @param time    current selection, or {@code null} for none
+         */
         public void launch(@StringRes final int titleId,
                            @IdRes final int fieldId,
                            @Nullable final Instant time) {
@@ -168,6 +175,15 @@ public class WrappedMaterialDatePicker<S>
                     .show(mFragmentManager, mRequestKey);
         }
 
+        /**
+         * Launch the dialog to select a date span.
+         *
+         * @param titleId      for the dialog screen
+         * @param startFieldId field for the start-date this dialog is bound to
+         * @param timeStart    current start-selection, or {@code null} for none
+         * @param endFieldId   field for the end-date this dialog is bound to
+         * @param timeEnd      current end-selection, or {@code null} for none
+         */
         public void launch(@StringRes final int titleId,
                            @IdRes final int startFieldId,
                            @Nullable final Instant timeStart,

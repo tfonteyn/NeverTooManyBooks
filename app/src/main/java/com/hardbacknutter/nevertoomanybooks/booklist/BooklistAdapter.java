@@ -48,7 +48,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -1035,12 +1034,8 @@ public class BooklistAdapter
             final String uuid = (String) coverView.getTag(R.id.TAG_THUMBNAIL_UUID);
             final File file = Book.getUuidCoverFile(coverView.getContext(), uuid, 0);
             if (file != null && file.exists()) {
-                final FragmentManager fm =
-                        ((FragmentActivity) coverView.getContext()).getSupportFragmentManager();
-
-                ZoomedImageDialogFragment
-                        .newInstance(file)
-                        .show(fm, ZoomedImageDialogFragment.TAG);
+                final FragmentActivity activity = (FragmentActivity) coverView.getContext();
+                ZoomedImageDialogFragment.launch(activity.getSupportFragmentManager(), file);
             }
         }
 

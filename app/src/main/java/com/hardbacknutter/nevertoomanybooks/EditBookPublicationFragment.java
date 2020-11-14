@@ -86,7 +86,8 @@ public class EditBookPublicationFragment
         });
 
         // no listener/callback. We share the book view model in the Activity scope
-        mVb.publisher.setOnClickListener(v -> EditBookPublisherListDialogFragment.launch(this));
+        mVb.publisher.setOnClickListener(v -> EditBookPublisherListDialogFragment
+                .launch(getChildFragmentManager()));
     }
 
     @Override
