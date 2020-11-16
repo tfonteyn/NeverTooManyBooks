@@ -52,7 +52,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
@@ -92,16 +91,12 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
  * Class for representing read-only book details.
@@ -294,42 +289,6 @@ public class BookDetailsFragment
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
             TipManager.display(getContext(), R.string.tip_view_only_help, null);
-        }
-    }
-
-    private void onProgress(@NonNull final ProgressMessage message) {
-        if (message.text != null) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), message.text, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onCancelled(@NonNull final LiveDataEvent message) {
-        if (message.isNewEvent()) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
-        if (message.isNewEvent()) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), GrStatus.getMessage(getContext(), message.result),
-                          Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
-        if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-                //noinspection ConstantConditions
-                mGrAuthTask.prompt(getContext());
-            } else {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), message.result.getMessage(getContext()),
-                              Snackbar.LENGTH_LONG).show();
-            }
         }
     }
 

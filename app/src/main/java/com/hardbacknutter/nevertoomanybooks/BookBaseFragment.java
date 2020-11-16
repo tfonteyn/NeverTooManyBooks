@@ -144,21 +144,21 @@ public abstract class BookBaseFragment
         mGrAuthTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
+    void onProgress(@NonNull final ProgressMessage message) {
         if (message.text != null) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), message.text, Snackbar.LENGTH_LONG).show();
         }
     }
 
-    private void onCancelled(@NonNull final LiveDataEvent message) {
+    void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 
-    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
+    void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), GrStatus.getMessage(getContext(), message.result),
@@ -166,7 +166,7 @@ public abstract class BookBaseFragment
         }
     }
 
-    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
+    void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
