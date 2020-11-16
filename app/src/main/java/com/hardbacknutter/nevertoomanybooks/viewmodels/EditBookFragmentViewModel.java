@@ -138,6 +138,10 @@ public class EditBookFragmentViewModel
         return fields;
     }
 
+    @NonNull
+    public DAO getDb() {
+        return mDb;
+    }
 
     /**
      * Get the list of fragments (their tags) which have unfinished edits.

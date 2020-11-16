@@ -145,6 +145,11 @@ public class BookDetailsFragmentViewModel
     }
 
     @NonNull
+    public DAO getDb() {
+        return mDb;
+    }
+
+    @NonNull
     public List<Bookshelf> getAllBookshelves() {
         // not cached.
         // This allows the user to edit the global list of shelves while editing a book.

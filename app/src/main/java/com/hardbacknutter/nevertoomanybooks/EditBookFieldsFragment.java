@@ -119,14 +119,14 @@ public class EditBookFieldsFragment
 
         if (mVm.isCoverUsed(getContext(), prefs, 0)) {
             mCoverHandler[0] = new CoverHandler(
-                    this, mBookViewModel, 0,
+                    mVm.getDb(), 0,
                     res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
                     res.getDimensionPixelSize(R.dimen.cover_edit_0_height));
         }
 
         if (mVm.isCoverUsed(getContext(), prefs, 1)) {
             mCoverHandler[1] = new CoverHandler(
-                    this, mBookViewModel, 1,
+                    mVm.getDb(), 1,
                     res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
                     res.getDimensionPixelSize(R.dimen.cover_edit_1_height));
         }
@@ -141,12 +141,12 @@ public class EditBookFieldsFragment
 
         // Covers
         if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onCreateView(mVb.coverImage0, mVb.isbn, mProgressBar);
+            mCoverHandler[0].onCreateView(this, mVb.coverImage0, mVb.isbn, mProgressBar);
         } else {
             mVb.coverImage0.setVisibility(View.GONE);
         }
         if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onCreateView(mVb.coverImage1, mVb.isbn, mProgressBar);
+            mCoverHandler[1].onCreateView(this, mVb.coverImage1, mVb.isbn, mProgressBar);
         } else {
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -282,10 +282,10 @@ public class EditBookFieldsFragment
         super.onPopulateViews(fields, book);
 
         if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onPopulateView();
+            mCoverHandler[0].onPopulateView(book);
         }
         if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onPopulateView();
+            mCoverHandler[1].onPopulateView(book);
         }
         // hide unwanted and empty fields
         //noinspection ConstantConditions

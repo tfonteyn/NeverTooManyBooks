@@ -25,7 +25,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.util.Log;
 import android.view.Surface;
-import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,8 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
  * Note that by default this task <strong>only</strong> decodes the file to a Bitmap.
  * <ol>
  * <li>To scale the input, call one of the {@link Transformation#setScale} methods.</li>
- * <li>For rotation based on the input, call {@link Transformation#setWindowManager}.</li>
- * <li>For specific rotation, call {@link Transformation#setRotate}.
+ * <li>For rotation based on the input, call {@link Transformation#setSurfaceRotation}.</li>
+ * <li>For specific rotation, call {@link Transformation#setRotation}.
  *     Can be combined with input-rotation</li>
  * </ol>
  * before executing this task.
@@ -153,9 +152,9 @@ public class TransFormTaskViewModel
     }
 
     private int calculateRotationAngle() {
-        if (mTransformation.getExplicitAngle() != 0) {
+        if (mTransformation.getExplicitRotation() != 0) {
             // just use the explicit value, ignore device and source file rotation
-            return mTransformation.getExplicitAngle();
+            return mTransformation.getExplicitRotation();
 
         } else {
             // Try to adjust the rotation automatically:
@@ -370,7 +369,7 @@ public class TransFormTaskViewModel
         private int mMaxHeight = ImageUtils.MAX_IMAGE_HEIGHT_PX;
         private boolean mScale;
 
-        private int mExplicitAngle;
+        private int mExplicitRotation;
         private int mSurfaceRotation;
 
         private int mReturnCode;
@@ -418,27 +417,27 @@ public class TransFormTaskViewModel
         }
 
         /**
-         * Set an explicit angle to rotate the image.
+         * Optional. Set an explicit angle to rotate the image.
          *
-         * @param angle to rotate; or {@code 0} for none.
+         * @param rotation to rotate; or {@code 0} for none.
          *
          * @return Transformation (for chaining)
          */
-        Transformation setRotate(final int angle) {
-            mExplicitAngle = angle;
+        Transformation setRotation(final int rotation) {
+            mExplicitRotation = rotation;
             return this;
         }
 
         /**
-         * Optional. Use the window manager to correct any device rotation automatically.
-         * Will be ignored if {@link #setRotate(int)} is called.
+         * Optional. Set the device rotation.
+         * Will be ignored if {@link #setRotation(int)} is set to a non-zero value.
          *
-         * @param windowManager to get the rotation from
+         * @param surfaceRotation as taken from the window manager
          *
          * @return Transformation (for chaining)
          */
-        Transformation setWindowManager(@NonNull final WindowManager windowManager) {
-            switch (windowManager.getDefaultDisplay().getRotation()) {
+        Transformation setSurfaceRotation(final int surfaceRotation) {
+            switch (surfaceRotation) {
                 case Surface.ROTATION_0:
                     mSurfaceRotation = +90;
                     break;
@@ -491,8 +490,8 @@ public class TransFormTaskViewModel
             return this;
         }
 
-        int getExplicitAngle() {
-            return mExplicitAngle;
+        int getExplicitRotation() {
+            return mExplicitRotation;
         }
 
         int getSurfaceRotation() {
