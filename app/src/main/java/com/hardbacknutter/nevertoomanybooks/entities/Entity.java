@@ -34,6 +34,14 @@ public interface Entity
         extends Parcelable {
 
     /**
+     * One <strong>or more</strong> entities were modified (or not).
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    String BKEY_DATA_MODIFIED = "Entity:modified";
+
+    /**
      * Get the database row id of the entity.
      *
      * @return id

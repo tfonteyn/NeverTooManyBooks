@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
  * Displays and manages a cover image browser in a dialog, allowing the user to select
@@ -88,10 +87,6 @@ public class CoverBrowserDialogFragment
     private int mPreviewMaxWidth;
     /** The max height to be used for the preview image. */
     private int mPreviewMaxHeight;
-
-    /** The book. Must be in the Activity scope. */
-    @SuppressWarnings("FieldCanBeLocal")
-    private BookViewModel mBookViewModel;
 
     /** The Fragment ViewModel. */
     private CoverBrowserViewModel mModel;
@@ -132,10 +127,9 @@ public class CoverBrowserDialogFragment
 
         mVb = DialogCoverBrowserBinding.bind(view);
 
-        //noinspection ConstantConditions
-        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-
-        mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
+        final String bookTitle = Objects.requireNonNull(
+                requireArguments().getString(DBDefinitions.KEY_TITLE));
+        mVb.toolbar.setSubtitle(bookTitle);
 
         // LayoutManager is set in the layout xml
         final LinearLayoutManager galleryLM = Objects.requireNonNull(
@@ -351,14 +345,17 @@ public class CoverBrowserDialogFragment
         /**
          * Launch the dialog.
          *
-         * @param isbn ISBN of book
-         * @param cIdx 0..n image index
+         * @param bookTitle to display
+         * @param isbn      ISBN of book
+         * @param cIdx      0..n image index
          */
-        public void launch(@NonNull final String isbn,
+        public void launch(@NonNull final String bookTitle,
+                           @NonNull final String isbn,
                            @IntRange(from = 0, to = 1) final int cIdx) {
 
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
+            args.putString(DBDefinitions.KEY_TITLE, bookTitle);
             args.putString(DBDefinitions.KEY_ISBN, isbn);
             args.putInt(CoverBrowserViewModel.BKEY_FILE_INDEX, cIdx);
 

@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class AuthorWorksModel
@@ -77,7 +78,7 @@ public class AuthorWorksModel
     /**
      * <ul>
      * <li>{@link DBDefinitions#KEY_PK_ID}          book id</li>
-     * <li>{@link BookViewModel#BKEY_DATA_MODIFIED}  boolean</li>
+     * <li>{@link Entity#BKEY_DATA_MODIFIED}  boolean</li>
      * </ul>
      */
     @NonNull
@@ -165,7 +166,7 @@ public class AuthorWorksModel
         } else if (work instanceof BookAsWork) {
             success = mDb.deleteBook(context, work.getId());
             if (success) {
-                mResultIntent.putExtra(BookViewModel.BKEY_DATA_MODIFIED, true);
+                mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
             }
 
         } else {

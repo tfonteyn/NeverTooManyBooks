@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 
 /**
@@ -61,10 +60,8 @@ public class EditBookActivity
     private static final String TAG = "EditBookActivity";
 
     /** Host for the tabbed fragments. */
-    private TabAdapter mViewPagerAdapter;
-    /** The book. Must be in the Activity scope. */
-    private BookViewModel mBookViewModel;
-    /** Other editing related stuff. Must be in the Activity scope. */
+    private TabAdapter mTabAdapter;
+    /** View model. Must be in the Activity scope. */
     private EditBookFragmentViewModel mVm;
     /** View Binding. */
     private ActivityEditBookBinding mVb;
@@ -79,17 +76,14 @@ public class EditBookActivity
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mBookViewModel = new ViewModelProvider(this).get(BookViewModel.class);
-        mBookViewModel.init(this, getIntent().getExtras(), true);
-
         mVm = new ViewModelProvider(this).get(EditBookFragmentViewModel.class);
         mVm.init(this, getIntent().getExtras());
 
-        mViewPagerAdapter = new TabAdapter(this);
-        mVb.pager.setAdapter(mViewPagerAdapter);
+        mTabAdapter = new TabAdapter(this);
+        mVb.pager.setAdapter(mTabAdapter);
 
         new TabLayoutMediator(mVb.tabPanel, mVb.pager, (tab, position) ->
-                tab.setText(getString(mViewPagerAdapter.getTabTitle(position))))
+                tab.setText(getString(mTabAdapter.getTabTitle(position))))
                 .attach();
     }
 
@@ -99,7 +93,7 @@ public class EditBookActivity
 
         int currentTab = mVm.getCurrentTab();
         // sanity check
-        if (currentTab >= mViewPagerAdapter.getItemCount()) {
+        if (currentTab >= mTabAdapter.getItemCount()) {
             currentTab = 0;
             mVm.setCurrentTab(0);
         }
@@ -107,7 +101,7 @@ public class EditBookActivity
 
         //FIXME: workaround for what seems to be a bug with FragmentStateAdapter#createFragment
         // and its re-use strategy.
-        mVb.pager.setOffscreenPageLimit(mViewPagerAdapter.getItemCount());
+        mVb.pager.setOffscreenPageLimit(mTabAdapter.getItemCount());
     }
 
     @Override
@@ -120,9 +114,8 @@ public class EditBookActivity
     public void onBackPressed() {
 
         // Warn the user if the book was changed
-        if (mBookViewModel.getBook().getStage() == EntityStage.Stage.Dirty) {
-            StandardDialogs.unsavedEdits(this,
-                                         () -> prepareSave(true),
+        if (mVm.getBook().getStage() == EntityStage.Stage.Dirty) {
+            StandardDialogs.unsavedEdits(this, () -> prepareSave(true),
                                          this::setResultsAndFinish);
             return;
         }
@@ -146,7 +139,7 @@ public class EditBookActivity
      *                             with {@code false}
      */
     public void prepareSave(final boolean checkUnfinishedEdits) {
-        final Book book = mBookViewModel.getBook();
+        final Book book = mVm.getBook();
         // list of fragment tags
         final Collection<String> unfinishedEdits = mVm.getUnfinishedEdits();
 
@@ -211,7 +204,7 @@ public class EditBookActivity
         }
 
         // Check if the book already exists
-        if (mBookViewModel.bookExists()) {
+        if (mVm.bookExists()) {
             new MaterialAlertDialogBuilder(this)
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_duplicate_book)
@@ -236,7 +229,7 @@ public class EditBookActivity
      */
     void saveBook() {
         try {
-            mBookViewModel.saveBook(this);
+            mVm.saveBook(this);
             setResultsAndFinish();
 
         } catch (@NonNull final DAO.DaoWriteException e) {
@@ -247,7 +240,7 @@ public class EditBookActivity
 
     /** Single point of exit for this Activity. */
     void setResultsAndFinish() {
-        setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
+        setResult(Activity.RESULT_OK, mVm.getResultIntent());
         finish();
     }
 

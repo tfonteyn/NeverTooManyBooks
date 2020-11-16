@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.FieldUsage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -658,7 +659,7 @@ public class UpdateFieldsModel
             // One or more books were changed.
             // Technically speaking when doing a list of books, the task might have been
             // cancelled before the first book was done. We disregard this fringe case.
-            results.putBoolean(BookViewModel.BKEY_DATA_MODIFIED, true);
+            results.putBoolean(Entity.BKEY_DATA_MODIFIED, true);
 
             // if applicable, pass the first book for repositioning the list on screen
             if (mBookIdList != null && !mBookIdList.isEmpty()) {

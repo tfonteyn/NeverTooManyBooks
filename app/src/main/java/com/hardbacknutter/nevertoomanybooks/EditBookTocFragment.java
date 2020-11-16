@@ -105,7 +105,7 @@ public class EditBookTocFragment
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookViewModel.getBook().setStage(EntityStage.Stage.Dirty);
+                    mVm.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
     /**
@@ -234,7 +234,7 @@ public class EditBookTocFragment
                 new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.tocList.setHasFixedSize(true);
 
-        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_TOC_LIST);
+        mList = mVm.getBook().getParcelableArrayList(Book.BKEY_TOC_LIST);
         mListAdapter = new TocListEditAdapter(getContext(), mList,
                                               vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
@@ -324,7 +324,7 @@ public class EditBookTocFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
-            final Book book = mBookViewModel.getBook();
+            final Book book = mVm.getBook();
             final long isfdbId = book.getLong(DBDefinitions.KEY_EID_ISFDB);
             if (isfdbId != 0) {
                 Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
@@ -415,9 +415,7 @@ public class EditBookTocFragment
         mEditPosition = position;
 
         final TocEntry tocEntry = mList.get(position);
-        mEditTocEntryLauncher.launch(mBookViewModel.getBook(),
-                                     tocEntry,
-                                     mVb.cbxMultipleAuthors.isChecked());
+        mEditTocEntryLauncher.launch(mVm.getBook(), tocEntry, mVb.cbxMultipleAuthors.isChecked());
     }
 
     /**
@@ -456,7 +454,7 @@ public class EditBookTocFragment
             }
 
             //noinspection ConstantConditions
-            final Author author = mBookViewModel.getPrimaryAuthor(getContext());
+            final Author author = mVm.getPrimaryAuthor(getContext());
             mVb.author.setText(author.getLabel(getContext()));
             mVb.author.selectAll();
             mVb.lblAuthor.setVisibility(View.VISIBLE);
@@ -488,7 +486,7 @@ public class EditBookTocFragment
             author = Author.from(mVb.author.getText().toString().trim());
         } else {
             //noinspection ConstantConditions
-            author = mBookViewModel.getPrimaryAuthor(getContext());
+            author = mVm.getPrimaryAuthor(getContext());
         }
         //noinspection ConstantConditions
         final TocEntry newTocEntry = new TocEntry(author,
@@ -506,7 +504,7 @@ public class EditBookTocFragment
     private void addNewEntry(@NonNull final TocEntry tocEntry) {
         // see if it already exists
         //noinspection ConstantConditions
-        mBookViewModel.fixTocEntryId(getContext(), tocEntry);
+        mVm.fixTocEntryId(getContext(), tocEntry);
         // and check it's not already in the list.
         if (mList.contains(tocEntry)) {
             mVb.lblTitle.setError(getString(R.string.warning_already_in_list));
@@ -514,7 +512,7 @@ public class EditBookTocFragment
             mList.add(tocEntry);
             // clear the form for next entry and scroll to the new item
             if (mVb.cbxMultipleAuthors.isChecked()) {
-                final Author author = mBookViewModel.getPrimaryAuthor(getContext());
+                final Author author = mVm.getPrimaryAuthor(getContext());
                 mVb.author.setText(author.getLabel(getContext()));
                 mVb.author.selectAll();
             }
@@ -549,7 +547,7 @@ public class EditBookTocFragment
                 return;
             }
 
-            final Book book = mBookViewModel.getBook();
+            final Book book = mVm.getBook();
 
             // update the book with Series information that was gathered from the TOC
             final List<Series> series =
@@ -583,7 +581,7 @@ public class EditBookTocFragment
     private void onIsfdbDataConfirmed(@Book.TocBits final long tocBitMask,
                                       @NonNull final Collection<TocEntry> tocEntries) {
         if (tocBitMask != 0) {
-            final Book book = mBookViewModel.getBook();
+            final Book book = mVm.getBook();
             book.putLong(DBDefinitions.KEY_TOC_BITMASK, tocBitMask);
             populateTocBits(book);
         }

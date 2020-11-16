@@ -323,7 +323,7 @@ public final class ImageUtils {
         } catch (@NonNull final IOException e) {
             FileUtils.delete(file);
 
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
+            if ((BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) || Logger.isJUnitTest) {
                 Logger.d(TAG, "saveImage", "|e=" + e.getLocalizedMessage());
 
                 // When running as a JUnit test, the file.renameTo done during the

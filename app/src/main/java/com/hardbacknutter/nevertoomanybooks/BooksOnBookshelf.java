@@ -102,6 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
@@ -115,7 +116,6 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
@@ -1209,7 +1209,7 @@ public class BooksOnBookshelf
      */
     private void onBookEditingDone(@Nullable final Bundle data) {
         if (data != null) {
-            if (data.getBoolean(BookViewModel.BKEY_DATA_MODIFIED, false)) {
+            if (data.getBoolean(Entity.BKEY_DATA_MODIFIED, false)) {
                 mVm.setForceRebuildInOnResume(true);
             }
 

@@ -78,7 +78,7 @@ public class EditBookFieldsFragment
                 public void onResult(@IdRes final int fieldId,
                                      @NonNull final ArrayList<Entity> selectedItems) {
                     final Field<List<Entity>, TextView> field = getField(fieldId);
-                    mBookViewModel.getBook().putParcelableArrayList(field.getKey(), selectedItems);
+                    mVm.getBook().putParcelableArrayList(field.getKey(), selectedItems);
                     field.getAccessor().setValue(selectedItems);
                     field.onChanged(true);
                 }
@@ -87,7 +87,7 @@ public class EditBookFieldsFragment
     private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
             new ScannerContract(), barCode -> {
                 if (barCode != null) {
-                    mBookViewModel.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
+                    mVm.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
                 }
             });
 
@@ -141,12 +141,14 @@ public class EditBookFieldsFragment
 
         // Covers
         if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onCreateView(this, mVb.coverImage0, mVb.isbn, mProgressBar);
+            mCoverHandler[0].onCreateView(this, mVb.coverImage0,
+                                          mVb.title, mVb.isbn, mProgressBar);
         } else {
             mVb.coverImage0.setVisibility(View.GONE);
         }
         if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onCreateView(this, mVb.coverImage1, mVb.isbn, mProgressBar);
+            mCoverHandler[1].onCreateView(this, mVb.coverImage1,
+                                          mVb.title, mVb.isbn, mProgressBar);
         } else {
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -162,13 +164,12 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
-        mBookViewModel.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
+        mVm.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
             final Field<List<Author>, TextView> field = getField(R.id.author);
             field.getAccessor().setValue(authors);
             field.validate();
         });
-
-        mBookViewModel.onSeriesList().observe(getViewLifecycleOwner(), series -> {
+        mVm.onSeriesList().observe(getViewLifecycleOwner(), series -> {
             final Field<List<Series>, TextView> field = getField(R.id.series_title);
             field.getAccessor().setValue(series);
             field.validate();
@@ -192,7 +193,7 @@ public class EditBookFieldsFragment
                 final ArrayList<Entity> allItems =
                         new ArrayList<>(mVm.getAllBookshelves());
                 final ArrayList<Entity> selectedItems =
-                        new ArrayList<>(mBookViewModel.getBook().getParcelableArrayList(
+                        new ArrayList<>(mVm.getBook().getParcelableArrayList(
                                 Book.BKEY_BOOKSHELF_LIST));
 
                 mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves_long),
@@ -212,18 +213,16 @@ public class EditBookFieldsFragment
     @Override
     public void onResume() {
         //noinspection ConstantConditions
-        mBookViewModel.pruneAuthors(getContext());
-        mBookViewModel.pruneSeries(getContext());
+        mVm.pruneAuthors(getContext());
+        mVm.pruneSeries(getContext());
 
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        addAutocomplete(prefs, getField(R.id.genre), () -> mVm
-                .getAllGenres());
-        addAutocomplete(prefs, getField(R.id.language), () -> mVm
-                .getAllLanguagesCodes());
+        addAutocomplete(prefs, getField(R.id.genre), () -> mVm.getAllGenres());
+        addAutocomplete(prefs, getField(R.id.language), () -> mVm.getAllLanguagesCodes());
     }
 
     @Override

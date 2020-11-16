@@ -79,7 +79,7 @@ public class EditBookPublicationFragment
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
 
-        mBookViewModel.onPublisherList().observe(getViewLifecycleOwner(), publishers -> {
+        mVm.onPublisherList().observe(getViewLifecycleOwner(), publishers -> {
             final Field<List<Publisher>, TextView> field = getField(R.id.publisher);
             field.getAccessor().setValue(publishers);
             field.validate();
@@ -93,7 +93,7 @@ public class EditBookPublicationFragment
     @Override
     public void onResume() {
         //noinspection ConstantConditions
-        mBookViewModel.prunePublishers(getContext());
+        mVm.prunePublishers(getContext());
 
         // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();

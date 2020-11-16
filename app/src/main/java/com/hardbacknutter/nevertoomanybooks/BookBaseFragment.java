@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 
 /**
@@ -68,24 +67,40 @@ public abstract class BookBaseFragment
     /** Handles cover replacement, rotation, etc. */
     final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
-    /** Goodreads authorization task. */
-    GrAuthTask mGrAuthTask;
+    /** Listener for all field changes. Must keep strong reference. */
+    private final Fields.AfterChangeListener mAfterChangeListener =
+            fieldId -> getBook().setStage(EntityStage.Stage.Dirty);
 
     /** simple indeterminate progress spinner to show while doing lengthy work. */
     ProgressBar mProgressBar;
 
-    /** The book. Must be in the Activity scope. */
-    BookViewModel mBookViewModel;
+    /**
+     * Goodreads authorization task.
+     * <p>
+     * Dev note: this object and the methods like {@link #onGrFinished} etc
+     * could be moved up to {@link BookDetailsFragment}.
+     * Keeping it here on purpose as sooner or later we might need it in
+     * the {@link EditBookBaseFragment} set of classes as well.
+     */
+    private GrAuthTask mGrAuthTask;
 
-    /** Listener for all field changes. Must keep strong reference. */
-    private final Fields.AfterChangeListener mAfterChangeListener =
-            new Fields.AfterChangeListener() {
-                @Override
-                public void afterFieldChange(@IdRes final int fieldId) {
-                    mBookViewModel.getBook().setStage(EntityStage.Stage.Dirty);
-                }
-            };
+    /** Give this base class access to the Book without having to know which VM it comes from. */
+    @NonNull
+    abstract Book getBook();
 
+    /**
+     * Init all Fields, and add them the fields collection.
+     * <p>
+     * Note that Field views are <strong>NOT AVAILABLE</strong> at this time.
+     * <p>
+     * Called from {@link #onViewCreated}.
+     * The fields will be populated in {@link #onPopulateViews}
+     *
+     * @param fields collection to add to
+     */
+    abstract void onInitFields(@NonNull Fields fields);
+
+    /** Give this base class access to the Fields without having to know which VM it comes from. */
     @NonNull
     abstract Fields getFields();
 
@@ -104,18 +119,6 @@ public abstract class BookBaseFragment
     <T, V extends View> Field<T, V> getField(@IdRes final int id) {
         return getFields().getField(id);
     }
-
-    /**
-     * Init all Fields, and add them the fields collection.
-     * <p>
-     * Note that Field views are <strong>NOT AVAILABLE</strong> at this time.
-     * <p>
-     * Called from {@link #onViewCreated}.
-     * The fields will be populated in {@link #onPopulateViews}
-     *
-     * @param fields collection to add to
-     */
-    abstract void onInitFields(@NonNull Fields fields);
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -192,19 +195,16 @@ public abstract class BookBaseFragment
      * Load all Views from the book.
      * <p>
      * Loads the data while preserving the isDirty() status.
-     * Normally called from the base {@link #onResume},
-     * but can explicitly be called after {@link BookViewModel#reload}.
      * <p>
      * This is final; Inheritors should implement {@link #onPopulateViews}.
      */
     final void populateViews() {
         final Fields fields = getFields();
-
-        final Book book = mBookViewModel.getBook();
         //noinspection ConstantConditions
         fields.setParentView(getView());
 
         fields.setAfterChangeListener(null);
+        final Book book = getBook();
         book.lockStage();
         // make it so!
         onPopulateViews(fields, book);
@@ -267,7 +267,7 @@ public abstract class BookBaseFragment
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        final Book book = mBookViewModel.getBook();
+        final Book book = getBook();
         MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
         MenuHelper.prepareOptionalMenus(menu, book);
 
@@ -279,7 +279,7 @@ public abstract class BookBaseFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
 
         final Context context = getContext();
-        final Book book = mBookViewModel.getBook();
+        final Book book = getBook();
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {

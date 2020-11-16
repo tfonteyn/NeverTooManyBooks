@@ -96,7 +96,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 
 /**
  * Class for representing read-only book details.
@@ -116,30 +115,28 @@ public class BookDetailsFragment
     // the duplicated book until we go back to BoB.
     // Temporary solution is removing the 'duplicate' option from this screen...
     private static final boolean ENABLE_BOOK_DUPLICATE_OPTION = false;
-    /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
-                    getActivity().finish();
-                }
-            };
-
-    private final ActivityResultLauncher<Long> mEditBookLauncher =
-            registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
-    private final ActivityResultLauncher<Bundle> mDuplicateBookLauncher =
-            registerForActivityResult(new EditBookFromBundleContract(), this::onBookEditingDone);
-    private final ActivityResultLauncher<Book> mUpdateBookLauncher =
-            registerForActivityResult(new UpdateBookContract(), this::onBookEditingDone);
-
     /** Registered with the Activity to deliver us gestures. */
     private View.OnTouchListener mOnTouchListener;
     /** Handle next/previous paging in the flattened booklist; called by mOnTouchListener. */
     private GestureDetector mGestureDetector;
     /** The details helper View model. */
     private BookDetailsFragmentViewModel mVm;
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
+                    getActivity().finish();
+                }
+            };
+    private final ActivityResultLauncher<Long> mEditBookLauncher =
+            registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
+    private final ActivityResultLauncher<Bundle> mDuplicateBookLauncher =
+            registerForActivityResult(new EditBookFromBundleContract(), this::onBookEditingDone);
+    private final ActivityResultLauncher<Book> mUpdateBookLauncher =
+            registerForActivityResult(new UpdateBookContract(), this::onBookEditingDone);
     /** View Binding. */
     private FragmentBookDetailsBinding mVb;
     /** Process the result from the dialog. */
@@ -149,7 +146,7 @@ public class BookDetailsFragment
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
                     // the db was already updated, just update the book to avoid a reload.
-                    mBookViewModel.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
+                    mVm.getBook().putString(DBDefinitions.KEY_LOANEE, loanee);
                     populateLendToField(loanee);
                 }
             };
@@ -167,6 +164,12 @@ public class BookDetailsFragment
         return mVm.getFields();
     }
 
+    @NonNull
+    @Override
+    Book getBook() {
+        return mVm.getBook();
+    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,14 +178,11 @@ public class BookDetailsFragment
         //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
-        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
-        //noinspection ConstantConditions
-        mBookViewModel.init(getContext(), getArguments(), false);
-
         mEditLenderLauncher.register(this, RK_EDIT_LENDER);
 
         mVm = new ViewModelProvider(this).get(BookDetailsFragmentViewModel.class);
-        mVm.init(getContext(), getArguments(), mBookViewModel.getBook());
+        //noinspection ConstantConditions
+        mVm.init(getContext(), requireArguments());
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
@@ -230,13 +230,15 @@ public class BookDetailsFragment
 
         // Covers
         if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onCreateView(this, mVb.coverImage0, mVbPub.isbn, mProgressBar);
+            mCoverHandler[0].onCreateView(this, mVb.coverImage0,
+                                          mVb.title, mVbPub.isbn, mProgressBar);
         } else {
             mVb.coverImage0.setVisibility(View.GONE);
         }
 
         if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onCreateView(this, mVb.coverImage1, mVbPub.isbn, mProgressBar);
+            mCoverHandler[1].onCreateView(this, mVb.coverImage1,
+                                          mVb.title, mVbPub.isbn, mProgressBar);
         } else {
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -264,7 +266,7 @@ public class BookDetailsFragment
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_edit);
         fab.setVisibility(View.VISIBLE);
-        fab.setOnClickListener(v -> mEditBookLauncher.launch(mBookViewModel.getBook().getId()));
+        fab.setOnClickListener(v -> mEditBookLauncher.launch(mVm.getBook().getId()));
 
         // ENHANCE: should be replaced by a ViewPager2/FragmentStateAdapter
         mGestureDetector = new GestureDetector(getContext(), new FlingHandler());
@@ -442,7 +444,7 @@ public class BookDetailsFragment
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
-            populateLendToField(mBookViewModel.getLoanee());
+            populateLendToField(mVm.getLoanee());
         }
 
         if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
@@ -603,14 +605,14 @@ public class BookDetailsFragment
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        final Book book = mBookViewModel.getBook();
+        final Book book = mVm.getBook();
 
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         final boolean isSaved = !book.isNew();
         final boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
-        final boolean isAvailable = mBookViewModel.isAvailable();
+        final boolean isAvailable = mVm.isAvailable();
 
         menu.findItem(R.id.MENU_BOOK_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isSaved && isRead);
@@ -631,11 +633,11 @@ public class BookDetailsFragment
     @Override
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        final Book book = mBookViewModel.getBook();
+        final Book book = mVm.getBook();
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_BOOK_EDIT) {
-            mEditBookLauncher.launch(mBookViewModel.getBook().getId());
+            mEditBookLauncher.launch(book.getId());
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
@@ -643,10 +645,10 @@ public class BookDetailsFragment
             final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             //noinspection ConstantConditions
             StandardDialogs.deleteBook(getContext(), title, authors, () -> {
-                mBookViewModel.deleteBook(getContext());
+                mVm.deleteBook(getContext());
 
                 //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, mBookViewModel.getResultIntent());
+                getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
                 getActivity().finish();
             });
             return true;
@@ -657,7 +659,7 @@ public class BookDetailsFragment
 
         } else if (itemId == R.id.MENU_BOOK_READ || itemId == R.id.MENU_BOOK_UNREAD) {
             // toggle 'read' status of the book
-            final boolean value = mBookViewModel.toggleRead();
+            final boolean value = mVm.toggleRead();
             final Field<Boolean, View> field = getField(R.id.icon_read);
             field.getAccessor().setValue(value);
             // Still call this, as it will handle related views (none for now, but future-proof)
@@ -670,7 +672,7 @@ public class BookDetailsFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            mBookViewModel.deleteLoan();
+            mVm.deleteLoan();
             populateLendToField(null);
             return true;
 
@@ -699,7 +701,7 @@ public class BookDetailsFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            mBookViewModel.deleteLoan();
+            mVm.deleteLoan();
             populateLendToField(null);
             return true;
         }
@@ -716,19 +718,19 @@ public class BookDetailsFragment
     private void onBookEditingDone(@Nullable final Bundle data) {
         if (data != null) {
             // pass the data up
-            mBookViewModel.putResultData(data);
+            mVm.putResultData(data);
 
             // deal with 'duplicate book'
             //TODO: swiping through the flattened booklist will not see
             // the duplicated book until we go back to BoB.
             // Easiest solution would be to remove the dup. option from this screen...
             final long id = data.getLong(DBDefinitions.KEY_PK_ID, 0);
-            if (id > 0 && id != mBookViewModel.getBook().getId()) {
-                mBookViewModel.loadBook(id);
+            if (id > 0 && id != mVm.getBook().getId()) {
+                mVm.loadBook(id);
             }
         }
         // onResume will display the changed book.
-        mBookViewModel.reload();
+        mVm.reload();
     }
 
     public static class ResultContract
@@ -743,13 +745,11 @@ public class BookDetailsFragment
                     .putExtra(DBDefinitions.KEY_PK_ID, input.bookId)
                     // the current list table, so the user can swipe
                     // to the next/previous book
-                    .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_NAME,
-                              input.listTableName)
+                    .putExtra(BooklistNavigator.BKEY_LIST_TABLE_NAME, input.listTableName)
                     // The row id in the list table of the given book.
                     // Keep in mind a book can occur multiple times,
                     // so we need to pass the specific one.
-                    .putExtra(BookDetailsFragmentViewModel.BKEY_LIST_TABLE_ROW_ID,
-                              input.listTableRowId)
+                    .putExtra(BooklistNavigator.BKEY_LIST_TABLE_ROW_ID, input.listTableRowId)
                     // some style elements are applicable for the details screen
                     .putExtra(BooklistStyle.BKEY_STYLE_UUID, input.styleUuid);
         }
@@ -816,14 +816,12 @@ public class BookDetailsFragment
             }
 
             if ((e1.getX() - e2.getX()) > SENSITIVITY) {
-                if (mVm.move(mBookViewModel.getBook(),
-                             BooklistNavigator.Direction.Next)) {
+                if (mVm.move(mVm.getBook(), BooklistNavigator.Direction.Next)) {
                     populateViews();
                     return true;
                 }
             } else if ((e2.getX() - e1.getX()) > SENSITIVITY) {
-                if (mVm.move(mBookViewModel.getBook(),
-                             BooklistNavigator.Direction.Previous)) {
+                if (mVm.move(mVm.getBook(), BooklistNavigator.Direction.Previous)) {
                     populateViews();
                     return true;
                 }

@@ -131,6 +131,8 @@ public class CoverHandler {
      * when we're in the book edit fragment.
      */
     private TextView mIsbnView;
+    private TextView mBookTitleView;
+
     /** Optional progress bar to display during operations. */
     @Nullable
     private ProgressBar mProgressBar;
@@ -183,14 +185,16 @@ public class CoverHandler {
      * with both read-only screens (passing the isbn itself would be enough)
      * AND with edit-screens (need the CURRENT code).
      *
-     * @param fragment    the hosting fragment
-     *                    A variety of launchers will be bound to this fragment.
-     * @param coverView   the views to populate
-     * @param isbnView    the view to read the *current* ISBN from
-     * @param progressBar (optional) a progress bar
+     * @param fragment      the hosting fragment
+     *                      A variety of launchers will be bound to this fragment.
+     * @param coverView     the views to populate
+     * @param bookTitleView the view to read the *current* title from
+     * @param isbnView      the view to read the *current* ISBN from
+     * @param progressBar   (optional) a progress bar
      */
     public void onCreateView(@NonNull final Fragment fragment,
                              @NonNull final ImageView coverView,
+                             @NonNull final TextView bookTitleView,
                              @NonNull final TextView isbnView,
                              @Nullable final ProgressBar progressBar) {
 
@@ -198,6 +202,7 @@ public class CoverHandler {
         mDisplay = fragment.getActivity().getWindowManager().getDefaultDisplay();
 
         mCoverView = coverView;
+        mBookTitleView = bookTitleView;
         mIsbnView = isbnView;
         mProgressBar = progressBar;
 
@@ -404,7 +409,8 @@ public class CoverHandler {
         if (!isbnStr.isEmpty()) {
             final ISBN isbn = ISBN.createISBN(isbnStr);
             if (isbn.isValid(true)) {
-                mCoverBrowserLauncher.launch(isbn.asText(), mCIdx);
+                mCoverBrowserLauncher.launch(mBookTitleView.getText().toString(),
+                                             isbn.asText(), mCIdx);
                 return;
             }
         }

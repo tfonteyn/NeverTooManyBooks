@@ -47,6 +47,10 @@ public class BooklistNavigator
     /** Log tag. */
     private static final String TAG = "BooklistNavigator";
 
+    /** Table name of the {@link Booklist} table. */
+    public static final String BKEY_LIST_TABLE_NAME = TAG + ":LTName";
+    public static final String BKEY_LIST_TABLE_ROW_ID = TAG + ":LTRow";
+
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";

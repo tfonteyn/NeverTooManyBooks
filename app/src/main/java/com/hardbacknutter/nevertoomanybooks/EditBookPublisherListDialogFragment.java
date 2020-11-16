@@ -36,10 +36,8 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
@@ -49,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
@@ -59,13 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ddsupport.StartDragListener;
 
 /**
  * Edit the list of Publishers of a Book.
- * <p>
- * <strong>Warning:</strong> By exception this DialogFragment uses the parents ViewModel directly.
- * This means that any observables in the ViewModel must be tested/used with care, as their
- * destination view might not be available at the moment of an update being triggered.
- * <p>
- * <p>
- * Dev note: see class doc {@link EditBookAuthorListDialogFragment}.
  */
 public class EditBookPublisherListDialogFragment
         extends BaseDialogFragment {
@@ -75,16 +66,15 @@ public class EditBookPublisherListDialogFragment
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_PUBLISHER =
             TAG + ":rk:" + EditPublisherForBookDialogFragment.TAG;
-    /** Database Access. */
-    private DAO mDb;
+
     /** The book. Must be in the Activity scope. */
-    private BookViewModel mBookViewModel;
+    private EditBookFragmentViewModel mVm;
     /** If the list changes, the book is dirty. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
             new SimpleAdapterDataObserver() {
                 @Override
                 public void onChanged() {
-                    mBookViewModel.getBook().setStage(EntityStage.Stage.Dirty);
+                    mVm.getBook().setStage(EntityStage.Stage.Dirty);
                 }
             };
     /** View Binding. */
@@ -128,8 +118,6 @@ public class EditBookPublisherListDialogFragment
         super.onCreate(savedInstanceState);
 
         mOnEditPublisherLauncher.register(this, RK_EDIT_PUBLISHER);
-
-        mDb = new DAO(TAG);
     }
 
     @Override
@@ -140,14 +128,13 @@ public class EditBookPublisherListDialogFragment
         mVb = DialogEditBookPublisherListBinding.bind(view);
 
         //noinspection ConstantConditions
-        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
 
-        mVb.toolbar.setSubtitle(mBookViewModel.getBook().getTitle());
+        mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
 
         //noinspection ConstantConditions
         final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item,
-                mDb.getPublisherNames());
+                getContext(), R.layout.dropdown_menu_popup_item, mVm.getAllPublisherNames());
         mVb.publisher.setAdapter(nameAdapter);
         mVb.publisher.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -167,7 +154,7 @@ public class EditBookPublisherListDialogFragment
 
         mVb.publisherList.setHasFixedSize(true);
 
-        mList = mBookViewModel.getBook().getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        mList = mVm.getBook().getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         mListAdapter = new PublisherListAdapter(getContext(), mList,
                                                 vh -> mItemTouchHelper.startDrag(vh));
         mVb.publisherList.setAdapter(mListAdapter);
@@ -210,11 +197,9 @@ public class EditBookPublisherListDialogFragment
 
         final Publisher newPublisher = Publisher.from(name);
 
-        //noinspection ConstantConditions
-        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
-
         // see if it already exists
-        newPublisher.fixId(getContext(), mDb, true, bookLocale);
+        //noinspection ConstantConditions
+        mVm.fixId(getContext(), newPublisher);
         // and check it's not already in the list.
         if (mList.contains(newPublisher)) {
             mVb.lblPublisher.setError(getString(R.string.warning_already_in_list));
@@ -243,7 +228,7 @@ public class EditBookPublisherListDialogFragment
             return false;
         }
 
-        mBookViewModel.updatePublishers(mList);
+        mVm.updatePublishers(mList);
         return true;
     }
 
@@ -257,22 +242,20 @@ public class EditBookPublisherListDialogFragment
     private void processChanges(@NonNull final Publisher original,
                                 @NonNull final Publisher modified) {
 
-        //noinspection ConstantConditions
-        final Locale bookLocale = mBookViewModel.getBook().getLocale(getContext());
-
         // name not changed ?
         if (original.getName().equals(modified.getName())) {
             return;
         }
 
         // The name was modified. Check if it's used by any other books.
-        if (mBookViewModel.isSingleUsage(getContext(), original)) {
+        //noinspection ConstantConditions
+        if (mVm.isSingleUsage(getContext(), original)) {
             // If it's not, we can simply modify the old object and we're done here.
             // There is no need to consult the user.
             // Copy the new data into the original object that the user was changing.
             original.copyFrom(modified);
             //noinspection ConstantConditions
-            Publisher.pruneList(mList, getContext(), mDb, true, bookLocale);
+            mVm.prunePublishers(getContext());
             mListAdapter.notifyDataSetChanged();
             return;
         }
@@ -281,20 +264,17 @@ public class EditBookPublisherListDialogFragment
         // We need to ask the user if they want to make the changes globally.
         StandardDialogs.confirmScopeForChange(
                 getContext(), original, modified,
-                () -> changeForAllBooks(original, modified, bookLocale),
-                () -> changeForThisBook(original, modified, bookLocale));
+                () -> changeForAllBooks(original, modified),
+                () -> changeForThisBook(original, modified));
     }
 
     private void changeForAllBooks(@NonNull final Publisher original,
-                                   @NonNull final Publisher modified,
-                                   @NonNull final Locale bookLocale) {
+                                   @NonNull final Publisher modified) {
         // copy all new data
         original.copyFrom(modified);
         // This change is done in the database right NOW!
         //noinspection ConstantConditions
-        if (mDb.update(getContext(), original, bookLocale)) {
-            Publisher.pruneList(mList, getContext(), mDb, true, bookLocale);
-            mBookViewModel.refreshPublishers(getContext());
+        if (mVm.changeForAllBooks(getContext(), original)) {
             mListAdapter.notifyDataSetChanged();
 
         } else {
@@ -305,29 +285,14 @@ public class EditBookPublisherListDialogFragment
     }
 
     private void changeForThisBook(@NonNull final Publisher original,
-                                   @NonNull final Publisher modified,
-                                   @NonNull final Locale bookLocale) {
+                                   @NonNull final Publisher modified) {
         // treat the new data as a new Publisher; save it so we have a valid id.
         // Note that if the user abandons the entire book edit,
         // we will orphan this new Publisher. That's ok, it will get
         // garbage collected from the database sooner or later.
         //noinspection ConstantConditions
-        mDb.insert(getContext(), modified, bookLocale);
-        // unlink the original, and link with the new one
-        // Note that the original *might* be orphaned at this time.
-        // Same remark as above.
-        mList.remove(original);
-        mList.add(modified);
-        Publisher.pruneList(mList, getContext(), mDb, true, bookLocale);
+        mVm.changeForThisBook(getContext(), original, modified);
         mListAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     /**
@@ -362,8 +327,8 @@ public class EditBookPublisherListDialogFragment
         /** FragmentResultListener request key to use for our response. */
         private String mRequestKey;
 
-        /** Database Access. */
-        private DAO mDb;
+        private EditBookFragmentViewModel mVm;
+
         /** Displayed for info only. */
         @Nullable
         private String mBookTitle;
@@ -410,8 +375,6 @@ public class EditBookPublisherListDialogFragment
         public void onCreate(@Nullable final Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            mDb = new DAO(TAG);
-
             final Bundle args = requireArguments();
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                                  "BKEY_REQUEST_KEY");
@@ -434,12 +397,14 @@ public class EditBookPublisherListDialogFragment
             super.onViewCreated(view, savedInstanceState);
 
             mVb = DialogEditBookPublisherBinding.bind(view);
-
             mVb.toolbar.setSubtitle(mBookTitle);
 
             //noinspection ConstantConditions
+            mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
+
+            //noinspection ConstantConditions
             final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
+                    getContext(), R.layout.dropdown_menu_popup_item, mVm.getAllPublisherNames());
             mVb.name.setText(mName);
             mVb.name.setAdapter(nameAdapter);
         }
@@ -487,14 +452,6 @@ public class EditBookPublisherListDialogFragment
             viewToModel();
             super.onPause();
         }
-
-        @Override
-        public void onDestroy() {
-            if (mDb != null) {
-                mDb.close();
-            }
-            super.onDestroy();
-        }
     }
 
     private class PublisherListAdapter
@@ -524,7 +481,7 @@ public class EditBookPublisherListDialogFragment
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditPublisherForBookDialogFragment
                     .launch(getParentFragmentManager(),
-                            RK_EDIT_PUBLISHER, mBookViewModel.getBook().getTitle(),
+                            RK_EDIT_PUBLISHER, mVm.getBook().getTitle(),
                             getItem(holder.getBindingAdapterPosition())));
 
             return holder;

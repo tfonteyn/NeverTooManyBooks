@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
 
@@ -93,9 +92,9 @@ public abstract class EditBookBaseFragment
                     onDateSet(fieldIds, selections);
                 }
             };
+
     /** The view model. */
     EditBookFragmentViewModel mVm;
-
 
     @NonNull
     @Override
@@ -103,12 +102,17 @@ public abstract class EditBookBaseFragment
         return mVm.getFields(getFragmentId());
     }
 
+    @NonNull
+    @Override
+    Book getBook() {
+        return mVm.getBook();
+    }
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mBookViewModel = new ViewModelProvider(getActivity()).get(BookViewModel.class);
         mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
 
         mPartialDatePickerLauncher.register(this, RK_DATE_PICKER_PARTIAL);
@@ -151,9 +155,9 @@ public abstract class EditBookBaseFragment
         // which after it comes back, brings along new data to be transferred to the book.
         // BUT: that new data would not be in the fragment arguments?
         //TODO: double check having book-data bundle in onResume.
-        if (mBookViewModel.getBook().isNew()) {
+        if (mVm.getBook().isNew()) {
             //noinspection ConstantConditions
-            mBookViewModel.addFieldsFromBundle(getContext(), getArguments());
+            mVm.addFieldsFromBundle(getContext(), getArguments());
         }
 
         // hook up the Views, and calls {@link #onPopulateViews}
@@ -165,8 +169,8 @@ public abstract class EditBookBaseFragment
     public void onPause() {
         mVm.setUnfinishedEdits(getFragmentId(), hasUnfinishedEdits());
 
-        if (mBookViewModel.getBook().getStage() == EntityStage.Stage.Dirty) {
-            onSaveFields(mBookViewModel.getBook());
+        if (mVm.getBook().getStage() == EntityStage.Stage.Dirty) {
+            onSaveFields(mVm.getBook());
         }
         super.onPause();
     }
