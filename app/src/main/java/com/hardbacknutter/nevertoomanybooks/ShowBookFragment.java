@@ -31,7 +31,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.activity.OnBackPressedCallback;
@@ -112,7 +111,8 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
  * Do NOT assume fields are empty by default when populating them manually.
  */
 public class ShowBookFragment
-        extends Fragment {
+        extends Fragment
+        implements CoverHandler.CoverViewHost {
 
     /** Log tag. */
     public static final String TAG = "ShowBookFragment";
@@ -160,7 +160,7 @@ public class ShowBookFragment
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
                     // The db was already updated, just update the book
-                    mPagerAdapter.notifyItemChanged(mVb.pager.getCurrentItem());
+                    refreshCurrentBook();
                 }
             };
 
@@ -231,19 +231,23 @@ public class ShowBookFragment
         final Resources res = getResources();
 
         if (mVm.isCoverUsed(getContext(), prefs, 0)) {
-            mCoverHandler[0] = new CoverHandler(
-                    mVm.getDb(), 0,
-                    res.getDimensionPixelSize(R.dimen.cover_details_0_width),
-                    res.getDimensionPixelSize(R.dimen.cover_details_0_height));
-            mCoverHandler[0].onViewCreated(this, progressBar);
+            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_0_width);
+            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
+
+            mCoverHandler[0] = new CoverHandler(mVm.getDb(), 0, maxWidth, maxHeight);
+            mCoverHandler[0].onFragmentViewCreated(this);
+            mCoverHandler[0].setProgressBar(progressBar);
+            mCoverHandler[0].setBookSupplier(() -> mVm.getBookAt(mVb.pager.getCurrentItem()));
         }
 
         if (mVm.isCoverUsed(getContext(), prefs, 1)) {
-            mCoverHandler[1] = new CoverHandler(
-                    mVm.getDb(), 1,
-                    res.getDimensionPixelSize(R.dimen.cover_details_1_width),
-                    res.getDimensionPixelSize(R.dimen.cover_details_1_height));
-            mCoverHandler[1].onViewCreated(this, progressBar);
+            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_1_width);
+            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
+
+            mCoverHandler[1] = new CoverHandler(mVm.getDb(), 1, maxWidth, maxHeight);
+            mCoverHandler[1].onFragmentViewCreated(this);
+            mCoverHandler[1].setProgressBar(progressBar);
+            mCoverHandler[1].setBookSupplier(() -> mVm.getBookAt(mVb.pager.getCurrentItem()));
         }
 
         mPagerAdapter = new ShowBookPagerAdapter(getContext(), mVm, mCoverHandler);
@@ -252,7 +256,7 @@ public class ShowBookFragment
         mVb.pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(final int position) {
-                onBookUpdate(mVm.getBookAt(position));
+                setActivityTitle(mVm.getBookAt(position));
             }
         });
 
@@ -424,15 +428,28 @@ public class ShowBookFragment
             // pass the data up
             mVm.putResultData(data);
         }
-
-        final Book book = mVm.reloadBookAt(mVb.pager.getCurrentItem());
-        // refresh the book
-        mPagerAdapter.notifyItemChanged(mVb.pager.getCurrentItem());
-        // refresh other parts of the display
-        onBookUpdate(book);
+        refreshCurrentBook();
     }
 
-    private void onBookUpdate(@NonNull final Book book) {
+    @Override
+    public void refresh(@IntRange(from = 0, to = 1) final int cIdx) {
+        refreshCurrentBook();
+    }
+
+    private void refreshCurrentBook() {
+        // refresh the book currently displayed
+        final Book book = mVm.reloadBookAt(mVb.pager.getCurrentItem());
+        mPagerAdapter.notifyItemChanged(mVb.pager.getCurrentItem());
+        setActivityTitle(book);
+    }
+
+    @Override
+    public void postRefresh(final int cIdx) {
+        //noinspection ConstantConditions
+        getView().post(() -> refresh(cIdx));
+    }
+
+    private void setActivityTitle(@NonNull final Book book) {
 
         // Set the activity title
         String title = book.getString(DBDefinitions.KEY_TITLE);
@@ -523,12 +540,16 @@ public class ShowBookFragment
             final View view = mInflater.inflate(R.layout.fragment_book_details, parent, false);
             final Holder holder = new Holder(view);
 
-            if (mCoverHandler[0] == null) {
-                holder.getCoverView(0).setVisibility(View.GONE);
+            if (mCoverHandler[0] != null) {
+                mCoverHandler[0].attachOnClickListeners(holder.mVb.coverImage0);
+            } else {
+                holder.mVb.coverImage0.setVisibility(View.GONE);
             }
 
-            if (mCoverHandler[1] == null) {
-                holder.getCoverView(1).setVisibility(View.GONE);
+            if (mCoverHandler[1] != null) {
+                mCoverHandler[1].attachOnClickListeners(holder.mVb.coverImage1);
+            } else {
+                holder.mVb.coverImage1.setVisibility(View.GONE);
             }
 
             return holder;
@@ -543,14 +564,10 @@ public class ShowBookFragment
             holder.onBindViewHolder(mFieldsMap, mVm.getDb(), book);
 
             if (mCoverHandler[0] != null) {
-                mCoverHandler[0].onPopulateView(holder.getCoverView(0),
-                                                book, book::getTitle,
-                                                () -> book.getString(DBDefinitions.KEY_ISBN));
+                mCoverHandler[0].onBindView(holder.mVb.coverImage0, book);
             }
             if (mCoverHandler[1] != null) {
-                mCoverHandler[1].onPopulateView(holder.getCoverView(1),
-                                                book, book::getTitle,
-                                                () -> book.getString(DBDefinitions.KEY_ISBN));
+                mCoverHandler[1].onBindView(holder.mVb.coverImage1, book);
             }
         }
 
@@ -738,19 +755,11 @@ public class ShowBookFragment
                 }
             }
 
-            @NonNull
-            ImageView getCoverView(@IntRange(from = 0, to = 1) final int cIdx) {
-                if (cIdx == 0) {
-                    return mVb.coverImage0;
-                } else {
-                    return mVb.coverImage1;
-                }
-            }
-
             /**
              * At this point we're told to load our local (to the fragment) fields from the Book.
              *
              * @param fields to populate
+             * @param db     Database Access
              * @param book   to load
              */
             void onBindViewHolder(@NonNull final Fields fields,
@@ -813,6 +822,7 @@ public class ShowBookFragment
              * Show or hide the Table Of Content section.
              *
              * @param book to load from
+             * @param db      Database Access
              */
             private void onBindToc(@NonNull final DAO db,
                                    @NonNull final Book book) {

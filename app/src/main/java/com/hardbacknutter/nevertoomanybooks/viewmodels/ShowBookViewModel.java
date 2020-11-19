@@ -58,11 +58,12 @@ public class ShowBookViewModel
 
     /** Table name of the {@link Booklist} table. */
     public static final String BKEY_NAV_TABLE_NAME = TAG + ":LTName";
+    /** The row id in the list table for the initial book to show. */
     public static final String BKEY_LIST_TABLE_ROW_ID = TAG + ":LTRow";
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    protected final Intent mResultIntent = new Intent();
+    private final Intent mResultIntent = new Intent();
 
     /** Database Access. */
     private DAO mDb;
@@ -176,7 +177,7 @@ public class ShowBookViewModel
         if (mNavHelper != null) {
             mCurrentBook = mNavHelper.getBookAt(position);
         } else {
-            mCurrentBook.load(mCurrentBook.getId(), mDb);
+            mCurrentBook = Book.from(mCurrentBook.getId(), mDb);
         }
         return mCurrentBook;
     }
@@ -242,7 +243,6 @@ public class ShowBookViewModel
         final Book book = getBookAt(position);
 
         if (mDb.delete(context, book)) {
-            //noinspection ConstantConditions
             mCurrentBook = null;
             mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
             return true;
@@ -369,21 +369,17 @@ public class ShowBookViewModel
         }
 
         /**
-         * Reposition and get the new book id.
+         * Reposition and get the new Book.
          *
-         * @return book id
+         * @return book
          *
          * @throws SQLiteDoneException which should NEVER happen... flw
          */
-        @IntRange(from = 1)
-        private long getBookId(final int position)
+        private Book getBookAt(final int position)
                 throws SQLiteDoneException {
             mGetBookStmt.bindLong(1, position);
-            return mGetBookStmt.simpleQueryForLong();
-        }
-
-        private Book getBookAt(final int position) {
-            return Book.from(getBookId(position), mDb);
+            final long bookId = mGetBookStmt.simpleQueryForLong();
+            return Book.from(bookId, mDb);
         }
 
         private void close() {

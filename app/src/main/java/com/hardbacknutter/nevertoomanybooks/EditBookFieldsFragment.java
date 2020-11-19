@@ -28,11 +28,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.IdRes;
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
@@ -64,7 +66,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class EditBookFieldsFragment
-        extends EditBookBaseFragment {
+        extends EditBookBaseFragment
+        implements CoverHandler.CoverViewHost {
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
@@ -92,6 +95,7 @@ public class EditBookFieldsFragment
             });
     /** Handles cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     /** Watch and clean the text entered in the ISBN field. */
@@ -139,21 +143,37 @@ public class EditBookFieldsFragment
         final ProgressBar progressBar = getActivity().findViewById(R.id.progressBar);
 
         if (mVm.isCoverUsed(getContext(), prefs, 0)) {
-            mCoverHandler[0] = new CoverHandler(
-                    mVm.getDb(), 0,
-                    res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
-                    res.getDimensionPixelSize(R.dimen.cover_edit_0_height));
-            mCoverHandler[0].onViewCreated(this, progressBar);
+            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_0_width);
+            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_0_height);
+
+            mCoverHandler[0] = new CoverHandler(mVm.getDb(), 0, maxWidth, maxHeight);
+            mCoverHandler[0].onFragmentViewCreated(this);
+            mCoverHandler[0].setProgressBar(progressBar);
+            mCoverHandler[0].setBookSupplier(() -> mVm.getBook());
+
+            //noinspection ConstantConditions
+            mCoverHandler[0].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
+            //noinspection ConstantConditions
+            mCoverHandler[0].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
+
         } else {
             mVb.coverImage0.setVisibility(View.GONE);
         }
 
         if (mVm.isCoverUsed(getContext(), prefs, 1)) {
-            mCoverHandler[1] = new CoverHandler(
-                    mVm.getDb(), 1,
-                    res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
-                    res.getDimensionPixelSize(R.dimen.cover_edit_1_height));
-            mCoverHandler[1].onViewCreated(this, progressBar);
+            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_1_width);
+            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_1_height);
+
+            mCoverHandler[1] = new CoverHandler(mVm.getDb(), 1, maxWidth, maxHeight);
+            mCoverHandler[1].onFragmentViewCreated(this);
+            mCoverHandler[1].setProgressBar(progressBar);
+            mCoverHandler[1].setBookSupplier(() -> mVm.getBook());
+
+            //noinspection ConstantConditions
+            mCoverHandler[1].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
+            //noinspection ConstantConditions
+            mCoverHandler[1].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
+
         } else {
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -271,20 +291,32 @@ public class EditBookFieldsFragment
         super.onPopulateViews(fields, book);
 
         if (mCoverHandler[0] != null) {
-            //noinspection ConstantConditions
-            mCoverHandler[0].onPopulateView(mVb.coverImage0, book,
-                                            () -> mVb.title.getText().toString(),
-                                            () -> mVb.isbn.getText().toString());
+            mCoverHandler[0].onBindView(mVb.coverImage0, book);
+            mCoverHandler[0].attachOnClickListeners(mVb.coverImage0);
         }
+
         if (mCoverHandler[1] != null) {
-            //noinspection ConstantConditions
-            mCoverHandler[1].onPopulateView(mVb.coverImage1, book,
-                                            () -> mVb.title.getText().toString(),
-                                            () -> mVb.isbn.getText().toString());
+            mCoverHandler[1].onBindView(mVb.coverImage1, book);
+            mCoverHandler[1].attachOnClickListeners(mVb.coverImage1);
         }
+
         // hide unwanted and empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
+    }
+
+    @Override
+    public void refresh(@IntRange(from = 0, to = 1) final int cIdx) {
+        if (mCoverHandler[cIdx] != null) {
+            final ImageView view = cIdx == 0 ? mVb.coverImage0 : mVb.coverImage1;
+            mCoverHandler[cIdx].onBindView(view, mVm.getBook());
+        }
+    }
+
+    @Override
+    public void postRefresh(final int cIdx) {
+        //noinspection ConstantConditions
+        getView().post(() -> refresh(cIdx));
     }
 
     @Override
