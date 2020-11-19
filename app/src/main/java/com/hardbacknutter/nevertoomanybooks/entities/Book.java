@@ -1119,7 +1119,8 @@ public class Book
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Logger.d(TAG, new Throwable("getCoverFile"),
-                     "cIdx=" + cIdx
+                     "bookId=" + getId()
+                     + "|cIdx=" + cIdx
                      + "|file=" + (coverFile == null ? "null" : coverFile.getAbsolutePath()));
         }
         return coverFile;
@@ -1156,7 +1157,8 @@ public class Book
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
             Logger.d(TAG, new Throwable("createTempCoverFile"),
-                     "cIdx=" + cIdx
+                     "bookId=" + getId()
+                     + "|cIdx=" + cIdx
                      + "|exists=" + coverFile.exists()
                      + "|file=" + coverFile.getAbsolutePath());
         }
@@ -1192,7 +1194,10 @@ public class Book
             if (file != null) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Logger.d(TAG, new Throwable("setCover"),
-                             "editing|cIdx=" + cIdx + "|file=" + file.getAbsolutePath());
+                             "editing"
+                             + "|bookId=" + getId()
+                             + "|cIdx=" + cIdx
+                             + "|file=" + file.getAbsolutePath());
                 }
                 // #storeCovers will do the actual storing
                 putString(BKEY_TMP_FILE_SPEC[cIdx], file.getAbsolutePath());
@@ -1200,7 +1205,10 @@ public class Book
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Logger.d(TAG, new Throwable("setCover"),
-                             "editing|cIdx=" + cIdx + "|deleting");
+                             "editing"
+                             + "|bookId=" + getId()
+                             + "|cIdx=" + cIdx
+                             + "|deleting");
                 }
                 // explicitly set to "" to let #storeCovers do the delete
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
@@ -1225,12 +1233,18 @@ public class Book
                     // ... not actually sure when this would be the case; keep an eye on logs
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                         Logger.d(TAG, new Throwable("setCover"),
-                                 "readOnly|cIdx=" + cIdx + "|uuid, in-place");
+                                 "readOnly"
+                                 + "|bookId=" + getId()
+                                 + "|cIdx=" + cIdx
+                                 + "|uuid, in-place");
                     }
                 } else {
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                         Logger.d(TAG, new Throwable("setCover"),
-                                 "readOnly|cIdx=" + cIdx + "|will rename="
+                                 "readOnly"
+                                 + "|bookId=" + getId()
+                                 + "|cIdx=" + cIdx
+                                 + "|will rename="
                                  + file.getAbsolutePath());
                     }
 
@@ -1240,7 +1254,9 @@ public class Book
                         FileUtils.rename(file, destination);
                     } catch (@NonNull final IOException e) {
                         Logger.error(context, TAG, e,
-                                     "setCover|bookId=" + getId() + "|cIdx=" + cIdx);
+                                     "setCover"
+                                     + "|bookId=" + getId()
+                                     + "|cIdx=" + cIdx);
                         return null;
                     }
                 }
@@ -1248,7 +1264,10 @@ public class Book
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                     Logger.d(TAG, new Throwable("setCover")
-                            , "readOnly|cIdx=" + cIdx + "|deleting");
+                            , "readOnly"
+                              + "|bookId=" + getId()
+                              + "|cIdx=" + cIdx
+                              + "|deleting");
                 }
 
                 FileUtils.delete(getUuidCoverFile(context, cIdx));
