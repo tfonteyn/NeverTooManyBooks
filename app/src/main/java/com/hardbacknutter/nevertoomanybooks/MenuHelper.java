@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
-final class MenuHelper {
+public final class MenuHelper {
 
     private MenuHelper() {
     }
@@ -55,8 +55,8 @@ final class MenuHelper {
      * @param menu to add to
      * @param book data to use
      */
-    static void prepareOptionalMenus(@NonNull final Menu menu,
-                                     @NonNull final Book book) {
+    public static void prepareOptionalMenus(@NonNull final Menu menu,
+                                            @NonNull final Book book) {
 
         final boolean hasAuthor = !book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST).isEmpty();
         final boolean hasSeries = !book.getParcelableArrayList(Book.BKEY_SERIES_LIST).isEmpty();
@@ -112,8 +112,8 @@ final class MenuHelper {
         }
     }
 
-    static void setupSearchActionView(@NonNull final Activity activity,
-                                      @NonNull final Menu menu) {
+    public static void setupSearchActionView(@NonNull final Activity activity,
+                                             @NonNull final Menu menu) {
         final MenuItem searchItem = menu.findItem(R.id.MENU_SEARCH);
         if (searchItem != null) {
             // Reminder: we let the SearchView handle its own icons.
@@ -135,8 +135,8 @@ final class MenuHelper {
      * @param menu       root menu
      * @param dataHolder the row data
      */
-    static void prepareViewBookOnWebsiteMenu(@NonNull final Menu menu,
-                                             @NonNull final DataHolder dataHolder) {
+    public static void prepareViewBookOnWebsiteMenu(@NonNull final Menu menu,
+                                                    @NonNull final DataHolder dataHolder) {
 
         final MenuItem subMenuItem = menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE);
         if (subMenuItem == null) {
@@ -169,9 +169,9 @@ final class MenuHelper {
         subMenuItem.setVisible(subMenuVisible);
     }
 
-    static boolean handleViewBookOnWebsiteMenu(@NonNull final Context context,
-                                               @IdRes final int menuItemId,
-                                               @NonNull final DataHolder rowData) {
+    public static boolean handleViewBookOnWebsiteMenu(@NonNull final Context context,
+                                                      @IdRes final int menuItemId,
+                                                      @NonNull final DataHolder rowData) {
 
         final Optional<SearchEngineRegistry.Config> oConfig = SearchEngineRegistry
                 .getByMenuId(menuItemId);

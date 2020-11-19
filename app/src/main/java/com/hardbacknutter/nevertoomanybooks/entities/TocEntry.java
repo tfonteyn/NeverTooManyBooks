@@ -296,6 +296,16 @@ public class TocEntry
         return mBookTitles;
     }
 
+    @NonNull
+    public List<Pair<Long, String>> getBookTitles() {
+        Objects.requireNonNull(mBookTitles, "mBookTitles");
+        return mBookTitles;
+    }
+
+    public void loadBookTitles(@NonNull final DAO db) {
+        mBookTitles = db.getBookTitlesForToc(mId);
+    }
+
     @Override
     @NonNull
     public PartialDate getFirstPublicationDate() {

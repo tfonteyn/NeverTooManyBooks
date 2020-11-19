@@ -67,8 +67,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.AuthorWorksViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
 
 /**
@@ -77,7 +77,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  *
  * <strong>Note:</strong> when an item is clicked, we start a <strong>NEW</strong> Activity.
  * Doing a 'back' will then get the user back here.
- * This is intentionally different from the behaviour of {@link FTSSearchFragment}.
+ * This is intentionally different from the behaviour of {@link SearchFtsFragment}.
  */
 public class AuthorWorksFragment
         extends Fragment {
@@ -93,7 +93,7 @@ public class AuthorWorksFragment
     /** FragmentResultListener request key. */
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** The Fragment ViewModel. */
-    private AuthorWorksModel mVm;
+    private AuthorWorksViewModel mVm;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -152,7 +152,7 @@ public class AuthorWorksFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mVm = new ViewModelProvider(this).get(AuthorWorksModel.class);
+        mVm = new ViewModelProvider(this).get(AuthorWorksViewModel.class);
         //noinspection ConstantConditions
         mVm.init(context, requireArguments());
 
@@ -320,7 +320,7 @@ public class AuthorWorksFragment
             final ArrayList<Long> bookIdList = mVm.getBookIds(tocEntry);
             if (bookIdList.size() == 1) {
                 // open new activity to show the book, 'back' will return to this one.
-                final Intent intent = new Intent(getContext(), BookDetailsActivity.class)
+                final Intent intent = new Intent(getContext(), ShowBookActivity.class)
                         .putExtra(DBDefinitions.KEY_PK_ID, bookIdList.get(0));
                 startActivity(intent);
 
@@ -331,11 +331,11 @@ public class AuthorWorksFragment
                         // Open the list expanded, as otherwise you end up with
                         // the author as a single line, and no books shown at all,
                         // which can be quite confusing to the user.
-                        .putExtra(BooksOnBookshelfModel.BKEY_LIST_STATE,
+                        .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
                                   Booklist.PREF_REBUILD_EXPANDED);
 
                 if (mVm.isAllBookshelves()) {
-                    intent.putExtra(BooksOnBookshelfModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);
+                    intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);
                 }
 
                 startActivity(intent);
@@ -343,7 +343,7 @@ public class AuthorWorksFragment
 
         } else if (work instanceof BookAsWork) {
             // open new activity to show the book, 'back' will return to this one.
-            final Intent intent = new Intent(getContext(), BookDetailsActivity.class)
+            final Intent intent = new Intent(getContext(), ShowBookActivity.class)
                     .putExtra(DBDefinitions.KEY_PK_ID, work.getId());
             startActivity(intent);
 

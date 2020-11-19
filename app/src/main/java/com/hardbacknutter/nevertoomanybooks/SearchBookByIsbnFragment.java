@@ -49,13 +49,13 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchByIsbnViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByIsbnViewModel;
 
 /**
  * The input field is not being limited in length. This is to allow entering UPC_A numbers.
  */
-public class BookSearchByIsbnFragment
-        extends BookSearchBaseFragment {
+public class SearchBookByIsbnFragment
+        extends SearchBookBaseFragment {
 
     /** Log tag. */
     public static final String TAG = "BookSearchByIsbnFrag";
@@ -81,7 +81,7 @@ public class BookSearchByIsbnFragment
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
 
-    private BookSearchByIsbnViewModel mVm;
+    private SearchBookByIsbnViewModel mVm;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -124,7 +124,7 @@ public class BookSearchByIsbnFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(BookSearchByIsbnViewModel.class);
+        mVm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
         mVm.init();
 
         //noinspection ConstantConditions

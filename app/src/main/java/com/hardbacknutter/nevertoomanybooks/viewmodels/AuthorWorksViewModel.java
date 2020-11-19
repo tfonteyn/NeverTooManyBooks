@@ -44,12 +44,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-public class AuthorWorksModel
+public class AuthorWorksViewModel
         extends ViewModel
         implements ResultIntent {
 
     /** Log tag. */
-    private static final String TAG = "AuthorWorksModel";
+    private static final String TAG = "AuthorWorksViewModel";
     private final ArrayList<AuthorWork> mWorkList = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;

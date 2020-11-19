@@ -116,7 +116,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
@@ -128,8 +128,8 @@ import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
  * Notes on the local-search:
  * <ol>Advanced:
  *     <li>User clicks navigation panel menu search option</li>
- *     <li>{@link FTSSearchFragment} is started</li>
- *     <li>{@link FTSSearchFragment} returns an id-list and the fts search terms</li>
+ *     <li>{@link SearchFtsFragment} is started</li>
+ *     <li>{@link SearchFtsFragment} returns an id-list and the fts search terms</li>
  *     <li>{@link #mFtsSearchLauncher} sets the incoming fts criteria</li>
  *     <li>{@link #onResume} builds the list</li>
  * </ol>
@@ -182,13 +182,13 @@ public class BooksOnBookshelf
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
-    private BooksOnBookshelfModel mVm;
+    private BooksOnBookshelfViewModel mVm;
 
 
     /** Display a Book. */
-    private final ActivityResultLauncher<BookDetailsFragment.ResultContract.Input>
+    private final ActivityResultLauncher<ShowBookActivity.ResultContract.Input>
             mDisplayBookLauncher = registerForActivityResult(
-            new BookDetailsFragment.ResultContract(), this::onBookEditingDone);
+            new ShowBookActivity.ResultContract(), this::onBookEditingDone);
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> mEditByIdLauncher = registerForActivityResult(
             new EditBookByIdContract(), this::onBookEditingDone);
@@ -223,7 +223,7 @@ public class BooksOnBookshelf
 
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
-            registerForActivityResult(new FTSSearchFragment.ResultContract(), data -> {
+            registerForActivityResult(new SearchFtsFragment.ResultContract(), data -> {
                 if (mVm.setSearchCriteria(data, true)) {
                     //URGENT: switch bookshelf? all-books?
                     mVm.setForceRebuildInOnResume(true);
@@ -420,9 +420,9 @@ public class BooksOnBookshelf
 
                     // If it's a book, open the details screen.
                     if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        mDisplayBookLauncher.launch(new BookDetailsFragment.ResultContract.Input(
+                        mDisplayBookLauncher.launch(new ShowBookActivity.ResultContract.Input(
                                 rowData.getLong(DBDefinitions.KEY_FK_BOOK),
-                                mVm.getBooklistTableName(),
+                                mVm.getBookNavigationTableName(),
                                 rowData.getLong(DBDefinitions.KEY_PK_ID),
                                 mVm.getCurrentStyle(BooksOnBookshelf.this).getUuid()
                         ));
@@ -499,7 +499,7 @@ public class BooksOnBookshelf
         }
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
-        mVm = new ViewModelProvider(this).get(BooksOnBookshelfModel.class);
+        mVm = new ViewModelProvider(this).get(BooksOnBookshelfViewModel.class);
         mVm.init(this, getIntent().getExtras());
         mVm.onCancelled().observe(this, this::onBuildFailed);
         mVm.onFailure().observe(this, this::onBuildFailed);

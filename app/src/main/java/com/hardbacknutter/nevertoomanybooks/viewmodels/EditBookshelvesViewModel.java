@@ -40,12 +40,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
-public class EditBookshelvesModel
+public class EditBookshelvesViewModel
         extends ViewModel
         implements ResultIntent {
 
     /** Log tag. */
-    private static final String TAG = "EditBookshelvesModel";
+    private static final String TAG = "EditBookshelvesViewModel";
 
     public static final String BKEY_CURRENT_BOOKSHELF = TAG + ":current";
     private final MutableLiveData<Pair<Integer, Integer>> mSelectedPositionLD =

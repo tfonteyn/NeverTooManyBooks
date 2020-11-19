@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
 /**
  * Static definitions of database objects.
@@ -137,6 +138,12 @@ public final class DBDefinitions {
      * {@link BooklistStyle#DEFAULT_STYLE_ID}
      */
     public static final Domain DOM_FK_STYLE;
+
+    /**
+     * Foreign key between the list table {@link Booklist}
+     * and the navigator table used by {@link ShowBookViewModel}.
+     */
+    public static final Domain DOM_FK_BL_ROW_ID;
 
     /* ======================================================================================
      * Domain definitions.
@@ -344,6 +351,7 @@ public final class DBDefinitions {
     public static final Domain DOM_BL_NODE_GROUP;
     /** {@link Booklist}. */
     public static final Domain DOM_BL_NODE_LEVEL;
+
     /**
      * {@link Booklist}.
      * An expanded node, should always be visible!
@@ -378,6 +386,8 @@ public final class DBDefinitions {
     public static final String KEY_FK_TOC_ENTRY = "anthology";
     /** Foreign key. */
     public static final String KEY_FK_STYLE = "style";
+    /** Foreign key. */
+    public static final String KEY_FK_BL_ROW_ID = "bl_row_id";
 
     /** External id. - Long. */
     public static final String KEY_EID_GOODREADS_BOOK = "goodreads_book_id";
@@ -1031,6 +1041,9 @@ public final class DBDefinitions {
         DOM_BL_NODE_EXPANDED =
                 new Domain.Builder(KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
                         .withDefault(0).build();
+
+        DOM_FK_BL_ROW_ID =
+                new Domain.Builder(KEY_FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER).notNull().build();
 
         /* ======================================================================================
          *  Book tables.

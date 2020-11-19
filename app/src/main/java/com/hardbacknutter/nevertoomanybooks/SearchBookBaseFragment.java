@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
 
-public abstract class BookSearchBaseFragment
+public abstract class SearchBookBaseFragment
         extends Fragment {
 
     private final ActivityResultLauncher<Bundle> mEditBookFoundLauncher = registerForActivityResult(

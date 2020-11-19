@@ -37,11 +37,11 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
-public class BookSearchByTextViewModel
+public class SearchBookByTextViewModel
         extends ViewModel
         implements ActivityResultViewModel {
 
-    private static final String TAG = "BookSearchByTextViewModel";
+    private static final String TAG = "SearchBookByTextViewModel";
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();

@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -29,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -90,7 +90,8 @@ public class EditBookFieldsFragment
                     mVm.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
                 }
             });
-
+    /** Handles cover replacement, rotation, etc. */
+    private final CoverHandler[] mCoverHandler = new CoverHandler[2];
     /** manage the validation check next to the ISBN field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     /** Watch and clean the text entered in the ISBN field. */
@@ -112,24 +113,6 @@ public class EditBookFieldsFragment
         super.onCreate(savedInstanceState);
 
         mEditBookshelvesLauncher.register(this, RK_EDIT_BOOKSHELVES);
-
-        //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        final Resources res = getResources();
-
-        if (mVm.isCoverUsed(getContext(), prefs, 0)) {
-            mCoverHandler[0] = new CoverHandler(
-                    mVm.getDb(), 0,
-                    res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
-                    res.getDimensionPixelSize(R.dimen.cover_edit_0_height));
-        }
-
-        if (mVm.isCoverUsed(getContext(), prefs, 1)) {
-            mCoverHandler[1] = new CoverHandler(
-                    mVm.getDb(), 1,
-                    res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
-                    res.getDimensionPixelSize(R.dimen.cover_edit_1_height));
-        }
     }
 
     @Override
@@ -138,21 +121,6 @@ public class EditBookFieldsFragment
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
         mVb = FragmentEditBookFieldsBinding.inflate(inflater, container, false);
-
-        // Covers
-        if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onCreateView(this, mVb.coverImage0,
-                                          mVb.title, mVb.isbn, mProgressBar);
-        } else {
-            mVb.coverImage0.setVisibility(View.GONE);
-        }
-        if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onCreateView(this, mVb.coverImage1,
-                                          mVb.title, mVb.isbn, mProgressBar);
-        } else {
-            mVb.coverImage1.setVisibility(View.GONE);
-        }
-
         return mVb.getRoot();
     }
 
@@ -161,27 +129,54 @@ public class EditBookFieldsFragment
                               @Nullable final Bundle savedInstanceState) {
         // setup common stuff and calls onInitFields()
         super.onViewCreated(view, savedInstanceState);
+
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final Resources res = getResources();
+
+        // simple indeterminate progress spinner to show while doing lengthy work.
+        //noinspection ConstantConditions
+        final ProgressBar progressBar = getActivity().findViewById(R.id.progressBar);
+
+        if (mVm.isCoverUsed(getContext(), prefs, 0)) {
+            mCoverHandler[0] = new CoverHandler(
+                    mVm.getDb(), 0,
+                    res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
+                    res.getDimensionPixelSize(R.dimen.cover_edit_0_height));
+            mCoverHandler[0].onViewCreated(this, progressBar);
+        } else {
+            mVb.coverImage0.setVisibility(View.GONE);
+        }
+
+        if (mVm.isCoverUsed(getContext(), prefs, 1)) {
+            mCoverHandler[1] = new CoverHandler(
+                    mVm.getDb(), 1,
+                    res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
+                    res.getDimensionPixelSize(R.dimen.cover_edit_1_height));
+            mCoverHandler[1].onViewCreated(this, progressBar);
+        } else {
+            mVb.coverImage1.setVisibility(View.GONE);
+        }
+
+        mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
         mVm.onAuthorList().observe(getViewLifecycleOwner(), authors -> {
             final Field<List<Author>, TextView> field = getField(R.id.author);
             field.getAccessor().setValue(authors);
             field.validate();
         });
-        mVm.onSeriesList().observe(getViewLifecycleOwner(), series -> {
-            final Field<List<Series>, TextView> field = getField(R.id.series_title);
-            field.getAccessor().setValue(series);
-            field.validate();
-        });
-
-        mVb.btnScan.setOnClickListener(v -> mScannerLauncher.launch(this));
 
         // no listener/callback. We share the book view model in the Activity scope
         mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
                 .launch(getChildFragmentManager()));
 
         if (getField(R.id.series_title).isUsed(prefs)) {
+            mVm.onSeriesList().observe(getViewLifecycleOwner(), series -> {
+                final Field<List<Series>, TextView> field = getField(R.id.series_title);
+                field.getAccessor().setValue(series);
+                field.validate();
+            });
+
             // no listener/callback. We share the book view model in the Activity scope
             mVb.seriesTitle.setOnClickListener(v -> EditBookSeriesListDialogFragment
                     .launch(getChildFragmentManager()));
@@ -190,11 +185,9 @@ public class EditBookFieldsFragment
         // Bookshelves editor (dialog)
         if (getField(R.id.bookshelves).isUsed(prefs)) {
             mVb.bookshelves.setOnClickListener(v -> {
-                final ArrayList<Entity> allItems =
-                        new ArrayList<>(mVm.getAllBookshelves());
-                final ArrayList<Entity> selectedItems =
-                        new ArrayList<>(mVm.getBook().getParcelableArrayList(
-                                Book.BKEY_BOOKSHELF_LIST));
+                final ArrayList<Entity> allItems = new ArrayList<>(mVm.getAllBookshelves());
+                final ArrayList<Entity> selectedItems = new ArrayList<>(
+                        mVm.getBook().getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST));
 
                 mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves_long),
                                                 R.id.bookshelves, allItems, selectedItems);
@@ -202,7 +195,6 @@ public class EditBookFieldsFragment
         }
 
         mIsbnValidityCheck = ISBN.getEditValidityLevel(prefs);
-
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, mIsbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
         mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
@@ -230,10 +222,8 @@ public class EditBookFieldsFragment
 
         final String nonBlankRequired = getString(R.string.vldt_non_blank_required);
 
-        final Context context = getContext();
-
         //noinspection ConstantConditions
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
 
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Short, true, false)),
@@ -281,10 +271,16 @@ public class EditBookFieldsFragment
         super.onPopulateViews(fields, book);
 
         if (mCoverHandler[0] != null) {
-            mCoverHandler[0].onPopulateView(book);
+            //noinspection ConstantConditions
+            mCoverHandler[0].onPopulateView(mVb.coverImage0, book,
+                                            () -> mVb.title.getText().toString(),
+                                            () -> mVb.isbn.getText().toString());
         }
         if (mCoverHandler[1] != null) {
-            mCoverHandler[1].onPopulateView(book);
+            //noinspection ConstantConditions
+            mCoverHandler[1].onPopulateView(mVb.coverImage1, book,
+                                            () -> mVb.title.getText().toString(),
+                                            () -> mVb.isbn.getText().toString());
         }
         // hide unwanted and empty fields
         //noinspection ConstantConditions

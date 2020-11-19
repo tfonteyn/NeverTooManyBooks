@@ -37,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.BookBaseFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -136,8 +135,7 @@ public class Field<T, V extends View> {
     }
 
     /**
-     * Called from {@link BookBaseFragment} #loadFields() (from onResume())
-     * to set the View for the field.
+     * Set the View for the field.
      * <p>
      * Unused fields (as configured in the user preferences) will be hidden after this step.
      *

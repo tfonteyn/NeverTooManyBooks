@@ -65,11 +65,11 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.CopyIfBlank;
 import static com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage.Overwrite;
 
-public class UpdateFieldsModel
+public class SearchBookUpdatesViewModel
         extends SearchCoordinator {
 
     /** Log tag. */
-    private static final String TAG = "UpdateFieldsModel";
+    private static final String TAG = "SearchBookUpdatesViewModel";
     private static final String BKEY_LAST_BOOK_ID = TAG + ":lastId";
 
     /** which fields to update and how. */

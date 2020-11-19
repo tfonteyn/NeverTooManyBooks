@@ -98,15 +98,13 @@ public class Booklist
     public static final int PREF_REBUILD_COLLAPSED = 2;
     @SuppressWarnings("WeakerAccess")
     public static final int PREF_REBUILD_PREFERRED_STATE = 3;
-
+    /** Log tag. */
+    public static final String TAG = "Booklist";
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
     private static final String _AND_ = " AND ";
     private static final String _ORDER_BY_ = " ORDER BY ";
-
-    /** Log tag. */
-    public static final String TAG = "Booklist";
     /**
      * Counter for Booklist ID's. Only increment.
      * Used to create unique table names etc... see {@link #mInstanceId}.
@@ -157,6 +155,7 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     @ListRebuildMode
     private int mRebuildState;
+
     /**
      * The temp table representing the booklist for the current bookshelf/style.
      * <p>
@@ -164,6 +163,15 @@ public class Booklist
      */
     @SuppressWarnings("FieldNotUsedInToString")
     private TableDefinition mListTable;
+
+    /**
+     * The navigation table for next/prev moving between books.
+     * <p>
+     * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
+     */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private TableDefinition mNavTable;
+
     /**
      * The temp table holding the state (expand,visibility,...) for all rows in the list-table.
      * <p>
@@ -344,8 +352,10 @@ public class Booklist
 
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
-            // create the table and populate it
-            mListTable = helper.build(mSyncedDb);
+            // create the tables and populate them
+            final Pair<TableDefinition, TableDefinition> tables = helper.build(mSyncedDb);
+            mListTable = tables.first;
+            mNavTable = tables.second;
 
             mRowStateDAO = new BooklistNodeDAO(mSyncedDb, mStmtManager, mListTable,
                                                mStyle, mBookshelf);
@@ -454,8 +464,8 @@ public class Booklist
     }
 
     @NonNull
-    public String getListTableName() {
-        return mListTable.getName();
+    public String getNavigationTableName() {
+        return mNavTable.getName();
     }
 
     /**

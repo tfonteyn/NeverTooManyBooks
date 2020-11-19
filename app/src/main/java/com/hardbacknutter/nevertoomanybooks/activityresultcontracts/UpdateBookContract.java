@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
-import com.hardbacknutter.nevertoomanybooks.UpdateFieldsFragment;
+import com.hardbacknutter.nevertoomanybooks.SearchBookUpdatesFragment;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -56,10 +56,10 @@ public class UpdateBookContract
 
         //noinspection ConstantConditions
         return new Intent(context, HostingActivity.class)
-                .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, UpdateFieldsFragment.TAG)
+                .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
                 .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
-                .putExtra(UpdateFieldsFragment.BKEY_SCREEN_TITLE, book.getTitle())
-                .putExtra(UpdateFieldsFragment.BKEY_SCREEN_SUBTITLE,
+                .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, book.getTitle())
+                .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE,
                           book.getPrimaryAuthor().getLabel(context));
     }
 

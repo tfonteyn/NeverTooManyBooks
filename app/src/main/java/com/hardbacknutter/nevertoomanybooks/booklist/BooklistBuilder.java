@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_VISIBLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BL_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
@@ -68,6 +70,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BL_ROW_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -99,6 +103,7 @@ final class BooklistBuilder {
     private static final String _AND_ = " AND ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _AS_ = " AS ";
+    private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
@@ -115,6 +120,12 @@ final class BooklistBuilder {
     /** The table we'll be generating. */
     @NonNull
     private final TableDefinition mListTable;
+    /**
+     * The navigation table we'll be generating.
+     * We need this due to SQLite in Android lacking the 3.25 window functions.
+     */
+    @NonNull
+    private final TableDefinition mNavTable;
 
     /**
      * Domains required in output table.
@@ -177,14 +188,8 @@ final class BooklistBuilder {
          *
          * We setup the table here, but don't create it yet.
          */
-        mListTable = new TableDefinition("book_list_tmp_" + instanceId)
+        mListTable = new TableDefinition("tmp_book_list_" + instanceId)
                 .setAlias("bl");
-        // Allow debug mode to use a standard table so we can export and inspect the content.
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
-            mListTable.setType(TableDefinition.TableType.Standard);
-        } else {
-            mListTable.setType(TableDefinition.TableType.Temporary);
-        }
 
         //TODO: figure out indexes
         mListTable.addDomains(DOM_PK_ID,
@@ -193,9 +198,22 @@ final class BooklistBuilder {
                               DOM_BL_NODE_KEY,
                               // {@link BooklistNodeDAO}.
                               DOM_BL_NODE_EXPANDED,
-                              DOM_BL_NODE_VISIBLE
-                             )
+                              DOM_BL_NODE_VISIBLE)
                   .setPrimaryKey(DOM_PK_ID);
+
+        mNavTable = new TableDefinition("tmp_book_nav_" + instanceId)
+                .setAlias("nav");
+        mNavTable.addDomains(DOM_PK_ID, DOM_FK_BOOK, DOM_FK_BL_ROW_ID)
+                 .setPrimaryKey(DOM_PK_ID);
+
+        // Allow debug mode to use a standard table so we can export and inspect the content.
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOOK_LIST_USES_STANDARD_TABLE) {
+            mListTable.setType(TableDefinition.TableType.Standard);
+            mNavTable.setType(TableDefinition.TableType.Standard);
+        } else {
+            mListTable.setType(TableDefinition.TableType.Temporary);
+            mNavTable.setType(TableDefinition.TableType.Temporary);
+        }
     }
 
     /**
@@ -315,7 +333,7 @@ final class BooklistBuilder {
      * @return the fully populated list table.
      */
     @NonNull
-    TableDefinition build(final SynchronizedDb syncedDb) {
+    Pair<TableDefinition, TableDefinition> build(@NonNull final SynchronizedDb syncedDb) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(mSqlForInitialInsert, "preBuild() must be called first");
 
@@ -359,7 +377,20 @@ final class BooklistBuilder {
         // remove the no longer needed triggers
         cleanupTriggers(syncedDb);
 
-        return mListTable;
+        // Create the navigation table.
+        // This is a mapping table between row-id + book-id and a plain sequential id.
+        // The latter is needed for a RecyclerView adapter.
+        // Don't apply constraints (no need)
+        mNavTable.recreate(syncedDb, false);
+        syncedDb.execSQL(INSERT_INTO_ + mNavTable.getName()
+                         + " (" + KEY_FK_BOOK + ',' + KEY_FK_BL_ROW_ID + ") "
+                         + SELECT_ + KEY_FK_BOOK + ',' + KEY_PK_ID
+                         + _FROM_ + mListTable.getName()
+                         + _WHERE_ + KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                         + _ORDER_BY_ + DBDefinitions.KEY_PK_ID
+                        );
+
+        return new Pair<>(mListTable, mNavTable);
     }
 
     /**
@@ -461,7 +492,7 @@ final class BooklistBuilder {
 
             // (re)Create the trigger
             mTriggerHelperLevelTriggerName = mListTable.getName() + "_TG_LEVEL_" + level;
-            db.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperLevelTriggerName);
+            db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName);
             final String levelTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
                     + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
@@ -479,7 +510,7 @@ final class BooklistBuilder {
 
         // Create a trigger to maintain the 'current' value
         mTriggerHelperCurrentValueTriggerName = mListTable.getName() + "_TG_CURRENT";
-        db.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperCurrentValueTriggerName);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
         // This is a single row only, so delete the previous value, and insert the current one
         final String currentValueTgSql =
                 "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
@@ -501,10 +532,10 @@ final class BooklistBuilder {
      */
     private void cleanupTriggers(@NonNull final SynchronizedDb db) {
         if (mTriggerHelperCurrentValueTriggerName != null) {
-            db.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperCurrentValueTriggerName);
+            db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
         }
         if (mTriggerHelperLevelTriggerName != null) {
-            db.execSQL("DROP TRIGGER IF EXISTS " + mTriggerHelperLevelTriggerName);
+            db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName);
         }
         if (mTriggerHelperTable != null) {
             db.drop(mTriggerHelperTable.getName());
@@ -602,6 +633,7 @@ final class BooklistBuilder {
      *
      * @return column expression
      */
+    @NonNull
     private String buildNodeKey() {
         final StringBuilder keyColumn = new StringBuilder();
         for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
@@ -632,6 +664,7 @@ final class BooklistBuilder {
      *
      * @return FROM clause
      */
+    @NonNull
     private String buildFrom(@NonNull final Context context) {
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         // Text of join statement
@@ -720,6 +753,7 @@ final class BooklistBuilder {
      *
      * @return WHERE clause, can be empty
      */
+    @NonNull
     private String buildWhere(@NonNull final Context context) {
         final StringBuilder where = new StringBuilder();
 
@@ -745,6 +779,7 @@ final class BooklistBuilder {
      *
      * @return ORDER BY clause
      */
+    @NonNull
     private String buildOrderBy() {
         // List of column names appropriate for 'ORDER BY' clause
         final StringBuilder orderBy = new StringBuilder();

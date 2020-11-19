@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.entities.EditBookshelfDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesViewModel;
 
 /**
  * Lists all bookshelves and can add/delete/edit them.
@@ -72,7 +72,7 @@ public class EditBookshelvesFragment
     private static final String RK_MENU_PICKER = TAG + ":rk:" + MenuPickerDialogFragment.TAG;
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
-    private EditBookshelvesModel mVm;
+    private EditBookshelvesViewModel mVm;
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.Launcher mOnEditBookshelfLauncher =
             new EditBookshelfDialogFragment.Launcher() {
@@ -138,7 +138,7 @@ public class EditBookshelvesFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mVm = new ViewModelProvider(this).get(EditBookshelvesModel.class);
+        mVm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
         mVm.init(getArguments());
         mVm.onSelectedPositionChanged().observe(getViewLifecycleOwner(), positionPair -> {
             // old position
@@ -301,7 +301,7 @@ public class EditBookshelvesFragment
             final Intent intent = new Intent(context, HostingActivity.class)
                     .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
             if (bookshelfId != 0) {
-                intent.putExtra(EditBookshelvesModel.BKEY_CURRENT_BOOKSHELF, bookshelfId);
+                intent.putExtra(EditBookshelvesViewModel.BKEY_CURRENT_BOOKSHELF, bookshelfId);
             }
             return intent;
         }

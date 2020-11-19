@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -115,10 +114,8 @@ public class EditBookPublicationFragment
     @Override
     protected void onInitFields(@NonNull final Fields fields) {
 
-        final Context context = getContext();
-
         //noinspection ConstantConditions
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+        final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
 
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);

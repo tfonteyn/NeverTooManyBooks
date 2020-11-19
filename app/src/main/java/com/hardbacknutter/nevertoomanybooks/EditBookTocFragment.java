@@ -369,6 +369,7 @@ public class EditBookTocFragment
                     R.drawable.ic_delete));
 
             mMenuLauncher.launch(title, menu, position);
+
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());
             menu.add(Menu.NONE, R.id.MENU_EDIT,

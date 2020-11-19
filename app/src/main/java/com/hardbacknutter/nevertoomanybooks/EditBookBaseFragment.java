@@ -19,12 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
@@ -34,6 +36,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -46,21 +50,27 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.FormattedDiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
+import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.WrappedMaterialDatePicker;
 
 public abstract class EditBookBaseFragment
-        extends BookBaseFragment
+        extends Fragment
         implements DataEditor<Book> {
 
     /** Log tag. */
@@ -75,15 +85,6 @@ public abstract class EditBookBaseFragment
     /** Tag/requestKey for WrappedMaterialDatePicker. */
     private static final String RK_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
 
-    private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
-            new PartialDatePickerDialogFragment.Launcher() {
-                @Override
-                public void onResult(@IdRes final int fieldId,
-                                     @NonNull final PartialDate date) {
-                    onDateSet(fieldId, date.getIsoString());
-                }
-            };
-
     private final WrappedMaterialDatePicker.Launcher mDatePickerLauncher =
             new WrappedMaterialDatePicker.Launcher() {
                 @Override
@@ -92,33 +93,76 @@ public abstract class EditBookBaseFragment
                     onDateSet(fieldIds, selections);
                 }
             };
-
     /** The view model. */
     EditBookFragmentViewModel mVm;
+    private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
+            new PartialDatePickerDialogFragment.Launcher() {
+                @Override
+                public void onResult(@IdRes final int fieldId,
+                                     @NonNull final PartialDate date) {
+                    onDateSet(fieldId, date.getIsoString());
+                }
+            };
+    /** Listener for all field changes. Must keep strong reference. */
+    private final Fields.AfterChangeListener mAfterChangeListener =
+            fieldId -> mVm.getBook().setStage(EntityStage.Stage.Dirty);
 
+    /**
+     * Init all Fields, and add them the fields collection.
+     * <p>
+     * Note that Field views are <strong>NOT AVAILABLE</strong> at this time.
+     * <p>
+     * Called from {@link #onViewCreated}.
+     * The fields will be populated in {@link #onPopulateViews}
+     *
+     * @param fields collection to add to
+     */
+    abstract void onInitFields(@NonNull Fields fields);
+
+    /**
+     * Convenience wrapper.
+     * <p>
+     * Return the Field associated with the passed ID.
+     *
+     * @param <T> type of Field value.
+     * @param <V> type of View for this field.
+     * @param id  Field/View ID
+     *
+     * @return Associated Field.
+     */
     @NonNull
-    @Override
-    Fields getFields() {
-        return mVm.getFields(getFragmentId());
+    <T, V extends View> Field<T, V> getField(@IdRes final int id) {
+        return getFields().getField(id);
     }
 
     @NonNull
-    @Override
-    Book getBook() {
-        return mVm.getBook();
+    private Fields getFields() {
+        return mVm.getFields(getFragmentId());
     }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+        mPartialDatePickerLauncher.register(this, RK_DATE_PICKER_PARTIAL);
+        mDatePickerLauncher.register(this, RK_DATE_PICKER_SINGLE);
+        mDatePickerLauncher.register(this, RK_DATE_PICKER_RANGE);
+    }
+
+    @Override
+    @CallSuper
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
 
-        mPartialDatePickerLauncher.register(this, RK_DATE_PICKER_PARTIAL);
-
-        mDatePickerLauncher.register(this, RK_DATE_PICKER_SINGLE);
-        mDatePickerLauncher.register(this, RK_DATE_PICKER_RANGE);
+        final Fields fields = getFields();
+        if (fields.isEmpty()) {
+            onInitFields(fields);
+        }
     }
 
     @Override
@@ -131,22 +175,70 @@ public abstract class EditBookBaseFragment
         button.setText(menuItem.getTitle());
         button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
 
+        if (menu.findItem(R.id.SUBMENU_VIEW_BOOK_AT_SITE) == null) {
+            inflater.inflate(R.menu.sm_view_on_site, menu);
+        }
+        if (menu.findItem(R.id.SUBMENU_AMAZON_SEARCH) == null) {
+            inflater.inflate(R.menu.sm_search_on_amazon, menu);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        final Book book = mVm.getBook();
+        MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
+        MenuHelper.prepareOptionalMenus(menu, book);
+
+        super.onPrepareOptionsMenu(menu);
+    }
+
+    @CallSuper
+    @Override
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        final Context context = getContext();
+        final Book book = mVm.getBook();
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_ACTION_CONFIRM) {
             //noinspection ConstantConditions
             ((EditBookActivity) getActivity()).prepareSave(true);
             return true;
+
+        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR) {
+            final Author author = book.getPrimaryAuthor();
+            if (author != null) {
+                //noinspection ConstantConditions
+                AmazonSearchEngine.startSearchActivity(context, author, null);
+            }
+            return true;
+
+        } else if (itemId == R.id.MENU_AMAZON_BOOKS_IN_SERIES) {
+            final Series series = book.getPrimarySeries();
+            if (series != null) {
+                //noinspection ConstantConditions
+                AmazonSearchEngine.startSearchActivity(context, null, series);
+            }
+            return true;
+
+        } else if (itemId == R.id.MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES) {
+            final Author author = book.getPrimaryAuthor();
+            final Series series = book.getPrimarySeries();
+            if (author != null && series != null) {
+                //noinspection ConstantConditions
+                AmazonSearchEngine.startSearchActivity(context, author, series);
+            }
+            return true;
         }
 
+        //noinspection ConstantConditions
+        if (MenuHelper.handleViewBookOnWebsiteMenu(context, item.getItemId(), book)) {
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
+    @CallSuper
     @Override
     public void onResume() {
 
@@ -160,8 +252,66 @@ public abstract class EditBookBaseFragment
             mVm.addFieldsFromBundle(getContext(), getArguments());
         }
 
-        // hook up the Views, and calls {@link #onPopulateViews}
         super.onResume();
+        // hook up the Views, and calls {@link #onPopulateViews}
+        populateViews();
+    }
+
+    /**
+     * Load all Views from the book while preserving the isDirty() status.
+     * <p>
+     * This is final/private; child classes should override {@link #onPopulateViews}.
+     */
+    private void populateViews() {
+        final Fields fields = getFields();
+        //noinspection ConstantConditions
+        fields.setParentView(getView());
+
+        fields.setAfterChangeListener(null);
+        final Book book = mVm.getBook();
+        book.lockStage();
+        // make it so!
+        onPopulateViews(fields, book);
+        book.unlockStage();
+        fields.setAfterChangeListener(mAfterChangeListener);
+
+        // All views should now have proper visibility set, so fix their focus order.
+        ViewFocusOrder.fix(getView());
+
+        // Set the activity title
+        //noinspection ConstantConditions
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (book.isNew()) {
+            // New book
+            //noinspection ConstantConditions
+            actionBar.setTitle(R.string.lbl_add_book);
+            actionBar.setSubtitle(null);
+        } else {
+            // Existing book
+            String title = book.getString(DBDefinitions.KEY_TITLE);
+            if (BuildConfig.DEBUG /* always */) {
+                title = "[" + book.getId() + "] " + title;
+            }
+            //noinspection ConstantConditions
+            actionBar.setTitle(title);
+            //noinspection ConstantConditions
+            actionBar.setSubtitle(Author.getCondensedNames(
+                    getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
+        }
+    }
+
+    /**
+     * This is where you should populate all the fields with the values coming from the book.
+     * The base class (this one) manages all the actual fields, but 'special' fields can/should
+     * be handled in overrides, calling super as the first step.
+     *
+     * @param fields current field collection
+     * @param book   loaded book
+     */
+    @CallSuper
+    void onPopulateViews(@NonNull final Fields fields,
+                         @NonNull final Book book) {
+        fields.setAll(book);
     }
 
     @Override
@@ -191,6 +341,7 @@ public abstract class EditBookBaseFragment
         getFields().getAll(book);
     }
 
+
     /**
      * Setup an adapter for the AutoCompleteTextView, using the (optional) formatter.
      * <p>
@@ -208,8 +359,8 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(preferences)) {
             final FieldFormatter<String> formatter = field.getAccessor().getFormatter();
             //noinspection ConstantConditions
-            final Fields.FormattedDiacriticArrayAdapter adapter =
-                    new Fields.FormattedDiacriticArrayAdapter(getContext(), list.get(), formatter);
+            final FormattedDiacriticArrayAdapter adapter =
+                    new FormattedDiacriticArrayAdapter(getContext(), list.get(), formatter);
 
             final AutoCompleteTextView view = field.getAccessor().getView();
             //noinspection ConstantConditions
@@ -264,8 +415,8 @@ public abstract class EditBookBaseFragment
                 // without using a start-date, single date picker for the end-date
                 //noinspection ConstantConditions
                 view.setOnClickListener(v -> mDatePickerLauncher
-                        .launch(endDateTitleId, fieldEndDate.getId(), getInstant(fieldEndDate,
-                                                                                 todayIfNone)));
+                        .launch(endDateTitleId,
+                                fieldEndDate.getId(), getInstant(fieldEndDate, todayIfNone)));
             }
         }
     }

@@ -66,11 +66,11 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
-public class BooksOnBookshelfModel
+public class BooksOnBookshelfViewModel
         extends VMTask<List<BooklistNode>> {
 
     /** Log tag. */
-    private static final String TAG = "BooksOnBookshelfModel";
+    private static final String TAG = "BooksOnBookshelfViewModel";
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
     /** Allows to set an explicit shelf. */
@@ -685,9 +685,9 @@ public class BooksOnBookshelfModel
     }
 
     @NonNull
-    public String getBooklistTableName() {
+    public String getBookNavigationTableName() {
         Objects.requireNonNull(mBooklist, Booklist.TAG);
-        return mBooklist.getListTableName();
+        return mBooklist.getNavigationTableName();
     }
 
     /**

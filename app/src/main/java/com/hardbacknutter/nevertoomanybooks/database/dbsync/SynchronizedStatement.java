@@ -203,7 +203,6 @@ public class SynchronizedStatement
      * @throws SQLiteDoneException if the query returns zero rows
      * @see #simpleQueryForLongOrZero()
      */
-    @SuppressWarnings("unused")
     public long simpleQueryForLong()
             throws SQLiteDoneException {
         final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();

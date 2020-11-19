@@ -25,13 +25,21 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
-public class BookSearchByExternalIdViewModel
+import java.util.ArrayList;
+
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+
+public class SearchBookByIsbnViewModel
         extends ViewModel
         implements ActivityResultViewModel {
 
+    private static final String TAG = "SearchBookByIsbnViewModel";
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
+    /** Database Access. */
+    private DAO mDb;
 
     /**
      * Inherits the result from {@link com.hardbacknutter.nevertoomanybooks.EditBookActivity}.
@@ -40,5 +48,28 @@ public class BookSearchByExternalIdViewModel
     @NonNull
     public Intent getResultIntent() {
         return mResultIntent;
+    }
+
+    @Override
+    protected void onCleared() {
+        if (mDb != null) {
+            mDb.close();
+        }
+
+        super.onCleared();
+    }
+
+    /**
+     * Pseudo constructor.
+     */
+    public void init() {
+        if (mDb == null) {
+            mDb = new DAO(TAG);
+        }
+    }
+
+    @NonNull
+    public ArrayList<Long> getBookIdsByIsbn(@NonNull final ISBN code) {
+        return mDb.getBookIdsByIsbn(code);
     }
 }

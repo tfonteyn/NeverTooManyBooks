@@ -54,21 +54,21 @@ public class HostingActivity
                 getIntent().getStringExtra(BKEY_FRAGMENT_TAG), "tag");
 
         switch (tag) {
-            case BookSearchByIsbnFragment.TAG:
-                addFirstFragment(R.id.main_fragment, BookSearchByIsbnFragment.class, tag);
+            case SearchBookByIsbnFragment.TAG:
+                addFirstFragment(R.id.main_fragment, SearchBookByIsbnFragment.class, tag);
                 return;
 
-            case BookSearchByTextFragment.TAG:
-                addFirstFragment(R.id.main_fragment, BookSearchByTextFragment.class, tag);
+            case SearchBookByTextFragment.TAG:
+                addFirstFragment(R.id.main_fragment, SearchBookByTextFragment.class, tag);
                 return;
 
-            case BookSearchByExternalIdFragment.TAG:
-                addFirstFragment(R.id.main_fragment, BookSearchByExternalIdFragment.class, tag);
+            case SearchBookByExternalIdFragment.TAG:
+                addFirstFragment(R.id.main_fragment, SearchBookByExternalIdFragment.class, tag);
                 return;
 
 
-            case FTSSearchFragment.TAG:
-                addFirstFragment(R.id.main_fragment, FTSSearchFragment.class, tag);
+            case SearchFtsFragment.TAG:
+                addFirstFragment(R.id.main_fragment, SearchFtsFragment.class, tag);
                 return;
 
 
@@ -76,8 +76,8 @@ public class HostingActivity
                 addFirstFragment(R.id.main_fragment, AuthorWorksFragment.class, tag);
                 return;
 
-            case UpdateFieldsFragment.TAG:
-                addFirstFragment(R.id.main_fragment, UpdateFieldsFragment.class, tag);
+            case SearchBookUpdatesFragment.TAG:
+                addFirstFragment(R.id.main_fragment, SearchBookUpdatesFragment.class, tag);
                 return;
 
             case EditBookshelvesFragment.TAG:

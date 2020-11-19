@@ -55,7 +55,7 @@ public class SearchCriteria {
 
     /**
      * List of book ID's to display.
-     * The RESULT of a search with {@link FTSSearchFragment}
+     * The RESULT of a search with {@link SearchFtsFragment}
      * which can be re-used for the builder.
      */
     @Nullable
@@ -63,21 +63,21 @@ public class SearchCriteria {
 
     /**
      * Author to use in FTS search query.
-     * Supported in the builder and {@link FTSSearchFragment}.
+     * Supported in the builder and {@link SearchFtsFragment}.
      */
     @Nullable
     private String mFtsAuthor;
 
     /**
      * Publisher to use in FTS search query.
-     * Supported in the builder and {@link FTSSearchFragment}.
+     * Supported in the builder and {@link SearchFtsFragment}.
      */
     @Nullable
     private String mFtsPublisher;
 
     /**
      * Title to use in FTS search query.
-     * Supported in the builder and {@link FTSSearchFragment}.
+     * Supported in the builder and {@link SearchFtsFragment}.
      */
     @Nullable
     private String mFtsTitle;
@@ -98,7 +98,7 @@ public class SearchCriteria {
 
     /**
      * Keywords to use in FTS search query.
-     * Supported in the builder and {@link FTSSearchFragment}.
+     * Supported in the builder and {@link SearchFtsFragment}.
      * <p>
      * Always use the setter as we need to intercept the "." character.
      */

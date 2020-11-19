@@ -43,14 +43,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchByTextViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByTextViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
-public class BookSearchByTextFragment
-        extends BookSearchBaseFragment {
+public class SearchBookByTextFragment
+        extends SearchBookBaseFragment {
 
     /** Log tag. */
-    public static final String TAG = "BookSearchByTextFragment";
+    public static final String TAG = "SearchBookByTextFragment";
 
     /** adapter for the AutoCompleteTextView. */
     private DiacriticArrayAdapter<String> mAuthorAdapter;
@@ -59,7 +59,7 @@ public class BookSearchByTextFragment
     /** View Binding. */
     private FragmentBooksearchByTextBinding mVb;
 
-    private BookSearchByTextViewModel mVm;
+    private SearchBookByTextViewModel mVm;
 
     @NonNull
     @Override
@@ -87,7 +87,7 @@ public class BookSearchByTextFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVm = new ViewModelProvider(this).get(BookSearchByTextViewModel.class);
+        mVm = new ViewModelProvider(this).get(SearchBookByTextViewModel.class);
         //noinspection ConstantConditions
         mVm.init(getContext());
 

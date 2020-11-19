@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookDetailsFragmentViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
@@ -342,17 +342,17 @@ public class BookTest {
     public void showBookVM()
             throws DAO.DaoWriteException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "BookDetailsFragmentViewModel-prep")) {
+        try (DAO db = new DAO(context, "ShowBookViewModel-prep")) {
             mBook[0] = prepareBook(context, db);
             mBookId[0] = mBook[0].getId();
         }
 
-        final BookDetailsFragmentViewModel vm = new BookDetailsFragmentViewModel();
+        final ShowBookViewModel vm = new ShowBookViewModel();
         final Bundle args = new Bundle();
         args.putLong(DBDefinitions.KEY_PK_ID, mBookId[0]);
         try {
             vm.init(context, args);
-            final Book retrieved = vm.getBook();
+            final Book retrieved = vm.getBookAt(1);
             assertEquals(mBookId[0], retrieved.getId());
             checkBookAfterInitialInsert(context, retrieved);
 

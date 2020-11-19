@@ -59,26 +59,26 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.UpdateFieldsModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookUpdatesViewModel;
 
 /**
  * Search the internet for one book or a list of books and download/update book data
  * as per user choices.
  * <p>
  * TODO: re-introduce remembering the last id done, and restarting from that id onwards.
- * See {@link UpdateFieldsModel} mFromBookIdOnwards
+ * See {@link SearchBookUpdatesViewModel} mFromBookIdOnwards
  */
-public class UpdateFieldsFragment
+public class SearchBookUpdatesFragment
         extends Fragment {
 
     /** Log tag. */
-    public static final String TAG = "UpdateFieldsFragment";
+    public static final String TAG = "SearchBookUpdatesFragment";
 
     public static final String BKEY_SCREEN_TITLE = TAG + ":title";
     public static final String BKEY_SCREEN_SUBTITLE = TAG + ":subtitle";
 
     /** The extended SearchCoordinator. */
-    private UpdateFieldsModel mVm;
+    private SearchBookUpdatesViewModel mVm;
     private final ActivityResultLauncher<ArrayList<Site>> mEditSitesLauncher =
             registerForActivityResult(new SearchSitesSingleListContract(),
                                       sites -> {
@@ -130,7 +130,7 @@ public class UpdateFieldsFragment
             actionBar.setTitle(args.getString(BKEY_SCREEN_SUBTITLE));
         }
 
-        mVm = new ViewModelProvider(this).get(UpdateFieldsModel.class);
+        mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
         //noinspection ConstantConditions
         mVm.init(getContext(), args);
 
@@ -328,7 +328,7 @@ public class UpdateFieldsFragment
 
         if (message.result != null) {
             // The result will contain:
-            // UpdateFieldsModel.BKEY_LAST_BOOK_ID, long
+            // SearchBookUpdatesViewModel.BKEY_LAST_BOOK_ID, long
             // UniqueId.BKEY_BOOK_MODIFIED, boolean
             // DBDefinitions.KEY_PK_ID, long (can be absent)
             final Intent resultIntent = new Intent().putExtras(message.result);

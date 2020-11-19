@@ -28,12 +28,12 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.BookSearchByExternalIdFragment;
-import com.hardbacknutter.nevertoomanybooks.BookSearchByIsbnFragment;
-import com.hardbacknutter.nevertoomanybooks.BookSearchByTextFragment;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
+import com.hardbacknutter.nevertoomanybooks.SearchBookByExternalIdFragment;
+import com.hardbacknutter.nevertoomanybooks.SearchBookByIsbnFragment;
+import com.hardbacknutter.nevertoomanybooks.SearchBookByTextFragment;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -55,21 +55,21 @@ public class AddBookBySearchContract
 
         switch (by) {
             case Isbn:
-                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG);
+                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookByIsbnFragment.TAG);
                 break;
 
             case Scan:
-                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, BookSearchByIsbnFragment.TAG)
-                      .putExtra(BookSearchByIsbnFragment.BKEY_SCAN_MODE, true);
+                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookByIsbnFragment.TAG)
+                      .putExtra(SearchBookByIsbnFragment.BKEY_SCAN_MODE, true);
                 break;
 
             case ExternalId:
                 intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG,
-                                BookSearchByExternalIdFragment.TAG);
+                                SearchBookByExternalIdFragment.TAG);
                 break;
 
             case Text:
-                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, BookSearchByTextFragment.TAG);
+                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookByTextFragment.TAG);
                 break;
         }
 

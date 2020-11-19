@@ -29,16 +29,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import java.util.List;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
 
 /**
  * This is the class that manages data and views for an Activity/Fragment;
@@ -253,35 +249,4 @@ public class Fields {
         void afterFieldChange(@IdRes int fieldId);
     }
 
-    public static class FormattedDiacriticArrayAdapter
-            extends DiacriticArrayAdapter<String> {
-
-        /** The formatter to apply on each line item. */
-        @Nullable
-        private final FieldFormatter<String> mFormatter;
-
-        /**
-         * Constructor.
-         *
-         * @param context   Current context.
-         * @param objects   The objects to represent in the list view
-         * @param formatter to use
-         */
-        public FormattedDiacriticArrayAdapter(@NonNull final Context context,
-                                              @NonNull final List<String> objects,
-                                              @Nullable final FieldFormatter<String> formatter) {
-            super(context, R.layout.dropdown_menu_popup_item, 0, objects);
-            mFormatter = formatter;
-        }
-
-        @Nullable
-        @Override
-        public String getItem(final int position) {
-            if (mFormatter != null) {
-                return mFormatter.format(getContext(), super.getItem(position));
-            } else {
-                return super.getItem(position);
-            }
-        }
-    }
 }

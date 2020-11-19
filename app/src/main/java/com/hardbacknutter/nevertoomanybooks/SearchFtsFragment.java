@@ -62,11 +62,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
  * to the {@link BooksOnBookshelf} Activity.
  * This is intentionally different from the behaviour of {@link AuthorWorksFragment}.
  */
-public class FTSSearchFragment
+public class SearchFtsFragment
         extends Fragment {
 
     /** Log tag. */
-    public static final String TAG = "FTSSearchFragment";
+    public static final String TAG = "SearchFtsFragment";
 
     /** create timer to tick every 250ms. */
     private static final int TIMER_TICK_MS = 250;
@@ -334,7 +334,7 @@ public class FTSSearchFragment
         public Intent createIntent(@NonNull final Context context,
                                    @NonNull final SearchCriteria criteria) {
             final Intent intent = new Intent(context, HostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, FTSSearchFragment.TAG);
+                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchFtsFragment.TAG);
             criteria.to(intent);
             return intent;
         }

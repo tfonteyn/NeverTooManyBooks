@@ -23,7 +23,7 @@ import androidx.activity.result.contract.ActivityResultContract;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.searches.JsoupLoader;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 
 /**
  * Global location where you can switch individual DEBUG options of/off
@@ -55,11 +55,11 @@ public final class DEBUG_SWITCHES {
     /** enable timers for rough performance measurements. */
     public static final boolean BOB_THE_BUILDER_TIMERS = false;
 
-    /** {@link BooksOnBookshelfModel}. */
+    /** {@link BooksOnBookshelfViewModel}. */
     public static final boolean BOB_INIT_BOOK_LIST = false;
-    /** {@link BooksOnBookshelfModel} Expand/Collapsing nodes. */
+    /** {@link BooksOnBookshelfViewModel} Expand/Collapsing nodes. */
     public static final boolean BOB_NODE_STATE = false;
-    /** {@link BooksOnBookshelfModel} Display the position and node id. Adds a View from code. */
+    /** {@link BooksOnBookshelfViewModel} Display the position and node id. Adds a View from code. */
     public static final boolean BOB_NODE_ID = false;
 
     /** track results from {@link ActivityResultContract#parseResult}. */

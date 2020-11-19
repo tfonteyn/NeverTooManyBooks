@@ -41,11 +41,11 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.BookSearchByExternalIdViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByExternalIdViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup;
 
-public class BookSearchByExternalIdFragment
-        extends BookSearchBaseFragment {
+public class SearchBookByExternalIdFragment
+        extends SearchBookBaseFragment {
 
     /** Log tag. */
     public static final String TAG = "BookSearchByExternalId";
@@ -64,7 +64,7 @@ public class BookSearchByExternalIdFragment
     @Nullable
     private SearchEngine.ByExternalId mSelectedSearchEngine;
 
-    private BookSearchByExternalIdViewModel mVm;
+    private SearchBookByExternalIdViewModel mVm;
 
     @NonNull
     @Override
@@ -87,7 +87,7 @@ public class BookSearchByExternalIdFragment
         super.onViewCreated(view, savedInstanceState);
 
         mVm = new ViewModelProvider(this)
-                .get(BookSearchByExternalIdViewModel.class);
+                .get(SearchBookByExternalIdViewModel.class);
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_external_id);
