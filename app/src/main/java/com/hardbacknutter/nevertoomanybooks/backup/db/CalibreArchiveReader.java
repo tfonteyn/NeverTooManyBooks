@@ -55,12 +55,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 /**
  * Copies the standard fields (book, author, publisher, series).
  * <p>
- * Supports custom columns:
+ * Supports custom columns, see {@link #handleCustomColumns(Book, int)}.
  * <ul>
  *     <li>read (boolean)</li>
  *     <li>read_start (datetime)</li>
  *     <li>read_end (datetime)</li>
  *     <li>date_read (datetime) -> read_end</li>
+ *     <li>notes (text)</li>
  * </ul>
  *
  * <p>
@@ -70,13 +71,20 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
  * Not copying "ratings" either. The source is rather unclear. Amazon or Goodreads? or?
  * <p>
  * ENHANCE: tags... this would require implementing a full tag system in our own database.
+ * => bookshelves 'are' tags? redefine the meaning of bookshelf as a 'tag'?
+ * => and then define some tags as being shelves ?
  */
 class CalibreArchiveReader
         implements ArchiveReader {
 
+    /**
+     * The minimal Calibre database version we support.
+     * Older versions might work, but no testing was done so we reject them.
+     */
+    private static final int MINIMUM_CALIBRE_DB_VERSION = 23;
+
     /** Log tag. */
     private static final String TAG = "CalibreArchiveReader";
-
     /** The main fields from the books table. */
     private static final String SQL_SELECT_BOOKS =
             "SELECT books.id AS id,"
@@ -95,37 +103,30 @@ class CalibreArchiveReader
 
             + " LEFT JOIN books_languages_link ON books.id = books_languages_link.book"
             + " LEFT JOIN languages ON books_languages_link.lang_code = languages.id";
-
     /** Read the authors for the given book id. */
     private static final String SQL_SELECT_AUTHORS =
             "SELECT authors.name FROM books_authors_link JOIN authors"
             + " ON books_authors_link.author = authors.id"
             + " WHERE books_authors_link.book=?";
-
     /** Read the publishers for the given book id. */
     private static final String SQL_SELECT_PUBLISHERS =
             "SELECT publishers.name FROM books_publishers_link JOIN publishers "
             + "ON books_publishers_link.publisher = publishers.id"
             + " WHERE books_publishers_link.book=?";
-
     /** Read the external identifiers for the given book id. */
     private static final String SQL_SELECT_IDENTIFIERS =
             "SELECT identifiers.type, identifiers.val FROM identifiers "
             + " WHERE identifiers.book=?";
-
     /** Read all custom column definitions. */
     private static final String SQL_SELECT_CUSTOM_COLUMNS =
             "SELECT id, label, datatype FROM custom_columns";
-
     /** Read a single custom column. The index must be string-substituted. */
     private static final String SQL_SELECT_CUSTOM_COLUMN_X =
             "SELECT value FROM custom_column_%s WHERE book=?";
-
     private static final String CALIBRE_BOOL = "bool";
     private static final String CALIBRE_DATETIME = "datetime";
     private static final String CALIBRE_COMMENTS = "comments";
     private static final String CALIBRE_TEXT = "text";
-
     /** Database Access. */
     @NonNull
     private final DAO mDb;
@@ -167,8 +168,7 @@ class CalibreArchiveReader
     @Override
     public void validate(@NonNull final Context context)
             throws InvalidArchiveException {
-        // Older versions might work, but no testing was done so we reject them.
-        if (mCalibreDb.getVersion() < 23) {
+        if (mCalibreDb.getVersion() < MINIMUM_CALIBRE_DB_VERSION) {
             throw new InvalidArchiveException(ImportHelper.IMPORT_NOT_SUPPORTED);
         }
     }
@@ -279,13 +279,8 @@ class CalibreArchiveReader
                             .getBookIdFromKey(DBDefinitions.KEY_EID_CALIBRE_UUID,
                                               calibreUuid);
 
-                    //    if (databaseBookId == 0) {
-                    //        // try to find it using the ISBN
-                    //        final String isbn = book.getString(DBDefinitions.KEY_ISBN);
-                    //        if (!isbn.isEmpty()) {
-                    //            databaseBookId = mDb.getBookIdFromIsbn(new ISBN(isbn));
-                    //        }
-                    //    }
+                    //Note: do NOT try and find it by ISBN. Keep Calibre strictly separate.
+                    // We don't want to overwrite physical copies!
 
                     if (databaseBookId > 0) {
                         // The book exists in our database
@@ -535,6 +530,8 @@ class CalibreArchiveReader
      * @param db      Database Access
      * @param book    the book we're updating
      * @param bookId  the book id to lookup in our database
+     *
+     * @return {@code true} if the imported data is newer then the local data.
      */
     private boolean isImportNewer(@NonNull final Context context,
                                   @NonNull final DAO db,
