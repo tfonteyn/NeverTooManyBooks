@@ -243,7 +243,7 @@ android {
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
 dependencies {
     // https://github.com/google/desugar_jdk_libs
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.0'
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.1'
     //
     implementation 'androidx.activity:activity:1.2.0-beta01'
     implementation 'androidx.annotation:annotation:1.2.0-alpha01'
@@ -286,7 +286,7 @@ dependencies {
     implementation 'com.journeyapps:zxing-android-embedded:4.0.0'
     implementation 'com.google.zxing:core:3.4.1'
 
-    testImplementation 'org.json:json:20200518'
+    testImplementation 'org.json:json:20201115'
 
     // uses JUnit5
     testImplementation 'org.mockito:mockito-core:3.6.0'
