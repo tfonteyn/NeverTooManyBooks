@@ -34,9 +34,9 @@ import java.nio.charset.StandardCharsets;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
@@ -58,8 +58,8 @@ public class CsvExporterTest {
 
         final ExportResults results;
 
-        final int entities = Options.BOOKS;
-        //final int entities = Options.BOOKS | Options.COVERS;
+        final int entities = ExportHelper.Options.BOOKS;
+        //final int entities = ExportHelper.Options.BOOKS | ExportHelper.Options.COVERS;
         try (Exporter exporter = new CsvExporter(context, entities, null)) {
             results = exporter.write(context, file, new TestProgressListener(TAG));
         }

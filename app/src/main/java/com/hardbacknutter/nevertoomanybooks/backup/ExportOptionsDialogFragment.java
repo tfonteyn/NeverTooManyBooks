@@ -38,7 +38,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
@@ -108,28 +107,30 @@ public class ExportOptionsDialogFragment
     private void setupOptions() {
         final ExportHelper helper = mExportViewModel.getExportHelper();
 
-        mVb.cbxBooks.setChecked(helper.isOptionSet(Options.BOOKS));
+        mVb.cbxBooks.setChecked(helper.isOptionSet(ExportHelper.Options.BOOKS));
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            helper.setOption(Options.BOOKS, isChecked);
+            helper.setOption(ExportHelper.Options.BOOKS, isChecked);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        final boolean allBooks = !helper.isOptionSet(Options.IS_SYNC);
+        final boolean allBooks = !helper.isOptionSet(ExportHelper.Options.IS_SYNC);
         mVb.rbBooksAll.setChecked(allBooks);
         mVb.rbBooksSync.setChecked(!allBooks);
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
             // We only have two buttons and one option, so just check the pertinent one.
-            helper.setOption(Options.IS_SYNC, checkedId == mVb.rbBooksSync.getId());
+            helper.setOption(ExportHelper.Options.IS_SYNC, checkedId == mVb.rbBooksSync.getId());
         });
 
-        mVb.cbxCovers.setChecked(helper.isOptionSet(Options.COVERS));
+        mVb.cbxCovers.setChecked(helper.isOptionSet(ExportHelper.Options.COVERS));
         mVb.cbxCovers.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
+                (buttonView, isChecked) -> helper
+                        .setOption(ExportHelper.Options.COVERS, isChecked));
 
-        mVb.cbxPrefsAndStyles.setChecked(helper.isOptionSet(Options.PREFS | Options.STYLES));
+        mVb.cbxPrefsAndStyles.setChecked(helper.isOptionSet(
+                ExportHelper.Options.PREFS | ExportHelper.Options.STYLES));
         mVb.cbxPrefsAndStyles.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            helper.setOption(Options.PREFS, isChecked);
-            helper.setOption(Options.STYLES, isChecked);
+            helper.setOption(ExportHelper.Options.PREFS, isChecked);
+            helper.setOption(ExportHelper.Options.STYLES, isChecked);
         });
 
         // Check options on position.

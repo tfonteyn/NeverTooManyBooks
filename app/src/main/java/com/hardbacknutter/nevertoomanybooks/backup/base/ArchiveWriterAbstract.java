@@ -103,7 +103,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             XmlExporter xmlExporter = new XmlExporter(context, Options.INFO, null)) {
+             XmlExporter xmlExporter = new XmlExporter(context, ExportHelper.Options.INFO, null)) {
 
             xmlExporter.writeArchiveInfo(writer, archiveInfo);
         }
@@ -124,7 +124,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             Exporter exporter = new XmlExporter(context, Options.STYLES, null)) {
+             Exporter exporter = new XmlExporter(context, ExportHelper.Options.STYLES, null)) {
 
             mResults.add(exporter.write(context, writer, progressListener));
         }
@@ -145,7 +145,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             Exporter exporter = new XmlExporter(context, Options.PREFS, null)) {
+             Exporter exporter = new XmlExporter(context, ExportHelper.Options.PREFS, null)) {
 
             mResults.add(exporter.write(context, writer, progressListener));
         }
@@ -171,7 +171,8 @@ public abstract class ArchiveWriterAbstract
 
         // Not strictly needed for the CsvExporter as it will ignore
         // other options, but done as a reminder (see XmlArchiveWriter)
-        final int entities = mHelper.getOptions() & (Options.BOOKS | Options.COVERS);
+        final int entities =
+                mHelper.getOptions() & (ExportHelper.Options.BOOKS | ExportHelper.Options.COVERS);
         try (Exporter exporter = new CsvExporter(context, entities,
                                                  mHelper.getUtcDateTimeSince())) {
             return exporter.write(context, mTmpBooksFile, progressListener);

@@ -38,7 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 
@@ -151,7 +150,7 @@ public class TarArchiveReader
             }
 
             // read the INFO
-            try (XmlImporter importer = new XmlImporter(context, Options.INFO)) {
+            try (XmlImporter importer = new XmlImporter(context, ImportHelper.Options.INFO)) {
                 mInfo = importer.readInfo(entity.getInputStream());
             }
             // We MUST close the stream here, so the caller gets a pristine stream.

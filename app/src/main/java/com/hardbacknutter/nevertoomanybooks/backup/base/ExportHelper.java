@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -29,10 +30,13 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
@@ -61,8 +65,8 @@ public class ExportHelper {
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
     /**
      * Bitmask.
-     * Contains the user selected options before doing the import/export.
-     * After the import/export, reflects the entities actually imported/exported.
+     * Contains the user selected options before doing the export.
+     * After the export, reflects the entities actually exported.
      */
     @Options.Bits
     private int mOptions;
@@ -321,5 +325,68 @@ public class ExportHelper {
                + ", mFromUtcDateTime=" + mFromUtcDateTime
                + ", mResults=" + mResults
                + '}';
+    }
+
+    /**
+     * Options as to what should be exported.
+     * Not all implementations will support all options.
+     * <p>
+     * The bit numbers are not stored.
+     */
+    public static final class Options {
+
+        public static final int NOTHING = 0;
+        public static final int INFO = 1;
+
+        public static final int BOOKS = 1 << 1;
+        public static final int COVERS = 1 << 2;
+
+        public static final int PREFS = 1 << 8;
+        public static final int STYLES = 1 << 9;
+
+        /**
+         * All entity types which can be written/read.
+         * This does not include INFO nor IS_SYNC.
+         */
+        public static final int ENTITIES = BOOKS | COVERS | PREFS | STYLES;
+
+        /**
+         * Do a sync.
+         * <ul>
+         *     <li>0: all books</li>
+         *     <li>1: books added/updated since last backup</li>
+         * </ul>
+         */
+        public static final int IS_SYNC = 1 << 16;
+
+        /** DEBUG. */
+        public static String toString(@Bits final int options) {
+            final StringJoiner sj = new StringJoiner(",", "Options{", "}");
+            if ((options & INFO) != 0) {
+                sj.add("INFO");
+            }
+            if ((options & BOOKS) != 0) {
+                sj.add("BOOKS");
+            }
+            if ((options & COVERS) != 0) {
+                sj.add("COVERS");
+            }
+            if ((options & PREFS) != 0) {
+                sj.add("PREFS");
+            }
+            if ((options & STYLES) != 0) {
+                sj.add("STYLES");
+            }
+            if ((options & IS_SYNC) != 0) {
+                sj.add("IS_SYNC");
+            }
+            return sj.toString();
+        }
+
+        @IntDef(flag = true, value = {INFO, BOOKS, COVERS, PREFS, STYLES, IS_SYNC})
+        @Retention(RetentionPolicy.SOURCE)
+        public @interface Bits {
+
+        }
     }
 }

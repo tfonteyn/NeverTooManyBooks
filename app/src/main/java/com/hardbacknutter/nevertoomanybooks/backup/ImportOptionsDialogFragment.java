@@ -36,7 +36,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
@@ -127,24 +126,26 @@ public class ImportOptionsDialogFragment
 
         } else {
             // Populate the options.
-            mVb.cbxBooks.setChecked(helper.isOptionSet(Options.BOOKS));
+            mVb.cbxBooks.setChecked(helper.isOptionSet(ImportHelper.Options.BOOKS));
             mVb.cbxBooks.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
-                        helper.setOption(Options.BOOKS, isChecked);
+                        helper.setOption(ImportHelper.Options.BOOKS, isChecked);
                         if (mAllowSetEnableOnBooksGroup) {
                             mVb.rbBooksGroup.setEnabled(isChecked);
                         }
                     });
 
-            mVb.cbxCovers.setChecked(helper.isOptionSet(Options.COVERS));
+            mVb.cbxCovers.setChecked(helper.isOptionSet(ImportHelper.Options.COVERS));
             mVb.cbxCovers.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> helper.setOption(Options.COVERS, isChecked));
+                    (buttonView, isChecked) -> helper
+                            .setOption(ImportHelper.Options.COVERS, isChecked));
 
-            mVb.cbxPrefsAndStyles.setChecked(helper.isOptionSet(Options.PREFS | Options.STYLES));
+            mVb.cbxPrefsAndStyles.setChecked(helper.isOptionSet(
+                    ImportHelper.Options.PREFS | ImportHelper.Options.STYLES));
             mVb.cbxPrefsAndStyles.setOnCheckedChangeListener(
                     (buttonView, isChecked) -> {
-                        helper.setOption(Options.PREFS, isChecked);
-                        helper.setOption(Options.STYLES, isChecked);
+                        helper.setOption(ImportHelper.Options.PREFS, isChecked);
+                        helper.setOption(ImportHelper.Options.STYLES, isChecked);
                     });
         }
 
@@ -152,7 +153,7 @@ public class ImportOptionsDialogFragment
         // enable or disable the sync option
         if (isBooksOnly || archiveCreationDate != null) {
             mAllowSetEnableOnBooksGroup = true;
-            final boolean allBooks = !helper.isOptionSet(Options.IS_SYNC);
+            final boolean allBooks = !helper.isOptionSet(ImportHelper.Options.IS_SYNC);
             mVb.rbBooksAll.setChecked(allBooks);
             mVb.infoBtnRbBooksAll.setOnClickListener(StandardDialogs::infoPopup);
             mVb.rbBooksSync.setChecked(!allBooks);
@@ -160,7 +161,7 @@ public class ImportOptionsDialogFragment
 
             mVb.rbBooksGroup.setOnCheckedChangeListener(
                     // We only have two buttons and one option, so just check the pertinent one.
-                    (group, checkedId) -> helper.setOption(Options.IS_SYNC,
+                    (group, checkedId) -> helper.setOption(ImportHelper.Options.IS_SYNC,
                                                            checkedId == mVb.rbBooksSync.getId()));
         } else {
             // If the archive does not have a valid creation-date field, then we can't use sync
@@ -170,7 +171,7 @@ public class ImportOptionsDialogFragment
 
             mVb.rbBooksAll.setChecked(true);
             mVb.rbBooksSync.setChecked(false);
-            helper.setOption(Options.IS_SYNC, false);
+            helper.setOption(ImportHelper.Options.IS_SYNC, false);
             mVb.infoBtnRbBooksSync.setContentDescription(
                     getString(R.string.warning_import_old_archive));
         }

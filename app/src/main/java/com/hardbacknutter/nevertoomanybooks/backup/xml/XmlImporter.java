@@ -60,9 +60,9 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
@@ -121,8 +121,9 @@ public class XmlImporter
      * but it's clean and future proof
      */
     private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
+    /** export configuration. */
+    @ImportHelper.Options.Bits
     private final int mOptions;
-    @NonNull
     private final ImportResults mResults = new ImportResults();
 
     /** a simple Holder for the current tag name and attributes. */
@@ -136,7 +137,7 @@ public class XmlImporter
      *                ignores other flags
      */
     public XmlImporter(@NonNull final Context context,
-                       final int options) {
+                       @ImportHelper.Options.Bits final int options) {
         mOptions = options;
         mDb = new DAO(TAG);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
@@ -150,7 +151,7 @@ public class XmlImporter
 
         switch (entity.getType()) {
             case BooklistStylesXml:
-                if ((mOptions & Options.STYLES) != 0) {
+                if ((mOptions & ImportHelper.Options.STYLES) != 0) {
                     // Don't close this stream!
                     final InputStream is = entity.getInputStream();
                     final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -163,7 +164,7 @@ public class XmlImporter
                 break;
 
             case PreferencesXml:
-                if ((mOptions & Options.PREFS) != 0) {
+                if ((mOptions & ImportHelper.Options.PREFS) != 0) {
                     // Don't close this stream!
                     final InputStream is = entity.getInputStream();
                     final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);

@@ -35,9 +35,9 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <p>
  * All books will have full toc, author, series and bookshelf information.
  * <p>
- * Support {@link Options#BOOKS} only (and does in fact simply disregard all Options flags).
+ * Support {@link ExportHelper.Options#BOOKS} only (and does in fact simply disregard all flags).
  */
 public class CsvExporter
         implements Exporter {
@@ -139,15 +139,17 @@ public class CsvExporter
     @NonNull
     private final DAO mDb;
     /** cached localized "unknown" string. */
+    @NonNull
     private final String mUnknownNameString;
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
     private final StringList<Publisher> mPublisherCoder = new StringList<>(new PublisherCoder());
     private final StringList<TocEntry> mTocCoder = new StringList<>(new TocEntryCoder());
-    private final StringList<Bookshelf> mBookshelfCoder;
     @NonNull
+    private final StringList<Bookshelf> mBookshelfCoder;
     private final ExportResults mResults = new ExportResults();
     /** export configuration. */
+    @ExportHelper.Options.Bits
     private final int mOptions;
     private final boolean mCollectCoverFilenames;
 
@@ -158,17 +160,17 @@ public class CsvExporter
      * Constructor.
      *
      * @param context          Current context
-     * @param options          {@link Options} flags
+     * @param options          {@link ExportHelper.Options} flags
      * @param utcSinceDateTime (optional) UTC based date to select only books modified or added
      *                         since.
      */
     @AnyThread
     public CsvExporter(@NonNull final Context context,
-                       final int options,
+                       @ExportHelper.Options.Bits final int options,
                        @Nullable final LocalDateTime utcSinceDateTime) {
 
         mOptions = options;
-        mCollectCoverFilenames = (mOptions & Options.COVERS) != 0;
+        mCollectCoverFilenames = (mOptions & ExportHelper.Options.COVERS) != 0;
         mUtcSinceDateTime = utcSinceDateTime;
 
         mDb = new DAO(TAG);
@@ -190,7 +192,7 @@ public class CsvExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        final boolean writeBooks = (mOptions & Options.BOOKS) != 0;
+        final boolean writeBooks = (mOptions & ExportHelper.Options.BOOKS) != 0;
         // Sanity check: if we don't do books, return empty results
         if (!writeBooks) {
             return mResults;

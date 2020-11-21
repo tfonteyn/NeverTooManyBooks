@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -98,7 +97,8 @@ public class XmlArchiveWriter
 
         // We must strip out other entities here as the XmlExporter supports all entities
         // which we don't want to do here.
-        final int entities = mHelper.getOptions() & (Options.BOOKS | Options.COVERS);
+        final int entities =
+                mHelper.getOptions() & (ExportHelper.Options.BOOKS | ExportHelper.Options.COVERS);
         try (Exporter exporter = new XmlExporter(context, entities,
                                                  mHelper.getUtcDateTimeSince())) {
             return exporter.write(context, mTmpBooksFile, progressListener);

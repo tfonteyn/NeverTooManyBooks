@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -158,7 +157,7 @@ class CalibreArchiveReader
         mCalibreDb = calibreDb;
         mDb = new DAO(TAG);
 
-        mForceUpdate = (helper.getOptions() & Options.IS_SYNC) == 0;
+        mForceUpdate = (helper.getOptions() & ImportHelper.Options.IS_SYNC) == 0;
 
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);

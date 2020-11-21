@@ -106,13 +106,13 @@ public abstract class ArchiveReaderAbstract
             throws IOException, ImportException, InvalidArchiveException {
 
         // keep track of what we read from the archive
-        @Options.Bits
-        int entitiesRead = Options.NOTHING;
+        @ImportHelper.Options.Bits
+        int entitiesRead = ImportHelper.Options.NOTHING;
 
-        boolean readStyles = mHelper.isOptionSet(Options.STYLES);
-        boolean readPrefs = mHelper.isOptionSet(Options.PREFS);
-        final boolean readBooks = mHelper.isOptionSet(Options.BOOKS);
-        final boolean readCovers = mHelper.isOptionSet(Options.COVERS);
+        boolean readStyles = mHelper.isOptionSet(ImportHelper.Options.STYLES);
+        boolean readPrefs = mHelper.isOptionSet(ImportHelper.Options.PREFS);
+        final boolean readBooks = mHelper.isOptionSet(ImportHelper.Options.BOOKS);
+        final boolean readCovers = mHelper.isOptionSet(ImportHelper.Options.COVERS);
 
         // progress counters
         int estimatedSteps = 1;
@@ -140,7 +140,7 @@ public abstract class ArchiveReaderAbstract
                     try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
-                    entitiesRead |= Options.STYLES;
+                    entitiesRead |= ImportHelper.Options.STYLES;
                     readStyles = false;
                 }
                 resetToStart();
@@ -154,7 +154,7 @@ public abstract class ArchiveReaderAbstract
                     try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
-                    entitiesRead |= Options.PREFS;
+                    entitiesRead |= ImportHelper.Options.PREFS;
                     readPrefs = false;
                 }
                 resetToStart();
@@ -186,7 +186,7 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
-                            entitiesRead |= Options.BOOKS;
+                            entitiesRead |= ImportHelper.Options.BOOKS;
                         }
                         break;
                     }
@@ -210,7 +210,7 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 importer.read(context, entity, progressListener);
                             }
-                            entitiesRead |= Options.PREFS;
+                            entitiesRead |= ImportHelper.Options.PREFS;
                             readPrefs = false;
                         }
                         break;
@@ -224,7 +224,7 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
-                            entitiesRead |= Options.STYLES;
+                            entitiesRead |= ImportHelper.Options.STYLES;
                             readStyles = false;
                         }
                         break;
@@ -253,7 +253,7 @@ public abstract class ArchiveReaderAbstract
         } finally {
             // report what we actually imported
             if (mResults.coversProcessed > 0) {
-                entitiesRead |= Options.COVERS;
+                entitiesRead |= ImportHelper.Options.COVERS;
             }
             mHelper.setOptions(entitiesRead);
 
@@ -281,7 +281,7 @@ public abstract class ArchiveReaderAbstract
             File dstFile = AppDir.Covers.getFile(context, cover.getName());
             final boolean exists = dstFile.exists();
 
-            if (mHelper.isOptionSet(Options.IS_SYNC) && exists) {
+            if (mHelper.isOptionSet(ImportHelper.Options.IS_SYNC) && exists) {
                 // shift 16 bits to get to +- 1 minute precision.
                 // Using pure milliseconds will create far to many false positives
                 final long importFileDate = cover.getLastModifiedEpochMilli() >> FILE_LM_PRECISION;

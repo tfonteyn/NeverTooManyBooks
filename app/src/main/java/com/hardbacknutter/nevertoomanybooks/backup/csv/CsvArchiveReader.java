@@ -35,13 +35,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * A minimal implementation of {@link ArchiveReader} which reads a plain CSV file with books.
- * {@link Options} are NOT supported for now (hardcoded to {@link Options#BOOKS} only).
+ * {@link ImportHelper.Options} are NOT supported for now (hardcoded to {@link ImportHelper.Options#BOOKS} only).
  */
 public class CsvArchiveReader
         implements ArchiveReader {

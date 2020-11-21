@@ -24,7 +24,6 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 
 public class ExportViewModel
         extends ViewModel {
@@ -36,7 +35,7 @@ public class ExportViewModel
     @NonNull
     ExportHelper getExportHelper() {
         if (mExportHelper == null) {
-            mExportHelper = new ExportHelper(Options.ENTITIES);
+            mExportHelper = new ExportHelper(ExportHelper.Options.ENTITIES);
         }
         return mExportHelper;
     }

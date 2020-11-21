@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -193,7 +192,8 @@ public class ImportFragment
             //noinspection EnumSwitchStatementWhichMissesCases
             switch (container) {
                 case CsvBooks:
-                    importHelper.setOptions(Options.BOOKS | Options.IS_SYNC);
+                    importHelper.setOptions(
+                            ImportHelper.Options.BOOKS | ImportHelper.Options.IS_SYNC);
 
                     //URGENT: make a backup before ANY csv import!
                     //noinspection ConstantConditions
@@ -213,7 +213,8 @@ public class ImportFragment
                 case Zip:
                 case Tar:
                 case SqLiteDb:
-                    importHelper.setOptions(Options.ENTITIES | Options.IS_SYNC);
+                    importHelper.setOptions(
+                            ImportHelper.Options.ENTITIES | ImportHelper.Options.IS_SYNC);
                     mImportOptionsLauncher.launch();
                     break;
 
@@ -367,9 +368,10 @@ public class ImportFragment
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {
-                return Options.NOTHING;
+                return ImportHelper.Options.NOTHING;
             }
-            return intent.getIntExtra(ImportResults.BKEY_IMPORT_RESULTS, Options.NOTHING);
+            return intent
+                    .getIntExtra(ImportResults.BKEY_IMPORT_RESULTS, ImportHelper.Options.NOTHING);
         }
     }
 }

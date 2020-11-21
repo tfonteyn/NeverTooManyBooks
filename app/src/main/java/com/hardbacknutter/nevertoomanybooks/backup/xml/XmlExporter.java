@@ -44,9 +44,9 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
@@ -131,6 +131,8 @@ public class XmlExporter
     @NonNull
     private final DAO mDb;
     private final ExportResults mResults = new ExportResults();
+    /** export configuration. */
+    @ExportHelper.Options.Bits
     private final int mOptions;
     private final boolean mCollectCoverFilenames;
 
@@ -144,16 +146,16 @@ public class XmlExporter
      * Constructor.
      *
      * @param context          Current context
-     * @param options          {@link Options} flags
+     * @param options          {@link ExportHelper.Options} flags
      * @param utcSinceDateTime (optional) UTC based date to select only books modified or added
      *                         since.
      */
     public XmlExporter(@NonNull final Context context,
-                       final int options,
+                       @ExportHelper.Options.Bits final int options,
                        @Nullable final LocalDateTime utcSinceDateTime) {
 
         mOptions = options;
-        mCollectCoverFilenames = (mOptions & Options.COVERS) != 0;
+        mCollectCoverFilenames = (mOptions & ExportHelper.Options.COVERS) != 0;
         mUtcSinceDateTime = utcSinceDateTime;
 
         mDb = new DAO(TAG);
@@ -177,9 +179,9 @@ public class XmlExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        final boolean writeBooks = (mOptions & Options.BOOKS) != 0;
-        final boolean writeStyles = (mOptions & Options.STYLES) != 0;
-        final boolean writePrefs = (mOptions & Options.PREFS) != 0;
+        final boolean writeBooks = (mOptions & ExportHelper.Options.BOOKS) != 0;
+        final boolean writeStyles = (mOptions & ExportHelper.Options.STYLES) != 0;
+        final boolean writePrefs = (mOptions & ExportHelper.Options.PREFS) != 0;
 
         if (!progressListener.isCancelled() && writeStyles) {
             progressListener.publishProgressStep(

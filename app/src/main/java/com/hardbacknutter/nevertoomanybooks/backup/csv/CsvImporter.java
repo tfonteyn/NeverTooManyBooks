@@ -46,9 +46,9 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Options;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
@@ -139,6 +139,7 @@ public class CsvImporter
     private final Locale mUserLocale;
 
     /** import configuration. */
+    @ImportHelper.Options.Bits
     private final int mOptions;
 
     /** cached localized "Books" string. */
@@ -161,13 +162,13 @@ public class CsvImporter
      * Constructor.
      *
      * @param context Current context
-     * @param options {@link Options#IS_SYNC} is respected.
+     * @param options {@link ImportHelper.Options#IS_SYNC} is respected.
      *                Other flags are ignored, as this class only
-     *                handles {@link Options#BOOKS} anyhow.
+     *                handles {@link ImportHelper.Options#BOOKS} anyhow.
      */
     @AnyThread
     public CsvImporter(@NonNull final Context context,
-                       final int options) {
+                       @ImportHelper.Options.Bits final int options) {
 
         mOptions = options;
 
@@ -258,7 +259,7 @@ public class CsvImporter
         // Overwrite (forceUpdate=true) existing data; or (forceUpdate=false) only
         // if the incoming data is newer.
         final boolean forceUpdate;
-        if ((mOptions & Options.IS_SYNC) != 0) {
+        if ((mOptions & ImportHelper.Options.IS_SYNC) != 0) {
             requireColumnOrThrow(context, book, DBDefinitions.KEY_UTC_LAST_UPDATED);
             forceUpdate = false;
         } else {
