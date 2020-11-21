@@ -193,7 +193,7 @@ public class ImportFragment
             switch (container) {
                 case CsvBooks:
                     importHelper.setOptions(
-                            ImportHelper.Options.BOOKS | ImportHelper.Options.IS_SYNC);
+                            ImportHelper.Options.BOOKS | ImportHelper.Options.UPDATED_BOOKS_SYNC);
 
                     //URGENT: make a backup before ANY csv import!
                     //noinspection ConstantConditions
@@ -214,7 +214,8 @@ public class ImportFragment
                 case Tar:
                 case SqLiteDb:
                     importHelper.setOptions(
-                            ImportHelper.Options.ENTITIES | ImportHelper.Options.IS_SYNC);
+                            ImportHelper.Options.ENTITIES
+                            | ImportHelper.Options.UPDATED_BOOKS_SYNC);
                     mImportOptionsLauncher.launch();
                     break;
 

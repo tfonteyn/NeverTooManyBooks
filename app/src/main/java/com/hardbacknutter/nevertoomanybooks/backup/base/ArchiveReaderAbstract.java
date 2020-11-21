@@ -281,7 +281,7 @@ public abstract class ArchiveReaderAbstract
             File dstFile = AppDir.Covers.getFile(context, cover.getName());
             final boolean exists = dstFile.exists();
 
-            if (mHelper.isOptionSet(ImportHelper.Options.IS_SYNC) && exists) {
+            if (mHelper.isOptionSet(ImportHelper.Options.UPDATED_BOOKS_SYNC) && exists) {
                 // shift 16 bits to get to +- 1 minute precision.
                 // Using pure milliseconds will create far to many false positives
                 final long importFileDate = cover.getLastModifiedEpochMilli() >> FILE_LM_PRECISION;

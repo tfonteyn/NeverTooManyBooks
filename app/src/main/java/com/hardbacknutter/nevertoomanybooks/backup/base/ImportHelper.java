@@ -50,9 +50,13 @@ public class ImportHelper {
     /**
      * all defined flags.
      */
-    private static final int MASK = Options.ENTITIES | Options.IS_SYNC;
+    private static final int MASK = Options.ENTITIES
+                                    | Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC;
+
+    /** Picked by the user; where we read from. */
     @NonNull
     private final Uri mUri;
+    /** Constructed from the Uri. */
     @Nullable
     private ArchiveContainer mArchiveContainer;
     @Nullable
@@ -299,6 +303,16 @@ public class ImportHelper {
     }
 
 
+    public boolean isOptionSet(@Options.Bits final int optionBit) {
+        return (mOptions & optionBit) != 0;
+    }
+
+    @Options.Bits
+    public int getOptions() {
+        return mOptions;
+    }
+
+
     /**
      * Called from the dialog via its View listeners.
      *
@@ -314,14 +328,6 @@ public class ImportHelper {
         }
     }
 
-    public boolean isOptionSet(@Options.Bits final int optionBit) {
-        return (mOptions & optionBit) != 0;
-    }
-
-    @Options.Bits
-    public int getOptions() {
-        return mOptions;
-    }
 
     /**
      * Should be called <strong>before</strong> the import to indicate what should be imported.
@@ -359,33 +365,42 @@ public class ImportHelper {
      * Options as to what should be imported.
      * Not all implementations will support all options.
      * <p>
-     * The bit numbers are not stored.
+     * The bit numbers are not stored and can be changed.
      */
     public static final class Options {
 
         public static final int NOTHING = 0;
         public static final int INFO = 1;
+        public static final int PREFS = 1 << 1;
+        public static final int STYLES = 1 << 2;
 
-        public static final int BOOKS = 1 << 1;
-        public static final int COVERS = 1 << 2;
+        public static final int BOOKS = 1 << 6;
+        public static final int COVERS = 1 << 7;
 
-        public static final int PREFS = 1 << 8;
-        public static final int STYLES = 1 << 9;
 
         /**
-         * All entity types which can be written/read.
-         * This does not include INFO nor IS_SYNC.
+         * All entity types which can be read.
+         * This does not include INFO nor the sync options.
          */
-        public static final int ENTITIES = BOOKS | COVERS | PREFS | STYLES;
+        public static final int ENTITIES = PREFS | STYLES | BOOKS | COVERS;
 
         /**
-         * Do a sync.
+         * New Books are always imported (if {@link #BOOKS} is set obviously).
+         * <p>
+         * Existing books handling:
          * <ul>
-         *     <li>0: all books</li>
-         *     <li>1: only new books and books with more recent update_date fields</li>
+         *     <li>00: skip entirely, keep the current data.
+         *     <em>UPDATED_BOOKS==0</em></li>
+         *     <li>01: overwrite current data with incoming data
+         *     <em>UPDATED_BOOKS==1 & UPDATED_BOOKS_SYNC==0</em></li>
+         *     <li>11: check the "update_date" field and only import newer data
+         *     <em>UPDATED_BOOKS==1& UPDATED_BOOKS_SYNC==1</em></li>
+         *     <li>10: <em>invalid bit combination</em></li>
          * </ul>
          */
-        public static final int IS_SYNC = 1 << 16;
+        public static final int UPDATED_BOOKS = 1 << 16;
+        public static final int UPDATED_BOOKS_SYNC = 1 << 17;
+
 
         /** DEBUG. */
         public static String toString(@Bits final int options) {
@@ -393,25 +408,30 @@ public class ImportHelper {
             if ((options & INFO) != 0) {
                 sj.add("INFO");
             }
-            if ((options & BOOKS) != 0) {
-                sj.add("BOOKS");
-            }
-            if ((options & COVERS) != 0) {
-                sj.add("COVERS");
-            }
             if ((options & PREFS) != 0) {
                 sj.add("PREFS");
             }
             if ((options & STYLES) != 0) {
                 sj.add("STYLES");
             }
-            if ((options & IS_SYNC) != 0) {
-                sj.add("IS_SYNC");
+            if ((options & BOOKS) != 0) {
+                sj.add("BOOKS");
+            }
+            if ((options & COVERS) != 0) {
+                sj.add("COVERS");
+            }
+
+            if ((options & UPDATED_BOOKS) != 0) {
+                sj.add("UPDATED_BOOKS");
+            }
+            if ((options & UPDATED_BOOKS_SYNC) != 0) {
+                sj.add("UPDATED_BOOKS_SYNC");
             }
             return sj.toString();
         }
 
-        @IntDef(flag = true, value = {INFO, BOOKS, COVERS, PREFS, STYLES, IS_SYNC})
+        @IntDef(flag = true, value = {INFO, PREFS, STYLES, BOOKS, COVERS,
+                                      UPDATED_BOOKS, UPDATED_BOOKS_SYNC})
         @Retention(RetentionPolicy.SOURCE)
         public @interface Bits {
 

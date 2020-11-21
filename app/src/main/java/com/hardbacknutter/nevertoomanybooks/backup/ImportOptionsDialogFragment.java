@@ -153,7 +153,7 @@ public class ImportOptionsDialogFragment
         // enable or disable the sync option
         if (isBooksOnly || archiveCreationDate != null) {
             mAllowSetEnableOnBooksGroup = true;
-            final boolean allBooks = !helper.isOptionSet(ImportHelper.Options.IS_SYNC);
+            final boolean allBooks = !helper.isOptionSet(ImportHelper.Options.UPDATED_BOOKS_SYNC);
             mVb.rbBooksAll.setChecked(allBooks);
             mVb.infoBtnRbBooksAll.setOnClickListener(StandardDialogs::infoPopup);
             mVb.rbBooksSync.setChecked(!allBooks);
@@ -161,7 +161,7 @@ public class ImportOptionsDialogFragment
 
             mVb.rbBooksGroup.setOnCheckedChangeListener(
                     // We only have two buttons and one option, so just check the pertinent one.
-                    (group, checkedId) -> helper.setOption(ImportHelper.Options.IS_SYNC,
+                    (group, checkedId) -> helper.setOption(ImportHelper.Options.UPDATED_BOOKS_SYNC,
                                                            checkedId == mVb.rbBooksSync.getId()));
         } else {
             // If the archive does not have a valid creation-date field, then we can't use sync
@@ -171,7 +171,7 @@ public class ImportOptionsDialogFragment
 
             mVb.rbBooksAll.setChecked(true);
             mVb.rbBooksSync.setChecked(false);
-            helper.setOption(ImportHelper.Options.IS_SYNC, false);
+            helper.setOption(ImportHelper.Options.UPDATED_BOOKS_SYNC, false);
             mVb.infoBtnRbBooksSync.setContentDescription(
                     getString(R.string.warning_import_old_archive));
         }

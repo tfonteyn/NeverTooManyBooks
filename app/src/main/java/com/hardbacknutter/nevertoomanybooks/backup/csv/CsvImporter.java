@@ -149,7 +149,6 @@ public class CsvImporter
     private final String mProgressMessage;
     @NonNull
     private final String mUnknownString;
-    @NonNull
     private final ImportResults mResults = new ImportResults();
 
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
@@ -162,7 +161,7 @@ public class CsvImporter
      * Constructor.
      *
      * @param context Current context
-     * @param options {@link ImportHelper.Options#IS_SYNC} is respected.
+     * @param options {@link ImportHelper.Options#UPDATED_BOOKS_SYNC} is respected.
      *                Other flags are ignored, as this class only
      *                handles {@link ImportHelper.Options#BOOKS} anyhow.
      */
@@ -259,7 +258,7 @@ public class CsvImporter
         // Overwrite (forceUpdate=true) existing data; or (forceUpdate=false) only
         // if the incoming data is newer.
         final boolean forceUpdate;
-        if ((mOptions & ImportHelper.Options.IS_SYNC) != 0) {
+        if ((mOptions & ImportHelper.Options.UPDATED_BOOKS_SYNC) != 0) {
             requireColumnOrThrow(context, book, DBDefinitions.KEY_UTC_LAST_UPDATED);
             forceUpdate = false;
         } else {

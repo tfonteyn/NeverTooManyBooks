@@ -113,12 +113,13 @@ public class ExportOptionsDialogFragment
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        final boolean allBooks = !helper.isOptionSet(ExportHelper.Options.IS_SYNC);
+        final boolean allBooks = !helper.isOptionSet(ExportHelper.Options.UPDATED_BOOKS);
         mVb.rbBooksAll.setChecked(allBooks);
         mVb.rbBooksSync.setChecked(!allBooks);
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
             // We only have two buttons and one option, so just check the pertinent one.
-            helper.setOption(ExportHelper.Options.IS_SYNC, checkedId == mVb.rbBooksSync.getId());
+            helper.setOption(ExportHelper.Options.UPDATED_BOOKS,
+                             checkedId == mVb.rbBooksSync.getId());
         });
 
         mVb.cbxCovers.setChecked(helper.isOptionSet(ExportHelper.Options.COVERS));

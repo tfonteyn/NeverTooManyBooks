@@ -129,7 +129,7 @@ class CalibreArchiveReader
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-
+    @NonNull
     private final SQLiteDatabase mCalibreDb;
 
     /** cached localized "Books" string. */
@@ -157,7 +157,7 @@ class CalibreArchiveReader
         mCalibreDb = calibreDb;
         mDb = new DAO(TAG);
 
-        mForceUpdate = (helper.getOptions() & ImportHelper.Options.IS_SYNC) == 0;
+        mForceUpdate = (helper.getOptions() & ImportHelper.Options.UPDATED_BOOKS_SYNC) == 0;
 
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);

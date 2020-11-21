@@ -54,7 +54,7 @@ public class ExportHelper {
     /**
      * all defined flags.
      */
-    private static final int MASK = Options.ENTITIES | Options.IS_SYNC;
+    private static final int MASK = Options.ENTITIES | Options.UPDATED_BOOKS;
     /** Log tag. */
     private static final String TAG = "ExportHelper";
     /** Write to this temp file first. */
@@ -63,6 +63,13 @@ public class ExportHelper {
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
+
+    /** Picked by the user; where we write to. */
+    @Nullable
+    private Uri mUri;
+    /** Constructed from the Uri. */
+    @Nullable
+    private ArchiveContainer mArchiveContainer;
     /**
      * Bitmask.
      * Contains the user selected options before doing the export.
@@ -71,12 +78,9 @@ public class ExportHelper {
     @Options.Bits
     private int mOptions;
     @Nullable
-    private Uri mUri;
-    @Nullable
     private ExportResults mResults;
-    @Nullable
-    private ArchiveContainer mArchiveContainer;
-    /** EXPORT_SINCE_LAST_BACKUP. */
+
+    /** Incremental backup; the date of the last full backup. */
     @Nullable
     private LocalDateTime mFromUtcDateTime;
 
@@ -134,7 +138,7 @@ public class ExportHelper {
      */
     @Nullable
     public LocalDateTime getUtcDateTimeSince() {
-        if ((mOptions & Options.IS_SYNC) != 0) {
+        if ((mOptions & Options.UPDATED_BOOKS) != 0) {
             return mFromUtcDateTime;
         } else {
             return null;
@@ -159,7 +163,7 @@ public class ExportHelper {
         SanityCheck.requirePositiveValue(mOptions & MASK, "mOptions");
         Objects.requireNonNull(mUri, "uri");
 
-        if ((mOptions & Options.IS_SYNC) != 0) {
+        if ((mOptions & Options.UPDATED_BOOKS) != 0) {
             mFromUtcDateTime = getLastFullBackupDate(context);
         } else {
             mFromUtcDateTime = null;
@@ -224,7 +228,7 @@ public class ExportHelper {
         FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
 
         // if the backup was a full one (not a 'since') remember that.
-        if ((mOptions & Options.IS_SYNC) != 0) {
+        if ((mOptions & Options.UPDATED_BOOKS) != 0) {
             setLastFullBackupDate(context);
         }
     }
@@ -331,24 +335,23 @@ public class ExportHelper {
      * Options as to what should be exported.
      * Not all implementations will support all options.
      * <p>
-     * The bit numbers are not stored.
+     * The bit numbers are not stored and can be changed.
      */
     public static final class Options {
 
         public static final int NOTHING = 0;
         public static final int INFO = 1;
+        public static final int PREFS = 1 << 1;
+        public static final int STYLES = 1 << 2;
 
-        public static final int BOOKS = 1 << 1;
-        public static final int COVERS = 1 << 2;
-
-        public static final int PREFS = 1 << 8;
-        public static final int STYLES = 1 << 9;
+        public static final int BOOKS = 1 << 6;
+        public static final int COVERS = 1 << 7;
 
         /**
-         * All entity types which can be written/read.
-         * This does not include INFO nor IS_SYNC.
+         * All entity types which can be written.
+         * This does not include INFO nor the sync options.
          */
-        public static final int ENTITIES = BOOKS | COVERS | PREFS | STYLES;
+        public static final int ENTITIES = PREFS | STYLES | BOOKS | COVERS;
 
         /**
          * Do a sync.
@@ -357,7 +360,7 @@ public class ExportHelper {
          *     <li>1: books added/updated since last backup</li>
          * </ul>
          */
-        public static final int IS_SYNC = 1 << 16;
+        public static final int UPDATED_BOOKS = 1 << 16;
 
         /** DEBUG. */
         public static String toString(@Bits final int options) {
@@ -365,25 +368,27 @@ public class ExportHelper {
             if ((options & INFO) != 0) {
                 sj.add("INFO");
             }
-            if ((options & BOOKS) != 0) {
-                sj.add("BOOKS");
-            }
-            if ((options & COVERS) != 0) {
-                sj.add("COVERS");
-            }
             if ((options & PREFS) != 0) {
                 sj.add("PREFS");
             }
             if ((options & STYLES) != 0) {
                 sj.add("STYLES");
             }
-            if ((options & IS_SYNC) != 0) {
-                sj.add("IS_SYNC");
+            if ((options & BOOKS) != 0) {
+                sj.add("BOOKS");
+            }
+            if ((options & COVERS) != 0) {
+                sj.add("COVERS");
+            }
+
+            if ((options & UPDATED_BOOKS) != 0) {
+                sj.add("UPDATED_BOOKS");
             }
             return sj.toString();
         }
 
-        @IntDef(flag = true, value = {INFO, BOOKS, COVERS, PREFS, STYLES, IS_SYNC})
+        @IntDef(flag = true, value = {INFO, PREFS, STYLES, BOOKS, COVERS,
+                                      UPDATED_BOOKS})
         @Retention(RetentionPolicy.SOURCE)
         public @interface Bits {
 
