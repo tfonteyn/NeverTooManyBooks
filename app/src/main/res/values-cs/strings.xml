@@ -50,6 +50,7 @@
     <string name="book_format_paperback">Brožovaná kniha</string>
     <string name="book_format_softcover">Měkká vazba</string>
     <string name="bookshelf_all_books">Všechny knihy</string>
+    <string name="lbl_export_option_all_books">Všechny knihy</string>
     <string name="bookshelf_my_books">Moje knihy</string>
     <string name="action_add">Přidat</string>
     <string name="X_action_exit">Přestat</string>
@@ -250,7 +251,7 @@
     <string name="lbl_edition_first_impression">První tisk</string>
     <string name="lbl_edition_limited">Limitovaná edice</string>
     <string name="lbl_edition_slipcase">Slipcase</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Všechny knihy byly přidány nebo aktualizovány od poslední úplné zálohy.</string>
+    <string name="inf_export_option_books_since_last_full_backup">Všechny knihy byly přidány nebo aktualizovány od poslední úplné zálohy.</string>
     <string name="lbl_family_name">Příjmení</string>
     <string name="lbl_field_usage_append">Přidat extra data</string>
     <string name="lbl_field_usage_copy_if_blank">Kopírovat pokud je prázdné</string>
@@ -264,7 +265,7 @@
     <string name="lbl_genre">Žánr</string>
     <string name="lbl_given_names">Křestní jméno</string>
     <string name="lbl_import">Importovat</string>
-    <string name="lbl_option_new_and_changed_books">Nové a aktualizované knihy</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Nové a aktualizované knihy</string>
     <string name="lbl_is_complete">Je kompletní</string>
     <string name="lbl_keywords">Klíčová slova</string>
     <string name="lbl_language">Jazyk</string>
@@ -656,7 +657,7 @@
     <string name="pt_line_spacing">Řádkování</string>
     <string name="confirm_clear_all_data">TOTO ODSTRANÍ VŠECHNY ÚDAJE!\n S výjimkou obnovy z předchozí zálohy TO NELZE ZRUŠIT!\n\n Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
-    <string name="lbl_backup_and_export">Zálohování a export</string>
+    <string name="menu_backup_and_export">Zálohování a export</string>
     <string name="lbl_export">Vývozní</string>
     <string name="lbl_database">Databáze</string>
     <string name="lbl_archive_format_db_info">Databáze SQLite.</string>

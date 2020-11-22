@@ -46,12 +46,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 public class ImportHelper {
 
     public static final String IMPORT_NOT_SUPPORTED = "Type not supported here";
+    /** Log tag. */
+    private static final String TAG = "ImportHelper";
 
-    /**
-     * all defined flags.
-     */
-    private static final int MASK = Options.ENTITIES
-                                    | Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC;
+    /** Debug: all valid flags. */
+    private static final int VALID_OPTIONS = Options.ENTITIES
+                                             | Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC;
 
     /** Picked by the user; where we read from. */
     @NonNull
@@ -263,7 +263,7 @@ public class ImportHelper {
     ArchiveReader getArchiveReader(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
-        SanityCheck.requirePositiveValue(mOptions & MASK, "mOptions");
+        SanityCheck.requirePositiveValue(mOptions & VALID_OPTIONS, "mOptions");
 
         final ArchiveReader reader;
         switch (getContainer(context)) {
@@ -303,6 +303,31 @@ public class ImportHelper {
     }
 
 
+    public boolean isSkipUpdatedBooks() {
+        return !isOptionSet(Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC);
+    }
+
+    public void setSkipUpdatedBooks() {
+        setOption(Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC, false);
+    }
+
+    public boolean isOverwriteUpdatedBook() {
+        return isOptionSet(Options.UPDATED_BOOKS) && !isOptionSet(Options.UPDATED_BOOKS_SYNC);
+    }
+
+    public void setOverwriteUpdatedBook() {
+        setOption(Options.UPDATED_BOOKS, true);
+        setOption(Options.UPDATED_BOOKS_SYNC, false);
+    }
+
+    public boolean isSyncUpdatedBooks() {
+        return isOptionSet(Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC);
+    }
+
+    public void setSyncUpdatedBooks() {
+        setOption(Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC, true);
+    }
+
     public boolean isOptionSet(@Options.Bits final int optionBit) {
         return (mOptions & optionBit) != 0;
     }
@@ -312,6 +337,15 @@ public class ImportHelper {
         return mOptions;
     }
 
+    /**
+     * Should be called <strong>before</strong> the import to indicate what should be imported.
+     * Should be called <strong>after</strong> the import to set what was actually imported.
+     *
+     * @param options {@link ImportHelper.Options} flags
+     */
+    public void setOptions(@Options.Bits final int options) {
+        mOptions = options;
+    }
 
     /**
      * Called from the dialog via its View listeners.
@@ -326,17 +360,6 @@ public class ImportHelper {
         } else {
             mOptions &= ~optionBit;
         }
-    }
-
-
-    /**
-     * Should be called <strong>before</strong> the import to indicate what should be imported.
-     * Should be called <strong>after</strong> the import to set what was actually imported.
-     *
-     * @param options set
-     */
-    public void setOptions(@Options.Bits final int options) {
-        mOptions = options;
     }
 
     /**
@@ -389,13 +412,10 @@ public class ImportHelper {
          * <p>
          * Existing books handling:
          * <ul>
-         *     <li>00: skip entirely, keep the current data.
-         *     <em>UPDATED_BOOKS==0</em></li>
-         *     <li>01: overwrite current data with incoming data
-         *     <em>UPDATED_BOOKS==1 & UPDATED_BOOKS_SYNC==0</em></li>
-         *     <li>11: check the "update_date" field and only import newer data
-         *     <em>UPDATED_BOOKS==1& UPDATED_BOOKS_SYNC==1</em></li>
-         *     <li>10: <em>invalid bit combination</em></li>
+         *     <li>00: skip entirely, keep the current data.</li>
+         *     <li>01: overwrite current data with incoming data.</li>
+         *     <li>10: [invalid combination]</li>
+         *     <li>11: check the "update_date" field and only import newer data.</li>
          * </ul>
          */
         public static final int UPDATED_BOOKS = 1 << 16;

@@ -843,17 +843,32 @@
     <!-- Dialog title. -->
     <string name="warning_search_failed">Searching for the book failed.</string>
 
-    <!-- Dialog title - import full-options. -->
-    <string name="lbl_import_options">Select what will be imported.</string>
-
     <string name="lbl_import">Import</string>
     <string name="lbl_export">Export</string>
 
     <string name="lbl_backup">Backup</string>
-    <string name="lbl_backup_and_export">Backup &amp; Export</string>
 
-    <!-- Dialog title - export full-options. -->
+
+    <!-- ####################################################################################### -->
+    <!-- == Import and Export. == -->
+    <!-- ####################################################################################### -->
+    <!-- Navigation panel menu option -->
+    <string name="menu_backup_and_export">Backup &amp; Export</string>
+
+    <!-- Dialog import all options. -->
+    <string name="lbl_import_options">Select what will be imported.</string>
+    <string name="lbl_import_option_updated_books_skip">New books only</string>
+    <string name="inf_import_option_updated_books_skip">Info New books only</string>
+    <string name="lbl_import_option_updated_books_overwrite">New and updated books</string>
+    <string name="inf_import_option_updated_books_overwrite">Info New and updated books</string>
+    <string name="lbl_import_option_updated_books_sync">Sync</string>
+    <string name="inf_import_option_updated_books_sync">Info Sync</string>
+
+    <!-- Dialog export all options. -->
     <string name="lbl_export_options">Select what will be exported to the archive.</string>
+    <string name="lbl_export_option_all_books">All books</string>
+    <string name="lbl_export_option_books_since_last_full_backup">New and updated books</string>
+    <string name="inf_export_option_books_since_last_full_backup">Books added or updated since last full backup.</string>
 
     <!-- Progress Dialog title. -->
     <string name="lbl_importing">Importing…</string>
@@ -1457,10 +1472,6 @@
     <string name="lbl_archive_format_db_info">The SQLite database.</string>
     <string name="lbl_database">Database</string>
 
-    <!-- 'export books' option. -->
-    <string name="lbl_export_option_books_since_last_full_backup">Books added or updated since last full backup.</string>
-    <!-- 'import' option -->
-    <string name="lbl_option_new_and_changed_books">New and updated books</string>
 
     <!-- [VERIFIED] - heading/titles for settings/preference screens. -->
     <string name="lbl_settings">Settings</string>
@@ -1578,5 +1589,4 @@
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
 
     <string name="pt_enable_fast_scroller_overlay">Scrolling information overlay.</string>
-
 </resources>

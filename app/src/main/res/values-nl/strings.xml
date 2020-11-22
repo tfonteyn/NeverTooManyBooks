@@ -63,6 +63,7 @@
     <string name="book_format_paperback">Pocket</string>
     <string name="book_format_softcover">Softcover</string>
     <string name="bookshelf_all_books">Alle Boeken</string>
+    <string name="lbl_export_option_all_books">Alle Boeken</string>
     <string name="bookshelf_my_books">Mijn Boeken</string>
     <string name="btn_disable_message">Bericht uitschakelen</string>
     <string name="btn_email">E-mailen</string>
@@ -231,7 +232,7 @@
     <string name="lbl_authors">Auteurs</string>
     <string name="lbl_available">Beschikbaar</string>
     <string name="lbl_backing_up">Aan \'t Back-uppen…</string>
-    <string name="lbl_backup_and_export">Back-up en export</string>
+    <string name="menu_backup_and_export">Back-up en export</string>
     <string name="lbl_backup">Back-up</string>
     <string name="lbl_barcode">Barcode</string>
     <string name="lbl_book">Boek</string>
@@ -273,7 +274,7 @@
     <string name="lbl_edition_limited">Gelimiteerd</string>
     <string name="lbl_edition_slipcase">Cassette</string>
     <string name="lbl_edition">Editie</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
+    <string name="inf_export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
     <string name="lbl_export_options">Selecteer wat geëxporteerd zal worden naar het archief.</string>
     <string name="lbl_export">Exporteren</string>
     <string name="lbl_family_name">Achternaam</string>
@@ -308,7 +309,7 @@
     <string name="lbl_month">Maand</string>
     <string name="lbl_name">Naam</string>
     <string name="lbl_next_book_without_cover">Ga naar het volgende boek zonder afbeelding</string>
-    <string name="lbl_option_new_and_changed_books">Nieuwe en bijgewerkte boeken</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Nieuwe en bijgewerkte boeken</string>
     <string name="lbl_pages">Pagina\'s</string>
     <string name="lbl_personal_notes">Aantekeningen</string>
     <string name="lbl_price_listed">Lijstprijs</string>

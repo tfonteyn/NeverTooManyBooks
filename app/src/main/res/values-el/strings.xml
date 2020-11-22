@@ -51,6 +51,7 @@
     <string name="book_format_softcover">μαλακό κάλυμμα</string>
     <string name="book_format_paperback_large">χαρτόδετο βιβλίο</string>
     <string name="bookshelf_all_books">Όλα τα βιβλία.</string>
+    <string name="lbl_export_option_all_books">Όλα τα βιβλία.</string>
     <string name="bookshelf_my_books">Τα βιβλία μου</string>
     <string name="action_add">Προσθήκη</string>
     <string name="X_action_exit">Έξοδος</string>
@@ -253,7 +254,7 @@
     <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="lbl_edition_limited">Περιορισμένη έκδοση</string>
     <string name="lbl_edition_slipcase">παντζούρια</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
+    <string name="inf_export_option_books_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
     <string name="lbl_family_name">Επώνυμο</string>
     <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
     <string name="lbl_field_usage_copy_if_blank">Αντιγραφή εαν ειναι κενό</string>
@@ -267,7 +268,7 @@
     <string name="lbl_genre">Είδος</string>
     <string name="lbl_given_names">Ονόματα</string>
     <string name="lbl_import">εισάγω</string>
-    <string name="lbl_option_new_and_changed_books">Καινούρια και ενημερωμένα βιβλία</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Καινούρια και ενημερωμένα βιβλία</string>
     <string name="lbl_is_complete">Ολοκληρώθηκε</string>
     <string name="lbl_keywords">Λέξεις κλειδιά</string>
     <string name="lbl_language">Γλώσσα</string>
@@ -661,7 +662,7 @@
     <string name="pt_line_spacing">Διάστιχο</string>
     <string name="confirm_clear_all_data">ΑΥΤΑ ΑΦΑΙΡΕΣΕΙ ΟΛΑ ΤΑ ΔΕΔΟΜΕΝΑ!\n Εκτός από την επαναφορά από ένα προηγούμενο αντίγραφο ασφαλείας, ΑΥΤΟ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΚΑΝΕΤΕ ΚΑΤΩ!\n\n Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
-    <string name="lbl_backup_and_export">Δημιουργία αντιγράφων ασφαλείας και εξαγωγή</string>
+    <string name="menu_backup_and_export">Δημιουργία αντιγράφων ασφαλείας και εξαγωγή</string>
     <string name="lbl_export">Εξαγωγή</string>
     <string name="lbl_database">Βάση δεδομένων</string>
     <string name="lbl_archive_format_db_info">Η βάση δεδομένων SQLite.</string>

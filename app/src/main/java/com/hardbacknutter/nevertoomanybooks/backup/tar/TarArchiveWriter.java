@@ -74,10 +74,9 @@ public class TarArchiveWriter
             throws FileNotFoundException {
         super(context, helper);
 
-        mOutputStream = new TarArchiveOutputStream(
-                new BufferedOutputStream(
-                        new FileOutputStream(helper.getTempOutputFile(context)),
-                        BUFFER_SIZE));
+        mOutputStream = new TarArchiveOutputStream(new BufferedOutputStream(
+                new FileOutputStream(helper.getTempOutputFile(context)),
+                BUFFER_SIZE));
     }
 
     @Override

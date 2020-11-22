@@ -139,8 +139,8 @@ public class CsvImporter
     private final Locale mUserLocale;
 
     /** import configuration. */
-    @ImportHelper.Options.Bits
-    private final int mOptions;
+    private final boolean mSyncBooks;
+    private final boolean mOverwriteBooks;
 
     /** cached localized "Books" string. */
     @NonNull
@@ -161,15 +161,17 @@ public class CsvImporter
      * Constructor.
      *
      * @param context Current context
-     * @param options {@link ImportHelper.Options#UPDATED_BOOKS_SYNC} is respected.
-     *                Other flags are ignored, as this class only
-     *                handles {@link ImportHelper.Options#BOOKS} anyhow.
+     * @param options Supports:
+     *                {@link ImportHelper.Options#BOOKS},
+     *                {@link ImportHelper.Options#UPDATED_BOOKS},
+     *                {@link ImportHelper.Options#UPDATED_BOOKS_SYNC},
      */
     @AnyThread
     public CsvImporter(@NonNull final Context context,
                        @ImportHelper.Options.Bits final int options) {
 
-        mOptions = options;
+        mSyncBooks = (options & ImportHelper.Options.UPDATED_BOOKS_SYNC) != 0;
+        mOverwriteBooks = (options & ImportHelper.Options.UPDATED_BOOKS) != 0;
 
         mDb = new DAO(TAG);
         mBookshelfCoder = new StringList<>(
@@ -255,14 +257,9 @@ public class CsvImporter
         // need a title.
         requireColumnOrThrow(context, book, DBDefinitions.KEY_TITLE);
 
-        // Overwrite (forceUpdate=true) existing data; or (forceUpdate=false) only
-        // if the incoming data is newer.
-        final boolean forceUpdate;
-        if ((mOptions & ImportHelper.Options.UPDATED_BOOKS_SYNC) != 0) {
+        // If a sync was requested, we'll need this column or cannot proceed.
+        if (mSyncBooks) {
             requireColumnOrThrow(context, book, DBDefinitions.KEY_UTC_LAST_UPDATED);
-            forceUpdate = false;
-        } else {
-            forceUpdate = true;
         }
 
         // See if we can deduce the kind of escaping to use based on column names.
@@ -337,7 +334,7 @@ public class CsvImporter
                     //verifyDates(context, mDb, book);
 
                     // do the actual import.
-                    importBook(context, forceUpdate, book, importUuid, importNumericId);
+                    importBook(context, book, importUuid, importNumericId);
 
                 } catch (@NonNull final DAO.DaoWriteException
                         | SQLiteDoneException
@@ -414,16 +411,12 @@ public class CsvImporter
     /**
      * insert or update a single book.
      *
-     * @param context     Current context
-     * @param forceUpdate Flag for existing books:
-     *                    {@code true} to always update
-     *                    {@code false} to only update if the incoming data is newer
-     * @param book        to import
+     * @param context Current context
+     * @param book    to import
      *
      * @throws DAO.DaoWriteException on failure
      */
     private void importBook(@NonNull final Context context,
-                            final boolean forceUpdate,
                             @NonNull final Book book,
                             @Nullable final String importUuid,
                             final long importNumericId)
@@ -442,8 +435,10 @@ public class CsvImporter
                 // Explicitly set the EXISTING id on the book (the importBookId is IGNORED)
                 book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
 
-                // and UPDATE the existing book (if allowed)
-                if (forceUpdate || isImportNewer(context, mDb, book, databaseBookId)) {
+                // UPDATE the existing book (if allowed). Check the sync option FIRST!
+                if ((mSyncBooks && isImportNewer(context, mDb, book, databaseBookId))
+                    || mOverwriteBooks) {
+
                     mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                               | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                     mResults.booksUpdated++;
@@ -509,7 +504,9 @@ public class CsvImporter
                 // to have the same id, but other than skipping there is no other option for now.
                 // Ideally, we should ask the user presenting a choice "keep/overwrite"
 
-                if (forceUpdate || isImportNewer(context, mDb, book, importNumericId)) {
+                // UPDATE the existing book (if allowed). Check the sync option FIRST!
+                if ((mSyncBooks && isImportNewer(context, mDb, book, importNumericId))
+                    || mOverwriteBooks) {
                     mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                               | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                     mResults.booksUpdated++;

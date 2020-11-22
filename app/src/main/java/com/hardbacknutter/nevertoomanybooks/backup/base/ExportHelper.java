@@ -54,7 +54,7 @@ public class ExportHelper {
     /**
      * all defined flags.
      */
-    private static final int MASK = Options.ENTITIES | Options.UPDATED_BOOKS;
+    private static final int MASK = Options.ENTITIES | Options.INCREMENTAL;
     /** Log tag. */
     private static final String TAG = "ExportHelper";
     /** Write to this temp file first. */
@@ -88,7 +88,7 @@ public class ExportHelper {
     /**
      * Constructor.
      *
-     * @param options to export
+     * @param options {@link ExportHelper.Options} flags
      */
     public ExportHelper(@Options.Bits final int options) {
         mOptions = options;
@@ -138,7 +138,7 @@ public class ExportHelper {
      */
     @Nullable
     public LocalDateTime getUtcDateTimeSince() {
-        if ((mOptions & Options.UPDATED_BOOKS) != 0) {
+        if ((mOptions & Options.INCREMENTAL) != 0) {
             return mFromUtcDateTime;
         } else {
             return null;
@@ -163,7 +163,7 @@ public class ExportHelper {
         SanityCheck.requirePositiveValue(mOptions & MASK, "mOptions");
         Objects.requireNonNull(mUri, "uri");
 
-        if ((mOptions & Options.UPDATED_BOOKS) != 0) {
+        if ((mOptions & Options.INCREMENTAL) != 0) {
             mFromUtcDateTime = getLastFullBackupDate(context);
         } else {
             mFromUtcDateTime = null;
@@ -227,8 +227,8 @@ public class ExportHelper {
         FileUtils.copy(context, AppDir.Cache.getFile(context, TEMP_FILE_NAME), getUri());
         FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
 
-        // if the backup was a full one (not a 'since') remember that.
-        if ((mOptions & Options.UPDATED_BOOKS) != 0) {
+        // if the backup was a full backup remember that.
+        if ((mOptions & Options.INCREMENTAL) != 0) {
             setLastFullBackupDate(context);
         }
     }
@@ -303,7 +303,7 @@ public class ExportHelper {
     /**
      * Should be called <strong>after</strong> the export to set what was actually exported.
      *
-     * @param options set
+     * @param options {@link ExportHelper.Options} flags
      */
     public void setOptions(@Options.Bits final int options) {
         mOptions = options;
@@ -354,13 +354,13 @@ public class ExportHelper {
         public static final int ENTITIES = PREFS | STYLES | BOOKS | COVERS;
 
         /**
-         * Do a sync.
+         * Do an incremental backup.
          * <ul>
          *     <li>0: all books</li>
          *     <li>1: books added/updated since last backup</li>
          * </ul>
          */
-        public static final int UPDATED_BOOKS = 1 << 16;
+        public static final int INCREMENTAL = 1 << 16;
 
         /** DEBUG. */
         public static String toString(@Bits final int options) {
@@ -381,14 +381,14 @@ public class ExportHelper {
                 sj.add("COVERS");
             }
 
-            if ((options & UPDATED_BOOKS) != 0) {
-                sj.add("UPDATED_BOOKS");
+            if ((options & INCREMENTAL) != 0) {
+                sj.add("INCREMENTAL");
             }
             return sj.toString();
         }
 
         @IntDef(flag = true, value = {INFO, PREFS, STYLES, BOOKS, COVERS,
-                                      UPDATED_BOOKS})
+                                      INCREMENTAL})
         @Retention(RetentionPolicy.SOURCE)
         public @interface Bits {
 

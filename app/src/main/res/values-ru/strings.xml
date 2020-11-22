@@ -50,6 +50,7 @@
     <string name="book_format_paperback">книга в мягкой обложке</string>
     <string name="book_format_softcover">Мягкое покрытие</string>
     <string name="bookshelf_all_books">Все книги</string>
+    <string name="lbl_export_option_all_books">Все книги</string>
     <string name="bookshelf_my_books">Мои книги</string>
     <string name="action_add">Добавить</string>
     <string name="X_action_exit">Выход</string>
@@ -248,7 +249,7 @@
     <string name="lbl_edition_first_impression">первый отпечаток</string>
     <string name="lbl_edition_limited">ограниченный выпуск</string>
     <string name="lbl_edition_slipcase">шкатулка</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
+    <string name="inf_export_option_books_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
     <string name="lbl_family_name">Фамилия</string>
     <string name="lbl_field_usage_append">Добавляет дополнительные данные</string>
     <string name="lbl_field_usage_copy_if_blank">Копирует, если пусто</string>
@@ -262,7 +263,7 @@
     <string name="lbl_genre">Жанр</string>
     <string name="lbl_given_names">Имя</string>
     <string name="lbl_import">Импортировать</string>
-    <string name="lbl_option_new_and_changed_books">Новые и обновленные книги</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Новые и обновленные книги</string>
     <string name="lbl_is_complete">Завершено</string>
     <string name="lbl_keywords">Ключевые слова</string>
     <string name="lbl_language">Язык</string>
@@ -655,7 +656,7 @@
     <string name="pt_line_spacing">Межстрочный интервал</string>
     <string name="confirm_clear_all_data">ЭТО УДАЛЯЕТ ВСЕ ДАННЫЕ!\n ЭТО НЕ МОЖЕТ БЫТЬ ОТМЕНЕНО, кроме восстановления из предыдущей резервной копии!\n\n Вы уверены что хотите продолжить ?</string>
     <string name="confirm_continue">Вы уверены что хотите продолжить ?</string>
-    <string name="lbl_backup_and_export">Резервное копирование и экспорт</string>
+    <string name="menu_backup_and_export">Резервное копирование и экспорт</string>
     <string name="lbl_export">Экспорт</string>
     <string name="lbl_database">База данных</string>
     <string name="lbl_archive_format_db_info">База данных SQLite.</string>

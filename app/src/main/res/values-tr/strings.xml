@@ -51,6 +51,7 @@
     <string name="book_format_paperback_large">Ciltsiz / Iri</string>
     <string name="book_format_softcover">Yumuşak kapak</string>
     <string name="bookshelf_all_books">Tüm kitaplar</string>
+    <string name="lbl_export_option_all_books">Tüm kitaplar</string>
     <string name="bookshelf_my_books">Kitaplarım</string>
     <string name="action_add">Ekle</string>
     <string name="X_action_exit">Çıkış</string>
@@ -253,7 +254,7 @@
     <string name="lbl_edition_first_impression">1. basım</string>
     <string name="lbl_edition_limited">Sınırlı sayıda</string>
     <string name="lbl_edition_slipcase">Kitap kabı</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
+    <string name="inf_export_option_books_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
     <string name="lbl_family_name">Soyadı</string>
     <string name="lbl_field_usage_append">Ek veriyi iliştirir</string>
     <string name="lbl_field_usage_copy_if_blank">Boş ise eşlemle</string>
@@ -267,7 +268,7 @@
     <string name="lbl_genre">Tür</string>
     <string name="lbl_given_names">Adı</string>
     <string name="lbl_import">Ithal etmek</string>
-    <string name="lbl_option_new_and_changed_books">Yeni ve güncellenmiş kitaplar</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Yeni ve güncellenmiş kitaplar</string>
     <string name="lbl_is_complete">Tamamlandı</string>
     <string name="lbl_keywords">Anahtar kelimeler</string>
     <string name="lbl_language">Dil</string>
@@ -657,7 +658,7 @@
     <string name="pt_line_spacing">Satır aralığı</string>
     <string name="confirm_clear_all_data">BU TÜM VERİLERİ KALDIRACAK!\n Önceki bir yedeklemeden geri yükleme dışında, BU GERİ ALINAMAZ!\n\n Devam etmek istediğine emin misin ?</string>
     <string name="confirm_continue">Devam etmek istediğine emin misin ?</string>
-    <string name="lbl_backup_and_export">Yedekleme ve Dışa Aktarma</string>
+    <string name="menu_backup_and_export">Yedekleme ve Dışa Aktarma</string>
     <string name="lbl_export">İhracat</string>
     <string name="lbl_database">Veri tabanı</string>
     <string name="lbl_archive_format_db_info">SQLite veritabanı.</string>

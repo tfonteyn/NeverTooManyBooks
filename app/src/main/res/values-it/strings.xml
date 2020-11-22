@@ -51,6 +51,7 @@
     <string name="book_format_paperback">Paperback</string>
     <string name="book_format_softcover">Copertina morbida</string>
     <string name="bookshelf_all_books">Tutti i libri</string>
+    <string name="lbl_export_option_all_books">Tutti i libri</string>
     <string name="bookshelf_my_books">I miei libri</string>
     <string name="action_add">Aggiungi</string>
     <string name="X_action_exit">Esci</string>
@@ -250,7 +251,7 @@
     <string name="lbl_edition_first_impression">Prima stampa</string>
     <string name="lbl_edition_limited">Edizione limitata</string>
     <string name="lbl_edition_slipcase">Custodia</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
+    <string name="inf_export_option_books_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
     <string name="lbl_family_name">Cognome</string>
     <string name="lbl_field_usage_append">Aggiungi altri dati</string>
     <string name="lbl_field_usage_copy_if_blank">Copia se vuoto</string>
@@ -264,7 +265,7 @@
     <string name="lbl_genre">Genere</string>
     <string name="lbl_given_names">Nome</string>
     <string name="lbl_import">Importa</string>
-    <string name="lbl_option_new_and_changed_books">Libri nuovi ed aggiornati</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Libri nuovi ed aggiornati</string>
     <string name="lbl_is_complete">È completo</string>
     <string name="lbl_keywords">Parole</string>
     <string name="lbl_language">Lingua</string>
@@ -659,7 +660,7 @@
     <string name="pt_line_spacing">Interlinea</string>
     <string name="confirm_clear_all_data">QUESTO RIMUOVERÀ TUTTI I DATI!\n Fatta eccezione per il ripristino da un backup precedente, QUESTO NON PU ESSERE ANNULLATO!\n\n Sei sicuro di voler continuare ?</string>
     <string name="confirm_continue">Sei sicuro di voler continuare ?</string>
-    <string name="lbl_backup_and_export">Backup ed esportazione</string>
+    <string name="menu_backup_and_export">Backup ed esportazione</string>
     <string name="lbl_export">Esportare</string>
     <string name="lbl_database">Banca dati</string>
     <string name="lbl_archive_format_db_info">Il database SQLite.</string>

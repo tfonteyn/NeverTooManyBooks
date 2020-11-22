@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/indent_radio_button"
                     android:checked="true"
-                    android:text="@string/bookshelf_all_books"
+                    android:text="@string/lbl_export_option_all_books"
                     app:layout_constraintEnd_toStartOf="@id/guideline"
                     app:layout_constraintStart_toStartOf="@id/cbx_books"
                     app:layout_constraintTop_toBottomOf="@id/cbx_books"
@@ -102,15 +102,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/indent_radio_button"
-                    android:text="@string/lbl_option_new_and_changed_books"
+                    android:text="@string/lbl_export_option_books_since_last_full_backup"
                     app:layout_constraintStart_toStartOf="@id/cbx_books"
                     app:layout_constraintTop_toBottomOf="@id/rb_books_all"
                     />
 
                 <ImageButton
-                    android:id="@+id/info_btn_rb_books_sync"
+                    android:id="@+id/rb_books_sync_info"
                     style="@style/InfoButton"
-                    android:contentDescription="@string/lbl_export_option_books_since_last_full_backup"
+                    android:contentDescription="@string/inf_export_option_books_since_last_full_backup"
                     app:layout_constraintEnd_toEndOf="@id/guideline"
                     app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toEndOf="@id/rb_books_sync"
@@ -130,7 +130,7 @@
                     />
 
                 <CheckBox
-                    android:id="@+id/cbx_prefs_and_styles"
+                    android:id="@+id/cbx_prefs"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:checked="true"
@@ -141,12 +141,24 @@
                     app:layout_constraintTop_toBottomOf="@id/cbx_covers"
                     />
 
+                <CheckBox
+                    android:id="@+id/cbx_styles"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/field_margin"
+                    android:checked="true"
+                    android:text="@string/lbl_styles"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/guideline"
+                    app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
+                    />
+
                 <androidx.constraintlayout.widget.Barrier
                     android:id="@+id/barrier_bottom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:barrierDirection="bottom"
-                    app:constraint_referenced_ids="cbx_prefs_and_styles,rb_books_sync"
+                    app:constraint_referenced_ids="rb_books_sync,cbx_styles"
                     />
 
                 <View

@@ -29,14 +29,13 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -54,7 +53,6 @@ public class ImportOptionsDialogFragment
     private ImportViewModel mImportViewModel;
     /** View Binding. */
     private DialogImportOptionsBinding mVb;
-    private boolean mAllowSetEnableOnBooksGroup;
 
     /**
      * No-arg constructor for OS use.
@@ -81,15 +79,8 @@ public class ImportOptionsDialogFragment
 
         //noinspection ConstantConditions
         mImportViewModel = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
-        try {
-            setupOptions();
 
-        } catch (@NonNull final InvalidArchiveException e) {
-            finishActivityWithErrorMessage(mVb.bodyFrame, R.string.error_import_file_not_supported);
-
-        } catch (@NonNull final IOException e) {
-            finishActivityWithErrorMessage(mVb.bodyFrame, R.string.error_import_failed);
-        }
+        setupOptions();
     }
 
     @Override
@@ -108,76 +99,68 @@ public class ImportOptionsDialogFragment
 
     /**
      * Set the checkboxes/radio-buttons from the options.
-     *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on other failures
      */
-    private void setupOptions()
-            throws InvalidArchiveException, IOException {
+    private void setupOptions() {
         final ImportHelper helper = mImportViewModel.getImportHelper();
 
-        // Indicates if we're importing from a file only containing books.
         //noinspection ConstantConditions
-        final boolean isBooksOnly = helper.isBooksOnlyContainer(getContext());
-
-        if (isBooksOnly) {
-            // CSV files don't have options other than the books.
+        if (helper.isBooksOnlyContainer(getContext())) {
+            // remove all non-book options if we're importing from a file/archive
+            // which only contains books.
             mVb.cbxGroup.setVisibility(View.GONE);
 
         } else {
-            // Populate the options.
             mVb.cbxBooks.setChecked(helper.isOptionSet(ImportHelper.Options.BOOKS));
-            mVb.cbxBooks.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> {
-                        helper.setOption(ImportHelper.Options.BOOKS, isChecked);
-                        if (mAllowSetEnableOnBooksGroup) {
-                            mVb.rbBooksGroup.setEnabled(isChecked);
-                        }
-                    });
+            mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                helper.setOption(ImportHelper.Options.BOOKS, isChecked);
+                mVb.rbBooksGroup.setEnabled(isChecked);
+            });
 
             mVb.cbxCovers.setChecked(helper.isOptionSet(ImportHelper.Options.COVERS));
-            mVb.cbxCovers.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> helper
-                            .setOption(ImportHelper.Options.COVERS, isChecked));
+            mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                    .setOption(ImportHelper.Options.COVERS, isChecked));
 
-            mVb.cbxPrefsAndStyles.setChecked(helper.isOptionSet(
-                    ImportHelper.Options.PREFS | ImportHelper.Options.STYLES));
-            mVb.cbxPrefsAndStyles.setOnCheckedChangeListener(
-                    (buttonView, isChecked) -> {
-                        helper.setOption(ImportHelper.Options.PREFS, isChecked);
-                        helper.setOption(ImportHelper.Options.STYLES, isChecked);
-                    });
+            mVb.cbxPrefs.setChecked(helper.isOptionSet(ImportHelper.Options.PREFS));
+            mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                    .setOption(ImportHelper.Options.PREFS, isChecked));
+
+            mVb.cbxStyles.setChecked(helper.isOptionSet(ImportHelper.Options.STYLES));
+            mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                    .setOption(ImportHelper.Options.STYLES, isChecked));
         }
 
-        final LocalDateTime archiveCreationDate = helper.getArchiveCreationDate(getContext());
-        // enable or disable the sync option
-        if (isBooksOnly || archiveCreationDate != null) {
-            mAllowSetEnableOnBooksGroup = true;
-            final boolean allBooks = !helper.isOptionSet(ImportHelper.Options.UPDATED_BOOKS_SYNC);
-            mVb.rbBooksAll.setChecked(allBooks);
-            mVb.infoBtnRbBooksAll.setOnClickListener(StandardDialogs::infoPopup);
-            mVb.rbBooksSync.setChecked(!allBooks);
-            mVb.infoBtnRbBooksSync.setOnClickListener(StandardDialogs::infoPopup);
+        mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdatedBooks());
+        mVb.rbUpdatedBooksSkipInfo.setOnClickListener(StandardDialogs::infoPopup);
 
-            mVb.rbBooksGroup.setOnCheckedChangeListener(
-                    // We only have two buttons and one option, so just check the pertinent one.
-                    (group, checkedId) -> helper.setOption(ImportHelper.Options.UPDATED_BOOKS_SYNC,
-                                                           checkedId == mVb.rbBooksSync.getId()));
-        } else {
-            // If the archive does not have a valid creation-date field, then we can't use sync
-            // TODO Maybe change string to "... archive is missing a creation date field.
-            mVb.rbBooksGroup.setEnabled(false);
-            mAllowSetEnableOnBooksGroup = false;
+        mVb.rbUpdatedBooksOverwrite.setChecked(helper.isOverwriteUpdatedBook());
+        mVb.rbUpdatedBooksOverwriteInfo.setOnClickListener(StandardDialogs::infoPopup);
 
-            mVb.rbBooksAll.setChecked(true);
-            mVb.rbBooksSync.setChecked(false);
-            helper.setOption(ImportHelper.Options.UPDATED_BOOKS_SYNC, false);
-            mVb.infoBtnRbBooksSync.setContentDescription(
-                    getString(R.string.warning_import_old_archive));
-        }
+        mVb.rbUpdatedBooksSync.setChecked(helper.isSyncUpdatedBooks());
+        mVb.rbUpdatedBooksSyncInfo.setOnClickListener(StandardDialogs::infoPopup);
+
+        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == mVb.rbUpdatedBooksSkip.getId()) {
+                helper.setSkipUpdatedBooks();
+
+            } else if (checkedId == mVb.rbUpdatedBooksOverwrite.getId()) {
+                helper.setOverwriteUpdatedBook();
+
+            } else if (checkedId == mVb.rbUpdatedBooksSync.getId()) {
+                helper.setSyncUpdatedBooks();
+            }
+        });
     }
 
-    protected void sendResult(final boolean startTask) {
+    /**
+     * Send a {@code true} if the user wants to go ahead,
+     * or a {@code false} if they cancelled.
+     *
+     * @param startTask flag
+     */
+    private void sendResult(final boolean startTask) {
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.d(TAG, "sendResult", mImportViewModel.getImportHelper().toString());
+        }
         Launcher.sendResult(this, mRequestKey, startTask);
         dismiss();
     }

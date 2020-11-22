@@ -35,12 +35,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
 public class ExportOptionsDialogFragment
         extends BaseDialogFragment {
@@ -113,26 +116,29 @@ public class ExportOptionsDialogFragment
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        final boolean allBooks = !helper.isOptionSet(ExportHelper.Options.UPDATED_BOOKS);
-        mVb.rbBooksAll.setChecked(allBooks);
-        mVb.rbBooksSync.setChecked(!allBooks);
-        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            // We only have two buttons and one option, so just check the pertinent one.
-            helper.setOption(ExportHelper.Options.UPDATED_BOOKS,
-                             checkedId == mVb.rbBooksSync.getId());
-        });
+        final boolean incremental = helper.isOptionSet(ExportHelper.Options.INCREMENTAL);
+        mVb.rbBooksAll.setChecked(!incremental);
+        mVb.rbBooksSync.setChecked(incremental);
+        mVb.rbBooksSyncInfo.setOnClickListener(StandardDialogs::infoPopup);
+
+        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
+                .setOption(ExportHelper.Options.INCREMENTAL,
+                           checkedId == mVb.rbBooksSync.getId()));
+
 
         mVb.cbxCovers.setChecked(helper.isOptionSet(ExportHelper.Options.COVERS));
-        mVb.cbxCovers.setOnCheckedChangeListener(
-                (buttonView, isChecked) -> helper
-                        .setOption(ExportHelper.Options.COVERS, isChecked));
+        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setOption(ExportHelper.Options.COVERS, isChecked));
 
-        mVb.cbxPrefsAndStyles.setChecked(helper.isOptionSet(
+        mVb.cbxPrefs.setChecked(helper.isOptionSet(
                 ExportHelper.Options.PREFS | ExportHelper.Options.STYLES));
-        mVb.cbxPrefsAndStyles.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            helper.setOption(ExportHelper.Options.PREFS, isChecked);
-            helper.setOption(ExportHelper.Options.STYLES, isChecked);
-        });
+        mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setOption(ExportHelper.Options.PREFS, isChecked));
+
+        mVb.cbxStyles.setChecked(helper.isOptionSet(
+                ExportHelper.Options.PREFS | ExportHelper.Options.STYLES));
+        mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setOption(ExportHelper.Options.STYLES, isChecked));
 
         // Check options on position.
         final List<String> list = new ArrayList<>();
@@ -178,8 +184,11 @@ public class ExportOptionsDialogFragment
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
 
-                        mVb.cbxPrefsAndStyles.setChecked(true);
-                        mVb.cbxPrefsAndStyles.setEnabled(true);
+                        mVb.cbxPrefs.setChecked(true);
+                        mVb.cbxPrefs.setEnabled(true);
+
+                        mVb.cbxStyles.setChecked(true);
+                        mVb.cbxStyles.setEnabled(true);
                         break;
                     }
                     case 1: {
@@ -196,8 +205,11 @@ public class ExportOptionsDialogFragment
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
 
-                        mVb.cbxPrefsAndStyles.setChecked(true);
-                        mVb.cbxPrefsAndStyles.setEnabled(true);
+                        mVb.cbxPrefs.setChecked(true);
+                        mVb.cbxPrefs.setEnabled(true);
+
+                        mVb.cbxStyles.setChecked(true);
+                        mVb.cbxStyles.setEnabled(true);
                         break;
                     }
                     case 2: {
@@ -214,8 +226,11 @@ public class ExportOptionsDialogFragment
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
 
-                        mVb.cbxPrefsAndStyles.setChecked(false);
-                        mVb.cbxPrefsAndStyles.setEnabled(false);
+                        mVb.cbxPrefs.setChecked(false);
+                        mVb.cbxPrefs.setEnabled(false);
+
+                        mVb.cbxStyles.setChecked(false);
+                        mVb.cbxStyles.setEnabled(false);
                         break;
                     }
                     case 3: {
@@ -232,8 +247,11 @@ public class ExportOptionsDialogFragment
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
 
-                        mVb.cbxPrefsAndStyles.setChecked(false);
-                        mVb.cbxPrefsAndStyles.setEnabled(true);
+                        mVb.cbxPrefs.setChecked(false);
+                        mVb.cbxPrefs.setEnabled(true);
+
+                        mVb.cbxStyles.setChecked(false);
+                        mVb.cbxStyles.setEnabled(true);
                         break;
                     }
                     case 4: {
@@ -250,8 +268,11 @@ public class ExportOptionsDialogFragment
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);
 
-                        mVb.cbxPrefsAndStyles.setChecked(false);
-                        mVb.cbxPrefsAndStyles.setEnabled(false);
+                        mVb.cbxPrefs.setChecked(false);
+                        mVb.cbxPrefs.setEnabled(false);
+
+                        mVb.cbxStyles.setChecked(false);
+                        mVb.cbxStyles.setEnabled(false);
                         break;
                     }
                     default:
@@ -266,7 +287,16 @@ public class ExportOptionsDialogFragment
         });
     }
 
-    protected void sendResult(final boolean startTask) {
+    /**
+     * Send a {@code true} if the user wants to go ahead,
+     * or a {@code false} if they cancelled.
+     *
+     * @param startTask flag
+     */
+    private void sendResult(final boolean startTask) {
+        if (BuildConfig.DEBUG /* always */) {
+            Logger.d(TAG, "sendResult", mExportViewModel.getExportHelper().toString());
+        }
         Launcher.sendResult(this, mRequestKey, startTask);
         dismiss();
     }

@@ -50,6 +50,7 @@
     <string name="book_format_paperback">Miękka</string>
     <string name="book_format_softcover">Miękka okładka</string>
     <string name="bookshelf_all_books">Wszystkie książki</string>
+    <string name="lbl_export_option_all_books">Wszystkie książki</string>
     <string name="bookshelf_my_books">Moje książki</string>
     <string name="action_add">Dodaj</string>
     <string name="X_action_exit">Wyjście</string>
@@ -250,7 +251,7 @@
     <string name="lbl_edition_first_impression">Pierwszy wydruk</string>
     <string name="lbl_edition_limited">Edycja limitowana</string>
     <string name="lbl_edition_slipcase">Futerał</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Wszystkie książki dodane lub zaktualizowane od ostatniej pełnej kopii zapasowej.</string>
+    <string name="inf_export_option_books_since_last_full_backup">Wszystkie książki dodane lub zaktualizowane od ostatniej pełnej kopii zapasowej.</string>
     <string name="lbl_family_name">Nazwisko</string>
     <string name="lbl_field_usage_append">Dopisz do istniejącego</string>
     <string name="lbl_field_usage_copy_if_blank">Kopiuj, gdy puste</string>
@@ -264,7 +265,7 @@
     <string name="lbl_genre">Gatunek</string>
     <string name="lbl_given_names">Imiona</string>
     <string name="lbl_import">Importuj</string>
-    <string name="lbl_option_new_and_changed_books">Nowe i zaktualizowane książki</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Nowe i zaktualizowane książki</string>
     <string name="lbl_is_complete">Jest gotowy</string>
     <string name="lbl_keywords">Słowa kluczowe</string>
     <string name="lbl_language">Język</string>
@@ -656,7 +657,7 @@
     <string name="pt_line_spacing">Odstępy między wierszami</string>
     <string name="confirm_clear_all_data">TO USUŃ WSZYSTKIE DANE!\n Z wyjątkiem przywracania z poprzedniej kopii zapasowej, TO NIE MOŻE BYĆ Cofnąć!\n\n Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>
-    <string name="lbl_backup_and_export">Kopia zapasowa i eksport</string>
+    <string name="menu_backup_and_export">Kopia zapasowa i eksport</string>
     <string name="lbl_export">Eksport</string>
     <string name="lbl_database">Baza danych</string>
     <string name="lbl_archive_format_db_info">Baza danych SQLite.</string>

@@ -100,6 +100,10 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
+    /** The launcher for picking a Uri. */
+    private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+                                      this::onOpenDocument);
     private ArchiveImportTask mArchiveImportTask;
     private final ImportOptionsDialogFragment.Launcher mImportOptionsLauncher =
             new ImportOptionsDialogFragment.Launcher() {
@@ -113,10 +117,6 @@ public class ImportFragment
                     }
                 }
             };
-    /** The launcher for picking a Uri. */
-    private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
-            registerForActivityResult(new ActivityResultContracts.OpenDocument(),
-                                      this::onOpenDocument);
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
@@ -192,8 +192,9 @@ public class ImportFragment
             //noinspection EnumSwitchStatementWhichMissesCases
             switch (container) {
                 case CsvBooks:
-                    importHelper.setOptions(
-                            ImportHelper.Options.BOOKS | ImportHelper.Options.UPDATED_BOOKS_SYNC);
+                    // Default: new books + books with newer "last_update" only
+                    importHelper.setOptions(ImportHelper.Options.BOOKS
+                                            | ImportHelper.Options.UPDATED_BOOKS_SYNC);
 
                     //URGENT: make a backup before ANY csv import!
                     //noinspection ConstantConditions
@@ -213,9 +214,10 @@ public class ImportFragment
                 case Zip:
                 case Tar:
                 case SqLiteDb:
-                    importHelper.setOptions(
-                            ImportHelper.Options.ENTITIES
-                            | ImportHelper.Options.UPDATED_BOOKS_SYNC);
+                    // Default: update all entities (includes new books)
+                    // + books with newer "last_update" only
+                    importHelper.setOptions(ImportHelper.Options.ENTITIES
+                                            | ImportHelper.Options.UPDATED_BOOKS_SYNC);
                     mImportOptionsLauncher.launch();
                     break;
 

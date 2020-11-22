@@ -65,6 +65,7 @@
     <string name="book_format_paperback">Taschenbuch</string>
     <string name="book_format_softcover">Softcover</string>
     <string name="bookshelf_all_books">Alle Bücher</string>
+    <string name="lbl_export_option_all_books">Alle Bücher</string>
     <string name="bookshelf_my_books">Meine Bücher</string>
     <string name="btn_disable_message">Meldung deaktivieren</string>
     <string name="btn_email">E-Mail senden</string>
@@ -233,7 +234,7 @@
     <string name="lbl_authors">Autoren</string>
     <string name="lbl_available">Verfügbar</string>
     <string name="lbl_backing_up">Sichere…</string>
-    <string name="lbl_backup_and_export">Sichern &amp; Exportieren</string>
+    <string name="menu_backup_and_export">Sichern &amp; Exportieren</string>
     <string name="lbl_backup">Sicherungskopie</string>
     <string name="lbl_barcode">Barcode</string>
     <string name="lbl_book">Buch</string>
@@ -275,7 +276,7 @@
     <string name="lbl_edition_limited">Limitierte Auflage</string>
     <string name="lbl_edition_slipcase">Schuber</string>
     <string name="lbl_edition">Auflage</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
+    <string name="inf_export_option_books_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
     <string name="lbl_export_options">Wählen Sie, was in das Archiv exportiert wird.</string>
     <string name="lbl_export">Export</string>
     <string name="lbl_family_name">Familienname</string>
@@ -310,7 +311,7 @@
     <string name="lbl_month">Monat</string>
     <string name="lbl_name">Name</string>
     <string name="lbl_next_book_without_cover">Springe zum nächsten Buch ohne Buchumschläge</string>
-    <string name="lbl_option_new_and_changed_books">Neue und aktualisierte Bücher</string>
+    <string name="lbl_export_option_books_since_last_full_backup">Neue und aktualisierte Bücher</string>
     <string name="lbl_pages">Seiten</string>
     <string name="lbl_personal_notes">Persönliche Notizen</string>
     <string name="lbl_price_listed">Listenpreis</string>

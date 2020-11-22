@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * A minimal implementation of {@link ArchiveReader} which reads a plain CSV file with books.
- * {@link ImportHelper.Options} are NOT supported for now (hardcoded to {@link ImportHelper.Options#BOOKS} only).
  */
 public class CsvArchiveReader
         implements ArchiveReader {

@@ -133,7 +133,10 @@ public class XmlImporter
      * Constructor.
      *
      * @param context Current context
-     * @param options what to import; respects INFO, Preferences and Styles
+     * @param options Supports:
+     *                {@link ImportHelper.Options#INFO},
+     *                {@link ImportHelper.Options#PREFS},
+     *                {@link ImportHelper.Options#STYLES},
      *                ignores other flags
      */
     public XmlImporter(@NonNull final Context context,

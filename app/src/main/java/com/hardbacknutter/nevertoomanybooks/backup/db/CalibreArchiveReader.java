@@ -140,9 +140,10 @@ class CalibreArchiveReader
     @NonNull
     private final String mProgressMessage;
 
-    private final boolean mForceUpdate;
-
     private Collection<CustomColumn> mCustomColumns;
+
+    private final boolean mSyncBooks;
+    private final boolean mOverwriteBooks;
 
     /**
      * Constructor.
@@ -157,7 +158,8 @@ class CalibreArchiveReader
         mCalibreDb = calibreDb;
         mDb = new DAO(TAG);
 
-        mForceUpdate = (helper.getOptions() & ImportHelper.Options.UPDATED_BOOKS_SYNC) == 0;
+        mSyncBooks = (helper.getOptions() & ImportHelper.Options.UPDATED_BOOKS_SYNC) != 0;
+        mOverwriteBooks = (helper.getOptions() & ImportHelper.Options.UPDATED_BOOKS) != 0;
 
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);
@@ -287,8 +289,10 @@ class CalibreArchiveReader
                         // Explicitly set the EXISTING id on the book
                         book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
 
-                        // and UPDATE the existing book (if allowed)
-                        if (mForceUpdate || isImportNewer(context, mDb, book, databaseBookId)) {
+                        // UPDATE the existing book (if allowed). Check the sync option FIRST!
+                        if ((mSyncBooks && isImportNewer(context, mDb, book, databaseBookId))
+                            || mOverwriteBooks) {
+
                             mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                                       | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                             results.booksUpdated++;
