@@ -25,6 +25,7 @@ import android.net.Uri;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import java.io.IOException;
@@ -32,7 +33,6 @@ import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.regex.Pattern;
 
@@ -46,12 +46,36 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 public class ImportHelper {
 
     public static final String IMPORT_NOT_SUPPORTED = "Type not supported here";
-    /** Log tag. */
-    private static final String TAG = "ImportHelper";
 
-    /** Debug: all valid flags. */
-    private static final int VALID_OPTIONS = Options.ENTITIES
-                                             | Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC;
+    /**
+     * Options as to what should be imported.
+     * Not all implementations will support all options.
+     * <p>
+     * The bit numbers are not stored and can be changed.
+     */
+    public static final int OPTIONS_NOTHING = 0;
+    public static final int OPTIONS_INFO = 1;
+    public static final int OPTIONS_PREFS = 1 << 1;
+    public static final int OPTIONS_STYLES = 1 << 2;
+    public static final int OPTIONS_BOOKS = 1 << 6;
+    public static final int OPTIONS_COVERS = 1 << 7;
+    /**
+     * New Books are always imported (if {@link #OPTIONS_BOOKS} is set obviously).
+     * <p>
+     * Existing books handling:
+     * <ul>
+     *     <li>00: skip entirely, keep the current data.</li>
+     *     <li>01: overwrite current data with incoming data.</li>
+     *     <li>10: [invalid combination]</li>
+     *     <li>11: check the "update_date" field and only import newer data.</li>
+     * </ul>
+     */
+    public static final int OPTIONS_UPDATED_BOOKS = 1 << 16;
+    public static final int OPTIONS_UPDATED_BOOKS_SYNC = 1 << 17;
+
+    /** All entity types. This does not include INFO nor the sync options. */
+    public static final int OPTIONS_ENTITIES = OPTIONS_PREFS | OPTIONS_STYLES
+                                               | OPTIONS_BOOKS | OPTIONS_COVERS;
 
     /** Picked by the user; where we read from. */
     @NonNull
@@ -66,10 +90,8 @@ public class ImportHelper {
      * Contains the user selected options before doing the import.
      * After the import, reflects the entities actually imported.
      */
-    @Options.Bits
+    @Options
     private int mOptions;
-    @Nullable
-    private ImportResults mResults;
 
     /**
      * Constructor.
@@ -217,7 +239,7 @@ public class ImportHelper {
      * @throws IOException             on other failures
      */
     @Nullable
-    ArchiveInfo getInfo(@NonNull final Context context)
+    ArchiveInfo getArchiveInfo(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
         if (mArchiveInfo == null) {
             try (ArchiveReader reader = getArchiveReader(context)) {
@@ -241,7 +263,7 @@ public class ImportHelper {
     public LocalDateTime getArchiveCreationDate(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
-        final ArchiveInfo info = getInfo(context);
+        final ArchiveInfo info = getArchiveInfo(context);
         if (info == null) {
             return null;
         } else {
@@ -259,11 +281,15 @@ public class ImportHelper {
      * @throws InvalidArchiveException on failure to recognise a supported archive
      * @throws IOException             on other failures
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NonNull
-    ArchiveReader getArchiveReader(@NonNull final Context context)
+    public ArchiveReader getArchiveReader(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
-        SanityCheck.requirePositiveValue(mOptions & VALID_OPTIONS, "mOptions");
+        SanityCheck.requirePositiveValue(mOptions & (OPTIONS_ENTITIES
+                                                     | OPTIONS_UPDATED_BOOKS
+                                                     | OPTIONS_UPDATED_BOOKS_SYNC),
+                                         "mOptions");
 
         final ArchiveReader reader;
         switch (getContainer(context)) {
@@ -293,46 +319,36 @@ public class ImportHelper {
         return reader;
     }
 
-    @NonNull
-    public ImportResults getResults() {
-        return Objects.requireNonNull(mResults, "mResults");
-    }
-
-    public void setResults(@NonNull final ImportResults results) {
-        mResults = results;
-    }
-
-
     public boolean isSkipUpdatedBooks() {
-        return !isOptionSet(Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC);
+        return !isOptionSet(OPTIONS_UPDATED_BOOKS | OPTIONS_UPDATED_BOOKS_SYNC);
     }
 
     public void setSkipUpdatedBooks() {
-        setOption(Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC, false);
+        setOption(OPTIONS_UPDATED_BOOKS | OPTIONS_UPDATED_BOOKS_SYNC, false);
     }
 
     public boolean isOverwriteUpdatedBook() {
-        return isOptionSet(Options.UPDATED_BOOKS) && !isOptionSet(Options.UPDATED_BOOKS_SYNC);
+        return isOptionSet(OPTIONS_UPDATED_BOOKS) && !isOptionSet(OPTIONS_UPDATED_BOOKS_SYNC);
     }
 
     public void setOverwriteUpdatedBook() {
-        setOption(Options.UPDATED_BOOKS, true);
-        setOption(Options.UPDATED_BOOKS_SYNC, false);
+        setOption(OPTIONS_UPDATED_BOOKS, true);
+        setOption(OPTIONS_UPDATED_BOOKS_SYNC, false);
     }
 
     public boolean isSyncUpdatedBooks() {
-        return isOptionSet(Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC);
+        return isOptionSet(OPTIONS_UPDATED_BOOKS | OPTIONS_UPDATED_BOOKS_SYNC);
     }
 
     public void setSyncUpdatedBooks() {
-        setOption(Options.UPDATED_BOOKS | Options.UPDATED_BOOKS_SYNC, true);
+        setOption(OPTIONS_UPDATED_BOOKS | OPTIONS_UPDATED_BOOKS_SYNC, true);
     }
 
-    public boolean isOptionSet(@Options.Bits final int optionBit) {
+    public boolean isOptionSet(@Options final int optionBit) {
         return (mOptions & optionBit) != 0;
     }
 
-    @Options.Bits
+    @Options
     public int getOptions() {
         return mOptions;
     }
@@ -341,9 +357,9 @@ public class ImportHelper {
      * Should be called <strong>before</strong> the import to indicate what should be imported.
      * Should be called <strong>after</strong> the import to set what was actually imported.
      *
-     * @param options {@link ImportHelper.Options} flags
+     * @param options flags
      */
-    public void setOptions(@Options.Bits final int options) {
+    public void setOptions(@Options final int options) {
         mOptions = options;
     }
 
@@ -353,7 +369,7 @@ public class ImportHelper {
      * @param optionBit bit or combination of bits
      * @param isSet     bit value
      */
-    public void setOption(@Options.Bits final int optionBit,
+    public void setOption(@Options final int optionBit,
                           final boolean isSet) {
         if (isSet) {
             mOptions |= optionBit;
@@ -368,93 +384,50 @@ public class ImportHelper {
      * @return {@code true} if something will be imported
      */
     public boolean hasEntityOption() {
-        return (mOptions & Options.ENTITIES) != 0;
+        return (mOptions & OPTIONS_ENTITIES) != 0;
     }
 
     @Override
     @NonNull
     public String toString() {
+        final StringJoiner sj = new StringJoiner(",", "Options{", "}");
+        if ((mOptions & OPTIONS_INFO) != 0) {
+            sj.add("INFO");
+        }
+        if ((mOptions & OPTIONS_PREFS) != 0) {
+            sj.add("PREFS");
+        }
+        if ((mOptions & OPTIONS_STYLES) != 0) {
+            sj.add("STYLES");
+        }
+        if ((mOptions & OPTIONS_BOOKS) != 0) {
+            sj.add("BOOKS");
+        }
+        if ((mOptions & OPTIONS_COVERS) != 0) {
+            sj.add("COVERS");
+        }
+
+        if ((mOptions & OPTIONS_UPDATED_BOOKS) != 0) {
+            sj.add("UPDATED_BOOKS");
+        }
+        if ((mOptions & OPTIONS_UPDATED_BOOKS_SYNC) != 0) {
+            sj.add("UPDATED_BOOKS_SYNC");
+        }
+
         return "ImportHelper{"
                + ", mOptions=0b" + Integer.toBinaryString(mOptions)
-               + ", mOptions=" + Options.toString(mOptions)
+               + ", mOptions=" + sj.toString()
                + ", mUri=" + mUri
                + ", mArchiveType=" + mArchiveContainer
                + ", mArchiveInfo=" + mArchiveInfo
-               + ", mResults=" + mResults
                + '}';
     }
 
-    /**
-     * Options as to what should be imported.
-     * Not all implementations will support all options.
-     * <p>
-     * The bit numbers are not stored and can be changed.
-     */
-    public static final class Options {
+    @IntDef(flag = true, value = {OPTIONS_INFO, OPTIONS_PREFS, OPTIONS_STYLES,
+                                  OPTIONS_BOOKS, OPTIONS_COVERS,
+                                  OPTIONS_UPDATED_BOOKS, OPTIONS_UPDATED_BOOKS_SYNC})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Options {
 
-        public static final int NOTHING = 0;
-        public static final int INFO = 1;
-        public static final int PREFS = 1 << 1;
-        public static final int STYLES = 1 << 2;
-
-        public static final int BOOKS = 1 << 6;
-        public static final int COVERS = 1 << 7;
-
-
-        /**
-         * All entity types which can be read.
-         * This does not include INFO nor the sync options.
-         */
-        public static final int ENTITIES = PREFS | STYLES | BOOKS | COVERS;
-
-        /**
-         * New Books are always imported (if {@link #BOOKS} is set obviously).
-         * <p>
-         * Existing books handling:
-         * <ul>
-         *     <li>00: skip entirely, keep the current data.</li>
-         *     <li>01: overwrite current data with incoming data.</li>
-         *     <li>10: [invalid combination]</li>
-         *     <li>11: check the "update_date" field and only import newer data.</li>
-         * </ul>
-         */
-        public static final int UPDATED_BOOKS = 1 << 16;
-        public static final int UPDATED_BOOKS_SYNC = 1 << 17;
-
-
-        /** DEBUG. */
-        public static String toString(@Bits final int options) {
-            final StringJoiner sj = new StringJoiner(",", "Options{", "}");
-            if ((options & INFO) != 0) {
-                sj.add("INFO");
-            }
-            if ((options & PREFS) != 0) {
-                sj.add("PREFS");
-            }
-            if ((options & STYLES) != 0) {
-                sj.add("STYLES");
-            }
-            if ((options & BOOKS) != 0) {
-                sj.add("BOOKS");
-            }
-            if ((options & COVERS) != 0) {
-                sj.add("COVERS");
-            }
-
-            if ((options & UPDATED_BOOKS) != 0) {
-                sj.add("UPDATED_BOOKS");
-            }
-            if ((options & UPDATED_BOOKS_SYNC) != 0) {
-                sj.add("UPDATED_BOOKS_SYNC");
-            }
-            return sj.toString();
-        }
-
-        @IntDef(flag = true, value = {INFO, PREFS, STYLES, BOOKS, COVERS,
-                                      UPDATED_BOOKS, UPDATED_BOOKS_SYNC})
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface Bits {
-
-        }
     }
 }

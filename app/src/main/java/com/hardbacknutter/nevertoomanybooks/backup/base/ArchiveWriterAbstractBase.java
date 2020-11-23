@@ -97,21 +97,21 @@ public abstract class ArchiveWriterAbstractBase
         mDb.purge();
 
         // keep track of what we wrote to the archive
-        @ExportHelper.Options.Bits
-        int entitiesWritten = ExportHelper.Options.NOTHING;
+        @ExportHelper.Options
+        int entitiesWritten = ExportHelper.OPTIONS_NOTHING;
 
         // All writers must support books.
-        final boolean writeBooks = mHelper.isOptionSet(ExportHelper.Options.BOOKS);
+        final boolean writeBooks = mHelper.isOptionSet(ExportHelper.OPTIONS_BOOKS);
 
         // these are optional.
         final boolean writeHeader = this instanceof SupportsArchiveHeader;
 
         final boolean writeStyles = this instanceof SupportsStyles
-                                    && mHelper.isOptionSet(ExportHelper.Options.STYLES);
+                                    && mHelper.isOptionSet(ExportHelper.OPTIONS_STYLES);
         final boolean writePrefs = this instanceof SupportsPreferences
-                                   && mHelper.isOptionSet(ExportHelper.Options.PREFS);
+                                   && mHelper.isOptionSet(ExportHelper.OPTIONS_PREFS);
         final boolean writeCovers = this instanceof SupportsCovers
-                                    && mHelper.isOptionSet(ExportHelper.Options.COVERS);
+                                    && mHelper.isOptionSet(ExportHelper.OPTIONS_COVERS);
 
         try {
             int steps = mDb.countBooksForExport(mHelper.getUtcDateTimeSince());
@@ -151,14 +151,14 @@ public abstract class ArchiveWriterAbstractBase
                 progressListener.publishProgressStep(0, context.getString(R.string.lbl_styles));
                 ((SupportsStyles) this).writeStyles(context, progressListener);
                 progressListener.publishProgressStep(mResults.styles, null);
-                entitiesWritten |= ExportHelper.Options.STYLES;
+                entitiesWritten |= ExportHelper.OPTIONS_STYLES;
             }
 
             if (!progressListener.isCancelled() && writePrefs) {
                 progressListener.publishProgressStep(0, context.getString(R.string.lbl_settings));
                 ((SupportsPreferences) this).writePreferences(context, progressListener);
                 progressListener.publishProgressStep(1, null);
-                entitiesWritten |= ExportHelper.Options.PREFS;
+                entitiesWritten |= ExportHelper.OPTIONS_PREFS;
             }
 
             // Add the previously generated books file.
@@ -166,14 +166,14 @@ public abstract class ArchiveWriterAbstractBase
                 progressListener.publishProgressStep(0, context.getString(R.string.lbl_books));
                 writeBooks(context, progressListener);
                 progressListener.publishProgressStep(1, null);
-                entitiesWritten |= ExportHelper.Options.BOOKS;
+                entitiesWritten |= ExportHelper.OPTIONS_BOOKS;
             }
 
             // Always do the covers as the last step
             if (!progressListener.isCancelled() && writeCovers && mResults.getCoverCount() > 0) {
                 progressListener.publishProgressStep(0, context.getString(R.string.lbl_covers));
                 ((SupportsCovers) this).writeCovers(context, progressListener);
-                entitiesWritten |= ExportHelper.Options.COVERS;
+                entitiesWritten |= ExportHelper.OPTIONS_COVERS;
             }
 
         } finally {

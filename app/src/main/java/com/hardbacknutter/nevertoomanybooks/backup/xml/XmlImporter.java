@@ -122,7 +122,7 @@ public class XmlImporter
      */
     private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
     /** export configuration. */
-    @ImportHelper.Options.Bits
+    @ImportHelper.Options
     private final int mOptions;
     private final ImportResults mResults = new ImportResults();
 
@@ -134,13 +134,13 @@ public class XmlImporter
      *
      * @param context Current context
      * @param options Supports:
-     *                {@link ImportHelper.Options#INFO},
-     *                {@link ImportHelper.Options#PREFS},
-     *                {@link ImportHelper.Options#STYLES},
+     *                {@link ImportHelper#OPTIONS_INFO},
+     *                {@link ImportHelper#OPTIONS_PREFS},
+     *                {@link ImportHelper#OPTIONS_STYLES},
      *                ignores other flags
      */
     public XmlImporter(@NonNull final Context context,
-                       @ImportHelper.Options.Bits final int options) {
+                       @ImportHelper.Options final int options) {
         mOptions = options;
         mDb = new DAO(TAG);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
@@ -154,7 +154,7 @@ public class XmlImporter
 
         switch (entity.getType()) {
             case BooklistStylesXml:
-                if ((mOptions & ImportHelper.Options.STYLES) != 0) {
+                if ((mOptions & ImportHelper.OPTIONS_STYLES) != 0) {
                     // Don't close this stream!
                     final InputStream is = entity.getInputStream();
                     final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
@@ -167,7 +167,7 @@ public class XmlImporter
                 break;
 
             case PreferencesXml:
-                if ((mOptions & ImportHelper.Options.PREFS) != 0) {
+                if ((mOptions & ImportHelper.OPTIONS_PREFS) != 0) {
                     // Don't close this stream!
                     final InputStream is = entity.getInputStream();
                     final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);

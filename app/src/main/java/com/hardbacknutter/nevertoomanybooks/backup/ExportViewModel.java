@@ -35,7 +35,7 @@ public class ExportViewModel
     @NonNull
     ExportHelper getExportHelper() {
         if (mExportHelper == null) {
-            mExportHelper = new ExportHelper(ExportHelper.Options.ENTITIES);
+            mExportHelper = new ExportHelper(ExportHelper.OPTIONS_ENTITIES);
         }
         return mExportHelper;
     }

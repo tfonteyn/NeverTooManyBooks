@@ -40,6 +40,13 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
+/**
+ * A generic wrapper to read sqlite db files.
+ * The {@link #validate} method should detect the type of db file and set a class variable
+ * (i.e. {@link #mIsCalibre} only for now).
+ * <p>
+ * The {@link #read} should then check that variable and start the actual reader.
+ */
 public class DbArchiveReader
         implements ArchiveReader {
 

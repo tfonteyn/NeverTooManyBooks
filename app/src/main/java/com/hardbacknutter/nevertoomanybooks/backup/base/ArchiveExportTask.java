@@ -34,10 +34,10 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 /**
  * Input: {@link ExportHelper}.
- * Output: the updated {@link ExportHelper} with the {@link ExportResults}.
+ * Output: {@link ExportResults}.
  */
 public class ArchiveExportTask
-        extends VMTask<Boolean> {
+        extends VMTask<ExportResults> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveExportTask";
@@ -71,31 +71,31 @@ public class ArchiveExportTask
     @NonNull
     @Override
     @WorkerThread
-    protected Boolean doWork(@NonNull final Context context)
+    protected ExportResults doWork(@NonNull final Context context)
             throws IOException, InvalidArchiveException {
         Thread.currentThread().setName(TAG);
 
+        ExportResults results = null;
         //noinspection ConstantConditions
         try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
-            mHelper.setResults(exporter.write(context, this));
+            results = exporter.write(context, this);
 
         } catch (@NonNull final IOException e) {
             // The zip archiver (maybe others as well?) can throw an IOException
             // when the user cancels, so only throw when this is not the case
             if (!isCancelled()) {
                 // it's a real exception, cleanup and let the caller handle it.
-                mHelper.onCleanup(context);
+                mHelper.onError(context);
                 throw e;
             }
         }
 
         if (isCancelled()) {
-            mHelper.onCleanup(context);
+            mHelper.onError(context);
+            return new ExportResults();
         } else {
-            // The output file is now properly closed, export it to the user Uri
             mHelper.onSuccess(context);
+            return Objects.requireNonNull(results, "exportResults");
         }
-
-        return true;
     }
 }

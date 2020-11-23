@@ -135,6 +135,7 @@ class CalibreArchiveReader
     /** cached localized "Books" string. */
     @NonNull
     private final String mBooksString;
+    /** cached localized "eBooks" string. */
     @NonNull
     private final String mEBookString;
     @NonNull
@@ -158,8 +159,8 @@ class CalibreArchiveReader
         mCalibreDb = calibreDb;
         mDb = new DAO(TAG);
 
-        mSyncBooks = (helper.getOptions() & ImportHelper.Options.UPDATED_BOOKS_SYNC) != 0;
-        mOverwriteBooks = (helper.getOptions() & ImportHelper.Options.UPDATED_BOOKS) != 0;
+        mSyncBooks = (helper.getOptions() & ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC) != 0;
+        mOverwriteBooks = (helper.getOptions() & ImportHelper.OPTIONS_UPDATED_BOOKS) != 0;
 
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);

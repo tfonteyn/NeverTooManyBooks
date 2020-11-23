@@ -110,11 +110,17 @@ public class ExportResults
         return mBooksExported.size();
     }
 
+    @NonNull
+    public List<Long> getBooksExported() {
+        return mBooksExported;
+    }
+
     public void addCover(@NonNull final String cover) {
         mCoversExported.add(cover);
     }
 
-    int getCoverCount() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public int getCoverCount() {
         return mCoversExported.size();
     }
 

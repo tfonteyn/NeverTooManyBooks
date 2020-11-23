@@ -50,6 +50,8 @@ public interface ReaderEntity {
 
     /**
      * Get the last modification time of this archive entry in EpochMilli.
+     * <p>
+     * Primarily used for cover files.
      *
      * @return EpochMilli
      */

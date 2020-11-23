@@ -200,12 +200,12 @@ public class BooksOnBookshelf
     /** Do an import. */
     private final ActivityResultLauncher<Void> mImportLauncher = registerForActivityResult(
             new ImportFragment.ResultContract(), options -> {
-                if (options != ImportHelper.Options.NOTHING) {
-                    if ((options & ImportHelper.Options.STYLES) != 0) {
+                if (options != ImportHelper.OPTIONS_NOTHING) {
+                    if ((options & ImportHelper.OPTIONS_STYLES) != 0) {
                         // Force a refresh of the cached styles
                         StyleDAO.clearCache();
                     }
-                    if ((options & ImportHelper.Options.PREFS) != 0) {
+                    if ((options & ImportHelper.OPTIONS_PREFS) != 0) {
                         // Refresh the preferred bookshelf. This also refreshes its style.
                         mVm.reloadSelectedBookshelf(this);
                     }

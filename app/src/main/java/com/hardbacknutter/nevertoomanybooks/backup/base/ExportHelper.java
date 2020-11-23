@@ -25,6 +25,7 @@ import android.net.Uri;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
@@ -52,9 +53,34 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 public class ExportHelper {
 
     /**
-     * all defined flags.
+     * Options as to what should be exported.
+     * Not all implementations will support all options.
+     * <p>
+     * The bit numbers are not stored and can be changed.
      */
-    private static final int MASK = Options.ENTITIES | Options.INCREMENTAL;
+    public static final int OPTIONS_NOTHING = 0;
+    public static final int OPTIONS_INFO = 1;
+    public static final int OPTIONS_PREFS = 1 << 1;
+    public static final int OPTIONS_STYLES = 1 << 2;
+    public static final int OPTIONS_BOOKS = 1 << 6;
+    public static final int OPTIONS_COVERS = 1 << 7;
+
+    /**
+     * Do an incremental backup.
+     * <ul>
+     *     <li>0: all books</li>
+     *     <li>1: books added/updated since last backup</li>
+     * </ul>
+     */
+    public static final int OPTIONS_INCREMENTAL = 1 << 16;
+
+
+    /**
+     * All entity types which can be written.
+     * This does not include INFO nor the sync options.
+     */
+    public static final int OPTIONS_ENTITIES =
+            OPTIONS_PREFS | OPTIONS_STYLES | OPTIONS_BOOKS | OPTIONS_COVERS;
     /** Log tag. */
     private static final String TAG = "ExportHelper";
     /** Write to this temp file first. */
@@ -75,10 +101,8 @@ public class ExportHelper {
      * Contains the user selected options before doing the export.
      * After the export, reflects the entities actually exported.
      */
-    @Options.Bits
+    @Options
     private int mOptions;
-    @Nullable
-    private ExportResults mResults;
 
     /** Incremental backup; the date of the last full backup. */
     @Nullable
@@ -88,20 +112,10 @@ public class ExportHelper {
     /**
      * Constructor.
      *
-     * @param options {@link ExportHelper.Options} flags
+     * @param options flags
      */
-    public ExportHelper(@Options.Bits final int options) {
+    public ExportHelper(@Options final int options) {
         mOptions = options;
-    }
-
-    /** Called from the dialog via its View listeners. */
-    public void setOption(@Options.Bits final int optionBit,
-                          final boolean isSet) {
-        if (isSet) {
-            mOptions |= optionBit;
-        } else {
-            mOptions &= ~optionBit;
-        }
     }
 
     @NonNull
@@ -131,19 +145,6 @@ public class ExportHelper {
         mUri = uri;
     }
 
-    /**
-     * Get the date-since.
-     *
-     * @return date (UTC based), or {@code null} if not in use
-     */
-    @Nullable
-    public LocalDateTime getUtcDateTimeSince() {
-        if ((mOptions & Options.INCREMENTAL) != 0) {
-            return mFromUtcDateTime;
-        } else {
-            return null;
-        }
-    }
 
     /**
      * Create a BackupWriter for the specified Uri.
@@ -156,14 +157,18 @@ public class ExportHelper {
      *                                 (this would be a bug)
      * @throws IOException             on failure
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NonNull
-    ArchiveWriter getArchiveWriter(@NonNull final Context context)
+    public ArchiveWriter getArchiveWriter(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
 
-        SanityCheck.requirePositiveValue(mOptions & MASK, "mOptions");
+        SanityCheck.requirePositiveValue(mOptions &
+                                         (OPTIONS_ENTITIES | OPTIONS_INCREMENTAL),
+                                         "mOptions");
+
         Objects.requireNonNull(mUri, "uri");
 
-        if ((mOptions & Options.INCREMENTAL) != 0) {
+        if ((mOptions & OPTIONS_INCREMENTAL) != 0) {
             mFromUtcDateTime = getLastFullBackupDate(context);
         } else {
             mFromUtcDateTime = null;
@@ -195,7 +200,7 @@ public class ExportHelper {
     /**
      * Get the temporary File to write to.
      * When writing is done (success <strong>and</strong> failure),
-     * {@link #onSuccess} / {@link #onCleanup} must be called as needed.
+     * {@link #onSuccess} / {@link #onError} must be called as needed.
      *
      * @param context Current context
      *
@@ -206,14 +211,6 @@ public class ExportHelper {
         return AppDir.Cache.getFile(context, TEMP_FILE_NAME);
     }
 
-    @NonNull
-    public ExportResults getResults() {
-        return Objects.requireNonNull(mResults, "mResults");
-    }
-
-    public void setResults(@NonNull final ExportResults results) {
-        mResults = results;
-    }
 
     /**
      * Should be called after a successful write.
@@ -224,13 +221,17 @@ public class ExportHelper {
      */
     public void onSuccess(@NonNull final Context context)
             throws IOException {
-        FileUtils.copy(context, AppDir.Cache.getFile(context, TEMP_FILE_NAME), getUri());
-        FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
+        // The output file is now properly closed, export it to the user Uri
+        final File tmpOutput = AppDir.Cache.getFile(context, TEMP_FILE_NAME);
+        FileUtils.copy(context, tmpOutput, getUri());
 
         // if the backup was a full backup remember that.
-        if ((mOptions & Options.INCREMENTAL) != 0) {
+        if ((mOptions & OPTIONS_INCREMENTAL) != 0) {
             setLastFullBackupDate(context);
         }
+
+        // cleanup
+        FileUtils.delete(tmpOutput);
     }
 
     /**
@@ -238,8 +239,24 @@ public class ExportHelper {
      *
      * @param context Current context
      */
-    void onCleanup(@NonNull final Context context) {
+    void onError(@NonNull final Context context) {
+        // cleanup
         FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
+    }
+
+
+    /**
+     * Get the date-since.
+     *
+     * @return date (UTC based), or {@code null} if not in use
+     */
+    @Nullable
+    public LocalDateTime getUtcDateTimeSince() {
+        if ((mOptions & OPTIONS_INCREMENTAL) != 0) {
+            return mFromUtcDateTime;
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -291,11 +308,11 @@ public class ExportHelper {
     }
 
 
-    public boolean isOptionSet(@Options.Bits final int optionBit) {
+    public boolean isOptionSet(@Options final int optionBit) {
         return (mOptions & optionBit) != 0;
     }
 
-    @Options.Bits
+    @Options
     public int getOptions() {
         return mOptions;
     }
@@ -303,10 +320,21 @@ public class ExportHelper {
     /**
      * Should be called <strong>after</strong> the export to set what was actually exported.
      *
-     * @param options {@link ExportHelper.Options} flags
+     * @param options flags
      */
-    public void setOptions(@Options.Bits final int options) {
+    public void setOptions(@Options final int options) {
         mOptions = options;
+    }
+
+
+    /** Called from the dialog via its View listeners. */
+    public void setOption(@Options final int optionBit,
+                          final boolean isSet) {
+        if (isSet) {
+            mOptions |= optionBit;
+        } else {
+            mOptions &= ~optionBit;
+        }
     }
 
     /**
@@ -315,83 +343,47 @@ public class ExportHelper {
      * @return {@code true} if something will be exported
      */
     public boolean hasEntityOption() {
-        return (mOptions & Options.ENTITIES) != 0;
+        return (mOptions & OPTIONS_ENTITIES) != 0;
     }
 
     @Override
     @NonNull
     public String toString() {
+        final StringJoiner options = new StringJoiner(",", "Options{", "}");
+        if ((mOptions & OPTIONS_INFO) != 0) {
+            options.add("INFO");
+        }
+        if ((mOptions & OPTIONS_PREFS) != 0) {
+            options.add("PREFS");
+        }
+        if ((mOptions & OPTIONS_STYLES) != 0) {
+            options.add("STYLES");
+        }
+        if ((mOptions & OPTIONS_BOOKS) != 0) {
+            options.add("BOOKS");
+        }
+        if ((mOptions & OPTIONS_COVERS) != 0) {
+            options.add("COVERS");
+        }
+
+        if ((mOptions & OPTIONS_INCREMENTAL) != 0) {
+            options.add("INCREMENTAL");
+        }
+
         return "ExportHelper{"
                + ", mOptions=0b" + Integer.toBinaryString(mOptions)
-               + ", mOptions=" + Options.toString(mOptions)
+               + ", mOptions=" + options.toString()
                + ", mUri=" + mUri
                + ", mArchiveType=" + mArchiveContainer
                + ", mFromUtcDateTime=" + mFromUtcDateTime
-               + ", mResults=" + mResults
                + '}';
     }
 
-    /**
-     * Options as to what should be exported.
-     * Not all implementations will support all options.
-     * <p>
-     * The bit numbers are not stored and can be changed.
-     */
-    public static final class Options {
+    @IntDef(flag = true, value = {OPTIONS_INFO, OPTIONS_PREFS, OPTIONS_STYLES,
+                                  OPTIONS_BOOKS, OPTIONS_COVERS,
+                                  OPTIONS_INCREMENTAL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Options {
 
-        public static final int NOTHING = 0;
-        public static final int INFO = 1;
-        public static final int PREFS = 1 << 1;
-        public static final int STYLES = 1 << 2;
-
-        public static final int BOOKS = 1 << 6;
-        public static final int COVERS = 1 << 7;
-
-        /**
-         * All entity types which can be written.
-         * This does not include INFO nor the sync options.
-         */
-        public static final int ENTITIES = PREFS | STYLES | BOOKS | COVERS;
-
-        /**
-         * Do an incremental backup.
-         * <ul>
-         *     <li>0: all books</li>
-         *     <li>1: books added/updated since last backup</li>
-         * </ul>
-         */
-        public static final int INCREMENTAL = 1 << 16;
-
-        /** DEBUG. */
-        public static String toString(@Bits final int options) {
-            final StringJoiner sj = new StringJoiner(",", "Options{", "}");
-            if ((options & INFO) != 0) {
-                sj.add("INFO");
-            }
-            if ((options & PREFS) != 0) {
-                sj.add("PREFS");
-            }
-            if ((options & STYLES) != 0) {
-                sj.add("STYLES");
-            }
-            if ((options & BOOKS) != 0) {
-                sj.add("BOOKS");
-            }
-            if ((options & COVERS) != 0) {
-                sj.add("COVERS");
-            }
-
-            if ((options & INCREMENTAL) != 0) {
-                sj.add("INCREMENTAL");
-            }
-            return sj.toString();
-        }
-
-        @IntDef(flag = true, value = {INFO, PREFS, STYLES, BOOKS, COVERS,
-                                      INCREMENTAL})
-        @Retention(RetentionPolicy.SOURCE)
-        public @interface Bits {
-
-        }
     }
 }

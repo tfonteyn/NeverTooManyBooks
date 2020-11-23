@@ -106,20 +106,21 @@ public abstract class ArchiveReaderAbstract
             throws IOException, ImportException, InvalidArchiveException {
 
         // keep track of what we read from the archive
-        @ImportHelper.Options.Bits
-        int entitiesRead = ImportHelper.Options.NOTHING;
+        @ImportHelper.Options
+        int entitiesRead = ImportHelper.OPTIONS_NOTHING;
 
-        boolean readStyles = mHelper.isOptionSet(ImportHelper.Options.STYLES);
-        boolean readPrefs = mHelper.isOptionSet(ImportHelper.Options.PREFS);
-        final boolean readBooks = mHelper.isOptionSet(ImportHelper.Options.BOOKS);
-        final boolean readCovers = mHelper.isOptionSet(ImportHelper.Options.COVERS);
+        boolean readStyles = mHelper.isOptionSet(ImportHelper.OPTIONS_STYLES);
+        boolean readPrefs = mHelper.isOptionSet(ImportHelper.OPTIONS_PREFS);
+        final boolean readBooks = mHelper.isOptionSet(ImportHelper.OPTIONS_BOOKS);
+        final boolean readCovers = mHelper.isOptionSet(ImportHelper.OPTIONS_COVERS);
 
         // progress counters
         int estimatedSteps = 1;
 
         try {
             // get the archive info; the helper will read it from the concrete archive.
-            final ArchiveInfo info = Objects.requireNonNull(mHelper.getInfo(context), "info");
+            final ArchiveInfo info = Objects
+                    .requireNonNull(mHelper.getArchiveInfo(context), "info");
             estimatedSteps += info.getBookCount();
             if (readCovers) {
                 if (info.hasCoverCount()) {
@@ -140,7 +141,7 @@ public abstract class ArchiveReaderAbstract
                     try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
-                    entitiesRead |= ImportHelper.Options.STYLES;
+                    entitiesRead |= ImportHelper.OPTIONS_STYLES;
                     readStyles = false;
                 }
                 resetToStart();
@@ -154,7 +155,7 @@ public abstract class ArchiveReaderAbstract
                     try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
-                    entitiesRead |= ImportHelper.Options.PREFS;
+                    entitiesRead |= ImportHelper.OPTIONS_PREFS;
                     readPrefs = false;
                 }
                 resetToStart();
@@ -186,7 +187,7 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
-                            entitiesRead |= ImportHelper.Options.BOOKS;
+                            entitiesRead |= ImportHelper.OPTIONS_BOOKS;
                         }
                         break;
                     }
@@ -210,7 +211,7 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 importer.read(context, entity, progressListener);
                             }
-                            entitiesRead |= ImportHelper.Options.PREFS;
+                            entitiesRead |= ImportHelper.OPTIONS_PREFS;
                             readPrefs = false;
                         }
                         break;
@@ -224,7 +225,7 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
-                            entitiesRead |= ImportHelper.Options.STYLES;
+                            entitiesRead |= ImportHelper.OPTIONS_STYLES;
                             readStyles = false;
                         }
                         break;
@@ -253,7 +254,7 @@ public abstract class ArchiveReaderAbstract
         } finally {
             // report what we actually imported
             if (mResults.coversProcessed > 0) {
-                entitiesRead |= ImportHelper.Options.COVERS;
+                entitiesRead |= ImportHelper.OPTIONS_COVERS;
             }
             mHelper.setOptions(entitiesRead);
 
@@ -283,7 +284,7 @@ public abstract class ArchiveReaderAbstract
 
             if (exists) {
                 // Check which is newer, the local file, or the imported file.
-                if (mHelper.isOptionSet(ImportHelper.Options.UPDATED_BOOKS_SYNC)) {
+                if (mHelper.isOptionSet(ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC)) {
                     // shift 16 bits to get to +- 1 minute precision.
                     // Using pure milliseconds will create far to many false positives
                     final long importFileDate =
@@ -296,7 +297,7 @@ public abstract class ArchiveReaderAbstract
                 }
 
                 // Are we allowed to overwrite at all ?
-                if (!mHelper.isOptionSet(ImportHelper.Options.UPDATED_BOOKS)) {
+                if (!mHelper.isOptionSet(ImportHelper.OPTIONS_UPDATED_BOOKS)) {
                     mResults.coversSkipped++;
                     return;
                 }

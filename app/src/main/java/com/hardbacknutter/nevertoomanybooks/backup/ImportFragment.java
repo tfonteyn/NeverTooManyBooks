@@ -100,10 +100,6 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
-    /** The launcher for picking a Uri. */
-    private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
-            registerForActivityResult(new ActivityResultContracts.OpenDocument(),
-                                      this::onOpenDocument);
     private ArchiveImportTask mArchiveImportTask;
     private final ImportOptionsDialogFragment.Launcher mImportOptionsLauncher =
             new ImportOptionsDialogFragment.Launcher() {
@@ -117,6 +113,10 @@ public class ImportFragment
                     }
                 }
             };
+    /** The launcher for picking a Uri. */
+    private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
+            registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+                                      this::onOpenDocument);
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
@@ -193,8 +193,8 @@ public class ImportFragment
             switch (container) {
                 case CsvBooks:
                     // Default: new books + books with newer "last_update" only
-                    importHelper.setOptions(ImportHelper.Options.BOOKS
-                                            | ImportHelper.Options.UPDATED_BOOKS_SYNC);
+                    importHelper.setOptions(ImportHelper.OPTIONS_BOOKS
+                                            | ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC);
 
                     //URGENT: make a backup before ANY csv import!
                     //noinspection ConstantConditions
@@ -216,8 +216,8 @@ public class ImportFragment
                 case SqLiteDb:
                     // Default: update all entities (includes new books)
                     // + books with newer "last_update" only
-                    importHelper.setOptions(ImportHelper.Options.ENTITIES
-                                            | ImportHelper.Options.UPDATED_BOOKS_SYNC);
+                    importHelper.setOptions(ImportHelper.OPTIONS_ENTITIES
+                                            | ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC);
                     mImportOptionsLauncher.launch();
                     break;
 
@@ -302,12 +302,12 @@ public class ImportFragment
         return msg;
     }
 
-    private void onImportCancelled(@NonNull final FinishedMessage<Boolean> message) {
+    private void onImportCancelled(@NonNull final FinishedMessage<ImportResults> message) {
         closeProgressDialog();
+
         if (message.isNewEvent()) {
             if (message.result != null) {
-                // message.result is always 'true'
-                onImportFinished(R.string.progress_end_import_partially_complete);
+                onImportFinished(R.string.progress_end_import_partially_complete, message.result);
             } else {
                 //noinspection ConstantConditions
                 Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
@@ -323,10 +323,13 @@ public class ImportFragment
      *
      * @param message to process
      */
-    private void onImportFinished(@NonNull final FinishedMessage<Boolean> message) {
+    private void onImportFinished(@NonNull final FinishedMessage<ImportResults> message) {
         closeProgressDialog();
+
         if (message.isNewEvent()) {
-            onImportFinished(R.string.progress_end_import_complete);
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+
+            onImportFinished(R.string.progress_end_import_complete, message.result);
         }
     }
 
@@ -334,14 +337,15 @@ public class ImportFragment
      * Import finished: Step 2: Inform the user.
      *
      * @param titleId for the dialog title; reports success or cancelled.
+     * @param result  of the import
      */
-    private void onImportFinished(@StringRes final int titleId) {
+    private void onImportFinished(@StringRes final int titleId,
+                                  @NonNull final ImportResults result) {
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
-                .setMessage(mVm.getImportHelper().getResults()
-                               .createReport(getContext()))
+                .setMessage(result.createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mVm.onImportFinished());
@@ -371,10 +375,10 @@ public class ImportFragment
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {
-                return ImportHelper.Options.NOTHING;
+                return ImportHelper.OPTIONS_NOTHING;
             }
             return intent
-                    .getIntExtra(ImportResults.BKEY_IMPORT_RESULTS, ImportHelper.Options.NOTHING);
+                    .getIntExtra(ImportResults.BKEY_IMPORT_RESULTS, ImportHelper.OPTIONS_NOTHING);
         }
     }
 }

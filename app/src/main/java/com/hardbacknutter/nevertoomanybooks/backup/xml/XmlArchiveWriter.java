@@ -98,7 +98,7 @@ public class XmlArchiveWriter
         // We must strip out other entities here as the XmlExporter supports all entities
         // which we don't want to do here.
         final int entities =
-                mHelper.getOptions() & (ExportHelper.Options.BOOKS | ExportHelper.Options.COVERS);
+                mHelper.getOptions() & (ExportHelper.OPTIONS_BOOKS | ExportHelper.OPTIONS_COVERS);
         try (Exporter exporter = new XmlExporter(context, entities,
                                                  mHelper.getUtcDateTimeSince())) {
             return exporter.write(context, mTmpBooksFile, progressListener);

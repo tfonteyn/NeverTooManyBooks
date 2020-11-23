@@ -64,9 +64,9 @@ public class CsvArchiveWriter
 
         // This is a plain books-only flat csv-file,so we *only* pass in Options.BOOKS.
         // ans disregard whatever was set in the helper.
-        try (Exporter exporter = new CsvExporter(context,
-                                                 ExportHelper.Options.BOOKS,
+        try (Exporter exporter = new CsvExporter(context, ExportHelper.OPTIONS_BOOKS,
                                                  mHelper.getUtcDateTimeSince())) {
+
             return exporter.write(context, mHelper.getTempOutputFile(context), progressListener);
         }
     }

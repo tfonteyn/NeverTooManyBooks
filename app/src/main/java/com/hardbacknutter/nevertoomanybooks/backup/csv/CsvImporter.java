@@ -162,16 +162,16 @@ public class CsvImporter
      *
      * @param context Current context
      * @param options Supports:
-     *                {@link ImportHelper.Options#BOOKS},
-     *                {@link ImportHelper.Options#UPDATED_BOOKS},
-     *                {@link ImportHelper.Options#UPDATED_BOOKS_SYNC},
+     *                {@link ImportHelper#OPTIONS_BOOKS} (implicit),
+     *                {@link ImportHelper#OPTIONS_UPDATED_BOOKS},
+     *                {@link ImportHelper#OPTIONS_UPDATED_BOOKS_SYNC},
      */
     @AnyThread
     public CsvImporter(@NonNull final Context context,
-                       @ImportHelper.Options.Bits final int options) {
+                       @ImportHelper.Options final int options) {
 
-        mSyncBooks = (options & ImportHelper.Options.UPDATED_BOOKS_SYNC) != 0;
-        mOverwriteBooks = (options & ImportHelper.Options.UPDATED_BOOKS) != 0;
+        mSyncBooks = (options & ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC) != 0;
+        mOverwriteBooks = (options & ImportHelper.OPTIONS_UPDATED_BOOKS) != 0;
 
         mDb = new DAO(TAG);
         mBookshelfCoder = new StringList<>(

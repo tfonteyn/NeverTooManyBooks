@@ -110,23 +110,23 @@ public class ImportOptionsDialogFragment
             mVb.cbxGroup.setVisibility(View.GONE);
 
         } else {
-            mVb.cbxBooks.setChecked(helper.isOptionSet(ImportHelper.Options.BOOKS));
+            mVb.cbxBooks.setChecked(helper.isOptionSet(ImportHelper.OPTIONS_BOOKS));
             mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                helper.setOption(ImportHelper.Options.BOOKS, isChecked);
+                helper.setOption(ImportHelper.OPTIONS_BOOKS, isChecked);
                 mVb.rbBooksGroup.setEnabled(isChecked);
             });
 
-            mVb.cbxCovers.setChecked(helper.isOptionSet(ImportHelper.Options.COVERS));
+            mVb.cbxCovers.setChecked(helper.isOptionSet(ImportHelper.OPTIONS_COVERS));
             mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setOption(ImportHelper.Options.COVERS, isChecked));
+                    .setOption(ImportHelper.OPTIONS_COVERS, isChecked));
 
-            mVb.cbxPrefs.setChecked(helper.isOptionSet(ImportHelper.Options.PREFS));
+            mVb.cbxPrefs.setChecked(helper.isOptionSet(ImportHelper.OPTIONS_PREFS));
             mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setOption(ImportHelper.Options.PREFS, isChecked));
+                    .setOption(ImportHelper.OPTIONS_PREFS, isChecked));
 
-            mVb.cbxStyles.setChecked(helper.isOptionSet(ImportHelper.Options.STYLES));
+            mVb.cbxStyles.setChecked(helper.isOptionSet(ImportHelper.OPTIONS_STYLES));
             mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setOption(ImportHelper.Options.STYLES, isChecked));
+                    .setOption(ImportHelper.OPTIONS_STYLES, isChecked));
         }
 
         mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdatedBooks());

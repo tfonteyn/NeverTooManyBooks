@@ -132,7 +132,7 @@ public class XmlExporter
     private final DAO mDb;
     private final ExportResults mResults = new ExportResults();
     /** export configuration. */
-    @ExportHelper.Options.Bits
+    @ExportHelper.Options
     private final int mOptions;
     private final boolean mCollectCoverFilenames;
 
@@ -146,16 +146,16 @@ public class XmlExporter
      * Constructor.
      *
      * @param context          Current context
-     * @param options          {@link ExportHelper.Options} flags
+     * @param options          {@link ExportHelper} flags
      * @param utcSinceDateTime (optional) UTC based date to select only books modified or added
      *                         since.
      */
     public XmlExporter(@NonNull final Context context,
-                       @ExportHelper.Options.Bits final int options,
+                       @ExportHelper.Options final int options,
                        @Nullable final LocalDateTime utcSinceDateTime) {
 
         mOptions = options;
-        mCollectCoverFilenames = (mOptions & ExportHelper.Options.COVERS) != 0;
+        mCollectCoverFilenames = (mOptions & ExportHelper.OPTIONS_COVERS) != 0;
         mUtcSinceDateTime = utcSinceDateTime;
 
         mDb = new DAO(TAG);
@@ -179,9 +179,9 @@ public class XmlExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        final boolean writeBooks = (mOptions & ExportHelper.Options.BOOKS) != 0;
-        final boolean writeStyles = (mOptions & ExportHelper.Options.STYLES) != 0;
-        final boolean writePrefs = (mOptions & ExportHelper.Options.PREFS) != 0;
+        final boolean writeBooks = (mOptions & ExportHelper.OPTIONS_BOOKS) != 0;
+        final boolean writeStyles = (mOptions & ExportHelper.OPTIONS_STYLES) != 0;
+        final boolean writePrefs = (mOptions & ExportHelper.OPTIONS_PREFS) != 0;
 
         if (!progressListener.isCancelled() && writeStyles) {
             progressListener.publishProgressStep(

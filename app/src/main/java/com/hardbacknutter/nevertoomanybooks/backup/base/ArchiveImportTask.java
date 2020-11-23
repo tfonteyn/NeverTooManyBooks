@@ -32,10 +32,10 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 /**
  * Input: {@link ImportHelper}.
- * Output: the updated {@link ImportHelper} with the {@link ImportResults }.
+ * Output: {@link ImportResults}.
  */
 public class ArchiveImportTask
-        extends VMTask<Boolean> {
+        extends VMTask<ImportResults> {
 
     /** Log tag. */
     private static final String TAG = "ArchiveImportTask";
@@ -57,14 +57,12 @@ public class ArchiveImportTask
     @NonNull
     @Override
     @WorkerThread
-    protected Boolean doWork(@NonNull final Context context)
+    protected ImportResults doWork(@NonNull final Context context)
             throws IOException, ImportException, InvalidArchiveException {
         Thread.currentThread().setName(TAG);
 
         try (ArchiveReader reader = mHelper.getArchiveReader(context)) {
-            mHelper.setResults(reader.read(context, this));
-
+            return reader.read(context, this);
         }
-        return true;
     }
 }

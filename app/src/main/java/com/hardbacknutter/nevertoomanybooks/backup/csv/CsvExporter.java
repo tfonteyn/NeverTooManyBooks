@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.StringList;
  * <p>
  * All books will have full toc, author, series and bookshelf information.
  * <p>
- * Support {@link ExportHelper.Options#BOOKS} only (and does in fact simply disregard all flags).
+ * Support {@link ExportHelper#OPTIONS_BOOKS} only (and does in fact simply disregard all flags).
  */
 public class CsvExporter
         implements Exporter {
@@ -149,7 +149,7 @@ public class CsvExporter
     private final StringList<Bookshelf> mBookshelfCoder;
     private final ExportResults mResults = new ExportResults();
     /** export configuration. */
-    @ExportHelper.Options.Bits
+    @ExportHelper.Options
     private final int mOptions;
     private final boolean mCollectCoverFilenames;
 
@@ -160,17 +160,17 @@ public class CsvExporter
      * Constructor.
      *
      * @param context          Current context
-     * @param options          {@link ExportHelper.Options} flags
+     * @param options          {@link ExportHelper} flags
      * @param utcSinceDateTime (optional) UTC based date to select only books modified or added
      *                         since.
      */
     @AnyThread
     public CsvExporter(@NonNull final Context context,
-                       @ExportHelper.Options.Bits final int options,
+                       @ExportHelper.Options final int options,
                        @Nullable final LocalDateTime utcSinceDateTime) {
 
         mOptions = options;
-        mCollectCoverFilenames = (mOptions & ExportHelper.Options.COVERS) != 0;
+        mCollectCoverFilenames = (mOptions & ExportHelper.OPTIONS_COVERS) != 0;
         mUtcSinceDateTime = utcSinceDateTime;
 
         mDb = new DAO(TAG);
@@ -192,7 +192,7 @@ public class CsvExporter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        final boolean writeBooks = (mOptions & ExportHelper.Options.BOOKS) != 0;
+        final boolean writeBooks = (mOptions & ExportHelper.OPTIONS_BOOKS) != 0;
         // Sanity check: if we don't do books, return empty results
         if (!writeBooks) {
             return mResults;

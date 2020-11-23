@@ -110,35 +110,35 @@ public class ExportOptionsDialogFragment
     private void setupOptions() {
         final ExportHelper helper = mExportViewModel.getExportHelper();
 
-        mVb.cbxBooks.setChecked(helper.isOptionSet(ExportHelper.Options.BOOKS));
+        mVb.cbxBooks.setChecked(helper.isOptionSet(ExportHelper.OPTIONS_BOOKS));
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            helper.setOption(ExportHelper.Options.BOOKS, isChecked);
+            helper.setOption(ExportHelper.OPTIONS_BOOKS, isChecked);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        final boolean incremental = helper.isOptionSet(ExportHelper.Options.INCREMENTAL);
+        final boolean incremental = helper.isOptionSet(ExportHelper.OPTIONS_INCREMENTAL);
         mVb.rbBooksAll.setChecked(!incremental);
         mVb.rbBooksSync.setChecked(incremental);
         mVb.rbBooksSyncInfo.setOnClickListener(StandardDialogs::infoPopup);
 
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
-                .setOption(ExportHelper.Options.INCREMENTAL,
+                .setOption(ExportHelper.OPTIONS_INCREMENTAL,
                            checkedId == mVb.rbBooksSync.getId()));
 
 
-        mVb.cbxCovers.setChecked(helper.isOptionSet(ExportHelper.Options.COVERS));
+        mVb.cbxCovers.setChecked(helper.isOptionSet(ExportHelper.OPTIONS_COVERS));
         mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setOption(ExportHelper.Options.COVERS, isChecked));
+                .setOption(ExportHelper.OPTIONS_COVERS, isChecked));
 
         mVb.cbxPrefs.setChecked(helper.isOptionSet(
-                ExportHelper.Options.PREFS | ExportHelper.Options.STYLES));
+                ExportHelper.OPTIONS_PREFS | ExportHelper.OPTIONS_STYLES));
         mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setOption(ExportHelper.Options.PREFS, isChecked));
+                .setOption(ExportHelper.OPTIONS_PREFS, isChecked));
 
         mVb.cbxStyles.setChecked(helper.isOptionSet(
-                ExportHelper.Options.PREFS | ExportHelper.Options.STYLES));
+                ExportHelper.OPTIONS_PREFS | ExportHelper.OPTIONS_STYLES));
         mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setOption(ExportHelper.Options.STYLES, isChecked));
+                .setOption(ExportHelper.OPTIONS_STYLES, isChecked));
 
         // Check options on position.
         final List<String> list = new ArrayList<>();

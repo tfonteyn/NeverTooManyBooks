@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveExportTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -256,7 +257,7 @@ public class ExportFragment
         return msg;
     }
 
-    private void onExportCancelled(@NonNull final FinishedMessage<Boolean> message) {
+    private void onExportCancelled(@NonNull final FinishedMessage<ExportResults> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
@@ -272,10 +273,12 @@ public class ExportFragment
      *
      * @param message to process
      */
-    private void onExportFinished(@NonNull final FinishedMessage<Boolean> message) {
+    private void onExportFinished(@NonNull final FinishedMessage<ExportResults> message) {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+
             final ExportHelper exportHelper = mExportViewModel.getExportHelper();
 
             //noinspection ConstantConditions
@@ -287,12 +290,13 @@ public class ExportFragment
 
             final Uri uri = exportHelper.getUri();
             final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
-            final String report = exportHelper.getResults().createReport(getContext(), uriInfo);
+            final String report = message.result.createReport(getContext(), uriInfo);
+
             if (exportHelper.offerEmail(uriInfo)) {
-                dialogBuilder
-                        .setMessage(report + "\n\n" + getString(R.string.confirm_email_export))
-                        .setNeutralButton(R.string.btn_email, (d, which) ->
-                                onExportEmail(uri, report));
+                dialogBuilder.setMessage(report + "\n\n"
+                                         + getString(R.string.confirm_email_export))
+                             .setNeutralButton(R.string.btn_email, (d, which) ->
+                                     onExportEmail(uri, report));
             } else {
                 dialogBuilder.setMessage(report);
             }

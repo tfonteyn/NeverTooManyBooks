@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -79,7 +80,8 @@ public class CsvArchiveReader
         // hope for the best
     }
 
-    private static class CsvReaderEntity
+    @VisibleForTesting
+    public static class CsvReaderEntity
             implements ReaderEntity {
 
         /** The entity source stream. */
