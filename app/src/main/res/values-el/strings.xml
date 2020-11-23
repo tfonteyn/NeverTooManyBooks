@@ -663,7 +663,7 @@
     <string name="confirm_clear_all_data">ΑΥΤΑ ΑΦΑΙΡΕΣΕΙ ΟΛΑ ΤΑ ΔΕΔΟΜΕΝΑ!\n Εκτός από την επαναφορά από ένα προηγούμενο αντίγραφο ασφαλείας, ΑΥΤΟ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΚΑΝΕΤΕ ΚΑΤΩ!\n\n Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="menu_backup_and_export">Δημιουργία αντιγράφων ασφαλείας και εξαγωγή</string>
-    <string name="lbl_export">Εξαγωγή</string>
+    <string name="X_action_export">Εξαγωγή</string>
     <string name="lbl_database">Βάση δεδομένων</string>
     <string name="lbl_archive_format_db_info">Η βάση δεδομένων SQLite.</string>
     <string name="lbl_archive_type_db">Αρχείο βάσης δεδομένων (%1$s)</string>
@@ -673,4 +673,13 @@
     <string name="camera_other">Άλλο</string>
     <string name="camera_front">Μπροστινή Κάμερα</string>
     <string name="camera_back">Πίσω Κάμερα</string>
+    <string name="lbl_import_option_updated_books_skip">Μόνο νέα βιβλία</string>
+    <string name="lbl_import_option_updated_books_overwrite">Νέα και ενημερωμένα βιβλία (επαναφορά)</string>
+    <string name="lbl_import_option_updated_books_sync">Συγχρονίζω</string>
+    <string name="inf_import_option_updated_books_skip">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
+    <string name="inf_import_option_updated_books_overwrite">Εισαγάγετε νέα βιβλία και αντικαταστήστε τα υπάρχοντα βιβλία. Χρησιμοποιήστε αυτό για την επαναφορά ενός αντιγράφου ασφαλείας.</string>
+    <string name="inf_import_option_updated_books_sync">Εισαγάγετε νέα βιβλία και συγχρονίστε υπάρχοντα βιβλία με βάση την τελευταία ημερομηνία τροποποίησής τους.</string>
+    <string name="pt_enable_fast_scroller_overlay">Φούσκα κειμένου κατά την κύλιση</string>
+    <string name="menu_import">εισάγω</string>
+    <string name="action_import">εισάγω</string>
 </resources>

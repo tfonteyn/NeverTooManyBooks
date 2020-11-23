@@ -659,7 +659,7 @@
     <string name="confirm_clear_all_data">BU TÜM VERİLERİ KALDIRACAK!\n Önceki bir yedeklemeden geri yükleme dışında, BU GERİ ALINAMAZ!\n\n Devam etmek istediğine emin misin ?</string>
     <string name="confirm_continue">Devam etmek istediğine emin misin ?</string>
     <string name="menu_backup_and_export">Yedekleme ve Dışa Aktarma</string>
-    <string name="lbl_export">İhracat</string>
+    <string name="X_action_export">İhracat</string>
     <string name="lbl_database">Veri tabanı</string>
     <string name="lbl_archive_format_db_info">SQLite veritabanı.</string>
     <string name="lbl_archive_type_db">Veritabanı dosyası (%1$s)</string>
@@ -669,4 +669,13 @@
     <string name="camera_other">Diğer</string>
     <string name="camera_front">Ön kamera</string>
     <string name="camera_back">Arka kamera</string>
+    <string name="lbl_import_option_updated_books_skip">Yalnızca yeni kitaplar</string>
+    <string name="lbl_import_option_updated_books_overwrite">Yeni ve güncellenmiş kitaplar (geri yükleme)</string>
+    <string name="lbl_import_option_updated_books_sync">Senkronize et</string>
+    <string name="inf_import_option_updated_books_skip">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
+    <string name="inf_import_option_updated_books_overwrite">Yeni kitapları içe aktarın ve mevcut kitapların üzerine yazın. Bunu bir yedeği geri yüklemek için kullanın.</string>
+    <string name="inf_import_option_updated_books_sync">Yeni kitapları içe aktarın ve mevcut kitapları son değişiklik tarihlerine göre senkronize edin.</string>
+    <string name="pt_enable_fast_scroller_overlay">Kaydırma sırasında metin balonu</string>
+    <string name="menu_import">Ithal etmek</string>
+    <string name="action_import">Ithal etmek</string>
 </resources>

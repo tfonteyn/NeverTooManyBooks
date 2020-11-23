@@ -280,7 +280,7 @@
     <string name="lbl_edition">Édition</string>
     <string name="inf_export_option_books_since_last_full_backup">Tous les livres ajoutés ou mis à jour depuis la dernière sauvegarde complète</string>
     <string name="lbl_export_options">Selection de ce qui doit être enregistré dans la sauvegarde.</string>
-    <string name="lbl_export">Exportation</string>
+    <string name="X_action_export">Exportation</string>
     <string name="lbl_family_name">Nom de famille</string>
     <string name="lbl_field_usage_append">Ajouter des données supplémentaires</string>
     <string name="lbl_field_usage_copy_if_blank">Copier si vide</string>
@@ -676,4 +676,13 @@
     <string name="camera_other">Autre</string>
     <string name="camera_front">Caméra frontale</string>
     <string name="camera_back">Caméra arrière</string>
+    <string name="lbl_import_option_updated_books_sync">Synchroniser</string>
+    <string name="lbl_import_option_updated_books_overwrite">Livres nouveaux et mis à jour (restauration)</string>
+    <string name="lbl_import_option_updated_books_skip">Nouveaux livres uniquement</string>
+    <string name="inf_import_option_updated_books_skip">Importez uniquement les nouveaux livres. Toutes les mises à jour des livres existants seront ignorées.</string>
+    <string name="inf_import_option_updated_books_overwrite">Importez de nouveaux livres et écrasez les livres existants. Utilisez ceci pour restaurer une sauvegarde.</string>
+    <string name="inf_import_option_updated_books_sync">Importez de nouveaux livres et synchronisez les livres existants en fonction de leur dernière date de modification.</string>
+    <string name="pt_enable_fast_scroller_overlay">Bulle de texte lors du défilement</string>
+    <string name="menu_import">Importer</string>
+    <string name="action_import">Importer</string>
 </resources>

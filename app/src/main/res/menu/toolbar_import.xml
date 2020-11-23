@@ -23,7 +23,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@id/MENU_ACTION_CONFIRM"
-        android:title="@string/lbl_import"
+        android:title="@string/action_import"
         app:actionLayout="@layout/mnu_btn_confirm"
         app:showAsAction="always" />
 </menu>

@@ -276,7 +276,7 @@
     <string name="lbl_edition">Editie</string>
     <string name="inf_export_option_books_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
     <string name="lbl_export_options">Selecteer wat geëxporteerd zal worden naar het archief.</string>
-    <string name="lbl_export">Exporteren</string>
+    <string name="X_action_export">Exporteren</string>
     <string name="lbl_family_name">Achternaam</string>
     <string name="lbl_field_usage_append">Voegt extra gegevens toe</string>
     <string name="lbl_field_usage_copy_if_blank">kopieer indien leeg</string>
@@ -672,4 +672,13 @@
     <string name="camera_other">Overig</string>
     <string name="camera_front">Camera aan de voorkant</string>
     <string name="camera_back">Camera aan de achterkant</string>
+    <string name="lbl_import_option_updated_books_skip">Alleen nieuwe boeken</string>
+    <string name="lbl_import_option_updated_books_overwrite">Nieuwe en bijgewerkte boeken (herstellen)</string>
+    <string name="lbl_import_option_updated_books_sync">Synchroniseren</string>
+    <string name="inf_import_option_updated_books_skip">Importeer alleen nieuwe boeken. Updates van bestaande boeken worden genegeerd.</string>
+    <string name="inf_import_option_updated_books_overwrite">Importeer nieuwe boeken en overschrijf bestaande boeken. Gebruik dit om een back-up te herstellen.</string>
+    <string name="inf_import_option_updated_books_sync">Importeer nieuwe boeken en synchroniseer bestaande boeken op basis van hun laatste wijzigingsdatum.</string>
+    <string name="pt_enable_fast_scroller_overlay">Tekstballon tijdens het scrollen</string>
+    <string name="menu_import">Importeren</string>
+    <string name="action_import">Importeren</string>
 </resources>

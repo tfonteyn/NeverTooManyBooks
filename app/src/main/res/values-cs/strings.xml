@@ -658,7 +658,7 @@
     <string name="confirm_clear_all_data">TOTO ODSTRANÍ VŠECHNY ÚDAJE!\n S výjimkou obnovy z předchozí zálohy TO NELZE ZRUŠIT!\n\n Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
     <string name="menu_backup_and_export">Zálohování a export</string>
-    <string name="lbl_export">Vývozní</string>
+    <string name="X_action_export">Vývozní</string>
     <string name="lbl_database">Databáze</string>
     <string name="lbl_archive_format_db_info">Databáze SQLite.</string>
     <string name="lbl_archive_type_db">Soubor databáze (%1$s)</string>
@@ -669,4 +669,13 @@
 
     <string name="camera_front">Přední fotoaparát</string>
     <string name="camera_back">Zadní fotoaparát</string>
+    <string name="lbl_import_option_updated_books_sync">Synchronizovat</string>
+    <string name="lbl_import_option_updated_books_overwrite">Nové a aktualizované knihy (obnovení)</string>
+    <string name="lbl_import_option_updated_books_skip">Pouze nové knihy</string>
+    <string name="inf_import_option_updated_books_skip">Importujte pouze nové knihy. Všechny aktualizace existujících knih budou ignorovány.</string>
+    <string name="inf_import_option_updated_books_overwrite">Importujte nové knihy a přepište existující knihy. Použijte k obnovení zálohy.</string>
+    <string name="inf_import_option_updated_books_sync">Importujte nové knihy a synchronizujte existující knihy na základě data jejich poslední úpravy.</string>
+    <string name="pt_enable_fast_scroller_overlay">Textová bublina při posouvání</string>
+    <string name="menu_import">Importovat</string>
+    <string name="action_import">Importovat</string>
 </resources>

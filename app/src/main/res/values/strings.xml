@@ -778,6 +778,10 @@
     <!-- SwitchPreference -->
     <string name="pt_bob_list_state_expansion_level">Default booklist expansion</string>
 
+    <!-- ListPreference: the popup bubble displayed while scrolling through a booklist.
+        The options are 'none', 'static' or 'dynamic' -->
+    <string name="pt_enable_fast_scroller_overlay">Text bubble while scrolling.</string>
+
     <!-- Preference Category: thumbnails -->
     <!-- SwitchPreference - Show thumbnail image for each book -->
     <string name="pt_bob_cover_show">Show covers</string>
@@ -843,37 +847,40 @@
     <!-- Dialog title. -->
     <string name="warning_search_failed">Searching for the book failed.</string>
 
-    <string name="lbl_import">Import</string>
-    <string name="lbl_export">Export</string>
-
-    <string name="lbl_backup">Backup</string>
-
-
     <!-- ####################################################################################### -->
     <!-- == Import and Export. == -->
     <!-- ####################################################################################### -->
-    <!-- Navigation panel menu option -->
-    <string name="menu_backup_and_export">Backup &amp; Export</string>
 
+    <!-- Navigation panel menu option -->
+    <string name="menu_import">Import</string>
+    <!-- Dialog title. -->
+    <string name="lbl_import">Import</string>
+    <!-- Button text. Must be short. -->
+    <string name="action_import">Import</string>
+    <!-- Progress Dialog title. -->
+    <string name="lbl_importing">Importing…</string>
     <!-- Dialog import all options. -->
     <string name="lbl_import_options">Select what will be imported.</string>
     <string name="lbl_import_option_updated_books_skip">New books only</string>
-    <string name="inf_import_option_updated_books_skip">Info New books only</string>
-    <string name="lbl_import_option_updated_books_overwrite">New and updated books</string>
-    <string name="inf_import_option_updated_books_overwrite">Info New and updated books</string>
-    <string name="lbl_import_option_updated_books_sync">Sync</string>
-    <string name="inf_import_option_updated_books_sync">Info Sync</string>
+    <string name="inf_import_option_updated_books_skip">Import only new books. Any updates to existing books will be ignored.</string>
+    <string name="lbl_import_option_updated_books_overwrite">New and updated books (restore)</string>
+    <string name="inf_import_option_updated_books_overwrite">Import new books and overwrite existing books. Use this for restoring a backup.</string>
+    <string name="lbl_import_option_updated_books_sync">Synchronize</string>
+    <string name="inf_import_option_updated_books_sync">Import new books and synchronize existing books based on their last modification date.</string>
 
+
+    <!-- Navigation panel menu option -->
+    <string name="menu_backup_and_export">Backup &amp; Export</string>
+    <!-- Dialog title. -->
+    <string name="lbl_backup">Backup</string>
+    <!-- Progress Dialog title. -->
+    <string name="lbl_backing_up">Backing up…</string>
     <!-- Dialog export all options. -->
     <string name="lbl_export_options">Select what will be exported to the archive.</string>
     <string name="lbl_export_option_all_books">All books</string>
     <string name="lbl_export_option_books_since_last_full_backup">New and updated books</string>
     <string name="inf_export_option_books_since_last_full_backup">Books added or updated since last full backup.</string>
 
-    <!-- Progress Dialog title. -->
-    <string name="lbl_importing">Importing…</string>
-    <!-- Progress Dialog title. -->
-    <string name="lbl_backing_up">Backing up…</string>
 
     <!-- ####################################################################################### -->
     <!-- == Booklist FAB menu options. == -->
@@ -1513,7 +1520,7 @@
     <!-- in theory, this should never be shown unless we have a bug in the validators. -->
     <string name="X_vldt_failed_for_x">Validation failed for “%1$s”</string>
 
-
+    <string name="X_action_export">Export</string>
     <string name="X_action_exit">Exit</string>
     <string name="X_action_update">Update</string>
     <string name="X_action_swap">Swap</string>
@@ -1587,6 +1594,4 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-
-    <string name="pt_enable_fast_scroller_overlay">Scrolling information overlay.</string>
 </resources>

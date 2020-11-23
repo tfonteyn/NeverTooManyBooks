@@ -658,7 +658,7 @@
     <string name="confirm_clear_all_data">TO USUŃ WSZYSTKIE DANE!\n Z wyjątkiem przywracania z poprzedniej kopii zapasowej, TO NIE MOŻE BYĆ Cofnąć!\n\n Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="menu_backup_and_export">Kopia zapasowa i eksport</string>
-    <string name="lbl_export">Eksport</string>
+    <string name="X_action_export">Eksport</string>
     <string name="lbl_database">Baza danych</string>
     <string name="lbl_archive_format_db_info">Baza danych SQLite.</string>
     <string name="lbl_archive_type_db">Plik bazy danych (%1$s)</string>
@@ -668,4 +668,13 @@
     <string name="camera_other">Inne</string>
     <string name="camera_front">Przedni aparat</string>
     <string name="camera_back">Tylny aparat</string>
+    <string name="lbl_import_option_updated_books_skip">Tylko nowe książki</string>
+    <string name="lbl_import_option_updated_books_overwrite">Nowe i zaktualizowane książki (przywróć)</string>
+    <string name="lbl_import_option_updated_books_sync">Synchronizować</string>
+    <string name="inf_import_option_updated_books_skip">Importuj tylko nowe książki. Wszelkie aktualizacje istniejących książek będą ignorowane.</string>
+    <string name="inf_import_option_updated_books_overwrite">Importuj nowe książki i nadpisz istniejące książki. Użyj tego do przywrócenia kopii zapasowej.</string>
+    <string name="inf_import_option_updated_books_sync">Importuj nowe książki i synchronizuj istniejące książki na podstawie daty ich ostatniej modyfikacji.</string>
+    <string name="pt_enable_fast_scroller_overlay">Dymek tekstowy podczas przewijania</string>
+    <string name="menu_import">Importuj</string>
+    <string name="action_import">Importuj</string>
 </resources>

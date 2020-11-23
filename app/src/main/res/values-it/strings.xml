@@ -661,7 +661,7 @@
     <string name="confirm_clear_all_data">QUESTO RIMUOVERÀ TUTTI I DATI!\n Fatta eccezione per il ripristino da un backup precedente, QUESTO NON PU ESSERE ANNULLATO!\n\n Sei sicuro di voler continuare ?</string>
     <string name="confirm_continue">Sei sicuro di voler continuare ?</string>
     <string name="menu_backup_and_export">Backup ed esportazione</string>
-    <string name="lbl_export">Esportare</string>
+    <string name="X_action_export">Esportare</string>
     <string name="lbl_database">Banca dati</string>
     <string name="lbl_archive_format_db_info">Il database SQLite.</string>
     <string name="lbl_archive_type_db">File di database (%1$s)</string>
@@ -671,4 +671,13 @@
     <string name="camera_other">Altro</string>
     <string name="camera_front">Fotocamera frontale</string>
     <string name="camera_back">Fotocamera posteriore</string>
+    <string name="lbl_import_option_updated_books_skip">Solo nuovi libri</string>
+    <string name="lbl_import_option_updated_books_overwrite">Libri nuovi e aggiornati (ripristino)</string>
+    <string name="lbl_import_option_updated_books_sync">Sincronizzare</string>
+    <string name="inf_import_option_updated_books_skip">Importa solo nuovi libri. Eventuali aggiornamenti ai libri esistenti verranno ignorati.</string>
+    <string name="inf_import_option_updated_books_overwrite">Importa nuovi libri e sovrascrivi i libri esistenti. Usalo per ripristinare un backup.</string>
+    <string name="inf_import_option_updated_books_sync">Importa nuovi libri e sincronizza i libri esistenti in base alla data dell\'ultima modifica.</string>
+    <string name="pt_enable_fast_scroller_overlay">Bolla di testo durante lo scorrimento</string>
+    <string name="menu_import">Importa</string>
+    <string name="action_import">Importa</string>
 </resources>

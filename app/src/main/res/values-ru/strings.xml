@@ -657,7 +657,7 @@
     <string name="confirm_clear_all_data">ЭТО УДАЛЯЕТ ВСЕ ДАННЫЕ!\n ЭТО НЕ МОЖЕТ БЫТЬ ОТМЕНЕНО, кроме восстановления из предыдущей резервной копии!\n\n Вы уверены что хотите продолжить ?</string>
     <string name="confirm_continue">Вы уверены что хотите продолжить ?</string>
     <string name="menu_backup_and_export">Резервное копирование и экспорт</string>
-    <string name="lbl_export">Экспорт</string>
+    <string name="X_action_export">Экспорт</string>
     <string name="lbl_database">База данных</string>
     <string name="lbl_archive_format_db_info">База данных SQLite.</string>
     <string name="lbl_archive_type_db">Файл базы данных (%1$s)</string>
@@ -667,4 +667,13 @@
     <string name="camera_other">Другое</string>
     <string name="camera_front">Фронтальная камера</string>
     <string name="camera_back">Задняя камера</string>
+    <string name="lbl_import_option_updated_books_skip">Только новые книги</string>
+    <string name="lbl_import_option_updated_books_overwrite">Новые и обновленные книги (восстановить)</string>
+    <string name="lbl_import_option_updated_books_sync">Синхронизировать</string>
+    <string name="inf_import_option_updated_books_skip">Импортируйте только новые книги. Любые обновления существующих книг будут проигнорированы.</string>
+    <string name="inf_import_option_updated_books_overwrite">Импортируйте новые книги и перезаписывайте существующие книги. Используйте это для восстановления резервной копии.</string>
+    <string name="inf_import_option_updated_books_sync">Импортируйте новые книги и синхронизируйте существующие книги по дате их последнего изменения.</string>
+    <string name="pt_enable_fast_scroller_overlay">Текстовая всплывающая подсказка при прокрутке</string>
+    <string name="action_import">Импортировать</string>
+    <string name="menu_import">Импортировать</string>
 </resources>
