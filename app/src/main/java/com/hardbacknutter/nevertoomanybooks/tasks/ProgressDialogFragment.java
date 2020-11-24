@@ -34,7 +34,6 @@ import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTaskProgressBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
@@ -48,6 +47,8 @@ public class ProgressDialogFragment
     public static final String TAG = "ProgressDialogFragment";
 
     private static final String BKEY_PREVENT_SLEEP = TAG + ":preventSleep";
+
+    private static final String BKEY_DIALOG_TITLE = TAG + ":title";
 
     private static final String BKEY_IS_INDETERMINATE = TAG + ":indeterminate";
     private static final String BKEY_MAX_POSITION = TAG + ":max";
@@ -94,7 +95,7 @@ public class ProgressDialogFragment
                                                      final boolean preventSleep) {
         final ProgressDialogFragment frag = new ProgressDialogFragment();
         final Bundle args = new Bundle(3);
-        args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
+        args.putString(BKEY_DIALOG_TITLE, title);
         args.putBoolean(BKEY_IS_INDETERMINATE, isIndeterminate);
         args.putBoolean(BKEY_PREVENT_SLEEP, preventSleep);
         frag.setArguments(args);
@@ -130,7 +131,7 @@ public class ProgressDialogFragment
 
         final Bundle args = getArguments();
         if (args != null) {
-            final String title = args.getString(StandardDialogs.BKEY_DIALOG_TITLE);
+            final String title = args.getString(BKEY_DIALOG_TITLE);
             if (title != null) {
                 dialog.setTitle(title);
             }
