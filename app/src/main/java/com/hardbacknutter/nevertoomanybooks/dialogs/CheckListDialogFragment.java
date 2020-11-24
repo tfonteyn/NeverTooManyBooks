@@ -53,6 +53,7 @@ public class CheckListDialogFragment
     /** Fragment/Log tag. */
     public static final String TAG = "CheckListDialogFragment";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
+    private static final String BKEY_DIALOG_TITLE = TAG + ":title";
     /** Argument. */
     private static final String BKEY_FIELD_ID = TAG + ":fieldId";
     /** Argument. */
@@ -78,8 +79,7 @@ public class CheckListDialogFragment
         Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mDialogTitle = args.getString(StandardDialogs.BKEY_DIALOG_TITLE,
-                                      getString(R.string.action_edit));
+        mDialogTitle = args.getString(BKEY_DIALOG_TITLE, getString(R.string.action_edit));
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
         mAllItems = Objects.requireNonNull(args.getParcelableArrayList(BKEY_ALL),
@@ -165,7 +165,7 @@ public class CheckListDialogFragment
 
             final Bundle args = new Bundle(5);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitle);
+            args.putString(BKEY_DIALOG_TITLE, dialogTitle);
             args.putInt(BKEY_FIELD_ID, fieldId);
             args.putParcelableArrayList(BKEY_ALL, allItems);
             args.putParcelableArrayList(BKEY_SELECTED, selectedItems);
