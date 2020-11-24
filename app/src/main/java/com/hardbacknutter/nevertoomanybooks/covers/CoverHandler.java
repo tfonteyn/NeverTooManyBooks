@@ -299,9 +299,9 @@ public class CoverHandler {
         menu.findItem(R.id.MENU_THUMB_ADD_FROM_ALT_EDITIONS).setVisible(mCIdx == 0);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.launch(title, menu, mCIdx);
+            mMenuLauncher.launch(title, null, menu, mCIdx);
         } else {
-            new MenuPicker(context, title, menu, mCIdx, this::onContextItemSelected)
+            new MenuPicker(context, title, null, menu, mCIdx, this::onContextItemSelected)
                     .show();
         }
 

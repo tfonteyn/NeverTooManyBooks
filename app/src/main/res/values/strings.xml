@@ -1594,4 +1594,7 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+
+    <string name="btn_all_shelves">All shelves</string>
+    <string name="btn_just_this_shelf">This shelf only</string>
 </resources>

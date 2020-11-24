@@ -141,6 +141,7 @@ public class DAOSql {
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
+    private static final String _AND_ = " AND ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
     private static final String _AS_ = " AS ";
@@ -950,24 +951,57 @@ public class DAOSql {
          */
         static final String BOOK_IDS_BY_AUTHOR_ID =
                 SELECT_ + TBL_BOOKS.dotAs(KEY_PK_ID)
-                + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_AUTHOR)
+                + _FROM_ + TBL_BOOK_AUTHOR.ref() + TBL_BOOK_AUTHOR.join(TBL_BOOKS)
                 + _WHERE_ + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?";
+
+        /**
+         * All Books (id only!) for a given Author and Bookshelf.
+         */
+        static final String BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID =
+                SELECT_ + TBL_BOOKS.dotAs(KEY_PK_ID)
+                + _FROM_ + TBL_BOOK_AUTHOR.ref()
+                + TBL_BOOK_AUTHOR.join(TBL_BOOKS)
+                + TBL_BOOKS.join(TBL_BOOK_BOOKSHELF)
+                + _WHERE_ + TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR) + "=?"
+                + _AND_ + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF) + "=?";
 
         /**
          * All Books (id only!) for a given Series.
          */
         static final String BOOK_IDS_BY_SERIES_ID =
                 SELECT_ + TBL_BOOKS.dotAs(KEY_PK_ID)
-                + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_SERIES)
+                + _FROM_ + TBL_BOOK_SERIES.ref() + TBL_BOOK_SERIES.join(TBL_BOOKS)
                 + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_SERIES) + "=?";
+
+        /**
+         * All Books (id only!) for a given Series and Bookshelf.
+         */
+        static final String BOOK_IDS_BY_SERIES_ID_AND_BOOKSHELF_ID =
+                SELECT_ + TBL_BOOKS.dotAs(KEY_PK_ID)
+                + _FROM_ + TBL_BOOK_SERIES.ref()
+                + TBL_BOOK_SERIES.join(TBL_BOOKS)
+                + TBL_BOOKS.join(TBL_BOOK_BOOKSHELF)
+                + _WHERE_ + TBL_BOOK_SERIES.dot(KEY_FK_SERIES) + "=?"
+                + _AND_ + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF) + "=?";
 
         /**
          * All Books (id only!) for a given Publisher.
          */
         static final String BOOK_IDS_BY_PUBLISHER_ID =
                 SELECT_ + TBL_BOOKS.dotAs(KEY_PK_ID)
-                + _FROM_ + TBL_BOOKS.ref() + TBL_BOOKS.join(TBL_BOOK_PUBLISHER)
+                + _FROM_ + TBL_BOOK_PUBLISHER.ref() + TBL_BOOK_PUBLISHER.join(TBL_BOOKS)
                 + _WHERE_ + TBL_BOOK_PUBLISHER.dot(KEY_FK_PUBLISHER) + "=?";
+
+        /**
+         * All Books (id only!) for a given Publisher and Bookshelf.
+         */
+        static final String BOOK_IDS_BY_PUBLISHER_ID_AND_BOOKSHELF_ID =
+                SELECT_ + TBL_BOOKS.dotAs(KEY_PK_ID)
+                + _FROM_ + TBL_BOOK_PUBLISHER.ref()
+                + TBL_BOOK_PUBLISHER.join(TBL_BOOKS)
+                + TBL_BOOKS.join(TBL_BOOK_BOOKSHELF)
+                + _WHERE_ + TBL_BOOK_PUBLISHER.dot(KEY_FK_PUBLISHER) + "=?"
+                + _AND_ + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF) + "=?";
 
         /**
          * All TocEntry's for an Author.

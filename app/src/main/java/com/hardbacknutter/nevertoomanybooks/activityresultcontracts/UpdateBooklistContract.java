@@ -83,13 +83,6 @@ public class UpdateBooklistContract
         final String subTitle;
 
         public Input(@NonNull final ArrayList<Long> bookIdList,
-                     @Nullable final String subTitle) {
-            this.bookIdList = bookIdList;
-            this.title = null;
-            this.subTitle = subTitle;
-        }
-
-        public Input(@NonNull final ArrayList<Long> bookIdList,
                      @Nullable final String title,
                      @Nullable final String subTitle) {
             this.bookIdList = bookIdList;

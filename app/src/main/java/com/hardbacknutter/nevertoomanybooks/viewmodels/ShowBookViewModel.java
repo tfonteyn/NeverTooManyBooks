@@ -82,7 +82,11 @@ public class ShowBookViewModel
      */
     private Book mCurrentBook;
 
-    /** The <strong>initial</strong> pager position being displayed. */
+    /**
+     * The <strong>initial</strong> pager position being displayed.
+     * This is {@code 0} based as it's the recycler view list position.
+     */
+    @IntRange(from = 0)
     private int mInitialPagerPosition;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -139,9 +143,9 @@ public class ShowBookViewModel
                 final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
                 SanityCheck.requirePositiveValue(rowId, "BKEY_LIST_TABLE_ROW_ID");
                 mNavHelper = new ShowBookNavigator(mDb, navTableName);
-                mInitialPagerPosition = mNavHelper.getPositionOf(rowId);
+                mInitialPagerPosition = mNavHelper.getRowNumber(rowId) - 1;
             } else {
-                mInitialPagerPosition = 1;
+                mInitialPagerPosition = 0;
             }
         }
     }
@@ -150,8 +154,9 @@ public class ShowBookViewModel
      * Get the initial position of the pager.
      * <strong>Use only to set {@link androidx.viewpager2.widget.ViewPager2#setCurrentItem}</strong>
      *
-     * @return nav position
+     * @return pager position
      */
+    @IntRange(from = 0)
     public int getInitialPagerPosition() {
         return mInitialPagerPosition;
     }
@@ -168,14 +173,14 @@ public class ShowBookViewModel
     /**
      * Force reload the book at the given <strong>pager</strong> position.
      *
-     * @param position to get
+     * @param position pager position to get the book for
      *
      * @return book
      */
     @NonNull
-    public Book reloadBookAt(@IntRange(from = 1) final int position) {
+    public Book reloadBookAtPosition(@IntRange(from = 0) final int position) {
         if (mNavHelper != null) {
-            mCurrentBook = mNavHelper.getBookAt(position);
+            mCurrentBook = mNavHelper.getBookAtRow(position + 1);
         } else {
             mCurrentBook = Book.from(mCurrentBook.getId(), mDb);
         }
@@ -185,14 +190,14 @@ public class ShowBookViewModel
     /**
      * Get the book at the given <strong>pager</strong> position.
      *
-     * @param position to get
+     * @param position pager position to get the book for
      *
      * @return book
      */
     @NonNull
-    public Book getBookAt(@IntRange(from = 1) final int position) {
+    public Book getBookAtPosition(@IntRange(from = 0) final int position) {
         if (mNavHelper != null) {
-            mCurrentBook = mNavHelper.getBookAt(position);
+            mCurrentBook = mNavHelper.getBookAtRow(position + 1);
         }
         return mCurrentBook;
     }
@@ -200,17 +205,21 @@ public class ShowBookViewModel
     /**
      * Check if this book available in our library; or if it was lend out.
      *
+     * @param position pager position to get the book for
+     *
      * @return {@code true} if the book is available for lending.
      */
-    public boolean isAvailable(@IntRange(from = 1) final int position) {
-        return getBookAt(position).getLoanee(mDb).isEmpty();
+    public boolean isAvailable(@IntRange(from = 0) final int position) {
+        return getBookAtPosition(position).getLoanee(mDb).isEmpty();
     }
 
     /**
      * The book was returned, remove the loanee.
+     *
+     * @param position pager position to get the book for
      */
-    public void deleteLoan(@IntRange(from = 1) final int position) {
-        final Book book = getBookAt(position);
+    public void deleteLoan(@IntRange(from = 0) final int position) {
+        final Book book = getBookAtPosition(position);
         book.remove(DBDefinitions.KEY_LOANEE);
         mDb.setLoanee(book, null, true);
     }
@@ -218,11 +227,13 @@ public class ShowBookViewModel
     /**
      * Toggle the read-status for this book.
      *
+     * @param position pager position to get the book for
+     *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean toggleRead(@IntRange(from = 1) final int position) {
-        if (getBookAt(position).toggleRead(mDb)) {
+    public boolean toggleRead(@IntRange(from = 0) final int position) {
+        if (getBookAtPosition(position).toggleRead(mDb)) {
             mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
             return true;
         } else {
@@ -233,14 +244,15 @@ public class ShowBookViewModel
     /**
      * Delete the current book.
      *
-     * @param context Current context
+     * @param context  Current context
+     * @param position pager position to get the book for
      *
      * @return {@code false} on any failure
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean deleteBook(@NonNull final Context context,
                               @IntRange(from = 1) final int position) {
-        final Book book = getBookAt(position);
+        final Book book = getBookAtPosition(position);
 
         if (mDb.delete(context, book)) {
             mCurrentBook = null;
@@ -301,7 +313,7 @@ public class ShowBookViewModel
      * using the navigation peer-table.
      * Keeps track of current position and bookId.
      */
-    private static class ShowBookNavigator {
+    private static final class ShowBookNavigator {
 
         private static final String SELECT_ = "SELECT ";
         private static final String _FROM_ = " FROM ";
@@ -352,14 +364,15 @@ public class ShowBookViewModel
         }
 
         /**
-         * Get the position in the navigation table for the given list table row id.
+         * Get the row number in the navigation table for the given list table row id.
+         * This is {@code 1} based.
          *
          * @param listTableRowId the Booklist table rowId to find
          *
-         * @return position
+         * @return row number
          */
         @IntRange(from = 1)
-        private int getPositionOf(final long listTableRowId) {
+        private int getRowNumber(final long listTableRowId) {
             try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(
                     SELECT_ + DBDefinitions.KEY_PK_ID + _FROM_ + mListTableName
                     + _WHERE_ + DBDefinitions.KEY_FK_BL_ROW_ID + "=?")) {
@@ -371,13 +384,16 @@ public class ShowBookViewModel
         /**
          * Reposition and get the new Book.
          *
+         * @param rowNumber the ROW number in the table
+         *
          * @return book
          *
          * @throws SQLiteDoneException which should NEVER happen... flw
          */
-        private Book getBookAt(final int position)
+        @NonNull
+        private Book getBookAtRow(@IntRange(from = 1) final int rowNumber)
                 throws SQLiteDoneException {
-            mGetBookStmt.bindLong(1, position);
+            mGetBookStmt.bindLong(1, rowNumber);
             final long bookId = mGetBookStmt.simpleQueryForLong();
             return Book.from(bookId, mDb);
         }

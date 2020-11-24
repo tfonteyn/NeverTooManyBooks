@@ -352,7 +352,7 @@ public class BookTest {
         args.putLong(DBDefinitions.KEY_PK_ID, mBookId[0]);
         try {
             vm.init(context, args);
-            final Book retrieved = vm.getBookAt(1);
+            final Book retrieved = vm.getBookAtPosition(1);
             assertEquals(mBookId[0], retrieved.getId());
             checkBookAfterInitialInsert(context, retrieved);
 

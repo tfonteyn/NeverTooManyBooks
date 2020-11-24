@@ -3063,6 +3063,28 @@ public class DAO
     }
 
     /**
+     * Get a list of book ID's for the given Author and Bookshelf.
+     *
+     * @param authorId    id of the Author
+     * @param bookshelfId id of the Bookshelf
+     *
+     * @return list with book ID's
+     */
+    @NonNull
+    public ArrayList<Long> getBookIdsByAuthor(final long authorId,
+                                              final long bookshelfId) {
+        final ArrayList<Long> list = new ArrayList<>();
+        try (Cursor cursor = mSyncedDb.rawQuery(
+                DAOSql.SqlSelect.BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
+                new String[]{String.valueOf(authorId), String.valueOf(bookshelfId)})) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getLong(0));
+            }
+        }
+        return list;
+    }
+
+    /**
      * Get a list of book ID's for the given Series.
      *
      * @param seriesId id of the Series
@@ -3082,6 +3104,28 @@ public class DAO
     }
 
     /**
+     * Get a list of book ID's for the given Series and Bookshelf.
+     *
+     * @param seriesId    id of the Series
+     * @param bookshelfId id of the Bookshelf
+     *
+     * @return list with book ID's
+     */
+    @NonNull
+    public ArrayList<Long> getBookIdsBySeries(final long seriesId,
+                                              final long bookshelfId) {
+        final ArrayList<Long> list = new ArrayList<>();
+        try (Cursor cursor = mSyncedDb.rawQuery(
+                DAOSql.SqlSelect.BOOK_IDS_BY_SERIES_ID_AND_BOOKSHELF_ID,
+                new String[]{String.valueOf(seriesId), String.valueOf(bookshelfId)})) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getLong(0));
+            }
+        }
+        return list;
+    }
+
+    /**
      * Get a list of book ID's for the given Publisher.
      *
      * @param publisherId id of the Publisher
@@ -3093,6 +3137,28 @@ public class DAO
         final ArrayList<Long> list = new ArrayList<>();
         try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BOOK_IDS_BY_PUBLISHER_ID,
                                                 new String[]{String.valueOf(publisherId)})) {
+            while (cursor.moveToNext()) {
+                list.add(cursor.getLong(0));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Get a list of book ID's for the given Publisher and Bookshelf.
+     *
+     * @param publisherId id of the Publisher
+     * @param bookshelfId id of the Bookshelf
+     *
+     * @return list with book ID's
+     */
+    @NonNull
+    public ArrayList<Long> getBookIdsByPublisher(final long publisherId,
+                                                 final long bookshelfId) {
+        final ArrayList<Long> list = new ArrayList<>();
+        try (Cursor cursor = mSyncedDb.rawQuery(
+                DAOSql.SqlSelect.BOOK_IDS_BY_PUBLISHER_ID_AND_BOOKSHELF_ID,
+                new String[]{String.valueOf(publisherId), String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }

@@ -368,7 +368,7 @@ public class EditBookTocFragment
                     getString(R.string.action_delete),
                     R.drawable.ic_delete));
 
-            mMenuLauncher.launch(title, menu, position);
+            mMenuLauncher.launch(title, null, menu, position);
 
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());
@@ -381,7 +381,7 @@ public class EditBookTocFragment
                      R.string.action_delete)
                 .setIcon(R.drawable.ic_delete);
 
-            new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
+            new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                     .show();
         }
     }

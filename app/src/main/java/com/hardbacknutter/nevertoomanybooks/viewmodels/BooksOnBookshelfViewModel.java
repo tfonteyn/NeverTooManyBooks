@@ -232,10 +232,6 @@ public class BooksOnBookshelfViewModel
         return Booklist.PREF_REBUILD_SAVED_STATE;
     }
 
-    public void setRebuildState(@Booklist.ListRebuildMode final int rebuildState) {
-        mRebuildState = rebuildState;
-    }
-
 
     /**
      * Get the Bookshelf list to show in the Spinner.
@@ -307,7 +303,7 @@ public class BooksOnBookshelfViewModel
     }
 
     @NonNull
-    public Bookshelf getSelectedBookshelf() {
+    public Bookshelf getCurrentBookshelf() {
         Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
         return mBookshelf;
     }
@@ -318,8 +314,8 @@ public class BooksOnBookshelfViewModel
      * @param context Current context
      * @param id      of desired Bookshelf
      */
-    public void setSelectedBookshelf(@NonNull final Context context,
-                                     final long id) {
+    public void setCurrentBookshelf(@NonNull final Context context,
+                                    final long id) {
         mBookshelf = mDb.getBookshelf(id);
         if (mBookshelf == null) {
             mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
@@ -533,7 +529,6 @@ public class BooksOnBookshelfViewModel
         return mBooklist.getNextBookWithoutCover(context, rowId);
     }
 
-
     @Nullable
     public String getHeaderFilterText(@NonNull final Context context) {
         final BooklistStyle style = getCurrentStyle(context);
@@ -583,103 +578,6 @@ public class BooksOnBookshelfViewModel
                 return context.getResources().getQuantityString(R.plurals.displaying_n_books,
                                                                 distinctBooks, totalBooks);
             }
-        }
-        return null;
-    }
-
-
-    /**
-     * Get the Book for the given row.
-     *
-     * @param rowData with data
-     *
-     * @return Book, or {@code null} if the row contains no Book id.
-     */
-    @Nullable
-    public Book getBook(@NonNull final DataHolder rowData) {
-        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-        if (bookId > 0) {
-            return Book.from(bookId, mDb);
-        }
-        return null;
-    }
-
-    /**
-     * Get the Author for the given row.
-     *
-     * @param rowData with data
-     *
-     * @return Author, or {@code null} if the row contains no Author id.
-     */
-    @Nullable
-    public Author getAuthor(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBDefinitions.KEY_FK_AUTHOR)) {
-            final long id = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
-            if (id > 0) {
-                return mDb.getAuthor(id);
-            }
-        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final List<Author> authors = mDb.getAuthorsByBookId(
-                    rowData.getLong(DBDefinitions.KEY_FK_BOOK));
-            if (!authors.isEmpty()) {
-                return authors.get(0);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get the Series for the given row.
-     *
-     * @param rowData with book data
-     *
-     * @return Series, or {@code null} if the row contains no Series id.
-     */
-    @Nullable
-    public Series getSeries(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBDefinitions.KEY_FK_SERIES)) {
-            final long id = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
-            if (id > 0) {
-                return mDb.getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
-            }
-        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final ArrayList<Series> series = mDb.getSeriesByBookId(
-                    rowData.getLong(DBDefinitions.KEY_FK_BOOK));
-            if (!series.isEmpty()) {
-                return series.get(0);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get the Publisher for the given row.
-     *
-     * @param rowData with book data
-     *
-     * @return Publisher, or {@code null} if the row contains no Publisher id.
-     */
-    @Nullable
-    public Publisher getPublisher(@NonNull final DataHolder rowData) {
-        final long id = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
-        if (id > 0) {
-            return mDb.getPublisher(id);
-        }
-        return null;
-    }
-
-    /**
-     * Get the Bookshelf for the given row.
-     *
-     * @param rowData with book data
-     *
-     * @return Bookshelf, or {@code null} if the row contains no Bookshelf id.
-     */
-    @Nullable
-    public Bookshelf getBookshelf(@NonNull final DataHolder rowData) {
-        final long id = rowData.getLong(DBDefinitions.KEY_FK_BOOKSHELF);
-        if (id > 0) {
-            return mDb.getBookshelf(id);
         }
         return null;
     }
@@ -895,24 +793,141 @@ public class BooksOnBookshelfViewModel
         return mBooklist.getNewListCursor();
     }
 
+
+    /**
+     * Get the Book for the given row.
+     *
+     * @param rowData with data
+     *
+     * @return Book, or {@code null} if the row contains no Book id.
+     */
+    @Nullable
+    public Book getBook(@NonNull final DataHolder rowData) {
+        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+        if (bookId > 0) {
+            return Book.from(bookId, mDb);
+        }
+        return null;
+    }
+
+    /**
+     * Get the Author for the given row.
+     *
+     * @param rowData with data
+     *
+     * @return Author, or {@code null} if the row contains no Author id.
+     */
+    @Nullable
+    public Author getAuthor(@NonNull final DataHolder rowData) {
+        if (rowData.contains(DBDefinitions.KEY_FK_AUTHOR)) {
+            final long id = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
+            if (id > 0) {
+                return mDb.getAuthor(id);
+            }
+        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            final List<Author> authors = mDb.getAuthorsByBookId(
+                    rowData.getLong(DBDefinitions.KEY_FK_BOOK));
+            if (!authors.isEmpty()) {
+                return authors.get(0);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the Series for the given row.
+     *
+     * @param rowData with book data
+     *
+     * @return Series, or {@code null} if the row contains no Series id.
+     */
+    @Nullable
+    public Series getSeries(@NonNull final DataHolder rowData) {
+        if (rowData.contains(DBDefinitions.KEY_FK_SERIES)) {
+            final long id = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
+            if (id > 0) {
+                return mDb.getSeries(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
+            }
+        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            final ArrayList<Series> series = mDb.getSeriesByBookId(
+                    rowData.getLong(DBDefinitions.KEY_FK_BOOK));
+            if (!series.isEmpty()) {
+                return series.get(0);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the Publisher for the given row.
+     *
+     * @param rowData with book data
+     *
+     * @return Publisher, or {@code null} if the row contains no Publisher id.
+     */
+    @Nullable
+    public Publisher getPublisher(@NonNull final DataHolder rowData) {
+        final long id = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
+        if (id > 0) {
+            return mDb.getPublisher(id);
+        }
+        return null;
+    }
+
+    /**
+     * Get the Bookshelf for the given row.
+     *
+     * @param rowData with book data
+     *
+     * @return Bookshelf, or {@code null} if the row contains no Bookshelf id.
+     */
+    @Nullable
+    public Bookshelf getBookshelf(@NonNull final DataHolder rowData) {
+        final long id = rowData.getLong(DBDefinitions.KEY_FK_BOOKSHELF);
+        if (id > 0) {
+            return mDb.getBookshelf(id);
+        }
+        return null;
+    }
+
+    @NonNull
     public List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
         return mDb.getAuthorsByBookId(bookId);
     }
 
     @NonNull
-    public ArrayList<Long> getBookIdsByAuthor(@IntRange(from = 1) final long authorId) {
-        return mDb.getBookIdsByAuthor(authorId);
+    public ArrayList<Long> getBookIdsByAuthor(@IntRange(from = 1) final long authorId,
+                                              final boolean justThisShelf) {
+        if (justThisShelf) {
+            Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
+            return mDb.getBookIdsByAuthor(authorId, mBookshelf.getId());
+        } else {
+            return mDb.getBookIdsByAuthor(authorId);
+        }
     }
 
     @NonNull
-    public ArrayList<Long> getBookIdsBySeries(@IntRange(from = 1) final long seriesId) {
-        return mDb.getBookIdsBySeries(seriesId);
+    public ArrayList<Long> getBookIdsBySeries(@IntRange(from = 1) final long seriesId,
+                                              final boolean justThisShelf) {
+        if (justThisShelf) {
+            Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
+            return mDb.getBookIdsBySeries(seriesId, mBookshelf.getId());
+        } else {
+            return mDb.getBookIdsBySeries(seriesId);
+        }
     }
 
     @NonNull
-    public ArrayList<Long> getBookIdsByPublisher(@IntRange(from = 1) final long publisherId) {
-        return mDb.getBookIdsByPublisher(publisherId);
+    public ArrayList<Long> getBookIdsByPublisher(@IntRange(from = 1) final long publisherId,
+                                                 final boolean justThisShelf) {
+        if (justThisShelf) {
+            Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
+            return mDb.getBookIdsByPublisher(publisherId, mBookshelf.getId());
+        } else {
+            return mDb.getBookIdsByPublisher(publisherId);
+        }
     }
+
 
     public boolean setAuthorComplete(@IntRange(from = 1) final long authorId,
                                      final boolean isComplete) {
@@ -929,18 +944,54 @@ public class BooksOnBookshelfViewModel
         return mDb.setBookRead(bookId, isRead);
     }
 
+    /**
+     * Delete the given Series.
+     *
+     * @param context Current context
+     * @param series  to delete
+     *
+     * @return {@code true} on a successful delete
+     */
     public boolean delete(@NonNull final Context context,
                           @NonNull final Series series) {
         return mDb.delete(context, series);
     }
 
+    /**
+     * Delete the given Publisher.
+     *
+     * @param context   Current context
+     * @param publisher to delete
+     *
+     * @return {@code true} on a successful delete
+     */
     public boolean delete(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
         return mDb.delete(context, publisher);
     }
 
+    /**
+     * Delete the given Bookshelf.
+     *
+     * @param bookshelf to delete
+     *
+     * @return {@code true} on a successful delete
+     */
     public boolean delete(@NonNull final Bookshelf bookshelf) {
         return mDb.delete(bookshelf);
+    }
+
+    /**
+     * Delete the given Book.
+     *
+     * @param context Current context
+     * @param bookId  to delete
+     *
+     * @return {@code true} on a successful delete
+     */
+    public boolean deleteBook(@NonNull final Context context,
+                              @IntRange(from = 1) final long bookId) {
+        return mDb.deleteBook(context, bookId);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -948,10 +999,4 @@ public class BooksOnBookshelfViewModel
                             @Nullable final String loanee) {
         return mDb.setLoanee(bookId, loanee, true);
     }
-
-    public boolean deleteBook(@NonNull final Context context,
-                              @IntRange(from = 1) final long bookId) {
-        return mDb.deleteBook(context, bookId);
-    }
-
 }

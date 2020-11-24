@@ -248,8 +248,8 @@ public class BooksOnBookshelf
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> mManageBookshelvesLauncher =
             registerForActivityResult(new EditBookshelvesFragment.ResultContract(), id -> {
-                if (id != 0 && id != mVm.getSelectedBookshelf().getId()) {
-                    mVm.setSelectedBookshelf(this, id);
+                if (id != 0 && id != mVm.getCurrentBookshelf().getId()) {
+                    mVm.setCurrentBookshelf(this, id);
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
@@ -334,11 +334,11 @@ public class BooksOnBookshelf
                         }
 
                         // check if the selection is actually different from the previous one
-                        final boolean isChanged = id != mVm.getSelectedBookshelf().getId();
+                        final boolean isChanged = id != mVm.getCurrentBookshelf().getId();
                         if (isChanged) {
                             saveListPosition();
                             // make the new shelf the current and rebuild
-                            mVm.setSelectedBookshelf(parent.getContext(), id);
+                            mVm.setCurrentBookshelf(parent.getContext(), id);
                             buildBookList();
                         }
                     }
@@ -372,7 +372,7 @@ public class BooksOnBookshelf
             new EditBookshelfDialogFragment.Launcher() {
                 @Override
                 public void onResult(final long bookshelfId) {
-                    if (bookshelfId != mVm.getSelectedBookshelf().getId()) {
+                    if (bookshelfId != mVm.getCurrentBookshelf().getId()) {
                         onRowChange(RowChangeListener.BOOKSHELF, bookshelfId);
                     }
                 }
@@ -454,9 +454,9 @@ public class BooksOnBookshelf
                         final String title = mAdapter.getLevelText(position, level);
 
                         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-                            mMenuLauncher.launch(title, menu, position);
+                            mMenuLauncher.launch(title, null, menu, position);
                         } else {
-                            new MenuPicker(BooksOnBookshelf.this, title, menu, position,
+                            new MenuPicker(BooksOnBookshelf.this, title, null, menu, position,
                                            BooksOnBookshelf.this::onContextItemSelected)
                                     .show();
                         }
@@ -639,7 +639,7 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.nav_manage_bookshelves) {
             // overridden, so we can pass the current bookshelf id.
-            mManageBookshelvesLauncher.launch(mVm.getSelectedBookshelf().getId());
+            mManageBookshelvesLauncher.launch(mVm.getCurrentBookshelf().getId());
             return true;
 
         } else if (itemId == R.id.nav_manage_list_styles) {
@@ -727,11 +727,11 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            // IMPORTANT: this is from an options menu selection.
+            // IMPORTANT: this is from the options menu selection.
             // We pass the book ID's for the currently displayed list.
             //TODO: add a fitting screen subtitle
             mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                    mVm.getCurrentBookIdList(), null));
+                    mVm.getCurrentBookIdList(), null, null));
             return true;
         }
 
@@ -969,49 +969,24 @@ public class BooksOnBookshelf
             mGrSendOneBookTask.startTask(bookId);
             return true;
 
-            /* ********************************************************************************** */
-
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            // IMPORTANT: this is from a context click on a row.
-            // We pass the book ID's which are suited for that row.
-            switch (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP)) {
-
-                case BooklistGroup.BOOK: {
-                    mUpdateBookLauncher.launch(mVm.getBook(rowData));
-                    break;
-                }
-                case BooklistGroup.AUTHOR: {
-                    final long authorId = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
-                    mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                            mVm.getBookIdsByAuthor(authorId),
-                            rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED)));
-                    break;
-                }
-                case BooklistGroup.SERIES: {
-                    final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
-                    mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                            mVm.getBookIdsBySeries(seriesId),
-                            rowData.getString(DBDefinitions.KEY_SERIES_TITLE)));
-                    break;
-                }
-                case BooklistGroup.PUBLISHER: {
-                    final long publisherId = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
-                    mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
-                            mVm.getBookIdsByPublisher(publisherId),
-                            rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME)));
-                    break;
-                }
-                default: {
-                    if (BuildConfig.DEBUG /* always */) {
-                        Log.d(TAG, "onContextItemSelected"
-                                   + "|MENU_UPDATE_FROM_INTERNET not supported"
-                                   + "|Group=" + rowData
-                                           .getInt(DBDefinitions.KEY_BL_NODE_GROUP));
-                    }
-                    return true;
-                }
+            if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                mUpdateBookLauncher.launch(mVm.getBook(rowData));
+                return true;
             }
 
+            // Show the sub menu
+            updateBooksFromInternetData(position, rowData);
+            return true;
+
+        } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY) {
+            // selection from R.id.MENU_UPDATE_FROM_INTERNET sub menu
+            updateBooksFromInternetData(rowData, true);
+            return true;
+
+        } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET_ALL_SHELVES) {
+            // selection from R.id.MENU_UPDATE_FROM_INTERNET sub menu
+            updateBooksFromInternetData(rowData, false);
             return true;
 
             /* ********************************************************************************** */
@@ -1046,7 +1021,7 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_AUTHOR_WORKS) {
             mAuthorWorksLauncher.launch(new AuthorWorksFragment.ResultContract.Input(
                     rowData.getLong(DBDefinitions.KEY_FK_AUTHOR),
-                    mVm.getSelectedBookshelf().getId()));
+                    mVm.getCurrentBookshelf().getId()));
             return true;
 
         } else if (itemId == R.id.MENU_AUTHOR_EDIT) {
@@ -1164,6 +1139,91 @@ public class BooksOnBookshelf
         }
 
         return MenuHelper.handleViewBookOnWebsiteMenu(this, itemId, rowData);
+    }
+
+    /**
+     * IMPORTANT: this is from a context click on a row.
+     * We pass the book ID's which are suited for that row.
+     *
+     * @param position in the list
+     * @param rowData  for the row which was selected
+     */
+    private void updateBooksFromInternetData(final int position,
+                                             @NonNull final DataHolder rowData) {
+        final int groupId = rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
+
+        final String message;
+        switch (groupId) {
+            case BooklistGroup.AUTHOR: {
+                message = rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                break;
+            }
+            case BooklistGroup.SERIES: {
+                message = rowData.getString(DBDefinitions.KEY_SERIES_TITLE);
+                break;
+            }
+            case BooklistGroup.PUBLISHER: {
+                message = rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME);
+                break;
+            }
+            default: {
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalArgumentException(
+                            "updateBooksFromInternetData|not supported|groupId=" + groupId);
+                }
+                return;
+            }
+        }
+
+        final String title = getString(R.string.menu_update_books);
+
+        final Menu menu = MenuPicker.createMenu(this);
+        getMenuInflater().inflate(R.menu.update_books, menu);
+        if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
+            mMenuLauncher.launch(title, message, menu, position);
+        } else {
+            new MenuPicker(this, title, message, menu, position, this::onContextItemSelected)
+                    .show();
+        }
+    }
+
+    private void updateBooksFromInternetData(@NonNull final DataHolder rowData,
+                                             final boolean justThisBookshelf) {
+        final int groupId = rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
+
+        switch (groupId) {
+            case BooklistGroup.AUTHOR: {
+                final long id = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
+                final String name = rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
+                        mVm.getBookIdsByAuthor(id, justThisBookshelf),
+                        getString(R.string.lbl_author), name));
+                break;
+            }
+            case BooklistGroup.SERIES: {
+                final long id = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
+                final String name = rowData.getString(DBDefinitions.KEY_SERIES_TITLE);
+                mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
+                        mVm.getBookIdsBySeries(id, justThisBookshelf),
+                        getString(R.string.lbl_series), name));
+                break;
+            }
+            case BooklistGroup.PUBLISHER: {
+                final long id = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
+                final String name = rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME);
+                mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
+                        mVm.getBookIdsByPublisher(id, justThisBookshelf),
+                        getString(R.string.lbl_publisher), name));
+                break;
+            }
+            default: {
+                if (BuildConfig.DEBUG /* always */) {
+                    throw new IllegalArgumentException(
+                            "updateBooksFromInternetData|not supported|groupId=" + groupId);
+                }
+                break;
+            }
+        }
     }
 
     public void editStyle(@NonNull final BooklistStyle style,
@@ -1438,7 +1498,7 @@ public class BooksOnBookshelf
      * @param targetNodes (optional) to re-position to
      */
     private void scrollToSavedPosition(@Nullable final List<BooklistNode> targetNodes) {
-        final Bookshelf bookshelf = mVm.getSelectedBookshelf();
+        final Bookshelf bookshelf = mVm.getCurrentBookshelf();
         int position = bookshelf.getTopItemPosition();
 
         if (position >= mAdapter.getItemCount()) {

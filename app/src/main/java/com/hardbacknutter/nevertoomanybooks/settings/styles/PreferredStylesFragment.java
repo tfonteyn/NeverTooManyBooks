@@ -324,7 +324,7 @@ public class PreferredStylesFragment
                     getString(R.string.action_duplicate),
                     R.drawable.ic_content_copy));
 
-            mMenuLauncher.launch(title, menu, position);
+            mMenuLauncher.launch(title, null, menu, position);
 
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());
@@ -344,7 +344,7 @@ public class PreferredStylesFragment
                      R.string.action_duplicate)
                 .setIcon(R.drawable.ic_content_copy);
 
-            new MenuPicker(getContext(), title, menu, position, this::onContextItemSelected)
+            new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                     .show();
         }
     }

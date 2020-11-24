@@ -221,7 +221,7 @@ public class ShowBookFragment
         fab.setImageResource(R.drawable.ic_edit);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> mEditBookLauncher.launch(
-                mVm.getBookAt(mVb.pager.getCurrentItem())
+                mVm.getBookAtPosition(mVb.pager.getCurrentItem())
                    .getId()));
 
         // simple indeterminate progress spinner to show while doing lengthy cover work.
@@ -237,7 +237,8 @@ public class ShowBookFragment
             mCoverHandler[0] = new CoverHandler(mVm.getDb(), 0, maxWidth, maxHeight);
             mCoverHandler[0].onFragmentViewCreated(this);
             mCoverHandler[0].setProgressBar(progressBar);
-            mCoverHandler[0].setBookSupplier(() -> mVm.getBookAt(mVb.pager.getCurrentItem()));
+            mCoverHandler[0].setBookSupplier(
+                    () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }
 
         if (mVm.isCoverUsed(getContext(), prefs, 1)) {
@@ -247,7 +248,8 @@ public class ShowBookFragment
             mCoverHandler[1] = new CoverHandler(mVm.getDb(), 1, maxWidth, maxHeight);
             mCoverHandler[1].onFragmentViewCreated(this);
             mCoverHandler[1].setProgressBar(progressBar);
-            mCoverHandler[1].setBookSupplier(() -> mVm.getBookAt(mVb.pager.getCurrentItem()));
+            mCoverHandler[1].setBookSupplier(
+                    () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }
 
         mPagerAdapter = new ShowBookPagerAdapter(getContext(), mVm, mCoverHandler);
@@ -256,7 +258,7 @@ public class ShowBookFragment
         mVb.pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(final int position) {
-                setActivityTitle(mVm.getBookAt(position));
+                setActivityTitle(mVm.getBookAtPosition(position));
             }
         });
 
@@ -288,7 +290,7 @@ public class ShowBookFragment
 
     @Override
     public void onPrepareOptionsMenu(@NonNull final Menu menu) {
-        final Book book = mVm.getBookAt(mVb.pager.getCurrentItem());
+        final Book book = mVm.getBookAtPosition(mVb.pager.getCurrentItem());
 
         //noinspection ConstantConditions
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -321,7 +323,7 @@ public class ShowBookFragment
     @CallSuper
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final Context context = getContext();
-        final Book book = mVm.getBookAt(mVb.pager.getCurrentItem());
+        final Book book = mVm.getBookAtPosition(mVb.pager.getCurrentItem());
 
         final int itemId = item.getItemId();
         if (itemId == R.id.MENU_BOOK_EDIT) {
@@ -438,7 +440,7 @@ public class ShowBookFragment
 
     private void refreshCurrentBook() {
         // refresh the book currently displayed
-        final Book book = mVm.reloadBookAt(mVb.pager.getCurrentItem());
+        final Book book = mVm.reloadBookAtPosition(mVb.pager.getCurrentItem());
         mPagerAdapter.notifyItemChanged(mVb.pager.getCurrentItem());
         setActivityTitle(book);
     }
@@ -559,7 +561,7 @@ public class ShowBookFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
 
-            final Book book = mVm.getBookAt(position);
+            final Book book = mVm.getBookAtPosition(position);
 
             holder.onBindViewHolder(mFieldsMap, mVm.getDb(), book);
 
@@ -822,7 +824,7 @@ public class ShowBookFragment
              * Show or hide the Table Of Content section.
              *
              * @param book to load from
-             * @param db      Database Access
+             * @param db   Database Access
              */
             private void onBindToc(@NonNull final DAO db,
                                    @NonNull final Book book) {
