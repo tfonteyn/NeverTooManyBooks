@@ -26,8 +26,9 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
         android:layout_margin="@dimen/screenBorder"
         >
 
@@ -37,7 +38,6 @@
             android:layout_marginStart="@dimen/indent2"
             android:layout_marginEnd="@dimen/indent2"
             android:text="@string/txt_select_fields_to_update"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             />
@@ -58,6 +58,7 @@
                 android:id="@+id/field_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
                 android:orientation="vertical"
                 >
                 <!-- fields are added here dynamically -->
