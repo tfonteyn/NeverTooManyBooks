@@ -59,7 +59,10 @@ public final class DEBUG_SWITCHES {
     public static final boolean BOB_INIT_BOOK_LIST = false;
     /** {@link BooksOnBookshelfViewModel} Expand/Collapsing nodes. */
     public static final boolean BOB_NODE_STATE = false;
-    /** {@link BooksOnBookshelfViewModel} Display the position and node id. Adds a View from code. */
+    /**
+     * {@link BooksOnBookshelfViewModel} Display the position and node id.
+     * Adds a View from code.
+     */
     public static final boolean BOB_NODE_ID = false;
 
     /** track results from {@link ActivityResultContract#parseResult}. */

@@ -34,7 +34,7 @@ import java.security.NoSuchAlgorithmException;
  * A trivial wrapper for {@link PackageInfoWrapper} to hide the different API versions
  * from the rest of the application.
  */
-public class PackageInfoWrapper {
+public final class PackageInfoWrapper {
 
     @NonNull
     private final PackageInfo mInfo;

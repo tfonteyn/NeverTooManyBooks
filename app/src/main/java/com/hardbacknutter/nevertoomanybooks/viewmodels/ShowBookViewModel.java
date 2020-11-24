@@ -255,6 +255,7 @@ public class ShowBookViewModel
         final Book book = getBookAtPosition(position);
 
         if (mDb.delete(context, book)) {
+            //noinspection ConstantConditions
             mCurrentBook = null;
             mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
             return true;

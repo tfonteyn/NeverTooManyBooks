@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 /**
  * Encapsulates a {@link SearchEngine} instance + the current enabled/disabled state.
  */
-public class Site
+public final class Site
         implements Parcelable {
 
     /** {@link Parcelable}. */

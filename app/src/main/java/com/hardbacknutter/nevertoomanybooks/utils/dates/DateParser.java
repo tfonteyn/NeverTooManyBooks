@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
  * <p>
  * FIXME: DateTimeParseException https://issuetracker.google.com/issues/158417777
  */
-public class DateParser
+public final class DateParser
         implements AppLocale.OnLocaleChangedListener {
 
     /** All numerical (i.e. Locale independent) patterns. */

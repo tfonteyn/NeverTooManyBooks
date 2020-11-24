@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
  * How to handle a data field when updating the entity it belongs to.
  * e.g. skip it, overwrite the value, etc...
  */
-public class FieldUsage {
+public final class FieldUsage {
 
     @NonNull
     public final String fieldId;

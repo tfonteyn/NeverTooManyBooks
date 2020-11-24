@@ -80,7 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
  *
  * @param <S> selection; This class only supports a {@code Long}, or a {@code Pair<Long,Long>}.
  */
-public class WrappedMaterialDatePicker<S>
+public final class WrappedMaterialDatePicker<S>
         implements MaterialPickerOnPositiveButtonClickListener<S> {
 
     /** Used instead of null, so our static method works. */
