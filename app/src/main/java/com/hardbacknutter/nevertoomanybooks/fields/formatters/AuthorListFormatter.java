@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 public class AuthorListFormatter
         extends HtmlFormatter<List<Author>> {
@@ -66,20 +65,26 @@ public class AuthorListFormatter
         switch (mDetails) {
             case Full:
                 if (mSingleLine) {
-                    return rawValue.stream().map(element -> element.getExtLabel(context))
+                    return rawValue.stream()
+                                   .map(author -> author.getExtLabel(context))
                                    .collect(Collectors.joining("; "));
                 } else {
-                    return HtmlUtils.asList(rawValue, author ->
-                            author.getExtLabel(context));
+                    return rawValue.stream()
+                                   .map(author -> author.getExtLabel(context))
+                                   .map(s -> "<li>" + s + "</li>")
+                                   .collect(Collectors.joining("", "<ul>", "</ul>"));
                 }
 
             case Normal:
                 if (mSingleLine) {
-                    return rawValue.stream().map(element -> element.getLabel(context))
+                    return rawValue.stream()
+                                   .map(author -> author.getLabel(context))
                                    .collect(Collectors.joining("; "));
                 } else {
-                    return HtmlUtils.asList(rawValue, author ->
-                            author.getLabel(context));
+                    return rawValue.stream()
+                                   .map(author -> author.getLabel(context))
+                                   .map(s -> "<li>" + s + "</li>")
+                                   .collect(Collectors.joining("", "<ul>", "</ul>"));
                 }
 
             case Short:
@@ -93,4 +98,5 @@ public class AuthorListFormatter
         }
         return "";
     }
+
 }

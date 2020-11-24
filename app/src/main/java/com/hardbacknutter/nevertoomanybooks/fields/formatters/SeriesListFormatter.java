@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 public class SeriesListFormatter
         extends HtmlFormatter<List<Series>> {
@@ -71,8 +70,10 @@ public class SeriesListFormatter
                                    .map(series -> series.getLabel(context))
                                    .collect(Collectors.joining("; "));
                 } else {
-                    return HtmlUtils.asList(rawValue, series ->
-                            series.getLabel(context));
+                    return rawValue.stream()
+                                   .map(series -> series.getLabel(context))
+                                   .map(s -> "<li>" + s + "</li>")
+                                   .collect(Collectors.joining("", "<ul>", "</ul>"));
                 }
 
             case Short:
@@ -86,4 +87,5 @@ public class SeriesListFormatter
         }
         return "";
     }
+
 }

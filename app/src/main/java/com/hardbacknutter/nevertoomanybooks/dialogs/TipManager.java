@@ -40,8 +40,8 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.fields.formatters.HtmlFormatter;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 /**
  * Original 'hints' renamed to 'tips' to avoid confusion with "android:hint".
@@ -329,7 +329,7 @@ public final class TipManager {
             if (messageView != null) {
                 final String tipText = context.getString(stringId, args);
                 // allow links, start a browser (or whatever)
-                messageView.setText(HtmlUtils.linkify(tipText));
+                messageView.setText(HtmlFormatter.linkify(tipText));
                 messageView.setMovementMethod(LinkMovementMethod.getInstance());
             }
 

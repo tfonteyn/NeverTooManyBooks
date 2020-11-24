@@ -20,13 +20,17 @@
 package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
 import android.content.Context;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
+import android.text.util.Linkify;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
-import com.hardbacknutter.nevertoomanybooks.utils.HtmlUtils;
 
 /**
  * FieldFormatter for HTML fields.
@@ -53,6 +57,45 @@ public class HtmlFormatter<T>
         mEnableLinks = enableLinks;
     }
 
+    /**
+     * Linkify partial HTML. Linkify methods remove all spans before building links,
+     * this method preserves them.
+     * <p>
+     * See:
+     * <a href="http://stackoverflow.com/questions/14538113">
+     * using-linkify-addlinks-combine-with-html-fromhtml</a>
+     *
+     * <pre>
+     *     {@code
+     *          view.setText(HtmlFormatter.linkify(body));
+     *          view.setMovementMethod(LinkMovementMethod.getInstance());
+     *     }
+     * </pre>
+     *
+     * @param html Partial HTML
+     *
+     * @return Spannable with all links
+     */
+    @NonNull
+    public static Spannable linkify(@NonNull final String html) {
+        // Get the spannable HTML; single linefeed between things like LI elements.
+        final Spanned text = Html.fromHtml(html, Html.FROM_HTML_MODE_COMPACT);
+
+        // Save the span details for later restoration
+        final URLSpan[] currentSpans = text.getSpans(0, text.length(), URLSpan.class);
+
+        // Build an empty spannable and add the links
+        final Spannable buffer = new SpannableString(text);
+        // Only do web & email links. Most likely all we'll ever need.
+        Linkify.addLinks(buffer, Linkify.WEB_URLS | Linkify.EMAIL_ADDRESSES);
+
+        // Add back the HTML spannable's
+        for (final URLSpan span : currentSpans) {
+            buffer.setSpan(span, text.getSpanStart(span), text.getSpanEnd(span), 0);
+        }
+        return buffer;
+    }
+
     @NonNull
     @Override
     public String format(@NonNull final Context context,
@@ -64,7 +107,7 @@ public class HtmlFormatter<T>
     public void apply(@Nullable final T rawValue,
                       @NonNull final TextView view) {
 
-        view.setText(HtmlUtils.linkify(format(view.getContext(), rawValue)));
+        view.setText(linkify(format(view.getContext(), rawValue)));
 
         if (mEnableLinks && !view.hasOnClickListeners()) {
             view.setMovementMethod(LinkMovementMethod.getInstance());
