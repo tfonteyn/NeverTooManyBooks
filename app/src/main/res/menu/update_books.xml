@@ -29,5 +29,5 @@
     <item
         android:id="@id/MENU_UPDATE_FROM_INTERNET_ALL_SHELVES"
         android:orderInCategory="@integer/MENU_ORDER_DELETE"
-        android:title="@string/btn_all_shelves" />
+        android:title="@string/lbl_all_bookshelves" />
 </menu>
