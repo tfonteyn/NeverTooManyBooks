@@ -619,8 +619,8 @@ public class EditBookAuthorListDialogFragment
             final Holder holder = new Holder(view);
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditAuthorForBookDialogFragment
-                    .launch(getParentFragmentManager(),
-                            RK_EDIT_AUTHOR, mVm.getBook().getTitle(),
+                    .launch(getChildFragmentManager(), RK_EDIT_AUTHOR,
+                            mVm.getBook().getTitle(),
                             getItem(holder.getBindingAdapterPosition())));
             return holder;
         }

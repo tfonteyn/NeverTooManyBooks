@@ -515,8 +515,8 @@ public class EditBookSeriesListDialogFragment
             final Holder holder = new Holder(view);
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditSeriesForBookDialogFragment
-                    .launch(getParentFragmentManager(),
-                            RK_EDIT_SERIES, mVm.getBook().getTitle(),
+                    .launch(getChildFragmentManager(), RK_EDIT_SERIES,
+                            mVm.getBook().getTitle(),
                             getItem(holder.getBindingAdapterPosition())));
             return holder;
         }

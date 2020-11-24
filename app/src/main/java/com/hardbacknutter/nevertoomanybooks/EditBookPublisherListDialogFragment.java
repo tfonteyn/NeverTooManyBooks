@@ -480,10 +480,9 @@ public class EditBookPublisherListDialogFragment
             final Holder holder = new Holder(view);
             // click -> edit
             holder.rowDetailsView.setOnClickListener(v -> EditPublisherForBookDialogFragment
-                    .launch(getParentFragmentManager(),
-                            RK_EDIT_PUBLISHER, mVm.getBook().getTitle(),
+                    .launch(getChildFragmentManager(), RK_EDIT_PUBLISHER,
+                            mVm.getBook().getTitle(),
                             getItem(holder.getBindingAdapterPosition())));
-
             return holder;
         }
 
