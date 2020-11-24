@@ -22,13 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.utils.BitUtils;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}.
@@ -64,6 +65,7 @@ public class PBitmask
         mMask = mask;
     }
 
+
     @NonNull
     public Integer getGlobalValue(@NonNull final Context context) {
         final Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
@@ -71,7 +73,7 @@ public class PBitmask
         if (value == null || value.isEmpty()) {
             return mDefaultValue;
         }
-        return BitUtils.from(value) & mMask;
+        return from(value) & mMask;
     }
 
     /**
@@ -80,7 +82,7 @@ public class PBitmask
     @Override
     public void set(@NonNull final SharedPreferences.Editor ed,
                     @NonNull final Integer value) {
-        ed.putStringSet(getKey(), BitUtils.toStringSet(value & mMask));
+        ed.putStringSet(getKey(), toStringSet(value & mMask));
     }
 
     /**
@@ -94,12 +96,56 @@ public class PBitmask
         if (mIsPersistent) {
             final Set<String> value = mStylePrefs.getStringSet(getKey(), null);
             if (value != null) {
-                return BitUtils.from(value) & mMask;
+                return from(value) & mMask;
             }
             return getGlobalValue(context);
         } else {
             return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
         }
+    }
+
+    /**
+     * Convert a set where each <strong>String</strong> element represents one bit to a bitmask.
+     *
+     * @param set the set
+     *
+     * @return the value
+     */
+    @NonNull
+    private Integer from(@NonNull final Set<String> set) {
+        int tmp = 0;
+        for (final String s : set) {
+            tmp |= Integer.parseInt(s);
+        }
+        return tmp;
+    }
+
+    /**
+     * Convert a bitmask.
+     *
+     * @param bitmask the value
+     *
+     * @return the set
+     */
+    @NonNull
+    private Set<String> toStringSet(@IntRange(from = 0, to = 0xFFFF)
+                                    @NonNull final Integer bitmask) {
+        if (bitmask < 0) {
+            throw new IllegalArgumentException(Integer.toBinaryString(bitmask));
+        }
+
+        final Set<String> set = new HashSet<>();
+        int tmp = bitmask;
+        int bit = 1;
+        while (tmp != 0) {
+            if ((tmp & 1) == 1) {
+                set.add(String.valueOf(bit));
+            }
+            bit *= 2;
+            // unsigned shift
+            tmp = tmp >>> 1;
+        }
+        return set;
     }
 
     @Override

@@ -41,6 +41,7 @@ import java.util.Objects;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,7 +51,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.BitUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -603,13 +603,19 @@ public class Author
     @NonNull
     private String getTypeLabels(@NonNull final Context context) {
         if (mType != TYPE_UNKNOWN) {
-            final List<String> list = BitUtils.toListOfStrings(context, TYPES, mType);
+            final List<String> list = TYPES.entrySet()
+                                           .stream()
+                                           .filter(entry -> (entry.getKey() & (long) mType) != 0)
+                                           .map(entry -> context.getString(entry.getValue()))
+                                           .collect(Collectors.toList());
+
             if (!list.isEmpty()) {
                 return context.getString(R.string.brackets, TextUtils.join(", ", list));
             }
         }
         return "";
     }
+
 
     /**
      * Syntax sugar to set the names in one call.
