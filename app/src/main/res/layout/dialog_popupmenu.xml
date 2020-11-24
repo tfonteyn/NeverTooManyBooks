@@ -40,6 +40,16 @@
         tools:text="alertTitle"
         />
 
+    <TextView
+        android:id="@+id/alertMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textIsSelectable="true"
+        android:visibility="gone"
+        tools:text="alertMessage"
+        tools:visibility="visible"
+        />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"
         android:layout_width="match_parent"

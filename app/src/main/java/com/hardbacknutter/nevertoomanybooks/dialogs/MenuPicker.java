@@ -70,12 +70,14 @@ public class MenuPicker {
      *
      * @param context  Current context
      * @param title    (optional) for the dialog/menu
+     * @param message  (optional) for the dialog/menu
      * @param menu     the menu options to show
      * @param position of the item in a list where the context menu was initiated
      * @param listener callback handler with the MenuItem the user chooses + the position
      */
     public MenuPicker(@NonNull final Context context,
                       @Nullable final String title,
+                      @Nullable final String message,
                       @NonNull final Menu menu,
                       final int position,
                       @NonNull final MenuPickListener listener) {
@@ -92,6 +94,15 @@ public class MenuPicker {
             titleView.setText(title);
         } else {
             titleView.setVisibility(View.GONE);
+        }
+
+        // optional message
+        final TextView messageView = view.findViewById(R.id.alertMessage);
+        if (message != null && !message.isEmpty()) {
+            messageView.setVisibility(View.VISIBLE);
+            messageView.setText(message);
+        } else {
+            messageView.setVisibility(View.GONE);
         }
 
         final MenuItemListAdapter adapter = new MenuItemListAdapter(context, menu);

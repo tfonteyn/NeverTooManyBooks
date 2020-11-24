@@ -65,6 +65,8 @@ public class MenuPickerDialogFragment
     public static final String TAG = "MenuPickerDialogFrag";
 
     private static final String BKEY_MENU = TAG + ":menu";
+    private static final String BKEY_TITLE = TAG + ":title";
+    private static final String BKEY_MESSAGE = TAG + ":message";
     private static final String BKEY_POSITION = TAG + ":pos";
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
@@ -94,13 +96,23 @@ public class MenuPickerDialogFragment
         final Iterable<Pick> menu = args.getParcelableArrayList(BKEY_MENU);
 
         // optional title
-        final String title = args.getString(StandardDialogs.BKEY_DIALOG_TITLE);
+        final String title = args.getString(BKEY_TITLE);
         final TextView titleView = view.findViewById(R.id.alertTitle);
         if (title != null && !title.isEmpty()) {
             titleView.setVisibility(View.VISIBLE);
             titleView.setText(title);
         } else {
             titleView.setVisibility(View.GONE);
+        }
+
+        // optional message
+        final String message = args.getString(BKEY_MESSAGE);
+        final TextView messageView = view.findViewById(R.id.alertMessage);
+        if (message != null && !message.isEmpty()) {
+            messageView.setVisibility(View.VISIBLE);
+            messageView.setText(message);
+        } else {
+            messageView.setVisibility(View.GONE);
         }
 
         //noinspection ConstantConditions
@@ -148,16 +160,19 @@ public class MenuPickerDialogFragment
          * Launch the dialog.
          *
          * @param title    (optional) for the dialog/menu
+         * @param message  (optional) for the dialog/menu
          * @param menu     the menu options to show
          * @param position of the item in a list where the context menu was initiated
          */
         public void launch(@Nullable final String title,
+                           @Nullable final String message,
                            @NonNull final ArrayList<Pick> menu,
                            final int position) {
 
             final Bundle args = new Bundle(4);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(StandardDialogs.BKEY_DIALOG_TITLE, title);
+            args.putString(BKEY_TITLE, title);
+            args.putString(BKEY_MESSAGE, message);
             args.putParcelableArrayList(BKEY_MENU, menu);
             args.putInt(BKEY_POSITION, position);
 
@@ -170,13 +185,15 @@ public class MenuPickerDialogFragment
          * Launch the dialog.
          *
          * @param title    (optional) for the dialog/menu
+         * @param message  (optional) for the dialog/menu
          * @param menu     the menu options to show
          * @param position of the item in a list where the context menu was initiated
          */
         public void launch(@Nullable final String title,
+                           @Nullable final String message,
                            @NonNull final Menu menu,
                            final int position) {
-            launch(title, convert(menu), position);
+            launch(title, message, convert(menu), position);
         }
 
         @Override
