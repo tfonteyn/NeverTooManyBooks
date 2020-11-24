@@ -47,16 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public final class StandardDialogs {
 
-    /** Log tag. */
-    private static final String TAG = "StandardDialogs";
-
-    /**
-     * The title to be used by generic Dialogs.
-     * <p>
-     * <br>type: {@code int} (stringId)
-     */
-    public static final String BKEY_DIALOG_TITLE = TAG + ":title";
-
     private StandardDialogs() {
     }
 
