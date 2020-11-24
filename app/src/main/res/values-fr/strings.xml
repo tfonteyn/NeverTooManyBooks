@@ -685,4 +685,5 @@
     <string name="pt_enable_fast_scroller_overlay">Bulle de texte lors du défilement</string>
     <string name="menu_import">Importer</string>
     <string name="action_import">Importer</string>
+    <string name="btn_just_this_shelf">Cette bibliothèque uniquement</string>
 </resources>

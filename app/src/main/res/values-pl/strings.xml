@@ -677,4 +677,5 @@
     <string name="pt_enable_fast_scroller_overlay">Dymek tekstowy podczas przewijania</string>
     <string name="menu_import">Importuj</string>
     <string name="action_import">Importuj</string>
+    <string name="btn_just_this_shelf">Tylko ta półka</string>
 </resources>

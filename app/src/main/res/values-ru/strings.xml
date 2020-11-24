@@ -676,4 +676,5 @@
     <string name="pt_enable_fast_scroller_overlay">Текстовая всплывающая подсказка при прокрутке</string>
     <string name="action_import">Импортировать</string>
     <string name="menu_import">Импортировать</string>
+    <string name="btn_just_this_shelf">Только эта книжная полка</string>
 </resources>

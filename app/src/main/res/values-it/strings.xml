@@ -680,4 +680,5 @@
     <string name="pt_enable_fast_scroller_overlay">Bolla di testo durante lo scorrimento</string>
     <string name="menu_import">Importa</string>
     <string name="action_import">Importa</string>
+    <string name="btn_just_this_shelf">Solo questa libreria</string>
 </resources>

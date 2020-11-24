@@ -681,4 +681,5 @@
     <string name="pt_enable_fast_scroller_overlay">Burbuja de texto mientras se desplaza</string>
     <string name="menu_import">Importar</string>
     <string name="action_import">Importar</string>
+    <string name="btn_just_this_shelf">Esta estantería solamente</string>
 </resources>

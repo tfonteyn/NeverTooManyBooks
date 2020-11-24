@@ -682,4 +682,5 @@
     <string name="pt_enable_fast_scroller_overlay">Φούσκα κειμένου κατά την κύλιση</string>
     <string name="menu_import">εισάγω</string>
     <string name="action_import">εισάγω</string>
+    <string name="btn_just_this_shelf">Μόνο αυτό το ράφι βιβλίου</string>
 </resources>
