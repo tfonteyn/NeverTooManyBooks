@@ -127,7 +127,7 @@ public class SearchBookUpdatesFragment
 
         // optional activity subtitle
         if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
-            actionBar.setTitle(args.getString(BKEY_SCREEN_SUBTITLE));
+            actionBar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
         }
 
         mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
