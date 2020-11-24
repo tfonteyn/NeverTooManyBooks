@@ -71,6 +71,7 @@ public class PartialDatePickerDialogFragment
     private static final String BKEY_DATE = TAG + ":date";
     /** Argument. */
     private static final String BKEY_FIELD_ID = TAG + ":fieldId";
+    private static final String BKEY_DIALOG_TITLE = TAG + ":title";
 
     /** Displayed to user: unset month. */
     private static final String UNKNOWN_MONTH = "---";
@@ -143,7 +144,7 @@ public class PartialDatePickerDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mDialogTitleId = args.getInt(StandardDialogs.BKEY_DIALOG_TITLE);
+        mDialogTitleId = args.getInt(BKEY_DIALOG_TITLE);
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
         setupDate(savedInstanceState);
@@ -438,7 +439,7 @@ public class PartialDatePickerDialogFragment
 
             final Bundle args = new Bundle(4);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putInt(StandardDialogs.BKEY_DIALOG_TITLE, dialogTitleId);
+            args.putInt(BKEY_DIALOG_TITLE, dialogTitleId);
             args.putInt(BKEY_FIELD_ID, fieldId);
             args.putString(BKEY_DATE, dateStr);
 
