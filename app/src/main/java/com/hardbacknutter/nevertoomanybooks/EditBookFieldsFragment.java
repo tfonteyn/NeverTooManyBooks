@@ -271,6 +271,7 @@ public class EditBookFieldsFragment
         fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(userLocale), true),
                    DBDefinitions.KEY_LANGUAGE)
               .setRelatedFields(R.id.lbl_language)
+              .setErrorViewId(R.id.lbl_language)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.genre, new EditTextAccessor<>(), DBDefinitions.KEY_GENRE)
