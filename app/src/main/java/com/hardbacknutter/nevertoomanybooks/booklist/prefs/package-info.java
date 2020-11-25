@@ -21,23 +21,25 @@
 /**
  * Problem:
  * <p>
- * The Preferences in {@link androidx.preference} are limited to store String and Boolean data only.
+ * The Preferences in {@link androidx.preference} are limited to storing
+ * String and Boolean data only.
  * <p>
  * Integer, Long, ... needs to be stored as String.
+ * <p>
  * Examples:
- * {@link androidx.preference.SwitchPreference}
- * => boolean
- * {@link androidx.preference.EditTextPreference}
- * => String
+ * <ul>
+ * <li>{@link androidx.preference.SwitchPreference} => boolean</li>
+ * <li>{@link androidx.preference.EditTextPreference} => String</li>
+ * </ul>
  * <p>
  * But, Preferences that support Lists in some way or form, are stored as {@code Set<String>}
+ * <p>
  * Example:
- * {@link androidx.preference.ListPreference}
- * -> store 1 value as String
- * <p>
- * {@link androidx.preference.MultiSelectListPreference}
- * => stores a {@code Set<String>} for the selected values.
- * <p>
+ * <ul>
+ * <li>{@link androidx.preference.ListPreference} => store 1 value as String</li>
+ * <li>{@link androidx.preference.MultiSelectListPreference}
+ * => stores a {@code Set<String>} for the selected values.</li>
+ * </ul>
  * At the same time, application code is easier to write/understand if it uses the actual types
  * it needs.
  * <p>
@@ -47,6 +49,7 @@
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString}
  * => {@link androidx.preference.EditTextPreference}
+ * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean}
  * => {@link androidx.preference.SwitchPreference}
  * <p>

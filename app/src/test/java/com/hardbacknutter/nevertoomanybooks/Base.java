@@ -229,7 +229,8 @@ public class Base {
         when(resources.getString(eq(R.string.book_format_hardcover))).thenReturn("Hardcover");
         when(resources.getString(eq(R.string.book_format_dimensions))).thenReturn("Dim");
 
-        when(resources.getString(eq(R.string.unknownName))).thenReturn("Unknown");
+        when(resources.getString(eq(R.string.unknown_title))).thenReturn("[Unknown title]");
+        when(resources.getString(eq(R.string.unknown_author))).thenReturn("[Unknown author]");
     }
 
 }

@@ -43,7 +43,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public final class StandardDialogs {
 
@@ -215,10 +214,8 @@ public final class StandardDialogs {
         // Format the list of authors nicely
         final StringBuilder authors = new StringBuilder();
         if (authorList.isEmpty()) {
-            authors.append('<')
-                   .append(context.getString(R.string.unknownName)
-                                  .toUpperCase(AppLocale.getInstance().getUserLocale(context)))
-                   .append('>');
+            authors.append('<').append(context.getString(R.string.unknown_author)).append('>');
+
         } else {
             // "a1, a2 and a3"
             authors.append(authorList.get(0).getLabel(context));

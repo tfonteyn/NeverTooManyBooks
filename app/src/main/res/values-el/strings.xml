@@ -563,7 +563,7 @@
     <string name="X_lbl_select_image">Επιλογή εικόνας…</string>
     <string name="lbl_select_style">Επιλογή Στυλ</string>
     <string name="X_lbl_send_mail">Να στείλετε e-mail…</string>
-    <string name="unknownName">Άγνωστο</string>
+    <string name="unknown_author">Άγνωστο</string>
     <string name="unused">αχρησιμοποίητος</string>
     <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για «%1$s»</string>

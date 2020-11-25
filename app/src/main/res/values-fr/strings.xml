@@ -580,7 +580,7 @@
     <string name="txt_tap_on_thumbnail_to_zoom">Appuyez sur une miniature pour afficher une image plus grande.</string>
     <string name="txt_x_pages">%1$d pages</string>
     <string name="unknown">Inconnu</string>
-    <string name="unknownName">Inconnu</string>
+    <string name="unknown_author">Inconnu</string>
     <string name="unused">inutilisé</string>
     <string name="vldt_blank_required_for_x">Le champ «%1$s» doit être vide</string>
     <string name="vldt_boolean_expected_for_x">Valeur booléenne (0,1,t,f,true,false) attendue pour «%1$s»</string>

@@ -563,7 +563,7 @@
     <string name="X_lbl_select_image">Seleccionar imagen…</string>
     <string name="lbl_select_style">Seleccionar Estilo</string>
     <string name="X_lbl_send_mail">Enviar correo electrónico…</string>
-    <string name="unknownName">Desconocido</string>
+    <string name="unknown_author">Desconocido</string>
     <string name="unused">no usado</string>
     <string name="vldt_blank_required_for_x">«%1$s» debe estar en blanco</string>
     <string name="vldt_boolean_expected_for_x">«%1$s» debe ser (0,1,t,f,true,false)</string>

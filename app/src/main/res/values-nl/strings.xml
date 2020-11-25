@@ -576,7 +576,7 @@
     <string name="txt_tap_on_thumbnail_to_zoom">Tik op een miniatuur om een grotere afbeelding weer te geven.</string>
     <string name="txt_x_pages">%1$d pagina\'s</string>
     <string name="unknown">Onbekend</string>
-    <string name="unknownName">Onbekend</string>
+    <string name="unknown_author">Onbekend</string>
     <string name="unused">ongebruikt</string>
     <string name="vldt_blank_required_for_x">Veld moet leeg zijn voor „%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Verwachtte een boolean waarde (0,1,t,f,true,false) voor „%1$s”</string>

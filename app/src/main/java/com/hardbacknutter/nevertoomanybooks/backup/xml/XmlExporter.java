@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -65,7 +64,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 /**
@@ -138,9 +136,9 @@ public class XmlExporter
 
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
-    /** cached localized "unknown" string. */
+    /** cached "unknown title" string. */
     @NonNull
-    private final String mUnknownNameString;
+    private final String mUnknownTitleString;
 
     /**
      * Constructor.
@@ -159,8 +157,7 @@ public class XmlExporter
         mUtcSinceDateTime = utcSinceDateTime;
 
         mDb = new DAO(TAG);
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-        mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
+        mUnknownTitleString = context.getString(R.string.unknown_title);
     }
 
     @Override
@@ -577,7 +574,7 @@ public class XmlExporter
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
-                    title = mUnknownNameString;
+                    title = mUnknownTitleString;
                 }
 
                 // it's a buffered writer, no need to first StringBuilder the line.

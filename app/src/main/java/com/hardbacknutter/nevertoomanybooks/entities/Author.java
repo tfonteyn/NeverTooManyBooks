@@ -50,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -292,9 +291,8 @@ public class Author
 
     @NonNull
     public static Author createUnknownAuthor(@NonNull final Context context) {
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-        final String unknownName = context.getString(R.string.unknownName).toUpperCase(userLocale);
-        return new Author(unknownName, "");
+        final String unknownAuthor = context.getString(R.string.unknown_author);
+        return new Author(unknownAuthor, "");
     }
 
     /**

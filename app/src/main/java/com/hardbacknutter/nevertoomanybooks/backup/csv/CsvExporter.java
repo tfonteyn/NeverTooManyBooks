@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
@@ -55,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
@@ -138,9 +136,14 @@ public class CsvExporter
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-    /** cached localized "unknown" string. */
+
+    /** cached "unknown title" string. */
     @NonNull
-    private final String mUnknownNameString;
+    private final String mUnknownTitleString;
+    /** cached "unknown author" string. */
+    @NonNull
+    private final String mUnknownAuthorString;
+
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
     private final StringList<Publisher> mPublisherCoder = new StringList<>(new PublisherCoder());
@@ -174,11 +177,10 @@ public class CsvExporter
         mUtcSinceDateTime = utcSinceDateTime;
 
         mDb = new DAO(TAG);
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-        mUnknownNameString = context.getString(R.string.unknownName).toUpperCase(userLocale);
+        mUnknownTitleString = context.getString(R.string.unknown_title);
+        mUnknownAuthorString = context.getString(R.string.unknown_author);
 
-        mBookshelfCoder = new StringList<>(
-                new BookshelfCoder(StyleDAO.getDefault(context, mDb)));
+        mBookshelfCoder = new StringList<>(new BookshelfCoder(StyleDAO.getDefault(context, mDb)));
     }
 
     @Override
@@ -215,14 +217,14 @@ public class CsvExporter
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
-                    title = mUnknownNameString;
+                    title = mUnknownTitleString;
                 }
 
                 String authors = mAuthorCoder.encodeList(
                         book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST));
                 // Sanity check: ensure author is non-blank.
                 if (authors.trim().isEmpty()) {
-                    authors = mUnknownNameString;
+                    authors = mUnknownAuthorString;
                 }
 
                 // it's a buffered writer, no need to first StringBuilder the line.

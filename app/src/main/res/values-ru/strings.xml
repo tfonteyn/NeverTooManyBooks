@@ -556,7 +556,7 @@
     <string name="X_lbl_select_image">Выбор картинки…</string>
     <string name="lbl_select_style">Выбрать стиль</string>
     <string name="X_lbl_send_mail">Эл. адрес…</string>
-    <string name="unknownName">Неизвестно</string>
+    <string name="unknown_author">Неизвестно</string>
     <string name="unused">неиспользуемый</string>
     <string name="vldt_blank_required_for_x">Требуется пустое значение: «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Введите логическое да-нет значение (0,1,t,f,true,false) for «%1$s»</string>

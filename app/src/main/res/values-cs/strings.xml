@@ -557,7 +557,7 @@
     <string name="X_lbl_select_image">Zvolit obrázek…</string>
     <string name="lbl_select_style">Zvolit styl</string>
     <string name="X_lbl_send_mail">Poslat e-mailem…</string>
-    <string name="unknownName">Není známo</string>
+    <string name="unknown_author">Není známo</string>
     <string name="unused">nepoužitý</string>
     <string name="vldt_blank_required_for_x">Prázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_boolean_expected_for_x">Očekávána pravdivostní hodnota (0,1,t,f,true,false) pro „%1$s“</string>
