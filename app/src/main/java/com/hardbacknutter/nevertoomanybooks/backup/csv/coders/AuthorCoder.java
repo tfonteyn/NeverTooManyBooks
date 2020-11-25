@@ -26,6 +26,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -56,7 +57,18 @@ public class AuthorCoder
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
-                author.fromJson(details);
+
+                if (details.has(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
+                    author.setComplete(details.optBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE));
+                } else if (details.has("complete")) {
+                    author.setComplete(details.optBoolean("complete"));
+                }
+
+                if (details.has(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+                    author.setType(details.optInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK));
+                } else if (details.has("type")) {
+                    author.setType(details.optInt("type"));
+                }
             } catch (@NonNull final JSONException ignore) {
                 // ignore
             }
@@ -70,21 +82,24 @@ public class AuthorCoder
     public String encode(@NonNull final Author author) {
         // Note the use of Author.NAME_SEPARATOR between family and given-names,
         // i.e. the names are considered ONE field with a private separator.
-        String result =
-                escape(author.getFamilyName(), mEscapeChars)
-                + Author.NAME_SEPARATOR + ' '
-                + escape(author.getGivenNames(), mEscapeChars);
+        String result = escape(author.getFamilyName(), mEscapeChars)
+                        + Author.NAME_SEPARATOR + ' '
+                        + escape(author.getGivenNames(), mEscapeChars);
 
         final JSONObject details = new JSONObject();
         try {
-            author.toJson(details);
+            if (author.isComplete()) {
+                details.put(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, true);
+            }
+            if (author.getType() != Author.TYPE_UNKNOWN) {
+                details.put(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
+            }
         } catch (@NonNull final JSONException e) {
             throw new IllegalStateException(e);
         }
 
         if (details.length() != 0) {
-            result += ' ' + String.valueOf(getObjectSeparator())
-                      + ' ' + details.toString();
+            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
         }
         return result;
     }

@@ -32,9 +32,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -458,34 +455,6 @@ public class Series
      */
     public void setComplete(final boolean isComplete) {
         mIsComplete = isComplete;
-    }
-
-    /**
-     * Write the extra data to the JSONObject.
-     *
-     * @param data which {@link #fromJson(JSONObject)} will read
-     *
-     * @throws JSONException on failure
-     */
-    public void toJson(@NonNull final JSONObject data)
-            throws JSONException {
-
-        if (mIsComplete) {
-            data.put(DBDefinitions.KEY_SERIES_IS_COMPLETE, true);
-        }
-    }
-
-    /**
-     * Read the extra data from the JSONObject.
-     *
-     * @param data as written by {@link #toJson(JSONObject)}
-     */
-    public void fromJson(@NonNull final JSONObject data) {
-        if (data.has(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
-            mIsComplete = data.optBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
-        } else if (data.has("complete")) {
-            mIsComplete = data.optBoolean("complete");
-        }
     }
 
     @Override

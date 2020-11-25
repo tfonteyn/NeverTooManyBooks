@@ -36,9 +36,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
 import java.util.Objects;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
@@ -407,33 +404,22 @@ public class Bookshelf
     }
 
     /**
-     * Write the extra data to the JSON object.
-     * Positions are not saved.
+     * WARNING: exposed ONLY for backup reasons. Do NOT use elsewhere!
      *
-     * @param data which {@link #fromJson(JSONObject)} will read
-     *
-     * @throws JSONException on failure
+     * @return the unvalidated style uuid
      */
-    public void toJson(@NonNull final JSONObject data)
-            throws JSONException {
-        if (!mStyleUuid.isEmpty()) {
-            data.put(DBDefinitions.KEY_FK_STYLE, mStyleUuid);
-        }
+    @NonNull
+    public String getStyleUuid() {
+        return mStyleUuid;
     }
 
     /**
-     * Read the extra data from the JSON object.
+     * WARNING: exposed ONLY for backup reasons. Do NOT use elsewhere!
      *
-     * @param data as written by {@link #toJson(JSONObject)}
+     * @param styleUuid the unvalidated style uuid
      */
-    public void fromJson(@NonNull final JSONObject data) {
-        // it's quite possible that the UUID is not a style we (currently)
-        // know. But that does not matter as we'll check it upon first access.
-        if (data.has(DBDefinitions.KEY_FK_STYLE)) {
-            mStyleUuid = data.optString(DBDefinitions.KEY_FK_STYLE);
-        } else if (data.has("style")) {
-            mStyleUuid = data.optString("style");
-        }
+    public void setStyleUuid(@NonNull final String styleUuid) {
+        mStyleUuid = styleUuid;
     }
 
     /**

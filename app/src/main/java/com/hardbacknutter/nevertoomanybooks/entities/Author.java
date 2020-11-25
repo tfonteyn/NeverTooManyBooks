@@ -43,9 +43,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -625,44 +622,6 @@ public class Author
                         @NonNull final String givenNames) {
         mFamilyName = familyName;
         mGivenNames = givenNames;
-    }
-
-    /**
-     * Write the extra data to the JSON object.
-     *
-     * @param data which {@link #fromJson(JSONObject)} will read
-     *
-     * @throws JSONException on failure
-     */
-    public void toJson(@NonNull final JSONObject data)
-            throws JSONException {
-
-        if (mIsComplete) {
-            data.put(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, true);
-        }
-        if (mType != Author.TYPE_UNKNOWN) {
-            data.put(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, mType);
-        }
-    }
-
-    /**
-     * Read the extra data from the JSON object.
-     *
-     * @param data as written by {@link #toJson(JSONObject)}
-     */
-    public void fromJson(@NonNull final JSONObject data) {
-
-        if (data.has(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
-            mIsComplete = data.optBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
-        } else if (data.has("complete")) {
-            mIsComplete = data.optBoolean("complete");
-        }
-
-        if (data.has(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-            setType(data.optInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK));
-        } else if (data.has("type")) {
-            setType(data.optInt("type"));
-        }
     }
 
     @NonNull

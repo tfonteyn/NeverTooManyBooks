@@ -26,6 +26,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -55,7 +56,11 @@ public class SeriesCoder
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
-                series.fromJson(details);
+                if (details.has(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
+                    series.setComplete(details.optBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE));
+                } else if (details.has("complete")) {
+                    series.setComplete(details.optBoolean("complete"));
+                }
             } catch (@NonNull final JSONException ignore) {
                 // ignore
             }
@@ -76,14 +81,15 @@ public class SeriesCoder
 
         final JSONObject details = new JSONObject();
         try {
-            series.toJson(details);
+            if (series.isComplete()) {
+                details.put(DBDefinitions.KEY_SERIES_IS_COMPLETE, true);
+            }
         } catch (@NonNull final JSONException e) {
             throw new IllegalStateException(e);
         }
 
         if (details.length() != 0) {
-            result += ' ' + String.valueOf(getObjectSeparator())
-                      + ' ' + details.toString();
+            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
         }
         return result;
     }

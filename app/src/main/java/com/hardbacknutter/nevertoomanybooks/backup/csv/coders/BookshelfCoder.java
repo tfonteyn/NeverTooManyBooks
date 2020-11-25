@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
@@ -72,7 +73,13 @@ public class BookshelfCoder
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
-                bookshelf.fromJson(details);
+                // It's quite possible that the UUID is not a style we (currently) know.
+                // But that does not matter as we'll check it upon first access.
+                if (details.has(DBDefinitions.KEY_FK_STYLE)) {
+                    bookshelf.setStyleUuid(details.optString(DBDefinitions.KEY_FK_STYLE));
+                } else if (details.has("style")) {
+                    bookshelf.setStyleUuid(details.optString("style"));
+                }
             } catch (@NonNull final JSONException ignore) {
                 // ignore
             }
@@ -88,14 +95,15 @@ public class BookshelfCoder
 
         final JSONObject details = new JSONObject();
         try {
-            bookshelf.toJson(details);
+            if (!bookshelf.getStyleUuid().isEmpty()) {
+                details.put(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid());
+            }
         } catch (@NonNull final JSONException e) {
             throw new IllegalStateException(e);
         }
 
         if (details.length() != 0) {
-            result += ' ' + String.valueOf(getObjectSeparator())
-                      + ' ' + details.toString();
+            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
         }
         return result;
     }
