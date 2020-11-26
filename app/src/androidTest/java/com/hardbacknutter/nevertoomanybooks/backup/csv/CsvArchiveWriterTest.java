@@ -160,7 +160,7 @@ public class CsvArchiveWriterTest {
 
         assertEquals(0, importResults.booksCreated);
         // we did an overwrite of ALL books
-        assertEquals(90, importResults.booksUpdated);
+        assertEquals(mBookInDb, importResults.booksUpdated);
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
     }
