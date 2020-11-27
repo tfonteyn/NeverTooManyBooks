@@ -20,23 +20,20 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
 
-import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
- * an SQL WHERE clause (column IN (a,b,c,...).
+ * an SQL WHERE clause (column IN (a,b,c,...)
  *
  * @param <T> type the elements of the 'IN' list.
  */
-public class ListOfValuesFilter<T>
+public class NumberListFilter<T extends Number>
         implements Filter<String> {
 
     @NonNull
@@ -55,30 +52,12 @@ public class ListOfValuesFilter<T>
      * @param domainKey to use by the expression
      * @param list      of values
      */
-    public ListOfValuesFilter(@NonNull final TableDefinition table,
-                              @NonNull final String domainKey,
-                              @NonNull final Collection<T> list) {
+    public NumberListFilter(@NonNull final TableDefinition table,
+                            @NonNull final String domainKey,
+                            @NonNull final List<T> list) {
         mTable = table;
         mDomainKey = domainKey;
-
-        mCriteria = new StringList<>(new StringList.Factory<T>() {
-            @Override
-            public char getElementSeparator() {
-                return ',';
-            }
-
-            @NonNull
-            @Override
-            public T decode(@NonNull final String element) {
-                throw new UnsupportedOperationException();
-            }
-
-            @NonNull
-            @Override
-            public String encode(@NonNull final T obj) {
-                return obj.toString();
-            }
-        }).encodeList(list);
+        mCriteria = list.stream().map(String::valueOf).collect(Collectors.joining(","));
     }
 
     @Override
@@ -89,8 +68,7 @@ public class ListOfValuesFilter<T>
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return DBDefinitions.isUsed(prefs, mDomainKey);
+        return true;
     }
 
     @Override
@@ -102,7 +80,7 @@ public class ListOfValuesFilter<T>
     @Override
     @NonNull
     public String toString() {
-        return "ListOfValuesFilter{"
+        return "NumberListFilter{"
                + "mTable=" + mTable.getName()
                + ", mDomain=" + mDomainKey
                + ", mCriteria=`" + mCriteria + '`'
