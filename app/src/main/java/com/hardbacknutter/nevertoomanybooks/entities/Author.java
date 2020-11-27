@@ -44,11 +44,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * Represents an Author.
@@ -140,8 +140,6 @@ public class Author
      */
     public static final int TYPE_PSEUDONYM = 1 << 16;
 
-    /** String encoding use: separator between family name and given-names. */
-    public static final char NAME_SEPARATOR = ',';
     /**
      * All valid bits for the type.
      * NEWTHINGS: author type: add to the mask
@@ -316,7 +314,9 @@ public class Author
     public static Author from(@NonNull final String name) {
         String uName = ParseUtils.unEscape(name);
 
-        final List<String> tmp = StringList.newInstance().decode(uName, NAME_SEPARATOR, true);
+        // take into account that there can be escaped commas....
+        // do we really need this except when reading from a backup ?
+        final List<String> tmp = StringList.newInstance().decode(uName, ',', true);
         if (tmp.size() > 1) {
             final Matcher suffixMatcher = FAMILY_NAME_SUFFIX_PATTERN.matcher(tmp.get(1));
             if (!suffixMatcher.find()) {

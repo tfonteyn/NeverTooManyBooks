@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -54,7 +55,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * <ul>Supports:
@@ -368,24 +368,27 @@ public class CsvExporter
     /**
      * Double quote all "'s and remove all newlines.
      *
-     * @param cell to encode
+     * @param source to encode
      *
      * @return The encoded cell enclosed in escaped quotes
      */
     @NonNull
-    private String encode(@Nullable final String cell) {
+    private String encode(@Nullable final String source) {
 
         try {
-            if (cell == null || "null".equalsIgnoreCase(cell) || cell.trim().isEmpty()) {
+            if (source == null || "null".equalsIgnoreCase(source) || source.trim().isEmpty()) {
                 return EMPTY_QUOTED_STRING;
             }
 
             final StringBuilder sb = new StringBuilder("\"");
-            final int endPos = cell.length() - 1;
+            final int endPos = source.length() - 1;
             int pos = 0;
             while (pos <= endPos) {
-                final char c = cell.charAt(pos);
+                final char c = source.charAt(pos);
                 switch (c) {
+                    case '\\':
+                        sb.append("\\\\");
+                        break;
                     case '\r':
                         sb.append("\\r");
                         break;
@@ -395,13 +398,12 @@ public class CsvExporter
                     case '\t':
                         sb.append("\\t");
                         break;
+
                     case '"':
                         // quotes are escaped by doubling them
                         sb.append(EMPTY_QUOTED_STRING);
                         break;
-                    case '\\':
-                        sb.append("\\\\");
-                        break;
+
                     default:
                         sb.append(c);
                         break;

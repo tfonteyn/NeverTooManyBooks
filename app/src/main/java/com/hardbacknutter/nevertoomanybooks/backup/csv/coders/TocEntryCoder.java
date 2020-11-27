@@ -27,7 +27,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * StringList factory for a TocEntry.

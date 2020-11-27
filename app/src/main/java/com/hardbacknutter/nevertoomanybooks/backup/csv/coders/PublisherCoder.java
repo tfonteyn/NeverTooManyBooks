@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * StringList factory for a Publisher.

@@ -28,7 +28,6 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.utils.StringList;
 
 /**
  * StringList factory for a Series.
