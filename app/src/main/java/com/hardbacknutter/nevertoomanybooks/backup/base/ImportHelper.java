@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -113,9 +114,10 @@ public class ImportHelper {
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean isSupported(@NonNull final Context context) {
         switch (getContainer(context)) {
-            case CsvBooks:
+            case Csv:
             case Zip:
             case Tar:
+            case Json:
             case SqLiteDb:
                 return true;
 
@@ -202,27 +204,31 @@ public class ImportHelper {
             // ignore
         }
 
-        // If the magic bytes check did not work out,
-        // we check for it being a CSV by looking at the extension.
-        // Allow some name variations:"file.csv", "file.csv (1)" etc
+        // If the magic bytes check did not work out, we look at the extension.
+        // Allow some name variations:"file.ext", "file.ext (1)", "file.ext (2)" etc
         final Pair<String, Long> uriInfo = FileUtils.getUriInfo(context, uri);
         if (uriInfo != null && uriInfo.first != null) {
-            final Pattern csvFilePattern =
-                    Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
-                                    Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-            if (csvFilePattern.matcher(uriInfo.first).find()) {
-                return ArchiveContainer.CsvBooks;
+            Pattern pattern = Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
+                                              Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+            if (pattern.matcher(uriInfo.first).find()) {
+                return ArchiveContainer.Csv;
+            }
+
+            pattern = Pattern.compile("^.*\\.json( \\(\\d+\\))?$",
+                                      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+            if (pattern.matcher(uriInfo.first).find()) {
+                return ArchiveContainer.Json;
             }
         }
         // give up.
         return ArchiveContainer.Unknown;
     }
 
-
     // TODO: split this up into one check for each entity we could import.
     public boolean isBooksOnlyContainer(@NonNull final Context context) {
         final ArchiveContainer container = getContainer(context);
-        return ArchiveContainer.CsvBooks == container
+        return ArchiveContainer.Csv == container
+               || ArchiveContainer.Json == container
                || ArchiveContainer.SqLiteDb == container;
     }
 
@@ -301,12 +307,16 @@ public class ImportHelper {
                 reader = new TarArchiveReader(context, this);
                 break;
 
-            case CsvBooks:
+            case Csv:
                 reader = new CsvArchiveReader(this);
                 break;
 
             case SqLiteDb:
                 reader = new DbArchiveReader(context, this);
+                break;
+
+            case Json:
+                reader = new JsonArchiveReader(this);
                 break;
 
             case Xml:
@@ -355,7 +365,6 @@ public class ImportHelper {
 
     /**
      * Should be called <strong>before</strong> the import to indicate what should be imported.
-     * Should be called <strong>after</strong> the import to set what was actually imported.
      *
      * @param options flags
      */

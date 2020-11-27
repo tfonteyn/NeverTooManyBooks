@@ -140,11 +140,13 @@ public class ExportOptionsDialogFragment
         mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
                 .setOption(ExportHelper.OPTIONS_STYLES, isChecked));
 
+        //ENHANCE: export from JSON not exposed to the user yet
+
         // Check options on position.
         final List<String> list = new ArrayList<>();
         list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Zip.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Tar.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_csv, ArchiveContainer.CsvBooks.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_csv, ArchiveContainer.Csv.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_db, ArchiveContainer.SqLiteDb.getFileExt()));
 
@@ -213,7 +215,7 @@ public class ExportOptionsDialogFragment
                         break;
                     }
                     case 2: {
-                        helper.setArchiveContainer(ArchiveContainer.CsvBooks);
+                        helper.setArchiveContainer(ArchiveContainer.Csv);
                         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
                         mVb.archiveFormatInfoLong.setText("");
                         requireConfirmButton().setText(R.string.action_save);

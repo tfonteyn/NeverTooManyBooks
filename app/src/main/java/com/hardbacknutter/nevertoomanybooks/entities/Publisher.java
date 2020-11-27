@@ -25,7 +25,6 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.Collection;
 import java.util.Locale;
@@ -66,7 +65,6 @@ public class Publisher
      *
      * @param name of publisher.
      */
-    @VisibleForTesting
     public Publisher(@NonNull final String name) {
         mName = name.trim();
     }

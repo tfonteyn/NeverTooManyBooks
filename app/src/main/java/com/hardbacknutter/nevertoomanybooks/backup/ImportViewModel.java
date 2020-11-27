@@ -63,9 +63,8 @@ public class ImportViewModel
     }
 
     @NonNull
-    Intent onImportFinished() {
-        Objects.requireNonNull(mImportHelper);
-        mResultIntent.putExtra(ImportResults.BKEY_IMPORT_RESULTS, mImportHelper.getOptions());
+    Intent onImportFinished(@NonNull final ImportResults result) {
+        mResultIntent.putExtra(ImportResults.BKEY_ENTITIES_READ, result.entitiesRead);
         return mResultIntent;
     }
 }

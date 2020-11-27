@@ -17,19 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.csv;
+package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.content.Context;
 import android.net.Uri;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.junit.Before;
@@ -55,9 +51,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
-public class CsvArchiveWriterTest {
+public class JsonArchiveWriterTest {
 
-    private static final String TAG = "CsvArchiveWriterTest";
+    private static final String TAG = "JsonArchiveWriterTest";
 
     private long mBookInDb;
 
@@ -75,14 +71,14 @@ public class CsvArchiveWriterTest {
     public void write()
             throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final File file = AppDir.Log.getFile(context, TAG + ".csv");
+        final File file = AppDir.Log.getFile(context, TAG + ".json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
         final ExportResults exportResults;
 
         final ExportHelper exportHelper = new ExportHelper(ExportHelper.OPTIONS_BOOKS);
-        exportHelper.setArchiveContainer(ArchiveContainer.Csv);
+        exportHelper.setArchiveContainer(ArchiveContainer.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.getArchiveWriter(context)) {
@@ -96,17 +92,6 @@ public class CsvArchiveWriterTest {
         assertEquals(0, exportResults.preferences);
         assertEquals(0, exportResults.styles);
         assertFalse(exportResults.database);
-
-
-        // count the lines in the export file
-        final long exportCount;
-        try (BufferedReader reader = new BufferedReader(
-                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
-            // -1 for the header line.
-            exportCount = reader.lines().count() - 1;
-        }
-        assertEquals(mBookInDb, exportCount);
-
 
         // Now modify/delete some books. We have at least 10 books to play with
         final List<Long> ids = exportResults.getBooksExported();
@@ -126,8 +111,6 @@ public class CsvArchiveWriterTest {
         final ImportHelper importHelper = new ImportHelper(Uri.fromFile(file));
         ImportResults importResults;
 
-
-
         importHelper.setOption(ImportHelper.OPTIONS_BOOKS, true);
         try (ArchiveReader reader = importHelper.getArchiveReader(context)) {
 
@@ -136,13 +119,13 @@ public class CsvArchiveWriterTest {
 
             importResults = reader.read(context, new TestProgressListener(TAG));
         }
-        assertEquals(exportCount, importResults.booksProcessed);
+        assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
 
         // we re-created the deleted book
         assertEquals(1, importResults.booksCreated);
         assertEquals(0, importResults.booksUpdated);
         // we skipped the updated book
-        assertEquals(exportCount - 1, importResults.booksSkipped);
+        assertEquals(exportResults.getBookCount() - 1, importResults.booksSkipped);
 
 
 
@@ -155,12 +138,12 @@ public class CsvArchiveWriterTest {
 
             importResults = reader.read(context, new TestProgressListener(TAG));
         }
-        assertEquals(exportCount, importResults.booksProcessed);
+        assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
 
 
         assertEquals(0, importResults.booksCreated);
         // we did an overwrite of ALL books
-        assertEquals(mBookInDb, importResults.booksUpdated);
+        assertEquals(90, importResults.booksUpdated);
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
     }

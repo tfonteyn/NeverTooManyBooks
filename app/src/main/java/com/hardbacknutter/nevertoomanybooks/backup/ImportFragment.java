@@ -189,9 +189,8 @@ public class ImportFragment
             }
 
             final ArchiveContainer container = importHelper.getContainer(getContext());
-            //noinspection EnumSwitchStatementWhichMissesCases
             switch (container) {
-                case CsvBooks:
+                case Csv:
                     // Default: new books + books with newer "last_update" only
                     importHelper.setOptions(ImportHelper.OPTIONS_BOOKS
                                             | ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC);
@@ -221,6 +220,12 @@ public class ImportFragment
                     mImportOptionsLauncher.launch();
                     break;
 
+                case Json:
+                    //ENHANCE: import from JSON not exposed to the user yet
+                    break;
+
+                case Xml:
+                case Unknown:
                 default:
                     throw new IllegalArgumentException(String.valueOf(container));
             }
@@ -348,7 +353,7 @@ public class ImportFragment
                 .setMessage(result.createReport(getContext()))
                 .setPositiveButton(R.string.done, (d, w) -> {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mVm.onImportFinished());
+                    getActivity().setResult(Activity.RESULT_OK, mVm.onImportFinished(result));
                     getActivity().finish();
                 })
                 .create()
@@ -378,7 +383,7 @@ public class ImportFragment
                 return ImportHelper.OPTIONS_NOTHING;
             }
             return intent
-                    .getIntExtra(ImportResults.BKEY_IMPORT_RESULTS, ImportHelper.OPTIONS_NOTHING);
+                    .getIntExtra(ImportResults.BKEY_ENTITIES_READ, ImportHelper.OPTIONS_NOTHING);
         }
     }
 }

@@ -32,6 +32,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter;
+import com.hardbacknutter.nevertoomanybooks.backup.json.JsonImporter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -106,8 +107,7 @@ public abstract class ArchiveReaderAbstract
             throws IOException, ImportException, InvalidArchiveException {
 
         // keep track of what we read from the archive
-        @ImportHelper.Options
-        int entitiesRead = ImportHelper.OPTIONS_NOTHING;
+        mResults.entitiesRead = ImportHelper.OPTIONS_NOTHING;
 
         boolean readStyles = mHelper.isOptionSet(ImportHelper.OPTIONS_STYLES);
         boolean readPrefs = mHelper.isOptionSet(ImportHelper.OPTIONS_PREFS);
@@ -141,7 +141,7 @@ public abstract class ArchiveReaderAbstract
                     try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
-                    entitiesRead |= ImportHelper.OPTIONS_STYLES;
+                    mResults.entitiesRead |= ImportHelper.OPTIONS_STYLES;
                     readStyles = false;
                 }
                 resetToStart();
@@ -155,7 +155,7 @@ public abstract class ArchiveReaderAbstract
                     try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
                         mResults.add(importer.read(context, entity, progressListener));
                     }
-                    entitiesRead |= ImportHelper.OPTIONS_PREFS;
+                    mResults.entitiesRead |= ImportHelper.OPTIONS_PREFS;
                     readPrefs = false;
                 }
                 resetToStart();
@@ -187,7 +187,17 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
-                            entitiesRead |= ImportHelper.OPTIONS_BOOKS;
+                            mResults.entitiesRead |= ImportHelper.OPTIONS_BOOKS;
+                        }
+                        break;
+                    }
+                    case BooksJson: {
+                        if (readBooks) {
+                            try (Importer importer = new JsonImporter(context,
+                                                                      mHelper.getOptions())) {
+                                mResults.add(importer.read(context, entity, progressListener));
+                            }
+                            mResults.entitiesRead |= ImportHelper.OPTIONS_BOOKS;
                         }
                         break;
                     }
@@ -211,7 +221,7 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 importer.read(context, entity, progressListener);
                             }
-                            entitiesRead |= ImportHelper.OPTIONS_PREFS;
+                            mResults.entitiesRead |= ImportHelper.OPTIONS_PREFS;
                             readPrefs = false;
                         }
                         break;
@@ -225,7 +235,7 @@ public abstract class ArchiveReaderAbstract
                                                                      mHelper.getOptions())) {
                                 mResults.add(importer.read(context, entity, progressListener));
                             }
-                            entitiesRead |= ImportHelper.OPTIONS_STYLES;
+                            mResults.entitiesRead |= ImportHelper.OPTIONS_STYLES;
                             readStyles = false;
                         }
                         break;
@@ -254,9 +264,8 @@ public abstract class ArchiveReaderAbstract
         } finally {
             // report what we actually imported
             if (mResults.coversProcessed > 0) {
-                entitiesRead |= ImportHelper.OPTIONS_COVERS;
+                mResults.entitiesRead |= ImportHelper.OPTIONS_COVERS;
             }
-            mHelper.setOptions(entitiesRead);
 
             try {
                 close();

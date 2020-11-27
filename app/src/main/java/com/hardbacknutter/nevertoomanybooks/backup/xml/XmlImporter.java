@@ -184,6 +184,7 @@ public class XmlImporter
                 throw new IllegalStateException("call #readInfo instead");
 
             case BooksCsv:
+            case BooksJson:
             case BooksXml:
             case XML:
             case Cover:

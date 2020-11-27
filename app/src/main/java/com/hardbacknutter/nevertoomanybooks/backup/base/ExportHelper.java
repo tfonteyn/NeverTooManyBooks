@@ -41,6 +41,7 @@ import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
@@ -178,7 +179,7 @@ public class ExportHelper {
             case Xml:
                 return new XmlArchiveWriter(context, this);
 
-            case CsvBooks:
+            case Csv:
                 return new CsvArchiveWriter(this);
 
             case Tar:
@@ -186,6 +187,9 @@ public class ExportHelper {
 
             case SqLiteDb:
                 return new DbArchiveWriter(this);
+
+            case Json:
+                return new JsonArchiveWriter(this);
 
             case Unknown:
                 throw new InvalidArchiveException(String.valueOf(getArchiveContainer()));

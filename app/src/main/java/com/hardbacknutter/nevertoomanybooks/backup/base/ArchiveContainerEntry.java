@@ -29,7 +29,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Supported archive entry types.
- * <strong>Not all archive reader/writers will support all types.</strong>
+ * An entry will either be handled directly (e.g. cover pictures) by the {@link ArchiveReader}
+ * and {@link ArchiveWriter} classes,
+ * or handed over to  a {@link Importer} and {@link Exporter} for second-level container
+ * formats like CSV, XML, ...
+ * <p>
+ * <strong>Not all {@link ArchiveContainer} classes will support all types.</strong>
  * <p>
  * Also: if a type needs to change its format, a new type must be created
  * (e.g. StylesXmlV2 etc...) and added to {@link ArchiveReaderAbstract#read}.
@@ -37,29 +42,26 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 public enum ArchiveContainerEntry {
     /** Archive information. */
     InfoHeaderXml,
-
     /** CSV book list. */
     BooksCsv,
+    /** JSON book list. */
+    BooksJson,
     /** XML book list. */
     BooksXml,
     /** XML Preferences file. */
     PreferencesXml,
     /** XML BooklistStyles file. */
     BooklistStylesXml,
-
     /** Generic xml file, the root tag should identify the content. */
     XML,
-
     /** Binary cover file. */
     Cover,
     /** Binary *.db file. */
     Database,
-
     /** Legacy XML Preferences file. */
     LegacyPreferences,
     /** Legacy binary style file. */
     LegacyBooklistStyles,
-
     /** Used during reads. */
     Unknown;
 
@@ -78,6 +80,8 @@ public enum ArchiveContainerEntry {
     private static final Pattern BOOKS_CSV_PATTERN =
             Pattern.compile("^books.*\\.csv$",
                             Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+    /** {@link #BooksJson}. */
+    private static final String BOOKS_JSON = "books.json";
     /** {@link #BooksXml}. */
     private static final String BOOKS_XML = "books.xml";
     /** {@link #Database}. */
@@ -94,13 +98,13 @@ public enum ArchiveContainerEntry {
     /**
      * Detect the type of the passed name.
      *
-     * @param entityName to get the type of (case insensitive)
+     * @param entryName to get the type of (case insensitive)
      *
      * @return the entity type
      */
     @NonNull
-    public static ArchiveContainerEntry getType(@NonNull final String entityName) {
-        final String name = entityName.toLowerCase(AppLocale.getInstance().getSystemLocale());
+    public static ArchiveContainerEntry getType(@NonNull final String entryName) {
+        final String name = entryName.toLowerCase(AppLocale.getInstance().getSystemLocale());
 
         if (name.endsWith(".jpg") || name.endsWith(".png")) {
             return Cover;
@@ -108,9 +112,11 @@ public enum ArchiveContainerEntry {
         } else if (INFO_XML.equalsIgnoreCase(name)) {
             return InfoHeaderXml;
 
-        } else if (BOOKS_CSV.equalsIgnoreCase(name)
-                   || BOOKS_CSV_PATTERN.matcher(name).find()) {
+        } else if (BOOKS_CSV.equalsIgnoreCase(name) || BOOKS_CSV_PATTERN.matcher(name).find()) {
             return BooksCsv;
+
+        } else if (BOOKS_JSON.equalsIgnoreCase(name)) {
+            return BooksJson;
 
         } else if (PREFERENCES_XML.equalsIgnoreCase(name)) {
             return PreferencesXml;
@@ -131,7 +137,7 @@ public enum ArchiveContainerEntry {
             return LegacyBooklistStyles;
 
         } else {
-            Logger.warn(App.getAppContext(), TAG, "getEntryType|Unknown file=" + entityName);
+            Logger.warn(App.getAppContext(), TAG, "getEntryType|Unknown file=" + entryName);
             return Unknown;
         }
     }
@@ -146,10 +152,14 @@ public enum ArchiveContainerEntry {
         switch (this) {
             case InfoHeaderXml:
                 return INFO_XML;
+
             case BooksCsv:
                 return BOOKS_CSV;
             case BooksXml:
                 return BOOKS_XML;
+            case BooksJson:
+                return BOOKS_JSON;
+
             case PreferencesXml:
                 return PREFERENCES_XML;
             case BooklistStylesXml:

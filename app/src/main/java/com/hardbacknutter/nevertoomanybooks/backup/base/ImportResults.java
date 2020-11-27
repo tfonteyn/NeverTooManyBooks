@@ -61,7 +61,7 @@ public class ImportResults
      * <br>type: {@code int} (bitmask)
      * setResult
      */
-    public static final String BKEY_IMPORT_RESULTS = "importResults";
+    public static final String BKEY_ENTITIES_READ = "importedEntities";
 
     private static final String BULLET = "\n• ";
     /** Keeps track of failed import lines in a text file. */
@@ -92,6 +92,10 @@ public class ImportResults
     /** #preferences we imported. */
     public int preferences;
 
+    /** What did we actually read/process. */
+    @ImportHelper.Options
+    public int entitiesRead;
+
     public ImportResults() {
     }
 
@@ -101,6 +105,8 @@ public class ImportResults
      * @param in Parcel to construct the object from
      */
     private ImportResults(@NonNull final Parcel in) {
+        entitiesRead = in.readInt();
+
         booksProcessed = in.readInt();
         booksCreated = in.readInt();
         booksUpdated = in.readInt();
@@ -139,6 +145,8 @@ public class ImportResults
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
+        dest.writeInt(entitiesRead);
+
         dest.writeInt(booksProcessed);
         dest.writeInt(booksCreated);
         dest.writeInt(booksUpdated);
@@ -165,7 +173,9 @@ public class ImportResults
     @NonNull
     public String toString() {
         return "Results{"
-               + "booksProcessed=" + booksProcessed
+               + "importHelperOptions=" + entitiesRead
+
+               + ", booksProcessed=" + booksProcessed
                + ", booksCreated=" + booksCreated
                + ", booksUpdated=" + booksUpdated
                + ", booksSkipped=" + booksSkipped
