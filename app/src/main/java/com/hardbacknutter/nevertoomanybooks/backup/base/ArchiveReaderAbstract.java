@@ -106,9 +106,6 @@ public abstract class ArchiveReaderAbstract
                               @NonNull final ProgressListener progressListener)
             throws IOException, ImportException, InvalidArchiveException {
 
-        // keep track of what we read from the archive
-        mResults.entitiesRead = ImportHelper.OPTIONS_NOTHING;
-
         boolean readStyles = mHelper.isOptionSet(ImportHelper.OPTIONS_STYLES);
         boolean readPrefs = mHelper.isOptionSet(ImportHelper.OPTIONS_PREFS);
         final boolean readBooks = mHelper.isOptionSet(ImportHelper.OPTIONS_BOOKS);
@@ -138,10 +135,10 @@ public abstract class ArchiveReaderAbstract
                 progressListener.publishProgressStep(1, mProcessBooklistStyles);
                 final ReaderEntity entity = seek(ArchiveContainerEntry.BooklistStylesXml);
                 if (entity != null) {
-                    try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
-                        mResults.add(importer.read(context, entity, progressListener));
+                    try (Importer importer = new XmlImporter(context)) {
+                        mResults.add(importer.read(context, entity, mHelper.getOptions(),
+                                                   progressListener));
                     }
-                    mResults.entitiesRead |= ImportHelper.OPTIONS_STYLES;
                     readStyles = false;
                 }
                 resetToStart();
@@ -152,10 +149,10 @@ public abstract class ArchiveReaderAbstract
                 progressListener.publishProgressStep(1, mProcessPreferences);
                 final ReaderEntity entity = seek(ArchiveContainerEntry.PreferencesXml);
                 if (entity != null) {
-                    try (Importer importer = new XmlImporter(context, mHelper.getOptions())) {
-                        mResults.add(importer.read(context, entity, progressListener));
+                    try (Importer importer = new XmlImporter(context)) {
+                        mResults.add(importer.read(context, entity, mHelper.getOptions(),
+                                                   progressListener));
                     }
-                    mResults.entitiesRead |= ImportHelper.OPTIONS_PREFS;
                     readPrefs = false;
                 }
                 resetToStart();
@@ -183,32 +180,29 @@ public abstract class ArchiveReaderAbstract
                     }
                     case BooksCsv: {
                         if (readBooks) {
-                            try (Importer importer = new CsvImporter(context,
-                                                                     mHelper.getOptions())) {
-                                mResults.add(importer.read(context, entity, progressListener));
+                            try (Importer importer = new CsvImporter(context)) {
+                                mResults.add(importer.read(context, entity, mHelper.getOptions(),
+                                                           progressListener));
                             }
-                            mResults.entitiesRead |= ImportHelper.OPTIONS_BOOKS;
                         }
                         break;
                     }
                     case BooksJson: {
                         if (readBooks) {
-                            try (Importer importer = new JsonImporter(context,
-                                                                      mHelper.getOptions())) {
-                                mResults.add(importer.read(context, entity, progressListener));
+                            try (Importer importer = new JsonImporter(context)) {
+                                mResults.add(importer.read(context, entity, mHelper.getOptions(),
+                                                           progressListener));
                             }
-                            mResults.entitiesRead |= ImportHelper.OPTIONS_BOOKS;
                         }
                         break;
                     }
                     case BooksXml: {
 //                        // ENHANCE: XmlImporter does not currently support importing BooksXml
 //                        if (readBooks) {
-//                            try (Importer importer = new XmlImporter(context,
-//                                                                     mHelper.getOptions())) {
-//                                mResults.add(importer.read(context, entity, progressListener));
+//                            try (Importer importer = new XmlImporter(context)) {
+//                                mResults.add(importer.read(context, entity, mHelper.getOptions(),
+//                                                           progressListener));
 //                            }
-//                            entitiesRead |= Options.BOOKS;
 //                        }
                         break;
                     }
@@ -217,11 +211,10 @@ public abstract class ArchiveReaderAbstract
                         // Leaving the code as we might support multiple entries in the future.
                         if (readPrefs) {
                             progressListener.publishProgressStep(1, mProcessPreferences);
-                            try (Importer importer = new XmlImporter(context,
-                                                                     mHelper.getOptions())) {
-                                importer.read(context, entity, progressListener);
+                            try (Importer importer = new XmlImporter(context)) {
+                                mResults.add(importer.read(context, entity, mHelper.getOptions(),
+                                                           progressListener));
                             }
-                            mResults.entitiesRead |= ImportHelper.OPTIONS_PREFS;
                             readPrefs = false;
                         }
                         break;
@@ -231,11 +224,10 @@ public abstract class ArchiveReaderAbstract
                         // Leaving the code as we might support multiple entries in the future.
                         if (readStyles) {
                             progressListener.publishProgressStep(1, mProcessBooklistStyles);
-                            try (Importer importer = new XmlImporter(context,
-                                                                     mHelper.getOptions())) {
-                                mResults.add(importer.read(context, entity, progressListener));
+                            try (Importer importer = new XmlImporter(context)) {
+                                mResults.add(importer.read(context, entity, mHelper.getOptions(),
+                                                           progressListener));
                             }
-                            mResults.entitiesRead |= ImportHelper.OPTIONS_STYLES;
                             readStyles = false;
                         }
                         break;
@@ -262,11 +254,6 @@ public abstract class ArchiveReaderAbstract
                 entity = next();
             }
         } finally {
-            // report what we actually imported
-            if (mResults.coversProcessed > 0) {
-                mResults.entitiesRead |= ImportHelper.OPTIONS_COVERS;
-            }
-
             try {
                 close();
             } catch (@NonNull final IOException ignore) {
@@ -293,7 +280,7 @@ public abstract class ArchiveReaderAbstract
 
             if (exists) {
                 // Check which is newer, the local file, or the imported file.
-                if (mHelper.isOptionSet(ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC)) {
+                if (mHelper.isUpdatesMustSync()) {
                     // shift 16 bits to get to +- 1 minute precision.
                     // Using pure milliseconds will create far to many false positives
                     final long importFileDate =
@@ -306,7 +293,7 @@ public abstract class ArchiveReaderAbstract
                 }
 
                 // Are we allowed to overwrite at all ?
-                if (!mHelper.isOptionSet(ImportHelper.OPTIONS_UPDATED_BOOKS)) {
+                if (!mHelper.isUpdatesMayOverwrite()) {
                     mResults.coversSkipped++;
                     return;
                 }

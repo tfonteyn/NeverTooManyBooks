@@ -37,6 +37,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -109,7 +110,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
  * Space characters are encoded for Authors names while exporting,
  * but it's not strictly needed although some exotic names might get mangled;
  * when in doubt, escape.
- *
+ * <p>
  * ENHANCE: after an import offer to run an internet update on the list of book id's
  * This would/could be split up....
  * - books inserted which had a uuid/id
@@ -144,11 +145,6 @@ public class CsvImporter
 
     @NonNull
     private final Locale mUserLocale;
-
-    /** import configuration. */
-    private final boolean mSyncBooks;
-    private final boolean mOverwriteBooks;
-
     /** cached localized "Books" string. */
     @NonNull
     private final String mBooksString;
@@ -158,30 +154,25 @@ public class CsvImporter
     private final String mUnknownString;
     @NonNull
     private final String mUnknownTitleString;
-
     private final ImportResults mResults = new ImportResults();
-
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
     private final StringList<Publisher> mPublisherCoder = new StringList<>(new PublisherCoder());
     private final StringList<TocEntry> mTocCoder = new StringList<>(new TocEntryCoder());
     private final StringList<Bookshelf> mBookshelfCoder;
+    /** import configuration. */
+    private boolean mSyncBooks;
+    private boolean mOverwriteBooks;
 
     /**
      * Constructor.
+     * <p>
+     * Only supports {@link ArchiveContainerEntry#BooksCsv}.
      *
      * @param context Current context
-     * @param options Supports:
-     *                {@link ImportHelper#OPTIONS_BOOKS} (implicit),
-     *                {@link ImportHelper#OPTIONS_UPDATED_BOOKS},
-     *                {@link ImportHelper#OPTIONS_UPDATED_BOOKS_SYNC},
      */
     @AnyThread
-    public CsvImporter(@NonNull final Context context,
-                       @ImportHelper.Options final int options) {
-
-        mSyncBooks = (options & ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC) != 0;
-        mOverwriteBooks = (options & ImportHelper.OPTIONS_UPDATED_BOOKS) != 0;
+    public CsvImporter(@NonNull final Context context) {
 
         mDb = new DAO(TAG);
         mBookshelfCoder = new StringList<>(
@@ -190,6 +181,7 @@ public class CsvImporter
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
+        // If the title is missing a generic "[Unknown title]" will be used.
         mUnknownTitleString = context.getString(R.string.unknown_title);
         mUnknownString = context.getString(R.string.unknown);
     }
@@ -197,6 +189,7 @@ public class CsvImporter
     /**
      * @param context          Current context
      * @param entity           to read data from
+     * @param options
      * @param progressListener Progress and cancellation provider
      *
      * @return {@link ImportResults}
@@ -208,8 +201,12 @@ public class CsvImporter
     @Override
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ReaderEntity entity,
+                              final int options,
                               @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
+
+        mSyncBooks = (options & ImportHelper.OPTIONS_UPDATES_MUST_SYNC) != 0;
+        mOverwriteBooks = (options & ImportHelper.OPTIONS_UPDATES_MAY_OVERWRITE) != 0;
 
         // we only support books, return empty results
         if (entity.getType() != ArchiveContainerEntry.BooksCsv) {
@@ -231,39 +228,38 @@ public class CsvImporter
             return mResults;
         }
 
-        // not perfect, but good enough
-        if (progressListener.getMaxPos() < importedList.size()) {
-            progressListener.setMaxPos(importedList.size());
-        }
-
-        // reused during the loop
-        final Book book = new Book();
-
-        // first line in import must be the column names
+        // First line in the import file must be the column names.
+        // Store them to use as keys into the book.
         final String[] csvColumnNames = parse(context, 0, importedList.get(0));
-
-        // Store the names so we can check what is present
+        // sanity check: make sure they are lower case
         for (int i = 0; i < csvColumnNames.length; i++) {
             csvColumnNames[i] = csvColumnNames[i].toLowerCase(mUserLocale);
-            // temporary add to the book; used to check columns before starting actual import
-            book.putString(csvColumnNames[i], "");
         }
 
+        // check for required columns
+        final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
         // If a sync was requested, we'll need this column or cannot proceed.
         if (mSyncBooks) {
-            requireColumnOrThrow(context, book, DBDefinitions.KEY_UTC_LAST_UPDATED);
+            requireColumnOrThrow(context, csvColumnNamesList, DBDefinitions.KEY_UTC_LAST_UPDATED);
         }
 
-        // Start after headings.
+        // One book == One row. We start after the headings row.
         int row = 1;
+        // Count the number of rows between committing a transaction
         int txRowCount = 0;
-        long lastUpdate = 0;
+        // Instance in time when we last send a progress message
+        long lastUpdateTime = 0;
         // Count the nr of books in between progress updates.
         int delta = 0;
 
         SyncLock txLock = null;
         try {
-            // Iterate through each imported row
+            // not perfect, but good enough
+            if (progressListener.getMaxPos() < importedList.size()) {
+                progressListener.setMaxPos(importedList.size());
+            }
+
+            // Iterate through each imported row or until cancelled
             while (row < importedList.size() && !progressListener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
@@ -277,24 +273,19 @@ public class CsvImporter
                 txRowCount++;
 
                 try {
-                    final String[] csvDataRow = parse(context, row, importedList.get(row)
-                                                     );
+                    final String[] csvDataRow = parse(context, row, importedList.get(row));
                     if (csvDataRow.length != csvColumnNames.length) {
                         throw new ImportException(context.getString(
                                 R.string.error_import_csv_column_count_mismatch, row));
                     }
 
-                    // clear book (avoiding construction another object)
-                    book.clearData();
+                    final Book book = new Book();
+
                     // Read all columns of the current row into the Bundle.
                     // Note that some of them require further processing before being valid.
                     for (int i = 0; i < csvColumnNames.length; i++) {
                         book.putString(csvColumnNames[i], csvDataRow[i]);
                     }
-
-                    // - if the author is missing a generic "[Unknown author]" will be used.
-                    // - if the title is missing a generic "[Unknown title]" will be used.
-
 
                     // check/add a title
                     if (book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
@@ -346,7 +337,7 @@ public class CsvImporter
 
                 delta++;
                 final long now = System.currentTimeMillis();
-                if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()
+                if ((now - lastUpdateTime) > progressListener.getUpdateIntervalInMs()
                     && !progressListener.isCancelled()) {
                     final String msg = String.format(mProgressMessage,
                                                      mBooksString,
@@ -354,7 +345,7 @@ public class CsvImporter
                                                      mResults.booksUpdated,
                                                      mResults.booksSkipped);
                     progressListener.publishProgressStep(delta, msg);
-                    lastUpdate = now;
+                    lastUpdateTime = now;
                     delta = 0;
                 }
             }
@@ -365,7 +356,7 @@ public class CsvImporter
             }
         }
 
-        // minus 1 for the column header line
+        // minus 1 to compensate for the last increment
         mResults.booksProcessed = row - 1;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
@@ -659,7 +650,7 @@ public class CsvImporter
      * Database access is strictly limited to fetching ID's.
      * <p>
      * Get the list of authors from whatever source is available.
-     * If none found, we add an 'Unknown' author.
+     * If none found, a generic "[Unknown author]" will be used.
      *
      * @param context    Current context
      * @param db         Database Access
@@ -971,18 +962,20 @@ public class CsvImporter
     /**
      * Require a column to be present. First one found; remainders are not needed.
      *
-     * @param context Current context
-     * @param book    to check
-     * @param names   columns which should be checked for, in order of preference
+     * @param context        Current context
+     * @param columnsPresent the column names which are present
+     * @param names          columns which should be checked for, in order of preference
      *
      * @throws ImportException if no suitable column is present
      */
     private void requireColumnOrThrow(@NonNull final Context context,
-                                      @NonNull final Book book,
+                                      @NonNull final List<String> columnsPresent,
                                       @NonNull final String... names)
             throws ImportException {
+
+
         for (final String name : names) {
-            if (book.contains(name)) {
+            if (columnsPresent.contains(name)) {
                 return;
             }
         }

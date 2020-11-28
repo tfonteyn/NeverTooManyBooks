@@ -129,24 +129,24 @@ public class ImportOptionsDialogFragment
                     .setOption(ImportHelper.OPTIONS_STYLES, isChecked));
         }
 
-        mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdatedBooks());
+        mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdates());
         mVb.rbUpdatedBooksSkipInfo.setOnClickListener(StandardDialogs::infoPopup);
 
-        mVb.rbUpdatedBooksOverwrite.setChecked(helper.isOverwriteUpdatedBook());
+        mVb.rbUpdatedBooksOverwrite.setChecked(helper.isUpdatesMayOverwrite());
         mVb.rbUpdatedBooksOverwriteInfo.setOnClickListener(StandardDialogs::infoPopup);
 
-        mVb.rbUpdatedBooksSync.setChecked(helper.isSyncUpdatedBooks());
+        mVb.rbUpdatedBooksSync.setChecked(helper.isUpdatesMustSync());
         mVb.rbUpdatedBooksSyncInfo.setOnClickListener(StandardDialogs::infoPopup);
 
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (checkedId == mVb.rbUpdatedBooksSkip.getId()) {
-                helper.setSkipUpdatedBooks();
+                helper.setSkipUpdates();
 
             } else if (checkedId == mVb.rbUpdatedBooksOverwrite.getId()) {
-                helper.setOverwriteUpdatedBook();
+                helper.setUpdatesMayOverwrite();
 
             } else if (checkedId == mVb.rbUpdatedBooksSync.getId()) {
-                helper.setSyncUpdatedBooks();
+                helper.setUpdatesMustSync();
             }
         });
     }

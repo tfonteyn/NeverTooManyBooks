@@ -54,15 +54,13 @@ public class ImportResults
             return new ImportResults[size];
         }
     };
-
+    /** Log tag. */
+    private static final String TAG = "ImportResults";
     /**
-     * The resulting {@link ImportHelper} options flags after an import.
-     * <p>
-     * <br>type: {@code int} (bitmask)
-     * setResult
+     * {@link ImportResults} after an import.
      */
-    public static final String BKEY_ENTITIES_READ = "importedEntities";
-
+    public static final String BKEY_IMPORT_RESULTS = TAG + ":results";
+    /** Report list bullet. */
     private static final String BULLET = "\n• ";
     /** Keeps track of failed import lines in a text file. */
     public final List<Integer> failedLinesNr = new ArrayList<>();
@@ -79,22 +77,18 @@ public class ImportResults
     public int booksSkipped;
 
     /** The total #covers that were present in the import data. */
-    public int coversProcessed;
+    int coversProcessed;
     /** #covers we created. */
-    public int coversCreated;
+    int coversCreated;
     /** #covers we updated. */
-    public int coversUpdated;
+    int coversUpdated;
     /** #covers we skipped. */
-    public int coversSkipped;
+    int coversSkipped;
 
     /** #styles we imported. */
     public int styles;
     /** #preferences we imported. */
     public int preferences;
-
-    /** What did we actually read/process. */
-    @ImportHelper.Options
-    public int entitiesRead;
 
     public ImportResults() {
     }
@@ -105,8 +99,6 @@ public class ImportResults
      * @param in Parcel to construct the object from
      */
     private ImportResults(@NonNull final Parcel in) {
-        entitiesRead = in.readInt();
-
         booksProcessed = in.readInt();
         booksCreated = in.readInt();
         booksUpdated = in.readInt();
@@ -142,56 +134,6 @@ public class ImportResults
         failedLinesMessage.addAll(results.failedLinesMessage);
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(entitiesRead);
-
-        dest.writeInt(booksProcessed);
-        dest.writeInt(booksCreated);
-        dest.writeInt(booksUpdated);
-        dest.writeInt(booksSkipped);
-
-        dest.writeInt(coversProcessed);
-        dest.writeInt(coversCreated);
-        dest.writeInt(coversUpdated);
-        dest.writeInt(coversSkipped);
-
-        dest.writeInt(styles);
-        dest.writeInt(preferences);
-
-        dest.writeList(failedLinesNr);
-        dest.writeList(failedLinesMessage);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "Results{"
-               + "importHelperOptions=" + entitiesRead
-
-               + ", booksProcessed=" + booksProcessed
-               + ", booksCreated=" + booksCreated
-               + ", booksUpdated=" + booksUpdated
-               + ", booksSkipped=" + booksSkipped
-
-               + ", coversProcessed=" + coversProcessed
-               + ", coversCreated=" + coversCreated
-               + ", coversUpdated=" + coversUpdated
-               + ", coversSkipped=" + coversSkipped
-
-               + ", styles=" + styles
-               + ", preferences=" + preferences
-
-               + ", failedLinesNr=" + failedLinesNr
-               + ", failedLinesMessage=" + failedLinesMessage
-               + '}';
-    }
 
     /**
      * Transform the result data into a user friendly report.
@@ -200,6 +142,7 @@ public class ImportResults
      *
      * @return report string
      */
+    @NonNull
     public String createReport(@NonNull final Context context) {
         //
         final StringBuilder report = new StringBuilder();
@@ -256,5 +199,52 @@ public class ImportResults
         }
 
         return report.toString();
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(booksProcessed);
+        dest.writeInt(booksCreated);
+        dest.writeInt(booksUpdated);
+        dest.writeInt(booksSkipped);
+
+        dest.writeInt(coversProcessed);
+        dest.writeInt(coversCreated);
+        dest.writeInt(coversUpdated);
+        dest.writeInt(coversSkipped);
+
+        dest.writeInt(styles);
+        dest.writeInt(preferences);
+
+        dest.writeList(failedLinesNr);
+        dest.writeList(failedLinesMessage);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "Results{"
+               + "booksProcessed=" + booksProcessed
+               + ", booksCreated=" + booksCreated
+               + ", booksUpdated=" + booksUpdated
+               + ", booksSkipped=" + booksSkipped
+
+               + ", coversProcessed=" + coversProcessed
+               + ", coversCreated=" + coversCreated
+               + ", coversUpdated=" + coversUpdated
+               + ", coversSkipped=" + coversSkipped
+
+               + ", styles=" + styles
+               + ", preferences=" + preferences
+
+               + ", failedLinesNr=" + failedLinesNr
+               + ", failedLinesMessage=" + failedLinesMessage
+               + '}';
     }
 }

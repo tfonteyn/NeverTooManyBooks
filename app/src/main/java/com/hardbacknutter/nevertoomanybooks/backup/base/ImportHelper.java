@@ -61,9 +61,9 @@ public class ImportHelper {
     public static final int OPTIONS_BOOKS = 1 << 6;
     public static final int OPTIONS_COVERS = 1 << 7;
     /**
-     * New Books are always imported (if {@link #OPTIONS_BOOKS} is set obviously).
+     * New Books/Covers are always imported (if {@link #OPTIONS_BOOKS} is set obviously).
      * <p>
-     * Existing books handling:
+     * Existing Books/Covers handling:
      * <ul>
      *     <li>00: skip entirely, keep the current data.</li>
      *     <li>01: overwrite current data with incoming data.</li>
@@ -71,8 +71,8 @@ public class ImportHelper {
      *     <li>11: check the "update_date" field and only import newer data.</li>
      * </ul>
      */
-    public static final int OPTIONS_UPDATED_BOOKS = 1 << 16;
-    public static final int OPTIONS_UPDATED_BOOKS_SYNC = 1 << 17;
+    public static final int OPTIONS_UPDATES_MAY_OVERWRITE = 1 << 16;
+    public static final int OPTIONS_UPDATES_MUST_SYNC = 1 << 17;
 
     /** All entity types. This does not include INFO nor the sync options. */
     public static final int OPTIONS_ENTITIES = OPTIONS_PREFS | OPTIONS_STYLES
@@ -293,8 +293,8 @@ public class ImportHelper {
             throws InvalidArchiveException, IOException {
 
         SanityCheck.requirePositiveValue(mOptions & (OPTIONS_ENTITIES
-                                                     | OPTIONS_UPDATED_BOOKS
-                                                     | OPTIONS_UPDATED_BOOKS_SYNC),
+                                                     | OPTIONS_UPDATES_MAY_OVERWRITE
+                                                     | OPTIONS_UPDATES_MUST_SYNC),
                                          "mOptions");
 
         final ArchiveReader reader;
@@ -329,30 +329,32 @@ public class ImportHelper {
         return reader;
     }
 
-    public boolean isSkipUpdatedBooks() {
-        return !isOptionSet(OPTIONS_UPDATED_BOOKS | OPTIONS_UPDATED_BOOKS_SYNC);
+    public boolean isSkipUpdates() {
+        return (mOptions & (OPTIONS_UPDATES_MAY_OVERWRITE | OPTIONS_UPDATES_MUST_SYNC)) == 0;
     }
 
-    public void setSkipUpdatedBooks() {
-        setOption(OPTIONS_UPDATED_BOOKS | OPTIONS_UPDATED_BOOKS_SYNC, false);
+    public void setSkipUpdates() {
+        mOptions &= ~(OPTIONS_UPDATES_MAY_OVERWRITE | OPTIONS_UPDATES_MUST_SYNC);
     }
 
-    public boolean isOverwriteUpdatedBook() {
-        return isOptionSet(OPTIONS_UPDATED_BOOKS) && !isOptionSet(OPTIONS_UPDATED_BOOKS_SYNC);
+    public boolean isUpdatesMayOverwrite() {
+        return (mOptions & OPTIONS_UPDATES_MAY_OVERWRITE) != 0
+               && (mOptions & OPTIONS_UPDATES_MUST_SYNC) == 0;
     }
 
-    public void setOverwriteUpdatedBook() {
-        setOption(OPTIONS_UPDATED_BOOKS, true);
-        setOption(OPTIONS_UPDATED_BOOKS_SYNC, false);
+    public void setUpdatesMayOverwrite() {
+        mOptions |= OPTIONS_UPDATES_MAY_OVERWRITE;
+        mOptions &= ~OPTIONS_UPDATES_MUST_SYNC;
     }
 
-    public boolean isSyncUpdatedBooks() {
-        return isOptionSet(OPTIONS_UPDATED_BOOKS | OPTIONS_UPDATED_BOOKS_SYNC);
+    public boolean isUpdatesMustSync() {
+        return (mOptions & (OPTIONS_UPDATES_MAY_OVERWRITE | OPTIONS_UPDATES_MUST_SYNC)) != 0;
     }
 
-    public void setSyncUpdatedBooks() {
-        setOption(OPTIONS_UPDATED_BOOKS | OPTIONS_UPDATED_BOOKS_SYNC, true);
+    public void setUpdatesMustSync() {
+        mOptions |= OPTIONS_UPDATES_MAY_OVERWRITE | OPTIONS_UPDATES_MUST_SYNC;
     }
+
 
     public boolean isOptionSet(@Options final int optionBit) {
         return (mOptions & optionBit) != 0;
@@ -363,14 +365,6 @@ public class ImportHelper {
         return mOptions;
     }
 
-    /**
-     * Should be called <strong>before</strong> the import to indicate what should be imported.
-     *
-     * @param options flags
-     */
-    public void setOptions(@Options final int options) {
-        mOptions = options;
-    }
 
     /**
      * Called from the dialog via its View listeners.
@@ -416,10 +410,10 @@ public class ImportHelper {
             sj.add("COVERS");
         }
 
-        if ((mOptions & OPTIONS_UPDATED_BOOKS) != 0) {
+        if ((mOptions & OPTIONS_UPDATES_MAY_OVERWRITE) != 0) {
             sj.add("UPDATED_BOOKS");
         }
-        if ((mOptions & OPTIONS_UPDATED_BOOKS_SYNC) != 0) {
+        if ((mOptions & OPTIONS_UPDATES_MUST_SYNC) != 0) {
             sj.add("UPDATED_BOOKS_SYNC");
         }
 
@@ -434,7 +428,7 @@ public class ImportHelper {
 
     @IntDef(flag = true, value = {OPTIONS_INFO, OPTIONS_PREFS, OPTIONS_STYLES,
                                   OPTIONS_BOOKS, OPTIONS_COVERS,
-                                  OPTIONS_UPDATED_BOOKS, OPTIONS_UPDATED_BOOKS_SYNC})
+                                  OPTIONS_UPDATES_MAY_OVERWRITE, OPTIONS_UPDATES_MUST_SYNC})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Options {
 

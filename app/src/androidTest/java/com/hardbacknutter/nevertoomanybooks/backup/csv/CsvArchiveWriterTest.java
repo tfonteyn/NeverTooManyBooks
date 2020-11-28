@@ -146,8 +146,8 @@ public class CsvArchiveWriterTest {
 
 
 
-        importHelper.setOption(ImportHelper.OPTIONS_BOOKS
-                               | ImportHelper.OPTIONS_UPDATED_BOOKS, true);
+        importHelper.setOption(ImportHelper.OPTIONS_BOOKS, true);
+        importHelper.setUpdatesMayOverwrite();
         try (ArchiveReader reader = importHelper.getArchiveReader(context)) {
 
             final ArchiveInfo archiveInfo = reader.readArchiveInfo(context);

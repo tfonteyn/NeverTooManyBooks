@@ -73,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookCo
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
@@ -199,13 +198,13 @@ public class BooksOnBookshelf
 
     /** Do an import. */
     private final ActivityResultLauncher<Void> mImportLauncher = registerForActivityResult(
-            new ImportFragment.ResultContract(), options -> {
-                if (options != ImportHelper.OPTIONS_NOTHING) {
-                    if ((options & ImportHelper.OPTIONS_STYLES) != 0) {
+            new ImportFragment.ResultContract(), importResults -> {
+                if (importResults != null) {
+                    if (importResults.styles > 0) {
                         // Force a refresh of the cached styles
                         StyleDAO.clearCache();
                     }
-                    if ((options & ImportHelper.OPTIONS_PREFS) != 0) {
+                    if (importResults.preferences > 0) {
                         // Refresh the preferred bookshelf. This also refreshes its style.
                         mVm.reloadSelectedBookshelf(this);
                     }

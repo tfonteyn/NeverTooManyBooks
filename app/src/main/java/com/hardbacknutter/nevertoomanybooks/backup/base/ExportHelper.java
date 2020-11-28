@@ -75,7 +75,6 @@ public class ExportHelper {
      */
     public static final int OPTIONS_INCREMENTAL = 1 << 16;
 
-
     /**
      * All entity types which can be written.
      * This does not include INFO nor the sync options.
@@ -320,16 +319,6 @@ public class ExportHelper {
     public int getOptions() {
         return mOptions;
     }
-
-    /**
-     * Should be called <strong>after</strong> the export to set what was actually exported.
-     *
-     * @param options flags
-     */
-    public void setOptions(@Options final int options) {
-        mOptions = options;
-    }
-
 
     /** Called from the dialog via its View listeners. */
     public void setOption(@Options final int optionBit,

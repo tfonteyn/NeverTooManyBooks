@@ -192,9 +192,8 @@ public class ImportFragment
             switch (container) {
                 case Csv:
                     // Default: new books + books with newer "last_update" only
-                    importHelper.setOptions(ImportHelper.OPTIONS_BOOKS
-                                            | ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC);
-
+                    importHelper.setOption(ImportHelper.OPTIONS_BOOKS, true);
+                    importHelper.setUpdatesMustSync();
                     //URGENT: make a backup before ANY csv import!
                     //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
@@ -215,8 +214,8 @@ public class ImportFragment
                 case SqLiteDb:
                     // Default: update all entities (includes new books)
                     // + books with newer "last_update" only
-                    importHelper.setOptions(ImportHelper.OPTIONS_ENTITIES
-                                            | ImportHelper.OPTIONS_UPDATED_BOOKS_SYNC);
+                    importHelper.setOption(ImportHelper.OPTIONS_ENTITIES, true);
+                    importHelper.setUpdatesMustSync();
                     mImportOptionsLauncher.launch();
                     break;
 
@@ -361,7 +360,7 @@ public class ImportFragment
     }
 
     public static class ResultContract
-            extends ActivityResultContract<Void, Integer> {
+            extends ActivityResultContract<Void, ImportResults> {
 
         @NonNull
         @Override
@@ -372,18 +371,17 @@ public class ImportFragment
         }
 
         @Override
-        @NonNull
-        public Integer parseResult(final int resultCode,
-                                   @Nullable final Intent intent) {
+        @Nullable
+        public ImportResults parseResult(final int resultCode,
+                                         @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                 Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {
-                return ImportHelper.OPTIONS_NOTHING;
+                return null;
             }
-            return intent
-                    .getIntExtra(ImportResults.BKEY_ENTITIES_READ, ImportHelper.OPTIONS_NOTHING);
+            return intent.getParcelableExtra(ImportResults.BKEY_IMPORT_RESULTS);
         }
     }
 }

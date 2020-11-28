@@ -118,12 +118,12 @@ public class ExportOptionsDialogFragment
 
         final boolean incremental = helper.isOptionSet(ExportHelper.OPTIONS_INCREMENTAL);
         mVb.rbBooksAll.setChecked(!incremental);
-        mVb.rbBooksSync.setChecked(incremental);
-        mVb.rbBooksSyncInfo.setOnClickListener(StandardDialogs::infoPopup);
+        mVb.rbBooksIncremental.setChecked(incremental);
+        mVb.rbBooksIncrementalInfo.setOnClickListener(StandardDialogs::infoPopup);
 
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
                 .setOption(ExportHelper.OPTIONS_INCREMENTAL,
-                           checkedId == mVb.rbBooksSync.getId()));
+                           checkedId == mVb.rbBooksIncremental.getId()));
 
 
         mVb.cbxCovers.setChecked(helper.isOptionSet(ExportHelper.OPTIONS_COVERS));
@@ -181,7 +181,7 @@ public class ExportOptionsDialogFragment
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
                         mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksSync.setChecked(true);
+                        mVb.rbBooksIncremental.setChecked(true);
 
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
@@ -202,7 +202,7 @@ public class ExportOptionsDialogFragment
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(true);
                         mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksSync.setChecked(true);
+                        mVb.rbBooksIncremental.setChecked(true);
 
                         mVb.cbxCovers.setChecked(true);
                         mVb.cbxCovers.setEnabled(true);
@@ -223,7 +223,7 @@ public class ExportOptionsDialogFragment
                         mVb.cbxBooks.setChecked(true);
                         mVb.cbxBooks.setEnabled(false);
                         mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksSync.setChecked(true);
+                        mVb.rbBooksIncremental.setChecked(true);
 
                         mVb.cbxCovers.setChecked(false);
                         mVb.cbxCovers.setEnabled(false);

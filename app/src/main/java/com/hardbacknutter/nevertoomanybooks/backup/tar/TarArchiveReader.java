@@ -150,7 +150,7 @@ public class TarArchiveReader
             }
 
             // read the INFO
-            try (XmlImporter importer = new XmlImporter(context, ImportHelper.OPTIONS_INFO)) {
+            try (XmlImporter importer = new XmlImporter(context)) {
                 mInfo = importer.readInfo(entity.getInputStream());
             }
             // We MUST close the stream here, so the caller gets a pristine stream.

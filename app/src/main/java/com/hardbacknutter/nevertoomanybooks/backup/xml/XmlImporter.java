@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
@@ -121,9 +120,6 @@ public class XmlImporter
      * but it's clean and future proof
      */
     private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
-    /** export configuration. */
-    @ImportHelper.Options
-    private final int mOptions;
     private final ImportResults mResults = new ImportResults();
 
     /** a simple Holder for the current tag name and attributes. */
@@ -133,15 +129,8 @@ public class XmlImporter
      * Constructor.
      *
      * @param context Current context
-     * @param options Supports:
-     *                {@link ImportHelper#OPTIONS_INFO},
-     *                {@link ImportHelper#OPTIONS_PREFS},
-     *                {@link ImportHelper#OPTIONS_STYLES},
-     *                ignores other flags
      */
-    public XmlImporter(@NonNull final Context context,
-                       @ImportHelper.Options final int options) {
-        mOptions = options;
+    public XmlImporter(@NonNull final Context context) {
         mDb = new DAO(TAG);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
     }
@@ -149,37 +138,34 @@ public class XmlImporter
     @Override
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ReaderEntity entity,
+                              final int ignoredOptions,
                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
         switch (entity.getType()) {
-            case BooklistStylesXml:
-                if ((mOptions & ImportHelper.OPTIONS_STYLES) != 0) {
-                    // Don't close this stream!
-                    final InputStream is = entity.getInputStream();
-                    final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                    final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
-                    final StylesReader stylesReader = new StylesReader(context, mDb);
-                    fromXml(in, stylesReader);
-                    //TODO: we should update the menu order in the database here
-                    mResults.styles += stylesReader.getStylesRead();
-                }
+            case BooklistStylesXml: {
+                // Don't close this stream!
+                final InputStream is = entity.getInputStream();
+                final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
+                final StylesReader stylesReader = new StylesReader(context, mDb);
+                fromXml(in, stylesReader);
+                //TODO: we should update the menu order in the database here
+                mResults.styles += stylesReader.getStylesRead();
                 break;
-
-            case PreferencesXml:
-                if ((mOptions & ImportHelper.OPTIONS_PREFS) != 0) {
-                    // Don't close this stream!
-                    final InputStream is = entity.getInputStream();
-                    final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                    final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
-                    final SharedPreferences.Editor editor = PreferenceManager
-                            .getDefaultSharedPreferences(context).edit();
-                    fromXml(in, new PreferencesReader(editor));
-                    editor.apply();
-                    mResults.preferences++;
-                }
+            }
+            case PreferencesXml: {
+                // Don't close this stream!
+                final InputStream is = entity.getInputStream();
+                final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
+                final SharedPreferences.Editor editor = PreferenceManager
+                        .getDefaultSharedPreferences(context).edit();
+                fromXml(in, new PreferencesReader(editor));
+                editor.apply();
+                mResults.preferences++;
                 break;
-
+            }
             case InfoHeaderXml:
                 throw new IllegalStateException("call #readInfo instead");
 

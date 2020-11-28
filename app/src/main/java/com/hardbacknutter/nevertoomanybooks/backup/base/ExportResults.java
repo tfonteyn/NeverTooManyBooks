@@ -55,19 +55,18 @@ public class ExportResults
             return new ExportResults[size];
         }
     };
+
+    /** Report list bullet. */
     private static final String BULLET = "\n• ";
 
     /** id's of books we exported. */
     private final List<Long> mBooksExported = new ArrayList<>();
-
     /** filenames of covers exported. */
     private final List<String> mCoversExported = new ArrayList<>();
-
     /** #styles we exported. */
     public int styles;
     /** #preferences we exported. */
     public int preferences;
-
     /** whether we exported the actual database. */
     public boolean database;
 
@@ -124,6 +123,7 @@ public class ExportResults
         return mCoversExported.size();
     }
 
+    @NonNull
     List<String> getCoverFileNames() {
         return mCoversExported;
     }
@@ -135,6 +135,7 @@ public class ExportResults
      *
      * @return report string
      */
+    @NonNull
     public String createReport(@NonNull final Context context,
                                @Nullable final Pair<String, Long> uriInfo) {
         // Transform the result data into a user friendly report.
@@ -199,8 +200,7 @@ public class ExportResults
     @NonNull
     public String toString() {
         return "Results{"
-               + "entitiesWritten=" + entitiesWritten
-               + ", mBooksExported=" + mBooksExported
+               + "mBooksExported=" + mBooksExported
                + ", mCoversExported=" + mCoversExported
                + ", styles=" + styles
                + ", preferences=" + preferences

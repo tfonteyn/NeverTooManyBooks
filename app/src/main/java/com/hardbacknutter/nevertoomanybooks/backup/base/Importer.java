@@ -36,6 +36,7 @@ public interface Importer
      *
      * @param context          Current context
      * @param entity           to read data from
+     * @param options          any applicable options
      * @param progressListener Progress and cancellation provider
      *
      * @return {@link ImportResults}
@@ -45,6 +46,7 @@ public interface Importer
      */
     ImportResults read(@NonNull Context context,
                        @NonNull ReaderEntity entity,
+                       @ImportHelper.Options int options,
                        @NonNull ProgressListener progressListener)
             throws IOException, ImportException;
 }
