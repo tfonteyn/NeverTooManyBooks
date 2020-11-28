@@ -71,21 +71,26 @@ public class BookCoder
         try {
             final Object o = book.get(key);
 
-            if (o instanceof String && !((String) o).isEmpty()) {
-                data.put(key, o);
-
-            } else if (o instanceof Long && (Long) o != 0) {
-                data.put(key, o);
-
-            } else if (o instanceof Integer && (Integer) o != 0) {
-                data.put(key, o);
-
-            } else if (o instanceof Double && (Double) o != 0) {
-                data.put(key, o);
-
-            } else if (o instanceof Float && (Float) o != 0) {
-                data.put(key, o);
-
+            if (o instanceof String) {
+                if (!((String) o).isEmpty()) {
+                    data.put(key, o);
+                }
+            } else if (o instanceof Long) {
+                if ((Long) o != 0) {
+                    data.put(key, o);
+                }
+            } else if (o instanceof Integer) {
+                if ((Integer) o != 0) {
+                    data.put(key, o);
+                }
+            } else if (o instanceof Double) {
+                if ((Double) o != 0) {
+                    data.put(key, o);
+                }
+            } else if (o instanceof Float) {
+                if ((Float) o != 0) {
+                    data.put(key, o);
+                }
             } else if (o instanceof Boolean) {
                 // always write regardless of being 'false'
                 data.put(key, o);
@@ -139,7 +144,7 @@ public class BookCoder
                 }
 
             } else if (o instanceof Serializable) {
-                throw new IllegalArgumentException("Serializable not implemented");
+                throw new IllegalArgumentException("Serializable not implemented o=" + o);
 
             } else if (o != null) {
                 throw new IllegalArgumentException("key=" + key + "|o=" + o);

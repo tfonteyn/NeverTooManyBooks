@@ -129,8 +129,8 @@ public class JsonArchiveWriterTest {
 
 
 
-        importHelper.setOption(ImportHelper.OPTIONS_BOOKS
-                               | ImportHelper.OPTIONS_UPDATED_BOOKS, true);
+        importHelper.setOption(ImportHelper.OPTIONS_BOOKS, true);
+        importHelper.setUpdatesMayOverwrite();
         try (ArchiveReader reader = importHelper.getArchiveReader(context)) {
 
             final ArchiveInfo archiveInfo = reader.readArchiveInfo(context);
@@ -143,7 +143,7 @@ public class JsonArchiveWriterTest {
 
         assertEquals(0, importResults.booksCreated);
         // we did an overwrite of ALL books
-        assertEquals(90, importResults.booksUpdated);
+        assertEquals(mBookInDb, importResults.booksUpdated);
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
     }

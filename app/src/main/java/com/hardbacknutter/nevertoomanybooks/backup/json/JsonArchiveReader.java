@@ -64,9 +64,9 @@ public class JsonArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (Importer importer = new JsonImporter(context, mHelper.getOptions())) {
+        try (Importer importer = new JsonImporter(context)) {
             final ReaderEntity entity = new JsonReaderEntity(is);
-            return importer.read(context, entity, progressListener);
+            return importer.read(context, entity, mHelper.getOptions(), progressListener);
         } finally {
             is.close();
         }
