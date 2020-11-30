@@ -77,7 +77,7 @@ class IsfdbBookHandlerTest
                  new boolean[]{false, false});
 
         assertEquals("Like Nothing on Earth", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals(112781L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));
+        assertEquals(112781L, mRawData.getLong(DBDefinitions.KEY_ESID_ISFDB));
         // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
         assertEquals("1986-10-01", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("0413600106", mRawData.getString(DBDefinitions.KEY_ISBN));
@@ -90,7 +90,7 @@ class IsfdbBookHandlerTest
         assertEquals(Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS,
                      mRawData.getLong(DBDefinitions.KEY_TOC_BITMASK));
 
-        assertEquals("13665857", mRawData.getString(DBDefinitions.KEY_EID_WORLDCAT));
+        assertEquals("13665857", mRawData.getString(DBDefinitions.KEY_ESID_WORLDCAT));
 
         assertEquals("Month from Locus1", mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
 
@@ -146,7 +146,7 @@ class IsfdbBookHandlerTest
                  new boolean[]{false, false});
 
         assertEquals("Mort", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals(431964L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));
+        assertEquals(431964L, mRawData.getLong(DBDefinitions.KEY_ESID_ISFDB));
         assertEquals("2013-11-07", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("9781473200104", mRawData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("1473200105", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
@@ -201,7 +201,7 @@ class IsfdbBookHandlerTest
                  new boolean[]{false, false});
 
         assertEquals("The Shepherd's Crown", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals(542125L, mRawData.getLong(DBDefinitions.KEY_EID_ISFDB));
+        assertEquals(542125L, mRawData.getLong(DBDefinitions.KEY_ESID_ISFDB));
         assertEquals("2015-09-01", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
         assertEquals("9780062429995", mRawData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("006242999X", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
@@ -210,8 +210,8 @@ class IsfdbBookHandlerTest
         assertEquals("ebook", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
 
-        assertEquals("2015943558", mRawData.getString(DBDefinitions.KEY_EID_LCCN));
-        assertEquals("B00W2EBY8O", mRawData.getString(DBDefinitions.KEY_EID_ASIN));
+        assertEquals("2015943558", mRawData.getString(DBDefinitions.KEY_ESID_LCCN));
+        assertEquals("B00W2EBY8O", mRawData.getString(DBDefinitions.KEY_ESID_ASIN));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

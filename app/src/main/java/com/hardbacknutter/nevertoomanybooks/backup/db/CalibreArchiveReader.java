@@ -240,7 +240,7 @@ class CalibreArchiveReader
                 final int calibreId = source.getInt(colId);
                 // keep the Calibre UUID
                 final String calibreUuid = source.getString(colUuid);
-                book.putString(DBDefinitions.KEY_EID_CALIBRE_UUID, calibreUuid);
+                book.putString(DBDefinitions.KEY_CALIBRE_UUID, calibreUuid);
 
                 book.putString(DBDefinitions.KEY_TITLE, source.getString(colTitle));
                 book.putString(DBDefinitions.KEY_LANGUAGE, source.getString(colLang));
@@ -278,7 +278,7 @@ class CalibreArchiveReader
                 try {
                     // check if the book exists in our database, and fetch it's id.
                     final long databaseBookId = mDb
-                            .getBookIdFromKey(DBDefinitions.KEY_EID_CALIBRE_UUID,
+                            .getBookIdFromKey(DBDefinitions.KEY_CALIBRE_UUID,
                                               calibreUuid);
 
                     //Note: do NOT try and find it by ISBN. Keep Calibre strictly separate.
@@ -396,15 +396,15 @@ class CalibreArchiveReader
                                            cursor.getString(1));
                             break;
                         case "amazon":
-                            book.putString(DBDefinitions.KEY_EID_ASIN,
+                            book.putString(DBDefinitions.KEY_ESID_ASIN,
                                            cursor.getString(1));
                             break;
                         case "goodreads":
-                            book.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK,
+                            book.putLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK,
                                          cursor.getLong(1));
                             break;
                         case "google":
-                            book.putString(DBDefinitions.KEY_EID_GOOGLE,
+                            book.putString(DBDefinitions.KEY_ESID_GOOGLE,
                                            cursor.getString(1));
                             break;
 
@@ -413,7 +413,7 @@ class CalibreArchiveReader
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             if (name.startsWith("amazon")) {
-                                book.putString(DBDefinitions.KEY_EID_ASIN,
+                                book.putString(DBDefinitions.KEY_ESID_ASIN,
                                                cursor.getString(1));
                             }
                             break;

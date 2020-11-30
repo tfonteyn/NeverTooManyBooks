@@ -110,7 +110,7 @@ public final class ApiUtils {
 
         final String tmpName = ImageUtils.createFilename(
                 GoodreadsManager.FILENAME_SUFFIX,
-                String.valueOf(goodreadsData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK)),
+                String.valueOf(goodreadsData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK)),
                 0, size);
 
         final File file = ImageUtils.saveImage(context, url, tmpName,

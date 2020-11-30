@@ -129,7 +129,7 @@ public class LibraryThingSearchEngine
                 .setSupportsMultipleCoverSizes(true)
                 .setFilenameSuffix("LT")
 
-                .setDomainKey(DBDefinitions.KEY_EID_LIBRARY_THING)
+                .setDomainKey(DBDefinitions.KEY_ESID_LIBRARY_THING)
                 .setDomainViewId(R.id.site_library_thing)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
                 .build();

@@ -481,7 +481,7 @@ class AmazonXmlHandler
                 }
 
             } else if (localName.equalsIgnoreCase(XML_ASIN)) {
-                addIfNotPresent(DBDefinitions.KEY_EID_ASIN, mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_ESID_ASIN, mBuilder.toString());
 
             } else {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.XML) {

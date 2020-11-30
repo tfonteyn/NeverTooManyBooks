@@ -746,10 +746,10 @@ public final class DBHelper
                   .remove("startup.lastVersion")
                   .apply();
 
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_EID_LAST_DODO_NL);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_ESID_LAST_DODO_NL);
         }
         if (oldVersion < 9) {
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_EID_CALIBRE);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_CALIBRE_UUID);
         }
         if (oldVersion < 10) {
             // moved to FTS4

@@ -237,7 +237,7 @@ public class IsfdbSearchEngine
                                                        "http://www.isfdb.org")
                 .setFilenameSuffix("ISFDB")
 
-                .setDomainKey(DBDefinitions.KEY_EID_ISFDB)
+                .setDomainKey(DBDefinitions.KEY_ESID_ISFDB)
                 .setDomainViewId(R.id.site_isfdb)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_ISFDB)
 
@@ -748,7 +748,7 @@ public class IsfdbSearchEngine
             if (!tmpString.isEmpty()) {
                 try {
                     final long record = Long.parseLong(tmpString);
-                    bookData.putLong(DBDefinitions.KEY_EID_ISFDB, record);
+                    bookData.putLong(DBDefinitions.KEY_ESID_ISFDB, record);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
@@ -1267,7 +1267,7 @@ public class IsfdbSearchEngine
                 .forEach(url -> {
                     if (url.contains("www.worldcat.org")) {
                         // http://www.worldcat.org/oclc/60560136
-                        bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, stripString(url, '/'));
+                        bookData.putString(DBDefinitions.KEY_ESID_WORLDCAT, stripString(url, '/'));
 
                     } else if (url.contains("amazon")) {
                         final int start = url.lastIndexOf('/');
@@ -1277,13 +1277,13 @@ public class IsfdbSearchEngine
                                 end = url.length();
                             }
                             final String asin = url.substring(start + 1, end);
-                            bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
+                            bookData.putString(DBDefinitions.KEY_ESID_ASIN, asin);
                         }
                     } else if (url.contains("lccn.loc.gov")) {
                         // Library of Congress (USA)
                         // http://lccn.loc.gov/2008299472
                         // http://lccn.loc.gov/95-22691
-                        bookData.putString(DBDefinitions.KEY_EID_LCCN, stripString(url, '/'));
+                        bookData.putString(DBDefinitions.KEY_ESID_LCCN, stripString(url, '/'));
 
                         //            } else if (url.contains("explore.bl.uk")) {
                         // http://explore.bl.uk/primo_library/libweb/action/dlDisplay.do?

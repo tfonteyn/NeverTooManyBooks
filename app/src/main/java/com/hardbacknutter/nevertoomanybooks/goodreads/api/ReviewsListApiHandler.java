@@ -344,7 +344,7 @@ public class ReviewsListApiHandler
                 //          <book>
                 .s(XmlTags.XML_BOOK)
                 //              <id type="integer">951750</id>
-                .longBody(XmlTags.XML_ID, DBDefinitions.KEY_EID_GOODREADS_BOOK)
+                .longBody(XmlTags.XML_ID, DBDefinitions.KEY_ESID_GOODREADS_BOOK)
                 //              <isbn>0583120911</isbn>
                 .stringBody(XmlTags.XML_ISBN, DBDefinitions.KEY_ISBN)
                 //              <isbn13>9780583120913</isbn13>

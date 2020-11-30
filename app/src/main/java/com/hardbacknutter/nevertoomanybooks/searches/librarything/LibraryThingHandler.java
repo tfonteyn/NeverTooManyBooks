@@ -539,7 +539,7 @@ class LibraryThingHandler
             if ("work".equalsIgnoreCase(type)) {
                 try {
                     final long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
-                    mBookData.putLong(DBDefinitions.KEY_EID_LIBRARY_THING, id);
+                    mBookData.putLong(DBDefinitions.KEY_ESID_LIBRARY_THING, id);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }

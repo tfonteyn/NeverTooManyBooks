@@ -55,14 +55,14 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_CALIBRE_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_GOODREADS_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
@@ -811,7 +811,7 @@ public class DAOSql {
             //NEWTHINGS: adding a new search engine: optional: add engine specific keys
             sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_UTC_GOODREADS_LAST_SYNC_DATE));
 
-            sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_EID_CALIBRE_UUID));
+            sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_CALIBRE_UUID));
 
             SQL_BOOK = sqlBookTmp.toString()
                        // COALESCE nulls to "" for the LEFT OUTER JOIN'ed tables
@@ -1063,7 +1063,7 @@ public class DAOSql {
         private static final String BASE_SELECT =
                 SELECT_ + KEY_PK_ID
                 + ',' + KEY_ISBN
-                + ',' + KEY_EID_GOODREADS_BOOK
+                + ',' + KEY_ESID_GOODREADS_BOOK
                 + ',' + KEY_READ
                 + ',' + KEY_READ_START
                 + ',' + KEY_READ_END
@@ -1288,7 +1288,7 @@ public class DAOSql {
          */
         static final String GOODREADS_BOOK_ID =
                 UPDATE_ + TBL_BOOKS.getName()
-                + _SET_ + KEY_EID_GOODREADS_BOOK + "=?"
+                + _SET_ + KEY_ESID_GOODREADS_BOOK + "=?"
                 + _WHERE_ + KEY_PK_ID + "=?";
 
         /**

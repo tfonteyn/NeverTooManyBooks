@@ -34,12 +34,12 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_GOODREADS_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_ISFDB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LAST_DODO_NL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_LIBRARY_THING;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_OPEN_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EID_STRIP_INFO_BE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_GOODREADS_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_ISFDB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_LAST_DODO_NL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_LIBRARY_THING;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_OPEN_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_STRIP_INFO_BE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED_CURRENCY;
@@ -162,22 +162,22 @@ class BookTest
         final Book book = new Book(mRawData);
 
         // Long: valid number
-        book.put(KEY_EID_GOODREADS_BOOK, 2L);
+        book.put(KEY_ESID_GOODREADS_BOOK, 2L);
         // Long: 0 -> should be removed
-        book.put(KEY_EID_ISFDB, 0L);
+        book.put(KEY_ESID_ISFDB, 0L);
         // Long: null -> should be removed
-        book.put(KEY_EID_LAST_DODO_NL, null);
+        book.put(KEY_ESID_LAST_DODO_NL, null);
         // Long: blank string -> should be removed
-        book.put(KEY_EID_LIBRARY_THING, "");
+        book.put(KEY_ESID_LIBRARY_THING, "");
         // Long: non-blank string -> should be removed
-        book.put(KEY_EID_STRIP_INFO_BE, "test");
+        book.put(KEY_ESID_STRIP_INFO_BE, "test");
 
 
         // String: valid
         // (KEY_ISBN is the external key for Amazon)
         book.put(KEY_ISBN, "test");
         // blank string for a text field -> should be removed
-        book.put(KEY_EID_OPEN_LIBRARY, "");
+        book.put(KEY_ESID_OPEN_LIBRARY, "");
 
 
         // Not tested: null string for a string field..
@@ -186,20 +186,20 @@ class BookTest
         book.preprocessExternalIds(true);
         dump(book);
 
-        assertEquals(2, book.getLong(KEY_EID_GOODREADS_BOOK));
-        assertFalse(book.contains(KEY_EID_ISFDB));
-        assertFalse(book.contains(KEY_EID_LAST_DODO_NL));
-        assertFalse(book.contains(KEY_EID_LIBRARY_THING));
-        assertFalse(book.contains(KEY_EID_STRIP_INFO_BE));
+        assertEquals(2, book.getLong(KEY_ESID_GOODREADS_BOOK));
+        assertFalse(book.contains(KEY_ESID_ISFDB));
+        assertFalse(book.contains(KEY_ESID_LAST_DODO_NL));
+        assertFalse(book.contains(KEY_ESID_LIBRARY_THING));
+        assertFalse(book.contains(KEY_ESID_STRIP_INFO_BE));
 
         assertEquals("test", book.getString(KEY_ISBN));
-        assertFalse(book.contains(KEY_EID_OPEN_LIBRARY));
+        assertFalse(book.contains(KEY_ESID_OPEN_LIBRARY));
 
 
         book.preprocessNullsAndBlanks(true);
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals(2, book.getLong(KEY_EID_GOODREADS_BOOK));
+        assertEquals(2, book.getLong(KEY_ESID_GOODREADS_BOOK));
         assertEquals("test", book.getString(KEY_ISBN));
     }
 
@@ -209,22 +209,22 @@ class BookTest
         final Book book = new Book(mRawData);
 
         // Long: valid number
-        book.put(KEY_EID_GOODREADS_BOOK, 2L);
+        book.put(KEY_ESID_GOODREADS_BOOK, 2L);
         // Long: 0 -> should be defaulted to null
-        book.put(KEY_EID_ISFDB, 0L);
+        book.put(KEY_ESID_ISFDB, 0L);
         // Long: null
-        book.put(KEY_EID_LAST_DODO_NL, null);
+        book.put(KEY_ESID_LAST_DODO_NL, null);
         // Long: blank string -> defaulted to null
-        book.put(KEY_EID_LIBRARY_THING, "");
+        book.put(KEY_ESID_LIBRARY_THING, "");
         // Long: non-blank string -> defaulted to null
-        book.put(KEY_EID_STRIP_INFO_BE, "test");
+        book.put(KEY_ESID_STRIP_INFO_BE, "test");
 
 
         // String: valid
         // (KEY_ISBN is the external key for Amazon)
         book.put(KEY_ISBN, "test");
         // blank string for a text field -> defaulted to null
-        book.put(KEY_EID_OPEN_LIBRARY, "");
+        book.put(KEY_ESID_OPEN_LIBRARY, "");
 
 
         // Not tested: null string for a string field..
@@ -233,27 +233,27 @@ class BookTest
         book.preprocessExternalIds(false);
         dump(book);
 
-        assertEquals(2, book.getLong(KEY_EID_GOODREADS_BOOK));
-        assertNull(book.get(KEY_EID_ISFDB));
-        assertNull(book.get(KEY_EID_LAST_DODO_NL));
-        assertNull(book.get(KEY_EID_LIBRARY_THING));
-        assertNull(book.get(KEY_EID_STRIP_INFO_BE));
+        assertEquals(2, book.getLong(KEY_ESID_GOODREADS_BOOK));
+        assertNull(book.get(KEY_ESID_ISFDB));
+        assertNull(book.get(KEY_ESID_LAST_DODO_NL));
+        assertNull(book.get(KEY_ESID_LIBRARY_THING));
+        assertNull(book.get(KEY_ESID_STRIP_INFO_BE));
 
         assertEquals("test", book.getString(KEY_ISBN));
-        assertNull(book.get(KEY_EID_OPEN_LIBRARY));
+        assertNull(book.get(KEY_ESID_OPEN_LIBRARY));
 
 
         book.preprocessNullsAndBlanks(false);
         dump(book);
         // should not have any effect, so same tests:
-        assertEquals(2, book.getLong(KEY_EID_GOODREADS_BOOK));
-        assertNull(book.get(KEY_EID_ISFDB));
-        assertNull(book.get(KEY_EID_LAST_DODO_NL));
-        assertNull(book.get(KEY_EID_LIBRARY_THING));
-        assertNull(book.get(KEY_EID_STRIP_INFO_BE));
+        assertEquals(2, book.getLong(KEY_ESID_GOODREADS_BOOK));
+        assertNull(book.get(KEY_ESID_ISFDB));
+        assertNull(book.get(KEY_ESID_LAST_DODO_NL));
+        assertNull(book.get(KEY_ESID_LIBRARY_THING));
+        assertNull(book.get(KEY_ESID_STRIP_INFO_BE));
 
         assertEquals("test", book.getString(KEY_ISBN));
-        assertNull(book.get(KEY_EID_OPEN_LIBRARY));
+        assertNull(book.get(KEY_ESID_OPEN_LIBRARY));
     }
 
     /**

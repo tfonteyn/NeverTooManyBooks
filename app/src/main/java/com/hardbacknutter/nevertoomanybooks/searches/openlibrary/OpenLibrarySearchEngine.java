@@ -166,7 +166,7 @@ public class OpenLibrarySearchEngine
                 .setSupportsMultipleCoverSizes(true)
                 .setFilenameSuffix("OL")
 
-                .setDomainKey(DBDefinitions.KEY_EID_OPEN_LIBRARY)
+                .setDomainKey(DBDefinitions.KEY_ESID_OPEN_LIBRARY)
                 .setDomainViewId(R.id.site_open_library)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
                 .build();
@@ -601,31 +601,31 @@ public class OpenLibrarySearchEngine
         }
         a = element.optJSONArray("amazon");
         if (a != null && a.length() > 0) {
-            bookData.putString(DBDefinitions.KEY_EID_ASIN, a.getString(0));
+            bookData.putString(DBDefinitions.KEY_ESID_ASIN, a.getString(0));
         }
         a = element.optJSONArray("openlibrary");
         if (a != null && a.length() > 0) {
-            bookData.putString(DBDefinitions.KEY_EID_OPEN_LIBRARY, a.getString(0));
+            bookData.putString(DBDefinitions.KEY_ESID_OPEN_LIBRARY, a.getString(0));
         }
         a = element.optJSONArray("librarything");
         if (a != null && a.length() > 0) {
-            bookData.putLong(DBDefinitions.KEY_EID_LIBRARY_THING, a.getLong(0));
+            bookData.putLong(DBDefinitions.KEY_ESID_LIBRARY_THING, a.getLong(0));
         }
         a = element.optJSONArray("goodreads");
         if (a != null && a.length() > 0) {
-            bookData.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK, a.getLong(0));
+            bookData.putLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK, a.getLong(0));
         }
         a = element.optJSONArray("google");
         if (a != null && a.length() > 0) {
-            bookData.putString(DBDefinitions.KEY_EID_GOOGLE, a.getString(0));
+            bookData.putString(DBDefinitions.KEY_ESID_GOOGLE, a.getString(0));
         }
         a = element.optJSONArray("lccn");
         if (a != null && a.length() > 0) {
-            bookData.putString(DBDefinitions.KEY_EID_LCCN, a.getString(0));
+            bookData.putString(DBDefinitions.KEY_ESID_LCCN, a.getString(0));
         }
         a = element.optJSONArray("oclc");
         if (a != null && a.length() > 0) {
-            bookData.putString(DBDefinitions.KEY_EID_WORLDCAT, a.getString(0));
+            bookData.putString(DBDefinitions.KEY_ESID_WORLDCAT, a.getString(0));
         }
     }
 

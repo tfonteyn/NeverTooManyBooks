@@ -140,7 +140,7 @@ public class StripInfoSearchEngine
                 .setCountry("BE", "nl")
                 .setFilenameSuffix("SI")
 
-                .setDomainKey(DBDefinitions.KEY_EID_STRIP_INFO_BE)
+                .setDomainKey(DBDefinitions.KEY_ESID_STRIP_INFO_BE)
                 .setDomainViewId(R.id.site_strip_info_be)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_STRIP_INFO_BE)
 
@@ -690,7 +690,7 @@ public class StripInfoSearchEngine
                                             .split("_")[0];
             final long bookId = Long.parseLong(idString);
             if (bookId > 0) {
-                bookData.putLong(DBDefinitions.KEY_EID_STRIP_INFO_BE, bookId);
+                bookData.putLong(DBDefinitions.KEY_ESID_STRIP_INFO_BE, bookId);
             }
         } catch (@NonNull final NumberFormatException ignore) {
             // ignore

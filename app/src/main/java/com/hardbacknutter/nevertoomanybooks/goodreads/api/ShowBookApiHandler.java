@@ -334,7 +334,7 @@ public abstract class ShowBookApiHandler
         // Pros: easier sync
         // Cons: Overwrite Goodreads id when it should not
 //        if (mBookData.containsKey(SiteField.BOOK_ID)) {
-//            mBookData.putLong(DBDefinitions.KEY_EID_GOODREADS_BOOK,
+//            mBookData.putLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK,
 //                              mBookData.getLong(SiteField.BOOK_ID));
 //        }
 
@@ -600,7 +600,7 @@ public abstract class ShowBookApiHandler
         // Goodreads specific ID fields
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ID)
-                 .setEndAction(mHandleLong, DBDefinitions.KEY_EID_GOODREADS_BOOK);
+                 .setEndAction(mHandleLong, DBDefinitions.KEY_ESID_GOODREADS_BOOK);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK,
                               XmlTags.XML_ID)
@@ -613,7 +613,7 @@ public abstract class ShowBookApiHandler
         // Amazon ID: <asin></asin>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ASIN)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_EID_ASIN);
+                 .setEndAction(mHandleText, DBDefinitions.KEY_ESID_ASIN);
 
         // <isbn>0689840926</isbn>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,

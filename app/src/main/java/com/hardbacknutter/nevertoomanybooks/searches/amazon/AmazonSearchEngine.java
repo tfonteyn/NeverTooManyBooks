@@ -180,7 +180,7 @@ public class AmazonSearchEngine
                 .setFilenameSuffix("AMZ")
 
                 // ENHANCE: support ASIN
-//                .setDomainKey(DBDefinitions.KEY_EID_ASIN)
+//                .setDomainKey(DBDefinitions.KEY_ESID_ASIN)
 //                .setDomainViewId(R.id.site_amazon)
 //                .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_AMAZON)
                 .build();
@@ -188,7 +188,6 @@ public class AmazonSearchEngine
 
     @NonNull
     public static String getSiteUrl(@NonNull final Context context) {
-        //noinspection ConstantConditions
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getString(PREFS_HOST_URL,
@@ -398,7 +397,6 @@ public class AmazonSearchEngine
         // will return null.
         // When run in JUnit, this call is NOT needed.
         // Whats different? -> the Java JDK!
-        //noinspection unused
         final Element unused = document.selectFirst("div#booksTitle");
 
         final Element titleElement = document.selectFirst("span#productTitle");
@@ -575,7 +573,7 @@ public class AmazonSearchEngine
             if (asinElement != null) {
                 final String asin = asinElement.attr("value");
                 if (asin != null) {
-                    bookData.putString(DBDefinitions.KEY_EID_ASIN, asin);
+                    bookData.putString(DBDefinitions.KEY_ESID_ASIN, asin);
                 }
             }
         }

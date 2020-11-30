@@ -258,21 +258,21 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_CONDITION_DUST_COVER;
 
     /** {@link #TBL_BOOKS}. Book ID, not 'work' ID. */
-    public static final Domain DOM_EID_GOODREADS_BOOK;
+    public static final Domain DOM_ESID_GOODREADS_BOOK;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_UTC_LAST_SYNC_DATE_GOODREADS;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_EID_ISFDB;
+    public static final Domain DOM_ESID_ISFDB;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_EID_LIBRARY_THING;
+    public static final Domain DOM_ESID_LIBRARY_THING;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_EID_OPEN_LIBRARY;
+    public static final Domain DOM_ESID_OPEN_LIBRARY;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_EID_STRIP_INFO_BE;
+    public static final Domain DOM_ESID_STRIP_INFO_BE;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_EID_LAST_DODO_NL;
+    public static final Domain DOM_ESID_LAST_DODO_NL;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_EID_CALIBRE;
+    public static final Domain DOM_CALIBRE_UUID;
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
@@ -389,33 +389,36 @@ public final class DBDefinitions {
     /** Foreign key. */
     public static final String KEY_FK_BL_ROW_ID = "bl_row_id";
 
-    /** External id. - Long. */
-    public static final String KEY_EID_GOODREADS_BOOK = "goodreads_book_id";
+    /** External Site id. - Long. */
+    public static final String KEY_ESID_GOODREADS_BOOK = "goodreads_book_id";
     public static final String KEY_UTC_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
-    /** External id. - Long. */
-    public static final String KEY_EID_ISFDB = "isfdb_book_id";
-    /** External id. - Long. */
-    public static final String KEY_EID_LIBRARY_THING = "lt_book_id";
-    /** External id. - String. */
-    public static final String KEY_EID_OPEN_LIBRARY = "ol_book_id";
-    /** External id. - Long. */
-    public static final String KEY_EID_STRIP_INFO_BE = "si_book_id";
-    /** External id. - Long. */
-    public static final String KEY_EID_LAST_DODO_NL = "ld_book_id";
+    /** External Site id. - Long. */
+    public static final String KEY_ESID_ISFDB = "isfdb_book_id";
+    /** External Site id. - Long. */
+    public static final String KEY_ESID_LIBRARY_THING = "lt_book_id";
+    /** External Site id. - String. */
+    public static final String KEY_ESID_OPEN_LIBRARY = "ol_book_id";
+    /** External Site id. - Long. */
+    public static final String KEY_ESID_STRIP_INFO_BE = "si_book_id";
+    /** External Site id. - Long. */
+    public static final String KEY_ESID_LAST_DODO_NL = "ld_book_id";
     //NEWTHINGS: adding a new search engine: optional: add external id KEY
 
-    /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
-    public static final String KEY_EID_ASIN = "asin";
-    /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
-    public static final String KEY_EID_GOOGLE = "google";
-    /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
-    public static final String KEY_EID_WORLDCAT = "worldcat_oclc_book_id";
-    /** External id. - String. ENHANCE: set by search engines when found, but not stored yet. */
-    public static final String KEY_EID_LCCN = "lccn_book_id";
+    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
+    public static final String KEY_ESID_ASIN = "asin";
+    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
+    public static final String KEY_ESID_GOOGLE = "google";
+    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
+    public static final String KEY_ESID_WORLDCAT = "worldcat_oclc_book_id";
+    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
+    public static final String KEY_ESID_LCCN = "lccn_book_id";
 
 
-    /** External id. - String. */
-    public static final String KEY_EID_CALIBRE_UUID = "clb_uuid";
+    /**
+     * It's external to this app, but NOT an "external Site id"
+     * as it comes from a user importing their Calibre database.
+     */
+    public static final String KEY_CALIBRE_UUID = "clb_uuid";
 
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf_name";
@@ -912,8 +915,8 @@ public final class DBDefinitions {
          *  Book external website id domains
          * ====================================================================================== */
         //NEWTHINGS: adding a new search engine: optional: add external id / specific DOM
-        DOM_EID_GOODREADS_BOOK =
-                new Domain.Builder(KEY_EID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER).build();
+        DOM_ESID_GOODREADS_BOOK =
+                new Domain.Builder(KEY_ESID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER).build();
 
         // Stores dates in UTC format!
         DOM_UTC_LAST_SYNC_DATE_GOODREADS =
@@ -933,25 +936,25 @@ public final class DBDefinitions {
         //      KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=''"
 
 
-        DOM_EID_ISFDB =
-                new Domain.Builder(KEY_EID_ISFDB, ColumnInfo.TYPE_INTEGER).build();
+        DOM_ESID_ISFDB =
+                new Domain.Builder(KEY_ESID_ISFDB, ColumnInfo.TYPE_INTEGER).build();
 
-        DOM_EID_LIBRARY_THING =
-                new Domain.Builder(KEY_EID_LIBRARY_THING, ColumnInfo.TYPE_INTEGER).build();
+        DOM_ESID_LIBRARY_THING =
+                new Domain.Builder(KEY_ESID_LIBRARY_THING, ColumnInfo.TYPE_INTEGER).build();
 
-        DOM_EID_OPEN_LIBRARY =
-                new Domain.Builder(KEY_EID_OPEN_LIBRARY, ColumnInfo.TYPE_TEXT).build();
+        DOM_ESID_OPEN_LIBRARY =
+                new Domain.Builder(KEY_ESID_OPEN_LIBRARY, ColumnInfo.TYPE_TEXT).build();
 
-        DOM_EID_STRIP_INFO_BE =
-                new Domain.Builder(KEY_EID_STRIP_INFO_BE, ColumnInfo.TYPE_INTEGER).build();
+        DOM_ESID_STRIP_INFO_BE =
+                new Domain.Builder(KEY_ESID_STRIP_INFO_BE, ColumnInfo.TYPE_INTEGER).build();
 
-        DOM_EID_LAST_DODO_NL =
-                new Domain.Builder(KEY_EID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER).build();
+        DOM_ESID_LAST_DODO_NL =
+                new Domain.Builder(KEY_ESID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER).build();
 
 
         // Used for imports; not an actual website
-        DOM_EID_CALIBRE =
-                new Domain.Builder(KEY_EID_CALIBRE_UUID, ColumnInfo.TYPE_TEXT).build();
+        DOM_CALIBRE_UUID =
+                new Domain.Builder(KEY_CALIBRE_UUID, ColumnInfo.TYPE_TEXT).build();
 
         /* ======================================================================================
          *  Loanee domains
@@ -1122,17 +1125,17 @@ public final class DBDefinitions {
 
                              // external id/data
                              //NEWTHINGS: adding a new search engine: optional: add external id DOM
-                             DOM_EID_GOODREADS_BOOK,
-                             DOM_EID_ISFDB,
-                             DOM_EID_LIBRARY_THING,
-                             DOM_EID_OPEN_LIBRARY,
-                             DOM_EID_STRIP_INFO_BE,
-                             DOM_EID_LAST_DODO_NL,
+                             DOM_ESID_GOODREADS_BOOK,
+                             DOM_ESID_ISFDB,
+                             DOM_ESID_LIBRARY_THING,
+                             DOM_ESID_OPEN_LIBRARY,
+                             DOM_ESID_STRIP_INFO_BE,
+                             DOM_ESID_LAST_DODO_NL,
                              //NEWTHINGS: adding a new search engine:
                              // optional: add engine specific DOM
                              DOM_UTC_LAST_SYNC_DATE_GOODREADS,
 
-                             DOM_EID_CALIBRE,
+                             DOM_CALIBRE_UUID,
                              // internal data
                              DOM_BOOK_UUID,
                              DOM_UTC_ADDED,
@@ -1145,13 +1148,13 @@ public final class DBDefinitions {
                  .addIndex(KEY_BOOK_UUID, true, DOM_BOOK_UUID)
                  //NEWTHINGS: adding a new search engine: optional: add indexes as needed.
 
-                 .addIndex(KEY_EID_GOODREADS_BOOK, false, DOM_EID_GOODREADS_BOOK)
-                 .addIndex(KEY_EID_ISFDB, false, DOM_EID_ISFDB)
-                 .addIndex(KEY_EID_OPEN_LIBRARY, false, DOM_EID_OPEN_LIBRARY)
-                 .addIndex(KEY_EID_STRIP_INFO_BE, false, DOM_EID_STRIP_INFO_BE)
-                 .addIndex(KEY_EID_CALIBRE_UUID, false, DOM_EID_CALIBRE)
+                 .addIndex(KEY_ESID_GOODREADS_BOOK, false, DOM_ESID_GOODREADS_BOOK)
+                 .addIndex(KEY_ESID_ISFDB, false, DOM_ESID_ISFDB)
+                 .addIndex(KEY_ESID_OPEN_LIBRARY, false, DOM_ESID_OPEN_LIBRARY)
+                 .addIndex(KEY_ESID_STRIP_INFO_BE, false, DOM_ESID_STRIP_INFO_BE)
+                 .addIndex(KEY_CALIBRE_UUID, false, DOM_CALIBRE_UUID)
         // we probably do not need this one (and have not created it)
-        //.addIndex(KEY_EID_LIBRARY_THING, false, DOM_EID_LIBRARY_THING)
+        //.addIndex(KEY_ESID_LIBRARY_THING, false, DOM_ESID_LIBRARY_THING)
         ;
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 

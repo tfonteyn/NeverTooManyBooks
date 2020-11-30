@@ -254,7 +254,7 @@ public class ImportGrTask
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
                                 Logger.d(TAG, "importReviews",
                                          "skipping|grId="
-                                         + review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
+                                         + review.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK));
                             }
                             // skip to the next review
                             continue;
@@ -285,7 +285,7 @@ public class ImportGrTask
                                @NonNull final DAO db,
                                @NonNull final Bundle review) {
 
-        final long grBookId = review.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+        final long grBookId = review.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_IMPORT) {
             Logger.d(TAG, "processReview", "grId=" + grBookId);
@@ -296,7 +296,7 @@ public class ImportGrTask
         try {
             // Find the book in our local database - there may be more than one!
             // First look by Goodreads book ID
-            cursor = db.fetchBooksByKey(DBDefinitions.KEY_EID_GOODREADS_BOOK,
+            cursor = db.fetchBooksByKey(DBDefinitions.KEY_ESID_GOODREADS_BOOK,
                                         String.valueOf(grBookId));
 
             boolean found = cursor.getCount() > 0;
@@ -401,7 +401,7 @@ public class ImportGrTask
         // 0 for new, or the existing id for updates
         delta.putLong(DBDefinitions.KEY_PK_ID, bookId);
 
-        addLongIfPresent(goodreadsData, DBDefinitions.KEY_EID_GOODREADS_BOOK, delta);
+        addLongIfPresent(goodreadsData, DBDefinitions.KEY_ESID_GOODREADS_BOOK, delta);
 
         // The ListReviewsApi does not return the Book language.
         // So during an insert, the bookLocale will always be null.

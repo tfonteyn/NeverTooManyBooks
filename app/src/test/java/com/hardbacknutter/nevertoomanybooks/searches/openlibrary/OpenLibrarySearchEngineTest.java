@@ -84,12 +84,12 @@ class OpenLibrarySearchEngineTest
 
         assertEquals("Slow reading", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("9780980200447", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("OL22853304M", mRawData.getString(DBDefinitions.KEY_EID_OPEN_LIBRARY));
-        assertEquals("2008054742", mRawData.getString(DBDefinitions.KEY_EID_LCCN));
-        assertEquals(8071257L, mRawData.getLong(DBDefinitions.KEY_EID_LIBRARY_THING));
-        assertEquals(6383507L, mRawData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK));
-        assertEquals("098020044X", mRawData.getString(DBDefinitions.KEY_EID_ASIN));
-        assertEquals("297222669", mRawData.getString(DBDefinitions.KEY_EID_WORLDCAT));
+        assertEquals("OL22853304M", mRawData.getString(DBDefinitions.KEY_ESID_OPEN_LIBRARY));
+        assertEquals("2008054742", mRawData.getString(DBDefinitions.KEY_ESID_LCCN));
+        assertEquals(8071257L, mRawData.getLong(DBDefinitions.KEY_ESID_LIBRARY_THING));
+        assertEquals(6383507L, mRawData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK));
+        assertEquals("098020044X", mRawData.getString(DBDefinitions.KEY_ESID_ASIN));
+        assertEquals("297222669", mRawData.getString(DBDefinitions.KEY_ESID_WORLDCAT));
 
         assertEquals("Includes bibliographical references and index.",
                      mRawData.getString(DBDefinitions.KEY_DESCRIPTION));

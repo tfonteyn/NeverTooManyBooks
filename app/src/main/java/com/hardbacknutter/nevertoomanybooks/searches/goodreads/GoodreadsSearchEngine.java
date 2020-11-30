@@ -96,7 +96,7 @@ public class GoodreadsSearchEngine
                                                        GoodreadsManager.BASE_URL)
                 .setFilenameSuffix(GoodreadsManager.FILENAME_SUFFIX)
 
-                .setDomainKey(DBDefinitions.KEY_EID_GOODREADS_BOOK)
+                .setDomainKey(DBDefinitions.KEY_ESID_GOODREADS_BOOK)
                 .setDomainViewId(R.id.site_goodreads)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
 

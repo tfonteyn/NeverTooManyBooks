@@ -89,7 +89,7 @@ public class LastDodoSearchEngine
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("LDD")
 
-                .setDomainKey(DBDefinitions.KEY_EID_LAST_DODO_NL)
+                .setDomainKey(DBDefinitions.KEY_ESID_LAST_DODO_NL)
                 .setDomainViewId(R.id.site_last_dodo_nl)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL)
                 .build();
@@ -184,7 +184,7 @@ public class LastDodoSearchEngine
             final Element td = tr.child(1);
             switch (th.text()) {
                 case "LastDodo nummer:":
-                    processText(td, DBDefinitions.KEY_EID_LAST_DODO_NL, bookData);
+                    processText(td, DBDefinitions.KEY_ESID_LAST_DODO_NL, bookData);
                     break;
 
                 case "Titel:":

@@ -177,7 +177,7 @@ public class GoodreadsManager {
      * Wrapper to send an entire book, including shelves, to Goodreads.
      * <ul>The bookData bundle has to have:
      *      <li>{@link DBDefinitions#KEY_PK_ID}</li>
-     *      <li>{@link DBDefinitions#KEY_EID_GOODREADS_BOOK}</li>
+     *      <li>{@link DBDefinitions#KEY_ESID_GOODREADS_BOOK}</li>
      *      <li>{@link DBDefinitions#KEY_ISBN}</li>
      *      <li>{@link DBDefinitions#KEY_READ}</li>
      *      <li>{@link DBDefinitions#KEY_READ_START}</li>
@@ -217,7 +217,7 @@ public class GoodreadsManager {
 
         // See if the book already has a Goodreads id and if it is valid.
         try {
-            grBookId = bookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+            grBookId = bookData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
             if (grBookId > 0) {
                 // Get the book details to make sure we have a valid book ID
                 final boolean[] fetchThumbnails = {false, false};
@@ -241,7 +241,7 @@ public class GoodreadsManager {
             // Get the book details using ISBN
             final boolean[] fetchThumbnails = {false, false};
             grBookData = getBookByIsbn(isbn.asText(), fetchThumbnails, new Bundle());
-            grBookId = grBookData.getLong(DBDefinitions.KEY_EID_GOODREADS_BOOK);
+            grBookId = grBookData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
 
             // If we got an ID, save it against the book
             if (grBookId > 0) {

@@ -325,7 +325,7 @@ public class EditBookTocFragment
 
         if (itemId == R.id.MENU_POPULATE_TOC_FROM_ISFDB) {
             final Book book = mVm.getBook();
-            final long isfdbId = book.getLong(DBDefinitions.KEY_EID_ISFDB);
+            final long isfdbId = book.getLong(DBDefinitions.KEY_ESID_ISFDB);
             if (isfdbId != 0) {
                 Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting,
                               Snackbar.LENGTH_LONG).show();
