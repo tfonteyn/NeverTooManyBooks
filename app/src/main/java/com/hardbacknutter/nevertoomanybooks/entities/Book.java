@@ -125,24 +125,29 @@ public class Book
             TAG + ":fileSpec:1"};
     /**
      * Bundle key for {@code ParcelableArrayList<Author>}.
+     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
-    public static final String BKEY_AUTHOR_LIST = TAG + ":author_list";
+    public static final String BKEY_AUTHOR_LIST = "author_list";
     /**
      * Bundle key for {@code ParcelableArrayList<Series>}.
+     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
-    public static final String BKEY_SERIES_LIST = TAG + ":series_list";
+    public static final String BKEY_SERIES_LIST = "series_list";
     /**
      * Bundle key for {@code ParcelableArrayList<Publisher>}.
+     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
-    public static final String BKEY_PUBLISHER_LIST = TAG + ":publisher_list";
+    public static final String BKEY_PUBLISHER_LIST = "publisher_list";
     /**
      * Bundle key for {@code ParcelableArrayList<TocEntry>}.
+     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
-    public static final String BKEY_TOC_LIST = TAG + ":toc_list";
+    public static final String BKEY_TOC_LIST = "toc_list";
     /**
      * Bundle key for {@code ParcelableArrayList<Bookshelf>}.
+     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
-    public static final String BKEY_BOOKSHELF_LIST = TAG + ":bookshelf_list";
+    public static final String BKEY_BOOKSHELF_LIST = "bookshelf_list";
     /**
      * Bundle key for an {@code ArrayList<Long>} of book ID's.
      * <p>
@@ -328,9 +333,9 @@ public class Book
         // Do not copy any identifiers.
         // KEY_PK_ID
         // KEY_BOOK_UUID
-        // KEY_EID_LIBRARY_THING
-        // KEY_EID_ISFDB
-        // KEY_EID_GOODREADS
+        // KEY_ESID_LIBRARY_THING
+        // KEY_ESID_ISFDB
+        // KEY_ESID_GOODREADS
         // ...
         // Do not copy these specific dates.
         // KEY_BOOK_DATE_ADDED
