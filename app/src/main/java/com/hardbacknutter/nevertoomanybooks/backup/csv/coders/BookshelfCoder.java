@@ -44,8 +44,8 @@ public class BookshelfCoder
 
     @NonNull
     private final BooklistStyle mDefaultStyle;
-    @NonNull
-    private final char[] mEscapeChars = {'(', ')'};
+
+    private static final char[] ESCAPE_CHARS = {'(', ')'};
 
     /**
      * Constructor.
@@ -90,7 +90,7 @@ public class BookshelfCoder
     @NonNull
     @Override
     public String encode(@NonNull final Bookshelf bookshelf) {
-        String result = escape(bookshelf.getName(), mEscapeChars);
+        String result = escape(bookshelf.getName(), ESCAPE_CHARS);
 
         final JSONObject details = new JSONObject();
         try {

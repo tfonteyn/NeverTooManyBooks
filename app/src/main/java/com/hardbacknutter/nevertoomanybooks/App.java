@@ -40,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 public class App
         extends Application {
 
-    public static final int ACRA_LOGFILE_LINES = 1_000;
-    public static final String EMAIL_ACRA_ATTACHMENTS = "NeverTooManyBooks-acra-report.txt";
+    private static final int ACRA_LOGFILE_LINES = 1_000;
+    private static final String EMAIL_ACRA_ATTACHMENTS = "NeverTooManyBooks-acra-report.txt";
 
     /** Singleton. */
     private static App sInstance;

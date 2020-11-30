@@ -35,8 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 public class PublisherCoder
         implements StringList.Factory<Publisher> {
 
-    @NonNull
-    private final char[] mEscapeChars = {'(', ')'};
+    private static final char[] ESCAPE_CHARS = {'(', ')'};
 
     @Override
     @NonNull
@@ -48,6 +47,6 @@ public class PublisherCoder
     @NonNull
     @Override
     public String encode(@NonNull final Publisher publisher) {
-        return escape(publisher.getName(), mEscapeChars);
+        return escape(publisher.getName(), ESCAPE_CHARS);
     }
 }

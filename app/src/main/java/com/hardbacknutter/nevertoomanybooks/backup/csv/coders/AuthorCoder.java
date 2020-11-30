@@ -49,8 +49,7 @@ public class AuthorCoder
     /** String encoding use: separator between family name and given-names. */
     private static final char NAME_SEPARATOR = ',';
 
-    @NonNull
-    private static final char[] mEscapeChars = {NAME_SEPARATOR, ' ', '(', ')'};
+    private static final char[] ESCAPE_CHARS = {NAME_SEPARATOR, ' ', '(', ')'};
 
     @Override
     @NonNull
@@ -85,9 +84,9 @@ public class AuthorCoder
     public String encode(@NonNull final Author author) {
         // Note the use of NAME_SEPARATOR between family and given-names,
         // i.e. the names are considered ONE field with a private separator.
-        String result = escape(author.getFamilyName(), mEscapeChars)
+        String result = escape(author.getFamilyName(), ESCAPE_CHARS)
                         + NAME_SEPARATOR + ' '
-                        + escape(author.getGivenNames(), mEscapeChars);
+                        + escape(author.getGivenNames(), ESCAPE_CHARS);
 
         final JSONObject details = new JSONObject();
         try {

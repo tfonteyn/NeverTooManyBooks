@@ -237,14 +237,14 @@ public abstract class VMTask<Result>
      * Can be called from the Callable.
      * Forwards the progress info to the MutableLiveData.
      *
-     * @param step the relative step in the overall progress count.
-     * @param text (optional) text message
+     * @param delta the relative step in the overall progress count.
+     * @param text  (optional) text message
      */
     @WorkerThread
     @Override
-    public final void publishProgressStep(final int step,
+    public final void publishProgressStep(final int delta,
                                           @Nullable final String text) {
-        mProgressCurrentPos += step;
+        mProgressCurrentPos += delta;
         mProgress.postValue(new ProgressMessage(mTaskId, text,
                                                 mProgressCurrentPos, mProgressMaxPos,
                                                 mIndeterminate));

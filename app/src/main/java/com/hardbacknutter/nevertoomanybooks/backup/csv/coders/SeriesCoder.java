@@ -44,8 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 public class SeriesCoder
         implements StringList.Factory<Series> {
 
-    @NonNull
-    private final char[] mEscapeChars = {'(', ')'};
+    private static final char[] ESCAPE_CHARS = {'(', ')'};
 
     @Override
     @NonNull
@@ -71,11 +70,11 @@ public class SeriesCoder
     @NonNull
     @Override
     public String encode(@NonNull final Series series) {
-        String result = escape(series.getTitle(), mEscapeChars);
+        String result = escape(series.getTitle(), ESCAPE_CHARS);
         if (!series.getNumber().isEmpty()) {
             // start with a space for readability
             // the surrounding () are NOT escaped as they are part of the format.
-            result += " (" + escape(series.getNumber(), mEscapeChars) + ')';
+            result += " (" + escape(series.getNumber(), ESCAPE_CHARS) + ')';
         }
 
         final JSONObject details = new JSONObject();

@@ -32,16 +32,16 @@ import org.json.JSONObject;
 public abstract class JsonCoderBase<T> {
 
     @NonNull
-    public abstract JSONObject encode(@NonNull final T entity);
-
-    @NonNull
-    public abstract T decode(@NonNull final JSONObject data)
-            throws JSONException;
+    public abstract JSONObject encode(@NonNull T entity);
 
     @NonNull
     public JSONArray encode(@NonNull final List<T> list) {
         return new JSONArray(list.stream().map(this::encode).collect(Collectors.toList()));
     }
+
+    @NonNull
+    public abstract T decode(@NonNull JSONObject data)
+            throws JSONException;
 
     @NonNull
     public ArrayList<T> decode(@NonNull final JSONArray objects)
