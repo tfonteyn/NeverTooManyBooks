@@ -24,6 +24,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 public class TestProgressListener
@@ -42,11 +43,13 @@ public class TestProgressListener
     public void publishProgressStep(final int delta,
                                     @Nullable final String message) {
         mProgressCurrentPos += delta;
-
-        Log.d(mTag + "|publishProgressStep",
-              "mProgressCurrentPos=" + mProgressCurrentPos
-              + "|delta=" + delta
-              + "|message=" + message);
+        // eat all message when in debug; it's to much of a slow down otherwise.
+        if (BuildConfig.DEBUG) {
+            Log.d(mTag + "|publishProgressStep",
+                  "mProgressCurrentPos=" + mProgressCurrentPos
+                  + "|delta=" + delta
+                  + "|message=" + message);
+        }
 
     }
 
