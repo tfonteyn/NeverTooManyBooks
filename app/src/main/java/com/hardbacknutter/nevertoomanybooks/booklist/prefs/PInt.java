@@ -22,7 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 import androidx.annotation.Nullable;
 
 /**
- * Passthrough support for {@link com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter}.
+ * Passthrough support.
  */
 public interface PInt {
 

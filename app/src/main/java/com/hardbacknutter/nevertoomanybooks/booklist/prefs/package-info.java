@@ -19,6 +19,11 @@
  */
 
 /**
+ * FIXME: using SharedPreferences was not a good idea.
+ * Migrate to e.g. JSON and store the json string in the database.
+ * Sort of full circle ... legacy code stored styles as serialized classes,
+ * but using JSON will allow clean backup/restore (as we have now with these PPrefs).
+ *
  * Problem:
  * <p>
  * The Preferences in {@link androidx.preference} are limited to storing

@@ -897,7 +897,6 @@ public class Book
      * The 'T' is the exception as that is easier to handle here for all fields.
      *
      * <strong>Note 2:</strong>: such a full parse should be done during import operations.
-     * See {@link com.hardbacknutter.nevertoomanybooks.backup.csv.CsvImporter}.
      */
     @VisibleForTesting
     void preprocessDates() {
