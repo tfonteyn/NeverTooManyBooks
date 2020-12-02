@@ -673,7 +673,7 @@
     <string name="camera_front">Cámara frontal</string>
     <string name="camera_back">Cámara trasera</string>
     <string name="lbl_import_option_updated_books_skip">Solo libros nuevos</string>
-    <string name="lbl_import_option_updated_books_overwrite">Libros nuevos y actualizados (restaurar)</string>
+    <string name="lbl_import_option_updated_books_overwrite">Libros nuevos y actualizados</string>
     <string name="lbl_import_option_updated_books_sync">Sincronizar</string>
     <string name="inf_import_option_updated_books_skip">Importa solo libros nuevos. Se ignorarán las actualizaciones de los libros existentes.</string>
     <string name="inf_import_option_updated_books_overwrite">Importe libros nuevos y sobrescriba los libros existentes. Use esto para restaurar una copia de seguridad.</string>

@@ -674,7 +674,7 @@
     <string name="camera_front">Μπροστινή Κάμερα</string>
     <string name="camera_back">Πίσω Κάμερα</string>
     <string name="lbl_import_option_updated_books_skip">Μόνο νέα βιβλία</string>
-    <string name="lbl_import_option_updated_books_overwrite">Νέα και ενημερωμένα βιβλία (επαναφορά)</string>
+    <string name="lbl_import_option_updated_books_overwrite">Νέα και ενημερωμένα βιβλία</string>
     <string name="lbl_import_option_updated_books_sync">Συγχρονίζω</string>
     <string name="inf_import_option_updated_books_skip">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
     <string name="inf_import_option_updated_books_overwrite">Εισαγάγετε νέα βιβλία και αντικαταστήστε τα υπάρχοντα βιβλία. Χρησιμοποιήστε αυτό για την επαναφορά ενός αντιγράφου ασφαλείας.</string>

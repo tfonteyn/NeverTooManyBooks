@@ -864,7 +864,7 @@
     <string name="lbl_import_options">Select what will be imported.</string>
     <string name="lbl_import_option_updated_books_skip">New books only</string>
     <string name="inf_import_option_updated_books_skip">Import only new books. Any updates to existing books will be ignored.</string>
-    <string name="lbl_import_option_updated_books_overwrite">New and updated books (restore)</string>
+    <string name="lbl_import_option_updated_books_overwrite">New and updated books</string>
     <string name="inf_import_option_updated_books_overwrite">Import new books and overwrite existing books. Use this for restoring a backup.</string>
     <string name="lbl_import_option_updated_books_sync">Synchronize</string>
     <string name="inf_import_option_updated_books_sync">Import new books and synchronize existing books based on their last modification date.</string>

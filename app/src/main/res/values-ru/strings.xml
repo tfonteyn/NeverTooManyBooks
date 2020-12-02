@@ -668,7 +668,7 @@
     <string name="camera_front">Фронтальная камера</string>
     <string name="camera_back">Задняя камера</string>
     <string name="lbl_import_option_updated_books_skip">Только новые книги</string>
-    <string name="lbl_import_option_updated_books_overwrite">Новые и обновленные книги (восстановить)</string>
+    <string name="lbl_import_option_updated_books_overwrite">Новые и обновленные книги</string>
     <string name="lbl_import_option_updated_books_sync">Синхронизировать</string>
     <string name="inf_import_option_updated_books_skip">Импортируйте только новые книги. Любые обновления существующих книг будут проигнорированы.</string>
     <string name="inf_import_option_updated_books_overwrite">Импортируйте новые книги и перезаписывайте существующие книги. Используйте это для восстановления резервной копии.</string>

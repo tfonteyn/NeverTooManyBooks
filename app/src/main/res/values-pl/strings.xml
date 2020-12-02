@@ -669,7 +669,7 @@
     <string name="camera_front">Przedni aparat</string>
     <string name="camera_back">Tylny aparat</string>
     <string name="lbl_import_option_updated_books_skip">Tylko nowe książki</string>
-    <string name="lbl_import_option_updated_books_overwrite">Nowe i zaktualizowane książki (przywróć)</string>
+    <string name="lbl_import_option_updated_books_overwrite">Nowe i zaktualizowane książki</string>
     <string name="lbl_import_option_updated_books_sync">Synchronizować</string>
     <string name="inf_import_option_updated_books_skip">Importuj tylko nowe książki. Wszelkie aktualizacje istniejących książek będą ignorowane.</string>
     <string name="inf_import_option_updated_books_overwrite">Importuj nowe książki i nadpisz istniejące książki. Użyj tego do przywrócenia kopii zapasowej.</string>
