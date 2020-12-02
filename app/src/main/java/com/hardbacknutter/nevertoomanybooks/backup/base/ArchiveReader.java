@@ -27,27 +27,16 @@ import androidx.annotation.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 public interface ArchiveReader
         extends Closeable {
 
-    /**
-     * Get the {@link ArchiveInfo} object read from the backup.
-     * The default implementation returns {@code null}.
-     *
-     * @param context Current context
-     *
-     * @return info object
-     *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on other failures
-     */
-    @Nullable
-    default ArchiveInfo readArchiveInfo(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
-        return null;
-    }
+    String ERROR_INVALID_INPUT = "File/type is not supported";
+    String ERROR_INVALID_HEADER = "Header is invalid / not found";
+
 
     /**
      * Checks if the current archive looks valid.
@@ -61,6 +50,23 @@ public interface ArchiveReader
     default void validate(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
         // do nothing
+    }
+
+    /**
+     * Get the {@link ArchiveInfo} object read from the backup.
+     * The default implementation returns {@code null}.
+     *
+     * @param context Current context
+     *
+     * @return info object
+     *
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException             on other failures
+     */
+    @Nullable
+    default ArchiveInfo readHeader(@NonNull final Context context)
+            throws InvalidArchiveException, IOException {
+        return null;
     }
 
     /**

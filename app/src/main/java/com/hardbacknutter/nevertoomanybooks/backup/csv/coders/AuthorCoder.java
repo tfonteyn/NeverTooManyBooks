@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 
@@ -45,37 +46,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 public class AuthorCoder
         implements StringList.Factory<Author> {
 
-
     /** String encoding use: separator between family name and given-names. */
     private static final char NAME_SEPARATOR = ',';
 
     private static final char[] ESCAPE_CHARS = {NAME_SEPARATOR, ' ', '(', ')'};
 
-    @Override
-    @NonNull
-    public Author decode(@NonNull final String element) {
-        final List<String> parts = StringList.newInstance().decodeElement(element);
-        final Author author = Author.from(parts.get(0));
-        if (parts.size() > 1) {
-            try {
-                final JSONObject details = new JSONObject(parts.get(1));
-
-                if (details.has(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
-                    author.setComplete(details.optBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE));
-                } else if (details.has("complete")) {
-                    author.setComplete(details.optBoolean("complete"));
-                }
-
-                if (details.has(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-                    author.setType(details.optInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK));
-                } else if (details.has("type")) {
-                    author.setType(details.optInt("type"));
-                }
-            } catch (@NonNull final JSONException ignore) {
-                // ignore
-            }
-        }
-        return author;
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public AuthorCoder() {
     }
 
     @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
@@ -104,5 +81,32 @@ public class AuthorCoder
             result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
         }
         return result;
+    }
+
+    @Override
+    @NonNull
+    public Author decode(@NonNull final String element) {
+        final List<String> parts = StringList.newInstance().decodeElement(element);
+        final Author author = Author.from(parts.get(0));
+        if (parts.size() > 1) {
+            try {
+                final JSONObject details = new JSONObject(parts.get(1));
+
+                if (details.has(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
+                    author.setComplete(details.optBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE));
+                } else if (details.has("complete")) {
+                    author.setComplete(details.optBoolean("complete"));
+                }
+
+                if (details.has(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+                    author.setType(details.optInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK));
+                } else if (details.has("type")) {
+                    author.setType(details.optInt("type"));
+                }
+            } catch (@NonNull final JSONException ignore) {
+                // ignore
+            }
+        }
+        return author;
     }
 }

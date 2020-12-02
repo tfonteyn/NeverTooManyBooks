@@ -30,24 +30,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 public class JsonArchiveReader
         implements ArchiveReader {
 
+    /** Log tag. */
+    private static final String TAG = "JsonArchiveReader";
+
     /** import configuration. */
     @NonNull
     private final ImportHelper mHelper;
 
+    @NonNull
+    private final DAO mDb;
+
     public JsonArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
+        mDb = new DAO(TAG);
     }
 
     @NonNull
@@ -64,40 +71,50 @@ public class JsonArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (Importer importer = new JsonImporter(context)) {
-            final ReaderEntity entity = new JsonReaderEntity(is);
-            return importer.read(context, entity, mHelper.getOptions(), progressListener);
+        try (RecordReader recordReader = new JsonRecordReader(context, mDb)) {
+            //noinspection ConstantConditions
+            final ArchiveReaderRecord record =
+                    new JsonArchiveRecord(mHelper.getUri().getLastPathSegment(), is);
+            return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {
             is.close();
         }
     }
 
     @Override
-    public void validate(@NonNull final Context context) {
-        // hope for the best
+    public void close()
+            throws IOException {
+        mDb.purge();
+        mDb.close();
     }
 
     @VisibleForTesting
-    public static class JsonReaderEntity
-            implements ReaderEntity {
+    public static class JsonArchiveRecord
+            implements ArchiveReaderRecord {
 
-        /** The entity source stream. */
+        @NonNull
+        private final String mName;
+
+        /** The record source stream. */
         @NonNull
         private final InputStream mIs;
 
         /**
          * Constructor.
          *
-         * @param is InputStream to use
+         * @param name of this record
+         * @param is   InputStream to use
          */
-        JsonReaderEntity(@NonNull final InputStream is) {
+        JsonArchiveRecord(@NonNull final String name,
+                          @NonNull final InputStream is) {
+            mName = name;
             mIs = is;
         }
 
         @NonNull
         @Override
         public String getName() {
-            return ArchiveContainerEntry.BooksJson.getName();
+            return mName;
         }
 
         @Override
@@ -110,12 +127,6 @@ public class JsonArchiveReader
         @Override
         public InputStream getInputStream() {
             return mIs;
-        }
-
-        @NonNull
-        @Override
-        public ArchiveContainerEntry getType() {
-            return ArchiveContainerEntry.BooksJson;
         }
     }
 }

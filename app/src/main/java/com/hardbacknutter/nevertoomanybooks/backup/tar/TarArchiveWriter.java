@@ -36,9 +36,9 @@ import java.time.Instant;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -75,51 +75,17 @@ public class TarArchiveWriter
         super(context, helper);
 
         mOutputStream = new TarArchiveOutputStream(new BufferedOutputStream(
-                new FileOutputStream(helper.getTempOutputFile(context)),
-                BUFFER_SIZE));
+                new FileOutputStream(helper.getTempOutputFile(context)), BUFFER_SIZE));
     }
 
     @Override
     public void writeCovers(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)
             throws IOException {
-        defWriteCovers(context, progressListener);
+        // delegate to the default implementation
+        writeCoversDefImpl(context, progressListener);
     }
 
-    /**
-     * Add a File to the archive. Supports text files only.
-     *
-     * @param name     for the entry;  allows easier overriding of the file name
-     * @param file     to store in the archive
-     * @param compress ignored
-     *
-     * @throws IOException on failure
-     */
-    @Override
-    public void putFile(@NonNull final String name,
-                        @NonNull final File file,
-                        final boolean compress)
-            throws IOException {
-        final TarArchiveEntry entry = new TarArchiveEntry(new File(name));
-        entry.setModTime(file.lastModified());
-        entry.setSize(file.length());
-        mOutputStream.putArchiveEntry(entry);
-        try (InputStream is = new FileInputStream(file)) {
-            FileUtils.copy(is, mOutputStream);
-        } finally {
-            mOutputStream.closeArchiveEntry();
-        }
-    }
-
-    /**
-     * Write a generic byte array to the archive.
-     *
-     * @param name     for the entry
-     * @param bytes    to store in the archive
-     * @param compress ignored
-     *
-     * @throws IOException on failure
-     */
     @Override
     public void putByteArray(@NonNull final String name,
                              @NonNull final byte[] bytes,
@@ -129,8 +95,27 @@ public class TarArchiveWriter
         final TarArchiveEntry entry = new TarArchiveEntry(name);
         entry.setModTime(Instant.now().toEpochMilli());
         entry.setSize(bytes.length);
+
         mOutputStream.putArchiveEntry(entry);
         try (InputStream is = new ByteArrayInputStream(bytes)) {
+            FileUtils.copy(is, mOutputStream);
+        } finally {
+            mOutputStream.closeArchiveEntry();
+        }
+    }
+
+    @Override
+    public void putFile(@NonNull final String name,
+                        @NonNull final File file,
+                        final boolean compress)
+            throws IOException {
+
+        final TarArchiveEntry entry = new TarArchiveEntry(new File(name));
+        entry.setModTime(file.lastModified());
+        entry.setSize(file.length());
+
+        mOutputStream.putArchiveEntry(entry);
+        try (InputStream is = new FileInputStream(file)) {
             FileUtils.copy(is, mOutputStream);
         } finally {
             mOutputStream.closeArchiveEntry();

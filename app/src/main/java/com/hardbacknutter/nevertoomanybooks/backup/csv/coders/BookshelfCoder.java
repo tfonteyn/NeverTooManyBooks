@@ -42,17 +42,16 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public class BookshelfCoder
         implements StringList.Factory<Bookshelf> {
 
+    private static final char[] ESCAPE_CHARS = {'(', ')'};
     @NonNull
     private final BooklistStyle mDefaultStyle;
-
-    private static final char[] ESCAPE_CHARS = {'(', ')'};
 
     /**
      * Constructor.
      *
      * @param defaultStyle to use for bookshelves without a style set.
      */
-    public BookshelfCoder(@NonNull final BooklistStyle defaultStyle) {
+    BookshelfCoder(@NonNull final BooklistStyle defaultStyle) {
         mDefaultStyle = defaultStyle;
     }
 
@@ -62,6 +61,27 @@ public class BookshelfCoder
     @Override
     public char getElementSeparator() {
         return ',';
+    }
+
+    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
+    @NonNull
+    @Override
+    public String encode(@NonNull final Bookshelf bookshelf) {
+        String result = escape(bookshelf.getName(), ESCAPE_CHARS);
+
+        final JSONObject details = new JSONObject();
+        try {
+            if (!bookshelf.getStyleUuid().isEmpty()) {
+                details.put(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid());
+            }
+        } catch (@NonNull final JSONException e) {
+            throw new IllegalStateException(e);
+        }
+
+        if (details.length() != 0) {
+            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
+        }
+        return result;
     }
 
     @Override
@@ -84,26 +104,5 @@ public class BookshelfCoder
             }
         }
         return bookshelf;
-    }
-
-    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
-    @NonNull
-    @Override
-    public String encode(@NonNull final Bookshelf bookshelf) {
-        String result = escape(bookshelf.getName(), ESCAPE_CHARS);
-
-        final JSONObject details = new JSONObject();
-        try {
-            if (!bookshelf.getStyleUuid().isEmpty()) {
-                details.put(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid());
-            }
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
-        }
-
-        if (details.length() != 0) {
-            result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
-        }
-        return result;
     }
 }

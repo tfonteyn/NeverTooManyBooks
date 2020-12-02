@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,41 +29,31 @@ import java.io.IOException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 /**
  * Input: {@link ExportHelper}.
  * Output: {@link ExportResults}.
  */
-public class ArchiveExportTask
+public class ArchiveWriterTask
         extends VMTask<ExportResults> {
 
     /** Log tag. */
-    private static final String TAG = "ArchiveExportTask";
+    private static final String TAG = "ArchiveWriterTask";
 
     /** export configuration. */
     @Nullable
     private ExportHelper mHelper;
 
-    public void setHelper(@NonNull final ExportHelper helper) {
-        mHelper = helper;
-    }
-
-    @NonNull
-    public String getDefaultUriName(@NonNull final Context context) {
-        Objects.requireNonNull(mHelper, "mHelper");
-        return Exporter.getNamePrefix(context) + mHelper.getArchiveContainer().getFileExt();
-    }
-
     /**
      * Start the task.
-     * {@link #setHelper(ExportHelper)} must have been called before.
      *
-     * @param uri to write to
+     * @param exportHelper with uri/options
      */
-    public void startExport(@NonNull final Uri uri) {
-        Objects.requireNonNull(mHelper, "mHelper");
-        mHelper.setUri(uri);
+    public void startExport(@NonNull final ExportHelper exportHelper) {
+        mHelper = exportHelper;
         execute(R.id.TASK_ID_EXPORT);
     }
 
@@ -77,8 +66,8 @@ public class ArchiveExportTask
 
         ExportResults results = null;
         //noinspection ConstantConditions
-        try (ArchiveWriter exporter = mHelper.getArchiveWriter(context)) {
-            results = exporter.write(context, this);
+        try (ArchiveWriter writer = mHelper.createArchiveWriter(context)) {
+            results = writer.write(context, this);
 
         } catch (@NonNull final IOException e) {
             // The zip archiver (maybe others as well?) can throw an IOException

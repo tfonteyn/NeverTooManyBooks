@@ -17,20 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup;
+package com.hardbacknutter.nevertoomanybooks.backup.json;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.ViewModel;
+class JsonTags {
 
-public class ExportViewModel
-        extends ViewModel {
+    /** JSON Object tag for the array of books. */
+    static final String BOOK_LIST = "book_list";
 
-    /** The export configuration. */
-    @NonNull
-    private final ExportHelper mExportHelper = new ExportHelper();
-
-    @NonNull
-    ExportHelper getExportHelper() {
-        return mExportHelper;
-    }
+    static final String STYLE_LIST = "style_list";
+    static final String PREFERENCES = "preferences";
 }

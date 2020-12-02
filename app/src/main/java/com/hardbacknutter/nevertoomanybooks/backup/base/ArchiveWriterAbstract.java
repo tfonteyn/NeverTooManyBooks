@@ -31,26 +31,22 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvExporter;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlExporter;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Default implementation of format-specific methods.
- *
- * <ol>This writes in order:
- *      <li>XML Archive info</li>
- *      <li>XML Styles</li>
- *      <li>XML Preferences</li>
- *      <li>CSV Books</li>
- * </ol>
- * <p>
- * Covers are implemented but support depends on the concrete class.
  */
 public abstract class ArchiveWriterAbstract
         extends ArchiveWriterAbstractBase
@@ -60,16 +56,36 @@ public abstract class ArchiveWriterAbstract
 
     /**
      * The format/version is shared between writers.
-     * A concrete writer merely defines the container.
+     * A concrete writer merely defines the archive.
+     * <ul>
+     *     <li>v3:
+     *         <ul>
+     *             <li>header: json</li>
+     *             <li>styles: xml</li>
+     *             <li>preferences: xml</li>
+     *             <li>books: json</li>
+     *         </ul>
+     *     </li>
+     *     <li>v2:
+     *         <ul>
+     *             <li>header: xml</li>
+     *             <li>styles: xml</li>
+     *             <li>preferences: xml</li>
+     *             <li>books: csv</li>
+     *         </ul>
+     *     </li>
+     *     <li>v1: obsolete</li>
+     * </ul>
      */
     protected static final int VERSION = 2;
 
     /** Buffer for the Writer. */
     private static final int BUFFER_SIZE = 65535;
 
-    /** {@link #prepareData} writes to this file; {@link #writeBooks} copies it to the archive. */
+    /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
     @Nullable
     private File mTmpBooksFile;
+    private String mBooksFileExtension;
 
     /**
      * Constructor.
@@ -91,24 +107,33 @@ public abstract class ArchiveWriterAbstract
     }
 
     /**
-     * Default implementation: write as XML.
+     * Default implementation: write as JSON.
      *
      * <br><br>{@inheritDoc}
      */
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void writeHeader(@NonNull final Context context,
                             @NonNull final ArchiveInfo archiveInfo)
             throws IOException {
-        // Write the archiveInfo as XML to a byte array.
-        final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             XmlExporter xmlExporter = new XmlExporter(context, ExportHelper.OPTIONS_INFO, null)) {
 
-            xmlExporter.writeArchiveInfo(writer, archiveInfo);
+        switch (VERSION) {
+            case 3: {
+                putString(ArchiveWriterRecord.Type.InfoHeader.getName() + ".json",
+                          archiveInfo.toJson().toString());
+                break;
+            }
+            case 2: {
+                final byte[] header;
+                try (XmlRecordWriter writer = new XmlRecordWriter()) {
+                    header = writer.createArchiveHeader(archiveInfo);
+                }
+                putByteArray(ArchiveWriterRecord.Type.InfoHeader.getName() + ".xml", header, true);
+                break;
+            }
+            default:
+                throw new IllegalStateException();
         }
-        // and store the array
-        putByteArray(ArchiveContainerEntry.InfoHeaderXml.getName(), data.toByteArray(), true);
     }
 
     /**
@@ -124,12 +149,16 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             Exporter exporter = new XmlExporter(context, ExportHelper.OPTIONS_STYLES, null)) {
+             RecordWriter recordWriter = new XmlRecordWriter()) {
 
-            mResults.add(exporter.write(context, writer, progressListener));
+            mResults.add(recordWriter.write(context, writer,
+                                            EnumSet.of(ArchiveWriterRecord.Type.Styles),
+                                            mHelper.getOptions(),
+                                            progressListener));
         }
         // and store the array
-        putByteArray(ArchiveContainerEntry.BooklistStylesXml.getName(), data.toByteArray(), true);
+        putByteArray(ArchiveWriterRecord.Type.Styles.getName() + ".xml",
+                     data.toByteArray(), true);
     }
 
     /**
@@ -145,12 +174,16 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             Exporter exporter = new XmlExporter(context, ExportHelper.OPTIONS_PREFS, null)) {
+             RecordWriter recordWriter = new XmlRecordWriter()) {
 
-            mResults.add(exporter.write(context, writer, progressListener));
+            mResults.add(recordWriter.write(context, writer,
+                                            EnumSet.of(ArchiveWriterRecord.Type.Preferences),
+                                            mHelper.getOptions(),
+                                            progressListener));
         }
         // and store the array
-        putByteArray(ArchiveContainerEntry.PreferencesXml.getName(), data.toByteArray(), true);
+        putByteArray(ArchiveWriterRecord.Type.Preferences.getName() + ".xml",
+                     data.toByteArray(), true);
     }
 
     /**
@@ -161,26 +194,52 @@ public abstract class ArchiveWriterAbstract
      *
      * <br><br>{@inheritDoc}
      */
+    @SuppressWarnings("ConstantConditions")
     @Override
-    public ExportResults prepareData(@NonNull final Context context,
-                                     @NonNull final ProgressListener progressListener)
+    public ExportResults prepareBooks(@NonNull final Context context,
+                                      @NonNull final ProgressListener progressListener)
             throws IOException {
+
+        // Filter to valid options for this step.
+        final Set<ArchiveWriterRecord.Type> types = EnumSet.noneOf(ArchiveWriterRecord.Type.class);
+
+        if (mHelper.getExporterEntries().contains(ArchiveWriterRecord.Type.Books)) {
+            types.add(ArchiveWriterRecord.Type.Books);
+        }
+        if (mHelper.getExporterEntries().contains(ArchiveWriterRecord.Type.Cover)) {
+            types.add(ArchiveWriterRecord.Type.Cover);
+        }
+
         // Get a temp file and set for delete
-        mTmpBooksFile = File.createTempFile("books_csv_", ".tmp");
+        mTmpBooksFile = File.createTempFile("books_", ".tmp");
         mTmpBooksFile.deleteOnExit();
 
-        // Not strictly needed for the CsvExporter as it will ignore
-        // other options, but done as a reminder (see XmlArchiveWriter)
-        final int entities =
-                mHelper.getOptions() & (ExportHelper.OPTIONS_BOOKS | ExportHelper.OPTIONS_COVERS);
-        try (Exporter exporter = new CsvExporter(context, entities,
-                                                 mHelper.getUtcDateTimeSince())) {
-            return exporter.write(context, mTmpBooksFile, progressListener);
+        switch (VERSION) {
+            case 3: {
+                mBooksFileExtension = ".json";
+                try (RecordWriter recordWriter =
+                             new JsonRecordWriter(mHelper.getUtcDateTimeSince())) {
+                    return recordWriter.write(context, mTmpBooksFile, types,
+                                              mHelper.getOptions(),
+                                              progressListener);
+                }
+            }
+            case 2: {
+                mBooksFileExtension = ".csv";
+                try (RecordWriter recordWriter =
+                             new CsvRecordWriter(mHelper.getUtcDateTimeSince())) {
+                    return recordWriter.write(context, mTmpBooksFile, types,
+                                              mHelper.getOptions(),
+                                              progressListener);
+                }
+            }
+            default:
+                throw new IllegalStateException();
         }
     }
 
     /**
-     * Default implementation: write the file as prepared in {@link #prepareData}.
+     * Default implementation: write the file as prepared in {@link #prepareBooks}.
      *
      * <br><br>{@inheritDoc}
      */
@@ -190,25 +249,29 @@ public abstract class ArchiveWriterAbstract
             throws IOException {
         try {
             Objects.requireNonNull(mTmpBooksFile);
-            putFile(ArchiveContainerEntry.BooksCsv.getName(), mTmpBooksFile, true);
+            putFile(ArchiveWriterRecord.Type.Books.getName() + mBooksFileExtension,
+                    mTmpBooksFile, true);
         } finally {
             FileUtils.delete(mTmpBooksFile);
         }
     }
 
     /**
-     * A container agnostic default implementation for writing cover files.
+     * An archive agnostic default implementation for writing cover files.
      * <p>
-     * Write each cover file as collected in {@link #prepareData}
+     * Write each cover file as collected in {@link #prepareBooks}
      * to the archive.
+     * <p>
+     * FIXME: not implemented as a RecordWriter,
+     * as we need to access the previous ExportResults object.
      *
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
      *
      * @throws IOException on failure
      */
-    protected void defWriteCovers(@NonNull final Context context,
-                                  @NonNull final ProgressListener progressListener)
+    protected void writeCoversDefImpl(@NonNull final Context context,
+                                      @NonNull final ProgressListener progressListener)
             throws IOException {
 
         progressListener.publishProgressStep(0, context.getString(R.string.lbl_covers_long));
@@ -240,6 +303,35 @@ public abstract class ArchiveWriterAbstract
     }
 
     /**
+     * Write a generic string to the archive.
+     *
+     * @param name    for the entry
+     * @param content to store in the archive as bytes
+     *
+     * @throws IOException on failure
+     */
+    public void putString(@NonNull final String name,
+                          @NonNull final String content)
+            throws IOException {
+        putByteArray(name, content.getBytes(StandardCharsets.UTF_8), true);
+    }
+
+    /**
+     * Write a generic byte array to the archive.
+     *
+     * @param name     for the entry
+     * @param bytes    to store in the archive
+     * @param compress Flag: compress the data if the writer supports it.
+     *
+     * @throws IOException on failure
+     */
+    public abstract void putByteArray(@NonNull String name,
+                                      @NonNull byte[] bytes,
+                                      @SuppressWarnings("SameParameterValue") boolean compress)
+            throws IOException;
+
+
+    /**
      * Write a generic file to the archive.
      *
      * @param name     for the entry;  allows easier overriding of the file name
@@ -251,19 +343,5 @@ public abstract class ArchiveWriterAbstract
     protected abstract void putFile(@NonNull String name,
                                     @NonNull File file,
                                     boolean compress)
-            throws IOException;
-
-    /**
-     * Write a generic byte array to the archive.
-     *
-     * @param name     for the entry
-     * @param bytes    to store in the archive
-     * @param compress Flag: compress the data if the writer supports it.
-     *
-     * @throws IOException on failure
-     */
-    protected abstract void putByteArray(@NonNull String name,
-                                         @NonNull byte[] bytes,
-                                         @SuppressWarnings("SameParameterValue") boolean compress)
             throws IOException;
 }

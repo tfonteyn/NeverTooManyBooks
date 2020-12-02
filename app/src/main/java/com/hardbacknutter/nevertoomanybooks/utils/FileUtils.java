@@ -28,7 +28,6 @@ import android.provider.OpenableColumns;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.documentfile.provider.DocumentFile;
 
 import java.io.File;
@@ -354,18 +353,55 @@ public final class FileUtils {
         }
     }
 
+    /**
+     * Get the name and size of the content behind a Uri.
+     * <p>
+     * Depending on [lots of things I don't claim to know], some Uri's accessing files
+     * on the local device come back as:
+     * <br><br>
+     * {@code content://com.android.providers.downloads.documents/document/
+     * raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fmetadata.db }
+     * <br><br>
+     * In the above, we seem to get a real path and certainly are getting the real filename.
+     * But in other cases we we just get the document id:
+     * <br><br>
+     * {@code content://com.android.providers.downloads.documents/document/30 }
+     * <br><br>
+     * Using the query interface for the ContentResolver, we <strong>DO</strong> get a name
+     * (and in our code, the size).
+     * There is potentially more info, and potentially the query will return gibberish.
+     *
+     * @param context Current context
+     * @param uri     to inspect
+     *
+     * @return a Pair with (name,size)
+     */
     @Nullable
-    public static Pair<String, Long> getUriInfo(@NonNull final Context context,
-                                                @NonNull final Uri uri) {
+    public static UriInfo getUriInfo(@NonNull final Context context,
+                                     @NonNull final Uri uri) {
+        UriInfo uriInfo = null;
+
         if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
             final ContentResolver contentResolver = context.getContentResolver();
             try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    final String name = cursor.getString(cursor.getColumnIndex(
-                            OpenableColumns.DISPLAY_NAME));
+
+                    final String name = cursor.getString(
+                            cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                     final long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+
                     if (name != null && !name.isEmpty()) {
-                        return new Pair<>(name, size);
+                        uriInfo = new UriInfo(name, size);
+
+                        //    for (final String cName : cursor.getColumnNames()) {
+                        //        //0 = "document_id"
+                        //        //1 = "mime_type"       it's what we put in when opening
+                        //        //2 = "_display_name"   OpenableColumns.DISPLAY_NAME
+                        //        //3 = "summary"
+                        //        //4 = "last_modified"
+                        //        //5 = "flags"
+                        //        //6 = "_size"           OpenableColumns.SIZE
+                        //    }
                     }
                 }
             }
@@ -374,12 +410,12 @@ public final class FileUtils {
             if (path != null) {
                 final File file = new File(path);
                 if (file.exists()) {
-                    return new Pair<>(file.getName(), file.length());
+                    uriInfo = new UriInfo(file.getName(), file.length());
                 }
             }
         }
 
-        return null;
+        return uriInfo;
     }
 
     /**
@@ -403,5 +439,18 @@ public final class FileUtils {
             }
         }
         return crc32;
+    }
+
+    public static class UriInfo {
+
+        @Nullable
+        public final String displayName;
+        public final long size;
+
+        UriInfo(@Nullable final String displayName,
+                final long size) {
+            this.displayName = displayName;
+            this.size = size;
+        }
     }
 }

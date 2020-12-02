@@ -17,25 +17,26 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 
 /**
+ * URGENT: redo this in two parts: the result of an {@link RecordReader#read} and the result
+ * of the complete import process.
+ * <p>
  * Value class to report back what was imported.
  * <p>
- * Used by {@link Importer} and accumulated in {@link ArchiveReader}.
+ * Used by {@link RecordReader} and accumulated in {@link ArchiveReader}.
  * <p>
  * Note: failed = processed - created - updated
  */
@@ -59,9 +60,7 @@ public class ImportResults
     /**
      * {@link ImportResults} after an import.
      */
-    public static final String BKEY_IMPORT_RESULTS = TAG + ":results";
-    /** Report list bullet. */
-    private static final String BULLET = "\n• ";
+    static final String BKEY_IMPORT_RESULTS = TAG + ":results";
     /** Keeps track of failed import lines in a text file. */
     public final List<Integer> failedLinesNr = new ArrayList<>();
     /** Keeps track of failed import lines in a text file. */
@@ -77,13 +76,13 @@ public class ImportResults
     public int booksSkipped;
 
     /** The total #covers that were present in the import data. */
-    int coversProcessed;
+    public int coversProcessed;
     /** #covers we created. */
-    int coversCreated;
+    public int coversCreated;
     /** #covers we updated. */
-    int coversUpdated;
+    public int coversUpdated;
     /** #covers we skipped. */
-    int coversSkipped;
+    public int coversSkipped;
 
     /** #styles we imported. */
     public int styles;
@@ -132,73 +131,6 @@ public class ImportResults
 
         failedLinesNr.addAll(results.failedLinesNr);
         failedLinesMessage.addAll(results.failedLinesMessage);
-    }
-
-
-    /**
-     * Transform the result data into a user friendly report.
-     *
-     * @param context Current context
-     *
-     * @return report string
-     */
-    @NonNull
-    public String createReport(@NonNull final Context context) {
-        //
-        final StringBuilder report = new StringBuilder();
-
-        //TODO: RTL
-        if (booksCreated > 0 || booksUpdated > 0 || booksSkipped > 0) {
-            report.append(BULLET)
-                  .append(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                            context.getString(R.string.lbl_books),
-                                            booksCreated,
-                                            booksUpdated,
-                                            booksSkipped));
-        }
-        if (coversCreated > 0 || coversUpdated > 0 || coversSkipped > 0) {
-            report.append(BULLET)
-                  .append(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                            context.getString(R.string.lbl_covers),
-                                            coversCreated,
-                                            coversUpdated,
-                                            coversSkipped));
-        }
-        if (styles > 0) {
-            report.append(BULLET).append(context.getString(R.string.name_colon_value,
-                                                           context.getString(R.string.lbl_styles),
-                                                           String.valueOf(styles)));
-        }
-        if (preferences > 0) {
-            report.append(BULLET).append(context.getString(R.string.lbl_settings));
-        }
-
-        int failed = failedLinesNr.size();
-        if (failed > 0) {
-            final int fs;
-            final Collection<String> msgList = new ArrayList<>();
-
-            if (failed > 10) {
-                // keep it sensible, list maximum 10 lines.
-                failed = 10;
-                fs = R.string.warning_import_csv_failed_lines_lots;
-            } else {
-                fs = R.string.warning_import_csv_failed_lines_some;
-            }
-
-            for (int i = 0; i < failed; i++) {
-                msgList.add(context.getString(R.string.a_bracket_b_bracket,
-                                              String.valueOf(failedLinesNr.get(i)),
-                                              failedLinesMessage.get(i)));
-            }
-
-            final String all = msgList.stream()
-                                      .map(s -> context.getString(R.string.list_element, s))
-                                      .collect(Collectors.joining("\n"));
-            report.append("\n").append(context.getString(fs, all));
-        }
-
-        return report.toString();
     }
 
     @Override

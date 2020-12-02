@@ -29,12 +29,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,37 +41,26 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.AuthorCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookshelfCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.PublisherCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.TocEntryCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
- * Implementation of {@link Importer} that reads a CSV file.
+ * Implementation of {@link RecordReader} that reads a CSV file.
  * <ul>Supports:
- *      <li>{@link ArchiveContainerEntry#BooksCsv}</li>
+ *      <li>{@link ArchiveReaderRecord.Type#Books}</li>
  * </ul>
  * <p>
  * A CSV file which was not written by this app, should be careful about encoding the following
@@ -117,27 +101,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
  * - books updated
  * - books inserted while not having a uuid/id; i.e. unknown input source -> would require ISBN
  */
-public class CsvImporter
-        implements Importer {
+public class CsvRecordReader
+        implements RecordReader {
 
     /** Log tag. */
-    private static final String TAG = "CsvImporter";
+    private static final String TAG = "CsvRecordReader";
 
     /** Buffer for the Reader. */
     private static final int BUFFER_SIZE = 65535;
 
-
     /** log error string. */
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
-
-    /** Obsolete/alternative header: full given+family author name. */
-    private static final String LEGACY_AUTHOR_NAME = "author_name";
-    /** Obsolete/alternative header: bookshelf name. */
-    private static final String LEGACY_BOOKSHELF_TEXT = "bookshelf_text";
-    /** Obsolete, not used. */
-    private static final String LEGACY_BOOKSHELF_ID = "bookshelf_id";
-    /** Obsolete/alternative header: bookshelf name. Used by pre-1.2 versions. */
-    private static final String LEGACY_BOOKSHELF_1_1_x = "bookshelf";
 
     /** Database Access. */
     @NonNull
@@ -152,94 +126,63 @@ public class CsvImporter
     private final String mProgressMessage;
     @NonNull
     private final String mUnknownString;
-    @NonNull
-    private final String mUnknownTitleString;
-    private final ImportResults mResults = new ImportResults();
-    private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
-    private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
-    private final StringList<Publisher> mPublisherCoder = new StringList<>(new PublisherCoder());
-    private final StringList<TocEntry> mTocCoder = new StringList<>(new TocEntryCoder());
-    private final StringList<Bookshelf> mBookshelfCoder;
-    /** import configuration. */
-    private boolean mSyncBooks;
-    private boolean mOverwriteBooks;
+
+    private final BookCoder mBookCoder;
+
+    private ImportResults mResults;
 
     /**
      * Constructor.
      * <p>
-     * Only supports {@link ArchiveContainerEntry#BooksCsv}.
+     * Only supports {@link ArchiveReaderRecord.Type#Books}.
      *
      * @param context Current context
+     * @param db      Database Access;
      */
     @AnyThread
-    public CsvImporter(@NonNull final Context context) {
-
-        mDb = new DAO(TAG);
-        mBookshelfCoder = new StringList<>(
-                new BookshelfCoder(StyleDAO.getDefault(context, mDb)));
+    public CsvRecordReader(@NonNull final Context context,
+                           @NonNull final DAO db) {
+        mDb = db;
+        mBookCoder = new BookCoder(StyleDAO.getDefault(context, mDb));
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
-        // If the title is missing a generic "[Unknown title]" will be used.
-        mUnknownTitleString = context.getString(R.string.unknown_title);
         mUnknownString = context.getString(R.string.unknown);
     }
 
-    /**
-     * @param context          Current context
-     * @param entity           to read data from
-     * @param options
-     * @param progressListener Progress and cancellation provider
-     *
-     * @return {@link ImportResults}
-     *
-     * @throws IndexOutOfBoundsException if the number of column headers != number of column data
-     * @throws IOException               on failure
-     * @throws ImportException           on failure
-     */
     @Override
+    @NonNull
     public ImportResults read(@NonNull final Context context,
-                              @NonNull final ReaderEntity entity,
-                              final int options,
+                              @NonNull final ArchiveReaderRecord record,
+                              @ImportHelper.Options final int options,
                               @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
-        mSyncBooks = (options & ImportHelper.OPTIONS_UPDATES_MUST_SYNC) != 0;
-        mOverwriteBooks = (options & ImportHelper.OPTIONS_UPDATES_MAY_OVERWRITE) != 0;
+        mResults = new ImportResults();
 
-        // we only support books, return empty results
-        if (entity.getType() != ArchiveContainerEntry.BooksCsv) {
+        // Read the whole file content into a list of lines.
+        final List<String> content = record.asList();
+        if (content.isEmpty()) {
             return mResults;
         }
 
-        // Don't close this stream!
-        final InputStream is = entity.getInputStream();
-        final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        final BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE);
-
-        // We read the whole file/list into memory.
-        final List<String> importedList = new ArrayList<>();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            importedList.add(line);
-        }
-        if (importedList.isEmpty()) {
-            return mResults;
-        }
+        final boolean updatesMustSync =
+                (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
+        final boolean updatesMayOverwrite =
+                (options & ImportHelper.OPTION_UPDATES_MAY_OVERWRITE) != 0;
 
         // First line in the import file must be the column names.
         // Store them to use as keys into the book.
-        final String[] csvColumnNames = parse(context, 0, importedList.get(0));
+        final String[] csvColumnNames = parse(context, 0, content.get(0));
         // sanity check: make sure they are lower case
         for (int i = 0; i < csvColumnNames.length; i++) {
             csvColumnNames[i] = csvColumnNames[i].toLowerCase(mUserLocale);
         }
-
         // check for required columns
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
         // If a sync was requested, we'll need this column or cannot proceed.
-        if (mSyncBooks) {
+        if (updatesMustSync) {
             requireColumnOrThrow(context, csvColumnNamesList, DBDefinitions.KEY_UTC_LAST_UPDATED);
         }
 
@@ -255,12 +198,12 @@ public class CsvImporter
         SyncLock txLock = null;
         try {
             // not perfect, but good enough
-            if (progressListener.getMaxPos() < importedList.size()) {
-                progressListener.setMaxPos(importedList.size());
+            if (progressListener.getMaxPos() < content.size()) {
+                progressListener.setMaxPos(content.size());
             }
 
             // Iterate through each imported row or until cancelled
-            while (row < importedList.size() && !progressListener.isCancelled()) {
+            while (row < content.size() && !progressListener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
                     mDb.setTransactionSuccessful();
@@ -273,37 +216,15 @@ public class CsvImporter
                 txRowCount++;
 
                 try {
-                    final String[] csvDataRow = parse(context, row, importedList.get(row));
+                    final String[] csvDataRow = parse(context, row, content.get(row));
+
                     if (csvDataRow.length != csvColumnNames.length) {
                         throw new ImportException(context.getString(
                                 R.string.error_import_csv_column_count_mismatch, row));
                     }
 
-                    final Book book = new Book();
-
-                    // Read all columns of the current row into the Bundle.
-                    // Note that some of them require further processing before being valid.
-                    for (int i = 0; i < csvColumnNames.length; i++) {
-                        book.putString(csvColumnNames[i], csvDataRow[i]);
-                    }
-
-                    // check/add a title
-                    if (book.getString(DBDefinitions.KEY_TITLE).isEmpty()) {
-                        book.putString(DBDefinitions.KEY_TITLE, mUnknownTitleString);
-                    }
-
-                    // check/fix the language
-                    final Locale bookLocale = book.getLocale(context);
-
-                    // Database access is strictly limited to fetching ID's for the list elements.
-                    handleAuthors(context, mDb, book, bookLocale);
-                    handleSeries(context, mDb, book, bookLocale);
-                    handlePublishers(context, mDb, book, bookLocale);
-                    handleAnthology(context, mDb, book, bookLocale);
-                    handleBookshelves(mDb, book);
-
-                    //URGENT: implement full parsing/formatting of incoming dates for validity
-                    //verifyDates(context, mDb, book);
+                    final Book book = mBookCoder.decode(context, mDb,
+                                                        csvColumnNames, csvDataRow);
 
                     // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
                     @Nullable
@@ -313,10 +234,12 @@ public class CsvImporter
 
                     // ALWAYS let the UUID trump the ID; we may be importing someone else's list
                     if (hasUuid) {
-                        importBookWithUuid(context, book, importNumericId);
+                        importBookWithUuid(context, updatesMustSync, updatesMayOverwrite,
+                                           book, importNumericId);
 
                     } else if (importNumericId > 0) {
-                        importBookWithId(context, book, importNumericId);
+                        importBookWithId(context, updatesMustSync, updatesMayOverwrite,
+                                         book, importNumericId);
 
                     } else {
                         importBook(context, book);
@@ -393,6 +316,8 @@ public class CsvImporter
      * @throws DAO.DaoWriteException on failure
      */
     private void importBookWithUuid(@NonNull final Context context,
+                                    final boolean updatesMustSync,
+                                    final boolean updatesMayOverwrite,
                                     @NonNull final Book book,
                                     final long importNumericId)
             throws DAO.DaoWriteException {
@@ -409,8 +334,8 @@ public class CsvImporter
             book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
 
             // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((mSyncBooks && isImportNewer(context, mDb, book, databaseBookId))
-                || mOverwriteBooks) {
+            if ((updatesMustSync && isImportNewer(context, mDb, book, databaseBookId))
+                || updatesMayOverwrite) {
 
                 mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                           | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
@@ -463,6 +388,8 @@ public class CsvImporter
      * @throws DAO.DaoWriteException on failure
      */
     private void importBookWithId(@NonNull final Context context,
+                                  final boolean updatesMustSync,
+                                  final boolean updatesMayOverwrite,
                                   @NonNull final Book book,
                                   final long importNumericId)
             throws DAO.DaoWriteException {
@@ -490,8 +417,8 @@ public class CsvImporter
             // Ideally, we should ask the user presenting a choice "keep/overwrite"
 
             // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((mSyncBooks && isImportNewer(context, mDb, book, importNumericId))
-                || mOverwriteBooks) {
+            if ((updatesMustSync && isImportNewer(context, mDb, book, importNumericId))
+                || updatesMayOverwrite) {
                 mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                           | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
@@ -605,209 +532,6 @@ public class CsvImporter
             }
         }
         return 0;
-    }
-
-    /**
-     * Process the bookshelves.
-     * Database access is strictly limited to fetching ID's.
-     *
-     * @param db   Database Access
-     * @param book the book
-     */
-    private void handleBookshelves(@NonNull final DAO db,
-                                   @NonNull final Book /* in/out */ book) {
-
-        String encodedList = null;
-
-        if (book.contains(DBDefinitions.KEY_BOOKSHELF_NAME)) {
-            // current version
-            encodedList = book.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
-
-        } else if (book.contains(LEGACY_BOOKSHELF_1_1_x)) {
-            // obsolete
-            encodedList = book.getString(LEGACY_BOOKSHELF_1_1_x);
-
-        } else if (book.contains(LEGACY_BOOKSHELF_TEXT)) {
-            // obsolete
-            encodedList = book.getString(LEGACY_BOOKSHELF_TEXT);
-        }
-
-        if (encodedList != null && !encodedList.isEmpty()) {
-            final ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
-            if (!bookshelves.isEmpty()) {
-                Bookshelf.pruneList(bookshelves, db);
-                book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
-            }
-        }
-
-        book.remove(LEGACY_BOOKSHELF_ID);
-        book.remove(LEGACY_BOOKSHELF_TEXT);
-        book.remove(LEGACY_BOOKSHELF_1_1_x);
-        book.remove(DBDefinitions.KEY_BOOKSHELF_NAME);
-    }
-
-    /**
-     * Database access is strictly limited to fetching ID's.
-     * <p>
-     * Get the list of authors from whatever source is available.
-     * If none found, a generic "[Unknown author]" will be used.
-     *
-     * @param context    Current context
-     * @param db         Database Access
-     * @param book       the book
-     * @param bookLocale of the book, already resolved
-     */
-    private void handleAuthors(@NonNull final Context context,
-                               @NonNull final DAO db,
-                               @NonNull final Book /* in/out */ book,
-                               @NonNull final Locale bookLocale) {
-
-        final String encodedList = book.getString(CsvExporter.CSV_COLUMN_AUTHORS);
-        book.remove(CsvExporter.CSV_COLUMN_AUTHORS);
-
-        final ArrayList<Author> list;
-        if (!encodedList.isEmpty()) {
-            list = mAuthorCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                Author.pruneList(list, context, db, false, bookLocale);
-            }
-        } else {
-            // check for individual author (full/family/given) fields in the input
-            list = new ArrayList<>();
-            if (book.contains(DBDefinitions.KEY_AUTHOR_FORMATTED)) {
-                final String name = book.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
-                if (!name.isEmpty()) {
-                    list.add(Author.from(name));
-                }
-                book.remove(DBDefinitions.KEY_AUTHOR_FORMATTED);
-
-            } else if (book.contains(DBDefinitions.KEY_AUTHOR_FAMILY_NAME)) {
-                final String family = book.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
-                if (!family.isEmpty()) {
-                    // given will be "" if it's not present
-                    final String given = book.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-                    list.add(new Author(family, given));
-                }
-                book.remove(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
-                book.remove(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-
-            } else if (book.contains(LEGACY_AUTHOR_NAME)) {
-                final String a = book.getString(LEGACY_AUTHOR_NAME);
-                if (!a.isEmpty()) {
-                    list.add(Author.from(a));
-                }
-                book.remove(LEGACY_AUTHOR_NAME);
-            }
-        }
-
-        // we MUST have an author.
-        if (list.isEmpty()) {
-            list.add(Author.createUnknownAuthor(context));
-        }
-        book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, list);
-    }
-
-    /**
-     * Process the list of Series.
-     * <p>
-     * Database access is strictly limited to fetching ID's.
-     *
-     * @param context    Current context
-     * @param db         Database Access
-     * @param book       the book
-     * @param bookLocale of the book, already resolved
-     */
-    private void handleSeries(@NonNull final Context context,
-                              @NonNull final DAO db,
-                              @NonNull final Book /* in/out */ book,
-                              @NonNull final Locale bookLocale) {
-
-        final String encodedList = book.getString(CsvExporter.CSV_COLUMN_SERIES);
-        book.remove(CsvExporter.CSV_COLUMN_SERIES);
-
-        if (!encodedList.isEmpty()) {
-            final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                Series.pruneList(list, context, db, false, bookLocale);
-                book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
-            }
-        } else {
-            // check for individual series title/number fields in the input
-            if (book.contains(DBDefinitions.KEY_SERIES_TITLE)) {
-                final String title = book.getString(DBDefinitions.KEY_SERIES_TITLE);
-                if (!title.isEmpty()) {
-                    final Series series = new Series(title);
-                    // number will be "" if it's not present
-                    series.setNumber(book.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES));
-                    final ArrayList<Series> list = new ArrayList<>();
-                    list.add(series);
-                    book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
-                }
-                book.remove(DBDefinitions.KEY_SERIES_TITLE);
-                book.remove(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
-            }
-        }
-    }
-
-    /**
-     * Process the list of Publishers.
-     * <p>
-     * Database access is strictly limited to fetching ID's.
-     *
-     * @param context    Current context
-     * @param db         Database Access
-     * @param book       the book
-     * @param bookLocale of the book, already resolved
-     */
-    private void handlePublishers(@NonNull final Context context,
-                                  @NonNull final DAO db,
-                                  @NonNull final Book /* in/out */ book,
-                                  @NonNull final Locale bookLocale) {
-
-        final String encodedList = book.getString(CsvExporter.CSV_COLUMN_PUBLISHERS);
-        book.remove(CsvExporter.CSV_COLUMN_PUBLISHERS);
-
-        if (!encodedList.isEmpty()) {
-            final ArrayList<Publisher> list = mPublisherCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                Publisher.pruneList(list, context, db, false, bookLocale);
-                book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
-            }
-        }
-    }
-
-    /**
-     * Process the list of Toc entries.
-     * <p>
-     * Database access is strictly limited to fetching ID's.
-     * <p>
-     * Ignores the actual value of the DBDefinitions.KEY_TOC_BITMASK.
-     * It will be computed when storing the book data.
-     *
-     * @param context    Current context
-     * @param db         Database Access
-     * @param book       the book
-     * @param bookLocale of the book, already resolved
-     */
-    private void handleAnthology(@NonNull final Context context,
-                                 @NonNull final DAO db,
-                                 @NonNull final Book /* in/out */ book,
-                                 @NonNull final Locale bookLocale) {
-
-        final String encodedList = book.getString(CsvExporter.CSV_COLUMN_TOC);
-        book.remove(CsvExporter.CSV_COLUMN_TOC);
-
-        if (!encodedList.isEmpty()) {
-            final ArrayList<TocEntry> list = mTocCoder.decodeList(encodedList);
-            if (!list.isEmpty()) {
-                // Force using the Book Locale, otherwise the import is far to slow.
-                TocEntry.pruneList(list, context, db, false, bookLocale);
-                book.putParcelableArrayList(Book.BKEY_TOC_LIST, list);
-            }
-        }
     }
 
     /**
@@ -983,11 +707,5 @@ public class CsvImporter
         final String msg = context.getString(R.string.error_import_csv_missing_columns_x,
                                              TextUtils.join(",", names));
         throw new ImportException(msg);
-    }
-
-    @Override
-    public void close() {
-        mDb.purge();
-        mDb.close();
     }
 }

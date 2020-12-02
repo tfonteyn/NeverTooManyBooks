@@ -284,4 +284,17 @@ public class Money
     public String getCurrency() {
         return mCurrency;
     }
+
+
+    /**
+     * This implements the same behaviour as
+     * {@link Number#toString()} for a <strong>double</strong>.
+     *
+     * @return the value part as a string.
+     */
+    @Override
+    @NonNull
+    public String toString() {
+        return Double.toString(mValue);
+    }
 }

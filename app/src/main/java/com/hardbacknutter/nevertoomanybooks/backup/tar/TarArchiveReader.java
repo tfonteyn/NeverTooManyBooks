@@ -19,27 +19,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.tar;
 
-import android.content.ContentResolver;
 import android.content.Context;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 
 /**
  * Implementation of TAR-specific reader functions.
@@ -47,22 +41,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 public class TarArchiveReader
         extends ArchiveReaderAbstract {
 
-    /** Buffer for {@link #mInputStream}. */
-    private static final int BUFFER_SIZE = 65535;
-
-    /** Provide access to the Uri InputStream. */
-    @NonNull
-    private final ContentResolver mContentResolver;
     /**
      * The data stream for the archive.
-     * Do <strong>NOT</strong> use this directly, see {link #getInputStream()}
+     * Do <strong>NOT</strong> use this directly, see {@link #getInputStream()}
      */
     @Nullable
     private TarArchiveInputStream mInputStream;
-
-    /** The INFO data read from the start of the archive. */
-    @Nullable
-    private ArchiveInfo mInfo;
 
     /**
      * Constructor.
@@ -73,42 +57,38 @@ public class TarArchiveReader
     public TarArchiveReader(@NonNull final Context context,
                             @NonNull final ImportHelper helper) {
         super(context, helper);
-        mContentResolver = context.getContentResolver();
-    }
-
-    @Override
-    public void validate(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
-        if (mInfo == null) {
-            mInfo = readArchiveInfo(context);
-        }
-        // the info block will/can do more checks.
-        mInfo.validate();
     }
 
     @Override
     @Nullable
-    public ReaderEntity seek(@NonNull final ArchiveContainerEntry type)
-            throws IOException {
+    public ArchiveReaderRecord seek(@NonNull final ArchiveReaderRecord.Type type)
+            throws InvalidArchiveException, IOException {
+        try {
+            TarArchiveEntry entry;
+            while (true) {
+                entry = getInputStream().getNextTarEntry();
+                if (entry == null) {
+                    return null;
+                }
 
-        TarArchiveEntry entry;
-        while (true) {
-            entry = getInputStream().getNextTarEntry();
-            if (entry == null) {
-                return null;
+                if (type == ArchiveReaderRecord.Type.getType(entry.getName())) {
+                    return new TarArchiveRecord(this, entry);
+                }
             }
-
-            // Based on the file name, determine entity type
-            final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
-            if (type == typeFound) {
-                return new TarReaderEntity(typeFound, this, entry);
+        } catch (@NonNull final IOException e) {
+            //VERY annoying... the apache tar library does not throw a unique exception.
+            // We reluctantly look at the message, to give the user better error details
+            if ("Error detected parsing the header".equals(e.getMessage())) {
+                throw new InvalidArchiveException(e);
+            } else {
+                throw e;
             }
         }
     }
 
     @Override
     @Nullable
-    public ReaderEntity next()
+    public ArchiveReaderRecord next()
             throws IOException {
 
         final TarArchiveEntry entry = getInputStream().getNextTarEntry();
@@ -116,76 +96,31 @@ public class TarArchiveReader
             return null;
         }
 
-        final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
-        return new TarReaderEntity(typeFound, this, entry);
-    }
-
-    /**
-     * A tar archive <strong>must</strong> have an info block.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public ArchiveInfo readArchiveInfo(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
-        if (mInfo == null) {
-            // Tar archive info is stored in an xml file in the archive itself.
-            // We try and find the InfoHeader entity, and process it with the XMLImporter
-            final ReaderEntity entity;
-            try {
-                entity = seek(ArchiveContainerEntry.InfoHeaderXml);
-            } catch (@NonNull final IOException e) {
-                //VERY annoying... the apache tar library does not throw a unique exception.
-                // We reluctantly look at the message, to give the user better error details
-                if ("Error detected parsing the header".equals(e.getMessage())) {
-                    throw new InvalidArchiveException(e);
-                } else {
-                    throw e;
-                }
-            }
-
-            if (entity == null) {
-                throw new IOException("No INFO entity found");
-            }
-
-            // read the INFO
-            try (XmlImporter importer = new XmlImporter(context)) {
-                mInfo = importer.readInfo(entity.getInputStream());
-            }
-            // We MUST close the stream here, so the caller gets a pristine stream.
-            resetToStart();
-        }
-
-        return mInfo;
+        return new TarArchiveRecord(this, entry);
     }
 
     /**
      * Get the input stream; (re)creating as needed.
      *
      * <strong>Note:</strong> TarArchiveInputStream does not support marking,
-     * so we let {@link #resetToStart()} close/null the stream, and (re)create it here when needed.
+     * so we let {@link #closeInputStream()} close/null the stream,
+     * and (re)create it here when needed.
      *
      * @return the stream
      *
      * @throws IOException on failure
      */
     @NonNull
-    private TarArchiveInputStream getInputStream()
+    public TarArchiveInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            final InputStream is = mContentResolver.openInputStream(getUri());
-            if (is == null) {
-                throw new IOException("Could not resolve uri=" + getUri());
-            }
-            mInputStream = new TarArchiveInputStream(new BufferedInputStream(is, BUFFER_SIZE));
+            mInputStream = new TarArchiveInputStream(openInputStream());
         }
-
         return mInputStream;
     }
 
     @Override
-    public void resetToStart()
+    public void closeInputStream()
             throws IOException {
         if (mInputStream != null) {
             mInputStream.close();
@@ -193,38 +128,24 @@ public class TarArchiveReader
         }
     }
 
-    @Override
-    @CallSuper
-    public void close()
-            throws IOException {
-        resetToStart();
-        super.close();
-    }
+    private static class TarArchiveRecord
+            implements ArchiveReaderRecord {
 
-    private static class TarReaderEntity
-            implements ReaderEntity {
-
-        /** The entity source stream. */
+        /** The record source stream. */
         @NonNull
         private final TarArchiveReader mReader;
         /** Tar archive entry. */
         @NonNull
         private final TarArchiveEntry mEntry;
-        /** Entity type. */
-        @NonNull
-        private final ArchiveContainerEntry mType;
 
         /**
          * Constructor.
          *
-         * @param type   Type of item
          * @param reader Parent
          * @param entry  Corresponding archive entry
          */
-        TarReaderEntity(@NonNull final ArchiveContainerEntry type,
-                        @NonNull final TarArchiveReader reader,
-                        @NonNull final TarArchiveEntry entry) {
-            mType = type;
+        TarArchiveRecord(@NonNull final TarArchiveReader reader,
+                         @NonNull final TarArchiveEntry entry) {
             mReader = reader;
             mEntry = entry;
         }
@@ -244,13 +165,8 @@ public class TarArchiveReader
         @Override
         public InputStream getInputStream()
                 throws IOException {
+            // The reader can open/close the stream at will, so always ask the reader
             return mReader.getInputStream();
-        }
-
-        @NonNull
-        @Override
-        public ArchiveContainerEntry getType() {
-            return mType;
         }
     }
 }

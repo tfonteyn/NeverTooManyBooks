@@ -22,13 +22,20 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -36,40 +43,50 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 /**
  * Class to encapsulate the INFO block from an archive.
  */
-public class ArchiveInfo {
+public class ArchiveInfo
+        implements Parcelable {
 
+    public static final Creator<ArchiveInfo> CREATOR = new Creator<ArchiveInfo>() {
+        @Override
+        public ArchiveInfo createFromParcel(@NonNull final Parcel in) {
+            return new ArchiveInfo(in);
+        }
+
+        @Override
+        public ArchiveInfo[] newArray(final int size) {
+            return new ArchiveInfo[size];
+        }
+    };
     /** Version of archiver used to write this archive. */
     private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
     /** Creation Date of archive (in SQL format). */
     private static final String INFO_CREATION_DATE = "CreateDate";
-
+    /** Identifier. */
     private static final String INFO_APP_PACKAGE = "AppPackage";
+    /** For reference only. */
     private static final String INFO_APP_VERSION_NAME = "AppVersionName";
+    /** Can be used for version checks. */
     private static final String INFO_APP_VERSION_CODE = "AppVersionCode";
+    /** Debug info. */
     private static final String INFO_SDK = "SDK";
-
-    private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
-    private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
-
-    private static final String INFO_HAS_BOOKS = "HasBooks";
-    private static final String INFO_HAS_COVERS = "HasCovers";
-
     /** Stores the database version. */
     private static final String INFO_DATABASE_VERSION = "DatabaseVersionCode";
 
+    private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
+    private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
     /** Bundle retrieved from the archive for this instance. */
     @NonNull
     private final Bundle mInfo;
 
     /**
-     * Constructor. Used when reading info from an archive.
+     * Constructor used while reading from an Archive.
      */
     public ArchiveInfo() {
         mInfo = new Bundle();
     }
 
     /**
-     * Constructor to create an INFO block based on the current environment.
+     * Constructor used while writing to an Archive.
      *
      * @param context Current context
      * @param version of the archive structure
@@ -77,9 +94,8 @@ public class ArchiveInfo {
     public ArchiveInfo(@NonNull final Context context,
                        final int version) {
         mInfo = new Bundle();
-        mInfo.putInt(INFO_ARCHIVER_VERSION, version);
 
-        mInfo.putInt(INFO_SDK, Build.VERSION.SDK_INT);
+        mInfo.putInt(INFO_ARCHIVER_VERSION, version);
         mInfo.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
         mInfo.putString(INFO_CREATION_DATE,
                         LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
@@ -88,6 +104,35 @@ public class ArchiveInfo {
         mInfo.putString(INFO_APP_PACKAGE, info.getPackageName());
         mInfo.putString(INFO_APP_VERSION_NAME, info.getVersionName());
         mInfo.putLong(INFO_APP_VERSION_CODE, info.getVersionCode());
+        mInfo.putInt(INFO_SDK, Build.VERSION.SDK_INT);
+    }
+
+    /**
+     * Constructor. Used when reading JSON info from an archive.
+     */
+    public ArchiveInfo(@NonNull final JSONObject from)
+            throws IOException {
+        try {
+            mInfo = new BundleCoder().decode(from);
+        } catch (@NonNull final JSONException e) {
+            throw new IOException(e);
+        }
+    }
+
+    protected ArchiveInfo(@NonNull final Parcel in) {
+        //noinspection ConstantConditions
+        mInfo = in.readBundle(getClass().getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeBundle(mInfo);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     /**
@@ -149,21 +194,16 @@ public class ArchiveInfo {
         return mInfo.getInt(INFO_DATABASE_VERSION, 0);
     }
 
-    /**
-     * Check if the archive has a books file stored (with or without an exact number).
-     *
-     * @return {@code true} if books are present
-     */
-    public boolean hasBooks() {
-        return mInfo.getBoolean(INFO_HAS_BOOKS) || hasBookCount();
+    public void setDatabaseVersionCode(final int version) {
+        mInfo.putInt(INFO_DATABASE_VERSION, version);
     }
 
     /**
      * Check if the archive has a known number of books.
-     * Will return {@code false} if there is no number (or if the number is 0); this does not
-     * mean there might not be any books though. Use {@link #hasBooks()} to be sure.
+     * Will return {@code false} if there is no number (or if the number is 0).
+     * This does not mean there might not be any books though.
      *
-     * @return {@code true} if the number of books are known
+     * @return {@code true} if the number of books is known
      */
     public boolean hasBookCount() {
         return mInfo.containsKey(INFO_NUMBER_OF_BOOKS)
@@ -178,23 +218,15 @@ public class ArchiveInfo {
         mInfo.putInt(INFO_NUMBER_OF_BOOKS, count);
     }
 
-    /**
-     * Check if the archive has covers (with or without an exact number).
-     *
-     * @return {@code true} if covers are present
-     */
-    public boolean hasCovers() {
-        return mInfo.getBoolean(INFO_HAS_COVERS) || hasCoverCount();
-    }
 
     /**
      * Check if the archive has a known number of covers.
-     * Will return {@code false} if there is no number (or if the number is 0); this does not
-     * mean there might not be any covers though. Use {@link #hasCovers()}} to be sure.
+     * Will return {@code false} if there is no number (or if the number is 0).
+     * This does not mean there might not be any covers though.
      *
-     * @return {@code true} if the number of books are known
+     * @return {@code true} if the number of books is known
      */
-    public boolean hasCoverCount() {
+    boolean hasCoverCount() {
         return mInfo.containsKey(INFO_NUMBER_OF_COVERS)
                && mInfo.getInt(INFO_NUMBER_OF_COVERS) > 0;
     }
@@ -203,7 +235,7 @@ public class ArchiveInfo {
         return mInfo.getInt(INFO_NUMBER_OF_COVERS);
     }
 
-    public void setCoverCount(final int count) {
+    void setCoverCount(final int count) {
         mInfo.putInt(INFO_NUMBER_OF_COVERS, count);
     }
 
@@ -217,7 +249,24 @@ public class ArchiveInfo {
             throws InvalidArchiveException {
         // extremely simple check: the archiver version field must be present
         if (!mInfo.containsKey(INFO_ARCHIVER_VERSION)) {
-            throw new InvalidArchiveException("info block lacks version field");
+            throw new InvalidArchiveException("Missing version information");
+        }
+    }
+
+    /**
+     * Covert to json.
+     *
+     * @return a JSON object
+     *
+     * @throws IOException on failure
+     */
+    @NonNull
+    JSONObject toJson()
+            throws IOException {
+        try {
+            return new BundleCoder().encode(mInfo);
+        } catch (@NonNull final JSONException e) {
+            throw new IOException(e);
         }
     }
 

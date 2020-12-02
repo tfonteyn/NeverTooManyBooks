@@ -34,11 +34,12 @@ import androidx.lifecycle.ViewModelProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogExportOptionsBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -49,7 +50,7 @@ public class ExportOptionsDialogFragment
         extends BaseDialogFragment {
 
     /** Log tag. */
-    public static final String TAG = "ExportHelperDialogFrag";
+    public static final String TAG = "ExportOptionsDialog";
     protected static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
@@ -98,7 +99,8 @@ public class ExportOptionsDialogFragment
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            sendResult(mExportViewModel.getExportHelper().hasEntityOption());
+            // Only send "start task" (i.e. 'true') if we have something to export
+            sendResult(!mExportViewModel.getExportHelper().getExporterEntries().isEmpty());
             return true;
         }
         return false;
@@ -109,48 +111,52 @@ public class ExportOptionsDialogFragment
      */
     private void setupOptions() {
         final ExportHelper helper = mExportViewModel.getExportHelper();
+        final Set<ArchiveWriterRecord.Type> exportEntities = helper.getExporterEntries();
 
-        mVb.cbxBooks.setChecked(helper.isOptionSet(ExportHelper.OPTIONS_BOOKS));
+        mVb.cbxBooks.setChecked(exportEntities.contains(
+                ArchiveWriterRecord.Type.Books));
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            helper.setOption(ExportHelper.OPTIONS_BOOKS, isChecked);
+            helper.setExportEntry(ArchiveWriterRecord.Type.Cover, isChecked);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        final boolean incremental = helper.isOptionSet(ExportHelper.OPTIONS_INCREMENTAL);
+        final boolean incremental = helper.isOptionSet(ExportHelper.OPTION_INCREMENTAL);
         mVb.rbBooksAll.setChecked(!incremental);
         mVb.rbBooksIncremental.setChecked(incremental);
         mVb.rbBooksIncrementalInfo.setOnClickListener(StandardDialogs::infoPopup);
 
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
-                .setOption(ExportHelper.OPTIONS_INCREMENTAL,
+                .setOption(ExportHelper.OPTION_INCREMENTAL,
                            checkedId == mVb.rbBooksIncremental.getId()));
 
 
-        mVb.cbxCovers.setChecked(helper.isOptionSet(ExportHelper.OPTIONS_COVERS));
+        mVb.cbxCovers.setChecked(exportEntities.contains(
+                ArchiveWriterRecord.Type.Cover));
         mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setOption(ExportHelper.OPTIONS_COVERS, isChecked));
+                .setExportEntry(ArchiveWriterRecord.Type.Cover, isChecked));
 
-        mVb.cbxPrefs.setChecked(helper.isOptionSet(
-                ExportHelper.OPTIONS_PREFS | ExportHelper.OPTIONS_STYLES));
+        mVb.cbxPrefs.setChecked(exportEntities.contains(
+                ArchiveWriterRecord.Type.Preferences));
         mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setOption(ExportHelper.OPTIONS_PREFS, isChecked));
+                .setExportEntry(ArchiveWriterRecord.Type.Preferences, isChecked));
 
-        mVb.cbxStyles.setChecked(helper.isOptionSet(
-                ExportHelper.OPTIONS_PREFS | ExportHelper.OPTIONS_STYLES));
+        mVb.cbxStyles.setChecked(exportEntities.contains(
+                ArchiveWriterRecord.Type.Styles));
         mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setOption(ExportHelper.OPTIONS_STYLES, isChecked));
+                .setExportEntry(ArchiveWriterRecord.Type.Styles, isChecked));
 
         //ENHANCE: export from JSON not exposed to the user yet
 
         // Check options on position.
         final List<String> list = new ArrayList<>();
-        list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Zip.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_backup, ArchiveContainer.Tar.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_csv, ArchiveContainer.Csv.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_xml, ArchiveContainer.Xml.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_db, ArchiveContainer.SqLiteDb.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_backup, ArchiveType.Zip.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_backup, ArchiveType.Tar.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_csv, ArchiveType.Csv.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_xml, ArchiveType.Xml.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_db, ArchiveType.SqLiteDb.getFileExt()));
 
         // The default selection is index 0, ZIP format.
+        helper.setArchiveType(ArchiveType.Zip);
         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
         mVb.archiveFormatInfoLong.setText("");
         requireConfirmButton().setText(R.string.action_save);
@@ -171,115 +177,7 @@ public class ExportOptionsDialogFragment
                     return;
                 }
 
-                switch (position) {
-                    case 0: {
-                        helper.setArchiveContainer(ArchiveContainer.Zip);
-                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
-                        mVb.archiveFormatInfoLong.setText("");
-                        requireConfirmButton().setText(R.string.action_save);
-
-                        mVb.cbxBooks.setChecked(true);
-                        mVb.cbxBooks.setEnabled(true);
-                        mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksIncremental.setChecked(true);
-
-                        mVb.cbxCovers.setChecked(true);
-                        mVb.cbxCovers.setEnabled(true);
-
-                        mVb.cbxPrefs.setChecked(true);
-                        mVb.cbxPrefs.setEnabled(true);
-
-                        mVb.cbxStyles.setChecked(true);
-                        mVb.cbxStyles.setEnabled(true);
-                        break;
-                    }
-                    case 1: {
-                        helper.setArchiveContainer(ArchiveContainer.Tar);
-                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
-                        mVb.archiveFormatInfoLong.setText("");
-                        requireConfirmButton().setText(R.string.action_save);
-
-                        mVb.cbxBooks.setChecked(true);
-                        mVb.cbxBooks.setEnabled(true);
-                        mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksIncremental.setChecked(true);
-
-                        mVb.cbxCovers.setChecked(true);
-                        mVb.cbxCovers.setEnabled(true);
-
-                        mVb.cbxPrefs.setChecked(true);
-                        mVb.cbxPrefs.setEnabled(true);
-
-                        mVb.cbxStyles.setChecked(true);
-                        mVb.cbxStyles.setEnabled(true);
-                        break;
-                    }
-                    case 2: {
-                        helper.setArchiveContainer(ArchiveContainer.Csv);
-                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
-                        mVb.archiveFormatInfoLong.setText("");
-                        requireConfirmButton().setText(R.string.action_save);
-
-                        mVb.cbxBooks.setChecked(true);
-                        mVb.cbxBooks.setEnabled(false);
-                        mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksIncremental.setChecked(true);
-
-                        mVb.cbxCovers.setChecked(false);
-                        mVb.cbxCovers.setEnabled(false);
-
-                        mVb.cbxPrefs.setChecked(false);
-                        mVb.cbxPrefs.setEnabled(false);
-
-                        mVb.cbxStyles.setChecked(false);
-                        mVb.cbxStyles.setEnabled(false);
-                        break;
-                    }
-                    case 3: {
-                        helper.setArchiveContainer(ArchiveContainer.Xml);
-                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
-                        mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
-                        requireConfirmButton().setText(R.string.action_save);
-
-                        mVb.cbxBooks.setChecked(true);
-                        mVb.cbxBooks.setEnabled(false);
-                        mVb.rbBooksGroup.setEnabled(true);
-                        mVb.rbBooksAll.setChecked(true);
-
-                        mVb.cbxCovers.setChecked(false);
-                        mVb.cbxCovers.setEnabled(false);
-
-                        mVb.cbxPrefs.setChecked(false);
-                        mVb.cbxPrefs.setEnabled(true);
-
-                        mVb.cbxStyles.setChecked(false);
-                        mVb.cbxStyles.setEnabled(true);
-                        break;
-                    }
-                    case 4: {
-                        helper.setArchiveContainer(ArchiveContainer.SqLiteDb);
-                        mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
-                        mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
-                        requireConfirmButton().setText(R.string.action_save);
-
-                        mVb.cbxBooks.setChecked(true);
-                        mVb.cbxBooks.setEnabled(false);
-                        mVb.rbBooksGroup.setEnabled(false);
-                        mVb.rbBooksAll.setChecked(true);
-
-                        mVb.cbxCovers.setChecked(false);
-                        mVb.cbxCovers.setEnabled(false);
-
-                        mVb.cbxPrefs.setChecked(false);
-                        mVb.cbxPrefs.setEnabled(false);
-
-                        mVb.cbxStyles.setChecked(false);
-                        mVb.cbxStyles.setEnabled(false);
-                        break;
-                    }
-                    default:
-                        throw new IllegalArgumentException(String.valueOf(position));
-                }
+                updateFromFormatSelection(position);
             }
 
             @Override
@@ -287,6 +185,120 @@ public class ExportOptionsDialogFragment
                 // Do Nothing
             }
         });
+    }
+
+    private void updateFromFormatSelection(final int position) {
+
+        final ExportHelper helper = mExportViewModel.getExportHelper();
+        switch (position) {
+            case 0: {
+                helper.setArchiveType(ArchiveType.Zip);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                mVb.archiveFormatInfoLong.setText("");
+                requireConfirmButton().setText(R.string.action_save);
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(true);
+                mVb.rbBooksGroup.setEnabled(true);
+                mVb.rbBooksIncremental.setChecked(true);
+
+                mVb.cbxCovers.setChecked(true);
+                mVb.cbxCovers.setEnabled(true);
+
+                mVb.cbxPrefs.setChecked(true);
+                mVb.cbxPrefs.setEnabled(true);
+
+                mVb.cbxStyles.setChecked(true);
+                mVb.cbxStyles.setEnabled(true);
+                break;
+            }
+            case 1: {
+                helper.setArchiveType(ArchiveType.Tar);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                mVb.archiveFormatInfoLong.setText("");
+                requireConfirmButton().setText(R.string.action_save);
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(true);
+                mVb.rbBooksGroup.setEnabled(true);
+                mVb.rbBooksIncremental.setChecked(true);
+
+                mVb.cbxCovers.setChecked(true);
+                mVb.cbxCovers.setEnabled(true);
+
+                mVb.cbxPrefs.setChecked(true);
+                mVb.cbxPrefs.setEnabled(true);
+
+                mVb.cbxStyles.setChecked(true);
+                mVb.cbxStyles.setEnabled(true);
+                break;
+            }
+            case 2: {
+                helper.setArchiveType(ArchiveType.Csv);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
+                mVb.archiveFormatInfoLong.setText("");
+                requireConfirmButton().setText(R.string.action_save);
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(false);
+                mVb.rbBooksGroup.setEnabled(true);
+                mVb.rbBooksIncremental.setChecked(true);
+
+                mVb.cbxCovers.setChecked(false);
+                mVb.cbxCovers.setEnabled(false);
+
+                mVb.cbxPrefs.setChecked(false);
+                mVb.cbxPrefs.setEnabled(false);
+
+                mVb.cbxStyles.setChecked(false);
+                mVb.cbxStyles.setEnabled(false);
+                break;
+            }
+            case 3: {
+                helper.setArchiveType(ArchiveType.Xml);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
+                mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
+                requireConfirmButton().setText(R.string.action_save);
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(false);
+                mVb.rbBooksGroup.setEnabled(true);
+                mVb.rbBooksAll.setChecked(true);
+
+                mVb.cbxCovers.setChecked(false);
+                mVb.cbxCovers.setEnabled(false);
+
+                mVb.cbxPrefs.setChecked(false);
+                mVb.cbxPrefs.setEnabled(true);
+
+                mVb.cbxStyles.setChecked(false);
+                mVb.cbxStyles.setEnabled(true);
+                break;
+            }
+            case 4: {
+                helper.setArchiveType(ArchiveType.SqLiteDb);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
+                mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
+                requireConfirmButton().setText(R.string.action_save);
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(false);
+                mVb.rbBooksGroup.setEnabled(false);
+                mVb.rbBooksAll.setChecked(true);
+
+                mVb.cbxCovers.setChecked(false);
+                mVb.cbxCovers.setEnabled(false);
+
+                mVb.cbxPrefs.setChecked(false);
+                mVb.cbxPrefs.setEnabled(false);
+
+                mVb.cbxStyles.setChecked(false);
+                mVb.cbxStyles.setEnabled(false);
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(String.valueOf(position));
+        }
     }
 
     /**

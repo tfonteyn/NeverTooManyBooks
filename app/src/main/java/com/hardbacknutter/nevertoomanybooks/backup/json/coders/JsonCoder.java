@@ -23,32 +23,37 @@ import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public abstract class JsonCoderBase<T> {
+public interface JsonCoder<T> {
 
     @NonNull
-    public abstract JSONObject encode(@NonNull T entity);
-
-    @NonNull
-    public JSONArray encode(@NonNull final List<T> list) {
-        return new JSONArray(list.stream().map(this::encode).collect(Collectors.toList()));
-    }
-
-    @NonNull
-    public abstract T decode(@NonNull JSONObject data)
+    JSONObject encode(@NonNull T element)
             throws JSONException;
 
     @NonNull
-    public ArrayList<T> decode(@NonNull final JSONArray objects)
+    default JSONArray encode(@NonNull final List<T> list)
+            throws JSONException {
+        final List<JSONObject> result = new ArrayList<>();
+        for (final T element : list) {
+            result.add(encode(element));
+        }
+        return new JSONArray(result);
+    }
+
+    @NonNull
+    T decode(@NonNull JSONObject data)
+            throws JSONException;
+
+    @NonNull
+    default ArrayList<T> decode(@NonNull final JSONArray elements)
             throws JSONException {
         final ArrayList<T> list = new ArrayList<>();
-        for (int i = 0; i < objects.length(); i++) {
-            list.add(decode((JSONObject) objects.get(i)));
+        for (int i = 0; i < elements.length(); i++) {
+            list.add(decode((JSONObject) elements.get(i)));
         }
         return list;
     }

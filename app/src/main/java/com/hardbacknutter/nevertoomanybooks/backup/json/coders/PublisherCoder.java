@@ -28,27 +28,29 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 public class PublisherCoder
-        extends JsonCoderBase<Publisher> {
+        implements JsonCoder<Publisher> {
+
+    PublisherCoder() {
+    }
 
     @Override
     @NonNull
-    public JSONObject encode(@NonNull final Publisher publisher) {
-        final JSONObject data = new JSONObject();
-        try {
-            data.put(DBDefinitions.KEY_PK_ID, publisher.getId());
-            data.put(DBDefinitions.KEY_PUBLISHER_NAME, publisher.getName());
+    public JSONObject encode(@NonNull final Publisher publisher)
+            throws JSONException {
+        final JSONObject out = new JSONObject();
 
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
-        }
-
-        return data;
+        out.put(DBDefinitions.KEY_PK_ID, publisher.getId());
+        out.put(DBDefinitions.KEY_PUBLISHER_NAME, publisher.getName());
+        return out;
     }
 
     @Override
     @NonNull
     public Publisher decode(@NonNull final JSONObject data)
             throws JSONException {
-        return new Publisher(data.getString(DBDefinitions.KEY_PUBLISHER_NAME));
+
+        final Publisher publisher = new Publisher(data.getString(DBDefinitions.KEY_PUBLISHER_NAME));
+        publisher.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+        return publisher;
     }
 }

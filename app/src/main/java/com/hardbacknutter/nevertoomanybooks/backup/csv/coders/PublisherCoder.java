@@ -37,10 +37,7 @@ public class PublisherCoder
 
     private static final char[] ESCAPE_CHARS = {'(', ')'};
 
-    @Override
-    @NonNull
-    public Publisher decode(@NonNull final String element) {
-        return Publisher.from(element);
+    PublisherCoder() {
     }
 
     @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
@@ -48,5 +45,11 @@ public class PublisherCoder
     @Override
     public String encode(@NonNull final Publisher publisher) {
         return escape(publisher.getName(), ESCAPE_CHARS);
+    }
+
+    @Override
+    @NonNull
+    public Publisher decode(@NonNull final String element) {
+        return Publisher.from(element);
     }
 }

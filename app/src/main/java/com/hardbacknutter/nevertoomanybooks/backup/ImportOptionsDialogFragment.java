@@ -29,22 +29,28 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.io.IOException;
 import java.util.Objects;
+import java.util.Set;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogImportOptionsBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 public class ImportOptionsDialogFragment
         extends BaseDialogFragment {
 
     /** Log tag. */
-    public static final String TAG = "ImportOptionsDialogFragment";
+    public static final String TAG = "ImportOptionsDialog";
     protected static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     /** FragmentResultListener request key to use for our response. */
@@ -79,6 +85,46 @@ public class ImportOptionsDialogFragment
 
         //noinspection ConstantConditions
         mImportViewModel = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
+        final ImportHelper helper = mImportViewModel.getImportHelper();
+
+        //noinspection ConstantConditions
+        final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(getContext(), helper.getUri());
+        if (uriInfo != null) {
+            mVb.archiveName.setText(uriInfo.displayName);
+            mVb.archiveName.setVisibility(View.VISIBLE);
+        } else {
+            mVb.archiveName.setVisibility(View.GONE);
+        }
+
+        ArchiveInfo archiveInfo = null;
+        try {
+            archiveInfo = helper.getArchiveInfo(getContext());
+        } catch (@NonNull final IOException | InvalidArchiveException ignore) {
+            // ignore; we would not be in this class unless the info was valid or null
+        }
+
+        if (archiveInfo != null) {
+            final StringJoiner info = new StringJoiner(", ");
+
+            final int bookCount = archiveInfo.getBookCount();
+            if (bookCount > 0) {
+                info.add(getString(R.string.name_colon_value,
+                                   getString(R.string.lbl_books), String.valueOf(bookCount)));
+            }
+            final int coverCount = archiveInfo.getCoverCount();
+            if (coverCount > 0) {
+                info.add(getString(R.string.name_colon_value,
+                                   getString(R.string.lbl_covers), String.valueOf(coverCount)));
+            }
+            if (info.length() > 0) {
+                mVb.archiveContent.setText(info.toString());
+                mVb.archiveContent.setVisibility(View.VISIBLE);
+            } else {
+                mVb.archiveContent.setVisibility(View.GONE);
+            }
+        } else {
+            mVb.archiveContent.setVisibility(View.GONE);
+        }
 
         setupOptions();
     }
@@ -91,7 +137,8 @@ public class ImportOptionsDialogFragment
     @Override
     protected boolean onToolbarMenuItemClick(@NonNull final MenuItem item) {
         if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            sendResult(mImportViewModel.getImportHelper().hasEntityOption());
+            // Only send "start task" (i.e. 'true') if we have something to import
+            sendResult(!mImportViewModel.getImportHelper().getImportEntries().isEmpty());
             return true;
         }
         return false;
@@ -102,31 +149,32 @@ public class ImportOptionsDialogFragment
      */
     private void setupOptions() {
         final ImportHelper helper = mImportViewModel.getImportHelper();
+        final Set<ArchiveReaderRecord.Type> importEntries = helper.getImportEntries();
 
-        //noinspection ConstantConditions
-        if (helper.isBooksOnlyContainer(getContext())) {
+        if (helper.archiveCanOnlyHaveBooks()) {
             // remove all non-book options if we're importing from a file/archive
             // which only contains books.
             mVb.cbxGroup.setVisibility(View.GONE);
 
         } else {
-            mVb.cbxBooks.setChecked(helper.isOptionSet(ImportHelper.OPTIONS_BOOKS));
+            mVb.cbxBooks.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Books));
             mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                helper.setOption(ImportHelper.OPTIONS_BOOKS, isChecked);
+                helper.setImportEntry(ArchiveReaderRecord.Type.Books, isChecked);
                 mVb.rbBooksGroup.setEnabled(isChecked);
             });
 
-            mVb.cbxCovers.setChecked(helper.isOptionSet(ImportHelper.OPTIONS_COVERS));
+            mVb.cbxCovers.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Cover));
             mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setOption(ImportHelper.OPTIONS_COVERS, isChecked));
+                    .setImportEntry(ArchiveReaderRecord.Type.Cover, isChecked));
 
-            mVb.cbxPrefs.setChecked(helper.isOptionSet(ImportHelper.OPTIONS_PREFS));
+            mVb.cbxPrefs.setChecked(importEntries.contains(
+                    ArchiveReaderRecord.Type.Preferences));
             mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setOption(ImportHelper.OPTIONS_PREFS, isChecked));
+                    .setImportEntry(ArchiveReaderRecord.Type.Preferences, isChecked));
 
-            mVb.cbxStyles.setChecked(helper.isOptionSet(ImportHelper.OPTIONS_STYLES));
+            mVb.cbxStyles.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Styles));
             mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setOption(ImportHelper.OPTIONS_STYLES, isChecked));
+                    .setImportEntry(ArchiveReaderRecord.Type.Styles, isChecked));
         }
 
         mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdates());

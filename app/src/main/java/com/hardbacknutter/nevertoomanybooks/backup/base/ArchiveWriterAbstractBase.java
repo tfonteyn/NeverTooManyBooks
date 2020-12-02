@@ -26,8 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -72,7 +75,7 @@ public abstract class ArchiveWriterAbstractBase
     /**
      * Do a full backup.
      * <ol>
-     *     <li>{@link #prepareData}</li>
+     *     <li>{@link #prepareBooks}</li>
      *     <li>{@link SupportsArchiveHeader#writeHeader}</li>
      *     <li>{@link SupportsStyles#writeStyles}</li>
      *     <li>{@link SupportsPreferences#writePreferences}</li>
@@ -93,21 +96,26 @@ public abstract class ArchiveWriterAbstractBase
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        // do a cleanup first
+        // do a cleanup before we start writing
         mDb.purge();
 
-        // All writers must support books.
-        final boolean writeBooks = mHelper.isOptionSet(ExportHelper.OPTIONS_BOOKS);
+        final Set<ArchiveWriterRecord.Type> exportEntities = mHelper.getExporterEntries();
 
-        // these are optional.
+        final boolean writeBooks = exportEntities.contains(ArchiveWriterRecord.Type.Books);
+
         final boolean writeHeader = this instanceof SupportsArchiveHeader;
 
         final boolean writeStyles = this instanceof SupportsStyles
-                                    && mHelper.isOptionSet(ExportHelper.OPTIONS_STYLES);
+                                    && exportEntities.contains(
+                ArchiveWriterRecord.Type.Styles);
+
         final boolean writePrefs = this instanceof SupportsPreferences
-                                   && mHelper.isOptionSet(ExportHelper.OPTIONS_PREFS);
+                                   && exportEntities.contains(
+                ArchiveWriterRecord.Type.Preferences);
+
         final boolean writeCovers = this instanceof SupportsCovers
-                                    && mHelper.isOptionSet(ExportHelper.OPTIONS_COVERS);
+                                    && exportEntities.contains(
+                ArchiveWriterRecord.Type.Cover);
 
         try {
             int steps = mDb.countBooksForExport(mHelper.getUtcDateTimeSince());
@@ -115,11 +123,12 @@ public abstract class ArchiveWriterAbstractBase
                 // assume 1 book == 1 cover
                 steps = 2 * steps;
             }
-            // set as temporary max
+            // set as an estimated max value
             progressListener.setMaxPos(steps + EXTRA_STEPS);
 
+            // Prepare data/files we need information of BEFORE we can write the archive header
             if (!progressListener.isCancelled()) {
-                mResults.add(prepareData(context, progressListener));
+                mResults.add(prepareBooks(context, progressListener));
             }
 
             // Recalculate the progress max value using the exact number of books/covers
@@ -128,20 +137,20 @@ public abstract class ArchiveWriterAbstractBase
                                        + mResults.getCoverCount()
                                        + EXTRA_STEPS);
 
-            // Start with the archive header if there is one
+            // Start with the archive header if required
             if (!progressListener.isCancelled() && writeHeader) {
-                final ArchiveInfo info = new ArchiveInfo(context, getVersion());
+                final ArchiveInfo archiveInfo = new ArchiveInfo(context, getVersion());
                 if (mResults.getBookCount() > 0) {
-                    info.setBookCount(mResults.getBookCount());
+                    archiveInfo.setBookCount(mResults.getBookCount());
                 }
                 if (mResults.getCoverCount() > 0) {
-                    info.setCoverCount(mResults.getCoverCount());
+                    archiveInfo.setCoverCount(mResults.getCoverCount());
                 }
-                ((SupportsArchiveHeader) this).writeHeader(context, info);
+                ((SupportsArchiveHeader) this).writeHeader(context, archiveInfo);
             }
 
-            // Write styles and prefs next. This will facilitate & speedup
-            // importing as we'll be seeking in the input archive for them first.
+            // Write styles first, and preferences next! This will facilitate & speedup
+            // importing as we'll be seeking in the input archive for these.
 
             if (!progressListener.isCancelled() && writeStyles) {
                 progressListener.publishProgressStep(0, context.getString(R.string.lbl_styles));
@@ -170,7 +179,7 @@ public abstract class ArchiveWriterAbstractBase
 
         } finally {
 
-            // closing a very large archive will take a while, so keep the progress dialog open
+            // closing a very large archive may take a while, so keep the progress dialog open
             progressListener.setIndeterminate(true);
             progressListener.publishProgressStep(
                     0, context.getString(R.string.progress_msg_please_wait));
@@ -182,7 +191,7 @@ public abstract class ArchiveWriterAbstractBase
     }
 
     /**
-     * Prepare the data.
+     * Prepare the Books and Covers.
      * <p>
      * For each book which will be exported, implementations should call:
      * {@link ExportResults#addBook(long)} and {@link ExportResults#addCover(String)} as needed.
@@ -195,8 +204,8 @@ public abstract class ArchiveWriterAbstractBase
      * @throws IOException on failure
      */
     @WorkerThread
-    protected abstract ExportResults prepareData(@NonNull Context context,
-                                                 @NonNull ProgressListener progressListener)
+    protected abstract ExportResults prepareBooks(@NonNull Context context,
+                                                  @NonNull ProgressListener progressListener)
             throws IOException;
 
     /**

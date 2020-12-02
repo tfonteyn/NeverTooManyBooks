@@ -31,10 +31,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -42,10 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * A generic wrapper to read sqlite db files.
- * The {@link #validate} method should detect the type of db file and set a class variable
- * (i.e. {@link #mIsCalibre} only for now).
  * <p>
- * The {@link #read} should then check that variable and start the actual reader.
+ * The {@link #validate(Context)} should detect which database we're dealing with and
+ * create the delegate {@link ArchiveReader} and run {@link #validate(Context)} on it.
  */
 public class DbArchiveReader
         implements ArchiveReader {
@@ -59,8 +60,9 @@ public class DbArchiveReader
     @Nullable
     private final SQLiteDatabase mSQLiteDatabase;
 
-    // If some day we support other db files, this should become an enum.
-    private boolean mIsCalibre;
+    @Nullable
+    private ArchiveReader mDelegateReader;
+
 
     /**
      * Constructor.
@@ -97,7 +99,7 @@ public class DbArchiveReader
 
     @Override
     public void validate(@NonNull final Context context)
-            throws InvalidArchiveException, FileNotFoundException {
+            throws InvalidArchiveException, IOException {
 
         // sanity check
         if (mSQLiteDatabase == null) {
@@ -119,14 +121,27 @@ public class DbArchiveReader
                     || "books_series_link".equals(tableName)) {
                     calibreTables--;
                     if (calibreTables == 0) {
-                        mIsCalibre = true;
+                        mDelegateReader = new CalibreArchiveReader(context, mHelper,
+                                                                   mSQLiteDatabase);
+                        mDelegateReader.validate(context);
                         return;
                     }
                 }
             }
         }
 
-        throw new InvalidArchiveException(ImportHelper.IMPORT_NOT_SUPPORTED);
+        throw new InvalidArchiveException(ArchiveType.ERROR_NO_READER_AVAILABLE);
+    }
+
+    @Nullable
+    @Override
+    public ArchiveInfo readHeader(@NonNull final Context context)
+            throws InvalidArchiveException, IOException {
+        if (mDelegateReader != null) {
+            return mDelegateReader.readHeader(context);
+        } else {
+            return null;
+        }
     }
 
     @NonNull
@@ -136,23 +151,26 @@ public class DbArchiveReader
             throws IOException, ImportException, InvalidArchiveException {
 
         // sanity check, we should not even get here if the database is not supported
-        if (mIsCalibre && mSQLiteDatabase != null) {
-            try (ArchiveReader reader =
-                         new CalibreArchiveReader(context, mHelper, mSQLiteDatabase)) {
-                reader.validate(context);
-                return reader.read(context, progressListener);
-            }
+        if (mDelegateReader == null) {
+            throw new InvalidArchiveException(ArchiveReader.ERROR_INVALID_INPUT);
         }
 
-        throw new InvalidArchiveException(ImportHelper.IMPORT_NOT_SUPPORTED);
+        return mDelegateReader.read(context, progressListener);
     }
 
     @Override
-    public void close() {
-        if (mSQLiteDatabase != null) {
-            mSQLiteDatabase.close();
-            // all done, no need to keep this file.
-            FileUtils.delete(new File(mSQLiteDatabase.getPath()));
+    public void close()
+            throws IOException {
+        try {
+            if (mDelegateReader != null) {
+                mDelegateReader.close();
+            }
+        } finally {
+            if (mSQLiteDatabase != null) {
+                mSQLiteDatabase.close();
+                // all done, no need to keep this file.
+                FileUtils.delete(new File(mSQLiteDatabase.getPath()));
+            }
         }
     }
 }

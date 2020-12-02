@@ -26,16 +26,22 @@ import androidx.annotation.NonNull;
 import java.io.Closeable;
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
-public interface Importer
+/**
+ * Implements Closeable to enforce a cleanup structure.
+ */
+public interface RecordReader
         extends Closeable {
 
     /**
-     * Read a {@link ReaderEntity}.
+     * Read an {@link ArchiveReaderRecord}.
      *
      * @param context          Current context
-     * @param entity           to read data from
+     * @param record           to read data from
      * @param options          any applicable options
      * @param progressListener Progress and cancellation provider
      *
@@ -44,9 +50,22 @@ public interface Importer
      * @throws IOException     on failure
      * @throws ImportException on failure
      */
+    @NonNull
     ImportResults read(@NonNull Context context,
-                       @NonNull ReaderEntity entity,
+                       @NonNull ArchiveReaderRecord record,
                        @ImportHelper.Options int options,
                        @NonNull ProgressListener progressListener)
             throws IOException, ImportException;
+
+    /**
+     * Override if the implementation needs to close something.
+     *
+     * @throws IOException on failure
+     */
+    @Override
+    default void close()
+            throws IOException {
+        // do nothing
+    }
+
 }

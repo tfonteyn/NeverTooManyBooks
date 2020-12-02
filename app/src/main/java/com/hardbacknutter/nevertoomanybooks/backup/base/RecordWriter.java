@@ -33,24 +33,17 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
-public interface Exporter
+public interface RecordWriter
         extends Closeable {
 
     /** Buffer for the Writer. */
     int BUFFER_SIZE = 65535;
-
-    @NonNull
-    static String getNamePrefix(@NonNull final Context context) {
-        return context.getString(R.string.app_name)
-               + '-' + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-               + ".ntmb";
-    }
 
     /**
      * Get the format version that this exporter is writing out.
@@ -60,10 +53,11 @@ public interface Exporter
     int getVersion();
 
     /**
-     * Wrapper for {@link #write(Context, Writer, ProgressListener)}.
+     * Wrapper.
      *
      * @param context          Current context
      * @param file             File to write to
+     * @param options          what to write and how
      * @param progressListener Progress and cancellation interface
      *
      * @return {@link ExportResults}
@@ -73,29 +67,34 @@ public interface Exporter
     @WorkerThread
     default ExportResults write(@NonNull final Context context,
                                 @NonNull final File file,
+                                @NonNull final Set<ArchiveWriterRecord.Type> entry,
+                                @ExportHelper.Options final int options,
                                 @NonNull final ProgressListener progressListener)
             throws IOException {
         try (OutputStream os = new FileOutputStream(file);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
-            return write(context, writer, progressListener);
+            return write(context, writer, entry, options, progressListener);
         }
     }
 
-    /**
-     * Export to a Writer.
-     *
-     * @param context          Current context
-     * @param writer           Writer to write to
-     * @param progressListener Progress and cancellation interface
-     *
-     * @return {@link ExportResults}
-     *
-     * @throws IOException on failure
-     */
     @WorkerThread
     ExportResults write(@NonNull Context context,
                         @NonNull Writer writer,
+                        @NonNull Set<ArchiveWriterRecord.Type> entry,
+                        @ExportHelper.Options int options,
                         @NonNull ProgressListener progressListener)
             throws IOException;
+
+
+    /**
+     * Override if the implementation needs to close something.
+     *
+     * @throws IOException on failure
+     */
+    @Override
+    default void close()
+            throws IOException {
+        // do nothing
+    }
 }

@@ -23,11 +23,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
+import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,9 +39,10 @@ import java.util.Optional;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -84,6 +88,9 @@ class CalibreArchiveReader
 
     /** Log tag. */
     private static final String TAG = "CalibreArchiveReader";
+
+    private static final String SQL_COUNT_BOOKS = "SELECT COUNT(*) FROM books";
+
     /** The main fields from the books table. */
     private static final String SQL_SELECT_BOOKS =
             "SELECT books.id AS id,"
@@ -146,6 +153,9 @@ class CalibreArchiveReader
     private final boolean mSyncBooks;
     private final boolean mOverwriteBooks;
 
+    @Nullable
+    private ArchiveInfo mArchiveInfo;
+
     /**
      * Constructor.
      *
@@ -171,8 +181,27 @@ class CalibreArchiveReader
     public void validate(@NonNull final Context context)
             throws InvalidArchiveException {
         if (mCalibreDb.getVersion() < MINIMUM_CALIBRE_DB_VERSION) {
-            throw new InvalidArchiveException(ImportHelper.IMPORT_NOT_SUPPORTED);
+            throw new InvalidArchiveException(ArchiveReader.ERROR_INVALID_INPUT);
         }
+    }
+
+    @Nullable
+    @Override
+    public ArchiveInfo readHeader(@NonNull final Context context)
+            throws IOException {
+        if (mArchiveInfo == null) {
+            // construct the header
+            mArchiveInfo = new ArchiveInfo();
+            mArchiveInfo.setDatabaseVersionCode(mCalibreDb.getVersion());
+            try (SQLiteStatement stmt = mCalibreDb.compileStatement(SQL_COUNT_BOOKS)) {
+                final int nrOfBooks = (int) stmt.simpleQueryForLong();
+                mArchiveInfo.setBookCount(nrOfBooks);
+            } catch (@NonNull final SQLiteDoneException e) {
+                throw new IOException(e);
+            }
+        }
+
+        return mArchiveInfo;
     }
 
     @NonNull

@@ -75,12 +75,35 @@
                     tools:ignore="MissingConstraints"
                     />
 
+                <TextView
+                    android:id="@+id/archive_name"
+                    style="@style/Text.Body.Small"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="archive name"
+                    />
+
+                <TextView
+                    android:id="@+id/archive_content"
+                    style="@style/Text.Body.Small"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/field_margin_inline"
+                    android:textIsSelectable="true"
+                    app:layout_constraintBaseline_toBaselineOf="@id/archive_name"
+                    app:layout_constraintStart_toEndOf="@id/archive_name"
+                    tools:text="archive content"
+                    />
+
                 <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/middle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.6"
+                    app:layout_constraintGuide_percent="0.55"
                     />
 
                 <CheckBox
@@ -89,9 +112,8 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_books"
-                    app:layout_constraintEnd_toStartOf="@id/middle"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/archive_content"
                     />
 
                 <RadioButton
@@ -162,9 +184,8 @@
                     android:layout_marginStart="@dimen/field_margin"
                     android:checked="true"
                     android:text="@string/lbl_covers_long"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/middle"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/cbx_books"
                     />
 
                 <CheckBox
@@ -174,7 +195,6 @@
                     android:layout_marginStart="@dimen/field_margin"
                     android:checked="true"
                     android:text="@string/lbl_settings"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/middle"
                     app:layout_constraintTop_toBottomOf="@id/cbx_covers"
                     />
@@ -186,7 +206,6 @@
                     android:layout_marginStart="@dimen/field_margin"
                     android:checked="true"
                     android:text="@string/lbl_styles"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/middle"
                     app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
                     />

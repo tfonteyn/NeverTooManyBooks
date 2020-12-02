@@ -58,6 +58,28 @@ public class TocEntryCoder
 
     private static final char[] ESCAPE_CHARS = {'(', ')'};
 
+    TocEntryCoder() {
+    }
+
+    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
+    @NonNull
+    @Override
+    public String encode(@NonNull final TocEntry tocEntry) {
+        String result = escape(tocEntry.getTitle(), ESCAPE_CHARS);
+
+        if (!tocEntry.getFirstPublicationDate().isEmpty()) {
+            // start with a space for readability
+            // the surrounding () are NOT escaped as they are part of the format.
+            result += " (" + tocEntry.getFirstPublicationDate().getIsoString() + ')';
+        }
+
+        return result
+               + ' ' + getObjectSeparator()
+               // we only use the name here
+               + ' ' + new StringList<>(new AuthorCoder())
+                       .encodeElement(tocEntry.getPrimaryAuthor());
+    }
+
     /**
      * Attempts to parse a single string into an TocEntry.
      * <ul>The date *must* match a pattern of a (partial) ISO date string:
@@ -90,24 +112,5 @@ public class TocEntryCoder
             }
         }
         return new TocEntry(author, title, null);
-    }
-
-    @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
-    @NonNull
-    @Override
-    public String encode(@NonNull final TocEntry tocEntry) {
-        String result = escape(tocEntry.getTitle(), ESCAPE_CHARS);
-
-        if (!tocEntry.getFirstPublicationDate().isEmpty()) {
-            // start with a space for readability
-            // the surrounding () are NOT escaped as they are part of the format.
-            result += " (" + tocEntry.getFirstPublicationDate().getIsoString() + ')';
-        }
-
-        return result
-               + ' ' + getObjectSeparator()
-               // we only use the name here
-               + ' ' + new StringList<>(new AuthorCoder())
-                       .encodeElement(tocEntry.getPrimaryAuthor());
     }
 }

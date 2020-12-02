@@ -35,7 +35,6 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -46,15 +45,14 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveExportTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -70,12 +68,12 @@ public class ExportFragment
     /** FragmentResultListener request key. */
     private static final String RK_EXPORT_OPTIONS = TAG + ":rk:" + ExportOptionsDialogFragment.TAG;
     /**
-     * The ViewModel and the {@link #mArchiveExportTask} could be folded into one object,
+     * The ViewModel and the {@link #mArchiveWriterTask} could be folded into one object,
      * but we're trying to keep task logic separate for now.
      */
     private ExportViewModel mExportViewModel;
-    private ArchiveExportTask mArchiveExportTask;
-    /** The launcher for picking a Uri. */
+    private ArchiveWriterTask mArchiveWriterTask;
+    /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument(),
                                       this::onCreateDocument);
@@ -93,6 +91,62 @@ public class ExportFragment
             };
     @Nullable
     private ProgressDialogFragment mProgressDialog;
+
+    /**
+     * Transform the result data into a user friendly report.
+     *
+     * @param result to report
+     *
+     * @return report string
+     */
+    @NonNull
+    private String createReport(@Nullable final FileUtils.UriInfo uriInfo,
+                                @NonNull final ExportResults result) {
+
+        final Context context = getContext();
+        final StringJoiner report = new StringJoiner("\n", "• ", "");
+        report.setEmptyValue("");
+
+        if (!result.getBooksExported().isEmpty()) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_books),
+                                         String.valueOf(result.getBooksExported().size())));
+        }
+        if (!result.getCoverFileNames().isEmpty()) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_covers),
+                                         String.valueOf(result.getCoverFileNames().size())));
+        }
+
+        if (result.styles > 0) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_styles),
+                                         String.valueOf(result.styles)));
+        }
+        if (result.preferences > 0) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.lbl_settings));
+        }
+        if (result.database) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.lbl_database));
+        }
+
+        // We cannot get the folder name for the file.
+        // FIXME: We need to change the descriptive string not to include the folder.
+        if (uriInfo != null && uriInfo.displayName != null) {
+            //noinspection ConstantConditions
+            return report.toString() + "\n\n" + context.getString(
+                    R.string.progress_end_export_success, "",
+                    uriInfo.displayName, FileUtils.formatFileSize(context, uriInfo.size));
+
+        } else {
+            return report.toString();
+        }
+    }
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -119,14 +173,14 @@ public class ExportFragment
 
         mExportViewModel = new ViewModelProvider(getActivity()).get(ExportViewModel.class);
 
-        mArchiveExportTask = new ViewModelProvider(this).get(ArchiveExportTask.class);
-        mArchiveExportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mArchiveExportTask.onCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
-        mArchiveExportTask.onFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
-        mArchiveExportTask.onFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
+        mArchiveWriterTask = new ViewModelProvider(this).get(ArchiveWriterTask.class);
+        mArchiveWriterTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mArchiveWriterTask.onCancelled().observe(getViewLifecycleOwner(), this::onExportCancelled);
+        mArchiveWriterTask.onFailure().observe(getViewLifecycleOwner(), this::onExportFailure);
+        mArchiveWriterTask.onFinished().observe(getViewLifecycleOwner(), this::onExportFinished);
 
         // if the task is NOT already running (e.g. after a screen rotation...) show the options
-        if (!mArchiveExportTask.isRunning()) {
+        if (!mArchiveWriterTask.isRunning()) {
             exportShowOptions();
         }
     }
@@ -154,7 +208,7 @@ public class ExportFragment
         }
 
         // hook the task up.
-        dialog.setCanceller(mArchiveExportTask);
+        dialog.setCanceller(mArchiveWriterTask);
         return dialog;
     }
 
@@ -187,10 +241,9 @@ public class ExportFragment
      * Export Step 2: prompt the user for a uri to export to.
      */
     private void exportPickUri() {
-        // set it now, as we need it for mArchiveExportTask.getDefaultUriName call just below
-        mArchiveExportTask.setHelper(mExportViewModel.getExportHelper());
         //noinspection ConstantConditions
-        mCreateDocumentLauncher.launch(mArchiveExportTask.getDefaultUriName(getContext()));
+        final String defName = mExportViewModel.getExportHelper().getDefaultUriName(getContext());
+        mCreateDocumentLauncher.launch(defName);
     }
 
     /**
@@ -205,7 +258,9 @@ public class ExportFragment
             getActivity().finish();
 
         } else {
-            mArchiveExportTask.startExport(uri);
+            final ExportHelper exportHelper = mExportViewModel.getExportHelper();
+            exportHelper.setUri(uri);
+            mArchiveWriterTask.startExport(exportHelper);
         }
     }
 
@@ -289,8 +344,8 @@ public class ExportFragment
                             .setPositiveButton(R.string.done, (d, which) -> getActivity().finish());
 
             final Uri uri = exportHelper.getUri();
-            final Pair<String, Long> uriInfo = FileUtils.getUriInfo(getContext(), uri);
-            final String report = message.result.createReport(getContext(), uriInfo);
+            final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(getContext(), uri);
+            final String report = createReport(uriInfo, message.result);
 
             if (exportHelper.offerEmail(uriInfo)) {
                 dialogBuilder.setMessage(report + "\n\n"

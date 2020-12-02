@@ -19,14 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.zip;
 
-import android.content.ContentResolver;
 import android.content.Context;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -34,13 +31,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
 
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 
 /**
  * Implementation of ZIP-specific reader functions.
@@ -48,22 +42,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlImporter;
 public class ZipArchiveReader
         extends ArchiveReaderAbstract {
 
-    /** Buffer for {@link #mInputStream}. */
-    private static final int BUFFER_SIZE = 65535;
-
-    /** Provide access to the Uri InputStream. */
-    @NonNull
-    private final ContentResolver mContentResolver;
     /**
      * The data stream for the archive.
-     * Do <strong>NOT</strong> use this directly, see {link #getInputStream()}
+     * Do <strong>NOT</strong> use this directly, see {@link #getInputStream()}
      */
     @Nullable
     private ZipInputStream mInputStream;
-
-    /** The INFO data read from the start of the archive. */
-    @Nullable
-    private ArchiveInfo mInfo;
 
     /**
      * Constructor.
@@ -74,42 +58,32 @@ public class ZipArchiveReader
     public ZipArchiveReader(@NonNull final Context context,
                             @NonNull final ImportHelper helper) {
         super(context, helper);
-        mContentResolver = context.getContentResolver();
-    }
-
-    @Override
-    public void validate(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
-        if (mInfo == null) {
-            mInfo = readArchiveInfo(context);
-        }
-        // the info block will/can do more checks.
-        mInfo.validate();
     }
 
     @Override
     @Nullable
-    public ReaderEntity seek(@NonNull final ArchiveContainerEntry type)
-            throws IOException {
+    public ArchiveReaderRecord seek(@NonNull final ArchiveReaderRecord.Type type)
+            throws InvalidArchiveException, IOException {
+        try {
+            ZipEntry entry;
+            while (true) {
+                entry = getInputStream().getNextEntry();
+                if (entry == null) {
+                    return null;
+                }
 
-        ZipEntry entry;
-        while (true) {
-            entry = getInputStream().getNextEntry();
-            if (entry == null) {
-                return null;
+                if (type == ArchiveReaderRecord.Type.getType(entry.getName())) {
+                    return new ZipArchiveRecord(this, entry);
+                }
             }
-
-            // Based on the file name, determine entity type
-            final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
-            if (type == typeFound) {
-                return new ZipReaderEntity(typeFound, this, entry);
-            }
+        } catch (@NonNull final ZipException e) {
+            throw new InvalidArchiveException(e);
         }
     }
 
     @Override
     @Nullable
-    public ReaderEntity next()
+    public ArchiveReaderRecord next()
             throws IOException {
 
         final ZipEntry entry = getInputStream().getNextEntry();
@@ -117,70 +91,31 @@ public class ZipArchiveReader
             return null;
         }
 
-        final ArchiveContainerEntry typeFound = ArchiveContainerEntry.getType(entry.getName());
-        return new ZipReaderEntity(typeFound, this, entry);
-    }
-
-    /**
-     * A tar archive <strong>must</strong> have an info block.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @NonNull
-    @Override
-    public ArchiveInfo readArchiveInfo(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
-        if (mInfo == null) {
-            // Archive info is stored in an xml file in the archive itself.
-            // We try and find the InfoHeader entity, and process it with the XMLImporter
-            final ReaderEntity entity;
-            try {
-                entity = seek(ArchiveContainerEntry.InfoHeaderXml);
-            } catch (@NonNull final ZipException e) {
-                throw new InvalidArchiveException(e);
-            }
-
-            if (entity == null) {
-                throw new IOException("No INFO entity found");
-            }
-
-            // read the INFO
-            try (XmlImporter importer = new XmlImporter(context)) {
-                mInfo = importer.readInfo(entity.getInputStream());
-            }
-            // We MUST close the stream here, so the caller gets a pristine stream.
-            resetToStart();
-        }
-
-        return mInfo;
+        return new ZipArchiveRecord(this, entry);
     }
 
     /**
      * Get the input stream; (re)creating as needed.
      *
-     * <strong>Note:</strong> TarArchiveInputStream does not support marking,
-     * so we let {@link #resetToStart()} close/null the stream, and (re)create it here when needed.
+     * <strong>Note:</strong> ZipInputStream does not support marking,
+     * so we let {@link #closeInputStream()} close/null the stream,
+     * and (re)create it here when needed.
      *
      * @return the stream
      *
      * @throws IOException on failure
      */
     @NonNull
-    private ZipInputStream getInputStream()
+    public ZipInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            final InputStream is = mContentResolver.openInputStream(getUri());
-            if (is == null) {
-                throw new IOException("Could not resolve uri=" + getUri());
-            }
-            mInputStream = new ZipInputStream(new BufferedInputStream(is, BUFFER_SIZE));
+            mInputStream = new ZipInputStream(openInputStream());
         }
-
         return mInputStream;
     }
 
     @Override
-    public void resetToStart()
+    public void closeInputStream()
             throws IOException {
         if (mInputStream != null) {
             mInputStream.close();
@@ -188,38 +123,24 @@ public class ZipArchiveReader
         }
     }
 
-    @Override
-    @CallSuper
-    public void close()
-            throws IOException {
-        resetToStart();
-        super.close();
-    }
+    private static class ZipArchiveRecord
+            implements ArchiveReaderRecord {
 
-    private static class ZipReaderEntity
-            implements ReaderEntity {
-
-        /** The entity source stream. */
+        /** The record source stream. */
         @NonNull
         private final ZipArchiveReader mReader;
         /** Zip archive entry. */
         @NonNull
         private final ZipEntry mEntry;
-        /** Entity type. */
-        @NonNull
-        private final ArchiveContainerEntry mType;
 
         /**
          * Constructor.
          *
-         * @param type   Type of item
          * @param reader Parent
          * @param entry  Corresponding archive entry
          */
-        ZipReaderEntity(@NonNull final ArchiveContainerEntry type,
-                        @NonNull final ZipArchiveReader reader,
-                        @NonNull final ZipEntry entry) {
-            mType = type;
+        ZipArchiveRecord(@NonNull final ZipArchiveReader reader,
+                         @NonNull final ZipEntry entry) {
             mReader = reader;
             mEntry = entry;
         }
@@ -245,13 +166,8 @@ public class ZipArchiveReader
         @Override
         public InputStream getInputStream()
                 throws IOException {
+            // The reader can open/close the stream at will, so always ask the reader
             return mReader.getInputStream();
-        }
-
-        @NonNull
-        @Override
-        public ArchiveContainerEntry getType() {
-            return mType;
         }
     }
 }

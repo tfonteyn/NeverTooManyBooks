@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class BookshelfCoder
-        extends JsonCoderBase<Bookshelf> {
+        implements JsonCoder<Bookshelf> {
 
     @NonNull
     private final BooklistStyle mDefaultStyle;
@@ -39,24 +39,22 @@ public class BookshelfCoder
      *
      * @param defaultStyle to use for bookshelves without a style set.
      */
-    public BookshelfCoder(@NonNull final BooklistStyle defaultStyle) {
+    BookshelfCoder(@NonNull final BooklistStyle defaultStyle) {
         mDefaultStyle = defaultStyle;
     }
 
     @Override
     @NonNull
-    public JSONObject encode(@NonNull final Bookshelf bookshelf) {
-        final JSONObject data = new JSONObject();
-        try {
-            data.put(DBDefinitions.KEY_PK_ID, bookshelf.getId());
-            data.put(DBDefinitions.KEY_BOOKSHELF_NAME, bookshelf.getName());
-            if (!bookshelf.getStyleUuid().isEmpty()) {
-                data.put(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid());
-            }
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
+    public JSONObject encode(@NonNull final Bookshelf bookshelf)
+            throws JSONException {
+        final JSONObject out = new JSONObject();
+
+        out.put(DBDefinitions.KEY_PK_ID, bookshelf.getId());
+        out.put(DBDefinitions.KEY_BOOKSHELF_NAME, bookshelf.getName());
+        if (!bookshelf.getStyleUuid().isEmpty()) {
+            out.put(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid());
         }
-        return data;
+        return out;
     }
 
     @Override
@@ -64,8 +62,9 @@ public class BookshelfCoder
     public Bookshelf decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final Bookshelf bookshelf = new Bookshelf(data.getString(DBDefinitions.KEY_BOOKSHELF_NAME),
-                                                  mDefaultStyle);
+        final Bookshelf bookshelf = new Bookshelf(
+                data.getString(DBDefinitions.KEY_BOOKSHELF_NAME), mDefaultStyle);
+        bookshelf.setId(data.getLong(DBDefinitions.KEY_PK_ID));
 
         // It's quite possible that the UUID is not a style we (currently) know.
         // But that does not matter as we'll check it upon first access.

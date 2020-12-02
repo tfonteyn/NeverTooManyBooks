@@ -76,15 +76,38 @@
 
                 <!-- Not present in landscape layout; displayed as the subtitle of the toolbar. -->
                 <TextView
-                    android:id="@+id/info"
+                    android:id="@+id/header"
                     style="@style/Text.Header"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/lbl_import_options"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="InconsistentLayout"
+                    />
+
+                <TextView
+                    android:id="@+id/archive_name"
+                    style="@style/Text.Body.Small"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/border2"
+                    android:textIsSelectable="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/header"
+                    tools:text="archive name"
+                    />
+
+                <TextView
+                    android:id="@+id/archive_content"
+                    style="@style/Text.Body.Small"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/field_margin"
+                    android:textIsSelectable="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/archive_name"
+                    tools:text="archive content"
                     />
 
                 <CheckBox
@@ -93,9 +116,8 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_books"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/info"
+                    app:layout_constraintTop_toBottomOf="@id/archive_content"
                     />
 
                 <RadioButton
@@ -165,7 +187,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_covers_long"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rb_updated_books_sync"
                     />
@@ -176,7 +197,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_settings"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cbx_covers"
                     />
@@ -187,7 +207,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_styles"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
                     />

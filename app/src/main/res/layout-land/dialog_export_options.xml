@@ -80,7 +80,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_books"
-                    app:layout_constraintEnd_toStartOf="@id/guideline"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     />
@@ -92,7 +91,6 @@
                     android:layout_marginStart="@dimen/indent_radio_button"
                     android:checked="true"
                     android:text="@string/lbl_export_option_all_books"
-                    app:layout_constraintEnd_toStartOf="@id/guideline"
                     app:layout_constraintStart_toStartOf="@id/cbx_books"
                     app:layout_constraintTop_toBottomOf="@id/cbx_books"
                     />
@@ -124,7 +122,6 @@
                     android:checked="true"
                     android:text="@string/lbl_covers_long"
                     android:layout_marginStart="@dimen/field_margin"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline"
                     app:layout_constraintTop_toTopOf="parent"
                     />
@@ -136,7 +133,6 @@
                     android:checked="true"
                     android:text="@string/lbl_settings"
                     android:layout_marginStart="@dimen/field_margin"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline"
                     app:layout_constraintTop_toBottomOf="@id/cbx_covers"
                     />
@@ -148,7 +144,6 @@
                     android:layout_marginStart="@dimen/field_margin"
                     android:checked="true"
                     android:text="@string/lbl_styles"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/guideline"
                     app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
                     />

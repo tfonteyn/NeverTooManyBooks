@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -29,8 +30,6 @@ import androidx.lifecycle.ViewModel;
 
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class ImportViewModel
@@ -52,8 +51,9 @@ public class ImportViewModel
     }
 
     @NonNull
-    ImportHelper createImportManager(@NonNull final Uri uri) {
-        mImportHelper = new ImportHelper(uri);
+    ImportHelper createImportHelper(@NonNull final Context context,
+                                    @NonNull final Uri uri) {
+        mImportHelper = new ImportHelper(context, uri);
         return mImportHelper;
     }
 

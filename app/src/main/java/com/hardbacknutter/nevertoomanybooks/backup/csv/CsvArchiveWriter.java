@@ -24,11 +24,13 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
@@ -62,12 +64,13 @@ public class CsvArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        // This is a plain books-only flat csv-file,so we *only* pass in Options.BOOKS.
-        // ans disregard whatever was set in the helper.
-        try (Exporter exporter = new CsvExporter(context, ExportHelper.OPTIONS_BOOKS,
-                                                 mHelper.getUtcDateTimeSince())) {
-
-            return exporter.write(context, mHelper.getTempOutputFile(context), progressListener);
+        // This is a flat csv, books-only file,so we *only* pass in Books.
+        // and disregard whatever was set in the helper.
+        try (RecordWriter recordWriter = new CsvRecordWriter(mHelper.getUtcDateTimeSince())) {
+            return recordWriter.write(context, mHelper.getTempOutputFile(context),
+                                      EnumSet.of(ArchiveWriterRecord.Type.Books),
+                                      mHelper.getOptions(),
+                                      progressListener);
         }
     }
 }

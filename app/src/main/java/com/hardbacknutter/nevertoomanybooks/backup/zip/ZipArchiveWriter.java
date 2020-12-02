@@ -36,9 +36,9 @@ import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
@@ -75,40 +75,15 @@ public class ZipArchiveWriter
         super(context, helper);
 
         mOutputStream = new ZipOutputStream(new BufferedOutputStream(
-                new FileOutputStream(helper.getTempOutputFile(context)),
-                BUFFER_SIZE));
+                new FileOutputStream(helper.getTempOutputFile(context)), BUFFER_SIZE));
     }
 
     @Override
     public void writeCovers(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)
             throws IOException {
-        defWriteCovers(context, progressListener);
-    }
-
-    @Override
-    public void putFile(@NonNull final String name,
-                        @NonNull final File file,
-                        final boolean compress)
-            throws IOException {
-        final ZipEntry entry = new ZipEntry(name);
-        entry.setTime(file.lastModified());
-        if (compress) {
-            entry.setMethod(ZipEntry.DEFLATED);
-
-        } else {
-            entry.setMethod(ZipEntry.STORED);
-            entry.setSize(file.length());
-            entry.setCompressedSize(file.length());
-            final CRC32 crc32 = FileUtils.getCrc32(file);
-            entry.setCrc(crc32.getValue());
-        }
-        mOutputStream.putNextEntry(entry);
-        try (InputStream is = new FileInputStream(file)) {
-            FileUtils.copy(is, mOutputStream);
-        } finally {
-            mOutputStream.closeEntry();
-        }
+        // delegate to the default implementation
+        writeCoversDefImpl(context, progressListener);
     }
 
     @Override
@@ -129,8 +104,36 @@ public class ZipArchiveWriter
             crc32.update(bytes);
             entry.setCrc(crc32.getValue());
         }
+
         mOutputStream.putNextEntry(entry);
         try (InputStream is = new ByteArrayInputStream(bytes)) {
+            FileUtils.copy(is, mOutputStream);
+        } finally {
+            mOutputStream.closeEntry();
+        }
+    }
+
+    @Override
+    public void putFile(@NonNull final String name,
+                        @NonNull final File file,
+                        final boolean compress)
+            throws IOException {
+
+        final ZipEntry entry = new ZipEntry(name);
+        entry.setTime(file.lastModified());
+        if (compress) {
+            entry.setMethod(ZipEntry.DEFLATED);
+
+        } else {
+            entry.setMethod(ZipEntry.STORED);
+            entry.setSize(file.length());
+            entry.setCompressedSize(file.length());
+            final CRC32 crc32 = FileUtils.getCrc32(file);
+            entry.setCrc(crc32.getValue());
+        }
+
+        mOutputStream.putNextEntry(entry);
+        try (InputStream is = new FileInputStream(file)) {
             FileUtils.copy(is, mOutputStream);
         } finally {
             mOutputStream.closeEntry();

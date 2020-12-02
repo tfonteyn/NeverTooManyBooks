@@ -43,18 +43,20 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -70,23 +72,21 @@ public class ImportFragment
     /** FragmentResultListener request key. */
     private static final String RK_IMPORT_OPTIONS = TAG + ":rk:" + ImportOptionsDialogFragment.TAG;
     /**
-     * The mime types accepted for importing files.
-     * This is the list how it SHOULD be set...
-     * {"application/zip",
-     * "application/x-tar",
-     * "text/csv",
-     * "application/x-sqlite3"};
+     * The mime types accepted for importing files SHOULD be set to this list:
+     * "application/zip", "application/x-tar", "text/csv", "application/x-sqlite3"
      * <p>
      * As it turns out the mime types are not an Android feature, but support for them
-     * is specific to whatever application is responding to {@link Intent#ACTION_OPEN_DOCUMENT}
+     * is specific to whatever application is responding to {@link Intent#ACTION_GET_CONTENT}
      * which in practice is extremely limited.
-     * e.g. "text/*" does not even allow csv files in the standard Files app.
+     * e.g. "text/*" does not even allow csv files in the standard Android 8.0 Files app.
+     * <p>
      * So we have no choice but to accept simply all files and deal with invalid ones later.
+     * Also see {@link #mOpenUriLauncher}.
      */
-    private static final String[] MIME_TYPES = {"*/*"};
+    private static final String MIME_TYPES = "*/*";
 
     /**
-     * The ViewModel and the {@link #mArchiveImportTask} could be folded into one object,
+     * The ViewModel and the {@link #mArchiveReaderTask} could be folded into one object,
      * but we're trying to keep task logic separate for now.
      */
     private ImportViewModel mVm;
@@ -100,25 +100,30 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
-    private ArchiveImportTask mArchiveImportTask;
+    private ArchiveReaderTask mArchiveReaderTask;
     private final ImportOptionsDialogFragment.Launcher mImportOptionsLauncher =
             new ImportOptionsDialogFragment.Launcher() {
                 @Override
                 public void onResult(final boolean startTask) {
                     if (startTask) {
-                        mArchiveImportTask.startImport(mVm.getImportHelper());
+                        mArchiveReaderTask.startImport(mVm.getImportHelper());
                     } else {
                         //noinspection ConstantConditions
                         getActivity().finish();
                     }
                 }
             };
-    /** The launcher for picking a Uri. */
-    private final ActivityResultLauncher<String[]> mOpenDocumentLauncher =
-            registerForActivityResult(new ActivityResultContracts.OpenDocument(),
-                                      this::onOpenDocument);
+    /**
+     * The launcher for picking a Uri to read from.
+     *
+     * <a href="https://developer.android.com/guide/topics/providers/document-provider.html#client">
+     * Android docs</a> : use a GetContent
+     */
+    private final ActivityResultLauncher<String> mOpenUriLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
     @Nullable
     private ProgressDialogFragment mProgressDialog;
+
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -148,16 +153,16 @@ public class ImportFragment
 
         mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
 
-        mArchiveImportTask = new ViewModelProvider(this).get(ArchiveImportTask.class);
-        mArchiveImportTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mArchiveImportTask.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
-        mArchiveImportTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
-        mArchiveImportTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+        mArchiveReaderTask = new ViewModelProvider(this).get(ArchiveReaderTask.class);
+        mArchiveReaderTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mArchiveReaderTask.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
+        mArchiveReaderTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mArchiveReaderTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
         // If the task is NOT already running (e.g. after a screen rotation...)
         // then start the import process.
-        if (!mArchiveImportTask.isRunning()) {
-            mOpenDocumentLauncher.launch(MIME_TYPES);
+        if (!mArchiveReaderTask.isRunning()) {
+            mOpenUriLauncher.launch(MIME_TYPES);
         }
     }
 
@@ -167,34 +172,31 @@ public class ImportFragment
      *
      * @param uri file to read from
      */
-    private void onOpenDocument(@Nullable final Uri uri) {
+    private void onOpenUri(@Nullable final Uri uri) {
         if (uri == null) {
             // nothing selected, just quit
             //noinspection ConstantConditions
             getActivity().finish();
 
         } else {
-            final ImportHelper importHelper = mVm.createImportManager(uri);
-
             //noinspection ConstantConditions
-            if (!importHelper.isSupported(getContext())) {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_error)
-                        .setMessage(R.string.error_import_file_not_supported)
-                        .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
-                        .create()
-                        .show();
+            final ImportHelper importHelper = mVm.createImportHelper(getContext(), uri);
+
+            try {
+                importHelper.validateArchive(getContext());
+            } catch (@NonNull final IOException | InvalidArchiveException e) {
+                onImportNotSupported();
                 return;
             }
 
-            final ArchiveContainer container = importHelper.getContainer(getContext());
-            switch (container) {
+            final ArchiveType archiveType = importHelper.getArchiveType();
+            switch (archiveType) {
                 case Csv:
-                    // Default: new books + books with newer "last_update" only
-                    importHelper.setOption(ImportHelper.OPTIONS_BOOKS, true);
+                    // Default: new books and sync updates
+                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
                     importHelper.setUpdatesMustSync();
-                    //URGENT: make a backup before ANY csv import!
+
+                    //URGENT: should make a backup before ANY csv import!
                     //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.ic_warning)
@@ -206,27 +208,33 @@ public class ImportFragment
                                     mImportOptionsLauncher.launch())
                             .create()
                             .show();
-
                     break;
 
                 case Zip:
                 case Tar:
-                case SqLiteDb:
-                    // Default: update all entities (includes new books)
-                    // + books with newer "last_update" only
-                    importHelper.setOption(ImportHelper.OPTIONS_ENTITIES, true);
+                    // Default: update all entries and sync updates
+                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Styles, true);
+                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Preferences, true);
+                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Cover, true);
                     importHelper.setUpdatesMustSync();
+                    mImportOptionsLauncher.launch();
+                    break;
+
+                case SqLiteDb:
+                    // Default: new books only
+                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+                    importHelper.setSkipUpdates();
                     mImportOptionsLauncher.launch();
                     break;
 
                 case Json:
                     //ENHANCE: import from JSON not exposed to the user yet
-                    break;
-
                 case Xml:
                 case Unknown:
                 default:
-                    throw new IllegalArgumentException(String.valueOf(container));
+                    onImportNotSupported();
+                    break;
             }
         }
     }
@@ -253,7 +261,7 @@ public class ImportFragment
         }
 
         // hook the task up.
-        dialog.setCanceller(mArchiveImportTask);
+        dialog.setCanceller(mArchiveReaderTask);
 
         return dialog;
     }
@@ -263,6 +271,16 @@ public class ImportFragment
             mProgressDialog.dismiss();
             mProgressDialog = null;
         }
+    }
+
+    private void onImportNotSupported() {
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(getContext())
+                .setIcon(R.drawable.ic_error)
+                .setMessage(R.string.error_import_file_not_supported)
+                .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
+                .create()
+                .show();
     }
 
     private void onImportFailure(@NonNull final FinishedMessage<Exception> message) {
@@ -279,31 +297,6 @@ public class ImportFragment
                     .create()
                     .show();
         }
-    }
-
-    @NonNull
-    private String createErrorReport(@Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof InvalidArchiveException) {
-            msg = getString(R.string.error_import_file_not_supported);
-
-        } else if (e instanceof ImportException) {
-            msg = e.getLocalizedMessage();
-
-        } else if (e instanceof IOException) {
-            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
-            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
-            //noinspection ConstantConditions
-            msg = StandardDialogs.createBadError(getContext(), R.string.error_storage_not_readable);
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = getString(R.string.error_unknown_long);
-        }
-
-        return msg;
     }
 
     private void onImportCancelled(@NonNull final FinishedMessage<ImportResults> message) {
@@ -349,7 +342,7 @@ public class ImportFragment
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
-                .setMessage(result.createReport(getContext()))
+                .setMessage(createReport(result))
                 .setPositiveButton(R.string.done, (d, w) -> {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mVm.onImportFinished(result));
@@ -357,6 +350,110 @@ public class ImportFragment
                 })
                 .create()
                 .show();
+    }
+
+
+    /**
+     * Transform the successful result data into a user friendly report.
+     *
+     * @param result to report
+     *
+     * @return report string
+     */
+    @NonNull
+    private String createReport(@NonNull final ImportResults result) {
+
+        final Context context = getContext();
+        final StringJoiner report = new StringJoiner("\n", "• ", "");
+        report.setEmptyValue("");
+
+        //TODO: RTL
+        if (result.booksCreated > 0 || result.booksUpdated > 0 || result.booksSkipped > 0) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                         context.getString(R.string.lbl_books),
+                                         result.booksCreated,
+                                         result.booksUpdated,
+                                         result.booksSkipped));
+        }
+        if (result.coversCreated > 0 || result.coversUpdated > 0 || result.coversSkipped > 0) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                         context.getString(R.string.lbl_covers),
+                                         result.coversCreated,
+                                         result.coversUpdated,
+                                         result.coversSkipped));
+        }
+        if (result.styles > 0) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_styles),
+                                         String.valueOf(result.styles)));
+        }
+        if (result.preferences > 0) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.lbl_settings));
+        }
+
+        int failed = result.failedLinesNr.size();
+        if (failed == 0) {
+            return report.toString();
+        }
+
+        final int fs;
+        final Collection<String> msgList = new ArrayList<>();
+
+        if (failed > 10) {
+            // keep it sensible, list maximum 10 lines.
+            failed = 10;
+            fs = R.string.warning_import_csv_failed_lines_lots;
+        } else {
+            fs = R.string.warning_import_csv_failed_lines_some;
+        }
+
+        for (int i = 0; i < failed; i++) {
+            //noinspection ConstantConditions
+            msgList.add(context.getString(R.string.a_bracket_b_bracket,
+                                          String.valueOf(result.failedLinesNr.get(i)),
+                                          result.failedLinesMessage.get(i)));
+        }
+
+        return report.toString() + "\n" + context.getString(
+                fs, msgList.stream()
+                           .map(s -> context.getString(R.string.list_element, s))
+                           .collect(Collectors.joining("\n")));
+    }
+
+    /**
+     * Transform the failure into a user friendly report.
+     *
+     * @param e error exception
+     *
+     * @return report string
+     */
+    @NonNull
+    private String createErrorReport(@Nullable final Exception e) {
+        String msg = null;
+
+        if (e instanceof InvalidArchiveException) {
+            msg = getString(R.string.error_import_file_not_supported);
+
+        } else if (e instanceof ImportException) {
+            msg = e.getLocalizedMessage();
+
+        } else if (e instanceof IOException) {
+            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
+            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
+            //noinspection ConstantConditions
+            msg = StandardDialogs.createBadError(getContext(), R.string.error_storage_not_readable);
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            msg = getString(R.string.error_unknown_long);
+        }
+
+        return msg;
     }
 
     public static class ResultContract

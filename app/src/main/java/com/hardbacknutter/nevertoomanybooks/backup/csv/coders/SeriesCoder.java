@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.backup.csv.coders;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 
@@ -46,24 +47,8 @@ public class SeriesCoder
 
     private static final char[] ESCAPE_CHARS = {'(', ')'};
 
-    @Override
-    @NonNull
-    public Series decode(@NonNull final String element) {
-        final List<String> parts = StringList.newInstance().decodeElement(element);
-        final Series series = Series.from(parts.get(0));
-        if (parts.size() > 1) {
-            try {
-                final JSONObject details = new JSONObject(parts.get(1));
-                if (details.has(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
-                    series.setComplete(details.optBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE));
-                } else if (details.has("complete")) {
-                    series.setComplete(details.optBoolean("complete"));
-                }
-            } catch (@NonNull final JSONException ignore) {
-                // ignore
-            }
-        }
-        return series;
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public SeriesCoder() {
     }
 
     @SuppressWarnings("ParameterNameDiffersFromOverriddenParameter")
@@ -90,5 +75,25 @@ public class SeriesCoder
             result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
         }
         return result;
+    }
+
+    @Override
+    @NonNull
+    public Series decode(@NonNull final String element) {
+        final List<String> parts = StringList.newInstance().decodeElement(element);
+        final Series series = Series.from(parts.get(0));
+        if (parts.size() > 1) {
+            try {
+                final JSONObject details = new JSONObject(parts.get(1));
+                if (details.has(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
+                    series.setComplete(details.optBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE));
+                } else if (details.has("complete")) {
+                    series.setComplete(details.optBoolean("complete"));
+                }
+            } catch (@NonNull final JSONException ignore) {
+                // ignore
+            }
+        }
+        return series;
     }
 }

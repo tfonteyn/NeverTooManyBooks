@@ -28,29 +28,31 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 public class AuthorCoder
-        extends JsonCoderBase<Author> {
+        implements JsonCoder<Author> {
+
+    AuthorCoder() {
+    }
 
     @Override
     @NonNull
-    public JSONObject encode(@NonNull final Author author) {
-        final JSONObject data = new JSONObject();
-        try {
-            data.put(DBDefinitions.KEY_PK_ID, author.getId());
-            data.put(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
-            if (!author.getGivenNames().isEmpty()) {
-                data.put(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, author.getGivenNames());
-            }
-            if (author.isComplete()) {
-                data.put(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, true);
-            }
-            if (author.getType() != Author.TYPE_UNKNOWN) {
-                data.put(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
-            }
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
+    public JSONObject encode(@NonNull final Author author)
+            throws JSONException {
+        final JSONObject out = new JSONObject();
+
+        out.put(DBDefinitions.KEY_PK_ID, author.getId());
+        out.put(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
+
+        if (!author.getGivenNames().isEmpty()) {
+            out.put(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, author.getGivenNames());
+        }
+        if (author.isComplete()) {
+            out.put(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, true);
+        }
+        if (author.getType() != Author.TYPE_UNKNOWN) {
+            out.put(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
         }
 
-        return data;
+        return out;
     }
 
     @Override
@@ -61,6 +63,8 @@ public class AuthorCoder
         final Author author = new Author(data.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME),
                                          // optional
                                          data.optString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
+
+        author.setId(data.getLong(DBDefinitions.KEY_PK_ID));
 
         if (data.has(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
             author.setComplete(data.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE));

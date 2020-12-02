@@ -24,15 +24,17 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * EXPERIMENTAL: only meant to be run from a test
+ * EXPERIMENTAL: only meant to be run from a test.
  */
 public class JsonArchiveWriter
         implements ArchiveWriter {
@@ -62,10 +64,13 @@ public class JsonArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Exporter exporter = new JsonExporter(context, ExportHelper.OPTIONS_BOOKS,
-                                                  mHelper.getUtcDateTimeSince())) {
-
-            return exporter.write(context, mHelper.getTempOutputFile(context), progressListener);
+        // This is a flat json, books-only file,so we *only* pass in OPTIONS_BOOKS.
+        // and disregard whatever was set in the helper.
+        try (RecordWriter recordWriter = new JsonRecordWriter(mHelper.getUtcDateTimeSince())) {
+            return recordWriter.write(context, mHelper.getTempOutputFile(context),
+                                      EnumSet.of(ArchiveWriterRecord.Type.Books),
+                                      mHelper.getOptions(),
+                                      progressListener);
         }
     }
 }

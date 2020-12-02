@@ -17,28 +17,24 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-import androidx.core.util.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 
 /**
  * Value class to report back what was exported.
  * <p>
- * Used by {@link Exporter} and accumulated in {@link ArchiveWriter}.
+ * Used by {@link RecordWriter} and accumulated in {@link ArchiveWriter}.
  */
 public class ExportResults
         implements Parcelable {
@@ -55,9 +51,6 @@ public class ExportResults
             return new ExportResults[size];
         }
     };
-
-    /** Report list bullet. */
-    private static final String BULLET = "\n• ";
 
     /** id's of books we exported. */
     private final List<Long> mBooksExported = new ArrayList<>();
@@ -104,7 +97,6 @@ public class ExportResults
         mBooksExported.add(bookId);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public int getBookCount() {
         return mBooksExported.size();
     }
@@ -118,66 +110,13 @@ public class ExportResults
         mCoversExported.add(cover);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public int getCoverCount() {
         return mCoversExported.size();
     }
 
     @NonNull
-    List<String> getCoverFileNames() {
+    public List<String> getCoverFileNames() {
         return mCoversExported;
-    }
-
-    /**
-     * Transform the result data into a user friendly report.
-     *
-     * @param context Current context
-     *
-     * @return report string
-     */
-    @NonNull
-    public String createReport(@NonNull final Context context,
-                               @Nullable final Pair<String, Long> uriInfo) {
-        // Transform the result data into a user friendly report.
-        final StringBuilder msg = new StringBuilder();
-
-        if (!mBooksExported.isEmpty()) {
-            msg.append(BULLET)
-               .append(context.getString(R.string.name_colon_value,
-                                         context.getString(R.string.lbl_books),
-                                         String.valueOf(mBooksExported.size())));
-        }
-        if (!mCoversExported.isEmpty()) {
-            msg.append(BULLET)
-               .append(context.getString(R.string.name_colon_value,
-                                         context.getString(R.string.lbl_covers),
-                                         String.valueOf(mCoversExported.size())));
-        }
-
-        if (styles > 0) {
-            msg.append(BULLET)
-               .append(context.getString(R.string.name_colon_value,
-                                         context.getString(R.string.lbl_styles),
-                                         String.valueOf(styles)));
-        }
-        if (preferences > 0) {
-            msg.append(BULLET).append(context.getString(R.string.lbl_settings));
-        }
-        if (database) {
-            msg.append(BULLET).append(context.getString(R.string.lbl_database));
-        }
-
-        // The below works, but we cannot get the folder name for the file.
-        // FIXME: We need to change the descriptive string not to include the folder.
-        if (uriInfo != null && uriInfo.first != null && uriInfo.second != null) {
-            msg.append("\n\n")
-               .append(context.getString(R.string.progress_end_export_success,
-                                         "",
-                                         uriInfo.first,
-                                         FileUtils.formatFileSize(context, uriInfo.second)));
-        }
-
-        return msg.toString();
     }
 
     @Override

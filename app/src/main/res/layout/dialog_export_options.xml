@@ -72,7 +72,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="@string/lbl_export_options"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:ignore="InconsistentLayout"
@@ -84,7 +83,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_books"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/info"
                     />
@@ -96,7 +94,6 @@
                     android:layout_marginStart="@dimen/indent_radio_button"
                     android:checked="true"
                     android:text="@string/lbl_export_option_all_books"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@id/cbx_books"
                     app:layout_constraintTop_toBottomOf="@id/cbx_books"
                     />
@@ -127,7 +124,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_covers_long"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/rb_books_incremental"
                     />
@@ -138,7 +134,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_settings"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cbx_covers"
                     />
@@ -149,7 +144,6 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/lbl_styles"
-                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
                     />

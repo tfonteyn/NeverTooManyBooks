@@ -27,6 +27,7 @@ import androidx.annotation.WorkerThread;
 import java.io.Closeable;
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 public interface ArchiveWriter
@@ -57,10 +58,15 @@ public interface ArchiveWriter
                         @NonNull ProgressListener progressListener)
             throws IOException;
 
+    /**
+     * Override if the implementation needs to close something.
+     *
+     * @throws IOException on failure
+     */
     @Override
     default void close()
             throws IOException {
-        // override if needed
+        // do nothing
     }
 
     /**

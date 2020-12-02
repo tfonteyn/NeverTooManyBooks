@@ -21,27 +21,52 @@
 /**
  * This package contains the format agnostic classes.
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveExportTask}
- * The core work is done by:
+ * <p>
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportHelper}
+ * is setup by the user UI, and determines the
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType}
+ * of the given archive.
+ * <p>
+ * The ExportHelper is passed to:
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask}
+ * The task gets an ArchiveWriter from the ExportHelper, and delegates the job to it:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter}
- * Writes to a File, and when done, copies that File to a {@link android.net.Uri}
- * The actual writing is done by:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.Exporter}
- * Writes to a {@link java.io.Writer}.
- * Reports back with:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults}.
+ * <p>
+ * The ArchiveWriter gets the desired list of entries it needs to write from the helper.
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord.Type}
+ * Writing starts with the header in a fixed format suitable for the archive type
+ * Next it loops over the entries, and for each entry
+ * invokes an exporter that can write that entry in the desired format.
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter}
+ * The output from the exporter is then streamed into the actual archive.
+ * <p>
+ * When done, the ArchiveWriter copies the archive file to to a {@link android.net.Uri}
+ * and reports back to the task... back to the user UI with:
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportResults}.
  * <p>
  * <p>
+ * *************************************************************************************
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveImportTask}
- * The core work is done by:
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportHelper}
+ * is setup by the user UI, inspects the Uri and determines the
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType}
+ * of the given archive.
+ * <p>
+ * The helper is passed to:
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask}
+ * The task gets a reader from the helper, and delegates the job to it:
  * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader}
- * Reads from a {@link android.net.Uri}.
- * The actual reading is done by:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.Importer}
- * Reads from the input stream using:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity}
- * Reports back with:
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults}.
+ * <p>
+ * The reader parses the archive for one or more
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord}
+ * Each of these are passed for actual reading to an importer suitable for that record type.
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader}
+ * The importer reports back with:
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportResults}.
+ * The reader accumulates all results from the used importer(s),
+ * and finally passes the result back to the task... back to the user UI.
+ * <p>
+ * In short:
+ * Uri -> Helper -> ArchiveType -> ArchiveReader -> LOOP(ArchiveReaderRecord -> RecordReader) -> Results
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;

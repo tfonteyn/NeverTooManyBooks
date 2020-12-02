@@ -28,26 +28,27 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 public class SeriesCoder
-        extends JsonCoderBase<Series> {
+        implements JsonCoder<Series> {
+
+    SeriesCoder() {
+    }
 
     @Override
     @NonNull
-    public JSONObject encode(@NonNull final Series series) {
-        final JSONObject data = new JSONObject();
-        try {
-            data.put(DBDefinitions.KEY_PK_ID, series.getId());
-            data.put(DBDefinitions.KEY_SERIES_TITLE, series.getTitle());
-            if (!series.getNumber().isEmpty()) {
-                data.put(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, series.getNumber());
-            }
-            if (series.isComplete()) {
-                data.put(DBDefinitions.KEY_SERIES_IS_COMPLETE, true);
-            }
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
-        }
+    public JSONObject encode(@NonNull final Series series)
+            throws JSONException {
+        final JSONObject out = new JSONObject();
 
-        return data;
+        out.put(DBDefinitions.KEY_PK_ID, series.getId());
+        out.put(DBDefinitions.KEY_SERIES_TITLE, series.getTitle());
+
+        if (!series.getNumber().isEmpty()) {
+            out.put(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, series.getNumber());
+        }
+        if (series.isComplete()) {
+            out.put(DBDefinitions.KEY_SERIES_IS_COMPLETE, true);
+        }
+        return out;
     }
 
     @Override
@@ -56,6 +57,8 @@ public class SeriesCoder
             throws JSONException {
 
         final Series series = new Series(data.getString(DBDefinitions.KEY_SERIES_TITLE));
+        series.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+
         if (data.has(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
             series.setNumber(data.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES));
         }

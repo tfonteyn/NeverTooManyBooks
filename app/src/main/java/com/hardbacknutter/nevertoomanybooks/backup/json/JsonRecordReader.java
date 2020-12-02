@@ -27,28 +27,24 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -58,17 +54,11 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
-/**
- * TEST: Experimental - NEEDS TESTING
- */
-public class JsonImporter
-        implements Importer {
+public class JsonRecordReader
+        implements RecordReader {
 
     /** Log tag. */
-    private static final String TAG = "JsonImporter";
-
-    /** Buffer for the Reader. */
-    private static final int BUFFER_SIZE = 65535;
+    private static final String TAG = "JsonRecordReader";
     /** log error string. */
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
     /** Database Access. */
@@ -81,60 +71,70 @@ public class JsonImporter
     private final String mProgressMessage;
     @NonNull
     private final String mUnknownString;
-    private final BookCoder mBookCoder;
-    private final ImportResults mResults = new ImportResults();
-    /** import configuration. */
-    private boolean mSyncBooks;
-    private boolean mOverwriteBooks;
+    private final JsonCoder<Book> mBookCoder;
+
+    private ImportResults mResults;
 
     /**
      * Constructor.
      * <p>
-     * Only supports {@link ArchiveContainerEntry#BooksJson}.
+     * Only supports {@link ArchiveReaderRecord.Type#Books}.
      *
      * @param context Current context
+     * @param db      Database Access;
      */
     @AnyThread
-    public JsonImporter(@NonNull final Context context) {
-
-        mDb = new DAO(TAG);
+    public JsonRecordReader(@NonNull final Context context,
+                            @NonNull final DAO db) {
+        mDb = db;
+        mBookCoder = new BookCoder(StyleDAO.getDefault(context, mDb));
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
         mUnknownString = context.getString(R.string.unknown);
-
-        mBookCoder = new BookCoder(StyleDAO.getDefault(context, mDb));
     }
 
     @Override
+    @NonNull
     public ImportResults read(@NonNull final Context context,
-                              @NonNull final ReaderEntity entity,
-                              final int options,
+                              @NonNull final ArchiveReaderRecord record,
+                              @ImportHelper.Options final int options,
                               @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
 
-        mSyncBooks = (options & ImportHelper.OPTIONS_UPDATES_MUST_SYNC) != 0;
-        mOverwriteBooks = (options & ImportHelper.OPTIONS_UPDATES_MAY_OVERWRITE) != 0;
+        mResults = new ImportResults();
 
-        // we only support books, return empty results
-        if (entity.getType() != ArchiveContainerEntry.BooksJson) {
+        final String content = record.asString();
+        if (content.isEmpty()) {
             return mResults;
         }
 
-        // Don't close this stream!
-        final InputStream is = entity.getInputStream();
-        final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        final BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE);
+        try {
+            final JSONObject root = new JSONObject(content);
+            // any books to decode ?
+            final JSONArray books = root.optJSONArray(JsonTags.BOOK_LIST);
+            if (books != null) {
+                readBooks(context, options, books, progressListener);
+            }
+        } catch (@NonNull final JSONException e) {
+            throw new ImportException(context.getString(R.string.error_import_failed), e);
+        }
 
-        // We read the whole file/list into memory.
-        final StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "read|mResults=" + mResults);
         }
-        if (sb.length() == 0) {
-            return mResults;
-        }
+        return mResults;
+    }
+
+    private void readBooks(@NonNull final Context context,
+                           @ImportHelper.Options final int options,
+                           final JSONArray books,
+                           @NonNull final ProgressListener progressListener)
+            throws JSONException {
+        final boolean updatesMustSync =
+                (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
+        final boolean updatesMayOverwrite =
+                (options & ImportHelper.OPTION_UPDATES_MAY_OVERWRITE) != 0;
 
         int row = 1;
         // Count the number of rows between committing a transaction
@@ -144,15 +144,13 @@ public class JsonImporter
         // Count the nr of books in between progress updates.
         int delta = 0;
 
+        // not perfect, but good enough
+        if (progressListener.getMaxPos() < books.length()) {
+            progressListener.setMaxPos(books.length());
+        }
+
         Synchronizer.SyncLock txLock = null;
         try {
-            final JSONArray books = new JSONArray(sb.toString());
-
-            // not perfect, but good enough
-            if (progressListener.getMaxPos() < books.length()) {
-                progressListener.setMaxPos(books.length());
-            }
-
             // Iterate through each imported row
             for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
                 // every 10 inserted, we commit the transaction
@@ -173,7 +171,8 @@ public class JsonImporter
 
                     final long importNumericId = book.getLong(DBDefinitions.KEY_PK_ID);
                     book.remove(DBDefinitions.KEY_PK_ID);
-                    importBookWithUuid(context, book, importNumericId);
+                    importBookWithUuid(context, updatesMustSync, updatesMayOverwrite,
+                                       book, importNumericId);
 
                 } catch (@NonNull final DAO.DaoWriteException | SQLiteDoneException e) {
                     //TODO: use a meaningful user-displaying string.
@@ -208,24 +207,14 @@ public class JsonImporter
                     delta = 0;
                 }
             }
-
-        } catch (@NonNull final JSONException e) {
-            throw new ImportException(context.getString(R.string.error_import_failed), e);
-
         } finally {
             if (mDb.inTransaction()) {
                 mDb.setTransactionSuccessful();
                 mDb.endTransaction(txLock);
             }
         }
-
         // minus 1 to compensate for the last increment
         mResults.booksProcessed = row - 1;
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "read|mResults=" + mResults);
-        }
-        return mResults;
     }
 
     /**
@@ -237,6 +226,8 @@ public class JsonImporter
      * @throws DAO.DaoWriteException on failure
      */
     private void importBookWithUuid(@NonNull final Context context,
+                                    final boolean updatesMustSync,
+                                    final boolean updatesMayOverwrite,
                                     @NonNull final Book book,
                                     final long importNumericId)
             throws DAO.DaoWriteException {
@@ -253,8 +244,8 @@ public class JsonImporter
             book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
 
             // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((mSyncBooks && isImportNewer(context, mDb, book, databaseBookId))
-                || mOverwriteBooks) {
+            if ((updatesMustSync && isImportNewer(context, mDb, book, databaseBookId))
+                || updatesMayOverwrite) {
 
                 mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                           | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
@@ -320,11 +311,5 @@ public class JsonImporter
         final LocalDateTime utcLastUpdated = db.getBookLastUpdateUtcDate(context, bookId);
 
         return utcLastUpdated == null || utcImportDate.isAfter(utcLastUpdated);
-    }
-
-    @Override
-    public void close() {
-        mDb.purge();
-        mDb.close();
     }
 }

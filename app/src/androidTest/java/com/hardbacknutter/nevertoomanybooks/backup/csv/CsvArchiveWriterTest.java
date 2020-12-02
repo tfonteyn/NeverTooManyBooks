@@ -35,16 +35,18 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -81,12 +83,13 @@ public class CsvArchiveWriterTest {
 
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(ExportHelper.OPTIONS_BOOKS);
-        exportHelper.setArchiveContainer(ArchiveContainer.Csv);
+        final ExportHelper exportHelper = new ExportHelper(
+                ArchiveWriterRecord.Type.Books);
+        exportHelper.setArchiveType(ArchiveType.Csv);
         exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.getArchiveWriter(context)) {
-            exportResults = writer.write(context, new TestProgressListener(TAG));
+        try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
+            exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
         }
         // assume success; a failure would have thrown an exception
         exportHelper.onSuccess(context);
@@ -123,18 +126,17 @@ public class CsvArchiveWriterTest {
             db.update(context, book, 0);
         }
 
-        final ImportHelper importHelper = new ImportHelper(Uri.fromFile(file));
+        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         ImportResults importResults;
 
 
+        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-        importHelper.setOption(ImportHelper.OPTIONS_BOOKS, true);
-        try (ArchiveReader reader = importHelper.getArchiveReader(context)) {
-
-            final ArchiveInfo archiveInfo = reader.readArchiveInfo(context);
+            final ArchiveInfo archiveInfo = reader.readHeader(context);
             assertNull(archiveInfo);
 
-            importResults = reader.read(context, new TestProgressListener(TAG));
+            importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
         }
         assertEquals(exportCount, importResults.booksProcessed);
 
@@ -146,14 +148,14 @@ public class CsvArchiveWriterTest {
 
 
 
-        importHelper.setOption(ImportHelper.OPTIONS_BOOKS, true);
+        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
         importHelper.setUpdatesMayOverwrite();
-        try (ArchiveReader reader = importHelper.getArchiveReader(context)) {
+        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-            final ArchiveInfo archiveInfo = reader.readArchiveInfo(context);
+            final ArchiveInfo archiveInfo = reader.readHeader(context);
             assertNull(archiveInfo);
 
-            importResults = reader.read(context, new TestProgressListener(TAG));
+            importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
         }
         assertEquals(exportCount, importResults.booksProcessed);
 

@@ -58,11 +58,11 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Importer;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ReaderEntity;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCollectionBase;
@@ -85,9 +85,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
  * <ul>Supports:
- *      <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
- *      <li>{@link ArchiveContainerEntry#BooklistStylesXml}</li>
- *      <li>{@link ArchiveContainerEntry#PreferencesXml}</li>
+ *      <li>{@link ArchiveReaderRecord.Type#InfoHeader}</li>
+ *      <li>{@link ArchiveReaderRecord.Type#Styles}</li>
+ *      <li>{@link ArchiveReaderRecord.Type#Preferences}</li>
  * </ul>
  *
  * <strong>Important</strong>: The sax parser closes streams, which is not good
@@ -95,14 +95,14 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
  * <p>
  * TODO: unify the handling of simple elements and set/list elements.
  */
-public class XmlImporter
-        implements Importer {
+public class XmlRecordReader
+        implements RecordReader {
 
     /** Log tag. */
-    private static final String TAG = "XmlImporter";
+    private static final String TAG = "XmlRecordReader";
 
-    private static final String ERROR_UNABLE_TO_PROCESS_XML_ENTITY =
-            "Unable to process XML entity ";
+    private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD =
+            "Unable to process XML record ";
 
     /** Buffer for the Reader. */
     private static final int BUFFER_SIZE = 65535;
@@ -120,104 +120,88 @@ public class XmlImporter
      * but it's clean and future proof
      */
     private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
-    private final ImportResults mResults = new ImportResults();
 
-    /** a simple Holder for the current tag name and attributes. */
+    /** a simple Holder for the current tag name and attributes. Pushed/pulled on the stack. */
     private TagInfo mTag;
 
     /**
      * Constructor.
      *
      * @param context Current context
+     * @param db      Database Access;
      */
-    public XmlImporter(@NonNull final Context context) {
-        mDb = new DAO(TAG);
+    public XmlRecordReader(@NonNull final Context context,
+                           @NonNull final DAO db) {
+        mDb = db;
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
     }
 
     @Override
+    @NonNull
     public ImportResults read(@NonNull final Context context,
-                              @NonNull final ReaderEntity entity,
-                              final int ignoredOptions,
+                              @NonNull final ArchiveReaderRecord record,
+                              @ImportHelper.Options final int unused,
                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        switch (entity.getType()) {
-            case BooklistStylesXml: {
-                // Don't close this stream!
-                final InputStream is = entity.getInputStream();
-                final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
-                final StylesReader stylesReader = new StylesReader(context, mDb);
-                fromXml(in, stylesReader);
-                //TODO: we should update the menu order in the database here
-                mResults.styles += stylesReader.getStylesRead();
-                break;
-            }
-            case PreferencesXml: {
-                // Don't close this stream!
-                final InputStream is = entity.getInputStream();
-                final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-                final Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE);
-                final SharedPreferences.Editor editor = PreferenceManager
-                        .getDefaultSharedPreferences(context).edit();
-                fromXml(in, new PreferencesReader(editor));
-                editor.apply();
-                mResults.preferences++;
-                break;
-            }
-            case InfoHeaderXml:
-                throw new IllegalStateException("call #readInfo instead");
+        final ImportResults results = new ImportResults();
+        final ArchiveReaderRecord.Type recordType = record.getType();
+        if (recordType != null) {
+            switch (recordType) {
+                case Styles: {
+                    final StylesReader stylesReader = new StylesReader(context, mDb);
+                    fromXml(record, stylesReader);
+                    //TODO: we should update the menu order in the database here
+                    results.styles += stylesReader.getStylesRead();
+                    break;
+                }
+                case Preferences: {
+                    final SharedPreferences.Editor editor = PreferenceManager
+                            .getDefaultSharedPreferences(context).edit();
+                    fromXml(record, new PreferencesReader(editor));
+                    editor.apply();
+                    results.preferences++;
+                    break;
+                }
+                case InfoHeader:
+                    throw new IllegalStateException("call #readInfo instead");
 
-            case BooksCsv:
-            case BooksJson:
-            case BooksXml:
-            case XML:
-            case Cover:
-            case Database:
-            case LegacyPreferences:
-                // BookCatalogue format. No longer supported.
-            case LegacyBooklistStyles:
-                // BookCatalogue format. No longer supported.
-            case Unknown:
-            default:
-                // not implemented.
-                break;
+                case Books:
+                case Cover:
+                default:
+                    // not implemented.
+                    break;
+            }
         }
-
-        return mResults;
+        return results;
     }
 
     /**
-     * Read the info block from an XML stream.
+     * Read the archive information block.
      *
-     * @param inputStream to read
+     * @param record to read data from
      *
      * @return the archive info
      *
      * @throws IOException on failure
      */
     @NonNull
-    public ArchiveInfo readInfo(@NonNull final InputStream inputStream)
+    public ArchiveInfo readArchiveHeader(@NonNull final ArchiveReaderRecord record)
             throws IOException {
         final ArchiveInfo info = new ArchiveInfo();
-        try (Reader isr = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             Reader in = new BufferedReaderNoClose(isr, BUFFER_SIZE)) {
-
-            fromXml(in, new InfoReader(info));
-        }
+        fromXml(record, new InfoReader(info));
         return info;
     }
 
     /**
      * Internal routine to update the passed EntityAccessor from an XML file.
      *
-     * @param in       source to read from
+     * @param record   source to read from
      * @param accessor the EntityReader to convert XML to the object
      *
      * @throws IOException on failure
      */
-    private void fromXml(@NonNull final Reader in,
+    private void fromXml(@NonNull final ArchiveReaderRecord record,
                          @NonNull final EntityReader<String> accessor)
             throws IOException {
 
@@ -231,9 +215,14 @@ public class XmlImporter
         final DefaultHandler handler = new XmlResponseParser(rootFilter);
 
         try {
+            // Don't close this stream
+            final InputStream is = record.getInputStream();
+            final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+            final BufferedReader reader = new BufferedReaderNoClose(isr, BUFFER_SIZE);
+            final InputSource source = new InputSource(reader);
+
             final SAXParser parser = factory.newSAXParser();
-            final InputSource is = new InputSource(in);
-            parser.parse(is, handler);
+            parser.parse(source, handler);
             // wrap parser exceptions in an IOException
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
@@ -355,7 +344,7 @@ public class XmlImporter
                 mTag = mTagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_ENTITY + mTag.name
+                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + mTag.name
                                            + '(' + mTag.type + ')', e);
             }
         };
@@ -451,7 +440,7 @@ public class XmlImporter
                 mTag = mTagStack.pop();
 
             } catch (@NonNull final RuntimeException e) {
-                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_ENTITY + mTag, e);
+                throw new RuntimeException(ERROR_UNABLE_TO_PROCESS_XML_RECORD + mTag, e);
             }
         };
 
@@ -475,12 +464,6 @@ public class XmlImporter
         XmlFilter.buildFilter(rootFilter, listRootElement, rootElement,
                               XmlUtils.TAG_LIST, XmlUtils.TAG_INT)
                  .setStartAction(startElementInCollection);
-    }
-
-    @Override
-    public void close() {
-        mDb.purge();
-        mDb.close();
     }
 
     /**
@@ -800,7 +783,7 @@ public class XmlImporter
      * Supports a *list* of {@link XmlTags#TAG_STYLE} block,
      * enclosed inside a {@link XmlTags#TAG_STYLE_LIST}
      * <p>
-     * See {@link XmlExporter} :
+     * See {@link XmlRecordWriter} :
      * * Filters and Groups are flattened.
      * * - each filter has a tag
      * * - actual groups are written as a set of ID's
@@ -980,7 +963,7 @@ public class XmlImporter
     /**
      * The sax parser closes streams, which is not good on a Tar archive entry.
      */
-    static class BufferedReaderNoClose
+    private static class BufferedReaderNoClose
             extends BufferedReader {
 
         BufferedReaderNoClose(@NonNull final Reader in,

@@ -23,14 +23,19 @@ import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import androidx.preference.PreferenceManager;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,13 +46,11 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainerEntry;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.Exporter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
@@ -68,10 +71,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 /**
  * <ul>Supports:
- *      <li>{@link ArchiveContainerEntry#InfoHeaderXml}</li>
- *      <li>{@link ArchiveContainerEntry#BooklistStylesXml}</li>
- *      <li>{@link ArchiveContainerEntry#PreferencesXml}</li>
- *      <li>{@link ArchiveContainerEntry#BooksXml}</li>
+ *      <li>{@link ArchiveWriterRecord.Type#InfoHeader}</li>
+ *      <li>{@link ArchiveWriterRecord.Type#Styles}</li>
+ *      <li>{@link ArchiveWriterRecord.Type#Preferences}</li>
+ *      <li>{@link ArchiveWriterRecord.Type#Books}</li>
  * </ul>
  *
  * <strong>WARNING: EXPERIMENTAL</strong> There are two types of XML here.
@@ -102,13 +105,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
  *      <li>NO LINK TABLES YET</li>
  * </ul>
  */
-public class XmlExporter
-        implements Exporter {
+public class XmlRecordWriter
+        implements RecordWriter {
 
     /** The format version of this exporter. */
     public static final int VERSION = 2;
+
     /** Log tag. */
-    private static final String TAG = "XmlExporter";
+    private static final String TAG = "XmlRecordWriter";
+
     /** individual format versions of table based data. */
     private static final int XML_EXPORTER_BOOKSHELVES_VERSION = 1;
     private static final int XML_EXPORTER_AUTHORS_VERSION = 1;
@@ -116,48 +121,39 @@ public class XmlExporter
     private static final int XML_EXPORTER_PUBLISHER_VERSION = 1;
     private static final int XML_EXPORTER_TOC_VERSION = 1;
     private static final int XML_EXPORTER_BOOKS_VERSION = 1;
-
     /** individual format version of Preferences. */
     private static final int XML_EXPORTER_PREFERENCES_VERSION = 1;
-
     /** individual format version of Styles. */
     private static final int XML_EXPORTER_STYLES_VERSION = 1;
-    private static final int XML_EXPORTER_STYLES_VERSION_EXPERIMENTAL = 99;
+
     /** suffix for progress messages. */
     private static final String XML_SUFFIX = " (xml)";
+
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-    private final ExportResults mResults = new ExportResults();
-    /** export configuration. */
-    @ExportHelper.Options
-    private final int mOptions;
-    private final boolean mCollectCoverFilenames;
-
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
-    /** cached "unknown title" string. */
-    @NonNull
-    private final String mUnknownTitleString;
+
+    /**
+     * Constructor.
+     */
+    public XmlRecordWriter() {
+        this(null);
+    }
 
     /**
      * Constructor.
      *
-     * @param context          Current context
-     * @param options          {@link ExportHelper} flags
-     * @param utcSinceDateTime (optional) UTC based date to select only books modified or added
-     *                         since.
+     * @param utcSinceDateTime (optional) UTC based date to select only items
+     *                         modified or added since.
      */
-    public XmlExporter(@NonNull final Context context,
-                       @ExportHelper.Options final int options,
-                       @Nullable final LocalDateTime utcSinceDateTime) {
+    @SuppressWarnings("WeakerAccess")
+    @AnyThread
+    public XmlRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
 
-        mOptions = options;
-        mCollectCoverFilenames = (mOptions & ExportHelper.OPTIONS_COVERS) != 0;
         mUtcSinceDateTime = utcSinceDateTime;
-
         mDb = new DAO(TAG);
-        mUnknownTitleString = context.getString(R.string.unknown_title);
     }
 
     @Override
@@ -165,36 +161,32 @@ public class XmlExporter
         return VERSION;
     }
 
-    /**
-     * Write all desired item types to the output writer as XML.
-     *
-     * <br><br>{@inheritDoc}
-     */
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
+                               @NonNull final Set<ArchiveWriterRecord.Type> entry,
+                               @ExportHelper.Options final int options,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        final boolean writeBooks = (mOptions & ExportHelper.OPTIONS_BOOKS) != 0;
-        final boolean writeStyles = (mOptions & ExportHelper.OPTIONS_STYLES) != 0;
-        final boolean writePrefs = (mOptions & ExportHelper.OPTIONS_PREFS) != 0;
+        final ExportResults results = new ExportResults();
 
-        if (!progressListener.isCancelled() && writeStyles) {
+        if (entry.contains(ArchiveWriterRecord.Type.Styles)
+            && !progressListener.isCancelled()) {
             progressListener.publishProgressStep(
                     1, context.getString(R.string.lbl_styles) + XML_SUFFIX);
-            writeStyles(context, writer);
-            // an experiment, might become the v2 of the styles format
-            //writeStyles2(context, writer, progressListener);
+            results.styles = writeStyles(context, writer);
         }
 
-        if (!progressListener.isCancelled() && writePrefs) {
+        if (entry.contains(ArchiveWriterRecord.Type.Preferences)
+            && !progressListener.isCancelled()) {
             progressListener.publishProgressStep(
                     1, context.getString(R.string.lbl_settings) + XML_SUFFIX);
-            writePreferences(context, writer);
+            results.preferences = writePreferences(context, writer);
         }
 
-        if (!progressListener.isCancelled() && writeBooks) {
+        if (entry.contains(ArchiveWriterRecord.Type.Books)
+            && !progressListener.isCancelled()) {
             // parsing will be faster if these go in the order done here.
             progressListener.publishProgressStep(
                     1, context.getString(R.string.lbl_bookshelves_long) + XML_SUFFIX);
@@ -218,23 +210,34 @@ public class XmlExporter
 
             progressListener.publishProgressStep(
                     1, context.getString(R.string.lbl_books) + XML_SUFFIX);
-            writeBooks(context, writer, progressListener);
+            final boolean collectCoverFilenames = entry.contains(
+                    ArchiveWriterRecord.Type.Cover);
+            results.add(writeBooks(context, collectCoverFilenames, writer, progressListener));
         }
 
-        return mResults;
+        return results;
     }
 
     /**
-     * Write out the archive info block as an XML file.
+     * Write/convert the archive information header (as XML) to a byte array.
      *
-     * @param writer writer
+     * @param info the archive information
+     *
+     * @return a byte[]  ready to stream into the archive
      *
      * @throws IOException on failure
      */
-    public void writeArchiveInfo(@NonNull final Writer writer,
-                                 @NonNull final ArchiveInfo info)
+    @NonNull
+    public byte[] createArchiveHeader(@NonNull final ArchiveInfo info)
             throws IOException {
-        toXml(writer, new InfoWriter(info));
+
+        final ByteArrayOutputStream data = new ByteArrayOutputStream();
+        try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
+             Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
+            toXml(writer, new InfoWriter(info));
+        }
+
+        return data.toByteArray();
     }
 
     /**
@@ -245,89 +248,16 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    private void writeStyles(@NonNull final Context context,
-                             @NonNull final Writer writer)
+    private int writeStyles(@NonNull final Context context,
+                            @NonNull final Writer writer)
             throws IOException {
         final Collection<BooklistStyle> styles = StyleDAO.getStyles(context, mDb, false);
         if (!styles.isEmpty()) {
             toXml(writer, new StylesWriter(context, styles));
         }
-        mResults.styles += styles.size();
+        return styles.size();
     }
 
-    /**
-     * Write out the user-defined styles using custom tags.
-     *
-     * @param context          Current context
-     * @param writer           writer
-     * @param progressListener Progress and cancellation interface
-     *
-     * @throws IOException on failure
-     */
-    private void writeStyles2(@NonNull final Context context,
-                              @NonNull final Writer writer,
-                              @NonNull final ProgressListener progressListener)
-            throws IOException {
-        final Collection<BooklistStyle> styles = StyleDAO.getStyles(context, mDb, false);
-        if (styles.isEmpty()) {
-            return;
-        }
-
-        writer.write('<' + XmlTags.TAG_STYLE_LIST);
-        writer.write(XmlUtils.versionAttr(XML_EXPORTER_STYLES_VERSION_EXPERIMENTAL));
-        writer.write(">\n");
-
-        for (final BooklistStyle style : styles) {
-            writer.write('<' + XmlTags.TAG_STYLE);
-            writer.write(XmlUtils.idAttr(style.getId()));
-            writer.write(XmlUtils.nameAttr(style.getUuid()));
-            writer.write(XmlUtils.attr(DBDefinitions.KEY_STYLE_IS_BUILTIN,
-                                       style.isBuiltin()));
-            writer.write(XmlUtils.attr(DBDefinitions.KEY_STYLE_IS_PREFERRED,
-                                       style.isPreferred()));
-            writer.write(XmlUtils.attr(DBDefinitions.KEY_STYLE_MENU_POSITION,
-                                       style.getMenuPosition()));
-            writer.write(">\n");
-
-            if (style.isBuiltin()) {
-                writer.write("<!-- builtin style preferences are for info only"
-                             + " and will not be imported -->");
-            }
-
-            // All 'flat' Preferences for this style.
-            for (final PPref p : style.getPreferences(false).values()) {
-                writer.write(XmlUtils.typedTag(p.getKey(), p.getValue(context)));
-            }
-
-            // Groups with their Preferences.
-            writer.write('<' + XmlTags.TAG_GROUP_LIST + '>');
-            for (final BooklistGroup group : style.getGroups().getGroupList()) {
-                writer.write('<' + XmlTags.TAG_GROUP);
-                writer.write(XmlUtils.idAttr(group.getId()));
-                writer.write(">\n");
-                for (final PPref p : group.getPreferences().values()) {
-                    writer.write(XmlUtils.typedTag(p.getKey(), p.getValue(context)));
-                }
-                writer.write("</" + XmlTags.TAG_GROUP + ">\n");
-            }
-            writer.write("</" + XmlTags.TAG_GROUP_LIST + '>');
-
-            // Active filters with their Preferences.
-            writer.write('<' + XmlTags.TAG_FILTER_LIST + '>');
-            for (final Filter<?> filter : style.getFilters().getActiveFilters(context)) {
-                writer.write(XmlUtils.tag(XmlTags.TAG_FILTER,
-                                          filter.getKey(), filter.getValue(context)));
-            }
-            writer.write("</" + XmlTags.TAG_FILTER_LIST + '>');
-
-
-            // close style tag.
-            writer.write("</" + XmlTags.TAG_STYLE + ">\n");
-        }
-
-        writer.write("</" + XmlTags.TAG_STYLE_LIST + ">\n");
-        mResults.styles += styles.size();
-    }
 
     /**
      * Write out the user preferences.
@@ -337,8 +267,8 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    private void writePreferences(@NonNull final Context context,
-                                  @NonNull final Writer writer)
+    private int writePreferences(@NonNull final Context context,
+                                 @NonNull final Writer writer)
             throws IOException {
 
         final Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(context).getAll();
@@ -352,7 +282,7 @@ public class XmlExporter
             }
         }
         toXml(writer, new PreferencesWriter(context, all, null));
-        mResults.preferences++;
+        return 1;
     }
 
     /**
@@ -548,15 +478,16 @@ public class XmlExporter
      *
      * @throws IOException on failure
      */
-    private void writeBooks(@NonNull final Context context,
-                            @NonNull final Writer writer,
-                            @NonNull final ProgressListener progressListener)
+    private ExportResults writeBooks(@NonNull final Context context,
+                                     final boolean collectCoverFilenames,
+                                     @NonNull final Writer writer,
+                                     @NonNull final ProgressListener progressListener)
             throws IOException {
+
+        final ExportResults results = new ExportResults();
 
         int delta = 0;
         long lastUpdate = 0;
-
-
 
         final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
 
@@ -574,7 +505,7 @@ public class XmlExporter
                 String title = book.getString(DBDefinitions.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
-                    title = mUnknownTitleString;
+                    title = context.getString(R.string.unknown_title);
                 }
 
                 // it's a buffered writer, no need to first StringBuilder the line.
@@ -641,7 +572,8 @@ public class XmlExporter
                                            book.getBoolean(DBDefinitions.KEY_SIGNED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
                                            book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
-
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_UUID,
+                                           book.getString(DBDefinitions.KEY_CALIBRE_UUID)));
                 // external ID's
                 for (final Domain domain : externalIdDomains) {
                     final String key = domain.getName();
@@ -743,13 +675,13 @@ public class XmlExporter
 
                 writer.write("</" + XmlTags.TAG_BOOK + ">\n");
 
-                mResults.addBook(book.getId());
+                results.addBook(book.getId());
 
-                if (mCollectCoverFilenames) {
+                if (collectCoverFilenames) {
                     for (int cIdx = 0; cIdx < 2; cIdx++) {
                         final File cover = book.getUuidCoverFile(context, cIdx);
                         if (cover != null && cover.exists()) {
-                            mResults.addCover(cover.getName());
+                            results.addCover(cover.getName());
                         }
                     }
                 }
@@ -764,6 +696,8 @@ public class XmlExporter
             }
             writer.write("</" + XmlTags.TAG_BOOK_LIST + ">\n");
         }
+
+        return results;
     }
 
     /**
@@ -866,7 +800,7 @@ public class XmlExporter
         /**
          * Check if the collection has more elements.
          * <p>
-         * See {@link XmlImporter.StylesReader} for an example
+         * See {@link XmlRecordReader.StylesReader} for an example
          *
          * @return {@code true} if there are
          */
@@ -1118,7 +1052,7 @@ public class XmlExporter
 
         @Override
         public long getRootTagVersionAttribute() {
-            return XmlExporter.XML_EXPORTER_STYLES_VERSION;
+            return XmlRecordWriter.XML_EXPORTER_STYLES_VERSION;
         }
 
         @Override

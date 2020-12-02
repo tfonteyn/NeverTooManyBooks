@@ -28,26 +28,26 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class TocEntryCoder
-        extends JsonCoderBase<TocEntry> {
+        implements JsonCoder<TocEntry> {
 
     private final AuthorCoder mAuthorCoder = new AuthorCoder();
 
+    TocEntryCoder() {
+    }
+
     @Override
     @NonNull
-    public JSONObject encode(@NonNull final TocEntry tocEntry) {
+    public JSONObject encode(@NonNull final TocEntry tocEntry)
+            throws JSONException {
         final JSONObject data = new JSONObject();
-        try {
-            data.put(DBDefinitions.KEY_PK_ID, tocEntry.getId());
-            data.put(DBDefinitions.KEY_TITLE, tocEntry.getTitle());
-            data.put(DBDefinitions.KEY_FK_AUTHOR,
-                     mAuthorCoder.encode(tocEntry.getPrimaryAuthor()));
 
-            if (!tocEntry.getFirstPublicationDate().isEmpty()) {
-                data.put(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                         tocEntry.getFirstPublicationDate().getIsoString());
-            }
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
+        data.put(DBDefinitions.KEY_PK_ID, tocEntry.getId());
+        data.put(DBDefinitions.KEY_TITLE, tocEntry.getTitle());
+        data.put(DBDefinitions.KEY_FK_AUTHOR, mAuthorCoder.encode(tocEntry.getPrimaryAuthor()));
+
+        if (!tocEntry.getFirstPublicationDate().isEmpty()) {
+            data.put(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                     tocEntry.getFirstPublicationDate().getIsoString());
         }
 
         return data;
@@ -58,9 +58,14 @@ public class TocEntryCoder
     public TocEntry decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        return new TocEntry(mAuthorCoder.decode(data.getJSONObject(DBDefinitions.KEY_FK_AUTHOR)),
-                            data.getString(DBDefinitions.KEY_TITLE),
-                            // optional
-                            data.optString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
+        final TocEntry tocEntry = new TocEntry(
+                mAuthorCoder.decode(data.getJSONObject(DBDefinitions.KEY_FK_AUTHOR)),
+                data.getString(DBDefinitions.KEY_TITLE),
+                // optional
+                data.optString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
+
+        tocEntry.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+
+        return tocEntry;
     }
 }

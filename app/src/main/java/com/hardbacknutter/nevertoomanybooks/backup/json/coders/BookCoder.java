@@ -44,13 +44,13 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
  * {@link #encode} omits {@code null} values, numeric {@code 0} values and empty lists.
  */
 public class BookCoder
-        extends JsonCoderBase<Book> {
+        implements JsonCoder<Book> {
 
-    private final AuthorCoder mAuthorCoder = new AuthorCoder();
-    private final PublisherCoder mPublisherCoder = new PublisherCoder();
-    private final SeriesCoder mSeriesCoder = new SeriesCoder();
-    private final TocEntryCoder mTocEntryCoder = new TocEntryCoder();
-    private final BookshelfCoder mBookshelfCoder;
+    private final JsonCoder<Author> mAuthorCoder = new AuthorCoder();
+    private final JsonCoder<Publisher> mPublisherCoder = new PublisherCoder();
+    private final JsonCoder<Series> mSeriesCoder = new SeriesCoder();
+    private final JsonCoder<TocEntry> mTocEntryCoder = new TocEntryCoder();
+    private final JsonCoder<Bookshelf> mBookshelfCoder;
 
     public BookCoder(@NonNull final BooklistStyle defStyle) {
         mBookshelfCoder = new BookshelfCoder(defStyle);
@@ -58,100 +58,91 @@ public class BookCoder
 
     @Override
     @NonNull
-    public JSONObject encode(@NonNull final Book book) {
-        final JSONObject data = new JSONObject();
-        //noinspection SimplifyStreamApiCallChains
-        book.keySet().stream().forEach(key -> encode(data, book, key));
-        return data;
+    public JSONObject encode(@NonNull final Book book)
+            throws JSONException {
+        final JSONObject out = new JSONObject();
+        for (final String key : book.keySet()) {
+            encode(out, book, key);
+        }
+        return out;
     }
 
-    private void encode(@NonNull final JSONObject data,
+    private void encode(@NonNull final JSONObject out,
                         @NonNull final Book book,
-                        @NonNull final String key) {
-        try {
-            final Object o = book.get(key);
+                        @NonNull final String key)
+            throws JSONException {
 
-            if (o instanceof String) {
-                if (!((String) o).isEmpty()) {
-                    data.put(key, o);
-                }
-            } else if (o instanceof Long) {
-                if ((Long) o != 0) {
-                    data.put(key, o);
-                }
-            } else if (o instanceof Integer) {
-                if ((Integer) o != 0) {
-                    data.put(key, o);
-                }
-            } else if (o instanceof Double) {
-                if ((Double) o != 0) {
-                    data.put(key, o);
-                }
-            } else if (o instanceof Float) {
-                if ((Float) o != 0) {
-                    data.put(key, o);
-                }
-            } else if (o instanceof Boolean) {
-                // always write regardless of being 'false'
-                data.put(key, o);
+        final Object element = book.get(key);
 
-            } else if (o instanceof ArrayList) {
-                switch (key) {
-                    case Book.BKEY_AUTHOR_LIST: {
-                        final ArrayList<Author> list = book.getParcelableArrayList(key);
-                        if (!list.isEmpty()) {
-                            data.put(key, mAuthorCoder.encode(list));
-                        }
-                        break;
+        if (element instanceof String) {
+            if (!((String) element).isEmpty()) {
+                out.put(key, element);
+            }
+
+        } else if (element instanceof Money) {
+            // Only write the value. The currency will be covered as a plain String type key.
+            // We could just treat Money as a Number (which it is) but JSONStringer uses
+            // 'toString' which caused some issues... so keeping this as a reminder.
+            final double d = ((Money) element).doubleValue();
+            if (d != 0) {
+                out.put(key, d);
+            }
+
+        } else if (element instanceof Number) {
+            if (((Number) element).doubleValue() != 0) {
+                out.put(key, element);
+            }
+        } else if (element instanceof Boolean) {
+            // always write regardless of being 'false'
+            out.put(key, element);
+
+        } else if (element instanceof ArrayList) {
+            switch (key) {
+                case Book.BKEY_AUTHOR_LIST: {
+                    final ArrayList<Author> list = book.getParcelableArrayList(key);
+                    if (!list.isEmpty()) {
+                        out.put(key, mAuthorCoder.encode(list));
                     }
-                    case Book.BKEY_BOOKSHELF_LIST: {
-                        final ArrayList<Bookshelf> list = book.getParcelableArrayList(key);
+                    break;
+                }
+                case Book.BKEY_BOOKSHELF_LIST: {
+                    final ArrayList<Bookshelf> list = book.getParcelableArrayList(key);
                         if (!list.isEmpty()) {
-                            data.put(key, mBookshelfCoder.encode(list));
+                            out.put(key, mBookshelfCoder.encode(list));
                         }
                         break;
                     }
                     case Book.BKEY_PUBLISHER_LIST: {
                         final ArrayList<Publisher> list = book.getParcelableArrayList(key);
                         if (!list.isEmpty()) {
-                            data.put(key, mPublisherCoder.encode(list));
+                            out.put(key, mPublisherCoder.encode(list));
                         }
                         break;
                     }
                     case Book.BKEY_SERIES_LIST: {
                         final ArrayList<Series> list = book.getParcelableArrayList(key);
                         if (!list.isEmpty()) {
-                            data.put(key, mSeriesCoder.encode(list));
+                            out.put(key, mSeriesCoder.encode(list));
                         }
                         break;
                     }
                     case Book.BKEY_TOC_LIST: {
                         final ArrayList<TocEntry> list = book.getParcelableArrayList(key);
                         if (!list.isEmpty()) {
-                            data.put(key, mTocEntryCoder.encode(list));
+                            out.put(key, mTocEntryCoder.encode(list));
                         }
                         break;
                     }
 
-                    default:
-                        throw new IllegalArgumentException("key=" + key + "|: " + o);
-                }
-            } else if (o instanceof Money) {
-                // Only write the value. The currency will be covered as a plain String type key.
-                final double d = ((Money) o).doubleValue();
-                if (d != 0) {
-                    data.put(key, d);
-                }
-
-            } else if (o instanceof Serializable) {
-                throw new IllegalArgumentException("Serializable not implemented o=" + o);
-
-            } else if (o != null) {
-                throw new IllegalArgumentException("key=" + key + "|o=" + o);
+                default:
+                    throw new IllegalArgumentException("key=" + key + "|: " + element);
             }
 
-        } catch (@NonNull final JSONException e) {
-            throw new IllegalStateException(e);
+        } else if (element instanceof Serializable) {
+            throw new IllegalArgumentException("Serializable not implemented o=" + element);
+
+        } else if (element != null) {
+            throw new IllegalArgumentException("key=" + key + "|o=" + element);
         }
     }
 
@@ -198,6 +189,7 @@ public class BookCoder
                     } else if (o instanceof Integer) {
                         book.putInt(key, (Integer) o);
                     } else if (o instanceof Double) {
+                        // Double covers 'Money'. The currency is done with a separate String type.
                         book.putDouble(key, (Double) o);
                     } else if (o instanceof Float) {
                         book.putFloat(key, (Float) o);

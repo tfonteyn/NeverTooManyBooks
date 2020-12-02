@@ -30,16 +30,18 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveContainer;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -75,14 +77,15 @@ public class ZipArchiveWriterTest {
 
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(ExportHelper.OPTIONS_BOOKS
-                                                           | ImportHelper.OPTIONS_PREFS
-                                                           | ImportHelper.OPTIONS_STYLES);
-        exportHelper.setArchiveContainer(ArchiveContainer.Zip);
+        final ExportHelper exportHelper = new ExportHelper(
+                ArchiveWriterRecord.Type.Books,
+                ArchiveWriterRecord.Type.Preferences,
+                ArchiveWriterRecord.Type.Styles);
+        exportHelper.setArchiveType(ArchiveType.Zip);
         exportHelper.setUri(Uri.fromFile(file));
 
-        try (ArchiveWriter writer = exportHelper.getArchiveWriter(context)) {
-            exportResults = writer.write(context, new TestProgressListener(TAG));
+        try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
+            exportResults = writer.write(context, new TestProgressListener(TAG + ":export"));
         }
         // assume success; a failure would have thrown an exception
         exportHelper.onSuccess(context);
@@ -95,20 +98,20 @@ public class ZipArchiveWriterTest {
 
         final long exportCount = exportResults.getBookCount();
 
-        final ImportHelper importHelper = new ImportHelper(Uri.fromFile(file));
+        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         final ImportResults importResults;
 
         // only NEW books, hence 0/0 created/updated as outcome of the test
-        importHelper.setOption(ImportHelper.OPTIONS_BOOKS, true);
-        try (ArchiveReader reader = importHelper.getArchiveReader(context)) {
+        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-            final ArchiveInfo archiveInfo = reader.readArchiveInfo(context);
+            final ArchiveInfo archiveInfo = reader.readHeader(context);
             assertNotNull(archiveInfo);
 
             assertEquals(mBookInDb, archiveInfo.getBookCount());
             assertEquals(0, archiveInfo.getCoverCount());
 
-            importResults = reader.read(context, new TestProgressListener(TAG));
+            importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
         }
         assertEquals(exportCount, importResults.booksProcessed);
 
