@@ -69,8 +69,6 @@ public class JsonRecordReader
     private final String mBooksString;
     @NonNull
     private final String mProgressMessage;
-    @NonNull
-    private final String mUnknownString;
     private final JsonCoder<Book> mBookCoder;
 
     private ImportResults mResults;
@@ -91,7 +89,6 @@ public class JsonRecordReader
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
-        mUnknownString = context.getString(R.string.unknown);
     }
 
     @Override
@@ -297,6 +294,8 @@ public class JsonRecordReader
      * @param db      Database Access
      * @param book    the book we're updating
      * @param bookId  the book id to lookup in our database
+     *
+     * @return {@code true} if the import data is newer then what we have locally
      */
     private boolean isImportNewer(@NonNull final Context context,
                                   @NonNull final DAO db,

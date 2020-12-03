@@ -174,11 +174,11 @@ public class BooklistNode {
     @NonNull
     public String toString() {
         return "BooklistNode{"
-               + "rowId=" + mRowId
-               + ", key=" + mKey
-               + ", level=" + mLevel
-               + ", isExpanded=" + mIsExpanded
-               + ", isVisible=" + mIsVisible
+               + "mRowId=" + mRowId
+               + ", mKey=" + mKey
+               + ", mLevel=" + mLevel
+               + ", mIsExpanded=" + mIsExpanded
+               + ", mIsVisible=" + mIsVisible
                + ", mListPosition=" + mListPosition
                + '}';
     }

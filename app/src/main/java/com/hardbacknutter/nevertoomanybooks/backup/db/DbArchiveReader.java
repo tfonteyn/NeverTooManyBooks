@@ -54,6 +54,7 @@ public class DbArchiveReader
     private static final String SQL_LIST_TABLES =
             "SELECT tbl_name FROM sqlite_master WHERE type='table'";
 
+    /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
 

@@ -246,6 +246,8 @@ public class XmlRecordWriter
      * @param context Current context
      * @param writer  writer
      *
+     * @return number of styles written
+     *
      * @throws IOException on failure
      */
     private int writeStyles(@NonNull final Context context,
@@ -264,6 +266,8 @@ public class XmlRecordWriter
      *
      * @param context Current context
      * @param writer  writer
+     *
+     * @return number of preferences written (always 1)
      *
      * @throws IOException on failure
      */

@@ -181,7 +181,7 @@ public enum ArchiveType {
      * Create an {@link ArchiveReader} based on the type.
      *
      * @param context Current context
-     * @param helper  reader configuration
+     * @param helper  import configuration
      *
      * @return a new reader
      *

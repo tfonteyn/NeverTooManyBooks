@@ -81,6 +81,9 @@ public abstract class ArchiveWriterAbstract
 
     /** Buffer for the Writer. */
     private static final int BUFFER_SIZE = 65535;
+    private static final String FILE_EXT_XML = ".xml";
+    private static final String FILE_EXT_JSON = ".json";
+    private static final String FILE_EXT_CSV = ".csv";
 
     /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
     @Nullable
@@ -119,7 +122,7 @@ public abstract class ArchiveWriterAbstract
 
         switch (VERSION) {
             case 3: {
-                putString(ArchiveWriterRecord.Type.InfoHeader.getName() + ".json",
+                putString(ArchiveWriterRecord.Type.InfoHeader.getName() + FILE_EXT_JSON,
                           archiveInfo.toJson().toString());
                 break;
             }
@@ -128,7 +131,8 @@ public abstract class ArchiveWriterAbstract
                 try (XmlRecordWriter writer = new XmlRecordWriter()) {
                     header = writer.createArchiveHeader(archiveInfo);
                 }
-                putByteArray(ArchiveWriterRecord.Type.InfoHeader.getName() + ".xml", header, true);
+                putByteArray(ArchiveWriterRecord.Type.InfoHeader.getName() + FILE_EXT_XML,
+                             header, true);
                 break;
             }
             default:
@@ -157,7 +161,7 @@ public abstract class ArchiveWriterAbstract
                                             progressListener));
         }
         // and store the array
-        putByteArray(ArchiveWriterRecord.Type.Styles.getName() + ".xml",
+        putByteArray(ArchiveWriterRecord.Type.Styles.getName() + FILE_EXT_XML,
                      data.toByteArray(), true);
     }
 
@@ -182,7 +186,7 @@ public abstract class ArchiveWriterAbstract
                                             progressListener));
         }
         // and store the array
-        putByteArray(ArchiveWriterRecord.Type.Preferences.getName() + ".xml",
+        putByteArray(ArchiveWriterRecord.Type.Preferences.getName() + FILE_EXT_XML,
                      data.toByteArray(), true);
     }
 
@@ -216,7 +220,7 @@ public abstract class ArchiveWriterAbstract
 
         switch (VERSION) {
             case 3: {
-                mBooksFileExtension = ".json";
+                mBooksFileExtension = FILE_EXT_JSON;
                 try (RecordWriter recordWriter =
                              new JsonRecordWriter(mHelper.getUtcDateTimeSince())) {
                     return recordWriter.write(context, mTmpBooksFile, types,
@@ -225,7 +229,7 @@ public abstract class ArchiveWriterAbstract
                 }
             }
             case 2: {
-                mBooksFileExtension = ".csv";
+                mBooksFileExtension = FILE_EXT_CSV;
                 try (RecordWriter recordWriter =
                              new CsvRecordWriter(mHelper.getUtcDateTimeSince())) {
                     return recordWriter.write(context, mTmpBooksFile, types,

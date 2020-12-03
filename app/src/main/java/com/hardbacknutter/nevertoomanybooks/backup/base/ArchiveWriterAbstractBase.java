@@ -50,7 +50,7 @@ public abstract class ArchiveWriterAbstractBase
      */
     private static final int EXTRA_STEPS = 10;
 
-    /** export configuration. */
+    /** Export configuration. */
     @NonNull
     protected final ExportHelper mHelper;
     /** Database Access. */

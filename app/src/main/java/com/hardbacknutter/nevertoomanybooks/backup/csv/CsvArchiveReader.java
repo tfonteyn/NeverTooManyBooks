@@ -48,13 +48,18 @@ public class CsvArchiveReader
     /** Log tag. */
     private static final String TAG = "CsvArchiveReader";
 
-    /** import configuration. */
+    /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
-
+    /** Database Access. */
     @NonNull
     private final DAO mDb;
 
+    /**
+     * Constructor.
+     *
+     * @param helper import configuration
+     */
     public CsvArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
         mDb = new DAO(TAG);

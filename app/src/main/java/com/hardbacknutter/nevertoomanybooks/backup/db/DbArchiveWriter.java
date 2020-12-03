@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 public class DbArchiveWriter
         implements ArchiveWriter {
 
+    /** Export configuration. */
     @NonNull
     private final ExportHelper mHelper;
 

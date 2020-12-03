@@ -475,7 +475,7 @@ public class BooklistGroup
         return "BooklistGroup{"
                + "mId=" + mId
                + ", mUuid=`'`" + mUuid + '`'
-               + ", style=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
+               + ", mStylePrefs=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
                + ", mIsUserDefinedStyle=" + mIsUserDefinedStyle
                + ", mGroupKey=" + mGroupKey
                + ", mAccumulatedDomains=" + mAccumulatedDomains

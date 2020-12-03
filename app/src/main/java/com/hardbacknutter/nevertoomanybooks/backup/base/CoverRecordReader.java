@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
- * FIXME: currently we import covers without checking if we actually have the book
+ * FIXME: currently we import covers without checking if we actually have the book.
  */
 public class CoverRecordReader
         implements RecordReader {

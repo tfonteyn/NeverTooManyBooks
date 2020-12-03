@@ -154,10 +154,10 @@ public class ImageFileInfo
     @Override
     public String toString() {
         return "ImageFileInfo{"
-               + "isbn=`" + mIsbn + '`'
-               + ", size=" + mSize
-               + ", engineId=" + mEngineId
-               + ", fileSpec=`"
+               + "mIsbn=`" + mIsbn + '`'
+               + ", mSize=" + mSize
+               + ", mEngineId=" + mEngineId
+               + ", mFileSpec=`"
                + (mFileSpec == null ? "" : mFileSpec.substring(mFileSpec.lastIndexOf('/')))
                + '`'
                + '}';

@@ -113,7 +113,7 @@ public class CoverHandler {
     private final int mCIdx;
     private final int mMaxWidth;
     private final int mMaxHeight;
-
+    /** Database Access. */
     @NonNull
     private final DAO mDb;
     /** The hosting fragment. */

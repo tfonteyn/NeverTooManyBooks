@@ -124,8 +124,6 @@ public class CsvRecordReader
     private final String mBooksString;
     @NonNull
     private final String mProgressMessage;
-    @NonNull
-    private final String mUnknownString;
 
     private final BookCoder mBookCoder;
 
@@ -148,7 +146,6 @@ public class CsvRecordReader
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
-        mUnknownString = context.getString(R.string.unknown);
     }
 
     @Override

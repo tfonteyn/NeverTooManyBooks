@@ -47,7 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 public class ImportHelper {
 
     /**
-     * New Books/Covers are always imported (if {@link ArchiveWriterRecord.Type#Books} is set obviously).
+     * New Books/Covers are always imported
+     * (if {@link ArchiveWriterRecord.Type#Books} is set obviously).
      * <p>
      * Existing Books/Covers handling:
      * <ul>

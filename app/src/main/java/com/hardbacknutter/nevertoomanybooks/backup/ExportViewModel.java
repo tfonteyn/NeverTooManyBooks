@@ -25,7 +25,7 @@ import androidx.lifecycle.ViewModel;
 public class ExportViewModel
         extends ViewModel {
 
-    /** The export configuration. */
+    /** Export configuration. */
     @NonNull
     private final ExportHelper mExportHelper = new ExportHelper();
 

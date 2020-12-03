@@ -57,6 +57,7 @@ public interface RecordWriter
      *
      * @param context          Current context
      * @param file             File to write to
+     * @param entry            The set of entries which should be read (if supported)
      * @param options          what to write and how
      * @param progressListener Progress and cancellation interface
      *

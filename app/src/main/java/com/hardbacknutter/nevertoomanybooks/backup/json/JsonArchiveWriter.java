@@ -41,6 +41,7 @@ public class JsonArchiveWriter
 
     protected static final int VERSION = 1;
 
+    /** Export configuration. */
     @NonNull
     private final ExportHelper mHelper;
 

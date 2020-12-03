@@ -77,6 +77,7 @@ public class ProgressDialogFragment
     private String mText;
 
     /** View Binding. */
+    @SuppressWarnings("FieldNotUsedInToString")
     private DialogTaskProgressBinding mVb;
 
     /**
@@ -255,7 +256,6 @@ public class ProgressDialogFragment
                + ", mMaxPosition=" + mMaxPosition
                + ", mCurrentPosition=" + mCurrentPosition
                + ", mText='" + mText + '\''
-               + ", mVb=" + (mVb != null)
                + '}';
     }
 }

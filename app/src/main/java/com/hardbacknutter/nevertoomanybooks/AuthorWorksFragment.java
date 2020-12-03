@@ -117,6 +117,7 @@ public class AuthorWorksFragment
     /** The Adapter. */
     private TocAdapter mAdapter;
     private ActionBar mActionBar;
+    /** View Binding. */
     private FragmentAuthorWorksBinding mVb;
 
     @Override

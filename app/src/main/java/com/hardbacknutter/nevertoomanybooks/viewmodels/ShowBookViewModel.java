@@ -323,6 +323,7 @@ public class ShowBookViewModel
         @NonNull
         private final SynchronizedStatement mGetBookStmt;
         private final int mRowCount;
+        /** Database Access. */
         @NonNull
         private final DAO mDb;
         @NonNull

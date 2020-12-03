@@ -131,7 +131,7 @@ public abstract class PPrefBase<T>
     public String toString() {
         return "PPrefBase{"
                + "mKey=`" + mKey + '`'
-               + ", style=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
+               + ", mStylePrefs=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
                + ", mDefaultValue=`" + mDefaultValue + '`'
                + ", mIsPersistent=" + mIsPersistent
                + ", mNonPersistedValue=`" + mNonPersistedValue + '`'

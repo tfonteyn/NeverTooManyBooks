@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQItem;
 
 public class EventCursorAdapter
         extends TQCursorAdapter {
-
+    /** Database Access. */
     @NonNull
     private final DAO mDb;
 

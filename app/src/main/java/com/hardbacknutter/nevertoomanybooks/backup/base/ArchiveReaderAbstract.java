@@ -61,7 +61,7 @@ public abstract class ArchiveReaderAbstract
     /** Database Access. */
     @NonNull
     private final DAO mDb;
-    /** import configuration. */
+    /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
     /** Provide access to the Uri InputStream. */

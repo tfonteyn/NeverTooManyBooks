@@ -272,13 +272,13 @@ public class SearchCriteria {
     @NonNull
     public String toString() {
         return "SearchCriteria{"
-               + "ftsAuthor=`" + mFtsAuthor + '`'
-               + ", ftsTitle=`" + mFtsTitle + '`'
-               + ", ftsSeries=`" + mFtsSeries + '`'
-               + ", ftsPublisher=`" + mFtsPublisher + '`'
-               + ", loanee=`" + mLoanee + '`'
-               + ", ftsKeywords=`" + mFtsKeywords + '`'
-               + ", bookList=" + mBookIdList
+               + "mFtsAuthor=`" + mFtsAuthor + '`'
+               + ", mFtsTitle=`" + mFtsTitle + '`'
+               + ", mFtsSeries=`" + mFtsSeries + '`'
+               + ", mFtsPublisher=`" + mFtsPublisher + '`'
+               + ", mLoanee=`" + mLoanee + '`'
+               + ", mFtsKeywords=`" + mFtsKeywords + '`'
+               + ", mBookIdList=" + mBookIdList
                + '}';
     }
 }

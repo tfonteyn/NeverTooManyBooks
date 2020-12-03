@@ -31,9 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 
 /**
- * URGENT: redo this in two parts: the result of an {@link RecordReader#read} and the result
- * of the complete import process.
- * <p>
  * Value class to report back what was imported.
  * <p>
  * Used by {@link RecordReader} and accumulated in {@link ArchiveReader}.
@@ -61,7 +58,11 @@ public class ImportResults
      * {@link ImportResults} after an import.
      */
     static final String BKEY_IMPORT_RESULTS = TAG + ":results";
-    /** Keeps track of failed import lines in a text file. */
+    /**
+     * Keeps track of failed import lines in a text file.
+     * Not strictly needed as row number should be part of the messages.
+     * Keeping for possible future enhancements.
+     */
     public final List<Integer> failedLinesNr = new ArrayList<>();
     /** Keeps track of failed import lines in a text file. */
     public final List<String> failedLinesMessage = new ArrayList<>();

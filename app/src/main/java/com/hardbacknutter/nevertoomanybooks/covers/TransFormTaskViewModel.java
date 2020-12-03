@@ -351,9 +351,9 @@ public class TransFormTaskViewModel
         @NonNull
         public String toString() {
             return "TransformedData{"
-                   + "returnCode=" + mReturnCode
-                   + ", bitmap=" + (mBitmap != null)
-                   + ", file=" + mFile.getAbsolutePath() + '}';
+                   + "mReturnCode=" + mReturnCode
+                   + ", mBitmap=" + (mBitmap != null)
+                   + ", mFile=" + mFile.getAbsolutePath() + '}';
         }
     }
 
