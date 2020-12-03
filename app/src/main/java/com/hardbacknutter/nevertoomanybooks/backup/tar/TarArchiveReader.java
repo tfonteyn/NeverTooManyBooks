@@ -111,7 +111,7 @@ public class TarArchiveReader
      * @throws IOException on failure
      */
     @NonNull
-    public TarArchiveInputStream getInputStream()
+    private TarArchiveInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
             mInputStream = new TarArchiveInputStream(openInputStream());
@@ -120,7 +120,7 @@ public class TarArchiveReader
     }
 
     @Override
-    public void closeInputStream()
+    protected void closeInputStream()
             throws IOException {
         if (mInputStream != null) {
             mInputStream.close();

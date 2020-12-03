@@ -106,7 +106,7 @@ public class ZipArchiveReader
      * @throws IOException on failure
      */
     @NonNull
-    public ZipInputStream getInputStream()
+    private ZipInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
             mInputStream = new ZipInputStream(openInputStream());
@@ -115,7 +115,7 @@ public class ZipArchiveReader
     }
 
     @Override
-    public void closeInputStream()
+    protected void closeInputStream()
             throws IOException {
         if (mInputStream != null) {
             mInputStream.close();

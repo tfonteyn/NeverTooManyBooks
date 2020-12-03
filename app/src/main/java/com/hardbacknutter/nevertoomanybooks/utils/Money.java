@@ -72,6 +72,7 @@ public class Money
     private static final long serialVersionUID = -2882175581162071769L;
 
     /** ISO code. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private String mCurrency;
     private double mValue;
@@ -287,6 +288,7 @@ public class Money
 
 
     /**
+     * NOT DEBUG!
      * This implements the same behaviour as
      * {@link Number#toString()} for a <strong>double</strong>.
      *
