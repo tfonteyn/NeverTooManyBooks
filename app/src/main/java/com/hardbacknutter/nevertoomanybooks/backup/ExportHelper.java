@@ -43,7 +43,6 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
@@ -108,15 +107,11 @@ public class ExportHelper {
     /**
      * Create the proposed name for the archive. The user can change it.
      *
-     * @param context Current context
-     *
      * @return archive name
      */
     @NonNull
-    String getDefaultUriName(@NonNull final Context context) {
-        return context.getString(R.string.app_name)
-               + '-' + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-               + ".ntmb"
+    String getDefaultUriName() {
+        return "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
                + mArchiveType.getFileExt();
     }
 
