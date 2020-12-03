@@ -50,6 +50,11 @@ public class ImportViewModel
         return mResultIntent;
     }
 
+    boolean hasUri() {
+        // simple check... the uri will always exist if the helper exists.
+        return mImportHelper != null;
+    }
+
     @NonNull
     ImportHelper createImportHelper(@NonNull final Context context,
                                     @NonNull final Uri uri) {

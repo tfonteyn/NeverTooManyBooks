@@ -27,8 +27,14 @@ import android.os.Bundle;
 import android.system.ErrnoException;
 import android.system.OsConstants;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContract;
@@ -44,7 +50,9 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -52,7 +60,10 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -71,25 +82,12 @@ public class ExportFragment
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
 
-    /** FragmentResultListener request key. */
-    private static final String RK_EXPORT_OPTIONS = TAG + ":rk:" + ExportOptionsDialogFragment.TAG;
     /**
      * The ViewModel and the {@link #mArchiveWriterTask} could be folded into one object,
      * but we're trying to keep task logic separate for now.
      */
     private ExportViewModel mExportViewModel;
-    private final ExportOptionsDialogFragment.Launcher mExportOptionsLauncher =
-            new ExportOptionsDialogFragment.Launcher() {
-                @Override
-                public void onResult(final boolean startTask) {
-                    if (startTask) {
-                        exportPickUri();
-                    } else {
-                        //noinspection ConstantConditions
-                        getActivity().finish();
-                    }
-                }
-            };
+
     private ArchiveWriterTask mArchiveWriterTask;
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
@@ -97,63 +95,17 @@ public class ExportFragment
                                       this::onCreateDocument);
     @Nullable
     private ProgressDialogFragment mProgressDialog;
+    /** View Binding. */
+    private FragmentExportBinding mVb;
 
-    /**
-     * Transform the result data into a user friendly report.
-     *
-     * @param result to report
-     *
-     * @return report string
-     */
-    @NonNull
-    private String createReport(@NonNull final FileUtils.UriInfo uriInfo,
-                                @NonNull final ExportResults result) {
 
-        final Context context = getContext();
-        final StringJoiner report = new StringJoiner("\n", "• ", "");
-        report.setEmptyValue("");
-
-        if (!result.getBooksExported().isEmpty()) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.name_colon_value,
-                                         context.getString(R.string.lbl_books),
-                                         String.valueOf(result.getBooksExported().size())));
-        }
-        if (!result.getCoverFileNames().isEmpty()) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.name_colon_value,
-                                         context.getString(R.string.lbl_covers),
-                                         String.valueOf(result.getCoverFileNames().size())));
-        }
-
-        if (result.styles > 0) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.name_colon_value,
-                                         context.getString(R.string.lbl_styles),
-                                         String.valueOf(result.styles)));
-        }
-        if (result.preferences > 0) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.lbl_settings));
-        }
-        if (result.database) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.lbl_database));
-        }
-
-        // We cannot get the folder name for the file.
-        // FIXME: We need to change the descriptive string not to include the folder.
-        //noinspection ConstantConditions
-        return report.toString() + "\n\n" + context.getString(
-                R.string.progress_end_export_success, "",
-                uriInfo.displayName, FileUtils.formatFileSize(context, uriInfo.size));
-    }
+    /** prevent first-time {@link AdapterView.OnItemSelectedListener#onItemSelected} call. */
+    private boolean mArchiveFormatIsSet;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mExportOptionsLauncher.register(this, RK_EXPORT_OPTIONS);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -161,7 +113,8 @@ public class ExportFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_import_export, container, false);
+        mVb = FragmentExportBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -182,10 +135,263 @@ public class ExportFragment
 
         // if the task is NOT already running (e.g. after a screen rotation...) show the options
         if (!mArchiveWriterTask.isRunning()) {
-            exportShowOptions();
+            showQuickOptions();
         }
     }
 
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_export, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+        button.setText(menuItem.getTitle());
+        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            if (!mExportViewModel.getExportHelper().getExporterEntries().isEmpty()) {
+                exportPickUri();
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Export Step 1: show the quick/simple options dialog to the user.
+     */
+    private void showQuickOptions() {
+        //noinspection ConstantConditions
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle(R.string.lbl_backup)
+                .setMessage(R.string.txt_export_backup_all)
+                .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
+                .setNeutralButton(R.string.btn_options, (d, w) -> {
+                    d.dismiss();
+                    showScreen();
+                })
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    d.dismiss();
+                    exportPickUri();
+                })
+                .create()
+                .show();
+    }
+
+    /**
+     * Export Step 1b: Show the full options screen to the user.
+     */
+    private void showScreen() {
+        final ExportHelper helper = mExportViewModel.getExportHelper();
+        final Set<ArchiveWriterRecord.Type> exportEntities = helper.getExporterEntries();
+
+        mVb.cbxBooks.setChecked(exportEntities.contains(
+                ArchiveWriterRecord.Type.Books));
+        mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            helper.setExportEntry(ArchiveWriterRecord.Type.Cover, isChecked);
+            mVb.rbBooksGroup.setEnabled(isChecked);
+        });
+
+        final boolean incremental = helper.isIncremental();
+        mVb.rbBooksAll.setChecked(!incremental);
+        mVb.rbBooksIncremental.setChecked(incremental);
+        mVb.rbBooksIncrementalInfo.setOnClickListener(StandardDialogs::infoPopup);
+
+        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
+                .setIncremental(checkedId == mVb.rbBooksIncremental.getId()));
+
+
+        mVb.cbxCovers.setChecked(exportEntities.contains(
+                ArchiveWriterRecord.Type.Cover));
+        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setExportEntry(ArchiveWriterRecord.Type.Cover, isChecked));
+
+        mVb.cbxPrefs.setChecked(exportEntities.contains(
+                ArchiveWriterRecord.Type.Preferences));
+        mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setExportEntry(ArchiveWriterRecord.Type.Preferences, isChecked));
+
+        mVb.cbxStyles.setChecked(exportEntities.contains(
+                ArchiveWriterRecord.Type.Styles));
+        mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setExportEntry(ArchiveWriterRecord.Type.Styles, isChecked));
+
+        //ENHANCE: export from JSON not exposed to the user yet
+
+        // Check options on position.
+        final List<String> list = new ArrayList<>();
+        list.add(getString(R.string.lbl_archive_type_backup, ArchiveType.Zip.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_backup, ArchiveType.Tar.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_csv, ArchiveType.Csv.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_xml, ArchiveType.Xml.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_db, ArchiveType.SqLiteDb.getFileExt()));
+
+        // The default selection is index 0, ZIP format.
+        helper.setArchiveType(ArchiveType.Zip);
+        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+        mVb.archiveFormatInfoLong.setText("");
+
+        //noinspection ConstantConditions
+        final ArrayAdapter<String> archiveFormatAdapter =
+                new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
+        archiveFormatAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
+        mVb.archiveFormat.setAdapter(archiveFormatAdapter);
+        mVb.archiveFormat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(@NonNull final AdapterView<?> parent,
+                                       @NonNull final View view,
+                                       final int position,
+                                       final long id) {
+                if (!mArchiveFormatIsSet) {
+                    mArchiveFormatIsSet = true;
+                    return;
+                }
+
+                updateFromFormatSelection(position);
+            }
+
+            @Override
+            public void onNothingSelected(@NonNull final AdapterView<?> parent) {
+                // Do Nothing
+            }
+        });
+
+        mVb.getRoot().setVisibility(View.VISIBLE);
+    }
+
+    private void updateFromFormatSelection(final int position) {
+
+        final ExportHelper helper = mExportViewModel.getExportHelper();
+        switch (position) {
+            case 0: {
+                helper.setArchiveType(ArchiveType.Zip);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                mVb.archiveFormatInfoLong.setText("");
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(true);
+                mVb.rbBooksGroup.setEnabled(true);
+                mVb.rbBooksIncremental.setChecked(true);
+
+                mVb.cbxCovers.setChecked(true);
+                mVb.cbxCovers.setEnabled(true);
+
+                mVb.cbxPrefs.setChecked(true);
+                mVb.cbxPrefs.setEnabled(true);
+
+                mVb.cbxStyles.setChecked(true);
+                mVb.cbxStyles.setEnabled(true);
+                break;
+            }
+            case 1: {
+                helper.setArchiveType(ArchiveType.Tar);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+                mVb.archiveFormatInfoLong.setText("");
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(true);
+                mVb.rbBooksGroup.setEnabled(true);
+                mVb.rbBooksIncremental.setChecked(true);
+
+                mVb.cbxCovers.setChecked(true);
+                mVb.cbxCovers.setEnabled(true);
+
+                mVb.cbxPrefs.setChecked(true);
+                mVb.cbxPrefs.setEnabled(true);
+
+                mVb.cbxStyles.setChecked(true);
+                mVb.cbxStyles.setEnabled(true);
+                break;
+            }
+            case 2: {
+                helper.setArchiveType(ArchiveType.Csv);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
+                mVb.archiveFormatInfoLong.setText("");
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(false);
+                mVb.rbBooksGroup.setEnabled(true);
+                mVb.rbBooksIncremental.setChecked(true);
+
+                mVb.cbxCovers.setChecked(false);
+                mVb.cbxCovers.setEnabled(false);
+
+                mVb.cbxPrefs.setChecked(false);
+                mVb.cbxPrefs.setEnabled(false);
+
+                mVb.cbxStyles.setChecked(false);
+                mVb.cbxStyles.setEnabled(false);
+                break;
+            }
+            case 3: {
+                helper.setArchiveType(ArchiveType.Xml);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
+                mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(false);
+                mVb.rbBooksGroup.setEnabled(true);
+                mVb.rbBooksAll.setChecked(true);
+
+                mVb.cbxCovers.setChecked(false);
+                mVb.cbxCovers.setEnabled(false);
+
+                mVb.cbxPrefs.setChecked(false);
+                mVb.cbxPrefs.setEnabled(true);
+
+                mVb.cbxStyles.setChecked(false);
+                mVb.cbxStyles.setEnabled(true);
+                break;
+            }
+            case 4: {
+                helper.setArchiveType(ArchiveType.SqLiteDb);
+                mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
+                mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
+
+                mVb.cbxBooks.setChecked(true);
+                mVb.cbxBooks.setEnabled(false);
+                mVb.rbBooksGroup.setEnabled(false);
+                mVb.rbBooksAll.setChecked(true);
+
+                mVb.cbxCovers.setChecked(false);
+                mVb.cbxCovers.setEnabled(false);
+
+                mVb.cbxPrefs.setChecked(false);
+                mVb.cbxPrefs.setEnabled(false);
+
+                mVb.cbxStyles.setChecked(false);
+                mVb.cbxStyles.setEnabled(false);
+                break;
+            }
+            default:
+                throw new IllegalArgumentException(String.valueOf(position));
+        }
+    }
+
+    /**
+     * Export Step 2: prompt the user for a uri to export to.
+     */
+    private void exportPickUri() {
+        final String defName = mExportViewModel.getExportHelper().getDefaultUriName();
+        mCreateDocumentLauncher.launch(defName);
+    }
+
+    /**
+     * Export Step 3: Called after the user selected a uri to write to.
+     *
+     * @param uri to write to
+     */
+    private void onCreateDocument(@Nullable final Uri uri) {
+        if (uri != null) {
+            final ExportHelper exportHelper = mExportViewModel.getExportHelper();
+            exportHelper.setUri(uri);
+            mArchiveWriterTask.startExport(exportHelper);
+        }
+    }
 
     private void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
@@ -220,48 +426,14 @@ public class ExportFragment
         }
     }
 
-    /**
-     * Export Step 1: show the options to the user.
-     */
-    private void exportShowOptions() {
-        //noinspection ConstantConditions
-        new MaterialAlertDialogBuilder(getContext())
-                .setTitle(R.string.lbl_backup)
-                .setMessage(R.string.txt_export_backup_all)
-                .setNegativeButton(android.R.string.cancel, (d, w) -> getActivity().finish())
-                .setNeutralButton(R.string.btn_options, (d, w) -> {
-                    d.dismiss();
-                    mExportOptionsLauncher.launch();
-                })
-                .setPositiveButton(android.R.string.ok, (d, w) -> exportPickUri())
-                .create()
-                .show();
-    }
+    private void onExportCancelled(@NonNull final FinishedMessage<ExportResults> message) {
+        closeProgressDialog();
 
-    /**
-     * Export Step 2: prompt the user for a uri to export to.
-     */
-    private void exportPickUri() {
-        //noinspection ConstantConditions
-        final String defName = mExportViewModel.getExportHelper().getDefaultUriName(getContext());
-        mCreateDocumentLauncher.launch(defName);
-    }
-
-    /**
-     * Called when the user selected a uri to write to.
-     *
-     * @param uri file to write to
-     */
-    private void onCreateDocument(@Nullable final Uri uri) {
-        if (uri == null) {
-            // nothing selected, just quit
+        if (message.isNewEvent()) {
             //noinspection ConstantConditions
-            getActivity().finish();
-
-        } else {
-            final ExportHelper exportHelper = mExportViewModel.getExportHelper();
-            exportHelper.setUri(uri);
-            mArchiveWriterTask.startExport(exportHelper);
+            Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
+            //noinspection ConstantConditions
+            getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
         }
     }
 
@@ -313,17 +485,6 @@ public class ExportFragment
         return msg;
     }
 
-    private void onExportCancelled(@NonNull final FinishedMessage<ExportResults> message) {
-        closeProgressDialog();
-
-        if (message.isNewEvent()) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
-            //noinspection ConstantConditions
-            getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
-        }
-    }
-
     /**
      * Export finished/failed: Process the result.
      *
@@ -360,6 +521,58 @@ public class ExportFragment
             dialogBuilder.create()
                          .show();
         }
+    }
+
+    /**
+     * Transform the result data into a user friendly report.
+     *
+     * @param uriInfo name and size of the file saved
+     * @param result  to report
+     *
+     * @return report string
+     */
+    @NonNull
+    private String createReport(@NonNull final FileUtils.UriInfo uriInfo,
+                                @NonNull final ExportResults result) {
+
+        final Context context = getContext();
+        final StringJoiner report = new StringJoiner("\n", "• ", "");
+        report.setEmptyValue("");
+
+        if (!result.getBooksExported().isEmpty()) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_books),
+                                         String.valueOf(result.getBooksExported().size())));
+        }
+        if (!result.getCoverFileNames().isEmpty()) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_covers),
+                                         String.valueOf(result.getCoverFileNames().size())));
+        }
+
+        if (result.styles > 0) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.name_colon_value,
+                                         context.getString(R.string.lbl_styles),
+                                         String.valueOf(result.styles)));
+        }
+        if (result.preferences > 0) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.lbl_settings));
+        }
+        if (result.database) {
+            //noinspection ConstantConditions
+            report.add(context.getString(R.string.lbl_database));
+        }
+
+        // We cannot get the folder name for the file.
+        // FIXME: We need to change the descriptive string not to include the folder.
+        //noinspection ConstantConditions
+        return report.toString() + "\n\n" + context.getString(
+                R.string.progress_end_export_success, "",
+                uriInfo.displayName, FileUtils.formatFileSize(context, uriInfo.size));
     }
 
     /**

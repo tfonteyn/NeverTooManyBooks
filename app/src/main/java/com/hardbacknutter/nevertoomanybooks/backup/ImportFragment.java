@@ -25,8 +25,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -35,6 +39,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -46,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
@@ -54,10 +61,12 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
@@ -72,8 +81,6 @@ public class ImportFragment
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
-    /** FragmentResultListener request key. */
-    private static final String RK_IMPORT_OPTIONS = TAG + ":rk:" + ImportOptionsDialogFragment.TAG;
     /**
      * The mime types accepted for importing files SHOULD be set to this list:
      * "application/zip", "application/x-tar", "text/csv", "application/x-sqlite3"
@@ -104,18 +111,10 @@ public class ImportFragment
                 }
             };
     private ArchiveReaderTask mArchiveReaderTask;
-    private final ImportOptionsDialogFragment.Launcher mImportOptionsLauncher =
-            new ImportOptionsDialogFragment.Launcher() {
-                @Override
-                public void onResult(final boolean startTask) {
-                    if (startTask) {
-                        mArchiveReaderTask.startImport(mVm.getImportHelper());
-                    } else {
-                        //noinspection ConstantConditions
-                        getActivity().finish();
-                    }
-                }
-            };
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
+    /** View Binding. */
+    private FragmentImportBinding mVb;
     /**
      * The launcher for picking a Uri to read from.
      *
@@ -124,15 +123,11 @@ public class ImportFragment
      */
     private final ActivityResultLauncher<String> mOpenUriLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
-
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        mImportOptionsLauncher.register(this, RK_IMPORT_OPTIONS);
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -140,7 +135,8 @@ public class ImportFragment
     public View onCreateView(@NonNull final LayoutInflater inflater,
                              @Nullable final ViewGroup container,
                              @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_import_export, container, false);
+        mVb = FragmentImportBinding.inflate(inflater, container, false);
+        return mVb.getRoot();
     }
 
     @Override
@@ -149,7 +145,13 @@ public class ImportFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_import);
+        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        //noinspection ConstantConditions
+        actionBar.setTitle(R.string.lbl_import);
+        if (mVb.header == null) {
+            // landscape layout only
+            actionBar.setSubtitle(R.string.lbl_import_options);
+        }
 
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
@@ -162,16 +164,19 @@ public class ImportFragment
         mArchiveReaderTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
         mArchiveReaderTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
-        // If the task is NOT already running (e.g. after a screen rotation...)
-        // then start the import process.
-        if (!mArchiveReaderTask.isRunning()) {
+
+        if (!mVm.hasUri()) {
+            // start the import process by asking the user for a Uri
             mOpenUriLauncher.launch(MIME_TYPES);
+        } else {
+            // or e.g. after a screen rotation, just show the screen/options again
+            showScreen();
         }
     }
 
     /**
      * Called when the user selected a uri to read from.
-     * Shows the import options; which in turn allow to start the import process.
+     * Prepares the options suited for the selected import file.
      *
      * @param uri file to read from
      */
@@ -183,21 +188,21 @@ public class ImportFragment
 
         } else {
             //noinspection ConstantConditions
-            final ImportHelper importHelper = mVm.createImportHelper(getContext(), uri);
+            final ImportHelper helper = mVm.createImportHelper(getContext(), uri);
 
             try {
-                importHelper.validateArchive(getContext());
+                helper.validateArchive(getContext());
             } catch (@NonNull final IOException | InvalidArchiveException e) {
                 onImportNotSupported();
                 return;
             }
 
-            final ArchiveType archiveType = importHelper.getArchiveType();
+            final ArchiveType archiveType = helper.getArchiveType();
             switch (archiveType) {
                 case Csv:
                     // Default: new books and sync updates
-                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
-                    importHelper.setUpdatesMustSync();
+                    helper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+                    helper.setUpdatesMustSync();
 
                     //URGENT: should make a backup before ANY csv import!
                     //noinspection ConstantConditions
@@ -207,8 +212,7 @@ public class ImportFragment
                             .setMessage(R.string.warning_import_be_cautious)
                             .setNegativeButton(android.R.string.cancel,
                                                (d, w) -> getActivity().finish())
-                            .setPositiveButton(android.R.string.ok, (d, w) ->
-                                    mImportOptionsLauncher.launch())
+                            .setPositiveButton(android.R.string.ok, (d, w) -> showScreen())
                             .create()
                             .show();
                     break;
@@ -216,19 +220,19 @@ public class ImportFragment
                 case Zip:
                 case Tar:
                     // Default: update all entries and sync updates
-                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Styles, true);
-                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Preferences, true);
-                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
-                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Cover, true);
-                    importHelper.setUpdatesMustSync();
-                    mImportOptionsLauncher.launch();
+                    helper.setImportEntry(ArchiveReaderRecord.Type.Styles, true);
+                    helper.setImportEntry(ArchiveReaderRecord.Type.Preferences, true);
+                    helper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+                    helper.setImportEntry(ArchiveReaderRecord.Type.Cover, true);
+                    helper.setUpdatesMustSync();
+                    showScreen();
                     break;
 
                 case SqLiteDb:
                     // Default: new books only
-                    importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
-                    importHelper.setSkipUpdates();
-                    mImportOptionsLauncher.launch();
+                    helper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+                    helper.setSkipUpdates();
+                    showScreen();
                     break;
 
                 case Json:
@@ -240,6 +244,117 @@ public class ImportFragment
                     break;
             }
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_import, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+        button.setText(menuItem.getTitle());
+        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            mArchiveReaderTask.startImport(mVm.getImportHelper());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Update the screen with archive specific options and values.
+     */
+    private void showScreen() {
+        final ImportHelper helper = mVm.getImportHelper();
+        final Set<ArchiveReaderRecord.Type> importEntries = helper.getImportEntries();
+
+        //noinspection ConstantConditions
+        final String displayName = helper.getArchiveName(getContext());
+        mVb.archiveName.setText(displayName);
+
+        ArchiveInfo archiveInfo = null;
+        try {
+            archiveInfo = helper.getArchiveInfo(getContext());
+        } catch (@NonNull final IOException | InvalidArchiveException ignore) {
+            // ignore; we would not be in this class unless the info was valid or null
+        }
+
+        if (archiveInfo != null) {
+            final StringJoiner info = new StringJoiner(", ");
+
+            final int bookCount = archiveInfo.getBookCount();
+            if (bookCount > 0) {
+                info.add(getString(R.string.name_colon_value,
+                                   getString(R.string.lbl_books), String.valueOf(bookCount)));
+            }
+            final int coverCount = archiveInfo.getCoverCount();
+            if (coverCount > 0) {
+                info.add(getString(R.string.name_colon_value,
+                                   getString(R.string.lbl_covers), String.valueOf(coverCount)));
+            }
+            if (info.length() > 0) {
+                mVb.archiveContent.setText(info.toString());
+                mVb.archiveContent.setVisibility(View.VISIBLE);
+            } else {
+                mVb.archiveContent.setVisibility(View.GONE);
+            }
+        } else {
+            mVb.archiveContent.setVisibility(View.GONE);
+        }
+
+        if (helper.archiveCanOnlyHaveBooks()) {
+            // remove all non-book options if we're importing from a file/archive
+            // which only contains books.
+            mVb.cbxGroup.setVisibility(View.GONE);
+
+        } else {
+            mVb.cbxBooks.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Books));
+            mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                helper.setImportEntry(ArchiveReaderRecord.Type.Books, isChecked);
+                mVb.rbBooksGroup.setEnabled(isChecked);
+            });
+
+            mVb.cbxCovers.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Cover));
+            mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                    .setImportEntry(ArchiveReaderRecord.Type.Cover, isChecked));
+
+            mVb.cbxPrefs.setChecked(importEntries.contains(
+                    ArchiveReaderRecord.Type.Preferences));
+            mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                    .setImportEntry(ArchiveReaderRecord.Type.Preferences, isChecked));
+
+            mVb.cbxStyles.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Styles));
+            mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                    .setImportEntry(ArchiveReaderRecord.Type.Styles, isChecked));
+        }
+
+        mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdates());
+        mVb.rbUpdatedBooksSkipInfo.setOnClickListener(StandardDialogs::infoPopup);
+
+        mVb.rbUpdatedBooksOverwrite.setChecked(helper.isUpdatesMayOverwrite());
+        mVb.rbUpdatedBooksOverwriteInfo.setOnClickListener(StandardDialogs::infoPopup);
+
+        mVb.rbUpdatedBooksSync.setChecked(helper.isUpdatesMustSync());
+        mVb.rbUpdatedBooksSyncInfo.setOnClickListener(StandardDialogs::infoPopup);
+
+        mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == mVb.rbUpdatedBooksSkip.getId()) {
+                helper.setSkipUpdates();
+
+            } else if (checkedId == mVb.rbUpdatedBooksOverwrite.getId()) {
+                helper.setUpdatesMayOverwrite();
+
+            } else if (checkedId == mVb.rbUpdatedBooksSync.getId()) {
+                helper.setUpdatesMustSync();
+            }
+        });
+
+        mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {

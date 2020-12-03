@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/screenBorder"
+    android:visibility="invisible"
+    tools:context=".HostingActivity"
+    tools:visibility="visible"
+    >
+
+    <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
+        android:id="@+id/rb_books_group"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="rb_books_all,rb_books_incremental"
+        tools:ignore="MissingConstraints"
+        />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.6"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_books"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/lbl_books"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <RadioButton
+        android:id="@+id/rb_books_all"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/indent_radio_button"
+        android:checked="true"
+        android:text="@string/lbl_export_option_all_books"
+        app:layout_constraintStart_toStartOf="@id/cbx_books"
+        app:layout_constraintTop_toBottomOf="@id/cbx_books"
+        />
+
+    <RadioButton
+        android:id="@+id/rb_books_incremental"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/indent_radio_button"
+        android:text="@string/lbl_export_option_books_since_last_full_backup"
+        app:layout_constraintStart_toStartOf="@id/cbx_books"
+        app:layout_constraintTop_toBottomOf="@id/rb_books_all"
+        />
+
+    <ImageButton
+        android:id="@+id/rb_books_incremental_info"
+        style="@style/InfoButton"
+        android:contentDescription="@string/inf_export_option_books_since_last_full_backup"
+        app:layout_constraintEnd_toEndOf="@id/guideline"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/rb_books_incremental"
+        app:layout_constraintTop_toTopOf="@id/rb_books_incremental"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_covers"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin"
+        android:checked="true"
+        android:text="@string/lbl_covers_long"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_prefs"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin"
+        android:checked="true"
+        android:text="@string/lbl_settings"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/cbx_covers"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_styles"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin"
+        android:checked="true"
+        android:text="@string/lbl_styles"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_bottom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="rb_books_incremental,cbx_styles"
+        />
+
+    <View
+        android:id="@+id/formatDivider"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="?attr/dividerHorizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/barrier_bottom"
+        />
+
+    <TextView
+        android:id="@+id/lbl_archive_format"
+        style="@style/Field.Label"
+        android:layout_marginTop="@dimen/border2"
+        android:text="@string/lbl_archive_format"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/formatDivider"
+        />
+
+    <Spinner
+        android:id="@+id/archive_format"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/indent2"
+        app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
+        app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
+        tools:entries="@array/tools_spinner_title"
+        />
+
+    <TextView
+        android:id="@+id/archive_format_info"
+        style="@style/Text.Body.Small"
+        app:layout_constraintStart_toStartOf="@id/archive_format"
+        app:layout_constraintTop_toBottomOf="@id/archive_format"
+        tools:ignore="SelectableText"
+        tools:text="@string/lbl_archive_format_xml_info"
+        />
+
+    <TextView
+        android:id="@+id/archive_format_info_long"
+        style="@style/Text.Body.Small"
+        app:layout_constraintStart_toStartOf="@id/archive_format"
+        app:layout_constraintTop_toBottomOf="@id/archive_format_info"
+        tools:ignore="SelectableText"
+        tools:text="@string/lbl_archive_is_export_only"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
