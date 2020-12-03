@@ -64,6 +64,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
+/**
+ * This fragment is a blank screen and all actions are done using dialogs (fullscreen and actual).
+ */
 public class ImportFragment
         extends Fragment {
 

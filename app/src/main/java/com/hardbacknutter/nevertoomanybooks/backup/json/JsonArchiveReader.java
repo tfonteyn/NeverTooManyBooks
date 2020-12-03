@@ -72,9 +72,8 @@ public class JsonArchiveReader
         }
 
         try (RecordReader recordReader = new JsonRecordReader(context, mDb)) {
-            //noinspection ConstantConditions
             final ArchiveReaderRecord record =
-                    new JsonArchiveRecord(mHelper.getUri().getLastPathSegment(), is);
+                    new JsonArchiveRecord(mHelper.getArchiveName(context), is);
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {
             is.close();

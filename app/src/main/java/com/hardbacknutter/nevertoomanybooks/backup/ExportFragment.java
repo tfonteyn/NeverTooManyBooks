@@ -60,11 +60,17 @@ import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
+/**
+ * This fragment is a blank screen and all actions are done using dialogs (fullscreen and actual).
+ */
 public class ExportFragment
         extends Fragment {
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
+    /** The maximum file size for an export file for which we'll offer to send it as an email. */
+    private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
+
     /** FragmentResultListener request key. */
     private static final String RK_EXPORT_OPTIONS = TAG + ":rk:" + ExportOptionsDialogFragment.TAG;
     /**
@@ -72,11 +78,6 @@ public class ExportFragment
      * but we're trying to keep task logic separate for now.
      */
     private ExportViewModel mExportViewModel;
-    private ArchiveWriterTask mArchiveWriterTask;
-    /** The launcher for picking a Uri to write to. */
-    private final ActivityResultLauncher<String> mCreateDocumentLauncher =
-            registerForActivityResult(new ActivityResultContracts.CreateDocument(),
-                                      this::onCreateDocument);
     private final ExportOptionsDialogFragment.Launcher mExportOptionsLauncher =
             new ExportOptionsDialogFragment.Launcher() {
                 @Override
@@ -89,6 +90,11 @@ public class ExportFragment
                     }
                 }
             };
+    private ArchiveWriterTask mArchiveWriterTask;
+    /** The launcher for picking a Uri to write to. */
+    private final ActivityResultLauncher<String> mCreateDocumentLauncher =
+            registerForActivityResult(new ActivityResultContracts.CreateDocument(),
+                                      this::onCreateDocument);
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
@@ -100,7 +106,7 @@ public class ExportFragment
      * @return report string
      */
     @NonNull
-    private String createReport(@Nullable final FileUtils.UriInfo uriInfo,
+    private String createReport(@NonNull final FileUtils.UriInfo uriInfo,
                                 @NonNull final ExportResults result) {
 
         final Context context = getContext();
@@ -137,15 +143,10 @@ public class ExportFragment
 
         // We cannot get the folder name for the file.
         // FIXME: We need to change the descriptive string not to include the folder.
-        if (uriInfo != null && uriInfo.displayName != null) {
-            //noinspection ConstantConditions
-            return report.toString() + "\n\n" + context.getString(
-                    R.string.progress_end_export_success, "",
-                    uriInfo.displayName, FileUtils.formatFileSize(context, uriInfo.size));
-
-        } else {
-            return report.toString();
-        }
+        //noinspection ConstantConditions
+        return report.toString() + "\n\n" + context.getString(
+                R.string.progress_end_export_success, "",
+                uriInfo.displayName, FileUtils.formatFileSize(context, uriInfo.size));
     }
 
     @Override
@@ -341,16 +342,16 @@ public class ExportFragment
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.ic_info)
                             .setTitle(R.string.progress_end_backup_success)
-                            .setPositiveButton(R.string.done, (d, which) -> getActivity().finish());
+                            .setPositiveButton(R.string.done, (d, w) -> getActivity().finish());
 
             final Uri uri = exportHelper.getUri();
             final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(getContext(), uri);
             final String report = createReport(uriInfo, message.result);
 
-            if (exportHelper.offerEmail(uriInfo)) {
+            if (uriInfo.size > 0 && uriInfo.size < MAX_FILE_SIZE_FOR_EMAIL) {
                 dialogBuilder.setMessage(report + "\n\n"
                                          + getString(R.string.confirm_email_export))
-                             .setNeutralButton(R.string.btn_email, (d, which) ->
+                             .setNeutralButton(R.string.btn_email, (d, w) ->
                                      onExportEmail(uri, report));
             } else {
                 dialogBuilder.setMessage(report);

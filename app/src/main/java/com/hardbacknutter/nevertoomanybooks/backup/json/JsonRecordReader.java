@@ -177,7 +177,8 @@ public class JsonRecordReader
                 } catch (@NonNull final DAO.DaoWriteException | SQLiteDoneException e) {
                     //TODO: use a meaningful user-displaying string.
                     mResults.booksSkipped++;
-                    mResults.failedLinesMessage.add(mUnknownString);
+                    mResults.failedLinesMessage.add(
+                            context.getString(R.string.error_import_csv_line, row));
                     mResults.failedLinesNr.add(row);
 
                     if (BuildConfig.DEBUG /* always */) {

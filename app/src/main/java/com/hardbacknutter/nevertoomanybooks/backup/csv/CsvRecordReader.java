@@ -248,7 +248,8 @@ public class CsvRecordReader
                 } catch (@NonNull final DAO.DaoWriteException
                         | SQLiteDoneException e) {
                     //TODO: use a meaningful user-displaying string.
-                    handleRowException(context, row, e, mUnknownString);
+                    handleRowException(context, row, e,
+                                       context.getString(R.string.error_import_csv_line, row));
 
                 } catch (@NonNull final ImportException e) {
                     // an ImportException has a user-displayable message.

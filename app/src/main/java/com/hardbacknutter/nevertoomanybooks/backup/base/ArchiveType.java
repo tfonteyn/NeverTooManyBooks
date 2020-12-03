@@ -161,18 +161,16 @@ public enum ArchiveType {
         // It MIGHT be correct, but equally it MIGHT be unusable.
         // This MIGHT depend on Android version/device.
         final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(context, uri);
-        if (uriInfo != null && uriInfo.displayName != null) {
-            Pattern pattern = Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
-                                              Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-            if (pattern.matcher(uriInfo.displayName).find()) {
-                return Csv;
-            }
+        Pattern pattern = Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
+                                          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        if (pattern.matcher(uriInfo.displayName).find()) {
+            return Csv;
+        }
 
-            pattern = Pattern.compile("^.*\\.json( \\(\\d+\\))?$",
-                                      Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-            if (pattern.matcher(uriInfo.displayName).find()) {
-                return Json;
-            }
+        pattern = Pattern.compile("^.*\\.json( \\(\\d+\\))?$",
+                                  Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        if (pattern.matcher(uriInfo.displayName).find()) {
+            return Json;
         }
 
         // give up.

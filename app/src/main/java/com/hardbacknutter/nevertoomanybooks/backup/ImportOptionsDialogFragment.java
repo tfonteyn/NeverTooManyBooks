@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
-import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 public class ImportOptionsDialogFragment
         extends BaseDialogFragment {
@@ -68,7 +67,6 @@ public class ImportOptionsDialogFragment
         setFloatingDialogWidth(R.dimen.floating_dialogs_import_options_width);
     }
 
-
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,13 +86,8 @@ public class ImportOptionsDialogFragment
         final ImportHelper helper = mImportViewModel.getImportHelper();
 
         //noinspection ConstantConditions
-        final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(getContext(), helper.getUri());
-        if (uriInfo != null) {
-            mVb.archiveName.setText(uriInfo.displayName);
-            mVb.archiveName.setVisibility(View.VISIBLE);
-        } else {
-            mVb.archiveName.setVisibility(View.GONE);
-        }
+        final String displayName = helper.getArchiveName(getContext());
+        mVb.archiveName.setText(displayName);
 
         ArchiveInfo archiveInfo = null;
         try {

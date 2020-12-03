@@ -71,8 +71,6 @@ public class ExportHelper {
     private static final String TEMP_FILE_NAME = TAG + ".tmp";
     /** Last full backup date. */
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
-    /** The maximum file size for an export file for which we'll offer to send it as an email. */
-    private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
     /** What is going to be exported. */
     @NonNull
     private final Set<ArchiveWriterRecord.Type> mExportEntries;
@@ -271,17 +269,6 @@ public class ExportHelper {
         return null;
     }
 
-    boolean offerEmail(@Nullable final FileUtils.UriInfo uriInfo) {
-        final long fileSize;
-        if (uriInfo != null) {
-            fileSize = uriInfo.size;
-        } else {
-            fileSize = 0;
-        }
-
-        return fileSize > 0 && fileSize < MAX_FILE_SIZE_FOR_EMAIL;
-    }
-
 
     void setExportEntry(@NonNull final ArchiveWriterRecord.Type entry,
                         final boolean isSet) {
@@ -297,23 +284,17 @@ public class ExportHelper {
         return mExportEntries;
     }
 
-    /**
-     * Called from the dialog via its View listeners.
-     *
-     * @param optionBit bit or combination of bits
-     * @param isSet     bit value
-     */
-    void setOption(@Options final int optionBit,
-                   final boolean isSet) {
-        if (isSet) {
-            mOptions |= optionBit;
-        } else {
-            mOptions &= ~optionBit;
-        }
+
+    boolean isIncremental() {
+        return (mOptions & OPTION_INCREMENTAL) != 0;
     }
 
-    boolean isOptionSet(@Options final int optionBit) {
-        return (mOptions & optionBit) != 0;
+    void setIncremental(final boolean isSet) {
+        if (isSet) {
+            mOptions |= OPTION_INCREMENTAL;
+        } else {
+            mOptions &= ~OPTION_INCREMENTAL;
+        }
     }
 
     @Options

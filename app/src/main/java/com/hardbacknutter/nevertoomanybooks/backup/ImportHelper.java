@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 public class ImportHelper {
 
@@ -120,6 +121,19 @@ public class ImportHelper {
     @NonNull
     public Uri getUri() {
         return mUri;
+    }
+
+    /**
+     * Get the name of the archive (based on the Uri).
+     *
+     * @param context Current context
+     *
+     * @return name
+     */
+    @NonNull
+    public String getArchiveName(@NonNull final Context context) {
+        final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(context, mUri);
+        return uriInfo.displayName;
     }
 
     /**

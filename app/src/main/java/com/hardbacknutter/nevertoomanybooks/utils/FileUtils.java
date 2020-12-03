@@ -355,31 +355,15 @@ public final class FileUtils {
 
     /**
      * Get the name and size of the content behind a Uri.
-     * <p>
-     * Depending on [lots of things I don't claim to know], some Uri's accessing files
-     * on the local device come back as:
-     * <br><br>
-     * {@code content://com.android.providers.downloads.documents/document/
-     * raw%3A%2Fstorage%2Femulated%2F0%2FDownload%2Fmetadata.db }
-     * <br><br>
-     * In the above, we seem to get a real path and certainly are getting the real filename.
-     * But in other cases we we just get the document id:
-     * <br><br>
-     * {@code content://com.android.providers.downloads.documents/document/30 }
-     * <br><br>
-     * Using the query interface for the ContentResolver, we <strong>DO</strong> get a name
-     * (and in our code, the size).
-     * There is potentially more info, and potentially the query will return gibberish.
      *
      * @param context Current context
      * @param uri     to inspect
      *
      * @return a Pair with (name,size)
      */
-    @Nullable
+    @NonNull
     public static UriInfo getUriInfo(@NonNull final Context context,
                                      @NonNull final Uri uri) {
-        UriInfo uriInfo = null;
 
         if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
             final ContentResolver contentResolver = context.getContentResolver();
@@ -389,9 +373,10 @@ public final class FileUtils {
                     final String name = cursor.getString(
                             cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
                     final long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
-
+                    // sanity check, according to the android.provider.OpenableColumns
+                    // documentation, the name and size MUST be present.
                     if (name != null && !name.isEmpty()) {
-                        uriInfo = new UriInfo(name, size);
+                        return new UriInfo(name, size);
 
                         //    for (final String cName : cursor.getColumnNames()) {
                         //        //0 = "document_id"
@@ -409,13 +394,14 @@ public final class FileUtils {
             final String path = uri.getPath();
             if (path != null) {
                 final File file = new File(path);
+                // sanity check
                 if (file.exists()) {
-                    uriInfo = new UriInfo(file.getName(), file.length());
+                    return new UriInfo(file.getName(), file.length());
                 }
             }
         }
 
-        return uriInfo;
+        throw new IllegalStateException("unknown scheme for uri: " + uri);
     }
 
     /**
@@ -443,11 +429,11 @@ public final class FileUtils {
 
     public static class UriInfo {
 
-        @Nullable
+        @NonNull
         public final String displayName;
         public final long size;
 
-        UriInfo(@Nullable final String displayName,
+        UriInfo(@NonNull final String displayName,
                 final long size) {
             this.displayName = displayName;
             this.size = size;

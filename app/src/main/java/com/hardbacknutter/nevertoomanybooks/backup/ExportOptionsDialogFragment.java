@@ -120,14 +120,13 @@ public class ExportOptionsDialogFragment
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
-        final boolean incremental = helper.isOptionSet(ExportHelper.OPTION_INCREMENTAL);
+        final boolean incremental = helper.isIncremental();
         mVb.rbBooksAll.setChecked(!incremental);
         mVb.rbBooksIncremental.setChecked(incremental);
         mVb.rbBooksIncrementalInfo.setOnClickListener(StandardDialogs::infoPopup);
 
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
-                .setOption(ExportHelper.OPTION_INCREMENTAL,
-                           checkedId == mVb.rbBooksIncremental.getId()));
+                .setIncremental(checkedId == mVb.rbBooksIncremental.getId()));
 
 
         mVb.cbxCovers.setChecked(exportEntities.contains(

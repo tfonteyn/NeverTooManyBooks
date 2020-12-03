@@ -75,9 +75,8 @@ public class CsvArchiveReader
         }
 
         try (RecordReader recordReader = new CsvRecordReader(context, mDb)) {
-            //noinspection ConstantConditions
             final ArchiveReaderRecord record =
-                    new CsvArchiveRecord(mHelper.getUri().getLastPathSegment(), is);
+                    new CsvArchiveRecord(mHelper.getArchiveName(context), is);
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {
             is.close();
