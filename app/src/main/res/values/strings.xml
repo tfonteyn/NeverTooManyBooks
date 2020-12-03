@@ -150,9 +150,10 @@
     <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
     <!-- Displayed when a CSV import fails -->
     <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
-    <string name="error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
+    <string name="error_import_csv_line">Unknown error in row %1$d</string>
     <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
-    <string name="error_import_csv_column_count_mismatch">Column count mismatch in row=%1$d</string>
+    <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
+    <string name="error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
 
 
     <!-- A search on a specific website failed, with the specified reason.
@@ -1173,6 +1174,13 @@
          e.g. black and white, but additional red for emphasis -->
     <string name="book_color_support_color">Bicolored</string>
 
+    <!-- Specifically used for an unknown book title (mostly in import/export logic).
+     Translations should add the [] around the string. -->
+    <string name="unknown_title">[Unknown title]</string>
+    <!-- Specifically used for an unknown book title (mostly in import/export logic).
+         Translations should add the [] around the string. -->
+    <string name="unknown_author">[Unknown author]</string>
+
     <!-- ####################################################################################### -->
     <!-- == List values. == -->
     <!-- ####################################################################################### -->
@@ -1598,12 +1606,5 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-
-
-    <!-- Specifically used for an unknown book title (mostly in import/export logic).
-         Translations should add the [] around the string. -->
-    <string name="unknown_title">[Unknown title]</string>
-    <!-- [VERIFIED] Unknown name; e.g. "the author is unknown". URGENT: update translations -->
-    <string name="unknown_author">[Unknown author]</string>
 
 </resources>

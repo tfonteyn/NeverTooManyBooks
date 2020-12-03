@@ -563,7 +563,7 @@
     <string name="X_lbl_select_image">Επιλογή εικόνας…</string>
     <string name="lbl_select_style">Επιλογή Στυλ</string>
     <string name="X_lbl_send_mail">Να στείλετε e-mail…</string>
-    <string name="unknown_author">Άγνωστο</string>
+    <string name="unknown_author">[Άγνωστος συγγραφέας]</string>
     <string name="unused">αχρησιμοποίητος</string>
     <string name="vldt_blank_required_for_x">Απαιτείται κενή τιμή για «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">Αναμένεται boolean τιμή (0,1,t,f,true,false) για «%1$s»</string>
@@ -683,4 +683,7 @@
     <string name="menu_import">εισάγω</string>
     <string name="action_import">εισάγω</string>
     <string name="btn_just_this_shelf">Μόνο αυτό το ράφι βιβλίου</string>
+    <string name="unknown_title">[Άγνωστος τίτλος]</string>
+    <string name="error_import_csv_column_count_mismatch">Λανθασμένος αριθμός στηλών στη σειρά %1$d</string>
+    <string name="error_import_csv_line">Άγνωστο σφάλμα στη σειρά %1$d</string>
 </resources>

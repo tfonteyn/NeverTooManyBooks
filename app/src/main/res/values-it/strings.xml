@@ -561,7 +561,7 @@
     <string name="X_lbl_select_image">Seleziona immagine…</string>
     <string name="lbl_select_style">Seleziona Stile</string>
     <string name="X_lbl_send_mail">Invia una email…</string>
-    <string name="unknown_author">Sconosciuto</string>
+    <string name="unknown_author">[Autore sconosciuto]</string>
     <string name="unused">non usato</string>
     <string name="vldt_blank_required_for_x">È richiesto un valore vuoto per «%1$s»</string>
     <string name="vldt_boolean_expected_for_x">È previsto un valore booleano (0,1,t,f,true,false) for «%1$s»</string>
@@ -681,4 +681,7 @@
     <string name="menu_import">Importa</string>
     <string name="action_import">Importa</string>
     <string name="btn_just_this_shelf">Solo questa libreria</string>
+    <string name="unknown_title">[Titolo sconosciuto]</string>
+    <string name="error_import_csv_column_count_mismatch">Conteggio colonne errato nella riga %1$d</string>
+    <string name="error_import_csv_line">Errore sconosciuto nella riga %1$d</string>
 </resources>

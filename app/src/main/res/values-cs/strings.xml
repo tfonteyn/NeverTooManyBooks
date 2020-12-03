@@ -557,7 +557,7 @@
     <string name="X_lbl_select_image">Zvolit obrázek…</string>
     <string name="lbl_select_style">Zvolit styl</string>
     <string name="X_lbl_send_mail">Poslat e-mailem…</string>
-    <string name="unknown_author">Není známo</string>
+    <string name="unknown_author">[Neznámý autor]</string>
     <string name="unused">nepoužitý</string>
     <string name="vldt_blank_required_for_x">Prázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_boolean_expected_for_x">Očekávána pravdivostní hodnota (0,1,t,f,true,false) pro „%1$s“</string>
@@ -679,4 +679,7 @@
     <string name="menu_import">Importovat</string>
     <string name="action_import">Importovat</string>
     <string name="btn_just_this_shelf">Pouze tato knihovna</string>
+    <string name="unknown_title">[Neznámý název]</string>
+    <string name="error_import_csv_column_count_mismatch">Nesprávný počet sloupců v řádku %1$d</string>
+    <string name="error_import_csv_line">Neznámá chyba v řádku %1$d</string>
 </resources>

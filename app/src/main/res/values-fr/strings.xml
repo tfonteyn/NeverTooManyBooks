@@ -580,7 +580,7 @@
     <string name="txt_tap_on_thumbnail_to_zoom">Appuyez sur une miniature pour afficher une image plus grande.</string>
     <string name="txt_x_pages">%1$d pages</string>
     <string name="unknown">Inconnu</string>
-    <string name="unknown_author">Inconnu</string>
+    <string name="unknown_author">[Auteur inconnu]</string>
     <string name="unused">inutilisé</string>
     <string name="vldt_blank_required_for_x">Le champ «%1$s» doit être vide</string>
     <string name="vldt_boolean_expected_for_x">Valeur booléenne (0,1,t,f,true,false) attendue pour «%1$s»</string>
@@ -686,4 +686,7 @@
     <string name="menu_import">Importer</string>
     <string name="action_import">Importer</string>
     <string name="btn_just_this_shelf">Cette bibliothèque uniquement</string>
+    <string name="unknown_title">[Titre inconnu]</string>
+    <string name="error_import_csv_column_count_mismatch">Nombre de colonnes incorrect dans la ligne %1$d</string>
+    <string name="error_import_csv_line">Erreur inconnue à la ligne %1$d</string>
 </resources>

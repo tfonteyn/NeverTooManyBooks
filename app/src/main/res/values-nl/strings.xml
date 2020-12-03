@@ -576,7 +576,7 @@
     <string name="txt_tap_on_thumbnail_to_zoom">Tik op een miniatuur om een grotere afbeelding weer te geven.</string>
     <string name="txt_x_pages">%1$d pagina\'s</string>
     <string name="unknown">Onbekend</string>
-    <string name="unknown_author">Onbekend</string>
+    <string name="unknown_author">[Onbekende auteur]</string>
     <string name="unused">ongebruikt</string>
     <string name="vldt_blank_required_for_x">Veld moet leeg zijn voor „%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Verwachtte een boolean waarde (0,1,t,f,true,false) voor „%1$s”</string>
@@ -682,4 +682,7 @@
     <string name="menu_import">Importeren</string>
     <string name="action_import">Importeren</string>
     <string name="btn_just_this_shelf">Alleen deze boekenplank</string>
+    <string name="unknown_title">[Onbekende titel]</string>
+    <string name="error_import_csv_column_count_mismatch">Onjuist aantal kolommen in rij %1$d</string>
+    <string name="error_import_csv_line">Onbekende fout in rij %1$d</string>
 </resources>

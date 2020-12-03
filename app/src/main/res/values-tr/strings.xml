@@ -560,7 +560,7 @@
     <string name="X_lbl_select_image">Resim seç…</string>
     <string name="lbl_select_style">Biçem seç</string>
     <string name="X_lbl_send_mail">E-posta…</string>
-    <string name="unknown_author">Bilinmiyor</string>
+    <string name="unknown_author">[Bilinmeyen Yazar]</string>
     <string name="unused">kullanılmamış</string>
     <string name="vldt_blank_required_for_x">“%1$s” için boş değer gerekli</string>
     <string name="vldt_boolean_expected_for_x">“%1$s” için bir ikili (bool) değer gerekli (0,1,t,f,true,false)</string>
@@ -679,4 +679,7 @@
     <string name="menu_import">Ithal etmek</string>
     <string name="action_import">Ithal etmek</string>
     <string name="btn_just_this_shelf">Yalnızca bu kitaplık</string>
+    <string name="unknown_title">[Bilinmeyen başlık]</string>
+    <string name="error_import_csv_column_count_mismatch">Satırda yanlış sütun sayısı %1$d</string>
+    <string name="error_import_csv_line">%1$d. satırda bilinmeyen hata</string>
 </resources>

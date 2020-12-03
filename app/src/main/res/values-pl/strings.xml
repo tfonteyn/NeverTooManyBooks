@@ -557,7 +557,7 @@
     <string name="X_lbl_select_image">Wybierz zdjęcie…</string>
     <string name="lbl_select_style">Wybierz styl</string>
     <string name="X_lbl_send_mail">Wysłać email…</string>
-    <string name="unknown_author">Nieznana</string>
+    <string name="unknown_author">[Nieznany autor]</string>
     <string name="unused">nie używany</string>
     <string name="vldt_blank_required_for_x">Oczekiwana wartość pusta dla „%1$s”</string>
     <string name="vldt_boolean_expected_for_x">Oczekiwana wartość logiczna (0,1,t,f,true,false) dla „%1$s”</string>
@@ -678,4 +678,7 @@
     <string name="menu_import">Importuj</string>
     <string name="action_import">Importuj</string>
     <string name="btn_just_this_shelf">Tylko ta półka</string>
+    <string name="unknown_title">[Nieznany tytuł]</string>
+    <string name="error_import_csv_column_count_mismatch">Nieprawidłowa liczba kolumn w wierszu %1$d</string>
+    <string name="error_import_csv_line">Nieznany błąd w wierszu %1$d</string>
 </resources>

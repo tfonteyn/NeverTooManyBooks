@@ -578,7 +578,7 @@
     <string name="txt_tap_on_thumbnail_to_zoom">Tippen Sie auf eine Vorschaubild, um ein größeres Bild anzuzeigen.</string>
     <string name="txt_x_pages">%1$d seiten</string>
     <string name="unknown">Unbekannt</string>
-    <string name="unknown_author">Unbekannt</string>
+    <string name="unknown_author">[Unbekannter Autor]</string>
     <string name="unused">ungebraucht</string>
     <string name="vldt_blank_required_for_x">„%1$s“ muss leer sein</string>
     <string name="vldt_boolean_expected_for_x">Es wird ein boolescher Wert (0,1,t,f,true,false) für „%1$s“ erwartet</string>
@@ -684,4 +684,7 @@
     <string name="menu_import">Importieren</string>
     <string name="action_import">Importieren</string>
     <string name="btn_just_this_shelf">Nur dieses Bücherregal</string>
+    <string name="unknown_title">[Unbekannter Titel]</string>
+    <string name="error_import_csv_column_count_mismatch">Falsche Spaltenanzahl in Zeile %1$d</string>
+    <string name="error_import_csv_line">Unbekannter Fehler in Zeile %1$d</string>
 </resources>
