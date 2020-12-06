@@ -116,14 +116,11 @@ public class BookshelfBooklistGroup
     public static boolean showBooksUnderEachDefault(@NonNull final Context context) {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getBoolean(PK_SHOW_BOOKS_UNDER_EACH,
-                            false);
+                .getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
     private void initPrefs() {
-        mUnderEach = new PBoolean(
-                mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH
-        );
+        mUnderEach = new PBoolean(mStyle, PK_SHOW_BOOKS_UNDER_EACH);
     }
 
     @NonNull
@@ -160,8 +157,7 @@ public class BookshelfBooklistGroup
 
         final PreferenceCategory category = screen.findPreference(PSK_STYLE_BOOKSHELF);
         if (category != null) {
-            final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH};
-            setPreferenceVisibility(category, keys, visible);
+            setPreferenceVisibility(category, new String[]{PK_SHOW_BOOKS_UNDER_EACH}, visible);
         }
     }
 

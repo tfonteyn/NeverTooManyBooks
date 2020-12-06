@@ -38,7 +38,7 @@ import java.io.Closeable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -70,7 +70,7 @@ public class ShowBookViewModel
 
     /** <strong>Optionally</strong> passed. */
     @Nullable
-    private BooklistStyle mStyle;
+    private ListStyle mStyle;
     /** <strong>Optionally</strong> passed. */
     @Nullable
     private ShowBookNavigator mNavHelper;
@@ -131,7 +131,7 @@ public class ShowBookViewModel
             SanityCheck.requirePositiveValue(bookId, "KEY_PK_ID");
             mCurrentBook = Book.from(bookId, mDb);
 
-            final String styleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
+            final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
             if (styleUuid != null) {
                 mStyle = StyleDAO.getStyleOrDefault(context, mDb, styleUuid);
             }
@@ -285,18 +285,18 @@ public class ShowBookViewModel
      *     <li>return the visibility as set in the style.</li>
      * </ol>
      *
-     * @param context     current context
-     * @param preferences Global preferences
-     * @param cIdx        0..n image index
+     * @param context current context
+     * @param global  Global preferences
+     * @param cIdx    0..n image index
      *
      * @return {@code true} if in use
      */
     public boolean isCoverUsed(@NonNull final Context context,
-                               @NonNull final SharedPreferences preferences,
+                               @NonNull final SharedPreferences global,
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         // Globally disabled overrules style setting
-        if (!DBDefinitions.isCoverUsed(preferences, cIdx)) {
+        if (!DBDefinitions.isCoverUsed(global, cIdx)) {
             return false;
         }
 
@@ -305,7 +305,7 @@ public class ShowBookViewModel
             return true;
         } else {
             // let the style decide
-            return mStyle.getDetailScreenBookFields().isShowCover(context, preferences, cIdx);
+            return mStyle.getDetailScreenBookFields().isShowCover(context, global, cIdx);
         }
     }
 

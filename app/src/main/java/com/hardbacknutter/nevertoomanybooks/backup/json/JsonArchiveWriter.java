@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * EXPERIMENTAL: only meant to be run from a test.
+ * EXPERIMENTAL: only meant to be run from a test. Hardcoded for books only.
  */
 public class JsonArchiveWriter
         implements ArchiveWriter {

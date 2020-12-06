@@ -56,11 +56,11 @@ public class ScannerContract
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Fragment fragment) {
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // By default -1, which for the IntentIntegrator call means 'no preference'
-        final int cameraId = ParseUtils.getIntListPref(prefs, Prefs.pk_camera_id_scan_barcode, -1);
+        final int cameraId = ParseUtils.getIntListPref(global, Prefs.pk_camera_id_scan_barcode, -1);
         // Beep when a barcode was recognised
-        final boolean beep = prefs.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
+        final boolean beep = global.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
         final IntentIntegrator integrator = IntentIntegrator.forSupportFragment(fragment);
         integrator.setCameraId(cameraId);

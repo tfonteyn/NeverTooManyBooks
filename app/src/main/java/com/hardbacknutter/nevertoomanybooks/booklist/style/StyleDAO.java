@@ -232,7 +232,7 @@ public final class StyleDAO {
 
         final ArrayList<BooklistStyle> preferredStyles = allStyles
                 .stream()
-                .filter(BooklistStyle::isPreferred)
+                .filter(ListStyle::isPreferred)
                 .collect(Collectors.toCollection(ArrayList::new));
 
         if (!preferredStyles.isEmpty()) {
@@ -318,12 +318,12 @@ public final class StyleDAO {
     /**
      * store the given style as the user default one.
      *
-     * @param preferences Global preferences
-     * @param uuid        style to set
+     * @param global the <strong>GLOBAL</strong> preferences
+     * @param uuid   style to set
      */
-    public static void setDefault(@NonNull final SharedPreferences preferences,
+    public static void setDefault(@NonNull final SharedPreferences global,
                                   @NonNull final String uuid) {
-        preferences.edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid).apply();
+        global.edit().putString(PREF_BL_STYLE_CURRENT_DEFAULT, uuid).apply();
     }
 
     public static void clearCache() {
@@ -557,6 +557,17 @@ public final class StyleDAO {
                 create(context, db);
             }
             return Collections.unmodifiableMap(S_BUILTIN_STYLES);
+        }
+
+        static boolean isBuiltin(@NonNull final String uuid) {
+            if (!uuid.isEmpty()) {
+                for (final String key : ID_UUID) {
+                    if (key.equals(uuid)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         /**

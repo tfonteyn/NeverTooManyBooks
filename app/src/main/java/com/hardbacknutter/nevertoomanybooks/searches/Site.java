@@ -287,8 +287,8 @@ public final class Site
                + mType.mTypeName + '.';
     }
 
-    private void loadFromPrefs(@NonNull final SharedPreferences preferences) {
-        mEnabled = preferences.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
+    private void loadFromPrefs(@NonNull final SharedPreferences global) {
+        mEnabled = global.getBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
 
     private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
@@ -523,12 +523,12 @@ public final class Site
         @VisibleForTesting
         public void loadPrefs(@NonNull final Context context) {
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
             for (final Site site : mList) {
-                site.loadFromPrefs(prefs);
+                site.loadFromPrefs(global);
             }
 
-            final String order = prefs.getString(PREFS_ORDER_PREFIX + mTypeName, null);
+            final String order = global.getString(PREFS_ORDER_PREFIX + mTypeName, null);
             if (order != null) {
                 // Reorder keeps the original list members.
                 final List<Site> reorderedList = reorder(mList, order);

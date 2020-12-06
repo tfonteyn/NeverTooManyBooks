@@ -112,14 +112,11 @@ public class PublisherBooklistGroup
     public static boolean showBooksUnderEachDefault(@NonNull final Context context) {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getBoolean(PK_SHOW_BOOKS_UNDER_EACH,
-                            false);
+                .getBoolean(PK_SHOW_BOOKS_UNDER_EACH, false);
     }
 
     private void initPrefs() {
-        mUnderEach = new PBoolean(
-                mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH
-        );
+        mUnderEach = new PBoolean(mStyle, PK_SHOW_BOOKS_UNDER_EACH);
     }
 
     @NonNull

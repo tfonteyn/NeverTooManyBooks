@@ -20,12 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 public class NotEmptyFilter
@@ -34,22 +34,18 @@ public class NotEmptyFilter
     /**
      * Constructor.
      *
-     * @param sp           Style preferences reference.
-     * @param isPersistent {@code true} to have the value persisted.
-     *                     {@code false} for in-memory only.
-     * @param labelId      string resource id to use as a display label
-     * @param key          of the preference
-     * @param table        to use by the expression
-     * @param domainKey    to use by the expression
+     * @param labelId   string resource id to use as a display label
+     * @param key       preference key
+     * @param table     to use by the expression
+     * @param domainKey to use by the expression
      */
-    public NotEmptyFilter(@NonNull final SharedPreferences sp,
-                          final boolean isPersistent,
+    public NotEmptyFilter(@NonNull final BooklistStyle style,
                           @StringRes final int labelId,
                           @NonNull final String key,
                           @SuppressWarnings("SameParameterValue") @NonNull
                           final TableDefinition table,
                           @NonNull final String domainKey) {
-        super(sp, isPersistent, labelId, key, table, domainKey);
+        super(style, labelId, key, table, domainKey);
     }
 
     @Override

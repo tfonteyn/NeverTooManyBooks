@@ -577,8 +577,8 @@ public class Author
     @NonNull
     public String getExtLabel(@NonNull final Context context) {
         String authorLabel = getLabel(context);
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        if (DBDefinitions.isUsed(global, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
             final String type = getTypeLabels(context);
             if (!type.isEmpty()) {
                 authorLabel += " <small><i>" + type + "</i></small>";

@@ -116,8 +116,7 @@ public class SeriesBooklistGroup
     }
 
     private void initPrefs() {
-        mUnderEach = new PBoolean(mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH
-        );
+        mUnderEach = new PBoolean(mStyle, PK_SHOW_BOOKS_UNDER_EACH);
     }
 
     @NonNull
@@ -154,8 +153,7 @@ public class SeriesBooklistGroup
 
         final PreferenceCategory category = screen.findPreference(PSK_STYLE_SERIES);
         if (category != null) {
-            final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH};
-            setPreferenceVisibility(category, keys, visible);
+            setPreferenceVisibility(category, new String[]{PK_SHOW_BOOKS_UNDER_EACH}, visible);
         }
     }
 

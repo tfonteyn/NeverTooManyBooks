@@ -20,10 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Parcel;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
+import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 
 /**
  * Used for {@link androidx.preference.SeekBarPreference}.
@@ -31,62 +34,94 @@ import androidx.preference.PreferenceManager;
  * @see PInt
  */
 public class PInteger
-        extends PPrefBase<Integer>
-        implements PInt {
+        implements PPref<Integer>, PInt {
 
-    /**
-     * Constructor. Uses the global setting as the default value,
-     * or {@code 0} if there is no global default.
-     *
-     * @param sp           Style preferences reference.
-     * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param key          key of preference
-     */
-    public PInteger(@NonNull final SharedPreferences sp,
-                    final boolean isPersistent,
-                    @NonNull final String key) {
-        super(sp, isPersistent, key, 0);
-    }
+    /** The {@link BooklistStyle} this preference belongs to. */
+    @NonNull
+    private final BooklistStyle mStyle;
+
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final Integer mDefaultValue;
+
+    /** key for the Preference. */
+    @NonNull
+    private final String mKey;
+    /** in memory value used for non-persistence situations. */
+    @Nullable
+    private Integer mNonPersistedValue;
 
     /**
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
-     * @param sp           Style preferences reference.
-     * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param key          key of preference
-     * @param defValue     in memory default
+     * @param key      preference key
+     * @param defValue default value
      */
-    public PInteger(@NonNull final SharedPreferences sp,
-                    final boolean isPersistent,
+    public PInteger(@NonNull final BooklistStyle style,
                     @NonNull final String key,
-                    @NonNull final Integer defValue) {
-        super(sp, isPersistent, key, defValue);
+                    final int defValue) {
+        mStyle = style;
+        mKey = key;
+        mDefaultValue = defValue;
     }
 
     @NonNull
-    public Integer getGlobalValue(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getInt(getKey(), mDefaultValue);
+    @Override
+    public String getKey() {
+        return mKey;
     }
 
     @Override
-    public void set(@NonNull final SharedPreferences.Editor ed,
-                    @NonNull final Integer value) {
-        ed.putInt(getKey(), value);
+    public void set(@Nullable final Integer value) {
+        if (mStyle.isUserDefined()) {
+            mStyle.getSettings().setInt(getKey(), value);
+        } else {
+            mNonPersistedValue = value;
+        }
     }
 
     @NonNull
     @Override
     public Integer getValue(@NonNull final Context context) {
-        if (mIsPersistent) {
-            // reminder: it's a primitive so we must test on contains first
-            if (mStylePrefs.contains(getKey())) {
-                return mStylePrefs.getInt(getKey(), mDefaultValue);
+        if (mStyle.isUserDefined()) {
+            final Integer value = mStyle.getSettings().getInteger(context, getKey());
+            if (value != null) {
+                return value;
             }
-            return getGlobalValue(context);
-        } else {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
+        } else if (mNonPersistedValue != null) {
+            return mNonPersistedValue;
         }
+
+        return mDefaultValue;
+    }
+
+    public void writeToParcel(@NonNull final Parcel dest) {
+        if (mStyle.isUserDefined()) {
+            dest.writeValue(getValue(App.getAppContext()));
+        } else {
+            // Write the in-memory value to the parcel.
+            // Do NOT use 'get' as that would return the default if the actual value is not set.
+            dest.writeValue(mNonPersistedValue);
+        }
+    }
+
+    public void set(@NonNull final Parcel in) {
+        final Integer tmp = (Integer) in.readValue(getClass().getClassLoader());
+        if (tmp != null) {
+            set(tmp);
+        }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PInteger{"
+               + "mStyle=" + mStyle.getUuid()
+               + ", mKey=`" + mKey + '`'
+               + ", mDefaultValue=" + mDefaultValue
+               + ", mNonPersistedValue=" + mNonPersistedValue
+               + ", value=" + getValue(App.getAppContext())
+               + '}';
     }
 }

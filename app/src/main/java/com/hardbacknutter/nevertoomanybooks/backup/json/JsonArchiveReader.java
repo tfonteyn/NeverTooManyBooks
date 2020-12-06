@@ -39,6 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
+/**
+ * EXPERIMENTAL: only meant to be run from a test. Hardcoded for books only.
+ */
 public class JsonArchiveReader
         implements ArchiveReader {
 
@@ -78,7 +81,8 @@ public class JsonArchiveReader
 
         try (RecordReader recordReader = new JsonRecordReader(context, mDb)) {
             final ArchiveReaderRecord record =
-                    new JsonArchiveRecord(mHelper.getArchiveName(context), is);
+                    new JsonArchiveRecord(ArchiveReaderRecord.Type.Books,
+                                          mHelper.getArchiveName(context), is);
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {
             is.close();
@@ -86,8 +90,7 @@ public class JsonArchiveReader
     }
 
     @Override
-    public void close()
-            throws IOException {
+    public void close() {
         mDb.purge();
         mDb.close();
     }
@@ -96,6 +99,8 @@ public class JsonArchiveReader
     public static class JsonArchiveRecord
             implements ArchiveReaderRecord {
 
+        @NonNull
+        private final Type mType;
         @NonNull
         private final String mName;
 
@@ -109,10 +114,24 @@ public class JsonArchiveReader
          * @param name of this record
          * @param is   InputStream to use
          */
-        JsonArchiveRecord(@NonNull final String name,
+        JsonArchiveRecord(@NonNull final Type type,
+                          @NonNull final String name,
                           @NonNull final InputStream is) {
+            mType = type;
             mName = name;
             mIs = is;
+        }
+
+        @NonNull
+        @Override
+        public Type getType() {
+            return mType;
+        }
+
+        @NonNull
+        @Override
+        public Encoding getEncoding() {
+            return Encoding.Json;
         }
 
         @NonNull

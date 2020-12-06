@@ -38,8 +38,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -109,7 +109,7 @@ final class BooklistBuilder {
     private static final int NANO_TO_MILLIS = 1_000_000;
 
     @NonNull
-    private final BooklistStyle mStyle;
+    private final ListStyle mStyle;
 
     /** Set to {@code true} if we're filtering on a specific bookshelf. */
     private final boolean mFilteredOnBookshelf;
@@ -172,7 +172,7 @@ final class BooklistBuilder {
      * @param rebuildState the mode to use for restoring the saved state.
      */
     BooklistBuilder(final int instanceId,
-                    @NonNull final BooklistStyle style,
+                    @NonNull final ListStyle style,
                     @NonNull final Bookshelf bookshelf,
                     @Booklist.ListRebuildMode final int rebuildState) {
         mStyle = style;
@@ -666,7 +666,7 @@ final class BooklistBuilder {
      */
     @NonNull
     private String buildFrom(@NonNull final Context context) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // Text of join statement
         final StringBuilder sql = new StringBuilder();
 
@@ -683,7 +683,7 @@ final class BooklistBuilder {
             sql.append(TBL_BOOKS.ref());
         }
 
-        if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
+        if (DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE)) {
             // get the loanee name, or a {@code null} for available books.
             sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE));
         }
@@ -717,7 +717,7 @@ final class BooklistBuilder {
         sql.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
 
         if (styleGroups.contains(BooklistGroup.SERIES)
-            || DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE)) {
+            || DBDefinitions.isUsed(global, DBDefinitions.KEY_SERIES_TITLE)) {
             // Join with the link table between Book and Series.
             sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
             // Extend the join filtering on the primary Series unless
@@ -731,7 +731,7 @@ final class BooklistBuilder {
         }
 
         if (styleGroups.contains(BooklistGroup.PUBLISHER)
-            || DBDefinitions.isUsed(prefs, DBDefinitions.KEY_PUBLISHER_NAME)) {
+            || DBDefinitions.isUsed(global, DBDefinitions.KEY_PUBLISHER_NAME)) {
             // Join with the link table between Book and Publishers.
             sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
             // Extend the join filtering on the primary Publisher unless

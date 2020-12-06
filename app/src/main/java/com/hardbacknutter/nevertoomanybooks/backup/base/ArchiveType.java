@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
@@ -216,6 +217,9 @@ public enum ArchiveType {
                 break;
 
             case Xml:
+                reader = new XmlArchiveReader(context, helper);
+                break;
+
             case Unknown:
             default:
                 throw new InvalidArchiveException(ERROR_NO_READER_AVAILABLE);

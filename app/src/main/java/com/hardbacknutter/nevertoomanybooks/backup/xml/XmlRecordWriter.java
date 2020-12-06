@@ -39,6 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -241,7 +243,9 @@ public class XmlRecordWriter
     }
 
     /**
-     * Write out the user-defined styles.
+     * Write out the styles.
+     * <p>
+     * We write all user-defined (in full) and builtin (without prefs) styles.
      *
      * @param context Current context
      * @param writer  writer
@@ -1031,9 +1035,9 @@ public class XmlRecordWriter
         @NonNull
         private final Iterator<BooklistStyle> it;
 
-        private BooklistStyle currentStyle;
+        private ListStyle mCurrentStyle;
         /** the Preferences from the current style and the groups that have PPrefs. */
-        private Map<String, PPref> currentStylePPrefs;
+        private Map<String, PPref> mCurrentStylePPrefs;
 
         /**
          * Constructor.
@@ -1067,8 +1071,8 @@ public class XmlRecordWriter
         @Override
         public boolean hasMoreElements() {
             if (it.hasNext()) {
-                currentStyle = it.next();
-                currentStylePPrefs = currentStyle.getPreferences(true);
+                mCurrentStyle = it.next();
+                mCurrentStylePPrefs = mCurrentStyle.getPreferences();
                 return true;
             } else {
                 return false;
@@ -1084,7 +1088,7 @@ public class XmlRecordWriter
         @NonNull
         @Override
         public String getElementTagNameAttribute() {
-            return currentStyle.getUuid();
+            return mCurrentStyle.getUuid();
         }
 
         @Nullable
@@ -1092,24 +1096,29 @@ public class XmlRecordWriter
         public List<Pair<String, String>> getElementTagAttributes() {
             final List<Pair<String, String>> list = new ArrayList<>();
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_BUILTIN,
-                                String.valueOf(currentStyle.isBuiltin())));
+                                String.valueOf(mCurrentStyle.isBuiltin())));
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_PREFERRED,
-                                String.valueOf(currentStyle.isPreferred())));
+                                String.valueOf(mCurrentStyle.isPreferred())));
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_MENU_POSITION,
-                                String.valueOf(currentStyle.getMenuPosition())));
+                                String.valueOf(mCurrentStyle.getMenuPosition())));
             return list;
         }
 
         @Override
         @NonNull
         public Set<String> getElementKeySet() {
-            return currentStylePPrefs.keySet();
+            if (mCurrentStyle.isBuiltin()) {
+                return Collections.emptySet();
+            } else {
+                // user-defined style
+                return mCurrentStylePPrefs.keySet();
+            }
         }
 
         @NonNull
         @Override
         public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(currentStylePPrefs.get(key), key).getValue(mContext);
+            return Objects.requireNonNull(mCurrentStylePPrefs.get(key), key).getValue(mContext);
         }
     }
 }

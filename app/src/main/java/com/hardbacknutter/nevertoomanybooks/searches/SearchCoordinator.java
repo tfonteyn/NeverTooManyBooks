@@ -265,18 +265,18 @@ public class SearchCoordinator
 
             mAllSites = Site.Type.Data.getSites();
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            if (FormatMapper.isMappingAllowed(prefs)) {
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+            if (FormatMapper.isMappingAllowed(global)) {
                 mMappers.add(new FormatMapper());
             }
-            if (ColorMapper.isMappingAllowed(prefs)) {
+            if (ColorMapper.isMappingAllowed(global)) {
                 mMappers.add(new ColorMapper());
             }
 
             if (args != null) {
                 mFetchThumbnail = new boolean[2];
-                mFetchThumbnail[0] = DBDefinitions.isCoverUsed(prefs, 0);
-                mFetchThumbnail[1] = DBDefinitions.isCoverUsed(prefs, 1);
+                mFetchThumbnail[0] = DBDefinitions.isCoverUsed(global, 0);
+                mFetchThumbnail[1] = DBDefinitions.isCoverUsed(global, 1);
 
                 mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
 

@@ -69,8 +69,8 @@ public final class FormatMapper
         MAPPER.put("hardback", R.string.book_format_hardcover);
     }
 
-    static boolean isMappingAllowed(@NonNull final SharedPreferences preferences) {
-        return preferences.getBoolean(Prefs.pk_search_reformat_format, false);
+    static boolean isMappingAllowed(@NonNull final SharedPreferences global) {
+        return global.getBoolean(Prefs.pk_search_reformat_format, false);
     }
 
     @NonNull

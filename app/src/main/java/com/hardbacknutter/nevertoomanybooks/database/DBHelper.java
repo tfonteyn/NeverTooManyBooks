@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -284,11 +284,12 @@ public final class DBHelper
         final String sqlInsertStyles =
                 "INSERT INTO " + TBL_BOOKLIST_STYLES
                 + '(' + KEY_PK_ID
+                // 1==true
                 + ',' + KEY_STYLE_IS_BUILTIN
+                // 0==false
                 + ',' + KEY_STYLE_IS_PREFERRED
                 + ',' + KEY_STYLE_MENU_POSITION
                 + ',' + KEY_UUID
-                // 1==true
                 + ") VALUES(?,1,0,?,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
             for (int id = StyleDAO.Builtin.MAX_ID; id < 0; id++) {
@@ -325,7 +326,7 @@ public final class DBHelper
                    + ") VALUES ("
                    + Bookshelf.ALL_BOOKS
                    + ",'" + context.getString(R.string.bookshelf_all_books)
-                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                   + "'," + ListStyle.DEFAULT_STYLE_ID
                    + ')');
 
         // inserts a 'Default' bookshelf with _id==1, see {@link Bookshelf}.
@@ -336,7 +337,7 @@ public final class DBHelper
                    + ") VALUES ("
                    + Bookshelf.DEFAULT
                    + ",'" + context.getString(R.string.bookshelf_my_books)
-                   + "'," + BooklistStyle.DEFAULT_STYLE_ID
+                   + "'," + ListStyle.DEFAULT_STYLE_ID
                    + ')');
     }
 
@@ -734,9 +735,9 @@ public final class DBHelper
         }
         if (oldVersion < 8) {
             // pref key name changes
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final Set<String> all = prefs.getAll().keySet();
-            final SharedPreferences.Editor editor = prefs.edit();
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+            final Set<String> all = global.getAll().keySet();
+            final SharedPreferences.Editor editor = global.edit();
             for (final String key : all) {
                 if (key.startsWith("search.site")) {
                     editor.remove(key);
@@ -777,8 +778,8 @@ public final class DBHelper
                                                      DOM_STYLE_MENU_POSITION,
                                                      DOM_STYLE_IS_PREFERRED);
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final String itemsStr = prefs.getString("bookList.style.preferred.order", null);
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+            final String itemsStr = global.getString("bookList.style.preferred.order", null);
             if (itemsStr != null && !itemsStr.isEmpty()) {
                 final String[] entries = itemsStr.split(",");
                 if (entries.length > 0) {
@@ -795,7 +796,7 @@ public final class DBHelper
                     }
                 }
             }
-            prefs.edit().remove("bookList.style.preferred.order").apply();
+            global.edit().remove("bookList.style.preferred.order").apply();
         }
 
         //URGENT: the use of recreateAndReload is dangerous right now and can break updates.
@@ -842,10 +843,10 @@ public final class DBHelper
      */
     private void removeObsoleteKeys(@NonNull final Context context) {
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        final Set<String> all = prefs.getAll().keySet();
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final Set<String> all = global.getAll().keySet();
 
-        final SharedPreferences.Editor ed = prefs.edit();
+        final SharedPreferences.Editor ed = global.edit();
         for (final String key : all) {
             if (key.startsWith("search.site")) {
                 ed.remove(key);

@@ -79,6 +79,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -259,13 +260,13 @@ public class BooksOnBookshelf
             new PreferredStylesFragment.ResultContract(), data -> {
                 if (data != null) {
                     // we get the UUID for the selected style back.
-                    final String uuid = data.getString(BooklistStyle.BKEY_STYLE_UUID);
+                    final String uuid = data.getString(ListStyle.BKEY_STYLE_UUID);
                     if (uuid != null) {
                         mVm.onStyleChanged(this, uuid);
                     }
 
                     // This is independent from the above style having been modified ot not.
-                    if (data.getBoolean(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                    if (data.getBoolean(ListStyle.BKEY_STYLE_MODIFIED, false)) {
                         mVm.setForceRebuildInOnResume(true);
                     }
                 }
@@ -279,7 +280,7 @@ public class BooksOnBookshelf
                     // when the user choose to EDIT a style.
                     // We get the ACTUAL style back.
                     @Nullable
-                    final BooklistStyle style = data.getParcelable(BooklistStyle.BKEY_STYLE);
+                    final BooklistStyle style = data.getParcelable(ListStyle.BKEY_STYLE);
                     if (style != null) {
                         mVm.onStyleEdited(this, style);
 
@@ -481,7 +482,7 @@ public class BooksOnBookshelf
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
@@ -517,7 +518,7 @@ public class BooksOnBookshelf
         mGrSendOneBookTask.onFinished().observe(this, this::onGrFinished);
 
         // show/hide the Goodreads menu
-        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(prefs));
+        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(global));
 
         // The booklist.
         //noinspection ConstantConditions
@@ -548,7 +549,8 @@ public class BooksOnBookshelf
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(this::onFabMenuItemSelected);
         // mVb.fab4SearchExternalId
-        mFabMenu.getItem(4).setEnabled(EditBookExternalIdFragment.showEditBookTabExternalId(prefs));
+        mFabMenu.getItem(4)
+                .setEnabled(EditBookExternalIdFragment.showEditBookTabExternalId(global));
 
         // Popup the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
@@ -756,7 +758,7 @@ public class BooksOnBookshelf
                 getMenuInflater().inflate(R.menu.sm_view_on_site, menu);
                 getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
-                final SharedPreferences prefs = PreferenceManager
+                final SharedPreferences global = PreferenceManager
                         .getDefaultSharedPreferences(this);
 
                 final boolean isRead = rowData.getBoolean(DBDefinitions.KEY_READ);
@@ -764,13 +766,13 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-                final boolean useLending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
+                final boolean useLending = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
                 final boolean isAvailable = mVm.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-                    .setVisible(GoodreadsManager.isShowSyncMenus(prefs));
+                    .setVisible(GoodreadsManager.isShowSyncMenus(global));
 
                 MenuHelper.prepareViewBookOnWebsiteMenu(menu, rowData);
                 MenuHelper.prepareOptionalMenus(menu, rowData);

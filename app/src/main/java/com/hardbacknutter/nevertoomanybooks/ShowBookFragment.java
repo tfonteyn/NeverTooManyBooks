@@ -227,10 +227,11 @@ public class ShowBookFragment
         // simple indeterminate progress spinner to show while doing lengthy cover work.
         final ProgressBar progressBar = getActivity().findViewById(R.id.progressBar);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
 
-        if (mVm.isCoverUsed(getContext(), prefs, 0)) {
+        if (mVm.isCoverUsed(getContext(), global, 0)) {
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
 
@@ -241,7 +242,7 @@ public class ShowBookFragment
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }
 
-        if (mVm.isCoverUsed(getContext(), prefs, 1)) {
+        if (mVm.isCoverUsed(getContext(), global, 1)) {
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
 
@@ -293,7 +294,8 @@ public class ShowBookFragment
         final Book book = mVm.getBookAtPosition(mVb.pager.getCurrentItem());
 
         //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
 
         final boolean isSaved = !book.isNew();
         final boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
@@ -306,10 +308,10 @@ public class ShowBookFragment
         menu.findItem(R.id.MENU_BOOK_DUPLICATE).setVisible(false);
 
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
-            .setVisible(GoodreadsManager.isShowSyncMenus(prefs));
+            .setVisible(GoodreadsManager.isShowSyncMenus(global));
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-        final boolean useLending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
+        final boolean useLending = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
@@ -720,10 +722,10 @@ public class ShowBookFragment
                         .bind(mVb.publicationSection);
                 mVbToc = FragmentBookDetailsMergeTocSectionBinding.bind(mVb.tocSection);
 
-                final SharedPreferences prefs =
-                        PreferenceManager.getDefaultSharedPreferences(itemView.getContext());
-                mUseLoanee = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
-                mUseToc = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK);
+                final SharedPreferences global = PreferenceManager
+                        .getDefaultSharedPreferences(itemView.getContext());
+                mUseLoanee = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
+                mUseToc = DBDefinitions.isUsed(global, DBDefinitions.KEY_TOC_BITMASK);
 
                 if (!mUseLoanee) {
                     mVb.lendTo.setVisibility(View.GONE);

@@ -58,7 +58,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean}
  * => {@link androidx.preference.SwitchPreference}
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs}
  * => a value in a List-of-values used by {@link androidx.preference.ListPreference}
  * => an actual {@code Integer} (not used as such yet)
  * <p>
@@ -67,13 +67,10 @@
  * {@link androidx.preference.MultiSelectListPreference}
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt}
- * => {@code Interface} implemented by PIntString, PBitmask to 'set' their values as {@code Integer}
+ * => {@code Interface} implemented by  PBitmask to 'set' their values as {@code Integer}
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntList}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.groups}
  * => {@code List<Integer>}: an ordered list of {@code Integer} values. Stored as a CSV String
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString}
- * => Interface implemented by {@code PIntList} (and potentially future List/Set classes) to 'set'
- * the value as {@code Set<String>}
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;

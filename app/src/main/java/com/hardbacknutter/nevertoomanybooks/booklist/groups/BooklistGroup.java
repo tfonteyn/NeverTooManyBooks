@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.groups;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -32,7 +31,6 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
-import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
 import java.lang.annotation.Retention;
@@ -41,6 +39,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -48,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -197,13 +198,10 @@ public class BooklistGroup
      */
     @VisibleForTesting
     public static final int GROUP_KEY_MAX = 31;
-    /** Flag: is the style user-defined. */
-    final boolean mIsUserDefinedStyle;
+
     @NonNull
-    final SharedPreferences mStylePrefs;
-    /** The UUID for the style. Needed to reconstruct the {@link #mStylePrefs} after parcelling. */
-    @NonNull
-    private final String mUuid;
+    final BooklistStyle mStyle;
+
     /** The type of row/group we represent, see {@link GroupKey}. */
     @Id
     private final int mId;
@@ -220,8 +218,6 @@ public class BooklistGroup
     /**
      * Constructor.
      *
-     * <strong>Dev. note:</strong> do not store the style to parcel it... it would recurse.
-     *
      * @param id    of group to create
      * @param style the style
      */
@@ -229,10 +225,8 @@ public class BooklistGroup
                   @NonNull final BooklistStyle style) {
         mId = id;
         mGroupKey = GroupKey.getGroupKey(mId);
-        mUuid = style.getUuid();
-        mStylePrefs = style.getStyleSharedPreferences();
 
-        mIsUserDefinedStyle = style.isUserDefined();
+        mStyle = style;
     }
 
     /**
@@ -243,17 +237,18 @@ public class BooklistGroup
     BooklistGroup(@NonNull final Parcel in) {
         mId = in.readInt();
         mGroupKey = GroupKey.getGroupKey(mId);
-        //noinspection ConstantConditions
-        mUuid = in.readString();
-        // reconstruct the preference reference.
-        //noinspection ConstantConditions
-        if (!mUuid.isEmpty()) {
-            mStylePrefs = App.getAppContext().getSharedPreferences(mUuid, Context.MODE_PRIVATE);
-        } else {
-            mStylePrefs = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+
+        // reconstruct the style.
+        @NonNull
+        final String uuid = Objects.requireNonNull(in.readString());
+        try (DAO db = new DAO(uuid)) {
+            if (!uuid.isEmpty()) {
+                mStyle = Objects.requireNonNull(StyleDAO.getStyle(App.getAppContext(), db, uuid));
+            } else {
+                mStyle = new BooklistStyle(App.getAppContext());
+            }
         }
 
-        mIsUserDefinedStyle = in.readByte() != 0;
         mAccumulatedDomains = new ArrayList<>();
         in.readList(mAccumulatedDomains, getClass().getClassLoader());
     }
@@ -463,8 +458,9 @@ public class BooklistGroup
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         dest.writeInt(mId);
-        dest.writeString(mUuid);
-        dest.writeByte((byte) (mIsUserDefinedStyle ? 1 : 0));
+        // DO NOT PARCEL THE STYLE ... IT WOULD RECURSE WHEN PARCELING THE GROUPS
+        // Instead parcel the uuid and which can be used to reconstruct the style.
+        dest.writeString(mStyle.getUuid());
         dest.writeList(mAccumulatedDomains);
         // now the prefs for this class (none on this level for now)
     }
@@ -474,9 +470,7 @@ public class BooklistGroup
     public String toString() {
         return "BooklistGroup{"
                + "mId=" + mId
-               + ", mUuid=`'`" + mUuid + '`'
-               + ", mStylePrefs=" + mStylePrefs.getString(BooklistStyle.PK_STYLE_NAME, "????")
-               + ", mIsUserDefinedStyle=" + mIsUserDefinedStyle
+               + ", mStyle=" + mStyle.getUuid()
                + ", mGroupKey=" + mGroupKey
                + ", mAccumulatedDomains=" + mAccumulatedDomains
                + '}';

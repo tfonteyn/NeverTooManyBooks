@@ -26,5 +26,7 @@ import androidx.annotation.Nullable;
  */
 public interface PCsvString {
 
-    void set(@Nullable String values);
+    String DELIM = ",";
+
+    void setCsv(@Nullable String values);
 }

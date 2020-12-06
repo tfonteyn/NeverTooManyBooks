@@ -20,54 +20,104 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Parcel;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
+import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 
 /**
  * Used for {@link androidx.preference.EditTextPreference}.
  */
 public class PString
-        extends PPrefBase<String> {
+        implements PPref<String> {
+
+    /** The {@link BooklistStyle} this preference belongs to. */
+    @NonNull
+    private final BooklistStyle mStyle;
+
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final String mDefaultValue;
+
+    /** key for the Preference. */
+    @NonNull
+    private final String mKey;
+    /** in memory value used for non-persistence situations. */
+    @Nullable
+    private String mNonPersistedValue;
 
     /**
      * Constructor. Uses the global setting as the default value,
      * or {@code ""} if there is no global default.
      *
-     * @param sp           Style preferences reference.
-     * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param key          key of preference
+     * @param key preference key
      */
-    public PString(@NonNull final SharedPreferences sp,
-                   final boolean isPersistent,
+    public PString(@NonNull final BooklistStyle style,
                    @NonNull final String key) {
-        super(sp, isPersistent, key, "");
+        mStyle = style;
+        mKey = key;
+        mDefaultValue = "";
     }
 
     @NonNull
-    public String getGlobalValue(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(getKey(), mDefaultValue);
+    @Override
+    public String getKey() {
+        return mKey;
     }
 
     @Override
-    public void set(@NonNull final SharedPreferences.Editor ed,
-                    @NonNull final String value) {
-        ed.putString(getKey(), value);
+    public void set(@Nullable final String value) {
+        if (mStyle.isUserDefined()) {
+            mStyle.getSettings().setString(getKey(), value);
+        } else {
+            mNonPersistedValue = value;
+        }
     }
 
     @NonNull
     @Override
     public String getValue(@NonNull final Context context) {
-        if (mIsPersistent) {
-            final String value = mStylePrefs.getString(getKey(), null);
-            if (value != null && !value.isEmpty()) {
+        if (mStyle.isUserDefined()) {
+            final String value = mStyle.getSettings().getString(context, getKey());
+            if (value != null) {
                 return value;
             }
-            return getGlobalValue(context);
-        } else {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
+        } else if (mNonPersistedValue != null) {
+            return mNonPersistedValue;
         }
+
+        return mDefaultValue;
+    }
+
+    public void writeToParcel(@NonNull final Parcel dest) {
+        if (mStyle.isUserDefined()) {
+            dest.writeValue(getValue(App.getAppContext()));
+        } else {
+            // Write the in-memory value to the parcel.
+            // Do NOT use 'get' as that would return the default if the actual value is not set.
+            dest.writeValue(mNonPersistedValue);
+        }
+    }
+
+    public void set(@NonNull final Parcel in) {
+        final String tmp = (String) in.readValue(getClass().getClassLoader());
+        if (tmp != null) {
+            set(tmp);
+        }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PString{"
+               + "mStyle=" + mStyle.getUuid()
+               + ", mKey=`" + mKey + '`'
+               + ", mDefaultValue=`" + mDefaultValue + '`'
+               + ", mNonPersistedValue=`" + mNonPersistedValue + '`'
+               + ", value=`" + getValue(App.getAppContext()) + '`'
+               + '}';
     }
 }

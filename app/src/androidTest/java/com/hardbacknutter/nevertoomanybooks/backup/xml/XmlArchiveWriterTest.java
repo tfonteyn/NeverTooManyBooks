@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.json;
+package com.hardbacknutter.nevertoomanybooks.backup.xml;
 
 import android.content.Context;
 import android.net.Uri;
@@ -26,7 +26,9 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,44 +46,47 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 
-public class JsonArchiveWriterTest {
+public class XmlArchiveWriterTest {
 
-    private static final String TAG = "JsonArchiveWriterTest";
+    private static final String TAG = "XmlArchiveWriterTest";
 
-    private long mBookInDb;
+    private final Map<String, BooklistStyle> mClonedStyles = new HashMap<>();
 
     @Before
-    public void count() {
+    public void cloneStyles() {
         try (DAO db = new DAO(TAG)) {
-            mBookInDb = db.countBooks();
-        }
-        if (mBookInDb < 10) {
-            throw new IllegalStateException("need at least 10 books for testing");
+            final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+            for (final BooklistStyle style : StyleDAO.getStyles(context, db, true)) {
+                mClonedStyles.put(style.getUuid(),
+                                  style.clone(context, style.getId(), style.getUuid()));
+            }
         }
     }
 
     @Test
     public void write()
-            throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException {
+            throws IOException, InvalidArchiveException, ImportException {
+
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final File file = AppDir.Log.getFile(context, TAG + ".json");
+        final File file = AppDir.Log.getFile(context, TAG + ".xml");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
         final ExportResults exportResults;
 
         final ExportHelper exportHelper = new ExportHelper(
-                ArchiveWriterRecord.Type.Books);
-        exportHelper.setArchiveType(ArchiveType.Json);
+                ArchiveWriterRecord.Type.Styles,
+                ArchiveWriterRecord.Type.Preferences);
+        exportHelper.setArchiveType(ArchiveType.Xml);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -90,64 +95,50 @@ public class JsonArchiveWriterTest {
         // assume success; a failure would have thrown an exception
         exportHelper.onSuccess(context);
 
-        assertEquals(mBookInDb, exportResults.getBookCount());
+        assertEquals(0, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
-        assertEquals(0, exportResults.preferences);
-        assertEquals(0, exportResults.styles);
+        assertEquals(1, exportResults.preferences);
+        assertEquals(mClonedStyles.size(), exportResults.styles);
         assertFalse(exportResults.database);
 
-        // Now modify/delete some books. We have at least 10 books to play with
-        final List<Long> ids = exportResults.getBooksExported();
-
-        final long deletedBookId = ids.get(3);
-        final long modifiedBookId = ids.get(5);
-
+        // remove all user, reset all builtin
         try (DAO db = new DAO(TAG)) {
-            db.deleteBook(context, deletedBookId);
+            for (final BooklistStyle style : StyleDAO.getStyles(context, db, true)) {
+                if (style.isUserDefined()) {
+                    db.delete(style);
+                } else {
+                    style.setPreferred(false);
+                    style.setMenuPosition((int) -style.getId());
+                    StyleDAO.update(db, style);
+                }
+            }
 
-            final Book book = Book.from(modifiedBookId, db);
-            book.putString(DBDefinitions.KEY_PRIVATE_NOTES,
-                           "MODIFIED" + book.getString(DBDefinitions.KEY_PRIVATE_NOTES));
-            db.update(context, book, 0);
+            final ArrayList<BooklistStyle> styles = StyleDAO.getStyles(context, db, true);
+            assertEquals(StyleDAO.Builtin.MAX_ID, -styles.size());
         }
+
 
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
-        ImportResults importResults;
-
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+        final ImportResults importResults;
+        importHelper.setImportEntry(ArchiveReaderRecord.Type.Styles, true);
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
             final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNull(archiveInfo);
-
-            importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
-        }
-        assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
-
-        // we re-created the deleted book
-        assertEquals(1, importResults.booksCreated);
-        assertEquals(0, importResults.booksUpdated);
-        // we skipped the updated book
-        assertEquals(exportResults.getBookCount() - 1, importResults.booksSkipped);
-
-
-
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
-        importHelper.setUpdatesMayOverwrite();
-        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
-
-            final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNull(archiveInfo);
+            assertNotNull(archiveInfo);
 
             importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
         }
-        assertEquals(exportResults.getBookCount(), importResults.booksProcessed);
 
+        assertEquals(exportResults.styles, importResults.styles);
 
-        assertEquals(0, importResults.booksCreated);
-        // we did an overwrite of ALL books
-        assertEquals(mBookInDb, importResults.booksUpdated);
-        // so we skipped none
-        assertEquals(0, importResults.booksSkipped);
+        try (DAO db = new DAO(TAG)) {
+            // the database reflects what we imported; compare that with what we cloned before
+            final ArrayList<BooklistStyle> styles = StyleDAO.getStyles(context, db, true);
+            assertEquals(mClonedStyles.size(), styles.size());
+
+            for (final BooklistStyle style : styles) {
+                assertEquals(mClonedStyles.get(style.getUuid()), style);
+            }
+        }
     }
 }

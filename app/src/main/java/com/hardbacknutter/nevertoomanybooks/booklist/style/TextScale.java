@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.os.Parcel;
 
@@ -64,13 +63,9 @@ public class TextScale {
 
     /**
      * Constructor.
-     *
-     * @param stylePrefs    the SharedPreferences for the style
-     * @param isUserDefined flag
      */
-    TextScale(@NonNull final SharedPreferences stylePrefs,
-              final boolean isUserDefined) {
-        mScale = new PInteger(stylePrefs, isUserDefined, PK_TEXT_SCALE, TEXT_SCALE_2_MEDIUM);
+    TextScale(@NonNull final BooklistStyle style) {
+        mScale = new PInteger(style, PK_TEXT_SCALE, TEXT_SCALE_2_MEDIUM);
     }
 
     /**

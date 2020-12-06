@@ -33,8 +33,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class StyleViewModel
@@ -70,13 +71,13 @@ public class StyleViewModel
                 mResultIntent.putExtra(BKEY_TEMPLATE_ID, templateId);
             }
 
-            final BooklistStyle style = args.getParcelable(BooklistStyle.BKEY_STYLE);
+            final BooklistStyle style = args.getParcelable(ListStyle.BKEY_STYLE);
             if (style != null) {
                 mStyle = style;
                 // always pass a non-global style back; whether existing or new.
                 // so even if the user makes no changes, we still send it back!
                 // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
-                mResultIntent.putExtra(BooklistStyle.BKEY_STYLE, mStyle);
+                mResultIntent.putExtra(ListStyle.BKEY_STYLE, mStyle);
 
             } else {
                 // we're doing the global preferences, create a placeholder style with an empty uuid
@@ -92,7 +93,7 @@ public class StyleViewModel
     }
 
     void setModified() {
-        mResultIntent.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, true);
+        mResultIntent.putExtra(ListStyle.BKEY_STYLE_MODIFIED, true);
     }
 
     @NonNull

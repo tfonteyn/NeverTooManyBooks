@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -3987,7 +3988,7 @@ public class DAO
 
 
     /**
-     * Get the id of a {@link BooklistStyle} with matching UUID.
+     * Get the id of a {@link ListStyle} with matching UUID.
      *
      * @param uuid UUID of the style to find
      *

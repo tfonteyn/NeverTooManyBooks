@@ -213,9 +213,9 @@ public class GoodreadsAuth {
         }
 
         // Get the stored token values from prefs
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        sAccessToken = prefs.getString(ACCESS_TOKEN, null);
-        sAccessSecret = prefs.getString(ACCESS_SECRET, null);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        sAccessToken = global.getString(ACCESS_TOKEN, null);
+        sAccessSecret = global.getString(ACCESS_SECRET, null);
 
         return sAccessToken != null && !sAccessToken.isEmpty()
                && sAccessSecret != null && !sAccessSecret.isEmpty();
@@ -384,9 +384,9 @@ public class GoodreadsAuth {
                    IOException {
 
         // Get the temporarily saved request tokens.
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        final String requestToken = prefs.getString(REQUEST_TOKEN, null);
-        final String requestSecret = prefs.getString(REQUEST_SECRET, null);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final String requestToken = global.getString(REQUEST_TOKEN, null);
+        final String requestSecret = global.getString(REQUEST_SECRET, null);
 
         // The tokens are stored in #requestAuthorization
         SanityCheck.requireValue(requestToken, "requestToken");
@@ -415,12 +415,12 @@ public class GoodreadsAuth {
         sAccessToken = mConsumer.getToken();
         sAccessSecret = mConsumer.getTokenSecret();
 
-        prefs.edit()
-             .putString(ACCESS_TOKEN, sAccessToken)
-             .putString(ACCESS_SECRET, sAccessSecret)
-             .remove(REQUEST_TOKEN)
-             .remove(REQUEST_SECRET)
-             .apply();
+        global.edit()
+              .putString(ACCESS_TOKEN, sAccessToken)
+              .putString(ACCESS_SECRET, sAccessSecret)
+              .remove(REQUEST_TOKEN)
+              .remove(REQUEST_SECRET)
+              .apply();
 
         // and return success or failure.
         return hasValidCredentials(context);

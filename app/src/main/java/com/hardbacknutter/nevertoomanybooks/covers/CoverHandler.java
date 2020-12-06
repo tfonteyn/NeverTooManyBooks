@@ -575,12 +575,12 @@ public class CoverHandler {
             //noinspection ConstantConditions
             final File file = getTempFile(context);
             if (file.exists()) {
-                final SharedPreferences prefs =
-                        PreferenceManager.getDefaultSharedPreferences(context);
+                final SharedPreferences global = PreferenceManager
+                        .getDefaultSharedPreferences(context);
 
                 // Should we apply an explicit rotation angle?
                 final int explicitRotation = ParseUtils
-                        .getIntListPref(prefs, Prefs.pk_camera_image_autorotate, 0);
+                        .getIntListPref(global, Prefs.pk_camera_image_autorotate, 0);
 
                 //noinspection ConstantConditions
                 final int surfaceRotation = mFragment.getActivity()
@@ -590,7 +590,7 @@ public class CoverHandler {
                 // What action (if any) should we take after we're done?
                 @NextAction
                 final int action = ParseUtils
-                        .getIntListPref(prefs, Prefs.pk_camera_image_action, ACTION_DONE);
+                        .getIntListPref(global, Prefs.pk_camera_image_action, ACTION_DONE);
 
                 showProgress(true);
                 mTransFormTaskViewModel.startTask(

@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,25 +36,7 @@ public interface PPref<T> {
     @NonNull
     String getKey();
 
-    /**
-     * For single updates. Not usable for globals.
-     * <ul>
-     *     <li>non-persistent preferences</li>
-     *     <li>user preferences: implementations should redirect
-     *     to {@link #set(SharedPreferences.Editor, Object)}</li>
-     * </ul>
-     */
     void set(@Nullable T value);
-
-    /**
-     * for batch updates. Not usable for non-persistent.
-     * <ul>
-     *     <li>user preferences</li>
-     *     <li>global preferences</li>
-     * </ul>
-     */
-    void set(@NonNull SharedPreferences.Editor ed,
-             @NonNull T value);
 
     /**
      * Implementations should return in order below.
@@ -71,18 +52,4 @@ public interface PPref<T> {
      */
     @NonNull
     T getValue(@NonNull Context context);
-
-    /**
-     * Implementations should return in order below.
-     * <ol>
-     *      <li>The global preference if set</li>
-     *      <li>The default value as set at creation time of the preference Object.</li>
-     * </ol>
-     *
-     * @param context Current context
-     *
-     * @return the value of the preference
-     */
-    @NonNull
-    T getGlobalValue(@NonNull Context context);
 }

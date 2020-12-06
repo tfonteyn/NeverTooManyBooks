@@ -135,14 +135,15 @@ public class EditBookFieldsFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
 
         // simple indeterminate progress spinner to show while doing lengthy work.
         //noinspection ConstantConditions
         final ProgressBar progressBar = getActivity().findViewById(R.id.progressBar);
 
-        if (mVm.isCoverUsed(getContext(), prefs, 0)) {
+        if (mVm.isCoverUsed(getContext(), global, 0)) {
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_0_height);
 
@@ -160,7 +161,7 @@ public class EditBookFieldsFragment
             mVb.coverImage0.setVisibility(View.GONE);
         }
 
-        if (mVm.isCoverUsed(getContext(), prefs, 1)) {
+        if (mVm.isCoverUsed(getContext(), global, 1)) {
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_1_height);
 
@@ -190,7 +191,7 @@ public class EditBookFieldsFragment
         mVb.author.setOnClickListener(v -> EditBookAuthorListDialogFragment
                 .launch(getChildFragmentManager()));
 
-        if (getField(R.id.series_title).isUsed(prefs)) {
+        if (getField(R.id.series_title).isUsed(global)) {
             mVm.onSeriesList().observe(getViewLifecycleOwner(), series -> {
                 final Field<List<Series>, TextView> field = getField(R.id.series_title);
                 field.getAccessor().setValue(series);
@@ -203,7 +204,7 @@ public class EditBookFieldsFragment
         }
 
         // Bookshelves editor (dialog)
-        if (getField(R.id.bookshelves).isUsed(prefs)) {
+        if (getField(R.id.bookshelves).isUsed(global)) {
             mVb.bookshelves.setOnClickListener(v -> {
                 final ArrayList<Entity> allItems = new ArrayList<>(mVm.getAllBookshelves());
                 final ArrayList<Entity> selectedItems = new ArrayList<>(
@@ -214,7 +215,7 @@ public class EditBookFieldsFragment
             });
         }
 
-        mIsbnValidityCheck = ISBN.getEditValidityLevel(prefs);
+        mIsbnValidityCheck = ISBN.getEditValidityLevel(global);
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, mIsbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
         mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
@@ -232,9 +233,10 @@ public class EditBookFieldsFragment
         super.onResume();
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
-        addAutocomplete(prefs, getField(R.id.genre), () -> mVm.getAllGenres());
-        addAutocomplete(prefs, getField(R.id.language), () -> mVm.getAllLanguagesCodes());
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+        addAutocomplete(global, getField(R.id.genre), () -> mVm.getAllGenres());
+        addAutocomplete(global, getField(R.id.language), () -> mVm.getAllLanguagesCodes());
     }
 
     @Override

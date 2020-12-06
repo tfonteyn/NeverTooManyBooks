@@ -42,8 +42,8 @@ public class EditBookExternalIdFragment
     /** Log tag. */
     private static final String TAG = "EditBookExternalIdFrag";
 
-    static boolean showEditBookTabExternalId(@NonNull final SharedPreferences preferences) {
-        return preferences.getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
+    static boolean showEditBookTabExternalId(@NonNull final SharedPreferences global) {
+        return global.getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
     }
 
     @NonNull

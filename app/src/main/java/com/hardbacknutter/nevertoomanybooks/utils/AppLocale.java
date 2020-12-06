@@ -218,14 +218,14 @@ public final class AppLocale {
     /**
      * Get the user-preferred Locale as stored in the preferences.
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      *
      * @return a Locale specification as used for Android resources;
      * or {@link #SYSTEM_LANGUAGE} to use the system settings
      */
     @NonNull
-    public String getPersistedLocaleSpec(@NonNull final SharedPreferences preferences) {
-        return preferences.getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
+    public String getPersistedLocaleSpec(@NonNull final SharedPreferences global) {
+        return global.getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
     }
 
     /**
@@ -281,14 +281,14 @@ public final class AppLocale {
     /**
      * Check if the passed localeSpec is different from the user preferred Locale.
      *
-     * @param preferences Global preferences
-     * @param localeSpec  to test
+     * @param global     Global preferences
+     * @param localeSpec to test
      *
      * @return {@code true} if different
      */
-    public boolean isChanged(@NonNull final SharedPreferences preferences,
+    public boolean isChanged(@NonNull final SharedPreferences global,
                              @Nullable final String localeSpec) {
-        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec(preferences));
+        return localeSpec == null || !localeSpec.equals(getPersistedLocaleSpec(global));
     }
 
     /**
@@ -304,10 +304,10 @@ public final class AppLocale {
     public Context apply(@NonNull final Context context) {
         boolean changed = false;
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         // Create the Locale at first access, or if the persisted is different from the current.
-        final String localeSpec = getPersistedLocaleSpec(prefs);
+        final String localeSpec = getPersistedLocaleSpec(global);
         if (sPreferredLocale == null || !sPreferredLocaleSpec.equals(localeSpec)) {
             sPreferredLocaleSpec = localeSpec;
             sPreferredLocale = create(localeSpec);

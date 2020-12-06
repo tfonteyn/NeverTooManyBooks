@@ -156,42 +156,47 @@ public class SearchBookUpdatesViewModel
      */
     private void initFields(@NonNull final Context context) {
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
-        addCoverField(prefs, R.string.lbl_cover_front, 0);
-        addCoverField(prefs, R.string.lbl_cover_back, 1);
+        addCoverField(global, R.string.lbl_cover_front, 0);
+        addCoverField(global, R.string.lbl_cover_back, 1);
 
-        addField(prefs, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
-        addListField(prefs, Book.BKEY_AUTHOR_LIST, R.string.lbl_authors,
+        addField(global, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
+        addField(global, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
+        addListField(global, Book.BKEY_AUTHOR_LIST, R.string.lbl_authors,
                      DBDefinitions.KEY_FK_AUTHOR);
-        addListField(prefs, Book.BKEY_SERIES_LIST, R.string.lbl_series_multiple,
+        addListField(global, Book.BKEY_SERIES_LIST, R.string.lbl_series_multiple,
                      DBDefinitions.KEY_SERIES_TITLE);
-        addField(prefs, DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description, CopyIfBlank);
+        addField(global, DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description,
+                 CopyIfBlank);
 
-        addListField(prefs, Book.BKEY_TOC_LIST, R.string.lbl_table_of_content,
+        addListField(global, Book.BKEY_TOC_LIST, R.string.lbl_table_of_content,
                      DBDefinitions.KEY_TOC_BITMASK);
 
-        addListField(prefs, Book.BKEY_PUBLISHER_LIST, R.string.lbl_publishers,
+        addListField(global, Book.BKEY_PUBLISHER_LIST, R.string.lbl_publishers,
                      DBDefinitions.KEY_PUBLISHER_NAME);
-        addField(prefs, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_DATE_FIRST_PUBLICATION, R.string.lbl_first_publication,
+        addField(global, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run,
+                 CopyIfBlank);
+        addField(global, DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published,
+                 CopyIfBlank);
+        addField(global, DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                 R.string.lbl_first_publication,
                  CopyIfBlank);
 
         // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(prefs, DBDefinitions.KEY_PRICE_LISTED, R.string.lbl_price_listed, CopyIfBlank);
+        addField(global, DBDefinitions.KEY_PRICE_LISTED, R.string.lbl_price_listed,
+                 CopyIfBlank);
 
-        addField(prefs, DBDefinitions.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_COLOR, R.string.lbl_color, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
-        addField(prefs, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
+        addField(global, DBDefinitions.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
+        addField(global, DBDefinitions.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
+        addField(global, DBDefinitions.KEY_COLOR, R.string.lbl_color, CopyIfBlank);
+        addField(global, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
+        addField(global, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
         for (final SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
             final Domain domain = config.getExternalIdDomain();
             if (domain != null) {
-                addField(prefs, domain.getName(), config.getNameResId(), Overwrite);
+                addField(global, domain.getName(), config.getNameResId(), Overwrite);
             }
         }
     }
@@ -248,54 +253,53 @@ public class SearchBookUpdatesViewModel
      * Add a FieldUsage for a <strong>list</strong> field if it has not been hidden by the user.
      * <p>
      *
-     * @param preferences Global preferences
-     * @param fieldId     List-field name to use in FieldUsages
-     * @param nameResId   Field label resource id
-     * @param key         Field name to use for preferences.
+     * @param global    Global preferences
+     * @param fieldId   List-field name to use in FieldUsages
+     * @param nameResId Field label resource id
+     * @param key       Field name to use for preferences.
      */
-    private void addListField(@NonNull final SharedPreferences preferences,
+    private void addListField(@NonNull final SharedPreferences global,
                               @NonNull final String fieldId,
                               @StringRes final int nameResId,
                               @NonNull final String key) {
 
-        if (DBDefinitions.isUsed(preferences, key)) {
-            mFields.put(fieldId, FieldUsage.createListField(fieldId, nameResId, preferences));
+        if (DBDefinitions.isUsed(global, key)) {
+            mFields.put(fieldId, FieldUsage.createListField(fieldId, nameResId, global));
         }
     }
 
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      * @param nameResId   Field label resource id
      * @param cIdx        0..n image index
      */
-    private void addCoverField(@NonNull final SharedPreferences preferences,
+    private void addCoverField(@NonNull final SharedPreferences global,
                                @StringRes final int nameResId,
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
-        if (DBDefinitions.isCoverUsed(preferences, cIdx)) {
+        if (DBDefinitions.isCoverUsed(global, cIdx)) {
             final String fieldId = DBDefinitions.PREFS_IS_USED_COVER + "." + cIdx;
-            mFields.put(fieldId, FieldUsage.create(fieldId, nameResId, preferences,
-                                                   CopyIfBlank));
+            mFields.put(fieldId, FieldUsage.create(fieldId, nameResId, global, CopyIfBlank));
         }
     }
 
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param preferences Global preferences
-     * @param fieldId     Field name to use in FieldUsages, and as key for preferences.
-     * @param nameResId   Field label resource id
-     * @param defValue    default Usage for this field
+     * @param global Global preferences
+     * @param fieldId           Field name to use in FieldUsages, and as key for preferences.
+     * @param nameResId         Field label resource id
+     * @param defValue          default Usage for this field
      */
-    private void addField(@NonNull final SharedPreferences preferences,
+    private void addField(@NonNull final SharedPreferences global,
                           @NonNull final String fieldId,
                           @StringRes final int nameResId,
                           @NonNull final FieldUsage.Usage defValue) {
 
-        if (DBDefinitions.isUsed(preferences, fieldId)) {
-            mFields.put(fieldId, FieldUsage.create(fieldId, nameResId, preferences, defValue));
+        if (DBDefinitions.isUsed(global, fieldId)) {
+            mFields.put(fieldId, FieldUsage.create(fieldId, nameResId, global, defValue));
         }
     }
 

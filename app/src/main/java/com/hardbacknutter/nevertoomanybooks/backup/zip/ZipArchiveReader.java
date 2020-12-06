@@ -145,6 +145,17 @@ public class ZipArchiveReader
             mEntry = entry;
         }
 
+        @Nullable
+        public Type getType() {
+            return Type.getType(mEntry.getName());
+        }
+
+        @Nullable
+        @Override
+        public Encoding getEncoding() {
+            return Encoding.getEncoding(mEntry.getName());
+        }
+
         @NonNull
         @Override
         public String getName() {

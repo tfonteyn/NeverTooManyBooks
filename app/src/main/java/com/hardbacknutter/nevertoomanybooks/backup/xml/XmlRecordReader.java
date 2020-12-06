@@ -65,12 +65,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCollectionBase;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -156,10 +156,10 @@ public class XmlRecordReader
                     break;
                 }
                 case Preferences: {
-                    final SharedPreferences.Editor editor = PreferenceManager
+                    final SharedPreferences.Editor ed = PreferenceManager
                             .getDefaultSharedPreferences(context).edit();
-                    fromXml(record, new PreferencesReader(editor));
-                    editor.apply();
+                    fromXml(record, new PreferencesReader(ed));
+                    ed.apply();
                     results.preferences++;
                     break;
                 }
@@ -800,9 +800,15 @@ public class XmlRecordReader
 
         private BooklistStyle mStyle;
 
-        /** a collection of all Preferences (including from *all* groups). */
+        /**
+         * A collection of all Preferences (including the preferences from *all* groups).
+         * Reminder: the map mStylePrefs is NOT a part of the style,
+         * but the elements IN this map ARE.
+         */
+        @Nullable
         private Map<String, PPref> mStylePrefs;
 
+        /** A counter to track how many styles we have read. */
         private int mStylesRead;
 
         /**
@@ -843,72 +849,69 @@ public class XmlRecordReader
         @Override
         public void startElement(final int version,
                                  @NonNull final TagInfo tag) {
-            SanityCheck.requireValue(tag.name, "tag.name");
 
-            final boolean isUserDefined = !ParseUtils.parseBoolean(
-                    tag.attrs.getValue(DBDefinitions.KEY_STYLE_IS_BUILTIN), true);
+            final String uuid = tag.name;
+            SanityCheck.requireValue(uuid, "uuid");
 
-            // create a new Style object. This will not have any groups assigned to it...
-            mStyle = new BooklistStyle(mContext, tag.id, tag.name, isUserDefined);
-            //... and hence, the Style Preferences won't have any group Preferences either.
-            mStylePrefs = mStyle.getPreferences(true);
-            // So loop all groups, and get their Preferences.
-            // Do NOT add the group itself to the style at this point as our import
-            // might not actually have it.
-            for (final BooklistGroup group : BooklistGroup.getAllGroups(mContext, mStyle)) {
-                mStylePrefs.putAll(group.getPreferences());
+            if (BooklistStyle.isBuiltin(uuid)) {
+                //noinspection ConstantConditions
+                mStyle = StyleDAO.getStyle(mContext, mDb, uuid);
+                mStylePrefs = null;
+
+            } else {
+                // create a new Style object. This will not have any groups assigned to it...
+                mStyle = new BooklistStyle(mContext, uuid);
+                //... and hence, the Style Preferences won't have any group Preferences either.
+                // Reminder: the map mStylePrefs is NOT a part of the style,
+                // but the elements IN this map ARE.
+                mStylePrefs = mStyle.getPreferences();
+                // So loop all groups, and get their Preferences.
+                // Do NOT add the group itself to the style at this point as our import
+                // might not actually have it.
+                for (final BooklistGroup group : BooklistGroup.getAllGroups(mContext, mStyle)) {
+                    mStylePrefs.putAll(group.getPreferences());
+                }
             }
 
-            // process database stored style settings now.
             boolean isPreferred;
             try {
-                isPreferred = ParseUtils.parseBoolean(
-                        tag.attrs.getValue(DBDefinitions.KEY_STYLE_IS_PREFERRED), true);
+                isPreferred = ParseUtils.parseBoolean(tag.attrs.getValue(
+                        DBDefinitions.KEY_STYLE_IS_PREFERRED), true);
             } catch (@NonNull final NumberFormatException ignore) {
                 isPreferred = false;
             }
-            mStyle.setPreferred(isPreferred);
 
             int menuPosition;
             try {
-                menuPosition = Integer.parseInt(
-                        tag.attrs.getValue(DBDefinitions.KEY_STYLE_MENU_POSITION));
+                menuPosition = Integer.parseInt(tag.attrs.getValue(
+                        DBDefinitions.KEY_STYLE_MENU_POSITION));
             } catch (@NonNull final NumberFormatException ignore) {
-                menuPosition = BooklistStyle.MENU_POSITION_NOT_PREFERRED;
+                menuPosition = ListStyle.MENU_POSITION_NOT_PREFERRED;
             }
+
+            mStyle.setPreferred(isPreferred);
             mStyle.setMenuPosition(menuPosition);
         }
 
-        /**
-         * The end of a Style element.
-         * Update the groups Preferences and save the style
-         */
         @Override
         public void endElement() {
-            // we now have the groups themselves (one of the 'flat' prefs) set on the style,
-            // so transfer their specific Preferences.
-            for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
-                mStyle.updatePreferences(mContext, group.getPreferences());
-            }
-
-            // migrate obsolete entries
-            if (mStylePrefs.containsKey(BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED)) {
-                // if the style is currently not-preferred,
-                if (!mStyle.isPreferred()) {
-                    // use the obsoleted preference entry to set the state
-                    final PPref p = mStylePrefs.get(
-                            BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED);
-                    if (p != null) {
-                        final Object o = p.getValue(mContext);
-                        if (o instanceof Boolean) {
-                            mStyle.setPreferred((boolean) o);
+            if (mStyle.isUserDefined()) {
+                // we now have the groups themselves (one of the 'flat' prefs) set on the style,
+                // so transfer their specific Preferences.
+                for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
+                    final Map<String, PPref> currentPreferences = mStyle.getPreferences();
+                    for (final PPref p : group.getPreferences().values()) {
+                        // do we have this Preference ?
+                        final PPref ourPPref = currentPreferences.get(p.getKey());
+                        if (ourPPref != null) {
+                            // if we do, update our value
+                            //noinspection unchecked
+                            ourPPref.set(p.getValue(mContext));
                         }
                     }
                 }
-                mStylePrefs.remove(BooklistStyle.OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED);
             }
 
-            // the prefs are written on the fly, but we still need the db entries saved.
             StyleDAO.updateOrInsert(mDb, mStyle);
 
             mStylesRead++;
@@ -917,45 +920,55 @@ public class XmlRecordReader
         @Override
         public void putString(@NonNull final String key,
                               @NonNull final String value) {
-            final PPref<String> p = (PString) mStylePrefs.get(key);
-            if (p != null) {
-                p.set(value);
+            if (mStylePrefs != null) {
+                final PPref<String> p = (PString) mStylePrefs.get(key);
+                if (p != null) {
+                    p.set(value);
+                }
             }
         }
 
         @Override
         public void putBoolean(@NonNull final String key,
                                final boolean value) {
-            final PPref<Boolean> p = (PBoolean) mStylePrefs.get(key);
-            if (p != null) {
-                p.set(value);
+            if (mStylePrefs != null) {
+                final PPref<Boolean> p = (PBoolean) mStylePrefs.get(key);
+                if (p != null) {
+                    p.set(value);
+                }
             }
         }
 
         @Override
         public void putInt(@NonNull final String key,
                            final int value) {
-            final PInt p = (PInt) mStylePrefs.get(key);
-            if (p != null) {
-                p.set(value);
+            if (mStylePrefs != null) {
+                final PInt p = (PInt) mStylePrefs.get(key);
+                if (p != null) {
+                    p.set(value);
+                }
             }
         }
 
         @Override
         public void putStringSet(@NonNull final String key,
                                  @NonNull final Collection<String> value) {
-            final PCsvString p = (PCsvString) mStylePrefs.get(key);
-            if (p != null) {
-                p.set(TextUtils.join(PCollectionBase.DELIM, value));
+            if (mStylePrefs != null) {
+                final PCsvString p = (PCsvString) mStylePrefs.get(key);
+                if (p != null) {
+                    p.setCsv(TextUtils.join(PCsvString.DELIM, value));
+                }
             }
         }
 
         @Override
         public void putStringList(@NonNull final String key,
                                   @NonNull final Collection<String> value) {
-            final PCsvString p = (PCsvString) mStylePrefs.get(key);
-            if (p != null) {
-                p.set(TextUtils.join(PCollectionBase.DELIM, value));
+            if (mStylePrefs != null) {
+                final PCsvString p = (PCsvString) mStylePrefs.get(key);
+                if (p != null) {
+                    p.setCsv(TextUtils.join(PCsvString.DELIM, value));
+                }
             }
         }
     }

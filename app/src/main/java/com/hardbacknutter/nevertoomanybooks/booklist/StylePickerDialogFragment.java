@@ -37,6 +37,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -83,7 +84,7 @@ public class StylePickerDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mCurrentStyleUuid = Objects.requireNonNull(args.getString(BooklistStyle.BKEY_STYLE_UUID),
+        mCurrentStyleUuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_STYLE_UUID),
                                                    "BKEY_STYLE_UUID");
         mShowAllStyles = args.getBoolean(BKEY_SHOW_ALL_STYLES, false);
     }
@@ -201,7 +202,7 @@ public class StylePickerDialogFragment
         }
 
         mAdapterItemList.clear();
-        for (final BooklistStyle style : mStyleList) {
+        for (final ListStyle style : mStyleList) {
             mAdapterItemList.add(new Pair<>(style.getUuid(), style.getLabel(context)));
         }
     }
@@ -223,12 +224,12 @@ public class StylePickerDialogFragment
          * @param currentStyle the currently active style
          * @param all          if {@code true} show all styles, otherwise only the preferred ones.
          */
-        public void launch(@NonNull final BooklistStyle currentStyle,
+        public void launch(@NonNull final ListStyle currentStyle,
                            final boolean all) {
 
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putString(BooklistStyle.BKEY_STYLE_UUID, currentStyle.getUuid());
+            args.putString(ListStyle.BKEY_STYLE_UUID, currentStyle.getUuid());
             args.putBoolean(BKEY_SHOW_ALL_STYLES, all);
 
             final DialogFragment frag = new StylePickerDialogFragment();

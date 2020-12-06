@@ -30,7 +30,7 @@ import java.util.Locale;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -129,7 +129,7 @@ public class BookCoder {
 
     private final List<Domain> externalIdDomains;
 
-    public BookCoder(@NonNull final BooklistStyle defStyle) {
+    public BookCoder(@NonNull final ListStyle defStyle) {
         mBookshelfCoder = new StringList<>(new BookshelfCoder(defStyle));
 
         externalIdDomains = SearchEngineRegistry.getExternalIdDomains();

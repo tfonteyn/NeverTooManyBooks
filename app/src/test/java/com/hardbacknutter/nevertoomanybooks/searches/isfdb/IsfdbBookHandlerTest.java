@@ -60,7 +60,7 @@ class IsfdbBookHandlerTest
                 .getSite(SearchSites.ISFDB).getSearchEngine(mContext, new MockCaller());
 
         // Override the default 'false'
-        mSharedPreferences.edit().putBoolean(PREFS_SERIES_FROM_TOC, true).apply();
+        mMockPreferences.edit().putBoolean(PREFS_SERIES_FROM_TOC, true).apply();
 
         final boolean b = PreferenceManager.getDefaultSharedPreferences(mContext)
                                            .getBoolean(PREFS_SERIES_FROM_TOC, false);

@@ -90,10 +90,10 @@ public final class FastScroller {
                 resources.getDimensionPixelSize(R.dimen.cfs_minimum_range),
                 resources.getDimensionPixelOffset(R.dimen.cfs_margin));
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // Optional overlay
         @OverlayProvider.Style
-        final int overlayType = ParseUtils.getIntListPref(prefs,
+        final int overlayType = ParseUtils.getIntListPref(global,
                                                           Prefs.pk_booklist_fastscroller_overlay,
                                                           OverlayProvider.STYLE_DYNAMIC);
         switch (overlayType) {

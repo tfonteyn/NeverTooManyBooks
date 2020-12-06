@@ -287,14 +287,14 @@ public class ISBN {
     /**
      * Get the user preferred ISBN validity level check for (by the user) editing ISBN codes.
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      *
      * @return {@link Validity} level
      */
     @Validity
-    public static int getEditValidityLevel(@NonNull final SharedPreferences preferences) {
+    public static int getEditValidityLevel(@NonNull final SharedPreferences global) {
         return ParseUtils
-                .getIntListPref(preferences, Prefs.pk_edit_book_isbn_checks, VALIDITY_LOOSE);
+                .getIntListPref(global, Prefs.pk_edit_book_isbn_checks, VALIDITY_LOOSE);
     }
 
     /**

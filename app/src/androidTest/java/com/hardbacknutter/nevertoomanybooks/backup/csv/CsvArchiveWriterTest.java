@@ -147,7 +147,6 @@ public class CsvArchiveWriterTest {
         assertEquals(exportCount - 1, importResults.booksSkipped);
 
 
-
         importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
         importHelper.setUpdatesMayOverwrite();
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {

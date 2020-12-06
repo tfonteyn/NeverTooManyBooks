@@ -28,7 +28,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
@@ -73,7 +73,7 @@ public class ShowBookActivity
                     // so we need to pass the specific one.
                     .putExtra(ShowBookViewModel.BKEY_LIST_TABLE_ROW_ID, input.listTableRowId)
                     // some style elements are applicable for the details screen
-                    .putExtra(BooklistStyle.BKEY_STYLE_UUID, input.styleUuid);
+                    .putExtra(ListStyle.BKEY_STYLE_UUID, input.styleUuid);
         }
 
         @Override

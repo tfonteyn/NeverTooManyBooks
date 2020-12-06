@@ -406,7 +406,7 @@ public abstract class ArchiveReaderAbstract
      */
     @Nullable
     protected abstract ArchiveReaderRecord next()
-            throws IOException;
+            throws InvalidArchiveException, IOException;
 
     /**
      * Scan the input for the desired record type.

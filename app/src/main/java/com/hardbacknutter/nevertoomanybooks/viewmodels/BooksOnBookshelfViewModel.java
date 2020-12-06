@@ -50,6 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
@@ -321,8 +322,8 @@ public class BooksOnBookshelfViewModel
             mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
                                                 Bookshelf.ALL_BOOKS);
         }
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        mBookshelf.setAsPreferred(prefs);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        mBookshelf.setAsPreferred(global);
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -346,7 +347,7 @@ public class BooksOnBookshelfViewModel
      * @return style
      */
     @NonNull
-    public BooklistStyle getCurrentStyle(@NonNull final Context context) {
+    public ListStyle getCurrentStyle(@NonNull final Context context) {
         Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
         return mBookshelf.getStyle(context, mDb);
     }
@@ -376,13 +377,13 @@ public class BooksOnBookshelfViewModel
         Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
 
         // Always validate first
-        final BooklistStyle style = StyleDAO.getStyleOrDefault(context, mDb, uuid);
+        final ListStyle style = StyleDAO.getStyleOrDefault(context, mDb, uuid);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // set as the global default.
-        StyleDAO.setDefault(prefs, style.getUuid());
+        StyleDAO.setDefault(global, style.getUuid());
         // save the new bookshelf/style combination
-        mBookshelf.setAsPreferred(prefs);
+        mBookshelf.setAsPreferred(global);
         mBookshelf.setStyle(context, mDb, style);
     }
 
@@ -531,8 +532,8 @@ public class BooksOnBookshelfViewModel
 
     @Nullable
     public String getHeaderFilterText(@NonNull final Context context) {
-        final BooklistStyle style = getCurrentStyle(context);
-        if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_FILTER)) {
+        final ListStyle style = getCurrentStyle(context);
+        if (style.isShowHeader(context, ListStyle.HEADER_SHOW_FILTER)) {
 
             final Collection<String> filterText = style
                     .getFilters()
@@ -557,8 +558,8 @@ public class BooksOnBookshelfViewModel
 
     @Nullable
     public String getHeaderStyleName(@NonNull final Context context) {
-        final BooklistStyle style = getCurrentStyle(context);
-        if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_STYLE_NAME)) {
+        final ListStyle style = getCurrentStyle(context);
+        if (style.isShowHeader(context, ListStyle.HEADER_SHOW_STYLE_NAME)) {
             return style.getLabel(context);
         }
         return null;
@@ -566,8 +567,8 @@ public class BooksOnBookshelfViewModel
 
     @Nullable
     public String getHeaderBookCount(@NonNull final Context context) {
-        final BooklistStyle style = getCurrentStyle(context);
-        if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
+        final ListStyle style = getCurrentStyle(context);
+        if (style.isShowHeader(context, ListStyle.HEADER_SHOW_BOOK_COUNT)) {
             //noinspection ConstantConditions
             final int totalBooks = mBooklist.countBooks();
             final int distinctBooks = mBooklist.countDistinctBooks();
@@ -608,8 +609,8 @@ public class BooksOnBookshelfViewModel
 
         Thread.currentThread().setName(TAG);
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        final BooklistStyle style = mBookshelf.getStyle(context, mDb);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final ListStyle style = mBookshelf.getStyle(context, mDb);
 
         Booklist builder = null;
         try {
@@ -623,36 +624,35 @@ public class BooksOnBookshelfViewModel
 
             // Add the conditional domains; global level.
 
-            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_EDITION_BITMASK)) {
+            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_EDITION_BITMASK)) {
                 // The edition bitmask
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)));
             }
 
-            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SIGNED)) {
+            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_SIGNED)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_SIGNED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED)));
             }
 
-            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_BOOK_CONDITION)) {
+            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_BOOK_CONDITION)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_CONDITION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_CONDITION)));
             }
 
-            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE)) {
+            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
                         DAOSql.SqlColumns.EXP_LOANEE_AS_BOOLEAN));
             }
 
             // Add the conditional domains; style level.
-            final ListScreenBookFields bookFields = style
-                    .getListScreenBookFields();
+            final ListScreenBookFields bookFields = style.getListScreenBookFields();
 
-            if (bookFields.isShowField(context, prefs,
+            if (bookFields.isShowField(context, global,
                                        ListScreenBookFields.PK_BOOKSHELVES)) {
                 // This collects a CSV list of the bookshelves the book is on.
                 builder.addDomain(new VirtualDomain(
@@ -661,8 +661,7 @@ public class BooksOnBookshelfViewModel
             }
 
             // we fetch ONLY the primary author
-
-            if (bookFields.isShowField(context, prefs,
+            if (bookFields.isShowField(context, global,
                                        ListScreenBookFields.PK_AUTHOR)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_AUTHOR_FORMATTED, DAOSql.SqlColumns
@@ -679,7 +678,7 @@ public class BooksOnBookshelfViewModel
             //              .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
             //  }
 
-            if (bookFields.isShowField(context, prefs,
+            if (bookFields.isShowField(context, global,
                                        ListScreenBookFields.PK_PUBLISHER)) {
                 // Collect a CSV list of the publishers of the book
                 builder.addDomain(new VirtualDomain(
@@ -687,28 +686,28 @@ public class BooksOnBookshelfViewModel
                         DAOSql.SqlColumns.EXP_PUBLISHER_NAME_CSV));
             }
 
-            if (bookFields.isShowField(context, prefs,
+            if (bookFields.isShowField(context, global,
                                        ListScreenBookFields.PK_PUB_DATE)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_DATE_PUBLISHED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED)));
             }
 
-            if (bookFields.isShowField(context, prefs,
+            if (bookFields.isShowField(context, global,
                                        ListScreenBookFields.PK_FORMAT)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_FORMAT,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT)));
             }
 
-            if (bookFields.isShowField(context, prefs,
+            if (bookFields.isShowField(context, global,
                                        ListScreenBookFields.PK_LOCATION)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_LOCATION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
             }
 
-            if (bookFields.isShowField(context, prefs,
+            if (bookFields.isShowField(context, global,
                                        ListScreenBookFields.PK_RATING)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_RATING,
@@ -744,7 +743,7 @@ public class BooksOnBookshelfViewModel
 
             // pre-count and cache (in the builder) these while we're in the background.
             // They are used for the header, and will not change even if the list cursor changes.
-            if (style.isShowHeader(context, BooklistStyle.HEADER_SHOW_BOOK_COUNT)) {
+            if (style.isShowHeader(context, ListStyle.HEADER_SHOW_BOOK_COUNT)) {
                 builder.countBooks();
                 builder.countDistinctBooks();
             }

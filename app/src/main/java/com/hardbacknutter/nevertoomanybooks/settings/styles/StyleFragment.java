@@ -42,10 +42,11 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -174,13 +175,13 @@ public class StyleFragment
 
     @Override
     @CallSuper
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences stylePrefs,
                                           @NonNull final String key) {
 
         // Covers on DETAIL screen
         // Setting cover 0 to false -> set cover 1 to false as well
         if (DetailScreenBookFields.PK_COVER[0].equals(key)
-            && !preferences.getBoolean(key, false)) {
+            && !stylePrefs.getBoolean(key, false)) {
             final SwitchPreference cover = findPreference(DetailScreenBookFields.PK_COVER[1]);
             // Sanity check
             if (cover != null) {
@@ -188,7 +189,7 @@ public class StyleFragment
             }
         }
 
-        super.onSharedPreferenceChanged(preferences, key);
+        super.onSharedPreferenceChanged(stylePrefs, key);
     }
 
     @Override
@@ -275,7 +276,7 @@ public class StyleFragment
                                    @NonNull final Input input) {
             return new Intent(context, SettingsHostingActivity.class)
                     .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
-                    .putExtra(BooklistStyle.BKEY_STYLE, input.style)
+                    .putExtra(ListStyle.BKEY_STYLE, input.style)
                     .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, input.templateStyleId);
         }
 

@@ -53,20 +53,21 @@ public class BuildLanguageMappingsTask
     @WorkerThread
     protected Boolean doWork(@NonNull final Context context) {
         Thread.currentThread().setName(TAG);
-        final SharedPreferences prefs = Languages.getInstance().getCacheFile(context);
+        final SharedPreferences languageCache = Languages.getInstance().getCacheFile(context);
 
         try {
             // the one the user is using our app in (can be different from the system one)
-            createLanguageMappingCache(prefs, AppLocale.getInstance().getUserLocale(context));
+            createLanguageMappingCache(languageCache,
+                                       AppLocale.getInstance().getUserLocale(context));
             // the system default
-            createLanguageMappingCache(prefs, AppLocale.getInstance().getSystemLocale());
+            createLanguageMappingCache(languageCache, AppLocale.getInstance().getSystemLocale());
             // Always add English
-            createLanguageMappingCache(prefs, Locale.ENGLISH);
+            createLanguageMappingCache(languageCache, Locale.ENGLISH);
 
             //NEWTHINGS: adding a new search engine: add mappings for site specific languages
 
             // Dutch: StripInfoSearchEngine, KbNlSearchEngine
-            createLanguageMappingCache(prefs, new Locale("nl"));
+            createLanguageMappingCache(languageCache, new Locale("nl"));
 
             return true;
 
@@ -79,16 +80,16 @@ public class BuildLanguageMappingsTask
     /**
      * Generate language mappings for a given Locale.
      *
-     * @param preferences the SharedPreferences used as our language names cache.
-     * @param locale      the Locale for which to create a mapping
+     * @param languageCache the SharedPreferences used as our language names cache.
+     * @param locale        the Locale for which to create a mapping
      */
-    private void createLanguageMappingCache(@NonNull final SharedPreferences preferences,
+    private void createLanguageMappingCache(@NonNull final SharedPreferences languageCache,
                                             @NonNull final Locale locale) {
         // just return if already done for this Locale.
-        if (preferences.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
+        if (languageCache.getBoolean(LANG_CREATED_PREFIX + locale.getISO3Language(), false)) {
             return;
         }
-        final SharedPreferences.Editor ed = preferences.edit();
+        final SharedPreferences.Editor ed = languageCache.edit();
         for (final Locale loc : Locale.getAvailableLocales()) {
             ed.putString(loc.getDisplayLanguage(locale).toLowerCase(locale),
                          loc.getISO3Language());

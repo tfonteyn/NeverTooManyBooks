@@ -31,7 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -135,7 +135,7 @@ public final class DBDefinitions {
     /**
      * Foreign key.
      * When a style is deleted, this key will be (re)set to
-     * {@link BooklistStyle#DEFAULT_STYLE_ID}
+     * {@link ListStyle#DEFAULT_STYLE_ID}
      */
     public static final Domain DOM_FK_STYLE;
 
@@ -631,7 +631,7 @@ public final class DBDefinitions {
         DOM_FK_STYLE =
                 new Domain.Builder(KEY_FK_STYLE, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .withDefault(BooklistStyle.DEFAULT_STYLE_ID)
+                        .withDefault(ListStyle.DEFAULT_STYLE_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE")
                         .build();
 
@@ -1011,7 +1011,7 @@ public final class DBDefinitions {
                         .notNull().withDefault(0).build();
         DOM_STYLE_MENU_POSITION =
                 new Domain.Builder(KEY_STYLE_MENU_POSITION, ColumnInfo.TYPE_INTEGER)
-                        .notNull().withDefault(BooklistStyle.MENU_POSITION_NOT_PREFERRED).build();
+                        .notNull().withDefault(ListStyle.MENU_POSITION_NOT_PREFERRED).build();
         /* ======================================================================================
          *  Booklist domains
          * ====================================================================================== */
@@ -1303,28 +1303,28 @@ public final class DBDefinitions {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param preferences Global preferences
-     * @param dbdKey      DBDefinitions.KEY_x to lookup
+     * @param global Global preferences
+     * @param dbdKey DBDefinitions.KEY_x to lookup
      *
      * @return {@code true} if the user wants to use this field.
      */
-    public static boolean isUsed(@NonNull final SharedPreferences preferences,
+    public static boolean isUsed(@NonNull final SharedPreferences global,
                                  @UserSelectedDomain @NonNull final String dbdKey) {
-        return preferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
+        return global.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
     }
 
     /**
      * Is the cover field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param preferences Global preferences
-     * @param cIdx        0..n image index
+     * @param global Global preferences
+     * @param cIdx   0..n image index
      *
      * @return {@code true} if the user wants to use this field.
      */
-    public static boolean isCoverUsed(@NonNull final SharedPreferences preferences,
+    public static boolean isCoverUsed(@NonNull final SharedPreferences global,
                                       @IntRange(from = 0, to = 1) final int cIdx) {
-        return preferences.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY
-                                      + PREFS_IS_USED_COVER + "." + cIdx, true);
+        return global.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY
+                                 + PREFS_IS_USED_COVER + "." + cIdx, true);
     }
 
     /**

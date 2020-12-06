@@ -23,7 +23,7 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -527,7 +527,7 @@ public class DAOSql {
                 + _WHERE_ + KEY_BOOK_UUID + "=?";
 
         /**
-         * Get the id of a {@link BooklistStyle} by UUID.
+         * Get the id of a {@link ListStyle} by UUID.
          */
         static final String BOOKLIST_STYLE_ID_BY_UUID =
                 SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKLIST_STYLES.getName()
@@ -695,7 +695,7 @@ public class DAOSql {
         /** {@link TocEntry}, all columns. */
         static final String TOC_ENTRIES = "SELECT * FROM " + TBL_TOC_ENTRIES.getName();
 
-        /** {@link BooklistStyle} all columns. */
+        /** {@link ListStyle} all columns. */
         static final String BOOKLIST_STYLES =
                 "SELECT * FROM " + TBL_BOOKLIST_STYLES.getName();
 
@@ -1330,7 +1330,7 @@ public class DAOSql {
         /** Delete a {@link TocEntry}. */
         static final String TOC_ENTRY =
                 DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + KEY_PK_ID + "=?";
-        /** Delete a {@link BooklistStyle}. */
+        /** Delete a {@link ListStyle}. */
         static final String STYLE_BY_ID =
                 DELETE_FROM_ + TBL_BOOKLIST_STYLES.getName() + _WHERE_ + KEY_PK_ID + "=?";
         /**

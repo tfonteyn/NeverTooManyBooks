@@ -20,16 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Parcel;
 
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
-
-import java.util.HashSet;
-import java.util.Set;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}.
@@ -39,121 +36,105 @@ import com.hardbacknutter.nevertoomanybooks.App;
  * @see PInt
  */
 public class PBitmask
-        extends PPrefBase<Integer>
-        implements PInt {
+        implements PPref<Integer>, PInt {
 
+    /** The {@link BooklistStyle} this preference belongs to. */
+    @NonNull
+    private final BooklistStyle mStyle;
+
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final Integer mDefaultValue;
+
+    /** key for the Preference. */
+    @NonNull
+    private final String mKey;
     /** Valid bits. */
-    @SuppressWarnings("FieldNotUsedInToString")
     private final int mMask;
+    /** in memory value used for non-persistence situations. */
+    @Nullable
+    private Integer mNonPersistedValue;
 
     /**
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
-     * @param sp           Style preferences reference.
-     * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param key          key of preference
-     * @param defValue     in memory default
-     * @param mask         valid values bitmask
+     * @param key      key of preference
+     * @param defValue default value
+     * @param mask     valid values bitmask
      */
-    public PBitmask(@NonNull final SharedPreferences sp,
-                    final boolean isPersistent,
+    public PBitmask(@NonNull final BooklistStyle style,
                     @NonNull final String key,
-                    @NonNull final Integer defValue,
+                    final int defValue,
                     final int mask) {
-        super(sp, isPersistent, key, defValue);
+        mStyle = style;
+        mKey = key;
+        mDefaultValue = defValue;
         mMask = mask;
     }
 
-
     @NonNull
-    public Integer getGlobalValue(@NonNull final Context context) {
-        final Set<String> value = PreferenceManager.getDefaultSharedPreferences(context)
-                                                   .getStringSet(getKey(), null);
-        if (value == null || value.isEmpty()) {
-            return mDefaultValue;
-        }
-        return from(value) & mMask;
-    }
-
-    /**
-     * converts the Integer bitmask and stores it as a {@code Set<String>}.
-     */
     @Override
-    public void set(@NonNull final SharedPreferences.Editor ed,
-                    @NonNull final Integer value) {
-        ed.putStringSet(getKey(), toStringSet(value & mMask));
+    public String getKey() {
+        return mKey;
     }
 
-    /**
-     * Reads a {@code Set<String>} from storage, and converts it to an Integer bitmask.
-     *
-     * @return bitmask, or the default value
-     */
+    @Override
+    public void set(@Nullable final Integer value) {
+        if (mStyle.isUserDefined()) {
+            mStyle.getSettings().setBitmask(getKey(), mMask, value);
+        } else {
+            mNonPersistedValue = value;
+        }
+    }
+
     @NonNull
     @Override
     public Integer getValue(@NonNull final Context context) {
-        if (mIsPersistent) {
-            final Set<String> value = mStylePrefs.getStringSet(getKey(), null);
+        if (mStyle.isUserDefined()) {
+            final Integer value = mStyle.getSettings().getBitmask(context, getKey(), mMask);
             if (value != null) {
-                return from(value) & mMask;
+                return value;
             }
-            return getGlobalValue(context);
+        } else if (mNonPersistedValue != null) {
+            return mNonPersistedValue;
+        }
+
+        return mDefaultValue;
+    }
+
+    public void writeToParcel(@NonNull final Parcel dest) {
+        if (mStyle.isUserDefined()) {
+            dest.writeValue(getValue(App.getAppContext()));
         } else {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
+            // Write the in-memory value to the parcel.
+            // Do NOT use 'get' as that would return the default if the actual value is not set.
+            dest.writeValue(mNonPersistedValue);
         }
     }
 
-    /**
-     * Convert a set where each <strong>String</strong> element represents one bit to a bitmask.
-     *
-     * @param set the set
-     *
-     * @return the value
-     */
-    @NonNull
-    private Integer from(@NonNull final Set<String> set) {
-        int tmp = 0;
-        for (final String s : set) {
-            tmp |= Integer.parseInt(s);
+    public void set(@NonNull final Parcel in) {
+        final Integer tmp = (Integer) in.readValue(getClass().getClassLoader());
+        if (tmp != null) {
+            set(tmp);
         }
-        return tmp;
-    }
-
-    /**
-     * Convert a bitmask.
-     *
-     * @param bitmask the value
-     *
-     * @return the set
-     */
-    @NonNull
-    private Set<String> toStringSet(@IntRange(from = 0, to = 0xFFFF)
-                                    @NonNull final Integer bitmask) {
-        if (bitmask < 0) {
-            throw new IllegalArgumentException(Integer.toBinaryString(bitmask));
-        }
-
-        final Set<String> set = new HashSet<>();
-        int tmp = bitmask;
-        int bit = 1;
-        while (tmp != 0) {
-            if ((tmp & 1) == 1) {
-                set.add(String.valueOf(bit));
-            }
-            bit *= 2;
-            // unsigned shift
-            tmp = tmp >>> 1;
-        }
-        return set;
     }
 
     @Override
     @NonNull
     public String toString() {
         return "PBitmask{"
-               + "value=`" + Integer.toBinaryString(getValue(App.getAppContext())) + '`'
-               + ", " + super.toString()
+               + "mStyle=" + mStyle.getUuid()
+               + ", mKey='" + mKey + '\''
+               + ", mDefaultValue=" + mDefaultValue
+               + "=" + Integer.toBinaryString(mDefaultValue)
+               + ", mMask=" + mMask
+               + "=" + Integer.toBinaryString(mMask)
+               + ", mNonPersistedValue=" + mNonPersistedValue
+               + (mNonPersistedValue != null ? "=" + Integer.toBinaryString(mNonPersistedValue)
+                                             : "")
+               + ", value=`" + getValue(App.getAppContext()) + '`'
+               + "=" + Integer.toBinaryString(getValue(App.getAppContext()))
                + '}';
     }
 }

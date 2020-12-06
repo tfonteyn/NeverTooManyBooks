@@ -193,9 +193,9 @@ public class AuthorBooklistGroup
     }
 
     private void initPrefs() {
-        mUnderEach = new PBoolean(mStylePrefs, mIsUserDefinedStyle, PK_SHOW_BOOKS_UNDER_EACH);
+        mUnderEach = new PBoolean(mStyle, PK_SHOW_BOOKS_UNDER_EACH);
 
-        mPrimaryType = new PBitmask(mStylePrefs, mIsUserDefinedStyle, PK_PRIMARY_TYPE,
+        mPrimaryType = new PBitmask(mStyle, PK_PRIMARY_TYPE,
                                     Author.TYPE_UNKNOWN, Author.TYPE_BITMASK_ALL);
     }
 
@@ -215,10 +215,9 @@ public class AuthorBooklistGroup
 
         final PreferenceCategory category = screen.findPreference(PSK_STYLE_AUTHOR);
         if (category != null) {
-            final String[] keys = {PK_SHOW_BOOKS_UNDER_EACH,
-                                   PK_PRIMARY_TYPE};
-
-            setPreferenceVisibility(category, keys, visible);
+            setPreferenceVisibility(category,
+                                    new String[]{PK_SHOW_BOOKS_UNDER_EACH, PK_PRIMARY_TYPE},
+                                    visible);
         }
     }
 

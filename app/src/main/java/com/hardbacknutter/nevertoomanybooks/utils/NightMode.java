@@ -95,8 +95,8 @@ public final class NightMode {
     @NightModeId
     public int apply(@NonNull final Context context) {
         // Always read from prefs.
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        mCurrentMode = ParseUtils.getIntListPref(prefs, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        mCurrentMode = ParseUtils.getIntListPref(global, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
 
         final int dnMode;
         switch (mCurrentMode) {
@@ -122,9 +122,9 @@ public final class NightMode {
         return mCurrentMode;
     }
 
-    public boolean isChanged(@NonNull final SharedPreferences preferences,
+    public boolean isChanged(@NonNull final SharedPreferences global,
                              @NightModeId final int mode) {
-        mCurrentMode = ParseUtils.getIntListPref(preferences, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
+        mCurrentMode = ParseUtils.getIntListPref(global, Prefs.pk_ui_theme, MODE_DAY_NIGHT);
         return mode != mCurrentMode;
     }
 

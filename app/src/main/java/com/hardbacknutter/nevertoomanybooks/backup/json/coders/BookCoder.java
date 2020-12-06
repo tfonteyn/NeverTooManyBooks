@@ -28,7 +28,7 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -52,7 +52,7 @@ public class BookCoder
     private final JsonCoder<TocEntry> mTocEntryCoder = new TocEntryCoder();
     private final JsonCoder<Bookshelf> mBookshelfCoder;
 
-    public BookCoder(@NonNull final BooklistStyle defStyle) {
+    public BookCoder(@NonNull final ListStyle defStyle) {
         mBookshelfCoder = new BookshelfCoder(defStyle);
     }
 
@@ -107,32 +107,32 @@ public class BookCoder
                 }
                 case Book.BKEY_BOOKSHELF_LIST: {
                     final ArrayList<Bookshelf> list = book.getParcelableArrayList(key);
-                        if (!list.isEmpty()) {
-                            out.put(key, mBookshelfCoder.encode(list));
-                        }
-                        break;
+                    if (!list.isEmpty()) {
+                        out.put(key, mBookshelfCoder.encode(list));
                     }
-                    case Book.BKEY_PUBLISHER_LIST: {
-                        final ArrayList<Publisher> list = book.getParcelableArrayList(key);
-                        if (!list.isEmpty()) {
-                            out.put(key, mPublisherCoder.encode(list));
-                        }
-                        break;
+                    break;
+                }
+                case Book.BKEY_PUBLISHER_LIST: {
+                    final ArrayList<Publisher> list = book.getParcelableArrayList(key);
+                    if (!list.isEmpty()) {
+                        out.put(key, mPublisherCoder.encode(list));
                     }
-                    case Book.BKEY_SERIES_LIST: {
-                        final ArrayList<Series> list = book.getParcelableArrayList(key);
-                        if (!list.isEmpty()) {
-                            out.put(key, mSeriesCoder.encode(list));
-                        }
-                        break;
+                    break;
+                }
+                case Book.BKEY_SERIES_LIST: {
+                    final ArrayList<Series> list = book.getParcelableArrayList(key);
+                    if (!list.isEmpty()) {
+                        out.put(key, mSeriesCoder.encode(list));
                     }
-                    case Book.BKEY_TOC_LIST: {
-                        final ArrayList<TocEntry> list = book.getParcelableArrayList(key);
-                        if (!list.isEmpty()) {
-                            out.put(key, mTocEntryCoder.encode(list));
-                        }
-                        break;
+                    break;
+                }
+                case Book.BKEY_TOC_LIST: {
+                    final ArrayList<TocEntry> list = book.getParcelableArrayList(key);
+                    if (!list.isEmpty()) {
+                        out.put(key, mTocEntryCoder.encode(list));
                     }
+                    break;
+                }
 
                 default:
                     throw new IllegalArgumentException("key=" + key + "|: " + element);

@@ -217,10 +217,10 @@ public class Fields {
      * @param parentView for the view of each field
      */
     public void setParentView(@NonNull final View parentView) {
-        final SharedPreferences prefs = PreferenceManager
+        final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(parentView.getContext());
         for (int f = 0; f < mAllFields.size(); f++) {
-            mAllFields.valueAt(f).setParentView(prefs, parentView);
+            mAllFields.valueAt(f).setParentView(global, parentView);
         }
     }
 

@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.FtsDefinition;
@@ -148,7 +148,7 @@ public class Booklist
     /** Style to use while building the list. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final BooklistStyle mStyle;
+    private final ListStyle mStyle;
     /** Show only books on this bookshelf. */
     @NonNull
     private final Bookshelf mBookshelf;
@@ -222,7 +222,7 @@ public class Booklist
      * @param rebuildState booklist state to use in next rebuild.
      */
     public Booklist(@NonNull final SynchronizedDb db,
-                    @NonNull final BooklistStyle style,
+                    @NonNull final ListStyle style,
                     @NonNull final Bookshelf bookshelf,
                     @ListRebuildMode final int rebuildState) {
 

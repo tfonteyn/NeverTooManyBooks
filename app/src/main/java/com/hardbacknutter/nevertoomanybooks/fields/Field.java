@@ -139,13 +139,13 @@ public class Field<T, V extends View> {
      * <p>
      * Unused fields (as configured in the user preferences) will be hidden after this step.
      *
-     * @param preferences Global preferences
-     * @param parent      of the field View
+     * @param global Global preferences
+     * @param parent of the field View
      */
-    void setParentView(@NonNull final SharedPreferences preferences,
+    void setParentView(@NonNull final SharedPreferences global,
                        @NonNull final View parent) {
         mFieldViewAccessor.setView(parent.findViewById(mId));
-        if (isUsed(preferences)) {
+        if (isUsed(global)) {
             if (mErrorViewId != 0) {
                 mFieldViewAccessor.setErrorView(parent.findViewById(mErrorViewId));
             }
@@ -206,9 +206,9 @@ public class Field<T, V extends View> {
             view.setVisibility(View.GONE);
 
         } else {
-            final SharedPreferences prefs = PreferenceManager
+            final SharedPreferences global = PreferenceManager
                     .getDefaultSharedPreferences(parent.getContext());
-            if (isUsed(prefs)) {
+            if (isUsed(global)) {
                 // Anything else (in use) should be visible if it's not yet.
                 view.setVisibility(View.VISIBLE);
             }
@@ -307,12 +307,12 @@ public class Field<T, V extends View> {
     /**
      * Is the field in use; i.e. is it enabled in the user-preferences.
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      *
      * @return {@code true} if the field *can* be visible
      */
-    public boolean isUsed(@NonNull final SharedPreferences preferences) {
-        return DBDefinitions.isUsed(preferences, mIsUsedKey);
+    public boolean isUsed(@NonNull final SharedPreferences global) {
+        return DBDefinitions.isUsed(global, mIsUsedKey);
     }
 
     /**

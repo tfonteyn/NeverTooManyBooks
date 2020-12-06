@@ -20,49 +20,74 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Parcel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PIntString;
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
-public abstract class IntStringFilter
-        extends PIntString
-        implements Filter<Integer> {
+/**
+ * An Integer stored as a String
+ * <p>
+ * Used for {@link androidx.preference.ListPreference}
+ * The Preference uses 'select 1 of many' type and insists on a String.
+ *
+ * @see PInt
+ */
+abstract class IntStringFilter
+        implements PInt, Filter<Integer>, PPref<Integer> {
 
     static final Integer P_NOT_USED = -1;
+
     @NonNull
     final TableDefinition mTable;
     @NonNull
     final String mDomainKey;
+    /** The {@link BooklistStyle} this preference belongs to. */
+    @NonNull
+    private final BooklistStyle mStyle;
+    /** preference key. */
+    @NonNull
+    private final String mKey;
     @StringRes
     private final int mLabelId;
+    @NonNull
+    private final Integer mDefaultValue;
+    /** in memory value used for non-persistence situations. */
+    @Nullable
+    private Integer mNonPersistedValue;
 
     /**
      * Constructor.
      * Default value is {@code P_NOT_USED}.
      *
-     * @param sp           Style preferences reference.
-     * @param isPersistent {@code true} to have the value persisted.
-     *                     {@code false} for in-memory only.
-     * @param labelId      string resource id to use as a display label
-     * @param key          of the preference
-     * @param table        to use by the expression
-     * @param domainKey    to use by the expression
+     * @param style     Style preferences reference.
+     * @param labelId   string resource id to use as a display label
+     * @param key       preference key
+     * @param table     to use by the expression
+     * @param domainKey to use by the expression
      */
-    IntStringFilter(@NonNull final SharedPreferences sp,
-                    final boolean isPersistent,
+    IntStringFilter(@NonNull final BooklistStyle style,
                     @StringRes final int labelId,
                     @NonNull final String key,
                     @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                     @NonNull final String domainKey) {
-        super(sp, isPersistent, key, P_NOT_USED);
+        mStyle = style;
+        mKey = key;
+
         mLabelId = labelId;
         mTable = table;
         mDomainKey = domainKey;
+
+        mDefaultValue = P_NOT_USED;
     }
 
     @NonNull
@@ -73,19 +98,81 @@ public abstract class IntStringFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return !P_NOT_USED.equals(getValue(context))
-               && DBDefinitions.isUsed(mStylePrefs, mDomainKey);
+        return !mDefaultValue.equals(getValue(context))
+               && DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                                       mDomainKey);
+    }
+
+    @NonNull
+    @Override
+    public Integer getValue(@NonNull final Context context) {
+        if (mStyle.isUserDefined()) {
+            final Integer value = mStyle.getSettings().getStringedInt(context, mKey);
+            if (value != null) {
+                return value;
+            }
+        } else if (mNonPersistedValue != null) {
+            return mNonPersistedValue;
+        }
+
+        return mDefaultValue;
+    }
+
+    @NonNull
+    @Override
+    public String getKey() {
+        return mKey;
+    }
+
+    @Override
+    public void set(@Nullable final Integer value) {
+        if (mStyle.isUserDefined()) {
+            mStyle.getSettings().setStringedInt(mKey, value);
+        } else {
+            mNonPersistedValue = value;
+        }
+    }
+
+    /**
+     * Set the <strong>value</strong> from the Parcel.
+     *
+     * @param in parcel to read from
+     */
+    public void set(@NonNull final Parcel in) {
+        final Integer tmp = (Integer) in.readValue(getClass().getClassLoader());
+        if (tmp != null) {
+            set(tmp);
+        }
+    }
+
+    public void writeToParcel(@NonNull final Parcel dest) {
+        if (mStyle.isUserDefined()) {
+            // write the actual value, this could be the default if we have no value, but that
+            // is what we want for user-defined styles anyhow.
+            dest.writeValue(getValue(App.getAppContext()));
+        } else {
+            // builtin ? write the in-memory value to the parcel
+            // do NOT use 'get' as that would return the default if the actual value is not set.
+            dest.writeValue(mNonPersistedValue);
+        }
     }
 
     @Override
     @NonNull
     public String toString() {
         return "IntStringFilter{"
-               + "mTable=" + mTable.getName()
-               + ", mDomainKey=" + mDomainKey
-               + ", mLabelId=" + mLabelId
-               + ", " + super.toString()
-               + "}";
-    }
+               + "mStyle=" + mStyle.getUuid()
+               + ", mKey=`" + mKey + '`'
+               + ", mDefaultValue=" + mDefaultValue
+               + ", mNonPersistedValue=" + mNonPersistedValue
 
+               + ", mLabelId=" + mLabelId
+               + ", mTable=" + mTable
+               + ", mDomainKey='" + mDomainKey + '\''
+               + ", isActive=" + isActive(App.getAppContext())
+               + ", expression=`" + getExpression(App.getAppContext()) + '\''
+
+               + ", value=" + getValue(App.getAppContext())
+               + '}';
+    }
 }

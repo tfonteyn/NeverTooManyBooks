@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
@@ -68,7 +69,7 @@ public class PreferredStylesViewModel
             mStyleList = StyleDAO.getStyles(context, mDb, true);
 
             mInitialStyleUuid = Objects.requireNonNull(
-                    args.getString(BooklistStyle.BKEY_STYLE_UUID), "mInitialStyleUuid");
+                    args.getString(ListStyle.BKEY_STYLE_UUID), "mInitialStyleUuid");
         }
     }
 

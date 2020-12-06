@@ -32,7 +32,7 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -165,7 +165,7 @@ public class DBCleaner {
     }
 
     /**
-     * Validates {@link Bookshelf} being set to a valid {@link BooklistStyle}.
+     * Validates {@link Bookshelf} being set to a valid {@link ListStyle}.
      *
      * @param context Current context
      */

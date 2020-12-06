@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
@@ -144,14 +145,13 @@ public class PreferredStylesFragment
                     // Return the currently selected style UUID, so the caller can apply it.
                     // This is independent from any modification to this or another style,
                     // or the order of the styles.
-                    final BooklistStyle selectedStyle = mListAdapter.getSelectedStyle();
+                    final ListStyle selectedStyle = mListAdapter.getSelectedStyle();
                     if (selectedStyle != null) {
-                        resultIntent
-                                .putExtra(BooklistStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
+                        resultIntent.putExtra(ListStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
                     }
 
                     // Same here, this is independent from the returned style
-                    resultIntent.putExtra(BooklistStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
+                    resultIntent.putExtra(ListStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
 
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
@@ -164,8 +164,8 @@ public class PreferredStylesFragment
                 if (data != null) {
                     // We get the ACTUAL style back.
                     @Nullable
-                    final BooklistStyle style = data.getParcelable(BooklistStyle.BKEY_STYLE);
-                    if (data.getBoolean(BooklistStyle.BKEY_STYLE_MODIFIED, false)) {
+                    final BooklistStyle style = data.getParcelable(ListStyle.BKEY_STYLE);
+                    if (data.getBoolean(ListStyle.BKEY_STYLE_MODIFIED, false)) {
                         if (style != null) {
                             // id of the original style we cloned (different from current)
                             // or edited (same as current).
@@ -287,7 +287,7 @@ public class PreferredStylesFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_PURGE_BLNS) {
-            final BooklistStyle selected = mListAdapter.getSelectedStyle();
+            final ListStyle selected = mListAdapter.getSelectedStyle();
             if (selected != null) {
                 //noinspection ConstantConditions
                 StandardDialogs.purgeBLNS(getContext(), R.string.lbl_style, selected, () ->
@@ -419,7 +419,7 @@ public class PreferredStylesFragment
                                    @NonNull final String styleUuid) {
             return new Intent(context, HostingActivity.class)
                     .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, PreferredStylesFragment.TAG)
-                    .putExtra(BooklistStyle.BKEY_STYLE_UUID, styleUuid);
+                    .putExtra(ListStyle.BKEY_STYLE_UUID, styleUuid);
         }
 
         @Override
@@ -499,7 +499,7 @@ public class PreferredStylesFragment
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            final BooklistStyle style = getItem(position);
+            final ListStyle style = getItem(position);
 
             holder.nameView.setText(style.getLabel(getContext()));
 
@@ -540,7 +540,7 @@ public class PreferredStylesFragment
         private void onItemCheckChanged(@NonNull final Holder holder) {
             // current row/style
             final int position = holder.getBindingAdapterPosition();
-            final BooklistStyle style = getItem(position);
+            final ListStyle style = getItem(position);
 
             // handle the 'preferred' state of the current row/style
             final boolean checked = !style.isPreferred();
@@ -609,7 +609,7 @@ public class PreferredStylesFragment
          * @return style, or {@code null} if none selected (which should never happen... flw)
          */
         @Nullable
-        BooklistStyle getSelectedStyle() {
+        ListStyle getSelectedStyle() {
             if (mSelectedPosition != RecyclerView.NO_POSITION) {
                 return getItem(mSelectedPosition);
             }

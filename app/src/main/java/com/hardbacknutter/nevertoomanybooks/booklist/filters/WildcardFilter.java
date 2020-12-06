@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.filters;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
@@ -79,8 +78,8 @@ public class WildcardFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return DBDefinitions.isUsed(prefs, mDomainKey);
+        return DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                                    mDomainKey);
     }
 
     @Override

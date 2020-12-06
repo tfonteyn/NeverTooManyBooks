@@ -78,7 +78,7 @@ public class Base {
 
     protected Bundle mRawData;
     protected Context mContext;
-    protected SharedPreferences mSharedPreferences;
+    protected SharedPreferences mMockPreferences;
 
     /** set during setup() call. */
     @Nullable
@@ -123,7 +123,7 @@ public class Base {
         setLocale(Locale.US);
 
         mContext = ContextMock.create(PACKAGE_NAME);
-        mSharedPreferences = SharedPreferencesMock.create();
+        mMockPreferences = SharedPreferencesMock.create();
 
         mRawData = BundleMock.create();
 
@@ -131,7 +131,7 @@ public class Base {
 
         when(mContext.getResources()).thenReturn(mResources);
         when(mContext.getSharedPreferences(eq(PACKAGE_NAME + "_preferences"), anyInt()))
-                .thenReturn(mSharedPreferences);
+                .thenReturn(mMockPreferences);
 
         doAnswer(invocation -> mResources.getString(invocation.getArgument(0)))
                 .when(mContext).getString(anyInt());
@@ -179,28 +179,29 @@ public class Base {
                     .apply();
     }
 
-    protected void setupSearchEnginePreferences(@NonNull final SharedPreferences preferences) {
-        preferences.edit()
-                   .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
-                   // random some at true, some at false.
-                   .putBoolean("search.site.amazon.data.enabled", true)
-                   .putBoolean("search.site.goodreads.data.enabled", true)
-                   .putBoolean("search.site.googlebooks.data.enabled", false)
-                   .putBoolean("search.site.isfdb.data.enabled", true)
-                   .putBoolean("search.site.kbnl.data.enabled", true)
-                   .putBoolean("search.site.lastdodo.data.enabled", true)
-                   .putBoolean("search.site.librarything.data.enabled", false)
-                   .putBoolean("search.site.openlibrary.data.enabled", true)
-                   .putBoolean("search.site.stripinfo.data.enabled", false)
+    protected void setupSearchEnginePreferences() {
+        mMockPreferences.edit()
+                        .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
+                        // random some at true, some at false.
+                        .putBoolean("search.site.amazon.data.enabled", true)
+                        .putBoolean("search.site.goodreads.data.enabled", true)
+                        .putBoolean("search.site.googlebooks.data.enabled", false)
+                        .putBoolean("search.site.isfdb.data.enabled", true)
+                        .putBoolean("search.site.kbnl.data.enabled", true)
+                        .putBoolean("search.site.lastdodo.data.enabled", true)
+                        .putBoolean("search.site.librarything.data.enabled", false)
+                        .putBoolean("search.site.openlibrary.data.enabled", true)
+                        .putBoolean("search.site.stripinfo.data.enabled", false)
 
-                   // deliberate added 4 (LibraryThing) and omitted 128/256
-                   .putString("search.siteOrder.data", "64,32,16,8,4,2,1")
-                   .putString("search.siteOrder.covers", "16,2,8,64,32")
-                   .putString("search.siteOrder.alted", "16,4")
+                        // deliberate added 4 (LibraryThing) and omitted 128/256
+                        .putString("search.siteOrder.data", "64,32,16,8,4,2,1")
+                        .putString("search.siteOrder.covers", "16,2,8,64,32")
+                        .putString("search.siteOrder.alted", "16,4")
 
-                   .apply();
+                        .apply();
 
-        when(preferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL), nullable(String.class)))
+        when(mMockPreferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL),
+                                        nullable(String.class)))
                 .thenAnswer((Answer<String>) invocation -> {
                     if (mLocale0 != null) {
                         final String iso3 = mLocale0.getISO3Language();

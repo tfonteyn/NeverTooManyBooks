@@ -30,6 +30,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 /**
@@ -65,7 +66,7 @@ public abstract class StyleBaseFragment
     public void onResume() {
         super.onResume();
 
-        final BooklistStyle style = mStyleViewModel.getStyle();
+        final ListStyle style = mStyleViewModel.getStyle();
 
         //noinspection ConstantConditions
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -82,11 +83,11 @@ public abstract class StyleBaseFragment
     }
 
     @Override
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
+    public void onSharedPreferenceChanged(@NonNull final SharedPreferences stylePrefs,
                                           @NonNull final String key) {
         // set the result (and again and again...)
         mStyleViewModel.setModified();
 
-        super.onSharedPreferenceChanged(preferences, key);
+        super.onSharedPreferenceChanged(stylePrefs, key);
     }
 }

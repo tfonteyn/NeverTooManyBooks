@@ -79,18 +79,19 @@ public class EditBookNotesFragment
         // With all Views populated, (re-)add the helpers which rely on fields having valid views
 
         //noinspection ConstantConditions
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
 
-        addReadCheckboxOnClickListener(prefs);
+        addReadCheckboxOnClickListener(global);
 
-        addAutocomplete(prefs, getField(R.id.price_paid_currency),
+        addAutocomplete(global, getField(R.id.price_paid_currency),
                         () -> mVm.getAllPricePaidCurrencyCodes());
-        addAutocomplete(prefs, getField(R.id.location),
+        addAutocomplete(global, getField(R.id.location),
                         () -> mVm.getAllLocations());
 
-        addDatePicker(prefs, getField(R.id.date_acquired), R.string.lbl_date_acquired, true);
+        addDatePicker(global, getField(R.id.date_acquired), R.string.lbl_date_acquired, true);
 
-        addDateRangePicker(prefs,
+        addDateRangePicker(global,
                            R.string.lbl_read,
                            R.string.lbl_read_start, getField(R.id.read_start),
                            R.string.lbl_read_end, getField(R.id.read_end),
@@ -172,12 +173,12 @@ public class EditBookNotesFragment
      * <p>
      * When user checks 'read', set the read-end date to today (unless set before)
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      */
-    private void addReadCheckboxOnClickListener(@NonNull final SharedPreferences preferences) {
+    private void addReadCheckboxOnClickListener(@NonNull final SharedPreferences global) {
         // only bother when it's in use
         final Field<?, ?> readCbx = getField(R.id.cbx_read);
-        if (readCbx.isUsed(preferences)) {
+        if (readCbx.isUsed(global)) {
             //noinspection ConstantConditions
             readCbx.getAccessor().getView().setOnClickListener(v -> {
                 final Checkable cb = (Checkable) v;

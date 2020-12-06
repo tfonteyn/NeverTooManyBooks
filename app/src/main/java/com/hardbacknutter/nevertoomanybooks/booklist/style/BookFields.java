@@ -42,18 +42,18 @@ public abstract class BookFields {
     /**
      * Check if the given book-detail field should be displayed.
      *
-     * @param context     Current context
-     * @param preferences the <strong>GLOBAL</strong> preferences
-     * @param key         to check
+     * @param context Current context
+     * @param global  the <strong>GLOBAL</strong> preferences
+     * @param key     to check
      *
      * @return {@code true} if in use
      */
     public boolean isShowField(@NonNull final Context context,
-                               @NonNull final SharedPreferences preferences,
+                               @NonNull final SharedPreferences global,
                                @ListScreenBookFields.Key @NonNull final String key) {
 
         // Disabled in the Global style overrules the local style
-        if (!preferences.getBoolean(key, true)) {
+        if (!global.getBoolean(key, true)) {
             return false;
         }
 

@@ -41,7 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -61,22 +61,21 @@ public class EditBookFragmentViewModel
 
     /** Log tag. */
     private static final String TAG = "EditBookFragmentVM";
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    protected final Intent mResultIntent = new Intent();
     /** The fields collection handled in this model. The key is the fragment tag. */
     private final Map<String, Fields> mFieldsMap = new HashMap<>();
     /** The key is the fragment tag. */
     private final Collection<String> mFragmentsWithUnfinishedEdits = new HashSet<>();
+    private final MutableLiveData<ArrayList<Author>> mAuthorList = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
+    private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
     /** Database Access. */
     private DAO mDb;
     /** <strong>Optionally</strong> passed in via the arguments. */
     @Nullable
-    private BooklistStyle mStyle;
-
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    protected final Intent mResultIntent = new Intent();
-    private final MutableLiveData<ArrayList<Author>> mAuthorList = new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
-    private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
+    private ListStyle mStyle;
     /**
      * The Book this model represents. The only time this can be {@code null}
      * is when this model is just initialized, or when the Book was deleted.
@@ -164,7 +163,7 @@ public class EditBookFragmentViewModel
             mDb = new DAO(TAG);
 
             if (args != null) {
-                final String styleUuid = args.getString(BooklistStyle.BKEY_STYLE_UUID);
+                final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
                 if (styleUuid != null) {
                     mStyle = StyleDAO.getStyleOrDefault(context, mDb, styleUuid);
                 }
@@ -323,18 +322,18 @@ public class EditBookFragmentViewModel
      *     <li>return the visibility as set in the style.</li>
      * </ol>
      *
-     * @param context     current context
-     * @param preferences Global preferences
-     * @param cIdx        0..n image index
+     * @param context current context
+     * @param global  Global preferences
+     * @param cIdx    0..n image index
      *
      * @return {@code true} if in use
      */
     public boolean isCoverUsed(@NonNull final Context context,
-                               @NonNull final SharedPreferences preferences,
+                               @NonNull final SharedPreferences global,
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         // Globally disabled overrules style setting
-        if (!DBDefinitions.isCoverUsed(preferences, cIdx)) {
+        if (!DBDefinitions.isCoverUsed(global, cIdx)) {
             return false;
         }
 
@@ -343,7 +342,7 @@ public class EditBookFragmentViewModel
             return true;
         } else {
             // let the style decide
-            return mStyle.getDetailScreenBookFields().isShowCover(context, preferences, cIdx);
+            return mStyle.getDetailScreenBookFields().isShowCover(context, global, cIdx);
         }
     }
 

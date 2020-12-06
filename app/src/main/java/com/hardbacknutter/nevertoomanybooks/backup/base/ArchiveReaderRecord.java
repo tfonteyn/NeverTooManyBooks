@@ -61,9 +61,7 @@ public interface ArchiveReaderRecord {
      * @return Type
      */
     @Nullable
-    default Type getType() {
-        return Type.getType(getName());
-    }
+    Type getType();
 
     /**
      * Get the encoding of this record.
@@ -71,9 +69,7 @@ public interface ArchiveReaderRecord {
      * @return Encoding
      */
     @Nullable
-    default Encoding getEncoding() {
-        return Encoding.getEncoding(getName());
-    }
+    Encoding getEncoding();
 
     /**
      * Get the last modification time of this archive record in EpochMilli.
@@ -142,8 +138,8 @@ public interface ArchiveReaderRecord {
         // but NOT suitable for checking standalone files.
         // However, it's not a real issue for now:
         // Csv: can only reads books anyhow
-        // Xml: does not import standalone files (but should be able to detect its own format)
-        // Json can detect its own format; but importing standalone files is not supported
+        // Xml: can detect its own format; but importing standalone files is not supported
+        // Json: can detect its own format; but importing standalone files is not supported
 
         InfoHeader("info"),
         Preferences("preferences"),

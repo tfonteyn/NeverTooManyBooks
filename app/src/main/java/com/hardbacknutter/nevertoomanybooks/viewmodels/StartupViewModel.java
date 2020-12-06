@@ -207,22 +207,22 @@ public class StartupViewModel
             Logger.cycleLogs(context);
 
             // prepare the maintenance flags and counters.
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final int maintenanceCountdown = prefs
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+            final int maintenanceCountdown = global
                     .getInt(PK_MAINTENANCE_COUNTDOWN, MAINTENANCE_COUNTDOWN);
-            final int backupCountdown = prefs
+            final int backupCountdown = global
                     .getInt(PK_STARTUP_BACKUP_COUNTDOWN, STARTUP_BACKUP_COUNTDOWN);
 
-            prefs.edit()
-                 .putInt(PK_MAINTENANCE_COUNTDOWN,
-                         maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN
-                                                   : maintenanceCountdown - 1)
-                 .putInt(PK_STARTUP_BACKUP_COUNTDOWN,
-                         backupCountdown == 0 ? STARTUP_BACKUP_COUNTDOWN
-                                              : backupCountdown - 1)
+            global.edit()
+                  .putInt(PK_MAINTENANCE_COUNTDOWN,
+                          maintenanceCountdown == 0 ? MAINTENANCE_COUNTDOWN
+                                                    : maintenanceCountdown - 1)
+                  .putInt(PK_STARTUP_BACKUP_COUNTDOWN,
+                          backupCountdown == 0 ? STARTUP_BACKUP_COUNTDOWN
+                                               : backupCountdown - 1)
 
-                 // The number of times the app was opened.
-                 .putInt(PK_STARTUP_COUNT, prefs.getInt(PK_STARTUP_COUNT, 0) + 1)
+                  // The number of times the app was opened.
+                  .putInt(PK_STARTUP_COUNT, global.getInt(PK_STARTUP_COUNT, 0) + 1)
                  .apply();
 
             mDoMaintenance = maintenanceCountdown == 0;
@@ -270,31 +270,31 @@ public class StartupViewModel
             return;
         }
 
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         boolean optimizeDb = false;
 
         // unconditional
         startTask(new BuildLanguageMappingsTask(mTaskListener));
 
-        if (mDoMaintenance || prefs.getBoolean(PK_RUN_MAINTENANCE, false)) {
+        if (mDoMaintenance || global.getBoolean(PK_RUN_MAINTENANCE, false)) {
             // cleaner must be started after the language mapper task,
             // but before the rebuild tasks.
             startTask(new DBCleanerTask(mDb, mTaskListener));
             optimizeDb = true;
         }
 
-        if (prefs.getBoolean(PK_REBUILD_ORDERBY_COLUMNS, false)) {
+        if (global.getBoolean(PK_REBUILD_ORDERBY_COLUMNS, false)) {
             startTask(new RebuildOrderByTitleColumnsTask(mDb, mTaskListener));
             optimizeDb = true;
         }
 
-        if (prefs.getBoolean(PK_REBUILD_INDEXES, false)) {
+        if (global.getBoolean(PK_REBUILD_INDEXES, false)) {
             startTask(new RebuildIndexesTask(mTaskListener));
             optimizeDb = true;
         }
 
-        if (prefs.getBoolean(PK_REBUILD_FTS, false)) {
+        if (global.getBoolean(PK_REBUILD_FTS, false)) {
             startTask(new RebuildFtsTask(mDb, mTaskListener));
             optimizeDb = true;
         }

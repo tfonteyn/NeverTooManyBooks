@@ -168,9 +168,9 @@ public abstract class BaseActivity
         final Context localizedContext = AppLocale.getInstance().apply(base);
         super.attachBaseContext(localizedContext);
         // preserve, so we can check for changes in onResume.
-        final SharedPreferences prefs =
-                PreferenceManager.getDefaultSharedPreferences(localizedContext);
-        mInitialLocaleSpec = AppLocale.getInstance().getPersistedLocaleSpec(prefs);
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(localizedContext);
+        mInitialLocaleSpec = AppLocale.getInstance().getPersistedLocaleSpec(global);
     }
 
     /**
@@ -269,11 +269,11 @@ public abstract class BaseActivity
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean recreateIfNeeded() {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (sActivityRecreateStatus == ACTIVITY_REQUIRES_RECREATE
-            || AppLocale.getInstance().isChanged(prefs, mInitialLocaleSpec)
-            || NightMode.getInstance().isChanged(prefs, mInitialNightModeId)) {
+            || AppLocale.getInstance().isChanged(global, mInitialLocaleSpec)
+            || NightMode.getInstance().isChanged(global, mInitialNightModeId)) {
 
             sActivityRecreateStatus = ACTIVITY_IS_RECREATING;
             recreate();
@@ -339,8 +339,8 @@ public abstract class BaseActivity
     }
 
     public void setGoodreadsMenuVisibility() {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(prefs));
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(global));
     }
 
     @CallSuper

@@ -347,16 +347,16 @@ public abstract class EditBookBaseFragment
      * <p>
      * Dev. note: a Supplier is used so we don't load the list if the Field is actually not in use
      *
-     * @param preferences Global preferences
-     * @param field       to setup
-     * @param list        Supplier with auto complete values
+     * @param global Global preferences
+     * @param field  to setup
+     * @param list   Supplier with auto complete values
      */
-    void addAutocomplete(@NonNull final SharedPreferences preferences,
+    void addAutocomplete(@NonNull final SharedPreferences global,
                          @NonNull final Field<String, AutoCompleteTextView> field,
                          @NonNull final Supplier<List<String>> list) {
 
         // only bother when it's in use
-        if (field.isUsed(preferences)) {
+        if (field.isUsed(global)) {
             final FieldFormatter<String> formatter = field.getAccessor().getFormatter();
             //noinspection ConstantConditions
             final FormattedDiacriticArrayAdapter adapter =
@@ -376,7 +376,7 @@ public abstract class EditBookBaseFragment
      * <p>
      * If only one field is used, we just display a single date picker.
      *
-     * @param preferences      Global preferences
+     * @param global      Global preferences
      * @param dateSpanTitleId  title of the dialog box if both start and end-dates are used.
      * @param startDateTitleId title of the dialog box if the end-date is not in use
      * @param fieldStartDate   to setup for the start-date
@@ -385,7 +385,7 @@ public abstract class EditBookBaseFragment
      * @param todayIfNone      if true, and if the field was empty, we'll default to today's date.
      */
     @SuppressWarnings("SameParameterValue")
-    void addDateRangePicker(@NonNull final SharedPreferences preferences,
+    void addDateRangePicker(@NonNull final SharedPreferences global,
                             @StringRes final int dateSpanTitleId,
                             @StringRes final int startDateTitleId,
                             @NonNull final Field<String, TextView> fieldStartDate,
@@ -393,7 +393,7 @@ public abstract class EditBookBaseFragment
                             @NonNull final Field<String, TextView> fieldEndDate,
                             final boolean todayIfNone) {
 
-        final boolean startUsed = fieldStartDate.isUsed(preferences);
+        final boolean startUsed = fieldStartDate.isUsed(global);
         if (startUsed) {
             // single date picker for the start-date
             //noinspection ConstantConditions
@@ -402,7 +402,7 @@ public abstract class EditBookBaseFragment
                             fieldStartDate.getId(), getInstant(fieldStartDate, todayIfNone)));
         }
 
-        if (fieldEndDate.isUsed(preferences)) {
+        if (fieldEndDate.isUsed(global)) {
             final TextView view = fieldEndDate.getAccessor().getView();
             if (startUsed) {
                 // date-span picker for the end-date
@@ -424,17 +424,17 @@ public abstract class EditBookBaseFragment
     /**
      * Setup a date picker for selecting a single, full date.
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      * @param field       to setup
      * @param titleId     title for the picker window
      * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
      */
     @SuppressWarnings("SameParameterValue")
-    void addDatePicker(@NonNull final SharedPreferences preferences,
+    void addDatePicker(@NonNull final SharedPreferences global,
                        @NonNull final Field<String, TextView> field,
                        @StringRes final int titleId,
                        final boolean todayIfNone) {
-        if (field.isUsed(preferences)) {
+        if (field.isUsed(global)) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> mDatePickerLauncher
                     .launch(titleId, field.getId(), getInstant(field, todayIfNone)));
@@ -444,17 +444,17 @@ public abstract class EditBookBaseFragment
     /**
      * Setup a date picker for selecting a partial date.
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      * @param field       to setup
      * @param titleId     title for the picker window
      * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
      */
     @SuppressWarnings("SameParameterValue")
-    void addPartialDatePicker(@NonNull final SharedPreferences preferences,
+    void addPartialDatePicker(@NonNull final SharedPreferences global,
                               @NonNull final Field<String, TextView> field,
                               @StringRes final int titleId,
                               final boolean todayIfNone) {
-        if (field.isUsed(preferences)) {
+        if (field.isUsed(global)) {
             //noinspection ConstantConditions
             field.getAccessor().getView().setOnClickListener(v -> mPartialDatePickerLauncher
                     .launch(titleId, field.getId(), field.getAccessor().getValue(), todayIfNone));

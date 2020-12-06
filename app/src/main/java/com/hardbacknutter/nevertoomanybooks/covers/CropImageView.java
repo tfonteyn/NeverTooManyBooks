@@ -144,10 +144,11 @@ public class CropImageView
      * @param bitmap to crop
      */
     public void initCropView(@NonNull final Bitmap bitmap) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
 
         // Flag indicating if by default the crop rectangle should be the whole image.
-        final boolean wholeImage = prefs.getBoolean(Prefs.pk_image_cropper_frame_whole, false);
+        final boolean wholeImage = global.getBoolean(Prefs.pk_image_cropper_frame_whole, false);
 
         setBitmapMatrix(bitmap);
         if (getScale() == 1f) {

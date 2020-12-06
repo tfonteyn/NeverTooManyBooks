@@ -455,7 +455,7 @@ public class EditBookAuthorListDialogFragment
                                   @Nullable final Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
             //noinspection ConstantConditions
-            final SharedPreferences prefs = PreferenceManager
+            final SharedPreferences global = PreferenceManager
                     .getDefaultSharedPreferences(getContext());
 
             mVb = DialogEditBookAuthorBinding.bind(view);
@@ -479,7 +479,7 @@ public class EditBookAuthorListDialogFragment
             mVb.cbxIsComplete.setChecked(mIsComplete);
 
             final boolean useAuthorType =
-                    DBDefinitions.isUsed(prefs, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+                    DBDefinitions.isUsed(global, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
             if (useAuthorType) {
                 mVb.btnUseAuthorType.setOnCheckedChangeListener(

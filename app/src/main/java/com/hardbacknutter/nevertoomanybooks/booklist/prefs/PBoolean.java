@@ -20,74 +20,123 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import android.content.Context;
-import android.content.SharedPreferences;
+import android.os.Parcel;
 
 import androidx.annotation.NonNull;
-import androidx.preference.PreferenceManager;
+import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 
 /**
  * Used for {@link androidx.preference.SwitchPreference}.
  */
 public class PBoolean
-        extends PPrefBase<Boolean> {
+        implements PPref<Boolean> {
+
+    /** The {@link BooklistStyle} this preference belongs to. */
+    @NonNull
+    private final BooklistStyle mStyle;
+
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final Boolean mDefaultValue;
+
+    /** key for the Preference. */
+    @NonNull
+    private final String mKey;
+    /** in memory value used for non-persistence situations. */
+    @Nullable
+    private Boolean mNonPersistedValue;
 
     /**
      * Constructor. Uses the global setting as the default value,
      * or {@code false} if there is no global default.
      *
-     * @param sp           Style preferences reference.
-     * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param key          key of preference
+     * @param key preference key
      */
-    public PBoolean(@NonNull final SharedPreferences sp,
-                    final boolean isPersistent,
+    public PBoolean(@NonNull final BooklistStyle style,
                     @NonNull final String key) {
-        super(sp, isPersistent, key, false);
+        mStyle = style;
+        mKey = key;
+        mDefaultValue = false;
     }
 
     /**
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
-     * @param sp           Style preferences reference.
-     * @param isPersistent {@code true} to persist the value, {@code false} for in-memory only.
-     * @param key          key of preference
-     * @param defValue     in memory default
+     * @param key      preference key
+     * @param defValue default value
      */
-    public PBoolean(final SharedPreferences sp,
-                    final boolean isPersistent,
+    public PBoolean(@NonNull final BooklistStyle style,
                     @NonNull final String key,
-                    @NonNull final Boolean defValue) {
-        super(sp, isPersistent, key, defValue);
+                    final boolean defValue) {
+        mStyle = style;
+        mKey = key;
+        mDefaultValue = defValue;
     }
 
     @NonNull
-    public Boolean getGlobalValue(@NonNull final Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(getKey(), mDefaultValue);
+    @Override
+    public String getKey() {
+        return mKey;
     }
 
     @Override
-    public void set(@NonNull final SharedPreferences.Editor ed,
-                    @NonNull final Boolean value) {
-        ed.putBoolean(getKey(), value);
+    public void set(@Nullable final Boolean value) {
+        if (mStyle.isUserDefined()) {
+            mStyle.getSettings().setBoolean(getKey(), value);
+        } else {
+            mNonPersistedValue = value;
+        }
     }
 
     @NonNull
     @Override
     public Boolean getValue(@NonNull final Context context) {
-        if (mIsPersistent) {
-            // reminder: it's a primitive so we must test on contains first
-            if (mStylePrefs.contains(getKey())) {
-                return mStylePrefs.getBoolean(getKey(), mDefaultValue);
+        if (mStyle.isUserDefined()) {
+            final Boolean value = mStyle.getSettings().getBoolean(context, getKey());
+            if (value != null) {
+                return value;
             }
-            return getGlobalValue(context);
-        } else {
-            return mNonPersistedValue != null ? mNonPersistedValue : mDefaultValue;
+        } else if (mNonPersistedValue != null) {
+            return mNonPersistedValue;
         }
+
+        return mDefaultValue;
     }
 
     public boolean isTrue(@NonNull final Context context) {
         return getValue(context);
+    }
+
+    public void writeToParcel(@NonNull final Parcel dest) {
+        if (mStyle.isUserDefined()) {
+            dest.writeValue(getValue(App.getAppContext()));
+        } else {
+            // Write the in-memory value to the parcel.
+            // Do NOT use 'get' as that would return the default if the actual value is not set.
+            dest.writeValue(mNonPersistedValue);
+        }
+    }
+
+    public void set(@NonNull final Parcel in) {
+        final Boolean tmp = (Boolean) in.readValue(getClass().getClassLoader());
+        if (tmp != null) {
+            set(tmp);
+        }
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "PBoolean{"
+               + "mStyle=" + mStyle.getUuid()
+               + ", mKey=`" + mKey + '`'
+               + ", mDefaultValue=" + mDefaultValue
+               + ", mNonPersistedValue=" + mNonPersistedValue
+               + ", value=" + getValue(App.getAppContext())
+               + '}';
     }
 }

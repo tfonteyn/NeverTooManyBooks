@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.text.TextUtils;
 
@@ -70,44 +69,42 @@ public class Filters {
     /**
      * Constructor.
      *
-     * @param stylePrefs    the SharedPreferences for the style
-     * @param isUserDefined flag
+     * @param style the style
      */
-    public Filters(@NonNull final SharedPreferences stylePrefs,
-                   final boolean isUserDefined) {
+    public Filters(@NonNull final BooklistStyle style) {
 
         mFilters.put(PK_FILTER_READ,
-                     new BooleanFilter(stylePrefs, isUserDefined, R.string.lbl_read,
+                     new BooleanFilter(style, R.string.lbl_read,
                                        PK_FILTER_READ,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_READ));
 
         mFilters.put(PK_FILTER_SIGNED,
-                     new BooleanFilter(stylePrefs, isUserDefined, R.string.lbl_signed,
+                     new BooleanFilter(style, R.string.lbl_signed,
                                        PK_FILTER_SIGNED,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_SIGNED));
 
         mFilters.put(PK_FILTER_ANTHOLOGY,
-                     new BooleanFilter(stylePrefs, isUserDefined, R.string.lbl_anthology,
+                     new BooleanFilter(style, R.string.lbl_anthology,
                                        PK_FILTER_ANTHOLOGY,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_TOC_BITMASK));
 
         mFilters.put(PK_FILTER_LEND,
-                     new BooleanFilter(stylePrefs, isUserDefined, R.string.lbl_lend_out,
+                     new BooleanFilter(style, R.string.lbl_lend_out,
                                        PK_FILTER_LEND,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_LOANEE));
 
         mFilters.put(PK_FILTER_EDITIONS,
-                     new BitmaskFilter(stylePrefs, isUserDefined, R.string.lbl_edition,
+                     new BitmaskFilter(style, R.string.lbl_edition,
                                        PK_FILTER_EDITIONS, 0, Book.Edition.BITMASK_ALL,
                                        DBDefinitions.TBL_BOOKS,
                                        DBDefinitions.KEY_EDITION_BITMASK));
 
         mFilters.put(PK_FILTER_ISBN,
-                     new NotEmptyFilter(stylePrefs, isUserDefined, R.string.lbl_isbn,
+                     new NotEmptyFilter(style, R.string.lbl_isbn,
                                         PK_FILTER_ISBN,
                                         DBDefinitions.TBL_BOOKS,
                                         DBDefinitions.KEY_ISBN));

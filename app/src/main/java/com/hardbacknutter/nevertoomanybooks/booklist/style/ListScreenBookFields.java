@@ -71,42 +71,20 @@ public class ListScreenBookFields
 
     /**
      * Constructor.
-     *
-     * @param stylePrefs    the SharedPreferences for the style
-     * @param isUserDefined flag
      */
-    ListScreenBookFields(@NonNull final SharedPreferences stylePrefs,
-                         final boolean isUserDefined) {
+    ListScreenBookFields(@NonNull final BooklistStyle style) {
 
-        mThumbnailScale = new PInteger(stylePrefs, isUserDefined, PK_COVER_SCALE,
-                                       BooklistStyle.IMAGE_SCALE_DEFAULT);
+        mThumbnailScale = new PInteger(style, PK_COVER_SCALE, ListStyle.IMAGE_SCALE_DEFAULT);
 
-        mFields.put(PK_COVERS,
-                    new PBoolean(stylePrefs, isUserDefined, PK_COVERS, true));
-
-        mFields.put(PK_AUTHOR,
-                    new PBoolean(stylePrefs, isUserDefined, PK_AUTHOR));
-
-        mFields.put(PK_PUBLISHER,
-                    new PBoolean(stylePrefs, isUserDefined, PK_PUBLISHER));
-
-        mFields.put(PK_PUB_DATE,
-                    new PBoolean(stylePrefs, isUserDefined, PK_PUB_DATE));
-
-        mFields.put(PK_ISBN,
-                    new PBoolean(stylePrefs, isUserDefined, PK_ISBN));
-
-        mFields.put(PK_FORMAT,
-                    new PBoolean(stylePrefs, isUserDefined, PK_FORMAT));
-
-        mFields.put(PK_LOCATION,
-                    new PBoolean(stylePrefs, isUserDefined, PK_LOCATION));
-
-        mFields.put(PK_RATING,
-                    new PBoolean(stylePrefs, isUserDefined, PK_RATING));
-
-        mFields.put(PK_BOOKSHELVES,
-                    new PBoolean(stylePrefs, isUserDefined, PK_BOOKSHELVES));
+        mFields.put(PK_COVERS, new PBoolean(style, PK_COVERS, true));
+        mFields.put(PK_AUTHOR, new PBoolean(style, PK_AUTHOR));
+        mFields.put(PK_PUBLISHER, new PBoolean(style, PK_PUBLISHER));
+        mFields.put(PK_PUB_DATE, new PBoolean(style, PK_PUB_DATE));
+        mFields.put(PK_ISBN, new PBoolean(style, PK_ISBN));
+        mFields.put(PK_FORMAT, new PBoolean(style, PK_FORMAT));
+        mFields.put(PK_LOCATION, new PBoolean(style, PK_LOCATION));
+        mFields.put(PK_RATING, new PBoolean(style, PK_RATING));
+        mFields.put(PK_BOOKSHELVES, new PBoolean(style, PK_BOOKSHELVES));
     }
 
     /**
@@ -116,14 +94,14 @@ public class ListScreenBookFields
      *
      * @return scale id
      */
-    @BooklistStyle.CoverScale
+    @ListStyle.CoverScale
     public int getCoverScale(@NonNull final Context context) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (isShowField(context, prefs, PK_COVERS)) {
+        if (isShowField(context, global, PK_COVERS)) {
             return mThumbnailScale.getValue(context);
         }
-        return BooklistStyle.IMAGE_SCALE_0_NOT_DISPLAYED;
+        return ListStyle.IMAGE_SCALE_0_NOT_DISPLAYED;
     }
 
     /**

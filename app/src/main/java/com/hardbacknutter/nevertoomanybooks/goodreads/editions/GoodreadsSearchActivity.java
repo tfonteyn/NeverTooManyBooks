@@ -46,7 +46,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityGoodreadsSearchBinding;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -228,9 +228,9 @@ public class GoodreadsSearchActivity
             super(itemView);
 
             coverView = itemView.findViewById(R.id.coverImage0);
-            final SharedPreferences prefs = PreferenceManager
+            final SharedPreferences global = PreferenceManager
                     .getDefaultSharedPreferences(itemView.getContext());
-            if (!DBDefinitions.isCoverUsed(prefs, 0)) {
+            if (!DBDefinitions.isCoverUsed(global, 0)) {
                 coverView.setVisibility(View.GONE);
             }
             authorView = itemView.findViewById(R.id.author);
@@ -262,7 +262,7 @@ public class GoodreadsSearchActivity
                     context.getResources().obtainTypedArray(R.array.cover_book_list_longest_side);
             // Same as in BoB, we use a square space and ratio multiplier
             mCoverLongestSide =
-                    coverSizes.getDimensionPixelSize(BooklistStyle.IMAGE_SCALE_DEFAULT, 0);
+                    coverSizes.getDimensionPixelSize(ListStyle.IMAGE_SCALE_DEFAULT, 0);
             coverSizes.recycle();
         }
 

@@ -266,17 +266,18 @@ public class EditBookActivity
         TabAdapter(@NonNull final FragmentActivity activity) {
             super(activity);
 
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(activity);
+            final SharedPreferences global =
+                    PreferenceManager.getDefaultSharedPreferences(activity);
 
             // Build the tab class/title list.
             mTabs.add(new TabInfo(EditBookFieldsFragment.class, R.string.tab_lbl_details));
             mTabs.add(new TabInfo(EditBookPublicationFragment.class, R.string.tab_lbl_publication));
             mTabs.add(new TabInfo(EditBookNotesFragment.class, R.string.tab_lbl_notes));
 
-            if (DBDefinitions.isUsed(prefs, DBDefinitions.KEY_TOC_BITMASK)) {
+            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_TOC_BITMASK)) {
                 mTabs.add(new TabInfo(EditBookTocFragment.class, R.string.tab_lbl_content));
             }
-            if (EditBookExternalIdFragment.showEditBookTabExternalId(prefs)) {
+            if (EditBookExternalIdFragment.showEditBookTabExternalId(global)) {
                 mTabs.add(new TabInfo(EditBookExternalIdFragment.class, R.string.tab_lbl_ext_id));
             }
         }

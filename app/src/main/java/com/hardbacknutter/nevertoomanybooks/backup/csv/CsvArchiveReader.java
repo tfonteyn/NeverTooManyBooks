@@ -89,8 +89,7 @@ public class CsvArchiveReader
     }
 
     @Override
-    public void close()
-            throws IOException {
+    public void close() {
         mDb.purge();
         mDb.close();
     }
@@ -116,6 +115,17 @@ public class CsvArchiveReader
                          @NonNull final InputStream is) {
             mName = name;
             mIs = is;
+        }
+
+        @Nullable
+        public Type getType() {
+            return Type.Books;
+        }
+
+        @NonNull
+        @Override
+        public Encoding getEncoding() {
+            return Encoding.Csv;
         }
 
         @NonNull

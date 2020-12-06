@@ -39,7 +39,7 @@ class SearchSitesTest
     @BeforeEach
     public void setUp() {
         super.setUp();
-        setupSearchEnginePreferences(mSharedPreferences);
+        setupSearchEnginePreferences();
     }
 
     @Test

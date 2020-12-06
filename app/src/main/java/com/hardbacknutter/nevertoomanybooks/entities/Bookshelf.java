@@ -38,7 +38,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 /**
  * Represents a Bookshelf.
  *
- * <strong>Warning:</strong> the {@link BooklistStyle} association is LAZY.
+ * <strong>Warning:</strong> the {@link ListStyle} association is LAZY.
  * i.o.w. the stored style UUID will/must always be validated before being used.
  * See {@link #getStyle(Context, DAO)}.
  */
@@ -117,7 +117,7 @@ public class Bookshelf
      * @param style the style to apply to this shelf
      */
     public Bookshelf(@NonNull final String name,
-                     @NonNull final BooklistStyle style) {
+                     @NonNull final ListStyle style) {
         mName = name.trim();
         mStyleUuid = style.getUuid();
     }
@@ -131,7 +131,7 @@ public class Bookshelf
      */
     private Bookshelf(@PredefinedBookshelf final long id,
                       @NonNull final String name,
-                      @NonNull final BooklistStyle style) {
+                      @NonNull final ListStyle style) {
         mId = id;
         mName = name.trim();
         mStyleUuid = style.getUuid();
@@ -216,8 +216,8 @@ public class Bookshelf
                                  StyleDAO.getDefault(context, db));
 
         } else if (id == PREFERRED) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-            final String name = prefs.getString(PREF_BOOKSHELF_CURRENT, null);
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+            final String name = global.getString(PREF_BOOKSHELF_CURRENT, null);
             if (name != null && !name.isEmpty()) {
                 return db.getBookshelfByName(name);
             }
@@ -255,10 +255,10 @@ public class Bookshelf
     /**
      * Set this bookshelf as the current/preferred.
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      */
-    public void setAsPreferred(@NonNull final SharedPreferences preferences) {
-        preferences.edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
+    public void setAsPreferred(@NonNull final SharedPreferences global) {
+        global.edit().putString(PREF_BOOKSHELF_CURRENT, mName).apply();
     }
 
     @Override
@@ -296,7 +296,7 @@ public class Bookshelf
      */
     public void setStyle(@NonNull final Context context,
                          @NonNull final DAO db,
-                         @NonNull final BooklistStyle style) {
+                         @NonNull final ListStyle style) {
         SanityCheck.requireNonZero(style.getId(), "style.getId()");
 
         mStyleUuid = style.getUuid();
@@ -313,11 +313,11 @@ public class Bookshelf
      * @return the style associated with this bookshelf.
      */
     @NonNull
-    public BooklistStyle getStyle(@NonNull final Context context,
-                                  @NonNull final DAO db) {
+    public ListStyle getStyle(@NonNull final Context context,
+                              @NonNull final DAO db) {
 
         // Always validate first
-        final BooklistStyle style = StyleDAO.getStyleOrDefault(context, db, mStyleUuid);
+        final ListStyle style = StyleDAO.getStyleOrDefault(context, db, mStyleUuid);
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;
@@ -369,7 +369,7 @@ public class Bookshelf
     public void validateStyle(@NonNull final Context context,
                               @NonNull final DAO db) {
         final String uuid = mStyleUuid;
-        final BooklistStyle style = getStyle(context, db);
+        final ListStyle style = getStyle(context, db);
         if (!uuid.equals(style.getUuid())) {
             db.update(context, this);
         }

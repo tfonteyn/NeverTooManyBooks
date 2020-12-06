@@ -133,10 +133,10 @@ public final class TipManager {
      */
     public static void reset(@NonNull final Context context,
                              @NonNull final String prefix) {
-        final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        final SharedPreferences.Editor ed = prefs.edit();
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences.Editor ed = global.edit();
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
-        for (final String key : prefs.getAll().keySet()) {
+        for (final String key : global.getAll().keySet()) {
             if (key.toLowerCase(systemLocale).startsWith(prefix.toLowerCase(systemLocale))) {
                 ed.remove(key);
             }

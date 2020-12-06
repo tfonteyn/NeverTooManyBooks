@@ -131,12 +131,12 @@ public class GoodreadsManager {
      * Check if Goodreads SYNC menus should be shown at all.
      * This does not affect searching on Goodreads.
      *
-     * @param preferences Global preferences
+     * @param global Global preferences
      *
      * @return {@code true} if menus should be shown
      */
-    public static boolean isShowSyncMenus(@NonNull final SharedPreferences preferences) {
-        return preferences.getBoolean(PREFS_SHOW_MENUS, true);
+    public static boolean isShowSyncMenus(@NonNull final SharedPreferences global) {
+        return global.getBoolean(PREFS_SHOW_MENUS, true);
     }
 
     public static boolean isCollectGenre(@NonNull final Context context) {

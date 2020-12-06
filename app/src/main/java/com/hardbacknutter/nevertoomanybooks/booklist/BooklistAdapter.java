@@ -61,8 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoaderWithCacheWrite;
@@ -123,7 +123,7 @@ public class BooklistAdapter
     /** A collection of 'in-use' flags for the fields we might display. */
     private FieldsInUse mFieldsInUse;
     /** List style to apply. */
-    private BooklistStyle mStyle;
+    private ListStyle mStyle;
     private int mGroupRowHeight;
     /** Top margin to use for Level 1 <strong>if</strong> the {@link #mGroupRowHeight} is wrap. */
     private int mGroupLevel1topMargin;
@@ -168,7 +168,7 @@ public class BooklistAdapter
      */
     public void setCursor(@NonNull final Context context,
                           @NonNull final Cursor cursor,
-                          @NonNull final BooklistStyle style) {
+                          @NonNull final ListStyle style) {
         // First set the style and prepare the related data
         mStyle = style;
         mFieldsInUse = new FieldsInUse(context, mStyle);
@@ -179,7 +179,7 @@ public class BooklistAdapter
                     .getResources().getDimensionPixelSize(R.dimen.bob_row_level_1_top_margin);
         }
 
-        @BooklistStyle.CoverScale
+        @ListStyle.CoverScale
         final int frontCoverScale = mStyle.getListScreenBookFields().getCoverScale(context);
 
         // The thumbnail scale is used to retrieve the cover dimensions
@@ -193,19 +193,19 @@ public class BooklistAdapter
         // The layout names ending in 3/4/5 are ONLY the references, they are not
         // hard coded in the layout files themselves (other than in 'tools' settings).
         switch (frontCoverScale) {
-            case BooklistStyle.IMAGE_SCALE_6_MAX:
-            case BooklistStyle.IMAGE_SCALE_5_VERY_LARGE:
+            case ListStyle.IMAGE_SCALE_6_MAX:
+            case ListStyle.IMAGE_SCALE_5_VERY_LARGE:
                 mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_5;
                 break;
 
-            case BooklistStyle.IMAGE_SCALE_4_LARGE:
+            case ListStyle.IMAGE_SCALE_4_LARGE:
                 mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_4;
                 break;
 
-            case BooklistStyle.IMAGE_SCALE_3_MEDIUM:
-            case BooklistStyle.IMAGE_SCALE_2_SMALL:
-            case BooklistStyle.IMAGE_SCALE_1_VERY_SMALL:
-            case BooklistStyle.IMAGE_SCALE_0_NOT_DISPLAYED:
+            case ListStyle.IMAGE_SCALE_3_MEDIUM:
+            case ListStyle.IMAGE_SCALE_2_SMALL:
+            case ListStyle.IMAGE_SCALE_1_VERY_SMALL:
+            case ListStyle.IMAGE_SCALE_0_NOT_DISPLAYED:
             default:
                 mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_3;
                 break;
@@ -779,44 +779,43 @@ public class BooklistAdapter
          * @param style   Current style
          */
         FieldsInUse(@NonNull final Context context,
-                    @NonNull final BooklistStyle style) {
-            final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    @NonNull final ListStyle style) {
+            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
-            read = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_READ);
-            signed = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SIGNED);
-            edition = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_EDITION_BITMASK);
-            lending = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_LOANEE);
-            series = DBDefinitions.isUsed(prefs, DBDefinitions.KEY_SERIES_TITLE);
+            read = DBDefinitions.isUsed(global, DBDefinitions.KEY_READ);
+            signed = DBDefinitions.isUsed(global, DBDefinitions.KEY_SIGNED);
+            edition = DBDefinitions.isUsed(global, DBDefinitions.KEY_EDITION_BITMASK);
+            lending = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
+            series = DBDefinitions.isUsed(global, DBDefinitions.KEY_SERIES_TITLE);
 
-            final ListScreenBookFields bookFields = style
-                    .getListScreenBookFields();
+            final ListScreenBookFields bookFields = style.getListScreenBookFields();
 
             cover = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_COVERS);
+                    .isShowField(context, global, ListScreenBookFields.PK_COVERS);
 
             author = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_AUTHOR);
+                    .isShowField(context, global, ListScreenBookFields.PK_AUTHOR);
 
             publisher = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_PUBLISHER);
+                    .isShowField(context, global, ListScreenBookFields.PK_PUBLISHER);
 
             pubDate = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_PUB_DATE);
+                    .isShowField(context, global, ListScreenBookFields.PK_PUB_DATE);
 
             isbn = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_ISBN);
+                    .isShowField(context, global, ListScreenBookFields.PK_ISBN);
 
             format = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_FORMAT);
+                    .isShowField(context, global, ListScreenBookFields.PK_FORMAT);
 
             location = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_LOCATION);
+                    .isShowField(context, global, ListScreenBookFields.PK_LOCATION);
 
             rating = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_RATING);
+                    .isShowField(context, global, ListScreenBookFields.PK_RATING);
 
             bookshelf = bookFields
-                    .isShowField(context, prefs, ListScreenBookFields.PK_BOOKSHELVES);
+                    .isShowField(context, global, ListScreenBookFields.PK_BOOKSHELVES);
         }
 
         /**
@@ -884,7 +883,7 @@ public class BooklistAdapter
          */
         abstract void onBindViewHolder(int position,
                                        @NonNull DataHolder rowData,
-                                       @NonNull BooklistStyle style);
+                                       @NonNull ListStyle style);
     }
 
     /**
@@ -1042,7 +1041,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final BooklistStyle style) {
+                              @NonNull final ListStyle style) {
             // update the in-use flags with row-data available fields. Do this once only.
             if (!mInUse.isSet) {
                 mInUse.set(rowData);
@@ -1283,7 +1282,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final BooklistStyle style) {
+                              @NonNull final ListStyle style) {
             mRatingBar.setRating(rowData.getInt(mKey));
         }
     }
@@ -1340,7 +1339,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final BooklistStyle style) {
+                              @NonNull final ListStyle style) {
             mTextView.setText(format(rowData.getString(mKey)));
 
             // Debugger help: color the row according to state
@@ -1401,7 +1400,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final BooklistStyle style) {
+                              @NonNull final ListStyle style) {
             // do the text part first
             super.onBindViewHolder(position, rowData, style);
 
@@ -1459,7 +1458,7 @@ public class BooklistAdapter
         @Override
         void onBindViewHolder(final int position,
                               @NonNull final DataHolder rowData,
-                              @NonNull final BooklistStyle style) {
+                              @NonNull final ListStyle style) {
             // grab the book language first for use in #format
             mBookLanguage = rowData.getString(DBDefinitions.KEY_LANGUAGE);
 

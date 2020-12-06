@@ -29,7 +29,9 @@ import androidx.preference.PreferenceManager;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
-/** Encapsulate the Book fields which can be shown on the Book-details screen. */
+/**
+ * Encapsulate the Book fields which can be shown on the Book-details screen.
+ */
 public class DetailScreenBookFields
         extends BookFields {
 
@@ -42,21 +44,16 @@ public class DetailScreenBookFields
     /**
      * Constructor.
      *
-     * @param context       Current context
-     * @param stylePrefs    the SharedPreferences for the style
-     * @param isUserDefined flag
+     * @param context Current context
      */
     DetailScreenBookFields(@NonNull final Context context,
-                           @NonNull final SharedPreferences stylePrefs,
-                           final boolean isUserDefined) {
+                           @NonNull final BooklistStyle style) {
 
-        final SharedPreferences globalPrefs =
-                PreferenceManager.getDefaultSharedPreferences(context);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         for (int cIdx = 0; cIdx < 2; cIdx++) {
-            mFields.put(PK_COVER[cIdx],
-                        new PBoolean(stylePrefs, isUserDefined, PK_COVER[cIdx],
-                                     DBDefinitions.isCoverUsed(globalPrefs, cIdx)));
+            mFields.put(PK_COVER[cIdx], new PBoolean(style, PK_COVER[cIdx],
+                                                     DBDefinitions.isCoverUsed(global, cIdx)));
         }
     }
 
@@ -64,15 +61,15 @@ public class DetailScreenBookFields
      * Convenience method to check if a cover (front/back) should be
      * show on the <strong>details</strong> screen.
      *
-     * @param context     Current context
-     * @param preferences the <strong>GLOBAL</strong> preferences
-     * @param cIdx        0..n image index
+     * @param context Current context
+     * @param global  the <strong>GLOBAL</strong> preferences
+     * @param cIdx    0..n image index
      *
      * @return {@code true} if in use
      */
     public boolean isShowCover(@NonNull final Context context,
-                               @NonNull final SharedPreferences preferences,
+                               @NonNull final SharedPreferences global,
                                @IntRange(from = 0, to = 1) final int cIdx) {
-        return isShowField(context, preferences, PK_COVER[cIdx]);
+        return isShowField(context, global, PK_COVER[cIdx]);
     }
 }

@@ -33,7 +33,7 @@ import java.util.Collection;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -114,7 +114,7 @@ class BooklistNodeDAO {
     private final long mBookshelfId;
     /** The current style. */
     @NonNull
-    private final BooklistStyle mStyle;
+    private final ListStyle mStyle;
 
     /** The current list table. */
     @NonNull
@@ -136,7 +136,7 @@ class BooklistNodeDAO {
     BooklistNodeDAO(@NonNull final SynchronizedDb db,
                     @NonNull final SqlStatementManager stmtManager,
                     @NonNull final TableDefinition listTable,
-                    @NonNull final BooklistStyle style,
+                    @NonNull final ListStyle style,
                     @NonNull final Bookshelf bookshelf) {
 
         mSyncedDb = db;

@@ -74,18 +74,18 @@ public final class FieldUsage {
      * <p>
      * The fieldId is used as the preference key.
      *
-     * @param fieldId     Field name
-     * @param nameResId   Field label resource id
-     * @param preferences Global preferences
-     * @param defValue    default Usage for this field
+     * @param fieldId   Field name
+     * @param nameResId Field label resource id
+     * @param global    Global preferences
+     * @param defValue  default Usage for this field
      *
      * @return new instance
      */
     public static FieldUsage create(@NonNull final String fieldId,
                                     @StringRes final int nameResId,
-                                    @NonNull final SharedPreferences preferences,
+                                    @NonNull final SharedPreferences global,
                                     @NonNull final Usage defValue) {
-        final Usage initialValue = Usage.read(preferences, fieldId, defValue);
+        final Usage initialValue = Usage.read(global, fieldId, defValue);
         return new FieldUsage(fieldId, nameResId, initialValue, defValue, false);
     }
 
@@ -96,14 +96,14 @@ public final class FieldUsage {
      *
      * @param fieldId     Field name
      * @param nameResId   Field label resource id
-     * @param preferences Global preferences
+     * @param global Global preferences
      *
      * @return new instance
      */
     public static FieldUsage createListField(@NonNull final String fieldId,
                                              @StringRes final int nameResId,
-                                             @NonNull final SharedPreferences preferences) {
-        final Usage initialValue = Usage.read(preferences, fieldId, Usage.Append);
+                                             @NonNull final SharedPreferences global) {
+        final Usage initialValue = Usage.read(global, fieldId, Usage.Append);
         return new FieldUsage(fieldId, nameResId, initialValue, Usage.Append, true);
     }
 
@@ -187,10 +187,10 @@ public final class FieldUsage {
 
         private static final String PREFS_PREFIX_FIELD_USAGE = "fields.update.usage.";
 
-        public static Usage read(@NonNull final SharedPreferences preferences,
+        public static Usage read(@NonNull final SharedPreferences global,
                                  @NonNull final String key,
                                  @NonNull final Usage defValue) {
-            final int ordinal = preferences.getInt(PREFS_PREFIX_FIELD_USAGE + key, -1);
+            final int ordinal = global.getInt(PREFS_PREFIX_FIELD_USAGE + key, -1);
             if (ordinal != -1) {
                 return Usage.values()[ordinal];
             } else {

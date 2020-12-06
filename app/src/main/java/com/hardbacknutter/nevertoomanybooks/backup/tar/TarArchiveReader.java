@@ -43,7 +43,7 @@ public class TarArchiveReader
 
     /**
      * The data stream for the archive.
-     * Do <strong>NOT</strong> use this directly, see {@link #getInputStream()}
+     * Do <strong>NOT</strong> use this directly, see {@link #getInputStream()}.
      */
     @Nullable
     private TarArchiveInputStream mInputStream;
@@ -148,6 +148,17 @@ public class TarArchiveReader
                          @NonNull final TarArchiveEntry entry) {
             mReader = reader;
             mEntry = entry;
+        }
+
+        @Nullable
+        public Type getType() {
+            return Type.getType(mEntry.getName());
+        }
+
+        @Nullable
+        @Override
+        public Encoding getEncoding() {
+            return Encoding.getEncoding(mEntry.getName());
         }
 
         @NonNull
