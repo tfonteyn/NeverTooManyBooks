@@ -27,10 +27,8 @@ import androidx.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 public interface ListStyle
@@ -105,12 +103,6 @@ public interface ListStyle
      */
     String BKEY_STYLE_MODIFIED = "ListStyle:modified";
 
-    @NonNull
-    Map<String, PPref> getPreferences();
-
-    @NonNull
-    StyleSettings getSettings();
-
     /**
      * Get the UUID for this style.
      *
@@ -143,8 +135,6 @@ public interface ListStyle
     }
 
 
-    int getMenuPosition();
-
     /**
      * Set the menu position of this style as sorted by the user.
      *
@@ -153,6 +143,8 @@ public interface ListStyle
      * @param menuPosition to set
      */
     void setMenuPosition(int menuPosition);
+
+    int getMenuPosition();
 
     /**
      * Check if this is a user preferred style.
@@ -168,7 +160,7 @@ public interface ListStyle
      *
      * @param isPreferred flag
      */
-    void setPreferred(boolean isPreferred);
+    void setPreferred(final boolean isPreferred);
 
     /**
      * Check if the style wants the specified header to be displayed.
@@ -226,8 +218,22 @@ public interface ListStyle
 
     boolean isShowBooksUnderEachAuthor(@NonNull Context context);
 
+    /**
+     * Whether the user prefers the Author names displayed by Given names, or by Family name first.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} when Given names should come first
+     */
     boolean isShowAuthorByGivenName(@NonNull Context context);
 
+    /**
+     * Whether the user prefers the Author names sorted by Given names, or by Family name first.
+     *
+     * @param context Current context
+     *
+     * @return {@code true} when Given names should come first
+     */
     boolean isSortAuthorByGivenName(@NonNull Context context);
 
     int getPrimaryAuthorType(@NonNull Context context);

@@ -57,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -2054,7 +2055,7 @@ public class DAO
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
-    public long insert(@NonNull final BooklistStyle style) {
+    public long insert(@NonNull final UserStyle style) {
         try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlInsert.BOOKLIST_STYLE)) {
             stmt.bindString(1, style.getUuid());

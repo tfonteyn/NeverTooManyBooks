@@ -540,7 +540,7 @@ public class PreferredStylesFragment
         private void onItemCheckChanged(@NonNull final Holder holder) {
             // current row/style
             final int position = holder.getBindingAdapterPosition();
-            final ListStyle style = getItem(position);
+            final BooklistStyle style = getItem(position);
 
             // handle the 'preferred' state of the current row/style
             final boolean checked = !style.isPreferred();

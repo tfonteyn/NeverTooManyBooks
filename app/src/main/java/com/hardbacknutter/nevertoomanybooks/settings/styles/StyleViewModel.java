@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class StyleViewModel
@@ -82,7 +83,7 @@ public class StyleViewModel
             } else {
                 // we're doing the global preferences, create a placeholder style with an empty uuid
                 // and let it use the standard SharedPreferences
-                mStyle = new BooklistStyle(context);
+                mStyle = new UserStyle(context);
             }
         }
     }

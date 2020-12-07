@@ -39,6 +39,9 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
 
+/**
+ * Encapsulate the SharedPreferences access for styles.
+ */
 public class StyleSettings {
 
     /**
@@ -52,6 +55,9 @@ public class StyleSettings {
 
     private static final String TAG = "StyleSettings";
 
+    /** Style unique name. */
+    private static final String PK_STYLE_UUID = "style.booklist.uuid";
+
     @NonNull
     private final SharedPreferences mStylePrefs;
 
@@ -59,6 +65,10 @@ public class StyleSettings {
                   @NonNull final String uuid) {
         if (!uuid.isEmpty()) {
             mStylePrefs = context.getSharedPreferences(uuid, Context.MODE_PRIVATE);
+            if (!mStylePrefs.contains(PK_STYLE_UUID)) {
+                // Storing the uuid is not actually needed but handy to have for debug
+                mStylePrefs.edit().putString(PK_STYLE_UUID, uuid).apply();
+            }
         } else {
             // Doing this here is much easier then doing it each time access is needed.
             // The downside is that when the global settings are accessed,

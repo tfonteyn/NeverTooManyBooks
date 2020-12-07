@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -850,17 +851,22 @@ public class XmlRecordReader
         public void startElement(final int version,
                                  @NonNull final TagInfo tag) {
 
-            final String uuid = tag.name;
+            String uuid = tag.attrs.getValue(DBDefinitions.KEY_UUID);
+            if (uuid == null) {
+                // backwards compatibility
+                uuid = tag.name;
+            }
+
             SanityCheck.requireValue(uuid, "uuid");
 
-            if (BooklistStyle.isBuiltin(uuid)) {
+            if (StyleDAO.Builtin.isBuiltin(uuid)) {
                 //noinspection ConstantConditions
                 mStyle = StyleDAO.getStyle(mContext, mDb, uuid);
                 mStylePrefs = null;
 
             } else {
                 // create a new Style object. This will not have any groups assigned to it...
-                mStyle = new BooklistStyle(mContext, uuid);
+                mStyle = new UserStyle(mContext, uuid, tag.name);
                 //... and hence, the Style Preferences won't have any group Preferences either.
                 // Reminder: the map mStylePrefs is NOT a part of the style,
                 // but the elements IN this map ARE.
@@ -921,9 +927,14 @@ public class XmlRecordReader
         public void putString(@NonNull final String key,
                               @NonNull final String value) {
             if (mStylePrefs != null) {
-                final PPref<String> p = (PString) mStylePrefs.get(key);
-                if (p != null) {
-                    p.set(value);
+                if (UserStyle.PK_STYLE_NAME.equals(key) && mStyle instanceof UserStyle) {
+                    // backwards compatibility
+                    ((UserStyle) mStyle).setName(value);
+                } else {
+                    final PPref<String> p = (PString) mStylePrefs.get(key);
+                    if (p != null) {
+                        p.set(value);
+                    }
                 }
             }
         }

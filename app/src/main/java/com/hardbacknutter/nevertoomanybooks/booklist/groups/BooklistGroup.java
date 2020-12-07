@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -245,7 +246,7 @@ public class BooklistGroup
             if (!uuid.isEmpty()) {
                 mStyle = Objects.requireNonNull(StyleDAO.getStyle(App.getAppContext(), db, uuid));
             } else {
-                mStyle = new BooklistStyle(App.getAppContext());
+                mStyle = new UserStyle(App.getAppContext());
             }
         }
 

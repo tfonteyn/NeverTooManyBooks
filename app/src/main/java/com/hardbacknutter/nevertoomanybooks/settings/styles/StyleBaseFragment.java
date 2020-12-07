@@ -29,7 +29,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
@@ -55,7 +54,7 @@ public abstract class StyleBaseFragment
         //noinspection ConstantConditions
         mStyleViewModel.init(getContext(), requireArguments());
 
-        final BooklistStyle style = mStyleViewModel.getStyle();
+        final ListStyle style = mStyleViewModel.getStyle();
         if (!style.isGlobal()) {
             // non-global, set the correct UUID SharedPreferences to use
             getPreferenceManager().setSharedPreferencesName(style.getUuid());

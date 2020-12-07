@@ -48,6 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookField
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostingActivity;
@@ -129,7 +130,7 @@ public class StyleFragment
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
         //noinspection ConstantConditions
-        final BooklistStyle globalStyle = new BooklistStyle(getContext());
+        final BooklistStyle globalStyle = new UserStyle(getContext());
         final Groups styleGroups = mStyleViewModel.getStyle().getGroups();
 
         for (final BooklistGroup group : BooklistGroup.getAllGroups(getContext(), globalStyle)) {
@@ -145,7 +146,7 @@ public class StyleFragment
         // for new (i.e. cloned) styles, auto-popup the name field for the user to change it.
         if (mStyleViewModel.getStyle().getId() == 0) {
             //noinspection ConstantConditions
-            findPreference(BooklistStyle.PK_STYLE_NAME).setViewId(R.id.STYLE_NAME_VIEW);
+            findPreference(UserStyle.PK_STYLE_NAME).setViewId(R.id.STYLE_NAME_VIEW);
             // We need this convoluted approach as the view we want to click
             // will only exist after the RecyclerView has bound it.
             getListView().addOnChildAttachStateChangeListener(

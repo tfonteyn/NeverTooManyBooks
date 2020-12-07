@@ -83,28 +83,28 @@ public final class StyleDAO {
         style.setId(db.getStyleIdByUuid(style.getUuid()));
 
         if (style.getId() == 0) {
-            return insert(db, style);
+            if (BuildConfig.DEBUG /* always */) {
+                if (style.isBuiltin()) {
+                    throw new IllegalArgumentException("Builtin Style cannot be inserted");
+                }
+            }
+            return insert(db, (UserStyle) style);
+
         } else {
             return update(db, style);
         }
     }
 
     /**
-     * Insert the given style.
+     * Insert the given UserStyle.
      *
      * @param db    Database Access
-     * @param style to update
+     * @param style to insert
      *
      * @return {@code true} on success
      */
     public static boolean insert(@NonNull final DAO db,
-                                 @NonNull final BooklistStyle style) {
-
-        if (BuildConfig.DEBUG /* always */) {
-            if (style.isBuiltin()) {
-                throw new IllegalArgumentException("Builtin Style cannot be inserted");
-            }
-        }
+                                 @NonNull final UserStyle style) {
 
         if (db.insert(style) > 0) {
             UserStyles.S_USER_STYLES.put(style.getUuid(), style);
@@ -131,9 +131,9 @@ public final class StyleDAO {
 
         if (db.update(style)) {
             if (style.isUserDefined()) {
-                UserStyles.S_USER_STYLES.put(style.getUuid(), style);
+                UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
             } else {
-                Builtin.S_BUILTIN_STYLES.put(style.getUuid(), style);
+                Builtin.S_BUILTIN_STYLES.put(style.getUuid(), (BuiltinStyle) style);
             }
             return true;
         }
@@ -344,7 +344,7 @@ public final class StyleDAO {
          * <p>
          * Key: uuid of style.
          */
-        private static final Map<String, BooklistStyle> S_USER_STYLES = new LinkedHashMap<>();
+        private static final Map<String, UserStyle> S_USER_STYLES = new LinkedHashMap<>();
 
         private UserStyles() {
 
@@ -363,16 +363,16 @@ public final class StyleDAO {
          * @return an ordered unmodifiableMap of BooklistStyle
          */
         @NonNull
-        static Map<String, BooklistStyle> getStyles(@NonNull final Context context,
-                                                    @NonNull final DAO db) {
+        static Map<String, UserStyle> getStyles(@NonNull final Context context,
+                                                @NonNull final DAO db) {
             if (S_USER_STYLES.isEmpty()) {
-                final Map<String, BooklistStyle> map = new LinkedHashMap<>();
+                final Map<String, UserStyle> map = new LinkedHashMap<>();
 
                 try (Cursor cursor = db.fetchStyles(true)) {
                     final DataHolder rowData = new CursorRow(cursor);
                     while (cursor.moveToNext()) {
                         final String uuid = rowData.getString(DBDefinitions.KEY_UUID);
-                        map.put(uuid, new BooklistStyle(context, rowData));
+                        map.put(uuid, new UserStyle(context, rowData));
                     }
                 }
 
@@ -514,7 +514,7 @@ public final class StyleDAO {
          * <p>
          * Key: uuid of style.
          */
-        private static final Map<String, BooklistStyle> S_BUILTIN_STYLES = new LinkedHashMap<>();
+        private static final Map<String, BuiltinStyle> S_BUILTIN_STYLES = new LinkedHashMap<>();
 
         private Builtin() {
         }
@@ -532,8 +532,8 @@ public final class StyleDAO {
          * @return style {@link #AUTHOR_THEN_SERIES_ID}
          */
         @NonNull
-        public static BooklistStyle getDefault(@NonNull final Context context,
-                                               @NonNull final DAO db) {
+        public static BuiltinStyle getDefault(@NonNull final Context context,
+                                              @NonNull final DAO db) {
             if (S_BUILTIN_STYLES.isEmpty()) {
                 create(context, db);
             }
@@ -550,8 +550,8 @@ public final class StyleDAO {
          * @return an ordered unmodifiableMap of all builtin styles.
          */
         @NonNull
-        static Map<String, BooklistStyle> getStyles(@NonNull final Context context,
-                                                    @NonNull final DAO db) {
+        static Map<String, BuiltinStyle> getStyles(@NonNull final Context context,
+                                                   @NonNull final DAO db) {
 
             if (S_BUILTIN_STYLES.isEmpty()) {
                 create(context, db);
@@ -559,7 +559,7 @@ public final class StyleDAO {
             return Collections.unmodifiableMap(S_BUILTIN_STYLES);
         }
 
-        static boolean isBuiltin(@NonNull final String uuid) {
+        public static boolean isBuiltin(@NonNull final String uuid) {
             if (!uuid.isEmpty()) {
                 for (final String key : ID_UUID) {
                     if (key.equals(uuid)) {
@@ -599,232 +599,232 @@ public final class StyleDAO {
                 }
             }
 
-            BooklistStyle style;
+            BuiltinStyle style;
 
             // Author/Series
-            style = new BooklistStyle(context,
-                                      AUTHOR_THEN_SERIES_ID,
-                                      AUTHOR_THEN_SERIES_UUID,
-                                      R.string.style_builtin_author_series,
-                                      preferred.get(AUTHOR_THEN_SERIES_ID),
-                                      menuPos.get(AUTHOR_THEN_SERIES_ID),
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     AUTHOR_THEN_SERIES_ID,
+                                     AUTHOR_THEN_SERIES_UUID,
+                                     R.string.style_builtin_author_series,
+                                     preferred.get(AUTHOR_THEN_SERIES_ID),
+                                     menuPos.get(AUTHOR_THEN_SERIES_ID),
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Unread
-            style = new BooklistStyle(context,
-                                      UNREAD_AUTHOR_THEN_SERIES_ID,
-                                      UNREAD_AUTHOR_THEN_SERIES_UUID,
-                                      R.string.style_builtin_unread,
-                                      preferred.get(UNREAD_AUTHOR_THEN_SERIES_ID),
-                                      menuPos.get(UNREAD_AUTHOR_THEN_SERIES_ID),
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     UNREAD_AUTHOR_THEN_SERIES_ID,
+                                     UNREAD_AUTHOR_THEN_SERIES_UUID,
+                                     R.string.style_builtin_unread,
+                                     preferred.get(UNREAD_AUTHOR_THEN_SERIES_ID),
+                                     menuPos.get(UNREAD_AUTHOR_THEN_SERIES_ID),
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             style.getFilters().setFilter(Filters.PK_FILTER_READ, false);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Compact
-            style = new BooklistStyle(context,
-                                      COMPACT_ID,
-                                      COMPACT_UUID,
-                                      R.string.style_builtin_compact,
-                                      preferred.get(COMPACT_ID),
-                                      menuPos.get(COMPACT_ID),
-                                      BooklistGroup.AUTHOR);
+            style = new BuiltinStyle(context,
+                                     COMPACT_ID,
+                                     COMPACT_UUID,
+                                     R.string.style_builtin_compact,
+                                     preferred.get(COMPACT_ID),
+                                     menuPos.get(COMPACT_ID),
+                                     BooklistGroup.AUTHOR);
             style.getTextScale().setScale(TextScale.TEXT_SCALE_1_SMALL);
             style.getListScreenBookFields()
                  .setShowField(ListScreenBookFields.PK_COVERS, false);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Title
-            style = new BooklistStyle(context,
-                                      TITLE_FIRST_LETTER_ID,
-                                      TITLE_FIRST_LETTER_UUID,
-                                      R.string.style_builtin_first_letter_book_title,
-                                      preferred.get(TITLE_FIRST_LETTER_ID),
-                                      menuPos.get(TITLE_FIRST_LETTER_ID),
-                                      BooklistGroup.BOOK_TITLE_LETTER);
+            style = new BuiltinStyle(context,
+                                     TITLE_FIRST_LETTER_ID,
+                                     TITLE_FIRST_LETTER_UUID,
+                                     R.string.style_builtin_first_letter_book_title,
+                                     preferred.get(TITLE_FIRST_LETTER_ID),
+                                     menuPos.get(TITLE_FIRST_LETTER_ID),
+                                     BooklistGroup.BOOK_TITLE_LETTER);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Series
-            style = new BooklistStyle(context,
-                                      SERIES_ID,
-                                      SERIES_UUID,
-                                      R.string.style_builtin_series,
-                                      preferred.get(SERIES_ID),
-                                      menuPos.get(SERIES_ID),
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     SERIES_ID,
+                                     SERIES_UUID,
+                                     R.string.style_builtin_series,
+                                     preferred.get(SERIES_ID),
+                                     menuPos.get(SERIES_ID),
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Genre
-            style = new BooklistStyle(context,
-                                      GENRE_ID,
-                                      GENRE_UUID,
-                                      R.string.style_builtin_genre,
-                                      preferred.get(GENRE_ID),
-                                      menuPos.get(GENRE_ID),
-                                      BooklistGroup.GENRE,
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     GENRE_ID,
+                                     GENRE_UUID,
+                                     R.string.style_builtin_genre,
+                                     preferred.get(GENRE_ID),
+                                     menuPos.get(GENRE_ID),
+                                     BooklistGroup.GENRE,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Lending
-            style = new BooklistStyle(context,
-                                      LENDING_ID,
-                                      LENDING_UUID,
-                                      R.string.style_builtin_lending,
-                                      preferred.get(LENDING_ID),
-                                      menuPos.get(LENDING_ID),
-                                      BooklistGroup.LENDING,
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     LENDING_ID,
+                                     LENDING_UUID,
+                                     R.string.style_builtin_lending,
+                                     preferred.get(LENDING_ID),
+                                     menuPos.get(LENDING_ID),
+                                     BooklistGroup.LENDING,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Read & Unread
-            style = new BooklistStyle(context,
-                                      READ_AND_UNREAD_ID,
-                                      READ_AND_UNREAD_UUID,
-                                      R.string.style_builtin_read_and_unread,
-                                      preferred.get(READ_AND_UNREAD_ID),
-                                      menuPos.get(READ_AND_UNREAD_ID),
-                                      BooklistGroup.READ_STATUS,
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     READ_AND_UNREAD_ID,
+                                     READ_AND_UNREAD_UUID,
+                                     R.string.style_builtin_read_and_unread,
+                                     preferred.get(READ_AND_UNREAD_ID),
+                                     menuPos.get(READ_AND_UNREAD_ID),
+                                     BooklistGroup.READ_STATUS,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Publication date
-            style = new BooklistStyle(context,
-                                      PUBLICATION_DATA_ID,
-                                      PUBLICATION_DATA_UUID,
-                                      R.string.style_builtin_publication_date,
-                                      preferred.get(PUBLICATION_DATA_ID),
-                                      menuPos.get(PUBLICATION_DATA_ID),
-                                      BooklistGroup.DATE_PUBLISHED_YEAR,
-                                      BooklistGroup.DATE_PUBLISHED_MONTH,
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     PUBLICATION_DATA_ID,
+                                     PUBLICATION_DATA_UUID,
+                                     R.string.style_builtin_publication_date,
+                                     preferred.get(PUBLICATION_DATA_ID),
+                                     menuPos.get(PUBLICATION_DATA_ID),
+                                     BooklistGroup.DATE_PUBLISHED_YEAR,
+                                     BooklistGroup.DATE_PUBLISHED_MONTH,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Added date
-            style = new BooklistStyle(context,
-                                      DATE_ADDED_ID,
-                                      DATE_ADDED_UUID,
-                                      R.string.style_builtin_added_date,
-                                      preferred.get(DATE_ADDED_ID),
-                                      menuPos.get(DATE_ADDED_ID),
-                                      BooklistGroup.DATE_ADDED_YEAR,
-                                      BooklistGroup.DATE_ADDED_MONTH,
-                                      BooklistGroup.DATE_ADDED_DAY,
-                                      BooklistGroup.AUTHOR);
+            style = new BuiltinStyle(context,
+                                     DATE_ADDED_ID,
+                                     DATE_ADDED_UUID,
+                                     R.string.style_builtin_added_date,
+                                     preferred.get(DATE_ADDED_ID),
+                                     menuPos.get(DATE_ADDED_ID),
+                                     BooklistGroup.DATE_ADDED_YEAR,
+                                     BooklistGroup.DATE_ADDED_MONTH,
+                                     BooklistGroup.DATE_ADDED_DAY,
+                                     BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Acquired date
-            style = new BooklistStyle(context,
-                                      DATE_ACQUIRED_ID,
-                                      DATE_ACQUIRED_UUID,
-                                      R.string.style_builtin_acquired_date,
-                                      preferred.get(DATE_ACQUIRED_ID),
-                                      menuPos.get(DATE_ACQUIRED_ID),
-                                      BooklistGroup.DATE_ACQUIRED_YEAR,
-                                      BooklistGroup.DATE_ACQUIRED_MONTH,
-                                      BooklistGroup.DATE_ACQUIRED_DAY,
-                                      BooklistGroup.AUTHOR);
+            style = new BuiltinStyle(context,
+                                     DATE_ACQUIRED_ID,
+                                     DATE_ACQUIRED_UUID,
+                                     R.string.style_builtin_acquired_date,
+                                     preferred.get(DATE_ACQUIRED_ID),
+                                     menuPos.get(DATE_ACQUIRED_ID),
+                                     BooklistGroup.DATE_ACQUIRED_YEAR,
+                                     BooklistGroup.DATE_ACQUIRED_MONTH,
+                                     BooklistGroup.DATE_ACQUIRED_DAY,
+                                     BooklistGroup.AUTHOR);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Author/Publication date
-            style = new BooklistStyle(context,
-                                      AUTHOR_AND_YEAR_ID,
-                                      AUTHOR_AND_YEAR_UUID,
-                                      R.string.style_builtin_author_year,
-                                      preferred.get(AUTHOR_AND_YEAR_ID),
-                                      menuPos.get(AUTHOR_AND_YEAR_ID),
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.DATE_PUBLISHED_YEAR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     AUTHOR_AND_YEAR_ID,
+                                     AUTHOR_AND_YEAR_UUID,
+                                     R.string.style_builtin_author_year,
+                                     preferred.get(AUTHOR_AND_YEAR_ID),
+                                     menuPos.get(AUTHOR_AND_YEAR_ID),
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.DATE_PUBLISHED_YEAR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Format
-            style = new BooklistStyle(context,
-                                      FORMAT_ID,
-                                      FORMAT_UUID,
-                                      R.string.style_builtin_format,
-                                      preferred.get(FORMAT_ID),
-                                      menuPos.get(FORMAT_ID),
-                                      BooklistGroup.FORMAT);
+            style = new BuiltinStyle(context,
+                                     FORMAT_ID,
+                                     FORMAT_UUID,
+                                     R.string.style_builtin_format,
+                                     preferred.get(FORMAT_ID),
+                                     menuPos.get(FORMAT_ID),
+                                     BooklistGroup.FORMAT);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Read date
-            style = new BooklistStyle(context,
-                                      DATE_READ_ID,
-                                      DATE_READ_UUID,
-                                      R.string.style_builtin_read_date,
-                                      preferred.get(DATE_READ_ID),
-                                      menuPos.get(DATE_READ_ID),
-                                      BooklistGroup.DATE_READ_YEAR,
-                                      BooklistGroup.DATE_READ_MONTH,
-                                      BooklistGroup.AUTHOR);
+            style = new BuiltinStyle(context,
+                                     DATE_READ_ID,
+                                     DATE_READ_UUID,
+                                     R.string.style_builtin_read_date,
+                                     preferred.get(DATE_READ_ID),
+                                     menuPos.get(DATE_READ_ID),
+                                     BooklistGroup.DATE_READ_YEAR,
+                                     BooklistGroup.DATE_READ_MONTH,
+                                     BooklistGroup.AUTHOR);
             style.getFilters().setFilter(Filters.PK_FILTER_READ, true);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
-            style = new BooklistStyle(context,
-                                      LOCATION_ID,
-                                      LOCATION_UUID,
-                                      R.string.style_builtin_location,
-                                      preferred.get(LOCATION_ID),
-                                      menuPos.get(LOCATION_ID),
-                                      BooklistGroup.LOCATION,
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     LOCATION_ID,
+                                     LOCATION_UUID,
+                                     R.string.style_builtin_location,
+                                     preferred.get(LOCATION_ID),
+                                     menuPos.get(LOCATION_ID),
+                                     BooklistGroup.LOCATION,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Location
-            style = new BooklistStyle(context,
-                                      LANGUAGE_ID,
-                                      LANGUAGE_UUID,
-                                      R.string.style_builtin_language,
-                                      preferred.get(LANGUAGE_ID),
-                                      menuPos.get(LANGUAGE_ID),
-                                      BooklistGroup.LANGUAGE,
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     LANGUAGE_ID,
+                                     LANGUAGE_UUID,
+                                     R.string.style_builtin_language,
+                                     preferred.get(LANGUAGE_ID),
+                                     menuPos.get(LANGUAGE_ID),
+                                     BooklistGroup.LANGUAGE,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Rating
-            style = new BooklistStyle(context,
-                                      RATING_ID,
-                                      RATING_UUID,
-                                      R.string.style_builtin_rating,
-                                      preferred.get(RATING_ID),
-                                      menuPos.get(RATING_ID),
-                                      BooklistGroup.RATING,
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     RATING_ID,
+                                     RATING_UUID,
+                                     R.string.style_builtin_rating,
+                                     preferred.get(RATING_ID),
+                                     menuPos.get(RATING_ID),
+                                     BooklistGroup.RATING,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Bookshelf
-            style = new BooklistStyle(context,
-                                      BOOKSHELF_ID,
-                                      BOOKSHELF_UUID,
-                                      R.string.style_builtin_bookshelf,
-                                      preferred.get(BOOKSHELF_ID),
-                                      menuPos.get(BOOKSHELF_ID),
-                                      BooklistGroup.BOOKSHELF,
-                                      BooklistGroup.AUTHOR,
-                                      BooklistGroup.SERIES);
+            style = new BuiltinStyle(context,
+                                     BOOKSHELF_ID,
+                                     BOOKSHELF_UUID,
+                                     R.string.style_builtin_bookshelf,
+                                     preferred.get(BOOKSHELF_ID),
+                                     menuPos.get(BOOKSHELF_ID),
+                                     BooklistGroup.BOOKSHELF,
+                                     BooklistGroup.AUTHOR,
+                                     BooklistGroup.SERIES);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
             // Update date
-            style = new BooklistStyle(context,
-                                      DATE_LAST_UPDATE_ID,
-                                      DATE_LAST_UPDATE_UUID,
-                                      R.string.style_builtin_update_date,
-                                      preferred.get(DATE_LAST_UPDATE_ID),
-                                      menuPos.get(DATE_LAST_UPDATE_ID),
-                                      BooklistGroup.DATE_LAST_UPDATE_YEAR,
-                                      BooklistGroup.DATE_LAST_UPDATE_MONTH,
-                                      BooklistGroup.DATE_LAST_UPDATE_DAY);
+            style = new BuiltinStyle(context,
+                                     DATE_LAST_UPDATE_ID,
+                                     DATE_LAST_UPDATE_UUID,
+                                     R.string.style_builtin_update_date,
+                                     preferred.get(DATE_LAST_UPDATE_ID),
+                                     menuPos.get(DATE_LAST_UPDATE_ID),
+                                     BooklistGroup.DATE_LAST_UPDATE_YEAR,
+                                     BooklistGroup.DATE_LAST_UPDATE_MONTH,
+                                     BooklistGroup.DATE_LAST_UPDATE_DAY);
             style.getListScreenBookFields()
                  .setShowField(ListScreenBookFields.PK_AUTHOR, true);
             S_BUILTIN_STYLES.put(style.getUuid(), style);

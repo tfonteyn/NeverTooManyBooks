@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -1035,7 +1034,7 @@ public class XmlRecordWriter
         @NonNull
         private final Iterator<BooklistStyle> it;
 
-        private ListStyle mCurrentStyle;
+        private BooklistStyle mCurrentStyle;
         /** the Preferences from the current style and the groups that have PPrefs. */
         private Map<String, PPref> mCurrentStylePPrefs;
 
@@ -1088,13 +1087,15 @@ public class XmlRecordWriter
         @NonNull
         @Override
         public String getElementTagNameAttribute() {
-            return mCurrentStyle.getUuid();
+            return mCurrentStyle.getLabel(mContext);
         }
 
         @Nullable
         @Override
         public List<Pair<String, String>> getElementTagAttributes() {
             final List<Pair<String, String>> list = new ArrayList<>();
+            list.add(new Pair<>(DBDefinitions.KEY_UUID, mCurrentStyle.getUuid()));
+
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_BUILTIN,
                                 String.valueOf(mCurrentStyle.isBuiltin())));
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_PREFERRED,

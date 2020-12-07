@@ -27,7 +27,6 @@ import android.view.ViewGroup;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.MultiSelectListPreference;
 
@@ -48,10 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 
@@ -78,24 +74,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * ... so it's a matter of extending the StyleBaseFragment and children (and group activity),
  * to allow editing global defaults.
  */
-public class BooklistStyle
+public abstract class BooklistStyle
         implements ListStyle {
-
-    /** {@link Parcelable}. */
-    public static final Creator<BooklistStyle> CREATOR = new Creator<BooklistStyle>() {
-        @Override
-        public BooklistStyle createFromParcel(@NonNull final Parcel source) {
-            return new BooklistStyle(source);
-        }
-
-        @Override
-        public BooklistStyle[] newArray(final int size) {
-            return new BooklistStyle[size];
-        }
-    };
-
-    /** Main style preferences. */
-    public static final String PK_STYLE_NAME = "style.booklist.name";
 
     /** The default expansion level for the groups. */
     public static final String PK_LEVELS_EXPANSION = "style.booklist.levels.default";
@@ -107,10 +87,6 @@ public class BooklistStyle
      * A value of {@code 0} means {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.
      */
     private static final String PK_SCALE_GROUP_ROW = "style.booklist.group.height";
-    /** Style unique name. */
-    private static final String PK_STYLE_UUID = "style.booklist.uuid";
-    /** log tag. */
-    private static final String TAG = "BooklistStyle";
 
     /**
      * The uuid based SharedPreference name.
@@ -118,145 +94,66 @@ public class BooklistStyle
      * When set to the empty string, the global preferences will be used.
      */
     @NonNull
-    private final String mUuid;
-    /**
-     * Display name of this style.
-     * Used for builtin styles.
-     * Always {@code 0} for a user-defined style
-     */
-    @StringRes
-    private final int mNameResId;
+    protected final String mUuid;
+
     /**
      * Row id of database row from which this object comes.
      * A '0' is for an as yet unsaved user-style.
      * Always NEGATIVE (e.g. <0 ) for a build-in style
      */
-    private long mId;
+    protected long mId;
     /**
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
      * <p>
      * Stored in the database.
      */
-    private int mMenuPosition;
-    /**
-     * Display name of this style.
-     * Used for user-defined styles.
-     * Encapsulated value is always {@code null} for a builtin style.
-     */
-    private PString mName;
+    protected int mMenuPosition;
     /**
      * Is this style preferred by the user; i.e. should it be shown in the preferred-list.
      * <p>
      * Stored in the database.
      */
-    private boolean mIsPreferred;
+    protected boolean mIsPreferred;
+
     /** The default number of levels to expand the list tree to. */
-    private PInteger mExpansionLevel;
+    protected PInteger mExpansionLevel;
     /**
      * Show list header info.
      * <p>
      * Ideally this would use a simple int, but {@link MultiSelectListPreference} insists on a Set.
      */
-    private PBitmask mShowHeaderInfo;
+    protected PBitmask mShowHeaderInfo;
     /** Text related settings. */
-    private TextScale mTextScale;
+    protected TextScale mTextScale;
     /**
      * Should rows be shown using WRAP_CONTENT (false),
      * or as system minimum list-item height (true).
      */
-    private PBoolean mGroupRowHeight;
+    protected PBoolean mGroupRowHeight;
+
     /** Local override. */
-    private PBoolean mShowAuthorByGivenName;
+    protected PBoolean mShowAuthorByGivenName;
     /** Local override. */
-    private PBoolean mSortAuthorByGivenName;
+    protected PBoolean mSortAuthorByGivenName;
+
     /** Configuration for the groups in this style. */
-    private Groups mGroups;
+    protected Groups mGroups;
     /** Configuration for the filters in this style. */
-    private Filters mFilters;
+    protected Filters mFilters;
     /** Configuration for the fields shown on the Book level in the book list. */
-    private ListScreenBookFields mListScreenBookFields;
+    protected ListScreenBookFields mListScreenBookFields;
     /** Configuration for the fields shown on the Book details screen. */
-    private DetailScreenBookFields mDetailScreenBookFields;
+    protected DetailScreenBookFields mDetailScreenBookFields;
+
     /** Cached backing preferences. */
     @SuppressWarnings("FieldNotUsedInToString")
-    private StyleSettings mStyleSettings;
+    protected StyleSettings mStyleSettings;
 
-    /**
-     * Constructor for <strong>Global defaults</strong>.
-     *
-     * @param context Current context
-     */
-    public BooklistStyle(@NonNull final Context context) {
-        // negative == builtin; MIN_VALUE because why not....
-        mId = Integer.MIN_VALUE;
-        // empty indicates global
-        mUuid = "";
-        // must have a name res id to indicate it's not a user defined style.
-        mNameResId = android.R.string.untitled;
-        initPrefs(context);
-    }
-
-    /**
-     * Constructor for <strong>builtin styles</strong>.
-     *
-     * @param context      Current context
-     * @param id           a negative int
-     * @param uuid         UUID for the builtin style.
-     * @param nameId       the resource id for the name
-     * @param isPreferred  flag
-     * @param menuPosition to set
-     * @param groupIds     a list of groups to attach to this style
-     */
-    BooklistStyle(@NonNull final Context context,
-                  @IntRange(from = StyleDAO.Builtin.MAX_ID, to = -1) final long id,
-                  @NonNull final String uuid,
-                  @StringRes final int nameId,
-                  final boolean isPreferred,
-                  final int menuPosition,
-                  @NonNull final int... groupIds) {
-        mId = id;
+    protected BooklistStyle(@NonNull final Context context,
+                            @NonNull final String uuid) {
         mUuid = uuid;
-        mNameResId = nameId;
-        mIsPreferred = isPreferred;
-        mMenuPosition = menuPosition;
-        initPrefs(context);
-
-        for (@BooklistGroup.Id final int groupId : groupIds) {
-            mGroups.add(BooklistGroup.newInstance(context, groupId, this));
-        }
-    }
-
-    /**
-     * Constructor for styles <strong>imported from xml</strong>.
-     *
-     * @param context Current context
-     * @param uuid    UUID of the style
-     */
-    public BooklistStyle(@NonNull final Context context,
-                         @NonNull final String uuid) {
-        mId = 0;
-        mUuid = uuid;
-        mNameResId = 0;
-        initPrefs(context);
-    }
-
-    /**
-     * Constructor for styles <strong>loaded from database</strong>.
-     *
-     * @param context    Current context
-     * @param dataHolder with data
-     */
-    public BooklistStyle(@NonNull final Context context,
-                         @NonNull final DataHolder dataHolder) {
-        mId = dataHolder.getLong(DBDefinitions.KEY_PK_ID);
-        mUuid = dataHolder.getString(DBDefinitions.KEY_UUID);
-        mNameResId = 0;
-
-        mIsPreferred = dataHolder.getBoolean(DBDefinitions.KEY_STYLE_IS_PREFERRED);
-        mMenuPosition = dataHolder.getInt(DBDefinitions.KEY_STYLE_MENU_POSITION);
-
-        initPrefs(context);
+        mStyleSettings = new StyleSettings(context, mUuid);
     }
 
     /**
@@ -264,101 +161,19 @@ public class BooklistStyle
      *
      * @param in Parcel to construct the object from
      */
-    private BooklistStyle(@NonNull final Parcel in) {
-        mId = in.readLong();
-        mNameResId = in.readInt();
+    protected BooklistStyle(@NonNull final Parcel in) {
         //noinspection ConstantConditions
-        mUuid = in.readString();
+        this(App.getAppContext(), in.readString());
+
+        mId = in.readLong();
+
         mIsPreferred = in.readByte() != 0;
         mMenuPosition = in.readInt();
 
-        // We have a valid uuid and name resId,
-        // and have read the basic (database stored) settings.
-        // Now init the preferences.
         initPrefs(App.getAppContext());
+        unparcelPrefs(in);
 
-        // continue to restore from the parcel.
-        mName.set(in);
-
-        mExpansionLevel.set(in);
-        mGroupRowHeight.set(in);
-        mTextScale.set(in);
-        mShowHeaderInfo.set(in);
-        mShowAuthorByGivenName.set(in);
-        mSortAuthorByGivenName.set(in);
-
-        mGroups.set(in);
-
-        mFilters.set(in);
-        mListScreenBookFields.set(in);
-        mDetailScreenBookFields.set(in);
-    }
-
-    /**
-     * Custom Parcelable constructor: create a new object but with the settings from the Parcel.
-     * <p>
-     * The id and uuid are passed in to allow testing,
-     * see {@link #clone(Context)}.
-     *
-     * @param context Current context
-     * @param id      for the new style
-     * @param uuid    for the new style
-     * @param name    for the new style
-     * @param in      Parcel to construct the object from
-     */
-    private BooklistStyle(@NonNull final Context context,
-                          final long id,
-                          @NonNull final String uuid,
-                          @NonNull final String name,
-                          @NonNull final Parcel in) {
-        // skip these and use new values
-
-        // skip mId
-        in.readLong();
-        mId = id;
-        // skip mNameResId
-        in.readInt();
-        mNameResId = 0;
-        // skip mUuid
-        in.readString();
-        mUuid = uuid;
-        // Manually store the new UUID.
-        // This will initialise a new xml file.
-        // It's not strictly needed (we'll never read it) but handy to have
-        // it stored inside the file for debugging.
-        context.getSharedPreferences(mUuid, Context.MODE_PRIVATE)
-               .edit().putString(PK_STYLE_UUID, mUuid).apply();
-
-        // continue with basic settings
-        mIsPreferred = in.readByte() != 0;
-        mMenuPosition = in.readInt();
-
-        // We have a valid uuid and name resId,
-        // and have read the basic (database stored) settings.
-        // Now init the preferences.
-        initPrefs(context);
-
-        // skip, and set the new name
-        mName.set(in);
-        mName.set(name);
-
-        // further prefs can be set from the parcel as normal.
-        mExpansionLevel.set(in);
-        mGroupRowHeight.set(in);
-        mTextScale.set(in);
-        mShowHeaderInfo.set(in);
-        mShowAuthorByGivenName.set(in);
-        mSortAuthorByGivenName.set(in);
-
-        mGroups.set(in);
-
-        mFilters.set(in);
-        mListScreenBookFields.set(in);
-        mDetailScreenBookFields.set(in);
-    }
-
-    public static boolean isBuiltin(@NonNull final String uuid) {
-        return StyleDAO.Builtin.isBuiltin(uuid);
+        // if adding fields, take care child classes stay in sync
     }
 
     /**
@@ -369,17 +184,17 @@ public class BooklistStyle
      * @return cloned/new instance
      */
     @NonNull
-    public BooklistStyle clone(@NonNull final Context context) {
-        SanityCheck.requireValue(mUuid, "mUuid");
+    public UserStyle clone(@NonNull final Context context) {
+        SanityCheck.requireValue(getUuid(), "mUuid");
 
         return clone(context, 0, UUID.randomUUID().toString());
     }
 
-    @VisibleForTesting
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NonNull
-    public BooklistStyle clone(@NonNull final Context context,
-                               final long id,
-                               @NonNull final String uuid) {
+    public UserStyle clone(@NonNull final Context context,
+                           final long id,
+                           @NonNull final String uuid) {
 
         //TODO: revisit... this is to complicated/inefficient.
         Parcel parcel = Parcel.obtain();
@@ -391,22 +206,19 @@ public class BooklistStyle
         parcel.unmarshall(bytes, 0, bytes.length);
         parcel.setDataPosition(0);
 
-        final BooklistStyle clone = new BooklistStyle(context, id, uuid, getLabel(context), parcel);
+        final UserStyle clone = new UserStyle(context, id, uuid, getLabel(context), parcel);
         parcel.recycle();
 
         return clone;
     }
+
 
     /**
      * Only ever init the Preferences if you have a valid UUID.
      *
      * @param context Current context
      */
-    private void initPrefs(@NonNull final Context context) {
-
-        mStyleSettings = new StyleSettings(context, mUuid);
-
-        mName = new PString(this, PK_STYLE_NAME);
+    void initPrefs(@NonNull final Context context) {
 
         mExpansionLevel = new PInteger(this, PK_LEVELS_EXPANSION, 1);
 
@@ -430,11 +242,9 @@ public class BooklistStyle
      *
      * @return unordered map with all preferences for this style
      */
-    @Override
     @NonNull
     public Map<String, PPref> getPreferences() {
         final Map<String, PPref> tmpMap = new HashMap<>();
-        tmpMap.put(mName.getKey(), mName);
 
         tmpMap.put(mExpansionLevel.getKey(), mExpansionLevel);
         tmpMap.put(mGroupRowHeight.getKey(), mGroupRowHeight);
@@ -456,7 +266,6 @@ public class BooklistStyle
         return tmpMap;
     }
 
-    @Override
     @NonNull
     public StyleSettings getSettings() {
         return mStyleSettings;
@@ -471,15 +280,16 @@ public class BooklistStyle
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
-        dest.writeInt(mNameResId);
         dest.writeString(mUuid);
+        dest.writeLong(mId);
+
         dest.writeByte((byte) (mIsPreferred ? 1 : 0));
         dest.writeInt(mMenuPosition);
 
-        // now the user preferences themselves
-        mName.writeToParcel(dest);
+        parcelPrefs(dest);
+    }
 
+    private void parcelPrefs(@NonNull final Parcel dest) {
         mExpansionLevel.writeToParcel(dest);
         mGroupRowHeight.writeToParcel(dest);
         mTextScale.writeToParcel(dest);
@@ -494,13 +304,26 @@ public class BooklistStyle
         mDetailScreenBookFields.writeToParcel(dest);
     }
 
+    void unparcelPrefs(@NonNull final Parcel in) {
+        mExpansionLevel.set(in);
+        mGroupRowHeight.set(in);
+        mTextScale.set(in);
+        mShowHeaderInfo.set(in);
+        mShowAuthorByGivenName.set(in);
+        mSortAuthorByGivenName.set(in);
+
+        mGroups.set(in);
+
+        mFilters.set(in);
+        mListScreenBookFields.set(in);
+        mDetailScreenBookFields.set(in);
+    }
+
     @Override
     @NonNull
     public String getUuid() {
         return mUuid;
     }
-
-
 
     /**
      * Accessor.
@@ -519,33 +342,6 @@ public class BooklistStyle
         mId = id;
     }
 
-    /**
-     * Get the user displayable name for this style.
-     *
-     * @param context Current context
-     *
-     * @return the system name or user-defined name
-     */
-    @Override
-    @NonNull
-    public String getLabel(@NonNull final Context context) {
-        if (mNameResId != 0) {
-            return context.getString(mNameResId);
-        } else {
-            return mName.getValue(context);
-        }
-    }
-
-    @Override
-    public boolean isUserDefined() {
-        return mNameResId == 0;
-    }
-
-    @Override
-    public boolean isBuiltin() {
-        return mNameResId != 0;
-    }
-
     @Override
     public int getMenuPosition() {
         return mMenuPosition;
@@ -555,7 +351,6 @@ public class BooklistStyle
     public void setMenuPosition(final int menuPosition) {
         mMenuPosition = menuPosition;
     }
-
 
     @Override
     public boolean isPreferred() {
@@ -592,7 +387,6 @@ public class BooklistStyle
             return ViewGroup.LayoutParams.WRAP_CONTENT;
         }
     }
-
 
     /**
      * Get the text style.
@@ -648,6 +442,15 @@ public class BooklistStyle
         return mDetailScreenBookFields;
     }
 
+    @Override
+    public boolean isShowAuthorByGivenName(@NonNull final Context context) {
+        return mShowAuthorByGivenName.isTrue(context);
+    }
+
+    @Override
+    public boolean isSortAuthorByGivenName(@NonNull final Context context) {
+        return mSortAuthorByGivenName.isTrue(context);
+    }
 
     /**
      * Wrapper that gets the preference from {@link SeriesBooklistGroup}
@@ -730,30 +533,6 @@ public class BooklistStyle
     }
 
     /**
-     * Whether the user prefers the Author names displayed by Given names, or by Family name first.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} when Given names should come first
-     */
-    @Override
-    public boolean isShowAuthorByGivenName(@NonNull final Context context) {
-        return mShowAuthorByGivenName.isTrue(context);
-    }
-
-    /**
-     * Whether the user prefers the Author names sorted by Given names, or by Family name first.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} when Given names should come first
-     */
-    @Override
-    public boolean isSortAuthorByGivenName(@NonNull final Context context) {
-        return mSortAuthorByGivenName.isTrue(context);
-    }
-
-    /**
      * Wrapper that gets the getPrimaryType flag from the
      * {@link AuthorBooklistGroup} if we have it, or from the global default.
      *
@@ -810,9 +589,6 @@ public class BooklistStyle
                + "mId=" + mId
                + "\nmUuid=`" + mUuid + '`'
                + "\nmMenuPosition=" + mMenuPosition
-               + "\nmNameResId=`" + (mNameResId != 0
-                                     ? App.getAppContext().getString(mNameResId) : 0) + '`'
-               + "\nmName=`" + mName + '`'
                + "\nmIsPreferred=" + mIsPreferred
                + "\nmExpansionLevel=" + mExpansionLevel
 
