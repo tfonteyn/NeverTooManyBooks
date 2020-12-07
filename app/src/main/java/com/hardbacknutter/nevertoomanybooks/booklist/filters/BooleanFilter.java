@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -51,13 +51,23 @@ public class BooleanFilter
      * @param table     to use by the expression
      * @param domainKey to use by the expression
      */
-    public BooleanFilter(@NonNull final BooklistStyle style,
+    public BooleanFilter(@NonNull final ListStyle style,
                          @StringRes final int labelId,
                          @NonNull final String key,
                          @SuppressWarnings("SameParameterValue")
                          @NonNull final TableDefinition table,
                          @NonNull final String domainKey) {
         super(style, labelId, key, table, domainKey);
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param filter to copy from
+     */
+    public BooleanFilter(@NonNull final ListStyle style,
+                         @NonNull final BooleanFilter filter) {
+        super(style, filter);
     }
 
     @Override

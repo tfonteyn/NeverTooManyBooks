@@ -72,7 +72,7 @@ public final class StyleDAO {
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean updateOrInsert(@NonNull final DAO db,
-                                         @NonNull final BooklistStyle style) {
+                                         @NonNull final ListStyle style) {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
@@ -84,11 +84,11 @@ public final class StyleDAO {
 
         if (style.getId() == 0) {
             if (BuildConfig.DEBUG /* always */) {
-                if (style.isBuiltin()) {
+                if (style instanceof BuiltinStyle) {
                     throw new IllegalArgumentException("Builtin Style cannot be inserted");
                 }
             }
-            return insert(db, (UserStyle) style);
+            return insert(db, style);
 
         } else {
             return update(db, style);
@@ -104,10 +104,12 @@ public final class StyleDAO {
      * @return {@code true} on success
      */
     public static boolean insert(@NonNull final DAO db,
-                                 @NonNull final UserStyle style) {
+                                 @NonNull final ListStyle style) {
 
         if (db.insert(style) > 0) {
-            UserStyles.S_USER_STYLES.put(style.getUuid(), style);
+            if (style instanceof UserStyle) {
+                UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
+            }
             return true;
         }
         return false;
@@ -122,7 +124,7 @@ public final class StyleDAO {
      * @return {@code true} on success
      */
     public static boolean update(@NonNull final DAO db,
-                                 @NonNull final BooklistStyle style) {
+                                 @NonNull final ListStyle style) {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
@@ -130,40 +132,18 @@ public final class StyleDAO {
         }
 
         if (db.update(style)) {
-            if (style.isUserDefined()) {
+            if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
+            } else if (style instanceof BuiltinStyle) {
+                BuiltinStyles.S_BUILTIN_STYLES.put(style.getUuid(), (BuiltinStyle) style);
             } else {
-                Builtin.S_BUILTIN_STYLES.put(style.getUuid(), (BuiltinStyle) style);
+                throw new IllegalStateException();
             }
             return true;
         }
         return false;
     }
 
-    public static void updateMenuOrder(@NonNull final DAO db,
-                                       @NonNull final Collection<BooklistStyle> styles) {
-        int order = 0;
-
-        // sort the preferred styles at the top
-        for (final BooklistStyle style : styles) {
-            if (style.isPreferred()) {
-                style.setMenuPosition(order);
-                db.update(style);
-                order++;
-            }
-        }
-        // followed by the non preferred styles
-        for (final BooklistStyle style : styles) {
-            if (!style.isPreferred()) {
-                style.setMenuPosition(order);
-                db.update(style);
-                order++;
-            }
-        }
-
-        // keep it safe and easy, just clear the caches; almost certainly overkill
-        StyleDAO.clearCache();
-    }
 
     /**
      * Delete the given style.
@@ -176,7 +156,7 @@ public final class StyleDAO {
      */
     public static boolean delete(@NonNull final Context context,
                                  @NonNull final DAO db,
-                                 @NonNull final BooklistStyle style) {
+                                 @NonNull final ListStyle style) {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
@@ -184,7 +164,7 @@ public final class StyleDAO {
         }
 
         // sanity check
-        if (style.isBuiltin()) {
+        if (style instanceof BuiltinStyle) {
             throw new IllegalArgumentException("A Builtin Style cannot be deleted");
         }
 
@@ -195,6 +175,33 @@ public final class StyleDAO {
         }
         return false;
     }
+
+
+    public static void updateMenuOrder(@NonNull final DAO db,
+                                       @NonNull final Collection<ListStyle> styles) {
+        int order = 0;
+
+        // sort the preferred styles at the top
+        for (final ListStyle style : styles) {
+            if (style.isPreferred()) {
+                style.setMenuPosition(order);
+                db.update(style);
+                order++;
+            }
+        }
+        // followed by the non preferred styles
+        for (final ListStyle style : styles) {
+            if (!style.isPreferred()) {
+                style.setMenuPosition(order);
+                db.update(style);
+                order++;
+            }
+        }
+
+        // keep it safe and easy, just clear the caches; almost certainly overkill
+        StyleDAO.clearCache();
+    }
+
 
     /**
      * Get a list with all the styles, ordered by preferred menu position.
@@ -209,19 +216,19 @@ public final class StyleDAO {
      * @return LinkedHashMap, key: uuid, value: style
      */
     @NonNull
-    public static ArrayList<BooklistStyle> getStyles(@NonNull final Context context,
-                                                     @NonNull final DAO db,
-                                                     final boolean all) {
+    public static ArrayList<ListStyle> getStyles(@NonNull final Context context,
+                                                 @NonNull final DAO db,
+                                                 final boolean all) {
 
         // combine all styles in a NEW list; we need to keep the original lists as-is.
-        final Collection<BooklistStyle> list = new ArrayList<>();
+        final Collection<ListStyle> list = new ArrayList<>();
         list.addAll(UserStyles.getStyles(context, db).values());
-        list.addAll(Builtin.getStyles(context, db).values());
+        list.addAll(BuiltinStyles.getStyles(context, db).values());
 
         // and sort them in the user preferred order
         // The styles marked as preferred will have a menu-position < 1000,
         // while the non-preferred styles will be 1000.
-        final ArrayList<BooklistStyle> allStyles = list
+        final ArrayList<ListStyle> allStyles = list
                 .stream()
                 .sorted((style1, style2) -> Integer.compare(
                         style1.getMenuPosition(), style2.getMenuPosition()))
@@ -230,7 +237,7 @@ public final class StyleDAO {
             return allStyles;
         }
 
-        final ArrayList<BooklistStyle> preferredStyles = allStyles
+        final ArrayList<ListStyle> preferredStyles = allStyles
                 .stream()
                 .filter(ListStyle::isPreferred)
                 .collect(Collectors.toCollection(ArrayList::new));
@@ -254,11 +261,11 @@ public final class StyleDAO {
      * @return the style, or {@code null} if not found
      */
     @Nullable
-    public static BooklistStyle getStyle(@NonNull final Context context,
-                                         @NonNull final DAO db,
-                                         @NonNull final String uuid) {
+    public static ListStyle getStyle(@NonNull final Context context,
+                                     @NonNull final DAO db,
+                                     @NonNull final String uuid) {
         // Check Builtin first
-        final BooklistStyle style = Builtin.getStyles(context, db).get(uuid);
+        final ListStyle style = BuiltinStyles.getStyles(context, db).get(uuid);
         if (style != null) {
             return style;
         }
@@ -277,11 +284,11 @@ public final class StyleDAO {
      * @return the style, or the default style if not found
      */
     @NonNull
-    public static BooklistStyle getStyleOrDefault(@NonNull final Context context,
-                                                  @NonNull final DAO db,
-                                                  @NonNull final String uuid) {
+    public static ListStyle getStyleOrDefault(@NonNull final Context context,
+                                              @NonNull final DAO db,
+                                              @NonNull final String uuid) {
         // Try to get user or builtin style
-        final BooklistStyle style = getStyle(context, db, uuid);
+        final ListStyle style = getStyle(context, db, uuid);
         if (style != null) {
             return style;
         }
@@ -298,21 +305,21 @@ public final class StyleDAO {
      * @return the style.
      */
     @NonNull
-    public static BooklistStyle getDefault(@NonNull final Context context,
-                                           @NonNull final DAO db) {
+    public static ListStyle getDefault(@NonNull final Context context,
+                                       @NonNull final DAO db) {
 
         // read the global user default, or if not present the hardcoded default.
         final String uuid = PreferenceManager.getDefaultSharedPreferences(context)
                                              .getString(PREF_BL_STYLE_CURRENT_DEFAULT,
-                                                        Builtin.DEFAULT_STYLE_UUID);
+                                                        BuiltinStyles.DEFAULT_STYLE_UUID);
 
         // Try to get user or builtin style
-        final BooklistStyle style = getStyle(context, db, uuid);
+        final ListStyle style = getStyle(context, db, uuid);
         if (style != null) {
             return style;
         }
         // fall back to the builtin default.
-        return Builtin.getDefault(context, db);
+        return BuiltinStyles.getDefault(context, db);
     }
 
     /**
@@ -328,27 +335,23 @@ public final class StyleDAO {
 
     public static void clearCache() {
         UserStyles.clearCache();
-        Builtin.clearCache();
+        BuiltinStyles.clearCache();
     }
 
     /**
      * Cache of user-defined booklist styles.
      */
-    public static final class UserStyles {
+    private static final class UserStyles {
 
         /**
          * We keep a cache of User styles in memory as it's to costly to keep
-         * re-creating {@link BooklistStyle} objects.
+         * re-creating {@link UserStyles} objects.
          * Pre-loaded on first access.
          * Re-loaded when the Locale changes.
          * <p>
          * Key: uuid of style.
          */
         private static final Map<String, UserStyle> S_USER_STYLES = new LinkedHashMap<>();
-
-        private UserStyles() {
-
-        }
 
         static void clearCache() {
             S_USER_STYLES.clear();
@@ -360,7 +363,7 @@ public final class StyleDAO {
          * @param context Current context
          * @param db      Database Access
          *
-         * @return an ordered unmodifiableMap of BooklistStyle
+         * @return an ordered unmodifiableMap of styles
          */
         @NonNull
         static Map<String, UserStyle> getStyles(@NonNull final Context context,
@@ -388,9 +391,9 @@ public final class StyleDAO {
      * <p>
      * The UUID's should never be changed.
      */
-    public static final class Builtin {
+    public static final class BuiltinStyles {
 
-        // NEWTHINGS: BooklistStyle. Make sure to update the max id when adding a style!
+        // NEWTHINGS: ListStyle. Make sure to update the max id when adding a style!
         // and make sure a row is added to the database styles table.
         // next max is -20
         public static final int MAX_ID = -19;
@@ -508,7 +511,7 @@ public final class StyleDAO {
                 };
         /**
          * We keep a cache of Builtin styles in memory as it's to costly to keep
-         * re-creating {@link BooklistStyle} objects.
+         * re-creating {@link BuiltinStyle} objects.
          * Pre-loaded on first access.
          * Re-loaded when the Locale changes.
          * <p>
@@ -516,7 +519,7 @@ public final class StyleDAO {
          */
         private static final Map<String, BuiltinStyle> S_BUILTIN_STYLES = new LinkedHashMap<>();
 
-        private Builtin() {
+        private BuiltinStyles() {
         }
 
         static void clearCache() {
@@ -632,7 +635,7 @@ public final class StyleDAO {
                                      preferred.get(COMPACT_ID),
                                      menuPos.get(COMPACT_ID),
                                      BooklistGroup.AUTHOR);
-            style.getTextScale().setScale(TextScale.TEXT_SCALE_1_SMALL);
+            style.getTextScale().set(TextScale.TEXT_SCALE_1_SMALL);
             style.getListScreenBookFields()
                  .setShowField(ListScreenBookFields.PK_COVERS, false);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
@@ -829,7 +832,7 @@ public final class StyleDAO {
                  .setShowField(ListScreenBookFields.PK_AUTHOR, true);
             S_BUILTIN_STYLES.put(style.getUuid(), style);
 
-            // NEWTHINGS: BooklistStyle: add a new builtin style
+            // NEWTHINGS: BuiltinStyle: add a new builtin style
         }
 
     }

@@ -30,7 +30,7 @@ import androidx.preference.PreferenceManager;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
@@ -47,23 +47,23 @@ public class BitmaskFilter
     private final TableDefinition mTable;
     @NonNull
     private final String mDomainKey;
-    /** The {@link BooklistStyle} this preference belongs to. */
-    @NonNull
-    private final BooklistStyle mStyle;
 
-    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    /** The {@link ListStyle} this preference belongs to. */
     @NonNull
-    private final Integer mDefaultValue;
+    private final ListStyle mStyle;
 
     /** key for the Preference. */
     @NonNull
     private final String mKey;
-    /** Valid bits. */
-    private final int mMask;
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final Integer mDefaultValue;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
 
+    /** Valid bits. */
+    private final int mMask;
 
     /**
      * Constructor.
@@ -77,7 +77,7 @@ public class BitmaskFilter
      * @param table     to use by the expression
      * @param domainKey to use by the expression
      */
-    public BitmaskFilter(@NonNull final BooklistStyle style,
+    public BitmaskFilter(@NonNull final ListStyle style,
                          @StringRes final int labelId,
                          @NonNull final String key,
                          @NonNull final Integer defValue,
@@ -93,6 +93,25 @@ public class BitmaskFilter
         mLabelId = labelId;
         mTable = table;
         mDomainKey = domainKey;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param filter to copy from
+     */
+    public BitmaskFilter(@NonNull final ListStyle style,
+                         @NonNull final BitmaskFilter filter) {
+        mStyle = style;
+        mKey = filter.mKey;
+        mDefaultValue = filter.mDefaultValue;
+        mMask = filter.mMask;
+
+        mLabelId = filter.mLabelId;
+        mTable = filter.mTable;
+        mDomainKey = filter.mDomainKey;
+
+        mNonPersistedValue = filter.mNonPersistedValue;
     }
 
     @NonNull

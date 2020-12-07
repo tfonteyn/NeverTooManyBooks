@@ -43,10 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -130,7 +128,7 @@ public class StyleFragment
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
         //noinspection ConstantConditions
-        final BooklistStyle globalStyle = new UserStyle(getContext());
+        final UserStyle globalStyle = new UserStyle(getContext());
         final Groups styleGroups = mStyleViewModel.getStyle().getGroups();
 
         for (final BooklistGroup group : BooklistGroup.getAllGroups(getContext(), globalStyle)) {
@@ -196,7 +194,7 @@ public class StyleFragment
     @Override
     protected void updateSummary(@NonNull final String key) {
 
-        final BooklistStyle style = mStyleViewModel.getStyle();
+        final UserStyle style = mStyleViewModel.getStyle();
 
         switch (key) {
             case TextScale.PK_TEXT_SCALE: {
@@ -219,7 +217,7 @@ public class StyleFragment
                 break;
             }
 
-            case BooklistStyle.PK_LEVELS_EXPANSION: {
+            case UserStyle.PK_LEVELS_EXPANSION: {
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     preference.setMax(style.getGroups().size());
@@ -277,7 +275,7 @@ public class StyleFragment
                                    @NonNull final Input input) {
             return new Intent(context, SettingsHostingActivity.class)
                     .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
-                    .putExtra(ListStyle.BKEY_STYLE, input.style)
+                    .putExtra(UserStyle.BKEY_STYLE, input.style)
                     .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, input.templateStyleId);
         }
 
@@ -298,10 +296,10 @@ public class StyleFragment
         public static class Input {
 
             @NonNull
-            final BooklistStyle style;
+            final UserStyle style;
             final long templateStyleId;
 
-            public Input(@NonNull final BooklistStyle style,
+            public Input(@NonNull final UserStyle style,
                          final long templateStyleId) {
                 this.style = style;
                 this.templateStyleId = templateStyleId;

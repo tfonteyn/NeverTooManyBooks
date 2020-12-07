@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
 /**
  * Encapsulate the SharedPreferences access for styles.
  */
-public class StyleSettings {
+public class StyleSharedPreferences {
 
     /**
      * Obsolete preference for this style being a preferred style. Now handled in the db.
@@ -53,7 +53,7 @@ public class StyleSettings {
     @Deprecated
     private static final String OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED = "style.booklist.preferred";
 
-    private static final String TAG = "StyleSettings";
+    private static final String TAG = "StyleSharedPreferences";
 
     /** Style unique name. */
     private static final String PK_STYLE_UUID = "style.booklist.uuid";
@@ -61,8 +61,8 @@ public class StyleSettings {
     @NonNull
     private final SharedPreferences mStylePrefs;
 
-    StyleSettings(@NonNull final Context context,
-                  @NonNull final String uuid) {
+    StyleSharedPreferences(@NonNull final Context context,
+                           @NonNull final String uuid) {
         if (!uuid.isEmpty()) {
             mStylePrefs = context.getSharedPreferences(uuid, Context.MODE_PRIVATE);
             if (!mStylePrefs.contains(PK_STYLE_UUID)) {

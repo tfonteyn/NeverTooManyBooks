@@ -70,6 +70,17 @@ public class WildcardFilter
         mCriteria = criteria;
     }
 
+    /**
+     * Copy constructor.
+     *
+     * @param filter to copy from
+     */
+    public WildcardFilter(@NonNull final WildcardFilter filter) {
+        mTable = filter.mTable;
+        mDomainKey = filter.mDomainKey;
+        mCriteria = filter.mCriteria;
+    }
+
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {

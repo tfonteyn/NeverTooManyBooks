@@ -64,8 +64,28 @@ public class TextScale {
     /**
      * Constructor.
      */
-    TextScale(@NonNull final BooklistStyle style) {
+    TextScale(@NonNull final ListStyle style) {
         mScale = new PInteger(style, PK_TEXT_SCALE, TEXT_SCALE_2_MEDIUM);
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param textScale to copy from
+     */
+    TextScale(final ListStyle style,
+              final TextScale textScale) {
+        mScale = new PInteger(style, textScale.mScale);
+    }
+
+    /**
+     * Used by built-in styles only. Set by user via preferences screen.
+     *
+     * @param scale id
+     */
+    @SuppressWarnings("SameParameterValue")
+    void set(@Scale final int scale) {
+        mScale.set(scale);
     }
 
     /**
@@ -124,16 +144,6 @@ public class TextScale {
      */
     public boolean isDefaultScale(@NonNull final Context context) {
         return mScale.getValue(context) == TEXT_SCALE_2_MEDIUM;
-    }
-
-    /**
-     * Used by built-in styles only. Set by user via preferences screen.
-     *
-     * @param scale id
-     */
-    @SuppressWarnings("SameParameterValue")
-    void setScale(@Scale final int scale) {
-        mScale.set(scale);
     }
 
     /**

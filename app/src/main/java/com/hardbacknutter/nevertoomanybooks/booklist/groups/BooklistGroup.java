@@ -46,7 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -201,7 +201,7 @@ public class BooklistGroup
     public static final int GROUP_KEY_MAX = 31;
 
     @NonNull
-    final BooklistStyle mStyle;
+    final ListStyle mStyle;
 
     /** The type of row/group we represent, see {@link GroupKey}. */
     @Id
@@ -211,7 +211,8 @@ public class BooklistGroup
     private final GroupKey mGroupKey;
     /**
      * The domains represented by this group.
-     * Set at runtime by builder based on current group <strong>and its outer groups</strong>
+     * Set at <strong>runtime</strong> by the BooklistBuilder
+     * based on current group <strong>and its outer groups</strong>
      */
     @Nullable
     private ArrayList<Domain> mAccumulatedDomains;
@@ -223,12 +224,25 @@ public class BooklistGroup
      * @param style the style
      */
     BooklistGroup(@Id final int id,
-                  @NonNull final BooklistStyle style) {
+                  @NonNull final ListStyle style) {
         mId = id;
         mGroupKey = GroupKey.getGroupKey(mId);
 
         mStyle = style;
     }
+
+    /**
+     * Copy constructor.
+     *
+     * @param group to copy from
+     */
+    public BooklistGroup(@NonNull final ListStyle style,
+                         @NonNull final BooklistGroup group) {
+        mStyle = style;
+        mId = group.mId;
+        mGroupKey = group.mGroupKey;
+    }
+
 
     /**
      * {@link Parcelable} Constructor.
@@ -268,7 +282,7 @@ public class BooklistGroup
     @NonNull
     public static BooklistGroup newInstance(@NonNull final Context context,
                                             @Id final int id,
-                                            @NonNull final BooklistStyle style) {
+                                            @NonNull final ListStyle style) {
         switch (id) {
             case AUTHOR:
                 return new AuthorBooklistGroup(context, style);
@@ -295,7 +309,7 @@ public class BooklistGroup
     @SuppressLint("WrongConstant")
     @NonNull
     public static List<BooklistGroup> getAllGroups(@NonNull final Context context,
-                                                   @NonNull final BooklistStyle style) {
+                                                   @NonNull final ListStyle style) {
         final List<BooklistGroup> list = new ArrayList<>();
         // Get the set of all valid <strong>Group</strong> values.
         // In other words: all valid groups, <strong>except</strong> the BOOK.

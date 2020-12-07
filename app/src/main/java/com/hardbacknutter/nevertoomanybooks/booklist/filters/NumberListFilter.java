@@ -30,10 +30,8 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 
 /**
  * an SQL WHERE clause (column IN (a,b,c,...)
- *
- * @param <T> type the elements of the 'IN' list.
  */
-public class NumberListFilter<T extends Number>
+public class NumberListFilter
         implements Filter<String> {
 
     @NonNull
@@ -51,13 +49,25 @@ public class NumberListFilter<T extends Number>
      * @param table     to use by the expression
      * @param domainKey to use by the expression
      * @param list      of values
+     * @param <T>       type the elements of the 'IN' list.
      */
-    public NumberListFilter(@NonNull final TableDefinition table,
-                            @NonNull final String domainKey,
-                            @NonNull final List<T> list) {
+    public <T extends Number> NumberListFilter(@NonNull final TableDefinition table,
+                                               @NonNull final String domainKey,
+                                               @NonNull final List<T> list) {
         mTable = table;
         mDomainKey = domainKey;
         mCriteria = list.stream().map(String::valueOf).collect(Collectors.joining(","));
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param filter to copy from
+     */
+    public NumberListFilter(@NonNull final NumberListFilter filter) {
+        mTable = filter.mTable;
+        mDomainKey = filter.mDomainKey;
+        mCriteria = filter.mCriteria;
     }
 
     @Override

@@ -33,7 +33,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -78,6 +78,7 @@ public class BookshelfBooklistGroup
     /** Customized domain with display data. */
     @NonNull
     private final VirtualDomain mDisplayDomain;
+
     /** Show a book under each {@link Bookshelf} it is linked to. */
     private PBoolean mUnderEach;
 
@@ -86,11 +87,24 @@ public class BookshelfBooklistGroup
      *
      * @param style the style
      */
-    BookshelfBooklistGroup(@NonNull final BooklistStyle style) {
+    BookshelfBooklistGroup(@NonNull final ListStyle style) {
         super(BOOKSHELF, style);
         mDisplayDomain = createDisplayDomain();
 
         initPrefs();
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param group to copy from
+     */
+    BookshelfBooklistGroup(@NonNull final ListStyle style,
+                           @NonNull final BookshelfBooklistGroup group) {
+        super(style, group);
+        mDisplayDomain = createDisplayDomain();
+
+        mUnderEach = new PBoolean(mStyle, group.mUnderEach);
     }
 
     /**

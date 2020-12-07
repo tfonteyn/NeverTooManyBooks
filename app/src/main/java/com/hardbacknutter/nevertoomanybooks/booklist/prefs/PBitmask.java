@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}.
@@ -38,22 +38,22 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 public class PBitmask
         implements PPref<Integer>, PInt {
 
-    /** The {@link BooklistStyle} this preference belongs to. */
+    /** The {@link ListStyle} this preference belongs to. */
     @NonNull
-    private final BooklistStyle mStyle;
-
-    /** in-memory default to use when value==null, or when the backend does not contain the key. */
-    @NonNull
-    private final Integer mDefaultValue;
+    private final ListStyle mStyle;
 
     /** key for the Preference. */
     @NonNull
     private final String mKey;
-    /** Valid bits. */
-    private final int mMask;
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final Integer mDefaultValue;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
+
+    /** Valid bits. */
+    private final int mMask;
 
     /**
      * Constructor. Uses the global setting as the default value,
@@ -63,7 +63,7 @@ public class PBitmask
      * @param defValue default value
      * @param mask     valid values bitmask
      */
-    public PBitmask(@NonNull final BooklistStyle style,
+    public PBitmask(@NonNull final ListStyle style,
                     @NonNull final String key,
                     final int defValue,
                     final int mask) {
@@ -71,6 +71,22 @@ public class PBitmask
         mKey = key;
         mDefaultValue = defValue;
         mMask = mask;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param pBitmask to copy from
+     */
+    public PBitmask(@NonNull final ListStyle style,
+                    @NonNull final PBitmask pBitmask) {
+        mStyle = style;
+        mKey = pBitmask.mKey;
+        mDefaultValue = pBitmask.mDefaultValue;
+
+        mMask = pBitmask.mMask;
+
+        mNonPersistedValue = pBitmask.mNonPersistedValue;
     }
 
     @NonNull

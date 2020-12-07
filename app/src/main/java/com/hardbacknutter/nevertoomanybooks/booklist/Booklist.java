@@ -332,7 +332,7 @@ public class Booklist
      */
     public void setFilterOnBookIdList(@Nullable final List<Long> filter) {
         if (filter != null && !filter.isEmpty()) {
-            mFilters.add(new NumberListFilter<>(TBL_BOOKS, KEY_PK_ID, filter));
+            mFilters.add(new NumberListFilter(TBL_BOOKS, KEY_PK_ID, filter));
         }
     }
 

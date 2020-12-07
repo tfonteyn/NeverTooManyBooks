@@ -78,9 +78,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
@@ -266,7 +266,7 @@ public class BooksOnBookshelf
                     }
 
                     // This is independent from the above style having been modified ot not.
-                    if (data.getBoolean(ListStyle.BKEY_STYLE_MODIFIED, false)) {
+                    if (data.getBoolean(UserStyle.BKEY_STYLE_MODIFIED, false)) {
                         mVm.setForceRebuildInOnResume(true);
                     }
                 }
@@ -280,7 +280,7 @@ public class BooksOnBookshelf
                     // when the user choose to EDIT a style.
                     // We get the ACTUAL style back.
                     @Nullable
-                    final BooklistStyle style = data.getParcelable(ListStyle.BKEY_STYLE);
+                    final UserStyle style = data.getParcelable(UserStyle.BKEY_STYLE);
                     if (style != null) {
                         mVm.onStyleEdited(this, style);
 
@@ -387,15 +387,6 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
-                }
-            };
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -462,6 +453,15 @@ public class BooksOnBookshelf
                         }
                     }
                     return true;
+                }
+            };
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
                 }
             };
 
@@ -1227,7 +1227,7 @@ public class BooksOnBookshelf
         }
     }
 
-    public void editStyle(@NonNull final BooklistStyle style,
+    public void editStyle(@NonNull final UserStyle style,
                           final long templateId) {
         mEditStyleLauncher.launch(new StyleFragment.ResultContract.Input(style, templateId));
     }

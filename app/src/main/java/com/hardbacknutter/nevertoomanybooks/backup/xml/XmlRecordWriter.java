@@ -53,8 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -82,7 +84,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
  * <ul>Type based, where the tag name is the type. Used by:
  *      <li>{@link ArchiveInfo}</li>
  *      <li>{@link android.content.SharedPreferences}</li>
- *      <li>{@link BooklistStyle}</li>
+ *      <li>{@link ListStyle}</li>
  * </ul>
  * <ul>Reason:
  *      <li>more or less flat objects (Bundle or Bundle-like)</li>
@@ -256,7 +258,7 @@ public class XmlRecordWriter
     private int writeStyles(@NonNull final Context context,
                             @NonNull final Writer writer)
             throws IOException {
-        final Collection<BooklistStyle> styles = StyleDAO.getStyles(context, mDb, false);
+        final Collection<ListStyle> styles = StyleDAO.getStyles(context, mDb, false);
         if (!styles.isEmpty()) {
             toXml(writer, new StylesWriter(context, styles));
         }
@@ -1030,12 +1032,16 @@ public class XmlRecordWriter
         @NonNull
         private final Context mContext;
         @NonNull
-        private final Collection<BooklistStyle> mStyles;
+        private final Collection<ListStyle> mStyles;
         @NonNull
-        private final Iterator<BooklistStyle> it;
+        private final Iterator<ListStyle> it;
 
-        private BooklistStyle mCurrentStyle;
-        /** the Preferences from the current style and the groups that have PPrefs. */
+        private ListStyle mCurrentStyle;
+        /**
+         * The Preferences from the current {@link UserStyle} and the groups that have PPrefs.
+         * Will be {@code null} for {@link BuiltinStyle}.
+         */
+        @Nullable
         private Map<String, PPref> mCurrentStylePPrefs;
 
         /**
@@ -1045,7 +1051,7 @@ public class XmlRecordWriter
          * @param styles  list of styles to write
          */
         StylesWriter(@NonNull final Context context,
-                     @NonNull final Collection<BooklistStyle> styles) {
+                     @NonNull final Collection<ListStyle> styles) {
             mContext = context;
             mStyles = styles;
             it = styles.iterator();
@@ -1071,7 +1077,11 @@ public class XmlRecordWriter
         public boolean hasMoreElements() {
             if (it.hasNext()) {
                 mCurrentStyle = it.next();
-                mCurrentStylePPrefs = mCurrentStyle.getPreferences();
+                if (mCurrentStyle instanceof UserStyle) {
+                    mCurrentStylePPrefs = ((UserStyle) mCurrentStyle).getPreferences();
+                } else {
+                    mCurrentStylePPrefs = null;
+                }
                 return true;
             } else {
                 return false;
@@ -1097,7 +1107,7 @@ public class XmlRecordWriter
             list.add(new Pair<>(DBDefinitions.KEY_UUID, mCurrentStyle.getUuid()));
 
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_BUILTIN,
-                                String.valueOf(mCurrentStyle.isBuiltin())));
+                                String.valueOf(mCurrentStyle instanceof BuiltinStyle)));
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_PREFERRED,
                                 String.valueOf(mCurrentStyle.isPreferred())));
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_MENU_POSITION,
@@ -1108,17 +1118,19 @@ public class XmlRecordWriter
         @Override
         @NonNull
         public Set<String> getElementKeySet() {
-            if (mCurrentStyle.isBuiltin()) {
-                return Collections.emptySet();
-            } else {
-                // user-defined style
+            if (mCurrentStyle instanceof UserStyle) {
+                //noinspection ConstantConditions
                 return mCurrentStylePPrefs.keySet();
+            } else {
+                // don't (try to) restore preferences for BuiltinStyle objects
+                return Collections.emptySet();
             }
         }
 
         @NonNull
         @Override
         public Object get(@NonNull final String key) {
+            //noinspection ConstantConditions
             return Objects.requireNonNull(mCurrentStylePPrefs.get(key), key).getValue(mContext);
         }
     }

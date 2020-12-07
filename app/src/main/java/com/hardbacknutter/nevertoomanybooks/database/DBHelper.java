@@ -292,12 +292,12 @@ public final class DBHelper
                 + ',' + KEY_UUID
                 + ") VALUES(?,1,0,?,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = StyleDAO.Builtin.MAX_ID; id < 0; id++) {
+            for (int id = StyleDAO.BuiltinStyles.MAX_ID; id < 0; id++) {
                 // remember, the id is negative -1..
                 stmt.bindLong(1, id);
                 // menu position, initially just as defined but with a positive number
                 stmt.bindLong(2, -id);
-                stmt.bindString(3, StyleDAO.Builtin.getUuidById(-id));
+                stmt.bindString(3, StyleDAO.BuiltinStyles.getUuidById(-id));
 
                 // after inserting '-1' our debug logging will claim that the insert failed.
                 if (BuildConfig.DEBUG /* always */) {

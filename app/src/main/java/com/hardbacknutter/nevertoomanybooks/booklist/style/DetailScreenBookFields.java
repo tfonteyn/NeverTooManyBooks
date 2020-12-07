@@ -47,7 +47,7 @@ public class DetailScreenBookFields
      * @param context Current context
      */
     DetailScreenBookFields(@NonNull final Context context,
-                           @NonNull final BooklistStyle style) {
+                           @NonNull final ListStyle style) {
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -55,6 +55,16 @@ public class DetailScreenBookFields
             mFields.put(PK_COVER[cIdx], new PBoolean(style, PK_COVER[cIdx],
                                                      DBDefinitions.isCoverUsed(global, cIdx)));
         }
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param bookFields to copy from
+     */
+    DetailScreenBookFields(@NonNull final ListStyle style,
+                           @NonNull final DetailScreenBookFields bookFields) {
+        super(style, bookFields);
     }
 
     /**

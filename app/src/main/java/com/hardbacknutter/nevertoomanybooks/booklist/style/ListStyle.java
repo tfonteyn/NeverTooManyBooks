@@ -74,7 +74,7 @@ public interface ListStyle
     int MENU_POSITION_NOT_PREFERRED = 1000;
 
     /** default style when none is set yet. */
-    int DEFAULT_STYLE_ID = StyleDAO.Builtin.AUTHOR_THEN_SERIES_ID;
+    int DEFAULT_STYLE_ID = StyleDAO.BuiltinStyles.AUTHOR_THEN_SERIES_ID;
 
     /**
      * A ListStyle <strong>UUID</strong>. This is used during the USE of a style.
@@ -83,25 +83,14 @@ public interface ListStyle
      */
     String BKEY_STYLE_UUID = "ListStyle:uuid";
 
-    /**
-     * A parcelled ListStyle. This should only be used during the EDITING of a style.
-     * <p>
-     * <br>type: {@link BooklistStyle}
-     */
-    String BKEY_STYLE = "ListStyle:style";
+    @NonNull
+    StyleSharedPreferences getSettings();
 
-    /**
-     * Styles related data was modified (or not).
-     * This includes a ListStyle being modified or deleted,
-     * or the order of the preferred styles modified,
-     * or the selected ListStyle changed,
-     * or ...
-     * ENHANCE: make this fine grained and reduce unneeded rebuilds
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    String BKEY_STYLE_MODIFIED = "ListStyle:modified";
+    @NonNull
+    UserStyle clone(@NonNull Context context);
+
+
+    void setId(long id);
 
     /**
      * Get the UUID for this style.
@@ -116,17 +105,12 @@ public interface ListStyle
      *
      * @return flag
      */
-    boolean isUserDefined();
+    default boolean isUserDefined() {
+        return false;
+    }
 
     /**
-     * Check if this is a builtin style.
-     *
-     * @return flag
-     */
-    boolean isBuiltin();
-
-    /**
-     * Convenience/clarity method: check if this style represents global settings.
+     * Convenience/clarity method: check if this style represents the global settings.
      *
      * @return {@code true} if global
      */
@@ -134,17 +118,19 @@ public interface ListStyle
         return getUuid().isEmpty();
     }
 
+    /**
+     * Get the menu position of this style as sorted by the user.
+     *
+     * @return menuPosition
+     */
+    int getMenuPosition();
 
     /**
      * Set the menu position of this style as sorted by the user.
      *
-     * <strong>Warning:</strong> this is a database stored property
-     *
      * @param menuPosition to set
      */
     void setMenuPosition(int menuPosition);
-
-    int getMenuPosition();
 
     /**
      * Check if this is a user preferred style.
@@ -155,8 +141,6 @@ public interface ListStyle
 
     /**
      * Set this style as a user preferred style.
-     *
-     * <strong>Warning:</strong> this is a database stored property
      *
      * @param isPreferred flag
      */
@@ -242,7 +226,7 @@ public interface ListStyle
                                   HEADER_SHOW_STYLE_NAME,
                                   HEADER_SHOW_FILTER})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface ListHeaderOption {
+    @interface ListHeaderOption {
 
     }
 
@@ -250,7 +234,7 @@ public interface ListStyle
              IMAGE_SCALE_1_VERY_SMALL, IMAGE_SCALE_2_SMALL, IMAGE_SCALE_3_MEDIUM,
              IMAGE_SCALE_4_LARGE, IMAGE_SCALE_5_VERY_LARGE, IMAGE_SCALE_6_MAX})
     @Retention(RetentionPolicy.SOURCE)
-    public @interface CoverScale {
+    @interface CoverScale {
 
     }
 }

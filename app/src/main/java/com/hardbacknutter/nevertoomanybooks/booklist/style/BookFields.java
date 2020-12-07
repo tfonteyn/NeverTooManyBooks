@@ -40,6 +40,25 @@ public abstract class BookFields {
     final Map<String, PBoolean> mFields = new LinkedHashMap<>();
 
     /**
+     * Constructor.
+     */
+    BookFields() {
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param bookFields to copy from
+     */
+    BookFields(@NonNull final ListStyle style,
+               @NonNull final BookFields bookFields) {
+        for (final PBoolean field : bookFields.mFields.values()) {
+            final PBoolean clonedField = new PBoolean(style, field);
+            mFields.put(clonedField.getKey(), clonedField);
+        }
+    }
+
+    /**
      * Check if the given book-detail field should be displayed.
      *
      * @param context Current context
@@ -114,4 +133,5 @@ public abstract class BookFields {
                + "mFields=" + mFields
                + '}';
     }
+
 }

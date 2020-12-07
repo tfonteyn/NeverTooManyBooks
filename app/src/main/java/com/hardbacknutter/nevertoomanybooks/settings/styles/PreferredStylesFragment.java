@@ -51,8 +51,9 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
@@ -86,7 +87,7 @@ public class PreferredStylesFragment
     private FragmentEditStylesBinding mVb;
 
     /** The adapter for the list. */
-    private BooklistStylesAdapter mListAdapter;
+    private ListStylesAdapter mListAdapter;
 
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
@@ -101,7 +102,7 @@ public class PreferredStylesFragment
                 @Override
                 public void onItemRangeChanged(final int positionStart,
                                                final int itemCount) {
-                    final BooklistStyle style = mListAdapter.getItem(positionStart);
+                    final ListStyle style = mListAdapter.getItem(positionStart);
                     // only the style was changed, update the database now
                     mModel.updateStyle(style);
                     // We'll update the list order in onPause.
@@ -151,7 +152,7 @@ public class PreferredStylesFragment
                     }
 
                     // Same here, this is independent from the returned style
-                    resultIntent.putExtra(ListStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
+                    resultIntent.putExtra(UserStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
 
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
@@ -164,8 +165,8 @@ public class PreferredStylesFragment
                 if (data != null) {
                     // We get the ACTUAL style back.
                     @Nullable
-                    final BooklistStyle style = data.getParcelable(ListStyle.BKEY_STYLE);
-                    if (data.getBoolean(ListStyle.BKEY_STYLE_MODIFIED, false)) {
+                    final UserStyle style = data.getParcelable(UserStyle.BKEY_STYLE);
+                    if (data.getBoolean(UserStyle.BKEY_STYLE_MODIFIED, false)) {
                         if (style != null) {
                             // id of the original style we cloned (different from current)
                             // or edited (same as current).
@@ -238,9 +239,9 @@ public class PreferredStylesFragment
         mVb.stylesList.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = new BooklistStylesAdapter(getContext(), mModel.getList(),
-                                                 mModel.getInitialStyleUuid(),
-                                                 vh -> mItemTouchHelper.startDrag(vh));
+        mListAdapter = new ListStylesAdapter(getContext(), mModel.getList(),
+                                             mModel.getInitialStyleUuid(),
+                                             vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mVb.stylesList.setAdapter(mListAdapter);
 
@@ -301,14 +302,14 @@ public class PreferredStylesFragment
 
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
-        final BooklistStyle style = mModel.getList().get(position);
+        final ListStyle style = mModel.getList().get(position);
         //noinspection ConstantConditions
         final String title = style.getLabel(getContext());
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
             final ArrayList<MenuPickerDialogFragment.Pick> menu = new ArrayList<>();
 
-            if (style.isUserDefined()) {
+            if (style instanceof UserStyle) {
                 menu.add(new MenuPickerDialogFragment.Pick(
                         R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                         getString(R.string.action_edit_ellipsis),
@@ -328,7 +329,7 @@ public class PreferredStylesFragment
 
         } else {
             final Menu menu = MenuPicker.createMenu(getContext());
-            if (style.isUserDefined()) {
+            if (style instanceof UserStyle) {
                 menu.add(Menu.NONE, R.id.MENU_EDIT,
                          res.getInteger(R.integer.MENU_ORDER_EDIT),
                          R.string.action_edit_ellipsis)
@@ -360,16 +361,17 @@ public class PreferredStylesFragment
     private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
 
-        final BooklistStyle style = mModel.getList().get(position);
+        final ListStyle style = mModel.getList().get(position);
 
         if (itemId == R.id.MENU_EDIT) {
             // dev sanity check
             if (BuildConfig.DEBUG /* always */) {
-                if (style.isBuiltin()) {
-                    throw new IllegalStateException("can't edit a builtin style");
+                if (!(style instanceof UserStyle)) {
+                    throw new IllegalStateException("Not a UserStyle");
                 }
             }
-            mEditStyleContract.launch(new StyleFragment.ResultContract.Input(style, style.getId()));
+            mEditStyleContract.launch(new StyleFragment
+                    .ResultContract.Input((UserStyle) style, style.getId()));
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
@@ -437,8 +439,8 @@ public class PreferredStylesFragment
         }
     }
 
-    private class BooklistStylesAdapter
-            extends RecyclerViewAdapterBase<BooklistStyle, Holder> {
+    private class ListStylesAdapter
+            extends RecyclerViewAdapterBase<ListStyle, Holder> {
 
         /** The UUID of the item which should be / is selected at creation time. */
         @NonNull
@@ -455,10 +457,10 @@ public class PreferredStylesFragment
          * @param initialSelectedItemUuid initially selected style UUID
          * @param dragStartListener       Listener to handle the user moving rows up and down
          */
-        BooklistStylesAdapter(@NonNull final Context context,
-                              @NonNull final List<BooklistStyle> items,
-                              @NonNull final String initialSelectedItemUuid,
-                              @NonNull final StartDragListener dragStartListener) {
+        ListStylesAdapter(@NonNull final Context context,
+                          @NonNull final List<ListStyle> items,
+                          @NonNull final String initialSelectedItemUuid,
+                          @NonNull final StartDragListener dragStartListener) {
             super(context, items, dragStartListener);
             mInitialSelectedItemUuid = initialSelectedItemUuid;
         }
@@ -504,10 +506,12 @@ public class PreferredStylesFragment
             holder.nameView.setText(style.getLabel(getContext()));
 
             holder.groupsView.setText(style.getGroups().getSummaryText(getContext()));
-            if (style.isUserDefined()) {
+            if (style instanceof UserStyle) {
                 holder.typeView.setText(R.string.style_is_user_defined);
-            } else {
+            } else if (style instanceof BuiltinStyle) {
                 holder.typeView.setText(R.string.style_is_builtin);
+            } else {
+                throw new IllegalStateException("Unhandled style: " + style);
             }
 
             // set the 'preferred style' checkable
@@ -540,7 +544,7 @@ public class PreferredStylesFragment
         private void onItemCheckChanged(@NonNull final Holder holder) {
             // current row/style
             final int position = holder.getBindingAdapterPosition();
-            final BooklistStyle style = getItem(position);
+            final ListStyle style = getItem(position);
 
             // handle the 'preferred' state of the current row/style
             final boolean checked = !style.isPreferred();

@@ -34,8 +34,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
@@ -51,7 +49,7 @@ public class StyleViewModel
     @NonNull
     private final Intent mResultIntent = new Intent();
     /** The style we're editing. */
-    private BooklistStyle mStyle;
+    private UserStyle mStyle;
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
     private ArrayList<WrappedGroup> mWrappedGroupList;
@@ -72,13 +70,13 @@ public class StyleViewModel
                 mResultIntent.putExtra(BKEY_TEMPLATE_ID, templateId);
             }
 
-            final BooklistStyle style = args.getParcelable(ListStyle.BKEY_STYLE);
+            final UserStyle style = args.getParcelable(UserStyle.BKEY_STYLE);
             if (style != null) {
                 mStyle = style;
                 // always pass a non-global style back; whether existing or new.
                 // so even if the user makes no changes, we still send it back!
                 // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
-                mResultIntent.putExtra(ListStyle.BKEY_STYLE, mStyle);
+                mResultIntent.putExtra(UserStyle.BKEY_STYLE, mStyle);
 
             } else {
                 // we're doing the global preferences, create a placeholder style with an empty uuid
@@ -89,12 +87,12 @@ public class StyleViewModel
     }
 
     @NonNull
-    BooklistStyle getStyle() {
+    UserStyle getStyle() {
         return mStyle;
     }
 
     void setModified() {
-        mResultIntent.putExtra(ListStyle.BKEY_STYLE_MODIFIED, true);
+        mResultIntent.putExtra(UserStyle.BKEY_STYLE_MODIFIED, true);
     }
 
     @NonNull

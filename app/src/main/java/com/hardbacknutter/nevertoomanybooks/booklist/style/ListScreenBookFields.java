@@ -72,7 +72,7 @@ public class ListScreenBookFields
     /**
      * Constructor.
      */
-    ListScreenBookFields(@NonNull final BooklistStyle style) {
+    ListScreenBookFields(@NonNull final ListStyle style) {
 
         mThumbnailScale = new PInteger(style, PK_COVER_SCALE, ListStyle.IMAGE_SCALE_DEFAULT);
 
@@ -85,6 +85,17 @@ public class ListScreenBookFields
         mFields.put(PK_LOCATION, new PBoolean(style, PK_LOCATION));
         mFields.put(PK_RATING, new PBoolean(style, PK_RATING));
         mFields.put(PK_BOOKSHELVES, new PBoolean(style, PK_BOOKSHELVES));
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param bookFields to copy from
+     */
+    ListScreenBookFields(@NonNull final ListStyle style,
+                         @NonNull final ListScreenBookFields bookFields) {
+        super(style, bookFields);
+        mThumbnailScale = new PInteger(style, bookFields.mThumbnailScale);
     }
 
     /**

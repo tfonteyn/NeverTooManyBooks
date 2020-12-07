@@ -47,7 +47,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
@@ -59,15 +62,17 @@ public class XmlArchiveWriterTest {
 
     private static final String TAG = "XmlArchiveWriterTest";
 
-    private final Map<String, BooklistStyle> mClonedStyles = new HashMap<>();
+    private final Map<String, ListStyle> mClonedStyles = new HashMap<>();
 
     @Before
     public void cloneStyles() {
         try (DAO db = new DAO(TAG)) {
             final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-            for (final BooklistStyle style : StyleDAO.getStyles(context, db, true)) {
-                mClonedStyles.put(style.getUuid(),
-                                  style.clone(context, style.getId(), style.getUuid()));
+            for (final ListStyle style : StyleDAO.getStyles(context, db, true)) {
+                // cast to access internal VisibleForTesting clone method
+                final UserStyle clonedStyle = ((BooklistStyle) style)
+                        .clone(context, style.getId(), style.getUuid());
+                mClonedStyles.put(style.getUuid(), clonedStyle);
             }
         }
     }
@@ -103,18 +108,20 @@ public class XmlArchiveWriterTest {
 
         // remove all user, reset all builtin
         try (DAO db = new DAO(TAG)) {
-            for (final BooklistStyle style : StyleDAO.getStyles(context, db, true)) {
-                if (style.isUserDefined()) {
+            for (final ListStyle style : StyleDAO.getStyles(context, db, true)) {
+                if (style instanceof UserStyle) {
                     db.delete(style);
-                } else {
+                } else if (style instanceof BuiltinStyle) {
                     style.setPreferred(false);
                     style.setMenuPosition((int) -style.getId());
                     StyleDAO.update(db, style);
+                } else {
+                    throw new IllegalStateException("Unhandled style: " + style);
                 }
             }
 
-            final ArrayList<BooklistStyle> styles = StyleDAO.getStyles(context, db, true);
-            assertEquals(StyleDAO.Builtin.MAX_ID, -styles.size());
+            final ArrayList<ListStyle> styles = StyleDAO.getStyles(context, db, true);
+            assertEquals(StyleDAO.BuiltinStyles.MAX_ID, -styles.size());
         }
 
 
@@ -133,10 +140,10 @@ public class XmlArchiveWriterTest {
 
         try (DAO db = new DAO(TAG)) {
             // the database reflects what we imported; compare that with what we cloned before
-            final ArrayList<BooklistStyle> styles = StyleDAO.getStyles(context, db, true);
+            final ArrayList<ListStyle> styles = StyleDAO.getStyles(context, db, true);
             assertEquals(mClonedStyles.size(), styles.size());
 
-            for (final BooklistStyle style : styles) {
+            for (final ListStyle style : styles) {
                 assertEquals(mClonedStyles.get(style.getUuid()), style);
             }
         }

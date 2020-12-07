@@ -25,6 +25,14 @@ import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
+import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
@@ -45,6 +53,25 @@ public class UserStyle
     };
     /** Style display name. */
     public static final String PK_STYLE_NAME = "style.booklist.name";
+    private static final String TAG = "UserStyle";
+    /**
+     * A parcelled ListStyle. This should only be used during the EDITING of a style.
+     * <p>
+     * <br>type: {@link UserStyle}
+     */
+    public static final String BKEY_STYLE = TAG + ":style";
+    /**
+     * Styles related data was modified (or not).
+     * This includes a ListStyle being modified or deleted,
+     * or the order of the preferred styles modified,
+     * or the selected ListStyle changed,
+     * or ...
+     * ENHANCE: make this fine grained and reduce unneeded rebuilds
+     * <p>
+     * <br>type: {@code boolean}
+     * setResult
+     */
+    public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
 
     /**
      * Constructor for <strong>Global defaults</strong>.
@@ -68,7 +95,7 @@ public class UserStyle
         mId = 0;
 
         initPrefs(context);
-        mStyleSettings.setString(PK_STYLE_NAME, name);
+        mStyleSharedPreferences.setString(PK_STYLE_NAME, name);
     }
 
     /**
@@ -88,55 +115,56 @@ public class UserStyle
         initPrefs(context);
     }
 
+    private UserStyle(@NonNull final Parcel in) {
+        super(in);
+    }
+
     /**
-     * Clone constructor: create a new object but with the settings from the Parcel.
+     * Copy constructor. Used for cloning.
      * <p>
      * The id and uuid are passed in to allow testing,
      * see {@link #clone(Context)}.
      *
      * @param context Current context
+     * @param style   to clone
      * @param id      for the new style
      * @param uuid    for the new style
-     * @param name    for the new style
-     * @param in      Parcel to construct the object from
      */
-    UserStyle(@NonNull final Context context,
-              final long id,
-              @NonNull final String uuid,
-              @NonNull final String name,
-              @NonNull final Parcel in) {
+    public UserStyle(@NonNull final Context context,
+                     @NonNull final BooklistStyle style,
+                     final long id,
+                     @NonNull final String uuid) {
         super(context, uuid);
         mId = id;
 
-        // skip mUuid
-        in.readString();
-        // skip mId
-        in.readLong();
-
         // Store the new name.
-        mStyleSettings.setString(PK_STYLE_NAME, name);
+        mStyleSharedPreferences.setString(PK_STYLE_NAME, style.getLabel(context));
 
         // continue with basic settings
-        mIsPreferred = in.readByte() != 0;
-        mMenuPosition = in.readInt();
+        mIsPreferred = style.isPreferred();
+        mMenuPosition = style.getMenuPosition();
 
         // We have a valid uuid and have read the basic (database stored) settings.
-        // Now init the preferences.
-        initPrefs(context);
-        unparcelPrefs(in);
+        // Now clone the preferences
+        mShowAuthorByGivenName = new PBoolean(this, style.mShowAuthorByGivenName);
+        mSortAuthorByGivenName = new PBoolean(this, style.mSortAuthorByGivenName);
 
-        // skip dummy mNameResId
-        in.readInt();
-    }
+        mExpansionLevel = new PInteger(this, style.mExpansionLevel);
+        mShowHeaderInfo = new PBitmask(this, style.mShowHeaderInfo);
+        mGroupsUseListPreferredHeight = new PBoolean(this, style.mGroupsUseListPreferredHeight);
 
-    private UserStyle(@NonNull final Parcel in) {
-        super(in);
-        // skip dummy mNameResId
-        in.readInt();
+        mTextScale = new TextScale(this, style.mTextScale);
+
+        mListScreenBookFields = new ListScreenBookFields(this, style.mListScreenBookFields);
+
+        mDetailScreenBookFields = new DetailScreenBookFields(this, style.mDetailScreenBookFields);
+
+        mGroups = new Groups(context, this, style.mGroups);
+        mFilters = new Filters(this, style.mFilters);
     }
 
     public void setName(@NonNull final String name) {
-        mStyleSettings.setString(PK_STYLE_NAME, name);
+        mStyleSharedPreferences.setString(PK_STYLE_NAME, name);
     }
 
     @Override
@@ -145,22 +173,37 @@ public class UserStyle
     }
 
     @Override
-    public boolean isBuiltin() {
-        return false;
-    }
-
-    @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
         //noinspection ConstantConditions
-        return mStyleSettings.getString(PK_STYLE_NAME);
+        return mStyleSharedPreferences.getString(PK_STYLE_NAME);
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        super.writeToParcel(dest, flags);
-        // write dummy mNameResId
-        dest.writeInt(0);
+    /**
+     * Get all of the preferences of this Style and its groups/filters.
+     *
+     * @return unordered map with all preferences for this style
+     */
+    @NonNull
+    public Map<String, PPref> getPreferences() {
+        final Map<String, PPref> tmpMap = new HashMap<>();
+
+        tmpMap.put(mExpansionLevel.getKey(), mExpansionLevel);
+        tmpMap.put(mGroupsUseListPreferredHeight.getKey(), mGroupsUseListPreferredHeight);
+        tmpMap.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
+
+        tmpMap.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
+        tmpMap.put(mSortAuthorByGivenName.getKey(), mSortAuthorByGivenName);
+
+        mTextScale.addToMap(tmpMap);
+
+        mListScreenBookFields.addToMap(tmpMap);
+        mDetailScreenBookFields.addToMap(tmpMap);
+
+        tmpMap.put(mGroups.getKey(), mGroups);
+        mGroups.addToMap(tmpMap);
+        mFilters.addToMap(tmpMap);
+
+        return tmpMap;
     }
 }

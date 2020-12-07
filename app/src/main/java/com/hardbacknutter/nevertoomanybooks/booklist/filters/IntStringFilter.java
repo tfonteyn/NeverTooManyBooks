@@ -30,7 +30,7 @@ import androidx.preference.PreferenceManager;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
@@ -43,22 +43,23 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * @see PInt
  */
 abstract class IntStringFilter
-        implements PInt, Filter<Integer>, PPref<Integer> {
+        implements Filter<Integer>, PPref<Integer>, PInt {
 
     static final Integer P_NOT_USED = -1;
 
+    @StringRes
+    private final int mLabelId;
     @NonNull
     final TableDefinition mTable;
     @NonNull
     final String mDomainKey;
-    /** The {@link BooklistStyle} this preference belongs to. */
+
+    /** The {@link ListStyle} this preference belongs to. */
     @NonNull
-    private final BooklistStyle mStyle;
+    private final ListStyle mStyle;
     /** preference key. */
     @NonNull
     private final String mKey;
-    @StringRes
-    private final int mLabelId;
     @NonNull
     private final Integer mDefaultValue;
     /** in memory value used for non-persistence situations. */
@@ -75,19 +76,36 @@ abstract class IntStringFilter
      * @param table     to use by the expression
      * @param domainKey to use by the expression
      */
-    IntStringFilter(@NonNull final BooklistStyle style,
+    IntStringFilter(@NonNull final ListStyle style,
                     @StringRes final int labelId,
                     @NonNull final String key,
                     @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                     @NonNull final String domainKey) {
         mStyle = style;
         mKey = key;
+        mDefaultValue = P_NOT_USED;
 
         mLabelId = labelId;
         mTable = table;
         mDomainKey = domainKey;
+    }
 
-        mDefaultValue = P_NOT_USED;
+    /**
+     * Copy constructor.
+     *
+     * @param filter to copy from
+     */
+    IntStringFilter(@NonNull final ListStyle style,
+                    @NonNull final IntStringFilter filter) {
+        mStyle = style;
+        mKey = filter.mKey;
+        mDefaultValue = filter.mDefaultValue;
+
+        mLabelId = filter.mLabelId;
+        mTable = filter.mTable;
+        mDomainKey = filter.mDomainKey;
+
+        mNonPersistedValue = filter.mNonPersistedValue;
     }
 
     @NonNull

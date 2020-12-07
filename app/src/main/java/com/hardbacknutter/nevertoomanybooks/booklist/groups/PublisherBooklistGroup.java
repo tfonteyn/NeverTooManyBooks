@@ -33,7 +33,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
@@ -82,11 +82,24 @@ public class PublisherBooklistGroup
      *
      * @param style the style
      */
-    PublisherBooklistGroup(@NonNull final BooklistStyle style) {
+    PublisherBooklistGroup(@NonNull final ListStyle style) {
         super(PUBLISHER, style);
         mDisplayDomain = createDisplayDomain();
 
         initPrefs();
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param group to copy from
+     */
+    PublisherBooklistGroup(@NonNull final ListStyle style,
+                           @NonNull final PublisherBooklistGroup group) {
+        super(style, group);
+        mDisplayDomain = createDisplayDomain();
+
+        mUnderEach = new PBoolean(mStyle, group.mUnderEach);
     }
 
     /**
@@ -101,6 +114,7 @@ public class PublisherBooklistGroup
         initPrefs();
         mUnderEach.set(in);
     }
+
 
     /**
      * Get the global default for this preference.

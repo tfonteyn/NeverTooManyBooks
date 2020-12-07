@@ -69,7 +69,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -799,7 +798,7 @@ public class XmlRecordReader
         @NonNull
         private final DAO mDb;
 
-        private BooklistStyle mStyle;
+        private ListStyle mStyle;
 
         /**
          * A collection of all Preferences (including the preferences from *all* groups).
@@ -843,7 +842,7 @@ public class XmlRecordReader
         /**
          * The start of a Style element.
          * <p>
-         * Creates a new BooklistStyle, and sets it as the 'current' one ready for writes.
+         * Creates a new {@link ListStyle}, and sets it as the 'current' one ready for writes.
          *
          * <br><br>{@inheritDoc}
          */
@@ -859,7 +858,7 @@ public class XmlRecordReader
 
             SanityCheck.requireValue(uuid, "uuid");
 
-            if (StyleDAO.Builtin.isBuiltin(uuid)) {
+            if (StyleDAO.BuiltinStyles.isBuiltin(uuid)) {
                 //noinspection ConstantConditions
                 mStyle = StyleDAO.getStyle(mContext, mDb, uuid);
                 mStylePrefs = null;
@@ -868,9 +867,9 @@ public class XmlRecordReader
                 // create a new Style object. This will not have any groups assigned to it...
                 mStyle = new UserStyle(mContext, uuid, tag.name);
                 //... and hence, the Style Preferences won't have any group Preferences either.
-                // Reminder: the map mStylePrefs is NOT a part of the style,
-                // but the elements IN this map ARE.
-                mStylePrefs = mStyle.getPreferences();
+                // Reminder: the map mStylePrefs is a TEMPORARY map,
+                // but the elements IN this map ARE IN THE STYLE.
+                mStylePrefs = ((UserStyle) mStyle).getPreferences();
                 // So loop all groups, and get their Preferences.
                 // Do NOT add the group itself to the style at this point as our import
                 // might not actually have it.
@@ -901,14 +900,14 @@ public class XmlRecordReader
 
         @Override
         public void endElement() {
-            if (mStyle.isUserDefined()) {
+            if (mStyle instanceof UserStyle) {
                 // we now have the groups themselves (one of the 'flat' prefs) set on the style,
                 // so transfer their specific Preferences.
                 for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
-                    final Map<String, PPref> currentPreferences = mStyle.getPreferences();
+                    final Map<String, PPref> stylePrefs = ((UserStyle) mStyle).getPreferences();
                     for (final PPref p : group.getPreferences().values()) {
                         // do we have this Preference ?
-                        final PPref ourPPref = currentPreferences.get(p.getKey());
+                        final PPref ourPPref = stylePrefs.get(p.getKey());
                         if (ourPPref != null) {
                             // if we do, update our value
                             //noinspection unchecked

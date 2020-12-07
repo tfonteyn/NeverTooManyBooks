@@ -33,7 +33,7 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
@@ -82,11 +82,19 @@ public class SeriesBooklistGroup
      *
      * @param style the style
      */
-    SeriesBooklistGroup(@NonNull final BooklistStyle style) {
+    SeriesBooklistGroup(@NonNull final ListStyle style) {
         super(SERIES, style);
         mDisplayDomain = createDisplayDomain();
 
         initPrefs();
+    }
+
+    SeriesBooklistGroup(@NonNull final ListStyle style,
+                        @NonNull final SeriesBooklistGroup group) {
+        super(style, group);
+        mDisplayDomain = createDisplayDomain();
+
+        mUnderEach = new PBoolean(mStyle, group.mUnderEach);
     }
 
     /**

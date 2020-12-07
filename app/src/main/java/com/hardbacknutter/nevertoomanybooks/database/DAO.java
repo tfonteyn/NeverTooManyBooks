@@ -55,9 +55,8 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -216,7 +215,7 @@ public class DAO
     private static final String STMT_GET_BOOK_ID_FROM_UUID = "GetBookIdFromUuid";
     private static final String STMT_GET_BOOKSHELF_ID_BY_NAME = "GetBookshelfIdByName";
     private static final String STMT_GET_LOANEE_BY_BOOK_ID = "GetLoaneeByBookId";
-    private static final String STMT_GET_BOOKLIST_STYLE = "GetBooklistStyle";
+    private static final String STMT_GET_BOOKLIST_STYLE = "GetListStyle";
 
     private static final String STMT_INSERT_AUTHOR = "InsertAuthor";
     private static final String STMT_INSERT_SERIES = "InsertSeries";
@@ -2049,17 +2048,17 @@ public class DAO
     }
 
     /**
-     * Create a new {@link BooklistStyle}.
+     * Create a new {@link ListStyle}.
      *
      * @param style object to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
-    public long insert(@NonNull final UserStyle style) {
+    public long insert(@NonNull final ListStyle style) {
         try (SynchronizedStatement stmt = mSyncedDb
                 .compileStatement(DAOSql.SqlInsert.BOOKLIST_STYLE)) {
             stmt.bindString(1, style.getUuid());
-            stmt.bindBoolean(2, style.isBuiltin());
+            stmt.bindBoolean(2, style instanceof BuiltinStyle);
             stmt.bindBoolean(3, style.isPreferred());
             stmt.bindLong(4, style.getMenuPosition());
             final long iId = stmt.executeInsert();
@@ -2071,13 +2070,13 @@ public class DAO
     }
 
     /**
-     * Update a {@link BooklistStyle}.
+     * Update a {@link ListStyle}.
      *
      * @param style to update
      *
      * @return {@code true} for success.
      */
-    public boolean update(@NonNull final BooklistStyle style) {
+    public boolean update(@NonNull final ListStyle style) {
 
         final ContentValues cv = new ContentValues();
         cv.put(KEY_STYLE_IS_PREFERRED, style.isPreferred());
@@ -2088,7 +2087,7 @@ public class DAO
     }
 
     /**
-     * Delete a {@link BooklistStyle}.
+     * Delete a {@link ListStyle}.
      * Cleans up {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} as well.
      *
      * @param style to delete
@@ -2096,7 +2095,7 @@ public class DAO
      * @return {@code true} if a row was deleted
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean delete(@NonNull final BooklistStyle style) {
+    public boolean delete(@NonNull final ListStyle style) {
 
         final int rowsAffected;
 

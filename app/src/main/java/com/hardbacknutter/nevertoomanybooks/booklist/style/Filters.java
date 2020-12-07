@@ -39,6 +39,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.BooleanFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NotEmptyFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.WildcardFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -71,7 +73,7 @@ public class Filters {
      *
      * @param style the style
      */
-    public Filters(@NonNull final BooklistStyle style) {
+    public Filters(@NonNull final ListStyle style) {
 
         mFilters.put(PK_FILTER_READ,
                      new BooleanFilter(style, R.string.lbl_read,
@@ -108,6 +110,32 @@ public class Filters {
                                         PK_FILTER_ISBN,
                                         DBDefinitions.TBL_BOOKS,
                                         DBDefinitions.KEY_ISBN));
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param filters to copy from
+     */
+    public Filters(@NonNull final ListStyle style,
+                   @NonNull final Filters filters) {
+        for (final Filter<?> filter : filters.mFilters.values()) {
+            final Filter<?> clonedFilter;
+            if (filter instanceof BitmaskFilter) {
+                clonedFilter = new BitmaskFilter(style, (BitmaskFilter) filter);
+            } else if (filter instanceof BooleanFilter) {
+                clonedFilter = new BooleanFilter(style, (BooleanFilter) filter);
+            } else if (filter instanceof NotEmptyFilter) {
+                clonedFilter = new NotEmptyFilter(style, (NotEmptyFilter) filter);
+            } else if (filter instanceof NumberListFilter) {
+                clonedFilter = new NumberListFilter((NumberListFilter) filter);
+            } else if (filter instanceof WildcardFilter) {
+                clonedFilter = new WildcardFilter((WildcardFilter) filter);
+            } else {
+                throw new IllegalStateException("Clone not supported for " + filter);
+            }
+            mFilters.put(clonedFilter.getKey(), clonedFilter);
+        }
     }
 
     /**

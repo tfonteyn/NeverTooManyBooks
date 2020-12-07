@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 
 /**
  * Used for {@link androidx.preference.EditTextPreference}.
@@ -34,17 +34,16 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 public class PString
         implements PPref<String> {
 
-    /** The {@link BooklistStyle} this preference belongs to. */
+    /** The {@link ListStyle} this preference belongs to. */
     @NonNull
-    private final BooklistStyle mStyle;
-
-    /** in-memory default to use when value==null, or when the backend does not contain the key. */
-    @NonNull
-    private final String mDefaultValue;
+    private final ListStyle mStyle;
 
     /** key for the Preference. */
     @NonNull
     private final String mKey;
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final String mDefaultValue;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private String mNonPersistedValue;
@@ -55,11 +54,25 @@ public class PString
      *
      * @param key preference key
      */
-    public PString(@NonNull final BooklistStyle style,
+    public PString(@NonNull final ListStyle style,
                    @NonNull final String key) {
         mStyle = style;
         mKey = key;
         mDefaultValue = "";
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param pString to copy from
+     */
+    public PString(@NonNull final ListStyle style,
+                   @NonNull final PString pString) {
+        mStyle = style;
+        mKey = pString.mKey;
+        mDefaultValue = pString.mDefaultValue;
+
+        mNonPersistedValue = pString.mNonPersistedValue;
     }
 
     @NonNull

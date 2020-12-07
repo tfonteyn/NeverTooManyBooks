@@ -35,7 +35,7 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -99,14 +99,35 @@ public class AuthorBooklistGroup
      * @param style   the style
      */
     AuthorBooklistGroup(@NonNull final Context context,
-                        @NonNull final BooklistStyle style) {
+                        @NonNull final ListStyle style) {
         super(AUTHOR, style);
-        initPrefs();
 
         mShowAuthorWithGivenNameFirst = style.isShowAuthorByGivenName(context);
         mSortAuthorByGivenNameFirst = style.isSortAuthorByGivenName(context);
         mDisplayDomain = createDisplayDomain();
         mSortedDomain = createSortDomain();
+
+        initPrefs();
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param context Current context
+     * @param group   to copy from
+     */
+    AuthorBooklistGroup(@NonNull final Context context,
+                        @NonNull final ListStyle style,
+                        @NonNull final AuthorBooklistGroup group) {
+        super(style, group);
+        mShowAuthorWithGivenNameFirst = style.isShowAuthorByGivenName(context);
+        mSortAuthorByGivenNameFirst = style.isSortAuthorByGivenName(context);
+
+        mDisplayDomain = createDisplayDomain();
+        mSortedDomain = createSortDomain();
+
+        mUnderEach = new PBoolean(mStyle, group.mUnderEach);
+        mPrimaryType = new PBitmask(mStyle, group.mPrimaryType);
     }
 
     /**
@@ -116,14 +137,16 @@ public class AuthorBooklistGroup
      */
     private AuthorBooklistGroup(@NonNull final Parcel in) {
         super(in);
-        initPrefs();
-        mUnderEach.set(in);
-
         mShowAuthorWithGivenNameFirst = in.readByte() != 0;
         mSortAuthorByGivenNameFirst = in.readByte() != 0;
+
         mDisplayDomain = createDisplayDomain();
         mSortedDomain = createSortDomain();
+
+        initPrefs();
+        mUnderEach.set(in);
     }
+
 
     /**
      * Get the global default for this preference.
@@ -186,10 +209,10 @@ public class AuthorBooklistGroup
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
         super.writeToParcel(dest, flags);
-        mUnderEach.writeToParcel(dest);
-
         dest.writeByte((byte) (mShowAuthorWithGivenNameFirst ? 1 : 0));
         dest.writeByte((byte) (mSortAuthorByGivenNameFirst ? 1 : 0));
+
+        mUnderEach.writeToParcel(dest);
     }
 
     private void initPrefs() {

@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
 
 import android.content.Context;
+import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,7 +44,8 @@ public interface PPref<T> {
      * <ol>
      *      <li>The user preference if set</li>
      *      <li>The global preference if set</li>
-     *      <li>The default value as set at creation time of the preference Object.</li>
+     *      <li>The non-persistent value if applicable</li>
+     *      <li>The default value as set at creation time of the PPref Object.</li>
      * </ol>
      *
      * @param context Current context
@@ -52,4 +54,8 @@ public interface PPref<T> {
      */
     @NonNull
     T getValue(@NonNull Context context);
+
+    void set(@NonNull Parcel in);
+
+    void writeToParcel(@NonNull Parcel dest);
 }

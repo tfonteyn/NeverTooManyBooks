@@ -30,9 +30,10 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 public class PreferredStylesViewModel
@@ -47,7 +48,7 @@ public class PreferredStylesViewModel
     /** Flag set when anything is changed. Includes moving styles up/down, on/off, ... */
     private boolean mIsDirty;
     /** The *in-memory* list of styles. */
-    private ArrayList<BooklistStyle> mStyleList;
+    private ArrayList<ListStyle> mStyleList;
 
     @Override
     protected void onCleared() {
@@ -98,7 +99,7 @@ public class PreferredStylesViewModel
     }
 
     @NonNull
-    ArrayList<BooklistStyle> getList() {
+    ArrayList<ListStyle> getList() {
         return mStyleList;
     }
 
@@ -111,7 +112,7 @@ public class PreferredStylesViewModel
      *
      * @return position of the style in the list
      */
-    int onStyleEdited(@NonNull final BooklistStyle style,
+    int onStyleEdited(@NonNull final ListStyle style,
                       final long templateId) {
         mIsDirty = true;
 
@@ -144,18 +145,18 @@ public class PreferredStylesViewModel
         } else {
             // We edited an existing Style.
             // Check if we edited in-place or cloned a style
-            final BooklistStyle origStyle = mStyleList.get(editedRow);
+            final ListStyle origStyle = mStyleList.get(editedRow);
             if (origStyle.equals(style)) {
                 // just a style edited in-place, update the list with the new object
                 mStyleList.set(editedRow, style);
 
             } else {
-                if (origStyle.isUserDefined()) {
+                if (origStyle instanceof UserStyle) {
                     // It's a clone of an user-defined style.
                     // Put it directly after the user-defined original
                     mStyleList.add(editedRow, style);
 
-                } else {
+                } else if (origStyle instanceof BuiltinStyle) {
                     // It's a clone of a builtin style
                     if (origStyle.isPreferred()) {
                         // if the original style was a preferred style,
@@ -178,6 +179,8 @@ public class PreferredStylesViewModel
                         // Put it directly after the original
                         mStyleList.add(editedRow, style);
                     }
+                } else {
+                    throw new IllegalStateException("Unhandled style: " + style);
                 }
             }
         }
@@ -205,7 +208,7 @@ public class PreferredStylesViewModel
      *
      * @param style to update
      */
-    void updateStyle(@NonNull final BooklistStyle style) {
+    void updateStyle(@NonNull final ListStyle style) {
         StyleDAO.update(mDb, style);
     }
 
@@ -216,7 +219,7 @@ public class PreferredStylesViewModel
      * @param style   to delete
      */
     void deleteStyle(@NonNull final Context context,
-                     @NonNull final BooklistStyle style) {
+                     @NonNull final ListStyle style) {
         StyleDAO.delete(context, mDb, style);
         mStyleList.remove(style);
     }

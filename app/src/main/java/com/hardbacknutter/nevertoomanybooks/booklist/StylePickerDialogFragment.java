@@ -36,9 +36,10 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
@@ -63,7 +64,7 @@ public class StylePickerDialogFragment
     @Nullable
     private String mCurrentStyleUuid;
     /** All styles as loaded from the database. */
-    private List<BooklistStyle> mStyleList;
+    private List<ListStyle> mStyleList;
     /** Adapter for the selection. */
     private RadioGroupRecyclerAdapter<String, String> mAdapter;
 
@@ -159,14 +160,14 @@ public class StylePickerDialogFragment
         dismiss();
 
         //noinspection OptionalGetWithoutIsPresent
-        BooklistStyle selectedStyle =
+        ListStyle selectedStyle =
                 mStyleList.stream()
                           .filter(style -> mCurrentStyleUuid.equals(style.getUuid()))
                           .findFirst()
                           .get();
 
         final long templateId = selectedStyle.getId();
-        if (selectedStyle.isBuiltin()) {
+        if (selectedStyle instanceof BuiltinStyle) {
             // clone a builtin style first
             //noinspection ConstantConditions
             selectedStyle = selectedStyle.clone(getContext());
@@ -177,7 +178,7 @@ public class StylePickerDialogFragment
 
         // use the activity so we get the results there.
         //noinspection ConstantConditions
-        ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle, templateId);
+        ((BooksOnBookshelf) getActivity()).editStyle((UserStyle) selectedStyle, templateId);
     }
 
     /**
@@ -193,7 +194,7 @@ public class StylePickerDialogFragment
                 // make sure the currently selected style is in the list
                 if (mStyleList.stream()
                               .noneMatch(style -> mCurrentStyleUuid.equals(style.getUuid()))) {
-                    final BooklistStyle style = StyleDAO.getStyle(context, db, mCurrentStyleUuid);
+                    final ListStyle style = StyleDAO.getStyle(context, db, mCurrentStyleUuid);
                     if (style != null) {
                         mStyleList.add(style);
                     }

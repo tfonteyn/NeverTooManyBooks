@@ -27,7 +27,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 
 public class BuiltinStyle
@@ -66,7 +65,7 @@ public class BuiltinStyle
      * @param groupIds     a list of groups to attach to this style
      */
     BuiltinStyle(@NonNull final Context context,
-                 @IntRange(from = StyleDAO.Builtin.MAX_ID, to = -1) final long id,
+                 @IntRange(from = StyleDAO.BuiltinStyles.MAX_ID, to = -1) final long id,
                  @NonNull final String uuid,
                  @StringRes final int nameId,
                  final boolean isPreferred,
@@ -83,7 +82,7 @@ public class BuiltinStyle
         initPrefs(context);
 
         for (@BooklistGroup.Id final int groupId : groupIds) {
-            mGroups.add(BooklistGroup.newInstance(context, groupId, this));
+            getGroups().add(BooklistGroup.newInstance(context, groupId, this));
         }
     }
 
@@ -98,16 +97,6 @@ public class BuiltinStyle
     }
 
     @Override
-    public boolean isUserDefined() {
-        return false;
-    }
-
-    @Override
-    public boolean isBuiltin() {
-        return true;
-    }
-
-    @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
         return context.getString(mNameResId);
@@ -118,14 +107,5 @@ public class BuiltinStyle
                               final int flags) {
         super.writeToParcel(dest, flags);
         dest.writeInt(mNameResId);
-    }
-
-    @Override
-    @NonNull
-    public String toString() {
-        return "BuiltinStyle{"
-               + "mNameResId=" + App.getAppContext().getString(mNameResId)
-               + super.toString()
-               + '}';
     }
 }

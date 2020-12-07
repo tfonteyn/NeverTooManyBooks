@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 
 /**
  * Used for {@link androidx.preference.SeekBarPreference}.
@@ -36,17 +36,16 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 public class PInteger
         implements PPref<Integer>, PInt {
 
-    /** The {@link BooklistStyle} this preference belongs to. */
+    /** The {@link ListStyle} this preference belongs to. */
     @NonNull
-    private final BooklistStyle mStyle;
-
-    /** in-memory default to use when value==null, or when the backend does not contain the key. */
-    @NonNull
-    private final Integer mDefaultValue;
+    private final ListStyle mStyle;
 
     /** key for the Preference. */
     @NonNull
     private final String mKey;
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final Integer mDefaultValue;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -58,12 +57,26 @@ public class PInteger
      * @param key      preference key
      * @param defValue default value
      */
-    public PInteger(@NonNull final BooklistStyle style,
+    public PInteger(@NonNull final ListStyle style,
                     @NonNull final String key,
                     final int defValue) {
         mStyle = style;
         mKey = key;
         mDefaultValue = defValue;
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param pInteger to copy from
+     */
+    public PInteger(@NonNull final ListStyle style,
+                    @NonNull final PInteger pInteger) {
+        mStyle = style;
+        mKey = pInteger.mKey;
+        mDefaultValue = pInteger.mDefaultValue;
+
+        mNonPersistedValue = pInteger.mNonPersistedValue;
     }
 
     @NonNull
