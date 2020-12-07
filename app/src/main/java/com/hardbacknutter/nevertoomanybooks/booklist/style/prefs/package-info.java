@@ -50,27 +50,27 @@
  * <p>
  * So... bring in the classes of this package to transmogrify (Hi Calvin) between the two.
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref} => Interface for all of them.
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref} => Interface for all of them.
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PString}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString}
  * => {@link androidx.preference.EditTextPreference}
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean}
  * => {@link androidx.preference.SwitchPreference}
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs}
  * => a value in a List-of-values used by {@link androidx.preference.ListPreference}
  * => an actual {@code Integer} (not used as such yet)
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask}
  * => an {@code Integer} used as a bitmask, used by
  * {@link androidx.preference.MultiSelectListPreference}
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInt}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt}
  * => {@code Interface} implemented by  PBitmask to 'set' their values as {@code Integer}
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.groups}
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.groups}
  * => {@code List<Integer>}: an ordered list of {@code Integer} values. Stored as a CSV String
  * <p>
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;

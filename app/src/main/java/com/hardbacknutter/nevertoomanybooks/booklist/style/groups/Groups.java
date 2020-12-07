@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.groups;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -35,10 +35,10 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleSharedPreferences;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PCsvString;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
 /**
  * Encapsulate the list of {@code BooklistGroup} with backend storage in a preference,
@@ -83,7 +83,7 @@ public class Groups
      * Constructor.
      *
      * @param context Current context
-     * @param style   the style
+     * @param style   Style reference.
      */
     public Groups(@NonNull final Context context,
                   @NonNull final ListStyle style) {
@@ -101,7 +101,9 @@ public class Groups
     /**
      * Copy constructor.
      *
-     * @param groups to copy from
+     * @param context Current context
+     * @param style   Style reference.
+     * @param groups  to copy from
      */
     public Groups(@NonNull final Context context,
                   @NonNull final ListStyle style,

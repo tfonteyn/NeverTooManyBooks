@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BitmaskFilter;
 
 /**
  * Allows a user to select 0 or more checkboxes (forming a bitmask) or select to disregard
@@ -64,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class BitmaskPreference
         extends MultiSelectListPreference {
 
-    /** See {@link com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter}. */
+    /** See {@link BitmaskFilter}. */
     private static final String ACTIVE = ".active";
 
     /** The text to use for the neutral button, which allows the user to choose "don't use". */

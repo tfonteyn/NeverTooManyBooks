@@ -130,7 +130,7 @@ class BooklistNodeDAO {
      *
      * @param db          Database Access
      * @param stmtManager to use
-     * @param style       Booklist style to use;
+     * @param style       Style reference.
      * @param bookshelf   to use
      */
     BooklistNodeDAO(@NonNull final SynchronizedDb db,

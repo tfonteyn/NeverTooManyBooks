@@ -27,7 +27,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 
 public class BuiltinStyle
         extends BooklistStyle {

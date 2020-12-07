@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -52,7 +52,8 @@ public class PBoolean
      * Constructor. Uses the global setting as the default value,
      * or {@code false} if there is no global default.
      *
-     * @param key preference key
+     * @param style Style reference.
+     * @param key   preference key
      */
     public PBoolean(@NonNull final ListStyle style,
                     @NonNull final String key) {
@@ -65,6 +66,7 @@ public class PBoolean
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
+     * @param style    Style reference.
      * @param key      preference key
      * @param defValue default value
      */
@@ -79,6 +81,7 @@ public class PBoolean
     /**
      * Copy constructor.
      *
+     * @param style    Style reference.
      * @param pBoolean to copy from
      */
     public PBoolean(@NonNull final ListStyle style,

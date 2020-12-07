@@ -37,9 +37,9 @@ import java.util.Map;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -115,7 +115,7 @@ final class BooklistBuilder {
     private final boolean mFilteredOnBookshelf;
 
     /** the list of Filters. */
-    private final Collection<Filter<?>> mFilters = new ArrayList<>();
+    private final Collection<Filter> mFilters = new ArrayList<>();
 
     /** The table we'll be generating. */
     @NonNull
@@ -228,7 +228,7 @@ final class BooklistBuilder {
      **/
     void preBuild(@NonNull final Context context,
                   @NonNull final Collection<VirtualDomain> bookDomains,
-                  @NonNull final Collection<Filter<?>> filters) {
+                  @NonNull final Collection<Filter> filters) {
 
         // Always sort by level first; no expression, as this does not represent a value.
         addDomain(new VirtualDomain(

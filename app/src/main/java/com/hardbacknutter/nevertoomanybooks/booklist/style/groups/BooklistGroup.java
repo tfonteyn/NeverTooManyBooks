@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.groups;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -45,10 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -221,7 +221,7 @@ public class BooklistGroup
      * Constructor.
      *
      * @param id    of group to create
-     * @param style the style
+     * @param style Style reference.
      */
     BooklistGroup(@Id final int id,
                   @NonNull final ListStyle style) {
@@ -234,6 +234,7 @@ public class BooklistGroup
     /**
      * Copy constructor.
      *
+     * @param style Style reference.
      * @param group to copy from
      */
     public BooklistGroup(@NonNull final ListStyle style,
@@ -274,7 +275,7 @@ public class BooklistGroup
      *
      * @param context Current context
      * @param id      of group to create
-     * @param style   the style
+     * @param style   Style reference.
      *
      * @return instance
      */
@@ -302,7 +303,7 @@ public class BooklistGroup
      * Get a list of BooklistGroup's, one for each defined {@link GroupKey}'s.
      *
      * @param context Current context
-     * @param style   the style
+     * @param style   Style reference.
      *
      * @return the list
      */

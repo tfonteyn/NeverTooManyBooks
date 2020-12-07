@@ -26,7 +26,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 /**
@@ -45,6 +45,7 @@ public class DetailScreenBookFields
      * Constructor.
      *
      * @param context Current context
+     * @param style   Style reference.
      */
     DetailScreenBookFields(@NonNull final Context context,
                            @NonNull final ListStyle style) {
@@ -59,7 +60,7 @@ public class DetailScreenBookFields
 
     /**
      * Copy constructor.
-     *
+     * @param style        Style reference.
      * @param bookFields to copy from
      */
     DetailScreenBookFields(@NonNull final ListStyle style,

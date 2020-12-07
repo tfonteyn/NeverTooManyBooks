@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 public interface ListStyle

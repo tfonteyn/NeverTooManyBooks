@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 
 /**
  * Defines a domain; name, type, ...

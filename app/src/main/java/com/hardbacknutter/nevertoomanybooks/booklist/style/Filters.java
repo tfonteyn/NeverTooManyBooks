@@ -35,13 +35,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.BitmaskFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.BooleanFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.NotEmptyFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.filters.WildcardFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BitmaskFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BooleanFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.NotEmptyFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.StyleFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -66,12 +64,12 @@ public class Filters {
     /**
      * All filters in an <strong>ordered</strong> map.
      */
-    private final Map<String, Filter<?>> mFilters = new LinkedHashMap<>();
+    private final Map<String, StyleFilter<?>> mFilters = new LinkedHashMap<>();
 
     /**
      * Constructor.
      *
-     * @param style the style
+     * @param style Style reference.
      */
     public Filters(@NonNull final ListStyle style) {
 
@@ -115,22 +113,19 @@ public class Filters {
     /**
      * Copy constructor.
      *
+     * @param style   Style reference.
      * @param filters to copy from
      */
     public Filters(@NonNull final ListStyle style,
                    @NonNull final Filters filters) {
-        for (final Filter<?> filter : filters.mFilters.values()) {
-            final Filter<?> clonedFilter;
+        for (final StyleFilter<?> filter : filters.mFilters.values()) {
+            final StyleFilter<?> clonedFilter;
             if (filter instanceof BitmaskFilter) {
                 clonedFilter = new BitmaskFilter(style, (BitmaskFilter) filter);
             } else if (filter instanceof BooleanFilter) {
                 clonedFilter = new BooleanFilter(style, (BooleanFilter) filter);
             } else if (filter instanceof NotEmptyFilter) {
                 clonedFilter = new NotEmptyFilter(style, (NotEmptyFilter) filter);
-            } else if (filter instanceof NumberListFilter) {
-                clonedFilter = new NumberListFilter((NumberListFilter) filter);
-            } else if (filter instanceof WildcardFilter) {
-                clonedFilter = new WildcardFilter((WildcardFilter) filter);
             } else {
                 throw new IllegalStateException("Clone not supported for " + filter);
             }
@@ -144,7 +139,7 @@ public class Filters {
      * @return list
      */
     @NonNull
-    public Collection<Filter<?>> getAll() {
+    public Collection<StyleFilter<?>> getAll() {
         return mFilters.values();
     }
 
@@ -156,7 +151,7 @@ public class Filters {
      * @return list
      */
     @NonNull
-    public Collection<Filter<?>> getActiveFilters(@NonNull final Context context) {
+    public Collection<StyleFilter<?>> getActiveFilters(@NonNull final Context context) {
         return mFilters.values()
                        .stream()
                        .filter(f -> f.isActive(context))
@@ -214,7 +209,7 @@ public class Filters {
      * @param map to add to
      */
     void addToMap(@NonNull final Map<String, PPref> map) {
-        for (final Filter<?> filter : mFilters.values()) {
+        for (final StyleFilter<?> filter : mFilters.values()) {
             map.put(filter.getKey(), (PPref) filter);
         }
     }
@@ -226,7 +221,7 @@ public class Filters {
      */
     public void set(@NonNull final Parcel in) {
         // the collection is ordered, so we don't need the keys.
-        for (final Filter<?> filter : mFilters.values()) {
+        for (final StyleFilter<?> filter : mFilters.values()) {
             filter.set(in);
         }
     }
@@ -238,7 +233,7 @@ public class Filters {
      */
     public void writeToParcel(@NonNull final Parcel dest) {
         // the collection is ordered, so we don't write the keys.
-        for (final Filter<?> filter : mFilters.values()) {
+        for (final StyleFilter<?> filter : mFilters.values()) {
             filter.writeToParcel(dest);
         }
     }

@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.groups;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -31,9 +31,9 @@ import androidx.preference.PreferenceScreen;
 
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
@@ -80,7 +80,7 @@ public class PublisherBooklistGroup
     /**
      * Constructor.
      *
-     * @param style the style
+     * @param style Style reference.
      */
     PublisherBooklistGroup(@NonNull final ListStyle style) {
         super(PUBLISHER, style);
@@ -92,6 +92,7 @@ public class PublisherBooklistGroup
     /**
      * Copy constructor.
      *
+     * @param style Style reference.
      * @param group to copy from
      */
     PublisherBooklistGroup(@NonNull final ListStyle style,

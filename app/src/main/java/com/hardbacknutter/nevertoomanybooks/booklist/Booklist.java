@@ -49,8 +49,8 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.FtsDefinition;
@@ -144,7 +144,7 @@ public class Booklist
     @NonNull
     private final Map<String, VirtualDomain> mBookDomains = new HashMap<>();
     /** the list of Filters. */
-    private final Collection<Filter<?>> mFilters = new ArrayList<>();
+    private final Collection<Filter> mFilters = new ArrayList<>();
     /** Style to use while building the list. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -216,8 +216,8 @@ public class Booklist
      * Constructor.
      *
      * @param db           Database Access
-     * @param style        Booklist style to use;
-     *                     this is the resolved style as used by the passed bookshelf
+     * @param style        Style reference.
+     *                     This is the resolved style as used by the passed bookshelf
      * @param bookshelf    the current bookshelf
      * @param rebuildState booklist state to use in next rebuild.
      */

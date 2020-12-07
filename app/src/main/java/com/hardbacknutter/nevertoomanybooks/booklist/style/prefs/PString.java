@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -52,7 +52,8 @@ public class PString
      * Constructor. Uses the global setting as the default value,
      * or {@code ""} if there is no global default.
      *
-     * @param key preference key
+     * @param style Style reference.
+     * @param key   preference key
      */
     public PString(@NonNull final ListStyle style,
                    @NonNull final String key) {
@@ -64,6 +65,7 @@ public class PString
     /**
      * Copy constructor.
      *
+     * @param style   Style reference.
      * @param pString to copy from
      */
     public PString(@NonNull final ListStyle style,

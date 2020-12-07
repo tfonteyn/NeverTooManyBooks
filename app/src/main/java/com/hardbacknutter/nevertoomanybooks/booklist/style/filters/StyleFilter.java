@@ -17,37 +17,33 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
-package com.hardbacknutter.nevertoomanybooks.booklist.filters;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
 /**
- * A generic SQL expression filter for use in {@code WHERE} clauses.
+ * A persistent filter used by a {@link ListStyle}.
+ *
+ * @param <T> type of the persistent value
+ *
+ * @see PPref
  */
-public interface Filter {
+public interface StyleFilter<T>
+        extends Filter, PPref<T> {
 
     /**
-     * A Filter must implement this method.
+     * Get a human readable label/name for this filter.
      *
      * @param context Current context
      *
-     * @return filter SQL expression, or {@code null} if not active.
+     * @return a human readable label/name for this filter.
      */
-    @Nullable
-    String getExpression(@NonNull Context context);
-
-    /**
-     * Allow an implementation to override the definition of being active.
-     *
-     * @param context Current context
-     *
-     * @return {@code true} if this filter is active.
-     */
-    default boolean isActive(@NonNull final Context context) {
-        return getExpression(context) != null;
-    }
+    @NonNull
+    String getLabel(@NonNull final Context context);
 }

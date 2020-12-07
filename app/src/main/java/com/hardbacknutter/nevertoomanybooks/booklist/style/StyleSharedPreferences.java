@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PCsvString;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PCsvString;
 
 /**
  * Encapsulate the SharedPreferences access for styles.

@@ -2050,7 +2050,7 @@ public class DAO
     /**
      * Create a new {@link ListStyle}.
      *
-     * @param style object to insert. Will be updated with the id.
+     * @param style to insert. Will be updated with the id.
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */

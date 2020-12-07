@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * an SQL WHERE clause (column IN (a,b,c,...)
  */
 public class NumberListFilter
-        implements Filter<String> {
+        implements Filter {
 
     @NonNull
     private final TableDefinition mTable;
@@ -79,12 +79,6 @@ public class NumberListFilter
     @Override
     public boolean isActive(@NonNull final Context context) {
         return true;
-    }
-
-    @Override
-    @NonNull
-    public String getValue(@NonNull final Context context) {
-        return mCriteria;
     }
 
     @Override

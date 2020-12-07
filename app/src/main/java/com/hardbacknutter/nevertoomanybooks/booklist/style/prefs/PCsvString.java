@@ -17,14 +17,16 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
 import androidx.annotation.Nullable;
 
 /**
  * Passthrough support.
  */
-public interface PInt {
+public interface PCsvString {
 
-    void set(@Nullable Integer value);
+    String DELIM = ",";
+
+    void setCsv(@Nullable String values);
 }

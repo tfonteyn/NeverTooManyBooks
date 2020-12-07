@@ -28,11 +28,11 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBitmask;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 

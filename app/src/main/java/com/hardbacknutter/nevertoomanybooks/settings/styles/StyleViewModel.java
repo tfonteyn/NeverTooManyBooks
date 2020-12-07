@@ -32,9 +32,9 @@ import androidx.lifecycle.ViewModel;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class StyleViewModel

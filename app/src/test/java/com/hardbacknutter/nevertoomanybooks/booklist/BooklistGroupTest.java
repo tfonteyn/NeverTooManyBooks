@@ -24,7 +24,7 @@ import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

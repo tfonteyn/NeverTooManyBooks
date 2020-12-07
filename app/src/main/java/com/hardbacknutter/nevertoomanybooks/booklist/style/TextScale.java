@@ -31,8 +31,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
 /**
  * Encapsulate Font Scale and all related data/logic.
@@ -63,6 +63,8 @@ public class TextScale {
 
     /**
      * Constructor.
+     *
+     * @param style Style reference.
      */
     TextScale(@NonNull final ListStyle style) {
         mScale = new PInteger(style, PK_TEXT_SCALE, TEXT_SCALE_2_MEDIUM);
@@ -71,10 +73,11 @@ public class TextScale {
     /**
      * Copy constructor.
      *
+     * @param style     Style reference.
      * @param textScale to copy from
      */
-    TextScale(final ListStyle style,
-              final TextScale textScale) {
+    TextScale(@NonNull final ListStyle style,
+              @NonNull final TextScale textScale) {
         mScale = new PInteger(style, textScale.mScale);
     }
 

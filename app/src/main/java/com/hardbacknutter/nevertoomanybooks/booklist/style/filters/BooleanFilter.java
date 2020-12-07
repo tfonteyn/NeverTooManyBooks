@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.filters;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
 import android.content.Context;
 
@@ -63,6 +63,7 @@ public class BooleanFilter
     /**
      * Copy constructor.
      *
+     * @param style  Style reference.
      * @param filter to copy from
      */
     public BooleanFilter(@NonNull final ListStyle style,

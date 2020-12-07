@@ -36,9 +36,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PInteger;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
 /** Encapsulate the Book fields which can be shown on the Book-list screen. */
 public class ListScreenBookFields
@@ -71,6 +71,8 @@ public class ListScreenBookFields
 
     /**
      * Constructor.
+     *
+     * @param style Style reference.
      */
     ListScreenBookFields(@NonNull final ListStyle style) {
 
@@ -90,6 +92,7 @@ public class ListScreenBookFields
     /**
      * Copy constructor.
      *
+     * @param style      Style reference.
      * @param bookFields to copy from
      */
     ListScreenBookFields(@NonNull final ListStyle style,

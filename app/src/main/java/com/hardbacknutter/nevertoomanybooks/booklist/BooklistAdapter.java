@@ -60,10 +60,10 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageLoaderWithCacheWrite;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -164,7 +164,7 @@ public class BooklistAdapter
      *
      * @param context Current context
      * @param cursor  cursor with the 'list of items'
-     * @param style   to use.
+     * @param style   Style reference.
      */
     public void setCursor(@NonNull final Context context,
                           @NonNull final Cursor cursor,
@@ -776,7 +776,7 @@ public class BooklistAdapter
          * Constructor. Initialized by the adapter.
          *
          * @param context Current context
-         * @param style   Current style
+         * @param style        Style reference.
          */
         FieldsInUse(@NonNull final Context context,
                     @NonNull final ListStyle style) {

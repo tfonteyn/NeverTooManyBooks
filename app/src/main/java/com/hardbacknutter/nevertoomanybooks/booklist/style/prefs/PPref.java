@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
 import android.content.Context;
 import android.os.Parcel;

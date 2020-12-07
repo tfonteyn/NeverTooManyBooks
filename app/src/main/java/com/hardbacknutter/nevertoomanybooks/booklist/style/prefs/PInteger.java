@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -54,6 +54,7 @@ public class PInteger
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
+     * @param style    Style reference.
      * @param key      preference key
      * @param defValue default value
      */
@@ -68,6 +69,7 @@ public class PInteger
     /**
      * Copy constructor.
      *
+     * @param style    Style reference.
      * @param pInteger to copy from
      */
     public PInteger(@NonNull final ListStyle style,

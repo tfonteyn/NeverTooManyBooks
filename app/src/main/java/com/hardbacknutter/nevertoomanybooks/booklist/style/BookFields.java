@@ -28,8 +28,8 @@ import androidx.annotation.NonNull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
 public abstract class BookFields {
 
@@ -48,6 +48,7 @@ public abstract class BookFields {
     /**
      * Copy constructor.
      *
+     * @param style      Style reference.
      * @param bookFields to copy from
      */
     BookFields(@NonNull final ListStyle style,

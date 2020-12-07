@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.prefs;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
 import android.content.Context;
 import android.os.Parcel;
@@ -48,17 +48,17 @@ public class PBitmask
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final Integer mDefaultValue;
+    /** Valid bits. */
+    private final int mMask;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
-
-    /** Valid bits. */
-    private final int mMask;
 
     /**
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
+     * @param style    Style reference.
      * @param key      key of preference
      * @param defValue default value
      * @param mask     valid values bitmask
@@ -76,6 +76,7 @@ public class PBitmask
     /**
      * Copy constructor.
      *
+     * @param style    Style reference.
      * @param pBitmask to copy from
      */
     public PBitmask(@NonNull final ListStyle style,
