@@ -93,7 +93,7 @@ public class Groups
         mDefaultValue = new ArrayList<>();
         mNonPersistedValue = new ArrayList<>();
 
-        initGroupMap(isPersistent, style);
+        initGroupMap();
     }
 
     /**
@@ -115,16 +115,15 @@ public class Groups
         if (mPersisted) {
             set(that.getValue());
         }
+
         // init the individual groups AFTER the value of the Groups is set,
-        // so they pick up the persisted Groups value if we set it.
-        initGroupMap(isPersistent, style);
+        initGroupMap();
     }
 
-    private void initGroupMap(final boolean isPersistent,
-                              @NonNull final ListStyle style) {
-        // load the group ID's from the SharedPreference and populates the Group object list.
+    private void initGroupMap() {
+        // The group map objects are build using the 'getValue()' list of group id's
         for (@BooklistGroup.Id final int id : getValue()) {
-            mGroupMap.put(id, BooklistGroup.newInstance(id, isPersistent, style));
+            mGroupMap.put(id, BooklistGroup.newInstance(id, mPersisted, mStyle));
         }
     }
 

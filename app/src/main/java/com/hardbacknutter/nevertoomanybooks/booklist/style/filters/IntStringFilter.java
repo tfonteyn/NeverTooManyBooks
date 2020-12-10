@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * Used for {@link androidx.preference.ListPreference}
  * The Preference uses 'select 1 of many' type and insists on a String.
  * <p>
- * The default value is {@link #P_NOT_USED}.
+ * The default value cannot by {@code null} so we use {@link #P_NOT_USED} instead.
  * For now, it cannot be changed, but the logic is implemented so
  * only a new constructor would need to be added.
  */
@@ -90,6 +90,7 @@ abstract class IntStringFilter
         mPersistence = persistenceLayer;
         mKey = key;
         mDefaultValue = P_NOT_USED;
+        mNonPersistedValue = P_NOT_USED;
 
         mLabelId = labelId;
         mTable = table;

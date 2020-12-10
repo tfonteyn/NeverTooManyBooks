@@ -72,35 +72,6 @@ public class Filters {
     public Filters(final boolean isPersistent,
                    @NonNull final StylePersistenceLayer persistenceLayer) {
 
-        createFilters(isPersistent, persistenceLayer);
-    }
-
-    /**
-     * Copy constructor.
-     *
-     * @param isPersistent     flag
-     * @param persistenceLayer Style reference.
-     * @param that             to copy from
-     */
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    public Filters(final boolean isPersistent,
-                   @NonNull final StylePersistenceLayer persistenceLayer,
-                   @NonNull final Filters that) {
-
-        createFilters(isPersistent, persistenceLayer);
-        if (isPersistent) {
-            for (final Map.Entry<String, StyleFilter<?>> entry : mFilters.entrySet()) {
-                // raw type as we have <?> for both which can't be matched by the compiler.
-                final StyleFilter thisFilter = entry.getValue();
-                final StyleFilter thatFilter = that.mFilters.get(entry.getKey());
-                //noinspection ConstantConditions
-                thisFilter.set(thatFilter.getValue());
-            }
-        }
-    }
-
-    private void createFilters(final boolean isPersistent,
-                               @NonNull final StylePersistenceLayer persistenceLayer) {
         mFilters.put(PK_FILTER_READ,
                      new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_read,
                                        PK_FILTER_READ,
@@ -137,6 +108,34 @@ public class Filters {
                                         PK_FILTER_ISBN,
                                         DBDefinitions.TBL_BOOKS,
                                         DBDefinitions.KEY_ISBN));
+    }
+
+    /**
+     * Copy constructor.
+     *
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param that             to copy from
+     */
+    public Filters(final boolean isPersistent,
+                   @NonNull final StylePersistenceLayer persistenceLayer,
+                   @NonNull final Filters that) {
+        for (final StyleFilter<?> filter : that.mFilters.values()) {
+            final StyleFilter<?> clonedFilter;
+            if (filter instanceof BitmaskFilter) {
+                clonedFilter = new BitmaskFilter(isPersistent, persistenceLayer,
+                                                 (BitmaskFilter) filter);
+            } else if (filter instanceof BooleanFilter) {
+                clonedFilter = new BooleanFilter(isPersistent, persistenceLayer,
+                                                 (BooleanFilter) filter);
+            } else if (filter instanceof NotEmptyFilter) {
+                clonedFilter = new NotEmptyFilter(isPersistent, persistenceLayer,
+                                                  (NotEmptyFilter) filter);
+            } else {
+                throw new IllegalStateException("Clone not supported for " + filter);
+            }
+            mFilters.put(clonedFilter.getKey(), clonedFilter);
+        }
     }
 
     /**

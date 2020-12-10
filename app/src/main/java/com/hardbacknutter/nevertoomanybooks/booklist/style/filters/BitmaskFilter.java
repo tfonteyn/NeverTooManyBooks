@@ -39,6 +39,7 @@ public class BitmaskFilter
 
     /** See {@link com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference}. */
     private static final String ACTIVE = ".active";
+
     @NonNull
     private final TableDefinition mTable;
     @NonNull
@@ -64,6 +65,7 @@ public class BitmaskFilter
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
+    private boolean mNonPersistedValueIsActive;
 
     /**
      * Constructor.
@@ -119,6 +121,7 @@ public class BitmaskFilter
         mDomainKey = that.mDomainKey;
 
         mNonPersistedValue = that.mNonPersistedValue;
+        mNonPersistedValueIsActive = that.mNonPersistedValueIsActive;
 
         if (mPersisted) {
             set(that.getValue());
@@ -139,9 +142,16 @@ public class BitmaskFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return mPersistence.getNonGlobalBoolean(mKey + ACTIVE)
-               && DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                                       mDomainKey);
+        if (!DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                                  mDomainKey)) {
+            return false;
+        }
+
+        if (mPersisted) {
+            return mPersistence.getNonGlobalBoolean(mKey + ACTIVE);
+        } else {
+            return mNonPersistedValueIsActive;
+        }
     }
 
     /**
@@ -168,11 +178,21 @@ public class BitmaskFilter
 
     @Override
     public void set(@Nullable final Integer value) {
-        final Integer maskedValue = value != null ? value & mMask : null;
+
         if (mPersisted) {
-            mPersistence.setBitmask(mKey, maskedValue);
+            if (value != null) {
+                mPersistence.setBitmask(mKey, value & mMask);
+            } else {
+                mPersistence.setBitmask(mKey, null);
+            }
         } else {
-            mNonPersistedValue = maskedValue;
+            if (value != null) {
+                mNonPersistedValue = value & mMask;
+                mNonPersistedValueIsActive = true;
+            } else {
+                mNonPersistedValue = null;
+                mNonPersistedValueIsActive = false;
+            }
         }
     }
 
@@ -207,13 +227,14 @@ public class BitmaskFilter
                && mDomainKey.equals(that.mDomainKey)
                && mKey.equals(that.mKey)
                && mDefaultValue.equals(that.mDefaultValue)
-               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue);
+               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
+               && mNonPersistedValueIsActive == that.mNonPersistedValueIsActive;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(mLabelId, mTable, mDomainKey, mPersistence, mKey, mDefaultValue, mMask,
-                            mPersisted, mNonPersistedValue);
+                            mPersisted, mNonPersistedValue, mNonPersistedValueIsActive);
     }
 
     @Override
@@ -226,7 +247,7 @@ public class BitmaskFilter
                + ", mNonPersistedValue=" + mNonPersistedValue
                + (mNonPersistedValue != null ? "=" + Integer.toBinaryString(mNonPersistedValue)
                                              : "")
-
+               + ", mNonPersistedValueIsActive=" + mNonPersistedValueIsActive
                + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)
 
                + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
