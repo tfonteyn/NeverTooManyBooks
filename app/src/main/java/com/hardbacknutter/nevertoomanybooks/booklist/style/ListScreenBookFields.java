@@ -81,15 +81,15 @@ public class ListScreenBookFields
         mThumbnailScale = new PInteger(isPersistent, persistenceLayer, PK_COVER_SCALE,
                                        ListStyle.IMAGE_SCALE_DEFAULT);
 
-        mFields.put(PK_COVERS, new PBoolean(isPersistent, persistenceLayer, PK_COVERS, true));
-        mFields.put(PK_AUTHOR, new PBoolean(isPersistent, persistenceLayer, PK_AUTHOR));
-        mFields.put(PK_PUBLISHER, new PBoolean(isPersistent, persistenceLayer, PK_PUBLISHER));
-        mFields.put(PK_PUB_DATE, new PBoolean(isPersistent, persistenceLayer, PK_PUB_DATE));
-        mFields.put(PK_ISBN, new PBoolean(isPersistent, persistenceLayer, PK_ISBN));
-        mFields.put(PK_FORMAT, new PBoolean(isPersistent, persistenceLayer, PK_FORMAT));
-        mFields.put(PK_LOCATION, new PBoolean(isPersistent, persistenceLayer, PK_LOCATION));
-        mFields.put(PK_RATING, new PBoolean(isPersistent, persistenceLayer, PK_RATING));
-        mFields.put(PK_BOOKSHELVES, new PBoolean(isPersistent, persistenceLayer, PK_BOOKSHELVES));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_COVERS, true));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_AUTHOR));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_PUBLISHER));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_PUB_DATE));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_ISBN));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_FORMAT));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_LOCATION));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_RATING));
+        addField(new PBoolean(isPersistent, persistenceLayer, PK_BOOKSHELVES));
     }
 
     /**
@@ -150,40 +150,31 @@ public class ListScreenBookFields
     private List<String> getLabels(@NonNull final Context context) {
         final List<String> labels = new ArrayList<>();
 
-        //noinspection ConstantConditions
-        if (mFields.get(PK_COVERS).isTrue()) {
+        if (isInUse(PK_COVERS)) {
             labels.add(context.getString(R.string.lbl_covers));
         }
-        //noinspection ConstantConditions
-        if (mFields.get(PK_AUTHOR).isTrue()) {
+        if (isInUse(PK_AUTHOR)) {
             labels.add(context.getString(R.string.lbl_author));
         }
-        //noinspection ConstantConditions
-        if (mFields.get(PK_PUBLISHER).isTrue()) {
+        if (isInUse(PK_PUBLISHER)) {
             labels.add(context.getString(R.string.lbl_publisher));
         }
-        //noinspection ConstantConditions
-        if (mFields.get(PK_PUB_DATE).isTrue()) {
+        if (isInUse(PK_PUB_DATE)) {
             labels.add(context.getString(R.string.lbl_date_published));
         }
-        //noinspection ConstantConditions
-        if (mFields.get(PK_ISBN).isTrue()) {
+        if (isInUse(PK_ISBN)) {
             labels.add(context.getString(R.string.lbl_isbn));
         }
-        //noinspection ConstantConditions
-        if (mFields.get(PK_FORMAT).isTrue()) {
+        if (isInUse(PK_FORMAT)) {
             labels.add(context.getString(R.string.lbl_format));
         }
-        //noinspection ConstantConditions
-        if (mFields.get(PK_LOCATION).isTrue()) {
+        if (isInUse(PK_LOCATION)) {
             labels.add(context.getString(R.string.lbl_location));
         }
-        //noinspection ConstantConditions
-        if (mFields.get(PK_RATING).isTrue()) {
+        if (isInUse(PK_RATING)) {
             labels.add(context.getString(R.string.lbl_rating));
         }
-        //noinspection ConstantConditions
-        if (mFields.get(PK_BOOKSHELVES).isTrue()) {
+        if (isInUse(PK_BOOKSHELVES)) {
             labels.add(context.getString(R.string.lbl_bookshelves_long));
         }
 

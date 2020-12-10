@@ -50,7 +50,8 @@
  * <p>
  * So... bring in the classes of this package to transmogrify (Hi Calvin) between the two.
  * <p>
- * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref} => Interface for all of them.
+ * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref}
+ * => Interface for all of them.
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString}
  * => {@link androidx.preference.EditTextPreference}

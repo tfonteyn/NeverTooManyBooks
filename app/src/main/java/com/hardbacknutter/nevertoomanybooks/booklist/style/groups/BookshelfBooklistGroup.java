@@ -71,7 +71,8 @@ public class BookshelfBooklistGroup
     /**
      * Constructor.
      *
-     * @param style Style reference.
+     * @param isPersistent flag
+     * @param style        Style reference.
      */
     BookshelfBooklistGroup(final boolean isPersistent,
                            @NonNull final ListStyle style) {
@@ -84,8 +85,9 @@ public class BookshelfBooklistGroup
     /**
      * Copy constructor.
      *
-     * @param style Style reference.
-     * @param group to copy from
+     * @param isPersistent flag
+     * @param style        Style reference.
+     * @param group        to copy from
      */
     BookshelfBooklistGroup(final boolean isPersistent,
                            @NonNull final ListStyle style,

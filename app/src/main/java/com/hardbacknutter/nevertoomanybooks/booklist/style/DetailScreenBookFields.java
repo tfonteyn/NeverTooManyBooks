@@ -55,8 +55,8 @@ public class DetailScreenBookFields
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         for (int cIdx = 0; cIdx < 2; cIdx++) {
-            mFields.put(PK_COVER[cIdx], new PBoolean(isPersistent, persistenceLayer, PK_COVER[cIdx],
-                                                     DBDefinitions.isCoverUsed(global, cIdx)));
+            addField(new PBoolean(isPersistent, persistenceLayer,
+                                  PK_COVER[cIdx], DBDefinitions.isCoverUsed(global, cIdx)));
         }
     }
 

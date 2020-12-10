@@ -66,7 +66,8 @@ public class PublisherBooklistGroup
     /**
      * Constructor.
      *
-     * @param style Style reference.
+     * @param isPersistent flag
+     * @param style        Style reference.
      */
     PublisherBooklistGroup(final boolean isPersistent,
                            @NonNull final ListStyle style) {
@@ -79,6 +80,7 @@ public class PublisherBooklistGroup
     /**
      * Copy constructor.
      *
+     * @param isPersistent flag
      * @param style Style reference.
      * @param group to copy from
      */

@@ -53,6 +53,7 @@ public class StyleSharedPreferences
     @Deprecated
     private static final String OBSOLETE_PK_STYLE_BOOKLIST_PREFERRED = "style.booklist.preferred";
 
+    /** Log tag. */
     private static final String TAG = "StyleSharedPreferences";
 
     /** Style unique name. */
@@ -63,6 +64,13 @@ public class StyleSharedPreferences
     @NonNull
     private final SharedPreferences mStylePrefs;
 
+    /**
+     * Constructor.
+     *
+     * @param context      Current context
+     * @param uuid         of the style
+     * @param isPersistent flag
+     */
     StyleSharedPreferences(@NonNull final Context context,
                            @NonNull final String uuid,
                            final boolean isPersistent) {
@@ -407,8 +415,7 @@ public class StyleSharedPreferences
      * @return the set
      */
     @NonNull
-    private Set<String> getBitmaskAsStringSet(
-            @IntRange(from = 0, to = 0xFFFF) final int bitmask) {
+    private Set<String> getBitmaskAsStringSet(@IntRange(from = 0, to = 0xFFFF) final int bitmask) {
         if (bitmask < 0) {
             throw new IllegalArgumentException(Integer.toBinaryString(bitmask));
         }

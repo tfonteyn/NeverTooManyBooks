@@ -152,7 +152,7 @@ public interface ListStyle {
      *
      * @param isPreferred flag
      */
-    void setPreferred(final boolean isPreferred);
+    void setPreferred(boolean isPreferred);
 
     /**
      * Check if the style wants the specified header to be displayed.
@@ -178,21 +178,48 @@ public interface ListStyle {
      * Get the group row <strong>height</strong> to be applied to
      * the {@link android.view.ViewGroup.LayoutParams}.
      *
+     * @param context Current context
+     *
      * @return group row height value in pixels
      */
     int getGroupRowHeight(@NonNull Context context);
 
+    /**
+     * Get the text style used by the style.
+     *
+     * @return TextScale
+     */
     TextScale getTextScale();
 
+    /**
+     * Get the Groups style object.
+     *
+     * @return the Groups object
+     */
     @NonNull
     Groups getGroups();
 
+    /**
+     * Get the Filters style object.
+     *
+     * @return the Filters object
+     */
     @NonNull
     Filters getFilters();
 
+    /**
+     * Get the ListScreenBookFields style object.
+     *
+     * @return the ListScreenBookFields object
+     */
     @NonNull
     ListScreenBookFields getListScreenBookFields();
 
+    /**
+     * Get the DetailScreenBookFields style object.
+     *
+     * @return the DetailScreenBookFields object
+     */
     @NonNull
     DetailScreenBookFields getDetailScreenBookFields();
 

@@ -210,8 +210,9 @@ public class BooklistGroup {
     /**
      * Constructor.
      *
-     * @param id    of group to create
-     * @param style Style reference.
+     * @param id           of group to create
+     * @param isPersistent flag
+     * @param style        Style reference.
      */
     BooklistGroup(@Id final int id,
                   final boolean isPersistent,
@@ -227,8 +228,9 @@ public class BooklistGroup {
     /**
      * Copy constructor.
      *
-     * @param style Style reference.
-     * @param group to copy from
+     * @param isPersistent flag
+     * @param style        Style reference.
+     * @param group        to copy from
      */
     public BooklistGroup(final boolean isPersistent,
                          @NonNull final ListStyle style,
@@ -1051,8 +1053,8 @@ public class BooklistGroup {
                 return false;
             }
             final GroupKey groupKey = (GroupKey) o;
-            return mLabelId == groupKey.mLabelId &&
-                   mKeyPrefix.equals(groupKey.mKeyPrefix)
+            return mLabelId == groupKey.mLabelId
+                   && mKeyPrefix.equals(groupKey.mKeyPrefix)
                    && mKeyDomain.equals(groupKey.mKeyDomain)
                    && mGroupDomains.equals(groupKey.mGroupDomains)
                    && mBaseDomains.equals(groupKey.mBaseDomains);

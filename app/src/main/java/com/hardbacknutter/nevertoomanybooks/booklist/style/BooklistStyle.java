@@ -193,6 +193,8 @@ public abstract class BooklistStyle
      * @param uuid         for the new style
      * @param isPersistent Should always be {@code true},
      *                     but for testing {@code false} can be passed in.
+     *
+     * @return the new copy
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NonNull
@@ -315,55 +317,29 @@ public abstract class BooklistStyle
         mIsPreferred = isPreferred;
     }
 
-    /**
-     * Get the Groups style object.
-     *
-     * @return the Groups object
-     */
     @Override
     @NonNull
     public Groups getGroups() {
         return mGroups;
     }
 
-    /**
-     * Get the Filters style object.
-     *
-     * @return the Filters object
-     */
     @Override
     @NonNull
     public Filters getFilters() {
         return mFilters;
     }
 
-
-    /**
-     * Get the text style.
-     *
-     * @return TextScale
-     */
     @Override
     public TextScale getTextScale() {
         return mTextScale;
     }
 
-    /**
-     * Get the ListScreenBookFields style object.
-     *
-     * @return the ListScreenBookFields object
-     */
     @Override
     @NonNull
     public ListScreenBookFields getListScreenBookFields() {
         return mListScreenBookFields;
     }
 
-    /**
-     * Get the DetailScreenBookFields style object.
-     *
-     * @return the DetailScreenBookFields object
-     */
     @Override
     @NonNull
     public DetailScreenBookFields getDetailScreenBookFields() {

@@ -37,7 +37,7 @@ public abstract class BookFields {
      * All fields (domains) that are optionally shown on the Book level,
      * in an <strong>ordered</strong> map.
      */
-    final Map<String, PBoolean> mFields = new LinkedHashMap<>();
+    private final Map<String, PBoolean> mFields = new LinkedHashMap<>();
 
     /**
      * Constructor.
@@ -59,6 +59,15 @@ public abstract class BookFields {
             final PBoolean clonedField = new PBoolean(isPersistent, persistenceLayer, field);
             mFields.put(clonedField.getKey(), clonedField);
         }
+    }
+
+    void addField(@NonNull final PBoolean field) {
+        mFields.put(field.getKey(), field);
+    }
+
+    boolean isInUse(@NonNull final String key) {
+        //noinspection ConstantConditions
+        return mFields.get(key).isTrue();
     }
 
     /**

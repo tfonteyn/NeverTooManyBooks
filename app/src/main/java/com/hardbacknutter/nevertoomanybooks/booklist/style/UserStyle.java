@@ -61,6 +61,7 @@ public class UserStyle
      *
      * @param context Current context
      * @param uuid    UUID of the style
+     * @param name    name of the style
      *
      * @see com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader
      */
