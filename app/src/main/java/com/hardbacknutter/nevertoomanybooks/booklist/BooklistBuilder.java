@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.StyleFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
@@ -250,16 +251,24 @@ final class BooklistBuilder {
             addGroup(group);
         }
 
-        // Add caller-specified book data
+        // Add caller-specified domains
         for (final VirtualDomain bookDomain : bookDomains) {
             addDomain(bookDomain, false);
         }
 
+        // Add filter-specified domains
+        final Collection<StyleFilter<?>> activeFilters =
+                mStyle.getFilters().getActiveFilters(context);
+        // Not actually needed right now (2020-12-10)
+        // but adding the filter-domains makes them future proof
+        for (final StyleFilter<?> styleFilter : activeFilters) {
+            addDomain(styleFilter.getVirtualDomain(), false);
+        }
+
         // Add the active filters from the style
-        mFilters.addAll(mStyle.getFilters().getActiveFilters(context));
+        mFilters.addAll(activeFilters);
         // And finally, add all filters to be used for the WHERE clause
         mFilters.addAll(filters);
-
 
         // List of column names for the INSERT INTO... clause
         final StringBuilder destColumns = new StringBuilder();

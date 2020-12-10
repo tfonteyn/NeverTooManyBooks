@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 
 /**
  * A persistent filter used by a {@link ListStyle}.
@@ -46,4 +47,7 @@ public interface StyleFilter<T>
      */
     @NonNull
     String getLabel(@NonNull final Context context);
+
+    @NonNull
+    VirtualDomain getVirtualDomain();
 }

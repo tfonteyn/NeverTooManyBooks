@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 
 /**
  * An Integer stored as a String
@@ -49,9 +49,7 @@ abstract class IntStringFilter
 
     private static final Integer P_NOT_USED = -1;
     @NonNull
-    final TableDefinition mTable;
-    @NonNull
-    final String mDomainKey;
+    final VirtualDomain mVirtualDomain;
     @StringRes
     private final int mLabelId;
     /** The {@link StylePersistenceLayer} to use. */
@@ -77,15 +75,13 @@ abstract class IntStringFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param table            to use by the expression
-     * @param domainKey        to use by the expression
+     * @param virtualDomain    to use by the expression
      */
     IntStringFilter(final boolean isPersistent,
                     @NonNull final StylePersistenceLayer persistenceLayer,
                     @StringRes final int labelId,
                     @NonNull final String key,
-                    @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
-                    @NonNull final String domainKey) {
+                    @NonNull final VirtualDomain virtualDomain) {
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = key;
@@ -93,8 +89,7 @@ abstract class IntStringFilter
         mNonPersistedValue = P_NOT_USED;
 
         mLabelId = labelId;
-        mTable = table;
-        mDomainKey = domainKey;
+        mVirtualDomain = virtualDomain;
     }
 
     /**
@@ -113,8 +108,7 @@ abstract class IntStringFilter
         mDefaultValue = that.mDefaultValue;
 
         mLabelId = that.mLabelId;
-        mTable = that.mTable;
-        mDomainKey = that.mDomainKey;
+        mVirtualDomain = new VirtualDomain(that.mVirtualDomain);
 
         mNonPersistedValue = that.mNonPersistedValue;
 
@@ -139,7 +133,13 @@ abstract class IntStringFilter
     public boolean isActive(@NonNull final Context context) {
         return !P_NOT_USED.equals(getValue())
                && DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                                       mDomainKey);
+                                       mVirtualDomain.getName());
+    }
+
+    @NonNull
+    @Override
+    public VirtualDomain getVirtualDomain() {
+        return mVirtualDomain;
     }
 
     @Override
@@ -177,8 +177,7 @@ abstract class IntStringFilter
         final IntStringFilter that = (IntStringFilter) o;
         return mLabelId == that.mLabelId
                && mPersisted == that.mPersisted
-               && mTable.equals(that.mTable)
-               && mDomainKey.equals(that.mDomainKey)
+               && mVirtualDomain.equals(that.mVirtualDomain)
                && mKey.equals(that.mKey)
                && mDefaultValue.equals(that.mDefaultValue)
                && Objects.equals(mNonPersistedValue, that.mNonPersistedValue);
@@ -187,7 +186,7 @@ abstract class IntStringFilter
     @Override
     public int hashCode() {
         return Objects
-                .hash(mTable, mDomainKey, mLabelId, mPersistence, mKey, mDefaultValue, mPersisted,
+                .hash(mVirtualDomain, mLabelId, mPersistence, mKey, mDefaultValue, mPersisted,
                       mNonPersistedValue);
     }
 
@@ -201,8 +200,7 @@ abstract class IntStringFilter
                + ", mNonPersistedValue=" + mNonPersistedValue
 
                + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
-               + ", mTable=" + mTable
-               + ", mDomainKey='" + mDomainKey + '\''
+               + ", mVirtualDomain=" + mVirtualDomain
                + '}';
     }
 }

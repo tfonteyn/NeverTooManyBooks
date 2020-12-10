@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 
 public class NotEmptyFilter
         extends IntStringFilter {
@@ -38,16 +38,14 @@ public class NotEmptyFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param table            to use by the expression
-     * @param domainKey        to use by the expression
+     * @param virtualDomain    to use by the expression
      */
     NotEmptyFilter(final boolean isPersistent,
                    @NonNull final StylePersistenceLayer persistenceLayer,
                    @StringRes final int labelId,
                    @NonNull final String key,
-                   @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
-                   @NonNull final String domainKey) {
-        super(isPersistent, persistenceLayer, labelId, key, table, domainKey);
+                   @NonNull final VirtualDomain virtualDomain) {
+        super(isPersistent, persistenceLayer, labelId, key, virtualDomain);
     }
 
     /**
@@ -69,11 +67,11 @@ public class NotEmptyFilter
         final Integer value = getValue();
         if (isActive(context)) {
             if (value == 0) {
-                return "((" + mTable.dot(mDomainKey) + " IS NULL)"
-                       + " OR (" + mTable.dot(mDomainKey) + "=''))";
+                return "((" + mVirtualDomain.getExpression() + " IS NULL)"
+                       + " OR (" + mVirtualDomain.getExpression() + "=''))";
             } else {
-                return "((" + mTable.dot(mDomainKey) + " IS NOT NULL)"
-                       + " AND (" + mTable.dot(mDomainKey) + "<>''))";
+                return "((" + mVirtualDomain.getExpression() + " IS NOT NULL)"
+                       + " AND (" + mVirtualDomain.getExpression() + "<>''))";
             }
         }
         return null;

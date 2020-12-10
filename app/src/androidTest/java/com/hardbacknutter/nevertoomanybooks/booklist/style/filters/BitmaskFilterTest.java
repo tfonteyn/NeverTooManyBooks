@@ -49,7 +49,7 @@ public class BitmaskFilterTest {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final BitmaskFilter p1 =
                 new BitmaskFilter(false, mLayerMock, R.string.lbl_edition,
-                                  Filters.PK_FILTER_EDITIONS,
+                                  Filters.PK_FILTER_EDITION_BITMASK,
                                   DBDefinitions.TBL_BOOKS,
                                   DBDefinitions.KEY_EDITION_BITMASK,
                                   Book.Edition.BITMASK_ALL);

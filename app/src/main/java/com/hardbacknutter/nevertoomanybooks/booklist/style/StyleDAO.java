@@ -400,7 +400,10 @@ public final class StyleDAO {
         private static final String AUTHOR_THEN_SERIES_UUID
                 = "6a82c4c0-48f1-4130-8a62-bbf478ffe184";
 
-        static final String DEFAULT_STYLE_UUID = AUTHOR_THEN_SERIES_UUID;
+        /**
+         * Absolute/initial default.
+         */
+        public static final String DEFAULT_STYLE_UUID = AUTHOR_THEN_SERIES_UUID;
 
         private static final int UNREAD_AUTHOR_THEN_SERIES_ID = -2;
         @VisibleForTesting

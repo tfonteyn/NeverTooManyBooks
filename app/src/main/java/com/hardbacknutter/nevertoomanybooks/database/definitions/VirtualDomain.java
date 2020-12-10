@@ -92,6 +92,17 @@ public class VirtualDomain
     }
 
     /**
+     * Copy constructor.
+     *
+     * @param that to copy from
+     */
+    public VirtualDomain(@NonNull final VirtualDomain that) {
+        mDomain = that.mDomain;
+        mExpression = that.mExpression;
+        mSorted = that.mSorted;
+    }
+
+    /**
      * {@link Parcelable} Constructor.
      *
      * @param in Parcel to construct the object from

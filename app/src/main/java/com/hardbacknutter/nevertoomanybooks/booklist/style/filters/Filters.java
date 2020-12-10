@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
@@ -49,15 +50,15 @@ public class Filters {
     /** Booklist Filter - ListPreference. */
     public static final String PK_FILTER_READ = "style.booklist.filter.read";
     /** Booklist Filter - ListPreference. */
-    static final String PK_FILTER_ISBN = "style.booklist.filter.isbn";
+    public static final String PK_FILTER_ISBN = "style.booklist.filter.isbn";
     /** Booklist Filter - ListPreference. */
-    static final String PK_FILTER_SIGNED = "style.booklist.filter.signed";
+    public static final String PK_FILTER_SIGNED = "style.booklist.filter.signed";
     /** Booklist Filter - ListPreference. */
-    static final String PK_FILTER_LEND = "style.booklist.filter.lending";
+    public static final String PK_FILTER_LOANEE = "style.booklist.filter.lending";
     /** Booklist Filter - ListPreference. */
-    static final String PK_FILTER_ANTHOLOGY = "style.booklist.filter.anthology";
+    public static final String PK_FILTER_TOC_BITMASK = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
-    static final String PK_FILTER_EDITIONS = "style.booklist.filter.editions";
+    public static final String PK_FILTER_EDITION_BITMASK = "style.booklist.filter.editions";
     /**
      * All filters in an <strong>ordered</strong> map.
      */
@@ -72,42 +73,36 @@ public class Filters {
     public Filters(final boolean isPersistent,
                    @NonNull final StylePersistenceLayer persistenceLayer) {
 
-        mFilters.put(PK_FILTER_READ,
-                     new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_read,
-                                       PK_FILTER_READ,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_READ));
+        mFilters.put(PK_FILTER_READ, new BooleanFilter(
+                isPersistent, persistenceLayer, R.string.lbl_read, PK_FILTER_READ,
+                new VirtualDomain(DBDefinitions.DOM_BOOK_READ,
+                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ))));
 
-        mFilters.put(PK_FILTER_SIGNED,
-                     new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_signed,
-                                       PK_FILTER_SIGNED,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_SIGNED));
+        mFilters.put(PK_FILTER_SIGNED, new BooleanFilter(
+                isPersistent, persistenceLayer, R.string.lbl_signed, PK_FILTER_SIGNED,
+                new VirtualDomain(DBDefinitions.DOM_BOOK_SIGNED,
+                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED))));
 
-        mFilters.put(PK_FILTER_ANTHOLOGY,
-                     new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_anthology,
-                                       PK_FILTER_ANTHOLOGY,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_TOC_BITMASK));
+        mFilters.put(PK_FILTER_TOC_BITMASK, new BooleanFilter(
+                isPersistent, persistenceLayer, R.string.lbl_anthology, PK_FILTER_TOC_BITMASK,
+                new VirtualDomain(DBDefinitions.DOM_BOOK_TOC_BITMASK,
+                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TOC_BITMASK))));
 
-        mFilters.put(PK_FILTER_LEND,
-                     new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_lend_out,
-                                       PK_FILTER_LEND,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_LOANEE));
+        mFilters.put(PK_FILTER_LOANEE, new BooleanFilter(
+                isPersistent, persistenceLayer, R.string.lbl_lend_out, PK_FILTER_LOANEE,
+                new VirtualDomain(DBDefinitions.DOM_LOANEE,
+                                  DBDefinitions.TBL_BOOK_LOANEE.dot(DBDefinitions.KEY_LOANEE))));
 
-        mFilters.put(PK_FILTER_EDITIONS,
-                     new BitmaskFilter(isPersistent, persistenceLayer, R.string.lbl_edition,
-                                       PK_FILTER_EDITIONS,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_EDITION_BITMASK,
-                                       Book.Edition.BITMASK_ALL));
+        mFilters.put(PK_FILTER_EDITION_BITMASK, new BitmaskFilter(
+                isPersistent, persistenceLayer, R.string.lbl_edition, PK_FILTER_EDITION_BITMASK,
+                new VirtualDomain(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
+                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)),
+                Book.Edition.BITMASK_ALL));
 
-        mFilters.put(PK_FILTER_ISBN,
-                     new NotEmptyFilter(isPersistent, persistenceLayer, R.string.lbl_isbn,
-                                        PK_FILTER_ISBN,
-                                        DBDefinitions.TBL_BOOKS,
-                                        DBDefinitions.KEY_ISBN));
+        mFilters.put(PK_FILTER_ISBN, new NotEmptyFilter(
+                isPersistent, persistenceLayer, R.string.lbl_isbn, PK_FILTER_ISBN,
+                new VirtualDomain(DBDefinitions.DOM_BOOK_ISBN,
+                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN))));
     }
 
     /**
@@ -246,9 +241,9 @@ public class Filters {
     @StringDef({PK_FILTER_ISBN,
                 PK_FILTER_READ,
                 PK_FILTER_SIGNED,
-                PK_FILTER_LEND,
-                PK_FILTER_ANTHOLOGY,
-                PK_FILTER_EDITIONS})
+                PK_FILTER_LOANEE,
+                PK_FILTER_TOC_BITMASK,
+                PK_FILTER_EDITION_BITMASK})
     @Retention(RetentionPolicy.SOURCE)
     @interface Key {
 
