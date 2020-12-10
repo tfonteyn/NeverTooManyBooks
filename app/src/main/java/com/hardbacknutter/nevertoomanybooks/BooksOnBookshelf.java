@@ -1398,9 +1398,12 @@ public class BooksOnBookshelf
                 displayList(null);
             } else {
                 // Something is REALLY BAD
-                //URGENT: usually due to the developer making an oopsie with the Styles.
+                // This is usually due to the developer making an oopsie with the Styles.
                 // i.e. the style used to build is very likely corrupt.
                 final ListStyle style = mVm.getCurrentStyle(this);
+                // so we reset the style to recover.. and restarting the app will work.
+                mVm.onStyleChanged(this, StyleDAO.BuiltinStyles.DEFAULT_STYLE_UUID);
+                // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
                 throw new IllegalStateException("Style=" + style);
             }
         }
