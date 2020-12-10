@@ -20,21 +20,20 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.MultiSelectListPreference;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BookshelfBooklistGroup;
@@ -71,6 +70,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
  * </ul>
  * ... so it's a matter of extending the StyleBaseFragment and children (and group activity),
  * to allow editing global defaults.
+ * <p>
+ * <p>
+ * Storing the settings: client -- style -- PPref -- StyleSetting -- SharedPreferences
+ * <ul>
+ *     <li>the style is the holder of the PPrefs</li>
+ *     <li>StyleSetting is a translation layer between type-safe PPrefs, and...</li>
+ *     <li>SharedPreferences which stores some settings type-safe,
+ *     and others as String or StringSet values which depends on the
+ *     androidx.preference framework.</li>
+ * </ul>
  */
 public abstract class BooklistStyle
         implements ListStyle {
@@ -84,6 +93,11 @@ public abstract class BooklistStyle
      * A value of {@code 0} means {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.
      */
     private static final String PK_SCALE_GROUP_ROW = "style.booklist.group.height";
+
+    /** Cached backing preferences. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    final StylePersistenceLayer mPersistenceLayer;
+
     /**
      * The uuid based SharedPreference name.
      * <p>
@@ -101,23 +115,21 @@ public abstract class BooklistStyle
      * The menu position of this style as sorted by the user.
      * Preferred styles will be at the top.
      * <p>
-     * Stored in the database.
+     * Stored in the database; not used by the global style.
      */
     int mMenuPosition;
-
     /**
      * Is this style preferred by the user; i.e. should it be shown in the preferred-list.
      * <p>
-     * Stored in the database.
+     * Stored in the database; not used by the global style.
      */
     boolean mIsPreferred;
 
+
     /** Local override. */
     PBoolean mShowAuthorByGivenName;
-
     /** Local override. */
     PBoolean mSortAuthorByGivenName;
-
     /** The default number of levels to expand the list tree to. */
     PInteger mExpansionLevel;
     /**
@@ -126,70 +138,34 @@ public abstract class BooklistStyle
      * Ideally this would use a simple int, but {@link MultiSelectListPreference} insists on a Set.
      */
     PBitmask mShowHeaderInfo;
-
     /**
      * Should rows be shown using WRAP_CONTENT (false),
      * or as system minimum list-item height (true).
      */
-    PBoolean mGroupsUseListPreferredHeight;
-
+    PBoolean mGroupRowPreferredHeight;
     /** Text related settings. */
     TextScale mTextScale;
-
     /** Configuration for the groups in this style. */
     Groups mGroups;
-
     /** Configuration for the filters in this style. */
     Filters mFilters;
-
     /** Configuration for the fields shown on the Book level in the book list. */
     ListScreenBookFields mListScreenBookFields;
-
     /** Configuration for the fields shown on the Book details screen. */
     DetailScreenBookFields mDetailScreenBookFields;
 
-    /** Cached backing preferences. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    StyleSharedPreferences mStyleSharedPreferences;
-
-    protected BooklistStyle(@NonNull final Context context,
-                            @NonNull final String uuid) {
-        mUuid = uuid;
-        mStyleSharedPreferences = new StyleSharedPreferences(context, mUuid);
-    }
-
     /**
-     * {@link Parcelable} Constructor.
+     * Base constructor.
      *
-     * @param in Parcel to construct the object from
+     * @param context      Current context
+     * @param uuid         a full UUID string, or an empty string to represent the global style.
+     * @param isPersistent flag
      */
-    protected BooklistStyle(@NonNull final Parcel in) {
-        //noinspection ConstantConditions
-        this(App.getAppContext(),
-             // the uuid
-             in.readString());
-
-        mId = in.readLong();
-
-        mIsPreferred = in.readByte() != 0;
-        mMenuPosition = in.readInt();
-
-        initPrefs(App.getAppContext());
-
-        mShowAuthorByGivenName.set(in);
-        mSortAuthorByGivenName.set(in);
-
-        mExpansionLevel.set(in);
-        mGroupsUseListPreferredHeight.set(in);
-        mShowHeaderInfo.set(in);
-
-        mTextScale.set(in);
-
-        mListScreenBookFields.set(in);
-        mDetailScreenBookFields.set(in);
-
-        mGroups.set(in);
-        mFilters.set(in);
+    protected BooklistStyle(@NonNull final Context context,
+                            @NonNull final String uuid,
+                            final boolean isPersistent) {
+        mUuid = uuid;
+        mPersistenceLayer = new StyleSharedPreferences(context, mUuid, isPersistent);
     }
 
     /**
@@ -204,60 +180,81 @@ public abstract class BooklistStyle
     public UserStyle clone(@NonNull final Context context) {
         SanityCheck.requireValue(getUuid(), "mUuid");
 
-        return clone(context, 0, UUID.randomUUID().toString());
+        return clone(context, 0, UUID.randomUUID().toString(), true);
     }
 
+    /**
+     * FOR TESTING ONLY: allows to pass in id, uuid and isPersistent==false.
+     * <p>
+     * see {@link #clone(Context)}.
+     *
+     * @param context      Current context
+     * @param id           for the new style
+     * @param uuid         for the new style
+     * @param isPersistent Should always be {@code true},
+     *                     but for testing {@code false} can be passed in.
+     */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NonNull
     public UserStyle clone(@NonNull final Context context,
                            final long id,
-                           @NonNull final String uuid) {
+                           @NonNull final String uuid,
+                           final boolean isPersistent) {
 
-        return new UserStyle(context, this, id, uuid);
+        return new UserStyle(context, this, id, uuid, isPersistent);
     }
 
     /**
      * Only ever init the Preferences if you have a valid UUID.
      *
-     * @param context Current context
+     * @param context      Current context
+     * @param isPersistent flag
      */
-    void initPrefs(@NonNull final Context context) {
-        mShowAuthorByGivenName = new PBoolean(this, Prefs.pk_show_author_name_given_first);
-        mSortAuthorByGivenName = new PBoolean(this, Prefs.pk_sort_author_name_given_first);
-        mExpansionLevel = new PInteger(this, PK_LEVELS_EXPANSION, 1);
-        mShowHeaderInfo = new PBitmask(this, PK_HEADER, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
-        mGroupsUseListPreferredHeight = new PBoolean(this, PK_SCALE_GROUP_ROW, true);
+    void initPrefs(@NonNull final Context context,
+                   final boolean isPersistent) {
 
-        mTextScale = new TextScale(this);
+        mShowAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
+                                              Prefs.pk_show_author_name_given_first);
+        mSortAuthorByGivenName = new PBoolean(isPersistent, mPersistenceLayer,
+                                              Prefs.pk_sort_author_name_given_first);
 
-        mListScreenBookFields = new ListScreenBookFields(this);
-        mDetailScreenBookFields = new DetailScreenBookFields(context, this);
+        mExpansionLevel = new PInteger(isPersistent, mPersistenceLayer,
+                                       PK_LEVELS_EXPANSION, 1);
+        mShowHeaderInfo = new PBitmask(isPersistent, mPersistenceLayer,
+                                       PK_HEADER, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
+        mGroupRowPreferredHeight = new PBoolean(isPersistent, mPersistenceLayer,
+                                                PK_SCALE_GROUP_ROW, true);
 
-        mGroups = new Groups(context, this);
-        mFilters = new Filters(this);
+        mTextScale = new TextScale(isPersistent, mPersistenceLayer);
 
+        mListScreenBookFields = new ListScreenBookFields(isPersistent, mPersistenceLayer);
+        mDetailScreenBookFields = new DetailScreenBookFields(context, isPersistent,
+                                                             mPersistenceLayer);
+
+        mFilters = new Filters(isPersistent, mPersistenceLayer);
+        mGroups = new Groups(isPersistent, this);
     }
 
     @Override
-    public boolean isShowAuthorByGivenName(@NonNull final Context context) {
-        return mShowAuthorByGivenName.isTrue(context);
+    public boolean isShowAuthorByGivenName() {
+        return mShowAuthorByGivenName.isTrue();
     }
 
     @Override
-    public boolean isSortAuthorByGivenName(@NonNull final Context context) {
-        return mSortAuthorByGivenName.isTrue(context);
+    public boolean isSortAuthorByGivenName() {
+        return mSortAuthorByGivenName.isTrue();
     }
 
     @Override
-    public boolean isShowHeader(@NonNull final Context context,
-                                @ListHeaderOption final int headerMask) {
-        return (mShowHeaderInfo.getValue(context) & headerMask) != 0;
+    public boolean isShowHeader(@ListHeaderOption final int headerMask) {
+        return (mShowHeaderInfo.getValue() & headerMask) != 0;
     }
 
     @Override
     public int getGroupRowHeight(@NonNull final Context context) {
-        if (mGroupsUseListPreferredHeight.getValue(context)) {
-            return AttrUtils.getDimensionPixelSize(context, R.attr.listPreferredItemHeightSmall);
+        if (mGroupRowPreferredHeight.getValue()) {
+            return AttrUtils
+                    .getDimensionPixelSize(context, R.attr.listPreferredItemHeightSmall);
         } else {
             return ViewGroup.LayoutParams.WRAP_CONTENT;
         }
@@ -265,49 +262,13 @@ public abstract class BooklistStyle
 
     @Override
     @IntRange(from = 1)
-    public int getTopLevel(@NonNull final Context context) {
+    public int getTopLevel() {
         // limit to the amount of groups!
-        int level = mExpansionLevel.getValue(context);
+        int level = mExpansionLevel.getValue();
         if (level > mGroups.size()) {
             level = mGroups.size();
         }
         return level;
-    }
-
-    @NonNull
-    public StyleSharedPreferences getSettings() {
-        return mStyleSharedPreferences;
-    }
-
-    @SuppressWarnings("SameReturnValue")
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeString(mUuid);
-        dest.writeLong(mId);
-
-        dest.writeByte((byte) (mIsPreferred ? 1 : 0));
-        dest.writeInt(mMenuPosition);
-
-        mShowAuthorByGivenName.writeToParcel(dest);
-        mSortAuthorByGivenName.writeToParcel(dest);
-
-        mExpansionLevel.writeToParcel(dest);
-        mGroupsUseListPreferredHeight.writeToParcel(dest);
-        mShowHeaderInfo.writeToParcel(dest);
-
-        mTextScale.writeToParcel(dest);
-
-        mListScreenBookFields.writeToParcel(dest);
-        mDetailScreenBookFields.writeToParcel(dest);
-
-        mGroups.writeToParcel(dest);
-        mFilters.writeToParcel(dest);
     }
 
     @Override
@@ -423,7 +384,7 @@ public abstract class BooklistStyle
         final SeriesBooklistGroup group = (SeriesBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.SERIES));
         if (group != null) {
-            return group.showBooksUnderEach(context);
+            return group.showBooksUnderEach();
         } else {
             // return the global default.
             return SeriesBooklistGroup.showBooksUnderEachDefault(context);
@@ -443,7 +404,7 @@ public abstract class BooklistStyle
         final PublisherBooklistGroup group = (PublisherBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.PUBLISHER));
         if (group != null) {
-            return group.showBooksUnderEach(context);
+            return group.showBooksUnderEach();
         } else {
             // return the global default.
             return PublisherBooklistGroup.showBooksUnderEachDefault(context);
@@ -463,7 +424,7 @@ public abstract class BooklistStyle
         final BookshelfBooklistGroup group = (BookshelfBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.BOOKSHELF));
         if (group != null) {
-            return group.showBooksUnderEach(context);
+            return group.showBooksUnderEach();
         } else {
             // return the global default.
             return BookshelfBooklistGroup.showBooksUnderEachDefault(context);
@@ -483,7 +444,7 @@ public abstract class BooklistStyle
         final AuthorBooklistGroup group = (AuthorBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.AUTHOR));
         if (group != null) {
-            return group.showBooksUnderEach(context);
+            return group.showBooksUnderEach();
         } else {
             // return the global default.
             return AuthorBooklistGroup.showBooksUnderEachDefault(context);
@@ -503,66 +464,101 @@ public abstract class BooklistStyle
         final AuthorBooklistGroup group = (AuthorBooklistGroup)
                 (getGroups().getGroupById(BooklistGroup.AUTHOR));
         if (group != null) {
-            return group.getPrimaryType(context);
+            return group.getPrimaryType();
         } else {
             // return the global default.
             return AuthorBooklistGroup.getPrimaryTypeGlobalDefault(context);
         }
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(mUuid);
+
+    @NonNull
+    public Map<String, PPref> getRawPreferences() {
+        final Map<String, PPref> tmpMap = new HashMap<>();
+
+        tmpMap.put(mExpansionLevel.getKey(), mExpansionLevel);
+        tmpMap.put(mGroupRowPreferredHeight.getKey(), mGroupRowPreferredHeight);
+        tmpMap.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
+
+        tmpMap.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
+        tmpMap.put(mSortAuthorByGivenName.getKey(), mSortAuthorByGivenName);
+
+        mTextScale.addToMap(tmpMap);
+
+        mListScreenBookFields.addToMap(tmpMap);
+        mDetailScreenBookFields.addToMap(tmpMap);
+
+        tmpMap.put(mGroups.getKey(), mGroups);
+        mFilters.addToMap(tmpMap);
+        mGroups.addToMap(tmpMap);
+
+        return tmpMap;
     }
 
-    /**
-     * Equality.
-     * <p>
-     * - it's the same Object duh..
-     * - the uuid is the same (and not empty).
-     */
+    @NonNull
+    public StylePersistenceLayer getPersistenceLayer() {
+        return mPersistenceLayer;
+    }
+
     @Override
-    public boolean equals(@Nullable final Object obj) {
-        if (this == obj) {
+    public boolean equals(final Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-
-        final BooklistStyle that = (BooklistStyle) obj;
-
-        if (mUuid.isEmpty() || that.mUuid.isEmpty()) {
-            return false;
-        }
-
-        // ignore case because paranoia (import)
-        return mUuid.equalsIgnoreCase(that.mUuid);
+        final BooklistStyle style = (BooklistStyle) o;
+        return mId == style.mId
+               && mUuid.equals(style.mUuid)
+               && mMenuPosition == style.mMenuPosition
+               && mIsPreferred == style.mIsPreferred
+               && Objects.equals(mShowAuthorByGivenName, style.mShowAuthorByGivenName)
+               && Objects.equals(mSortAuthorByGivenName, style.mSortAuthorByGivenName)
+               && Objects.equals(mExpansionLevel, style.mExpansionLevel)
+               && Objects.equals(mShowHeaderInfo, style.mShowHeaderInfo)
+               && Objects.equals(mGroupRowPreferredHeight, style.mGroupRowPreferredHeight)
+               && Objects.equals(mTextScale, style.mTextScale)
+               && Objects.equals(mListScreenBookFields, style.mListScreenBookFields)
+               && Objects.equals(mDetailScreenBookFields, style.mDetailScreenBookFields)
+               && Objects.equals(mGroups, style.mGroups)
+               && Objects.equals(mFilters, style.mFilters);
     }
 
-//    @Override
-//    @NonNull
-//    public String toString() {
-//        return "\nBooklistStyle{"
-//               + "mId=" + mId
-//               + "\nmUuid=`" + mUuid + '`'
-//               + "\nmMenuPosition=" + mMenuPosition
-//               + "\nmIsPreferred=" + mIsPreferred
-//               + "\nmExpansionLevel=" + mExpansionLevel
-//
-//               + "\nmTextScale=" + mTextScale
-//               + "\nmGroupRowScale=" + mGroupRowHeight
-//
-//               + "\nmShowHeaderInfo=" + mShowHeaderInfo
-//
-//               + "\nmShowAuthorByGivenNameFirst=" + mShowAuthorByGivenName
-//               + "\nmSortAuthorByGivenNameFirst=" + mSortAuthorByGivenName
-//
-//               + "\nmStyleGroups=" + mGroups
-//               + "\nmFilters=\n" + mFilters
-//               + "\nmListScreenBookFields=" + mListScreenBookFields
-//               + "\nmDetailScreenBookFields=" + mDetailScreenBookFields
-//               + '}';
-//    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mUuid, mMenuPosition, mIsPreferred,
+                            //mPersistenceLayer,
+                            mShowAuthorByGivenName, mSortAuthorByGivenName,
+                            mExpansionLevel, mShowHeaderInfo, mGroupRowPreferredHeight,
+                            mTextScale, mListScreenBookFields, mDetailScreenBookFields,
+                            mGroups, mFilters);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "BooklistStyle{"
+               + "mId=" + mId
+               + ", mUuid=`" + mUuid + '`'
+               + ", mIsPreferred=" + mIsPreferred
+               + ", mMenuPosition=" + mMenuPosition
+
+               + ", mShowAuthorByGivenName=" + mShowAuthorByGivenName
+               + ", mSortAuthorByGivenName=" + mSortAuthorByGivenName
+
+               + ", mExpansionLevel=" + mExpansionLevel
+               + ", mGroupsUseListPreferredHeight=" + mGroupRowPreferredHeight
+               + ", mShowHeaderInfo=" + mShowHeaderInfo
+
+               + ", mTextScale=" + mTextScale
+
+               + ", mListScreenBookFields=" + mListScreenBookFields
+               + ", mDetailScreenBookFields=" + mDetailScreenBookFields
+
+               + ", mFilters=" + mFilters
+               + ", mGroups=" + mGroups
+               + '}';
+    }
 
 }

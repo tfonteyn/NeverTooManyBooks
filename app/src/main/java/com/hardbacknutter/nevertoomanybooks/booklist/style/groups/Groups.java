@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.content.Context;
-import android.os.Parcel;
 import android.text.TextUtils;
 
 import androidx.annotation.IntRange;
@@ -34,9 +33,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleSharedPreferences;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PCsvString;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
@@ -57,79 +55,78 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
  * @see PCsvString
  */
 public class Groups
-        implements PPref<List<Integer>>, PCsvString {
+        implements PPref<ArrayList<Integer>>, PCsvString {
 
     /** Style group preferences. */
     public static final String PK_STYLE_GROUPS = "style.booklist.groups";
-
-    /** The {@link ListStyle} this preference belongs to. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final ListStyle mStyle;
-
     /** key for the Preference. */
     @NonNull
     private final String mKey;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
-    private final List<Integer> mDefaultValue;
+    private final ArrayList<Integer> mDefaultValue;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @NonNull
-    private final List<Integer> mNonPersistedValue;
-
-    /** All groups; ordered. Reminder: the underlying pref is only storing the id. */
+    private final ArrayList<Integer> mNonPersistedValue;
+    /**
+     * All groups; <strong>ordered</strong>.
+     * Reminder: the underlying pref is only storing the id.
+     */
     private final Map<Integer, BooklistGroup> mGroupMap = new LinkedHashMap<>();
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param style   Style reference.
+     * @param isPersistent flag
+     * @param style        Style reference.
      */
-    public Groups(@NonNull final Context context,
+    public Groups(final boolean isPersistent,
                   @NonNull final ListStyle style) {
+        mPersisted = isPersistent;
         mStyle = style;
         mKey = PK_STYLE_GROUPS;
         mDefaultValue = new ArrayList<>();
         mNonPersistedValue = new ArrayList<>();
 
-        // load the group ID's from the SharedPreference and populates the Group object list.
-        for (@BooklistGroup.Id final int id : getValue(context)) {
-            mGroupMap.put(id, BooklistGroup.newInstance(context, id, style));
-        }
+        initGroupMap(isPersistent, style);
     }
 
     /**
      * Copy constructor.
      *
-     * @param context Current context
-     * @param style   Style reference.
-     * @param groups  to copy from
+     * @param isPersistent flag
+     * @param style        Style reference.
+     * @param that         to copy from
      */
-    public Groups(@NonNull final Context context,
+    public Groups(final boolean isPersistent,
                   @NonNull final ListStyle style,
-                  @NonNull final Groups groups) {
+                  @NonNull final Groups that) {
+        mPersisted = isPersistent;
         mStyle = style;
-        mKey = groups.mKey;
-        mDefaultValue = new ArrayList<>(groups.mDefaultValue);
-        mNonPersistedValue = new ArrayList<>(groups.mNonPersistedValue);
+        mKey = that.mKey;
+        mDefaultValue = new ArrayList<>(that.mDefaultValue);
+        mNonPersistedValue = new ArrayList<>(that.mNonPersistedValue);
 
-        for (final BooklistGroup group : groups.mGroupMap.values()) {
-            final BooklistGroup clonedGroup;
-            if (group instanceof AuthorBooklistGroup) {
-                clonedGroup = new AuthorBooklistGroup(context, style, (AuthorBooklistGroup) group);
-            } else if (group instanceof SeriesBooklistGroup) {
-                clonedGroup = new SeriesBooklistGroup(style, (SeriesBooklistGroup) group);
-            } else if (group instanceof PublisherBooklistGroup) {
-                clonedGroup = new PublisherBooklistGroup(style, (PublisherBooklistGroup) group);
-            } else if (group instanceof BookshelfBooklistGroup) {
-                clonedGroup = new BookshelfBooklistGroup(style, (BookshelfBooklistGroup) group);
-            } else {
-                clonedGroup = new BooklistGroup(style, group);
-            }
-            mGroupMap.put(clonedGroup.getId(), clonedGroup);
+        if (mPersisted) {
+            set(that.getValue());
         }
+        // init the individual groups AFTER the value of the Groups is set,
+        // so they pick up the persisted Groups value if we set it.
+        initGroupMap(isPersistent, style);
     }
 
+    private void initGroupMap(final boolean isPersistent,
+                              @NonNull final ListStyle style) {
+        // load the group ID's from the SharedPreference and populates the Group object list.
+        for (@BooklistGroup.Id final int id : getValue()) {
+            mGroupMap.put(id, BooklistGroup.newInstance(id, isPersistent, style));
+        }
+    }
 
     /**
      * Get all groups assigned to this style.
@@ -234,7 +231,6 @@ public class Groups
                         .collect(Collectors.joining(", "));
     }
 
-
     @NonNull
     @Override
     public String getKey() {
@@ -243,9 +239,9 @@ public class Groups
 
     @NonNull
     @Override
-    public List<Integer> getValue(@NonNull final Context context) {
-        if (mStyle.isUserDefined()) {
-            final List<Integer> value = mStyle.getSettings().getIntList(context, mKey);
+    public ArrayList<Integer> getValue() {
+        if (mPersisted) {
+            final ArrayList<Integer> value = mStyle.getPersistenceLayer().getIntList(mKey);
             if (value != null) {
                 return value;
             }
@@ -258,8 +254,8 @@ public class Groups
 
     @Override
     public void setCsv(@Nullable final String values) {
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().setString(mKey, values);
+        if (mPersisted) {
+            mStyle.getPersistenceLayer().setString(mKey, values);
         } else {
             // Not implemented for now, and in fact not needed/used for now (2020-03-11)
             // Problem is that we'd need to split the incoming CSV string, and re-create the list.
@@ -273,9 +269,9 @@ public class Groups
     }
 
     @Override
-    public void set(@Nullable final List<Integer> value) {
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().setIntList(mKey, value);
+    public void set(@Nullable final ArrayList<Integer> value) {
+        if (mPersisted) {
+            mStyle.getPersistenceLayer().setIntList(mKey, value);
         } else {
             mNonPersistedValue.clear();
             if (value != null) {
@@ -286,8 +282,8 @@ public class Groups
 
     public void clear() {
         mGroupMap.clear();
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().remove(mKey);
+        if (mPersisted) {
+            mStyle.getPersistenceLayer().remove(mKey);
         } else {
             mNonPersistedValue.clear();
         }
@@ -301,11 +297,10 @@ public class Groups
     public void add(@NonNull final BooklistGroup group) {
         mGroupMap.put(group.getId(), group);
 
-        if (mStyle.isUserDefined()) {
-            final StyleSharedPreferences styleSharedPreferences = mStyle.getSettings();
-            final String list = styleSharedPreferences.getString(mKey);
-            styleSharedPreferences
-                    .setString(mKey, (list != null ? list + DELIM : "") + group.getId());
+        if (mPersisted) {
+            final StylePersistenceLayer persistenceLayer = mStyle.getPersistenceLayer();
+            final String list = persistenceLayer.getNonGlobalString(mKey);
+            persistenceLayer.setString(mKey, (list != null ? list + DELIM : "") + group.getId());
         } else {
             mNonPersistedValue.add(group.getId());
         }
@@ -319,10 +314,9 @@ public class Groups
     public void remove(@BooklistGroup.Id final int id) {
         mGroupMap.remove(id);
 
-        if (mStyle.isUserDefined()) {
-            final StyleSharedPreferences styleSharedPreferences = mStyle.getSettings();
-
-            final String list = styleSharedPreferences.getString(mKey);
+        if (mPersisted) {
+            final StylePersistenceLayer persistenceLayer = mStyle.getPersistenceLayer();
+            final String list = persistenceLayer.getNonGlobalString(mKey);
             if (list != null && !list.isEmpty()) {
                 // create a new list, and copy the elements from the old list
                 // except the one to remove
@@ -333,9 +327,9 @@ public class Groups
                     }
                 }
                 if (newList.isEmpty()) {
-                    styleSharedPreferences.remove(mKey);
+                    persistenceLayer.remove(mKey);
                 } else {
-                    styleSharedPreferences.setString(mKey, TextUtils.join(DELIM, newList));
+                    persistenceLayer.setString(mKey, TextUtils.join(DELIM, newList));
                 }
             }
         } else {
@@ -351,49 +345,42 @@ public class Groups
     public void addToMap(@NonNull final Map<String, PPref> map) {
         // for each group used by the style, add its specific preferences to our list
         for (final BooklistGroup group : getGroupList()) {
-            map.putAll(group.getPreferences());
+            map.putAll(group.getRawPreferences());
         }
     }
 
-    /**
-     * Set the <strong>value</strong> from the Parcel.
-     *
-     * @param in parcel to read from
-     */
-    public void set(@NonNull final Parcel in) {
-        clear();
-
-        final List<BooklistGroup> list = new ArrayList<>();
-        in.readList(list, getClass().getClassLoader());
-        // (faster) equivalent of add(@NonNull final BooklistGroup group)
-        // but split in adding the group and...
-        for (final BooklistGroup group : list) {
-            mGroupMap.put(group.getId(), group);
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
         }
-        // storing the ID's in SharedPreference.
-        this.set(new ArrayList<>(mGroupMap.keySet()));
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Groups groups = (Groups) o;
+        return mPersisted == groups.mPersisted
+               && mKey.equals(groups.mKey)
+               && mDefaultValue.equals(groups.mDefaultValue)
+               && mNonPersistedValue.equals(groups.mNonPersistedValue)
+               && Objects.equals(mGroupMap, groups.mGroupMap);
     }
 
-
-    /**
-     * Write the <strong>value</strong> to the Parcel.
-     *
-     * @param dest parcel to write to
-     */
-    public void writeToParcel(@NonNull final Parcel dest) {
-        dest.writeList(new ArrayList<>(mGroupMap.values()));
+    @Override
+    public int hashCode() {
+        return Objects.hash(mKey, mDefaultValue, mPersisted, mNonPersistedValue, mGroupMap,
+                            // UUID only
+                            mStyle.getUuid());
     }
 
     @Override
     @NonNull
     public String toString() {
         return "Groups{"
-               + "mGroups=" + mGroupMap
-               + ", mKey=`" + mKey + '`'
-               + ", mStyle=" + mStyle.getUuid()
+               + "mKey=`" + mKey + '`'
                + ", mDefaultValue=`" + mDefaultValue + '`'
+               + ", mPersisted=" + mPersisted
                + ", mNonPersistedValue=`" + mNonPersistedValue + '`'
-               + ", value=`" + getValue(App.getAppContext()) + '`'
+               + ", mGroupMap=" + mGroupMap
                + '}';
     }
 }

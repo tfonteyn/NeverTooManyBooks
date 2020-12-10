@@ -143,7 +143,7 @@ public class EditBookFieldsFragment
         //noinspection ConstantConditions
         final ProgressBar progressBar = getActivity().findViewById(R.id.progressBar);
 
-        if (mVm.isCoverUsed(getContext(), global, 0)) {
+        if (mVm.isCoverUsed(global, 0)) {
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_0_height);
 
@@ -161,7 +161,7 @@ public class EditBookFieldsFragment
             mVb.coverImage0.setVisibility(View.GONE);
         }
 
-        if (mVm.isCoverUsed(getContext(), global, 1)) {
+        if (mVm.isCoverUsed(global, 1)) {
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_1_height);
 

@@ -393,7 +393,7 @@ public class BooklistAdapter
         final Context context = parent.getContext();
         final TextScale textScale = mStyle.getTextScale();
         // Scale text/padding (recursively) if required
-        if (!textScale.isDefaultScale(context)) {
+        if (!textScale.isDefaultScale()) {
             scaleTextViews(view,
                            textScale.getFontSizeInSpUnits(context),
                            textScale.getPaddingFactor(context));
@@ -791,31 +791,31 @@ public class BooklistAdapter
             final ListScreenBookFields bookFields = style.getListScreenBookFields();
 
             cover = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_COVERS);
+                    .isShowField(global, ListScreenBookFields.PK_COVERS);
 
             author = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_AUTHOR);
+                    .isShowField(global, ListScreenBookFields.PK_AUTHOR);
 
             publisher = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_PUBLISHER);
+                    .isShowField(global, ListScreenBookFields.PK_PUBLISHER);
 
             pubDate = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_PUB_DATE);
+                    .isShowField(global, ListScreenBookFields.PK_PUB_DATE);
 
             isbn = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_ISBN);
+                    .isShowField(global, ListScreenBookFields.PK_ISBN);
 
             format = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_FORMAT);
+                    .isShowField(global, ListScreenBookFields.PK_FORMAT);
 
             location = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_LOCATION);
+                    .isShowField(global, ListScreenBookFields.PK_LOCATION);
 
             rating = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_RATING);
+                    .isShowField(global, ListScreenBookFields.PK_RATING);
 
             bookshelf = bookFields
-                    .isShowField(context, global, ListScreenBookFields.PK_BOOKSHELVES);
+                    .isShowField(global, ListScreenBookFields.PK_BOOKSHELVES);
         }
 
         /**

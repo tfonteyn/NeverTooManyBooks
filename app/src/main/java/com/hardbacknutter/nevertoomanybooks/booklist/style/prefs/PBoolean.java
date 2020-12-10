@@ -19,14 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import android.content.Context;
-import android.os.Parcel;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 /**
  * Used for {@link androidx.preference.SwitchPreference}.
@@ -34,9 +32,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 public class PBoolean
         implements PPref<Boolean> {
 
-    /** The {@link ListStyle} this preference belongs to. */
+    /** The {@link StylePersistenceLayer} to use. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final ListStyle mStyle;
+    private final StylePersistenceLayer mPersistence;
 
     /** key for the Preference. */
     @NonNull
@@ -44,6 +43,8 @@ public class PBoolean
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final Boolean mDefaultValue;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Boolean mNonPersistedValue;
@@ -52,28 +53,31 @@ public class PBoolean
      * Constructor. Uses the global setting as the default value,
      * or {@code false} if there is no global default.
      *
-     * @param style Style reference.
-     * @param key   preference key
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param key              preference key
      */
-    public PBoolean(@NonNull final ListStyle style,
+    public PBoolean(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
                     @NonNull final String key) {
-        mStyle = style;
-        mKey = key;
-        mDefaultValue = false;
+        this(isPersistent, persistenceLayer, key, false);
     }
 
     /**
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
-     * @param style    Style reference.
-     * @param key      preference key
-     * @param defValue default value
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param key              preference key
+     * @param defValue         default value
      */
-    public PBoolean(@NonNull final ListStyle style,
+    public PBoolean(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
                     @NonNull final String key,
                     final boolean defValue) {
-        mStyle = style;
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
         mKey = key;
         mDefaultValue = defValue;
     }
@@ -81,16 +85,23 @@ public class PBoolean
     /**
      * Copy constructor.
      *
-     * @param style    Style reference.
-     * @param pBoolean to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param that             to copy from
      */
-    public PBoolean(@NonNull final ListStyle style,
-                    @NonNull final PBoolean pBoolean) {
-        mStyle = style;
-        mKey = pBoolean.mKey;
-        mDefaultValue = pBoolean.mDefaultValue;
+    public PBoolean(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @NonNull final PBoolean that) {
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
+        mKey = that.mKey;
+        mDefaultValue = that.mDefaultValue;
 
-        mNonPersistedValue = pBoolean.mNonPersistedValue;
+        mNonPersistedValue = that.mNonPersistedValue;
+
+        if (mPersisted) {
+            set(that.getValue());
+        }
     }
 
     @NonNull
@@ -101,8 +112,8 @@ public class PBoolean
 
     @Override
     public void set(@Nullable final Boolean value) {
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().setBoolean(getKey(), value);
+        if (mPersisted) {
+            mPersistence.setBoolean(getKey(), value);
         } else {
             mNonPersistedValue = value;
         }
@@ -110,9 +121,9 @@ public class PBoolean
 
     @NonNull
     @Override
-    public Boolean getValue(@NonNull final Context context) {
-        if (mStyle.isUserDefined()) {
-            final Boolean value = mStyle.getSettings().getBoolean(context, getKey());
+    public Boolean getValue() {
+        if (mPersisted) {
+            final Boolean value = mPersistence.getBoolean(getKey());
             if (value != null) {
                 return value;
             }
@@ -123,36 +134,38 @@ public class PBoolean
         return mDefaultValue;
     }
 
-    public boolean isTrue(@NonNull final Context context) {
-        return getValue(context);
+    public boolean isTrue() {
+        return getValue();
     }
 
-    public void writeToParcel(@NonNull final Parcel dest) {
-        if (mStyle.isUserDefined()) {
-            dest.writeValue(getValue(App.getAppContext()));
-        } else {
-            // Write the in-memory value to the parcel.
-            // Do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeValue(mNonPersistedValue);
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final PBoolean pBoolean = (PBoolean) o;
+        return mPersisted == pBoolean.mPersisted
+               && mKey.equals(pBoolean.mKey)
+               && mDefaultValue.equals(pBoolean.mDefaultValue)
+               && Objects.equals(mNonPersistedValue, pBoolean.mNonPersistedValue);
     }
 
-    public void set(@NonNull final Parcel in) {
-        final Boolean tmp = (Boolean) in.readValue(getClass().getClassLoader());
-        if (tmp != null) {
-            set(tmp);
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(mPersistence, mKey, mDefaultValue, mPersisted, mNonPersistedValue);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "PBoolean{"
-               + "mStyle=" + mStyle.getUuid()
-               + ", mKey=`" + mKey + '`'
+               + "mKey=`" + mKey + '`'
                + ", mDefaultValue=" + mDefaultValue
+               + ", mPersisted=" + mPersisted
                + ", mNonPersistedValue=" + mNonPersistedValue
-               + ", value=" + getValue(App.getAppContext())
                + '}';
     }
 }

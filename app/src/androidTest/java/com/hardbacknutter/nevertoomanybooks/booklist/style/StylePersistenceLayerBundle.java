@@ -1,0 +1,162 @@
+/*
+ * @Copyright 2020 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.booklist.style;
+
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import java.util.ArrayList;
+
+public class StylePersistenceLayerBundle
+        implements StylePersistenceLayer {
+
+    private final Bundle b = new Bundle();
+
+
+    @Override
+    public void remove(@NonNull final String key) {
+        b.remove(key);
+    }
+
+    @Override
+    public void setString(@NonNull final String key,
+                          @Nullable final String value) {
+        b.putString(key, value);
+    }
+
+    @Nullable
+    @Override
+    public String getNonGlobalString(@NonNull final String key) {
+        return b.getString(key);
+    }
+
+    @Nullable
+    @Override
+    public String getString(@NonNull final String key) {
+        return b.getString(key);
+    }
+
+    @Override
+    public void setBoolean(@NonNull final String key,
+                           @Nullable final Boolean value) {
+        if (value == null) {
+            b.remove(key);
+        } else {
+            b.putBoolean(key, value);
+        }
+    }
+
+    @Override
+    public boolean getNonGlobalBoolean(@NonNull final String key) {
+        return b.getBoolean(key);
+    }
+
+    @Nullable
+    @Override
+    public Boolean getBoolean(@NonNull final String key) {
+        if (b.containsKey(key)) {
+            return b.getBoolean(key);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void setInt(@NonNull final String key,
+                       @Nullable final Integer value) {
+        if (value == null) {
+            b.remove(key);
+        } else {
+            b.putInt(key, value);
+        }
+    }
+
+    @Nullable
+    @Override
+    public Integer getInteger(@NonNull final String key) {
+        if (b.containsKey(key)) {
+            return b.getInt(key);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void setStringedInt(@NonNull final String key,
+                               @Nullable final Integer value) {
+        if (value == null) {
+            b.remove(key);
+        } else {
+            b.putInt(key, value);
+        }
+    }
+
+    @Nullable
+    @Override
+    public Integer getStringedInt(@NonNull final String key) {
+        if (b.containsKey(key)) {
+            return b.getInt(key);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void setIntList(@NonNull final String key,
+                           @Nullable final ArrayList<Integer> value) {
+        if (value == null) {
+            b.remove(key);
+        } else {
+            b.putIntegerArrayList(key, value);
+        }
+    }
+
+    @Nullable
+    @Override
+    public ArrayList<Integer> getIntList(@NonNull final String key) {
+        if (b.containsKey(key)) {
+            return b.getIntegerArrayList(key);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void setBitmask(@NonNull final String key,
+                           @Nullable final Integer value) {
+        if (value == null) {
+            b.remove(key);
+        } else {
+            b.putInt(key, value);
+        }
+    }
+
+    @Nullable
+    @Override
+    public Integer getBitmask(@NonNull final String key) {
+        if (b.containsKey(key)) {
+            return b.getInt(key);
+        } else {
+            return null;
+        }
+    }
+}

@@ -19,17 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import android.content.Context;
-import android.os.Parcel;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
- * None of the Preferences implement Parcelable but we *do* parcel the 'value'.
- * This does mean the class must be properly constructed with all other fields initialised,
- * before un-parceling the actual value.
- *
  * @param <T> type of the actual value we store.
  */
 public interface PPref<T> {
@@ -48,14 +41,8 @@ public interface PPref<T> {
      *      <li>The default value as set at creation time of the PPref Object.</li>
      * </ol>
      *
-     * @param context Current context
-     *
      * @return the value of the preference
      */
     @NonNull
-    T getValue(@NonNull Context context);
-
-    void set(@NonNull Parcel in);
-
-    void writeToParcel(@NonNull Parcel dest);
+    T getValue();
 }

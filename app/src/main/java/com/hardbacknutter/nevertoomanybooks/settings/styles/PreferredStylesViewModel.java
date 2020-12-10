@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
@@ -83,7 +84,6 @@ public class PreferredStylesViewModel
         return mIsDirty;
     }
 
-
     void setDirty(@SuppressWarnings("SameParameterValue") final boolean isDirty) {
         mIsDirty = isDirty;
     }
@@ -106,19 +106,15 @@ public class PreferredStylesViewModel
     /**
      * Called after a style has been edited.
      *
-     * @param style      the (potentially) modified style
-     * @param templateId id of the original style we cloned (different from current)
-     *                   or edited (same as current).
+     * @param style        the (potentially) modified style
+     * @param templateUuid uuid of the original style we cloned (different from current)
+     *                     or edited (same as current).
      *
      * @return position of the style in the list
      */
     int onStyleEdited(@NonNull final ListStyle style,
-                      final long templateId) {
+                      @NonNull final String templateUuid) {
         mIsDirty = true;
-
-        // Always save/update a new style to the database first.
-        // This will give it an id if it's a new style.
-        StyleDAO.updateOrInsert(mDb, style);
 
         // Now (re)organise the list of styles.
 
@@ -151,6 +147,7 @@ public class PreferredStylesViewModel
                 mStyleList.set(editedRow, style);
 
             } else {
+                // Check the type of the ORIGINAL (i.e. template) style.
                 if (origStyle instanceof UserStyle) {
                     // It's a clone of an user-defined style.
                     // Put it directly after the user-defined original
@@ -163,14 +160,12 @@ public class PreferredStylesViewModel
                         // replace the original row with the new one
                         mStyleList.set(editedRow, style);
 
-                        // Make the new one preferred
+                        // Make the new one preferred and update it
                         style.setPreferred(true);
-                        // save the preferred state
                         StyleDAO.update(mDb, style);
 
-                        // And demote the original
+                        // And demote the original and update it
                         origStyle.setPreferred(false);
-                        // save the preferred state
                         StyleDAO.update(mDb, origStyle);
 
                         mStyleList.add(origStyle);
@@ -187,20 +182,26 @@ public class PreferredStylesViewModel
 
         // Not sure if this check is really needed... or already covered above
         // if the style was cloned from a builtin style,
-        if (templateId < 0) {
+        if (StyleDAO.BuiltinStyles.isBuiltin(templateUuid)) {
             // then we're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
             mStyleList.stream()
-                      .filter(s -> s.getId() == templateId)
+                      .filter(s -> s.getUuid().equalsIgnoreCase(templateUuid))
                       .findFirst()
                       .ifPresent(s -> {
+                          // demote the preferred state and update it
                           s.setPreferred(false);
-                          // save the preferred state
                           StyleDAO.update(mDb, s);
                       });
         }
 
         return editedRow;
+    }
+
+    @Nullable
+    ListStyle getStyle(@NonNull final Context context,
+                       @NonNull final String uuid) {
+        return StyleDAO.getStyle(context, mDb, uuid);
     }
 
     /**

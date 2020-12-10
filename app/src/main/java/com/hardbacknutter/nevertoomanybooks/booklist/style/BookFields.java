@@ -19,14 +19,14 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Parcel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
@@ -48,13 +48,15 @@ public abstract class BookFields {
     /**
      * Copy constructor.
      *
-     * @param style      Style reference.
-     * @param bookFields to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param bookFields       to copy from
      */
-    BookFields(@NonNull final ListStyle style,
+    BookFields(final boolean isPersistent,
+               @NonNull final StylePersistenceLayer persistenceLayer,
                @NonNull final BookFields bookFields) {
         for (final PBoolean field : bookFields.mFields.values()) {
-            final PBoolean clonedField = new PBoolean(style, field);
+            final PBoolean clonedField = new PBoolean(isPersistent, persistenceLayer, field);
             mFields.put(clonedField.getKey(), clonedField);
         }
     }
@@ -62,14 +64,12 @@ public abstract class BookFields {
     /**
      * Check if the given book-detail field should be displayed.
      *
-     * @param context Current context
-     * @param global  the <strong>GLOBAL</strong> preferences
-     * @param key     to check
+     * @param global the <strong>GLOBAL</strong> preferences
+     * @param key    to check
      *
      * @return {@code true} if in use
      */
-    public boolean isShowField(@NonNull final Context context,
-                               @NonNull final SharedPreferences global,
+    public boolean isShowField(@NonNull final SharedPreferences global,
                                @ListScreenBookFields.Key @NonNull final String key) {
 
         // Disabled in the Global style overrules the local style
@@ -79,7 +79,7 @@ public abstract class BookFields {
 
         if (mFields.containsKey(key)) {
             final PBoolean value = mFields.get(key);
-            return value != null && value.isTrue(context);
+            return value != null && value.isTrue();
         }
         return false;
     }
@@ -102,36 +102,28 @@ public abstract class BookFields {
         }
     }
 
-    /**
-     * Set the <strong>value</strong> from the Parcel.
-     *
-     * @param in parcel to read from
-     */
-    public void set(@NonNull final Parcel in) {
-        // the collection is ordered, so we don't need the keys.
-        for (final PBoolean field : mFields.values()) {
-            field.set(in);
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BookFields that = (BookFields) o;
+        return Objects.equals(mFields, that.mFields);
     }
 
-    /**
-     * Write the <strong>value</strong> to the Parcel.
-     *
-     * @param dest parcel to write to
-     */
-    public void writeToParcel(@NonNull final Parcel dest) {
-        // the collection is ordered, so we don't write the keys.
-        for (final PBoolean field : mFields.values()) {
-            field.writeToParcel(dest);
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(mFields);
     }
-
 
     @Override
     @NonNull
     public String toString() {
-        return "DetailScreenBookFields{"
-               + "mFields=" + mFields
+        return "BookFields{"
+               + ", mFields=" + mFields
                + '}';
     }
 

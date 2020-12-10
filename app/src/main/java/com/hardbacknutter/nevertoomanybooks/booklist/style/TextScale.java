@@ -21,14 +21,15 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.os.Parcel;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInteger;
@@ -36,6 +37,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
 /**
  * Encapsulate Font Scale and all related data/logic.
+ * <p>
+ * Dev. Note: the resource attributes depend on the {@link #mScale}, so we can't cache
+ * them in the constructor.
  */
 public class TextScale {
 
@@ -64,21 +68,25 @@ public class TextScale {
     /**
      * Constructor.
      *
-     * @param style Style reference.
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
      */
-    TextScale(@NonNull final ListStyle style) {
-        mScale = new PInteger(style, PK_TEXT_SCALE, TEXT_SCALE_2_MEDIUM);
+    TextScale(final boolean isPersistent,
+              @NonNull final StylePersistenceLayer persistenceLayer) {
+        mScale = new PInteger(isPersistent, persistenceLayer, PK_TEXT_SCALE, TEXT_SCALE_2_MEDIUM);
     }
 
     /**
      * Copy constructor.
      *
-     * @param style     Style reference.
-     * @param textScale to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param textScale        to copy from
      */
-    TextScale(@NonNull final ListStyle style,
+    TextScale(final boolean isPersistent,
+              @NonNull final StylePersistenceLayer persistenceLayer,
               @NonNull final TextScale textScale) {
-        mScale = new PInteger(style, textScale.mScale);
+        mScale = new PInteger(isPersistent, persistenceLayer, textScale.mScale);
     }
 
     /**
@@ -99,10 +107,10 @@ public class TextScale {
      * @return scale factor
      */
     public float getPaddingFactor(@NonNull final Context context) {
-        final TypedArray ta = context
-                .getResources().obtainTypedArray(R.array.bob_text_padding_in_percent);
+        final TypedArray ta = context.getResources()
+                                     .obtainTypedArray(R.array.bob_text_padding_in_percent);
         try {
-            return ta.getFloat(mScale.getValue(context), TEXT_SCALE_2_MEDIUM);
+            return ta.getFloat(mScale.getValue(), TEXT_SCALE_2_MEDIUM);
         } finally {
             ta.recycle();
         }
@@ -116,10 +124,10 @@ public class TextScale {
      * @return sp units
      */
     public float getFontSizeInSpUnits(@NonNull final Context context) {
-        final TypedArray ta = context
-                .getResources().obtainTypedArray(R.array.bob_text_size_in_sp);
+        final TypedArray ta = context.getResources()
+                                     .obtainTypedArray(R.array.bob_text_size_in_sp);
         try {
-            return ta.getFloat(mScale.getValue(context), TEXT_SCALE_2_MEDIUM);
+            return ta.getFloat(mScale.getValue(), TEXT_SCALE_2_MEDIUM);
         } finally {
             ta.recycle();
         }
@@ -134,19 +142,16 @@ public class TextScale {
      * @return summary text
      */
     public String getFontScaleSummaryText(@NonNull final Context context) {
-        return context.getResources().getStringArray(R.array.pe_bob_text_scale)
-                [mScale.getValue(context)];
+        return context.getResources().getStringArray(R.array.pe_bob_text_scale)[mScale.getValue()];
     }
 
     /**
      * Check if the current setting is the default.
      *
-     * @param context Current context
-     *
      * @return {@code true} if this is the default
      */
-    public boolean isDefaultScale(@NonNull final Context context) {
-        return mScale.getValue(context) == TEXT_SCALE_2_MEDIUM;
+    public boolean isDefaultScale() {
+        return mScale.getValue() == TEXT_SCALE_2_MEDIUM;
     }
 
     /**
@@ -158,22 +163,21 @@ public class TextScale {
         map.put(mScale.getKey(), mScale);
     }
 
-    /**
-     * Set the <strong>value</strong> from the Parcel.
-     *
-     * @param in parcel to read from
-     */
-    void set(@NonNull final Parcel in) {
-        mScale.set(in);
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final TextScale textScale = (TextScale) o;
+        return Objects.equals(mScale, textScale.mScale);
     }
 
-    /**
-     * Write the <strong>value</strong> to the Parcel.
-     *
-     * @param dest parcel to write to
-     */
-    void writeToParcel(@NonNull final Parcel dest) {
-        mScale.writeToParcel(dest);
+    @Override
+    public int hashCode() {
+        return Objects.hash(mScale);
     }
 
     @NonNull

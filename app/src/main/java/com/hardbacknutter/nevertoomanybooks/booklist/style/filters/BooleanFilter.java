@@ -25,57 +25,50 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
-/**
- * Used for {@link androidx.preference.ListPreference} mimicking a nullable Boolean
- * and supporting an SQL WHERE clause expression.
- * <ul>
- *      <li>value==1 -> true</li>
- *      <li>value==0 -> false</li>
- *      <li>value==-1 -> do not use the filter</li>
- * </ul>
- * <p>
- * Syntax sugar for {@link IntStringFilter}.
- */
 public class BooleanFilter
         extends IntStringFilter {
 
     /**
      * Constructor.
      *
-     * @param style     Style reference.
-     * @param labelId   string resource id to use as a display label
-     * @param key       preference key
-     * @param table     to use by the expression
-     * @param domainKey to use by the expression
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param labelId          string resource id to use as a display label
+     * @param key              preference key
+     * @param table            to use by the expression
+     * @param domainKey        to use by the expression
      */
-    public BooleanFilter(@NonNull final ListStyle style,
-                         @StringRes final int labelId,
-                         @NonNull final String key,
-                         @SuppressWarnings("SameParameterValue")
-                         @NonNull final TableDefinition table,
-                         @NonNull final String domainKey) {
-        super(style, labelId, key, table, domainKey);
+    BooleanFilter(final boolean isPersistent,
+                  @NonNull final StylePersistenceLayer persistenceLayer,
+                  @StringRes final int labelId,
+                  @NonNull final String key,
+                  @SuppressWarnings("SameParameterValue")
+                  @NonNull final TableDefinition table,
+                  @NonNull final String domainKey) {
+        super(isPersistent, persistenceLayer, labelId, key, table, domainKey);
     }
 
     /**
      * Copy constructor.
      *
-     * @param style  Style reference.
-     * @param filter to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param filter           to copy from
      */
-    public BooleanFilter(@NonNull final ListStyle style,
-                         @NonNull final BooleanFilter filter) {
-        super(style, filter);
+    BooleanFilter(final boolean isPersistent,
+                  @NonNull final StylePersistenceLayer persistenceLayer,
+                  @NonNull final BooleanFilter filter) {
+        super(isPersistent, persistenceLayer, filter);
     }
 
     @Override
     @Nullable
     public String getExpression(@NonNull final Context context) {
-        final Integer value = getValue(context);
-        if (!P_NOT_USED.equals(value)) {
+        final Integer value = getValue();
+        if (isActive(context)) {
             return mTable.dot(mDomainKey) + '=' + value;
         }
         return null;

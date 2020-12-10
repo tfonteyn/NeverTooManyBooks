@@ -231,7 +231,7 @@ public class ShowBookFragment
                 .getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
 
-        if (mVm.isCoverUsed(getContext(), global, 0)) {
+        if (mVm.isCoverUsed(global, 0)) {
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
 
@@ -242,7 +242,7 @@ public class ShowBookFragment
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }
 
-        if (mVm.isCoverUsed(getContext(), global, 1)) {
+        if (mVm.isCoverUsed(global, 1)) {
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
 

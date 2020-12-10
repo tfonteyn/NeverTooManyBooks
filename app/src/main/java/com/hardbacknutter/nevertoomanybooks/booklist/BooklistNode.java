@@ -127,7 +127,7 @@ public class BooklistNode {
         mIsVisible = visible;
     }
 
-    public long getRowId() {
+    long getRowId() {
         return mRowId;
     }
 

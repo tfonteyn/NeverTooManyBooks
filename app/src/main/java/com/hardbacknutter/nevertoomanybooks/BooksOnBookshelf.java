@@ -79,7 +79,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -113,6 +112,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -266,7 +266,7 @@ public class BooksOnBookshelf
                     }
 
                     // This is independent from the above style having been modified ot not.
-                    if (data.getBoolean(UserStyle.BKEY_STYLE_MODIFIED, false)) {
+                    if (data.getBoolean(StyleViewModel.BKEY_STYLE_MODIFIED, false)) {
                         mVm.setForceRebuildInOnResume(true);
                     }
                 }
@@ -278,11 +278,8 @@ public class BooksOnBookshelf
                 if (data != null) {
                     // We get here from the StylePickerDialogFragment (i.e. the style menu)
                     // when the user choose to EDIT a style.
-                    // We get the ACTUAL style back.
-                    @Nullable
-                    final UserStyle style = data.getParcelable(UserStyle.BKEY_STYLE);
-                    if (style != null) {
-                        mVm.onStyleEdited(this, style);
+                    if (data.uuid != null && !data.uuid.isEmpty()) {
+                        mVm.onStyleEdited(this, data.uuid);
 
                         // ALWAYS rebuild here, even when the style was not modified
                         // as we're handling this as a style-change
@@ -698,7 +695,7 @@ public class BooksOnBookshelf
     public boolean onPrepareOptionsMenu(@NonNull final Menu menu) {
         mFabMenu.hideMenu();
 
-        final boolean showECPreferred = mVm.getCurrentStyle(this).getTopLevel(this) > 1;
+        final boolean showECPreferred = mVm.getCurrentStyle(this).getTopLevel() > 1;
         menu.findItem(R.id.MENU_LEVEL_PREFERRED_COLLAPSE).setVisible(showECPreferred);
 
         return super.onPrepareOptionsMenu(menu);
@@ -716,7 +713,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_LEVEL_PREFERRED_COLLAPSE) {
-            expandAllNodes(mVm.getCurrentStyle(this).getTopLevel(this), false);
+            expandAllNodes(mVm.getCurrentStyle(this).getTopLevel(), false);
             return true;
 
         } else if (itemId == R.id.MENU_LEVEL_EXPAND) {
@@ -1227,9 +1224,10 @@ public class BooksOnBookshelf
         }
     }
 
-    public void editStyle(@NonNull final UserStyle style,
-                          final long templateId) {
-        mEditStyleLauncher.launch(new StyleFragment.ResultContract.Input(style, templateId));
+    public void editStyle(@NonNull final ListStyle style,
+                          final boolean setAsPreferred) {
+        mEditStyleLauncher.launch(new StyleFragment.ResultContract.Input(
+                StyleViewModel.BKEY_ACTION_EDIT, style.getUuid(), setAsPreferred));
     }
 
     /**
@@ -1400,7 +1398,10 @@ public class BooksOnBookshelf
                 displayList(null);
             } else {
                 // Something is REALLY BAD
-                throw new IllegalStateException();
+                //URGENT: usually due to the developer making an oopsie with the Styles.
+                // i.e. the style used to build is very likely corrupt.
+                final ListStyle style = mVm.getCurrentStyle(this);
+                throw new IllegalStateException("Style=" + style);
             }
         }
     }
@@ -1490,6 +1491,8 @@ public class BooksOnBookshelf
 
         createAdapter(mVm.getNewListCursor());
         scrollToSavedPosition(targetNodes);
+
+        //Log.d(TAG, "style=" + mVm.getCurrentStyle(this));
     }
 
     /**

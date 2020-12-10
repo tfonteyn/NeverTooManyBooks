@@ -32,7 +32,6 @@ import androidx.preference.PreferenceManager;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,7 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PCsvString;
 /**
  * Encapsulate the SharedPreferences access for styles.
  */
-public class StyleSharedPreferences {
+public class StyleSharedPreferences
+        implements StylePersistenceLayer {
 
     /**
      * Obsolete preference for this style being a preferred style. Now handled in the db.
@@ -59,13 +59,19 @@ public class StyleSharedPreferences {
     private static final String PK_STYLE_UUID = "style.booklist.uuid";
 
     @NonNull
+    private final SharedPreferences mGlobalPrefs;
+    @NonNull
     private final SharedPreferences mStylePrefs;
 
     StyleSharedPreferences(@NonNull final Context context,
-                           @NonNull final String uuid) {
+                           @NonNull final String uuid,
+                           final boolean isPersistent) {
+
+        mGlobalPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
         if (!uuid.isEmpty()) {
             mStylePrefs = context.getSharedPreferences(uuid, Context.MODE_PRIVATE);
-            if (!mStylePrefs.contains(PK_STYLE_UUID)) {
+            if (isPersistent && !mStylePrefs.contains(PK_STYLE_UUID)) {
                 // Storing the uuid is not actually needed but handy to have for debug
                 mStylePrefs.edit().putString(PK_STYLE_UUID, uuid).apply();
             }
@@ -73,7 +79,7 @@ public class StyleSharedPreferences {
             // Doing this here is much easier then doing it each time access is needed.
             // The downside is that when the global settings are accessed,
             // and the desired setting is not preset, a *second* and useless read is done.
-            mStylePrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            mStylePrefs = mGlobalPrefs;
         }
 
         // remove obsolete entries; no attempt is made to preserve the setting
@@ -82,12 +88,12 @@ public class StyleSharedPreferences {
         }
     }
 
-
     /**
      * Remove the value for the given key.
      *
      * @param key preference key
      */
+    @Override
     public void remove(@NonNull final String key) {
         mStylePrefs.edit().remove(key).apply();
     }
@@ -98,6 +104,7 @@ public class StyleSharedPreferences {
      * @param key   preference key
      * @param value to set
      */
+    @Override
     public void setString(@NonNull final String key,
                           @Nullable final String value) {
         if (value == null) {
@@ -117,16 +124,16 @@ public class StyleSharedPreferences {
      * <li>{@code null}</li>
      * </ol>
      */
+    @Override
     @Nullable
-    public String getString(@NonNull final String key) {
+    public String getNonGlobalString(@NonNull final String key) {
         return mStylePrefs.getString(key, null);
     }
 
     /**
      * Get a String value for the given key.
      *
-     * @param context Current context
-     * @param key     preference key
+     * @param key preference key
      *
      * @return <ol>
      * <li>The user preference if set</li>
@@ -134,17 +141,16 @@ public class StyleSharedPreferences {
      * <li>{@code null}</li>
      * </ol>
      */
+    @Override
     @Nullable
-    public String getString(@NonNull final Context context,
-                            @NonNull final String key) {
+    public String getString(@NonNull final String key) {
 
         final String value = mStylePrefs.getString(key, null);
         if (value != null && !value.isEmpty()) {
             return value;
         }
 
-        return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(key, null);
+        return mGlobalPrefs.getString(key, null);
     }
 
 
@@ -154,6 +160,7 @@ public class StyleSharedPreferences {
      * @param key   preference key
      * @param value to set
      */
+    @Override
     public void setBoolean(@NonNull final String key,
                            @Nullable final Boolean value) {
         if (value == null) {
@@ -173,15 +180,15 @@ public class StyleSharedPreferences {
      * <li>{@code false}</li>
      * </ol>
      */
-    public boolean getBoolean(@NonNull final String key) {
+    @Override
+    public boolean getNonGlobalBoolean(@NonNull final String key) {
         return mStylePrefs.getBoolean(key, false);
     }
 
     /**
      * Get a Boolean value for the given key.
      *
-     * @param context Current context
-     * @param key     preference key
+     * @param key preference key
      *
      * @return <ol>
      * <li>The user preference if set</li>
@@ -189,19 +196,17 @@ public class StyleSharedPreferences {
      * <li>{@code null}</li>
      * </ol>
      */
+    @Override
     @Nullable
-    public Boolean getBoolean(@NonNull final Context context,
-                              @NonNull final String key) {
+    public Boolean getBoolean(@NonNull final String key) {
         // reminder: it's a primitive so we must test on contains first
 
         if (mStylePrefs.contains(key)) {
             return mStylePrefs.getBoolean(key, false);
         }
 
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        if (global.contains(key)) {
-            return global.getBoolean(key, false);
+        if (mGlobalPrefs.contains(key)) {
+            return mGlobalPrefs.getBoolean(key, false);
         }
 
         return null;
@@ -214,6 +219,7 @@ public class StyleSharedPreferences {
      * @param key   preference key
      * @param value to set
      */
+    @Override
     public void setInt(@NonNull final String key,
                        @Nullable final Integer value) {
         if (value == null) {
@@ -226,8 +232,7 @@ public class StyleSharedPreferences {
     /**
      * Get an Integer value for the given key.
      *
-     * @param context Current context
-     * @param key     preference key
+     * @param key preference key
      *
      * @return <ol>
      * <li>The user preference if set</li>
@@ -235,19 +240,17 @@ public class StyleSharedPreferences {
      * <li>{@code null}</li>
      * </ol>
      */
+    @Override
     @Nullable
-    public Integer getInteger(@NonNull final Context context,
-                              @NonNull final String key) {
+    public Integer getInteger(@NonNull final String key) {
         // reminder: it's a primitive so we must test on contains first
 
         if (mStylePrefs.contains(key)) {
             return mStylePrefs.getInt(key, 0);
         }
 
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(context);
-        if (global.contains(key)) {
-            return global.getInt(key, 0);
+        if (mGlobalPrefs.contains(key)) {
+            return mGlobalPrefs.getInt(key, 0);
         }
 
         return null;
@@ -261,6 +264,7 @@ public class StyleSharedPreferences {
      * @param key   preference key
      * @param value to set
      */
+    @Override
     public void setStringedInt(@NonNull final String key,
                                @Nullable final Integer value) {
         if (value == null) {
@@ -274,8 +278,7 @@ public class StyleSharedPreferences {
      * Get an int value, <strong>which is stored as a String</strong>,
      * for the given key.
      *
-     * @param context Current context
-     * @param key     preference key
+     * @param key preference key
      *
      * @return <ol>
      * <li>The user preference if set</li>
@@ -283,17 +286,16 @@ public class StyleSharedPreferences {
      * <li>{@code null}</li>
      * </ol>
      */
+    @Override
     @Nullable
-    public Integer getStringedInt(@NonNull final Context context,
-                                  @NonNull final String key) {
+    public Integer getStringedInt(@NonNull final String key) {
         // reminder: {@link androidx.preference.ListPreference} is stored as a String
         String value = mStylePrefs.getString(key, null);
         if (value != null && !value.isEmpty()) {
             return Integer.parseInt(value);
         }
 
-        value = PreferenceManager.getDefaultSharedPreferences(context)
-                                 .getString(key, null);
+        value = mGlobalPrefs.getString(key, null);
         if (value != null && !value.isEmpty()) {
             return Integer.parseInt(value);
         }
@@ -307,8 +309,9 @@ public class StyleSharedPreferences {
      * @param key   preference key
      * @param value to set
      */
+    @Override
     public void setIntList(@NonNull final String key,
-                           @Nullable final List<Integer> value) {
+                           @Nullable final ArrayList<Integer> value) {
         if (value == null || value.isEmpty()) {
             mStylePrefs.edit().remove(key).apply();
         } else {
@@ -319,8 +322,7 @@ public class StyleSharedPreferences {
     /**
      * Get a list of int values for the given key.
      *
-     * @param context Current context
-     * @param key     preference key
+     * @param key preference key
      *
      * @return <ol>
      * <li>The user preference if set</li>
@@ -328,16 +330,15 @@ public class StyleSharedPreferences {
      * <li>{@code null}</li>
      * </ol>
      */
+    @Override
     @Nullable
-    public List<Integer> getIntList(@NonNull final Context context,
-                                    @NonNull final String key) {
+    public ArrayList<Integer> getIntList(@NonNull final String key) {
         String csvString = mStylePrefs.getString(key, null);
         if (csvString != null && !csvString.isEmpty()) {
             return getIntListFromCsv(csvString);
         }
 
-        csvString = PreferenceManager.getDefaultSharedPreferences(context)
-                                     .getString(key, null);
+        csvString = mGlobalPrefs.getString(key, null);
         if (csvString != null && !csvString.isEmpty()) {
             return getIntListFromCsv(csvString);
         }
@@ -345,53 +346,25 @@ public class StyleSharedPreferences {
     }
 
     /**
-     * Split a CSV String into a List.
-     *
-     * @param csvString CSV string
-     *
-     * @return list
-     */
-    @NonNull
-    private List<Integer> getIntListFromCsv(@NonNull final String csvString) {
-        try {
-            return Arrays.stream(csvString.split(PCsvString.DELIM))
-                         .map(Integer::parseInt)
-                         .collect(Collectors.toList());
-
-        } catch (@NonNull final NumberFormatException e) {
-            // should not happen unless we had a bug while previously writing the pref.
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "values=`" + csvString + '`', e);
-            }
-            // in which case we bail out gracefully
-            return new ArrayList<>();
-        }
-    }
-
-
-    /**
      * Set or remove a bitmask (int) value.
      *
      * @param key   preference key
-     * @param mask  valid values bitmask
      * @param value to set
      */
+    @Override
     public void setBitmask(@NonNull final String key,
-                           @IntRange(from = 0, to = 0xFFFF) final int mask,
                            @Nullable final Integer value) {
         if (value == null) {
             mStylePrefs.edit().remove(key).apply();
         } else {
-            mStylePrefs.edit().putStringSet(key, getBitmaskAsStringSet(mask & value)).apply();
+            mStylePrefs.edit().putStringSet(key, getBitmaskAsStringSet(value)).apply();
         }
     }
 
     /**
      * Get a bitmask value for the given key.
      *
-     * @param context Current context
-     * @param key     preference key
-     * @param mask    valid values bitmask
+     * @param key preference key
      *
      * @return <ol>
      * <li>The user preference if set</li>
@@ -399,35 +372,31 @@ public class StyleSharedPreferences {
      * <li>{@code null}</li>
      * </ol>
      */
+    @Override
     @Nullable
-    public Integer getBitmask(@NonNull final Context context,
-                              @NonNull final String key,
-                              @IntRange(from = 0, to = 0xFFFF) final int mask) {
+    public Integer getBitmask(@NonNull final String key) {
         // an empty set is a valid result
 
         Set<String> stringSet = mStylePrefs.getStringSet(key, null);
         if (stringSet != null) {
-            return getStringSetAsBitmask(mask, stringSet);
+            return getStringSetAsBitmask(stringSet);
         }
 
-        stringSet = PreferenceManager.getDefaultSharedPreferences(context)
-                                     .getStringSet(key, null);
+        stringSet = mGlobalPrefs.getStringSet(key, null);
         if (stringSet != null) {
-            return getStringSetAsBitmask(mask, stringSet);
+            return getStringSetAsBitmask(stringSet);
         }
 
         return null;
     }
 
-
     @IntRange(from = 0, to = 0xFFFF)
-    private int getStringSetAsBitmask(@IntRange(from = 0, to = 0xFFFF) final int mask,
-                                      @NonNull final Set<String> stringSet) {
+    private int getStringSetAsBitmask(@NonNull final Set<String> stringSet) {
         int bitmask = 0;
         for (final String s : stringSet) {
             bitmask |= Integer.parseInt(s);
         }
-        return bitmask & mask;
+        return bitmask;
     }
 
     /**
@@ -456,5 +425,29 @@ public class StyleSharedPreferences {
             tmp = tmp >>> 1;
         }
         return stringSet;
+    }
+
+    /**
+     * Split a CSV String into a List.
+     *
+     * @param csvString CSV string
+     *
+     * @return list
+     */
+    @NonNull
+    private ArrayList<Integer> getIntListFromCsv(@NonNull final String csvString) {
+        try {
+            return Arrays.stream(csvString.split(PCsvString.DELIM))
+                         .map(Integer::parseInt)
+                         .collect(Collectors.toCollection(ArrayList::new));
+
+        } catch (@NonNull final NumberFormatException e) {
+            // should not happen unless we had a bug while previously writing the pref.
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "values=`" + csvString + '`', e);
+            }
+            // in which case we bail out gracefully
+            return new ArrayList<>();
+        }
     }
 }

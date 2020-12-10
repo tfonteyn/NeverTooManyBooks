@@ -20,15 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
 import android.content.Context;
-import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceManager;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -38,27 +39,28 @@ public class BitmaskFilter
 
     /** See {@link com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference}. */
     private static final String ACTIVE = ".active";
-
-    @StringRes
-    private final int mLabelId;
-
     @NonNull
     private final TableDefinition mTable;
     @NonNull
     private final String mDomainKey;
-
-    /** The {@link ListStyle} this preference belongs to. */
+    @StringRes
+    private final int mLabelId;
+    /** The {@link StylePersistenceLayer} to use. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final ListStyle mStyle;
-
+    private final StylePersistenceLayer mPersistence;
     /** key for the Preference. */
     @NonNull
     private final String mKey;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final Integer mDefaultValue;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
+
     /** Valid bits. */
     private final int mMask;
+
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -67,25 +69,27 @@ public class BitmaskFilter
      * Constructor.
      * Default value is {@code 0}, i.e. no bits set.
      *
-     * @param style     Style reference.
-     * @param labelId   string resource id to use as a display label
-     * @param key       preference key
-     * @param defValue  in memory default
-     * @param mask      valid values bitmask
-     * @param table     to use by the expression
-     * @param domainKey to use by the expression
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param labelId          string resource id to use as a display label
+     * @param key              preference key
+     * @param table            to use by the expression
+     * @param domainKey        to use by the expression
+     * @param mask             valid values bitmask
      */
-    public BitmaskFilter(@NonNull final ListStyle style,
-                         @StringRes final int labelId,
-                         @NonNull final String key,
-                         @NonNull final Integer defValue,
-                         @NonNull final Integer mask,
-                         @SuppressWarnings("SameParameterValue")
-                         @NonNull final TableDefinition table,
-                         @NonNull final String domainKey) {
-        mStyle = style;
+    BitmaskFilter(final boolean isPersistent,
+                  @NonNull final StylePersistenceLayer persistenceLayer,
+                  @StringRes final int labelId,
+                  @NonNull final String key,
+                  @SuppressWarnings("SameParameterValue")
+                  @NonNull final TableDefinition table,
+                  @NonNull final String domainKey,
+                  @NonNull final Integer mask) {
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
         mKey = key;
-        mDefaultValue = defValue;
+        mDefaultValue = 0;
+
         mMask = mask;
 
         mLabelId = labelId;
@@ -96,27 +100,48 @@ public class BitmaskFilter
     /**
      * Copy constructor.
      *
-     * @param style  Style reference.
-     * @param filter to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param that             to copy from
      */
-    public BitmaskFilter(@NonNull final ListStyle style,
-                         @NonNull final BitmaskFilter filter) {
-        mStyle = style;
-        mKey = filter.mKey;
-        mDefaultValue = filter.mDefaultValue;
-        mMask = filter.mMask;
+    BitmaskFilter(final boolean isPersistent,
+                  @NonNull final StylePersistenceLayer persistenceLayer,
+                  @NonNull final BitmaskFilter that) {
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
+        mKey = that.mKey;
+        mDefaultValue = that.mDefaultValue;
 
-        mLabelId = filter.mLabelId;
-        mTable = filter.mTable;
-        mDomainKey = filter.mDomainKey;
+        mMask = that.mMask;
 
-        mNonPersistedValue = filter.mNonPersistedValue;
+        mLabelId = that.mLabelId;
+        mTable = that.mTable;
+        mDomainKey = that.mDomainKey;
+
+        mNonPersistedValue = that.mNonPersistedValue;
+
+        if (mPersisted) {
+            set(that.getValue());
+        }
     }
 
     @NonNull
     @Override
     public String getKey() {
         return mKey;
+    }
+
+    @NonNull
+    @Override
+    public String getLabel(@NonNull final Context context) {
+        return context.getString(mLabelId);
+    }
+
+    @Override
+    public boolean isActive(@NonNull final Context context) {
+        return mPersistence.getNonGlobalBoolean(mKey + ACTIVE)
+               && DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                                       mDomainKey);
     }
 
     /**
@@ -131,7 +156,7 @@ public class BitmaskFilter
     @Nullable
     public String getExpression(@NonNull final Context context) {
         if (isActive(context)) {
-            final int value = getValue(context);
+            final int value = getValue();
             if (value > 0) {
                 return "((" + mTable.dot(mDomainKey) + " & " + value + ") <> 0)";
             } else {
@@ -141,78 +166,72 @@ public class BitmaskFilter
         return null;
     }
 
-    @NonNull
-    @Override
-    public String getLabel(@NonNull final Context context) {
-        return context.getString(mLabelId);
-    }
-
-    @Override
-    public boolean isActive(@NonNull final Context context) {
-        return mStyle.getSettings().getBoolean(mKey + ACTIVE)
-               && DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                                       mDomainKey);
-    }
-
     @Override
     public void set(@Nullable final Integer value) {
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().setBitmask(mKey, mMask, value);
+        final Integer maskedValue = value != null ? value & mMask : null;
+        if (mPersisted) {
+            mPersistence.setBitmask(mKey, maskedValue);
         } else {
-            mNonPersistedValue = value;
+            mNonPersistedValue = maskedValue;
         }
     }
 
     @NonNull
     @Override
-    public Integer getValue(@NonNull final Context context) {
-        if (mStyle.isUserDefined()) {
-            final Integer value = mStyle.getSettings().getBitmask(context, mKey, mMask);
+    public Integer getValue() {
+        if (mPersisted) {
+            final Integer value = mPersistence.getBitmask(mKey);
             if (value != null) {
-                return value;
+                return value & mMask;
             }
         } else if (mNonPersistedValue != null) {
-            return mNonPersistedValue;
+            return mNonPersistedValue & mMask;
         }
 
-        return mDefaultValue;
+        return mDefaultValue & mMask;
     }
 
-    public void writeToParcel(@NonNull final Parcel dest) {
-        if (mStyle.isUserDefined()) {
-            dest.writeValue(getValue(App.getAppContext()));
-        } else {
-            // Write the in-memory value to the parcel.
-            // Do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeValue(mNonPersistedValue);
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BitmaskFilter that = (BitmaskFilter) o;
+        return mLabelId == that.mLabelId
+               && mMask == that.mMask
+               && mPersisted == that.mPersisted
+               && mTable.equals(that.mTable)
+               && mDomainKey.equals(that.mDomainKey)
+               && mKey.equals(that.mKey)
+               && mDefaultValue.equals(that.mDefaultValue)
+               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue);
     }
 
-    public void set(@NonNull final Parcel in) {
-        final Integer tmp = (Integer) in.readValue(getClass().getClassLoader());
-        if (tmp != null) {
-            set(tmp);
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(mLabelId, mTable, mDomainKey, mPersistence, mKey, mDefaultValue, mMask,
+                            mPersisted, mNonPersistedValue);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "BitmaskFilter{"
-               + "mStyle=" + mStyle.getUuid()
-               + ", mKey='" + mKey + '\''
-               + ", mDefaultValue=" + mDefaultValue
-               + "=" + Integer.toBinaryString(mDefaultValue)
-               + ", mMask=" + mMask
-               + "=" + Integer.toBinaryString(mMask)
+               + "mKey='" + mKey + '\''
+               + ", mDefaultValue=" + mDefaultValue + "=" + Integer.toBinaryString(mDefaultValue)
+               + ", mPersisted=" + mPersisted
                + ", mNonPersistedValue=" + mNonPersistedValue
                + (mNonPersistedValue != null ? "=" + Integer.toBinaryString(mNonPersistedValue)
                                              : "")
-               + ", mLabelId=" + mLabelId
+
+               + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)
+
+               + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
                + ", mTable=" + mTable
                + ", mDomainKey='" + mDomainKey + '\''
-               + ", isActive=" + isActive(App.getAppContext())
-               + ", expression=`" + getExpression(App.getAppContext()) + '\''
                + '}';
     }
 }

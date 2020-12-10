@@ -375,7 +375,7 @@ public class MenuPickerDialogFragment
         }
 
         @Override
-        public boolean equals(final Object o) {
+        public boolean equals(@Nullable final Object o) {
             if (!(o instanceof Pick)) {
                 return false;
             }

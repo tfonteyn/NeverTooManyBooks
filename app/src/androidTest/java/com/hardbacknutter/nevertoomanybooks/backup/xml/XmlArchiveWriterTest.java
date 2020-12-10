@@ -69,9 +69,11 @@ public class XmlArchiveWriterTest {
         try (DAO db = new DAO(TAG)) {
             final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
             for (final ListStyle style : StyleDAO.getStyles(context, db, true)) {
-                // cast to access internal VisibleForTesting clone method
+                // Clone WITH THE SAME ID/UUID.
+                // This is not a test of cloning, but we simply need to make a 1:1 copy here.
+                // Cast to access internal VisibleForTesting clone method
                 final UserStyle clonedStyle = ((BooklistStyle) style)
-                        .clone(context, style.getId(), style.getUuid());
+                        .clone(context, style.getId(), style.getUuid(), true);
                 mClonedStyles.put(style.getUuid(), clonedStyle);
             }
         }
@@ -144,7 +146,8 @@ public class XmlArchiveWriterTest {
             assertEquals(mClonedStyles.size(), styles.size());
 
             for (final ListStyle style : styles) {
-                assertEquals(mClonedStyles.get(style.getUuid()), style);
+                final ListStyle cloned = mClonedStyles.get(style.getUuid());
+                assertEquals(cloned, style);
             }
         }
     }

@@ -92,7 +92,7 @@ public class PreferredStylesFragment
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
     /** The Activity ViewModel. */
-    private PreferredStylesViewModel mModel;
+    private PreferredStylesViewModel mVm;
 
     /** React to changes in the adapter. */
     private final SimpleAdapterDataObserver mAdapterDataObserver =
@@ -104,9 +104,9 @@ public class PreferredStylesFragment
                                                final int itemCount) {
                     final ListStyle style = mListAdapter.getItem(positionStart);
                     // only the style was changed, update the database now
-                    mModel.updateStyle(style);
+                    mVm.updateStyle(style);
                     // We'll update the list order in onPause.
-                    mModel.setDirty(true);
+                    mVm.setDirty(true);
                 }
 
                 @Override
@@ -114,7 +114,7 @@ public class PreferredStylesFragment
                                                final int itemCount) {
                     // Deleting the style is already done.
                     // We'll update the list order in onPause.
-                    mModel.setDirty(true);
+                    mVm.setDirty(true);
                 }
 
                 @Override
@@ -125,14 +125,14 @@ public class PreferredStylesFragment
                     // so moving a row 5 rows up... this gets called FIVE times.
 
                     // We'll update the list order in onPause.
-                    mModel.setDirty(true);
+                    mVm.setDirty(true);
                 }
 
                 /** Fallback for all other types of notification (if any). */
                 @Override
                 public void onChanged() {
                     // We'll update the list order in onPause.
-                    mModel.setDirty(true);
+                    mVm.setDirty(true);
                 }
             };
 
@@ -152,7 +152,7 @@ public class PreferredStylesFragment
                     }
 
                     // Same here, this is independent from the returned style
-                    resultIntent.putExtra(UserStyle.BKEY_STYLE_MODIFIED, mModel.isDirty());
+                    resultIntent.putExtra(StyleViewModel.BKEY_STYLE_MODIFIED, mVm.isDirty());
 
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, resultIntent);
@@ -163,18 +163,19 @@ public class PreferredStylesFragment
     private final ActivityResultLauncher<StyleFragment.ResultContract.Input> mEditStyleContract =
             registerForActivityResult(new StyleFragment.ResultContract(), data -> {
                 if (data != null) {
-                    // We get the ACTUAL style back.
                     @Nullable
-                    final UserStyle style = data.getParcelable(UserStyle.BKEY_STYLE);
-                    if (data.getBoolean(UserStyle.BKEY_STYLE_MODIFIED, false)) {
-                        if (style != null) {
-                            // id of the original style we cloned (different from current)
-                            // or edited (same as current).
-                            final long templateId = data.getLong(
-                                    StyleViewModel.BKEY_TEMPLATE_ID, style.getId());
+                    final ListStyle style;
+                    if (data.uuid != null && !data.uuid.isEmpty()) {
+                        //noinspection ConstantConditions
+                        style = mVm.getStyle(getContext(), data.uuid);
+                    } else {
+                        style = null;
+                    }
 
-                            // save/update the style, and calculate the (new) position in the list
-                            final int position = mModel.onStyleEdited(style, templateId);
+                    if (data.modified) {
+                        if (style != null) {
+                            // calculate the (new) position in the list
+                            final int position = mVm.onStyleEdited(style, data.templateUuid);
                             mListAdapter.setSelectedPosition(position);
                         }
 
@@ -185,7 +186,6 @@ public class PreferredStylesFragment
                         // The style was not modified. If this was a cloned (new) style,
                         // discard it by deleting the SharedPreferences file
                         if (style != null && style.getId() == 0) {
-                            //noinspection ConstantConditions
                             getContext().deleteSharedPreferences(style.getUuid());
                         }
                     }
@@ -230,17 +230,17 @@ public class PreferredStylesFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mModel = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
+        mVm = new ViewModelProvider(this).get(PreferredStylesViewModel.class);
         //noinspection ConstantConditions
-        mModel.init(getContext(), requireArguments());
+        mVm.init(getContext(), requireArguments());
 
         mVb.stylesList.addItemDecoration(
                 new DividerItemDecoration(getContext(), RecyclerView.VERTICAL));
         mVb.stylesList.setHasFixedSize(true);
 
         // setup the adapter
-        mListAdapter = new ListStylesAdapter(getContext(), mModel.getList(),
-                                             mModel.getInitialStyleUuid(),
+        mListAdapter = new ListStylesAdapter(getContext(), mVm.getList(),
+                                             mVm.getInitialStyleUuid(),
                                              vh -> mItemTouchHelper.startDrag(vh));
         mListAdapter.registerAdapterDataObserver(mAdapterDataObserver);
         mVb.stylesList.setAdapter(mListAdapter);
@@ -258,8 +258,8 @@ public class PreferredStylesFragment
 
     @Override
     public void onPause() {
-        if (mModel.isDirty()) {
-            mModel.updateMenuOrder();
+        if (mVm.isDirty()) {
+            mVm.updateMenuOrder();
         }
         super.onPause();
     }
@@ -291,8 +291,9 @@ public class PreferredStylesFragment
             final ListStyle selected = mListAdapter.getSelectedStyle();
             if (selected != null) {
                 //noinspection ConstantConditions
-                StandardDialogs.purgeBLNS(getContext(), R.string.lbl_style, selected, () ->
-                        mModel.purgeBLNS(selected.getId()));
+                StandardDialogs.purgeBLNS(getContext(), R.string.lbl_style,
+                                          selected.getLabel(getContext()), () ->
+                                                  mVm.purgeBLNS(selected.getId()));
             }
             return true;
         }
@@ -302,7 +303,7 @@ public class PreferredStylesFragment
 
     private void onCreateContextMenu(final int position) {
         final Resources res = getResources();
-        final ListStyle style = mModel.getList().get(position);
+        final ListStyle style = mVm.getList().get(position);
         //noinspection ConstantConditions
         final String title = style.getLabel(getContext());
 
@@ -361,7 +362,7 @@ public class PreferredStylesFragment
     private boolean onContextItemSelected(@IdRes final int itemId,
                                           final int position) {
 
-        final ListStyle style = mModel.getList().get(position);
+        final ListStyle style = mVm.getList().get(position);
 
         if (itemId == R.id.MENU_EDIT) {
             // dev sanity check
@@ -370,21 +371,19 @@ public class PreferredStylesFragment
                     throw new IllegalStateException("Not a UserStyle");
                 }
             }
-            mEditStyleContract.launch(new StyleFragment
-                    .ResultContract.Input((UserStyle) style, style.getId()));
+            mEditStyleContract.launch(new StyleFragment.ResultContract.Input(
+                    StyleViewModel.BKEY_ACTION_EDIT, style.getUuid(), style.isPreferred()));
             return true;
 
         } else if (itemId == R.id.MENU_DELETE) {
             //noinspection ConstantConditions
-            mModel.deleteStyle(getContext(), style);
+            mVm.deleteStyle(getContext(), style);
             mListAdapter.notifyItemRemoved(position);
             return true;
 
         } else if (itemId == R.id.MENU_DUPLICATE) {
-            // pass the style id of the template style
-            //noinspection ConstantConditions
             mEditStyleContract.launch(new StyleFragment.ResultContract.Input(
-                    style.clone(getContext()), style.getId()));
+                    StyleViewModel.BKEY_ACTION_CLONE, style.getUuid(), style.isPreferred()));
             return true;
         }
         return false;

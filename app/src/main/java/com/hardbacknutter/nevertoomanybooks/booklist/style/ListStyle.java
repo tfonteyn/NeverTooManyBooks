@@ -27,12 +27,13 @@ import androidx.annotation.NonNull;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 
-public interface ListStyle
-        extends Entity {
+public interface ListStyle {
 
     /**
      * the amount of details to show in the header.
@@ -77,20 +78,36 @@ public interface ListStyle
     int DEFAULT_STYLE_ID = StyleDAO.BuiltinStyles.AUTHOR_THEN_SERIES_ID;
 
     /**
-     * A ListStyle <strong>UUID</strong>. This is used during the USE of a style.
+     * A ListStyle <strong>UUID</strong>.
      * <p>
      * <br>type: {@code String}
      */
     String BKEY_STYLE_UUID = "ListStyle:uuid";
 
     @NonNull
-    StyleSharedPreferences getSettings();
+    StylePersistenceLayer getPersistenceLayer();
 
     @NonNull
     UserStyle clone(@NonNull Context context);
 
+    /**
+     * Get the database row id of the entity.
+     *
+     * @return id
+     */
+    long getId();
 
     void setId(long id);
+
+    /**
+     * Get the label to use. This is for <strong>displaying only</strong>.
+     *
+     * @param context Current context
+     *
+     * @return the label to use.
+     */
+    @NonNull
+    String getLabel(@NonNull Context context);
 
     /**
      * Get the UUID for this style.
@@ -99,15 +116,6 @@ public interface ListStyle
      */
     @NonNull
     String getUuid();
-
-    /**
-     * Check if this is a user defined style.
-     *
-     * @return flag
-     */
-    default boolean isUserDefined() {
-        return false;
-    }
 
     /**
      * Convenience/clarity method: check if this style represents the global settings.
@@ -149,13 +157,11 @@ public interface ListStyle
     /**
      * Check if the style wants the specified header to be displayed.
      *
-     * @param context    Current context
      * @param headerMask to check
      *
      * @return {@code true} if the header should be shown
      */
-    boolean isShowHeader(@NonNull Context context,
-                         @ListHeaderOption int headerMask);
+    boolean isShowHeader(@ListHeaderOption int headerMask);
 
     /**
      * Get the default visible level for the list.
@@ -163,18 +169,14 @@ public interface ListStyle
      * i.o.w. the top-level where items above will be expanded/visible,
      * and items below will be hidden.
      *
-     * @param context Current context
-     *
      * @return level
      */
     @IntRange(from = 1)
-    int getTopLevel(@NonNull Context context);
+    int getTopLevel();
 
     /**
      * Get the group row <strong>height</strong> to be applied to
      * the {@link android.view.ViewGroup.LayoutParams}.
-     *
-     * @param context Current context
      *
      * @return group row height value in pixels
      */
@@ -205,22 +207,28 @@ public interface ListStyle
     /**
      * Whether the user prefers the Author names displayed by Given names, or by Family name first.
      *
-     * @param context Current context
-     *
      * @return {@code true} when Given names should come first
      */
-    boolean isShowAuthorByGivenName(@NonNull Context context);
+    boolean isShowAuthorByGivenName();
 
     /**
      * Whether the user prefers the Author names sorted by Given names, or by Family name first.
      *
-     * @param context Current context
-     *
      * @return {@code true} when Given names should come first
      */
-    boolean isSortAuthorByGivenName(@NonNull Context context);
+    boolean isSortAuthorByGivenName();
 
     int getPrimaryAuthorType(@NonNull Context context);
+
+    /**
+     * Get all of the preferences of this Style and its groups/filters.<br>
+     * Provides low-level access to all preferences.<br>
+     * This should only be called for export/import.
+     *
+     * @return flat map with accumulated preferences for this style and it's groups.
+     */
+    @NonNull
+    Map<String, PPref> getRawPreferences();
 
     @IntDef(flag = true, value = {HEADER_SHOW_BOOK_COUNT,
                                   HEADER_SHOW_STYLE_NAME,

@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BitmaskFilter
  * the entire setting.
  * <p>
  * The latter is handled with a secondary preference key (originalKey + ".active")
- * to enable/disabled the actual preference..
+ * to enable/disabled the actual preference.
  *
  * <pre>
  *     {@code

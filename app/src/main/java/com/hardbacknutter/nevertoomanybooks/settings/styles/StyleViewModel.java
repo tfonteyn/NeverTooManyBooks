@@ -24,27 +24,50 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class StyleViewModel
         extends ViewModel
         implements ResultIntent {
 
+    public static final int BKEY_ACTION_CLONE = 0;
+    public static final int BKEY_ACTION_EDIT = 1;
+
     /** Log tag. */
     private static final String TAG = "StyleViewModel";
-    /** The template style (id) the style we're editing is based on. */
-    static final String BKEY_TEMPLATE_ID = TAG + ":templateId";
+    /**
+     * Styles related data was modified (or not).
+     * This includes a ListStyle being modified or deleted,
+     * or the order of the preferred styles modified,
+     * or the selected ListStyle changed,
+     * or ...
+     * ENHANCE: make this fine grained and reduce unneeded BoB rebuilds
+     * <p>
+     * <br>type: {@code boolean}
+     */
+    public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
+    static final String BKEY_ACTION = TAG + ":action";
+    static final String BKEY_SET_AS_PREFERRED = TAG + ":setAsPreferred";
+    static final String BKEY_TEMPLATE_UUID = TAG + ":templateUuid";
+
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
@@ -53,6 +76,15 @@ public class StyleViewModel
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
     private ArrayList<WrappedGroup> mWrappedGroupList;
+    private DAO mDb;
+
+    @Override
+    protected void onCleared() {
+        if (mDb != null) {
+            mDb.close();
+        }
+        super.onCleared();
+    }
 
     /**
      * Pseudo constructor.
@@ -62,26 +94,40 @@ public class StyleViewModel
      */
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
-        if (mStyle == null) {
+        if (mDb == null) {
+            mDb = new DAO(TAG);
 
-            // The templateId is not actually used here, but it MUST always be passed back.
-            final long templateId = args.getLong(BKEY_TEMPLATE_ID);
-            if (templateId != 0) {
-                mResultIntent.putExtra(BKEY_TEMPLATE_ID, templateId);
-            }
 
-            final UserStyle style = args.getParcelable(UserStyle.BKEY_STYLE);
-            if (style != null) {
-                mStyle = style;
-                // always pass a non-global style back; whether existing or new.
+            final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_STYLE_UUID));
+
+            if (!uuid.isEmpty()) {
+                // ALWAYS pass the original style uuid back.
+                mResultIntent.putExtra(BKEY_TEMPLATE_UUID, uuid);
+
+                final ListStyle style = StyleDAO.getStyle(context, mDb, uuid);
+                Objects.requireNonNull(style, "uuid not found: " + uuid);
+
+                @EditAction
+                final int action = args.getInt(BKEY_ACTION, BKEY_ACTION_EDIT);
+
+                if (action == BKEY_ACTION_CLONE || style instanceof BuiltinStyle) {
+                    mStyle = style.clone(context);
+                } else {
+                    mStyle = (UserStyle) style;
+                }
+
+                if (args.getBoolean(BKEY_SET_AS_PREFERRED)) {
+                    mStyle.setPreferred(true);
+                }
+
+                // always pass a non-global style uuid back; whether existing or new.
                 // so even if the user makes no changes, we still send it back!
-                // If the user does make changes, we'll overwrite it in onSharedPreferenceChanged
-                mResultIntent.putExtra(UserStyle.BKEY_STYLE, mStyle);
+                mResultIntent.putExtra(ListStyle.BKEY_STYLE_UUID, mStyle.getUuid());
 
             } else {
                 // we're doing the global preferences, create a placeholder style with an empty uuid
                 // and let it use the standard SharedPreferences
-                mStyle = new UserStyle(context);
+                mStyle = UserStyle.createGlobal(context);
             }
         }
     }
@@ -92,7 +138,7 @@ public class StyleViewModel
     }
 
     void setModified() {
-        mResultIntent.putExtra(UserStyle.BKEY_STYLE_MODIFIED, true);
+        mResultIntent.putExtra(BKEY_STYLE_MODIFIED, true);
     }
 
     @NonNull
@@ -102,7 +148,7 @@ public class StyleViewModel
     }
 
     @NonNull
-    ArrayList<WrappedGroup> createWrappedGroupList(@NonNull final Context context) {
+    ArrayList<WrappedGroup> createWrappedGroupList() {
         final Groups styleGroups = mStyle.getGroups();
 
         // Build an array list with the groups already present in the style
@@ -112,7 +158,7 @@ public class StyleViewModel
         }
         // Get all other groups and add any missing ones to the list so the user can
         // add them if wanted.
-        for (final BooklistGroup group : BooklistGroup.getAllGroups(context, mStyle)) {
+        for (final BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
             if (!styleGroups.contains(group.getId())) {
                 mWrappedGroupList.add(new WrappedGroup(group, false));
             }
@@ -139,6 +185,21 @@ public class StyleViewModel
                          .filter(WrappedGroup::isPresent)
                          .map(WrappedGroup::getGroup)
                          .forEach(styleGroups::add);
+    }
+
+    /**
+     * Called when leaving the fragment. Save any updates needed.
+     */
+    void updateOrInsertStyle() {
+        if (mResultIntent.getBooleanExtra(BKEY_STYLE_MODIFIED, false)) {
+            StyleDAO.updateOrInsert(mDb, mStyle);
+        }
+    }
+
+    @IntDef({BKEY_ACTION_CLONE, BKEY_ACTION_EDIT})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface EditAction {
+
     }
 
     /**

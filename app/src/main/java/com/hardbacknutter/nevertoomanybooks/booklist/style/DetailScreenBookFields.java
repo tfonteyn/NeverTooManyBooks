@@ -44,43 +44,54 @@ public class DetailScreenBookFields
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param style   Style reference.
+     * @param context          Current context
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
      */
     DetailScreenBookFields(@NonNull final Context context,
-                           @NonNull final ListStyle style) {
+                           final boolean isPersistent,
+                           @NonNull final StylePersistenceLayer persistenceLayer) {
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
         for (int cIdx = 0; cIdx < 2; cIdx++) {
-            mFields.put(PK_COVER[cIdx], new PBoolean(style, PK_COVER[cIdx],
+            mFields.put(PK_COVER[cIdx], new PBoolean(isPersistent, persistenceLayer, PK_COVER[cIdx],
                                                      DBDefinitions.isCoverUsed(global, cIdx)));
         }
     }
 
     /**
      * Copy constructor.
-     * @param style        Style reference.
-     * @param bookFields to copy from
+     *
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param bookFields       to copy from
      */
-    DetailScreenBookFields(@NonNull final ListStyle style,
+    DetailScreenBookFields(final boolean isPersistent,
+                           @NonNull final StylePersistenceLayer persistenceLayer,
                            @NonNull final DetailScreenBookFields bookFields) {
-        super(style, bookFields);
+        super(isPersistent, persistenceLayer, bookFields);
     }
 
     /**
      * Convenience method to check if a cover (front/back) should be
      * show on the <strong>details</strong> screen.
      *
-     * @param context Current context
-     * @param global  the <strong>GLOBAL</strong> preferences
-     * @param cIdx    0..n image index
+     * @param global the <strong>GLOBAL</strong> preferences
+     * @param cIdx   0..n image index
      *
      * @return {@code true} if in use
      */
-    public boolean isShowCover(@NonNull final Context context,
-                               @NonNull final SharedPreferences global,
+    public boolean isShowCover(@NonNull final SharedPreferences global,
                                @IntRange(from = 0, to = 1) final int cIdx) {
-        return isShowField(context, global, PK_COVER[cIdx]);
+        return isShowField(global, PK_COVER[cIdx]);
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "DetailScreenBookFields{"
+               + super.toString()
+               + '}';
     }
 }

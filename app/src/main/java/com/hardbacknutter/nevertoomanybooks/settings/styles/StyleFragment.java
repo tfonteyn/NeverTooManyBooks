@@ -37,12 +37,15 @@ import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
@@ -73,6 +76,8 @@ public class StyleFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    mStyleViewModel.updateOrInsertStyle();
+
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mStyleViewModel.getResultIntent());
                     getActivity().finish();
@@ -128,10 +133,10 @@ public class StyleFragment
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
         //noinspection ConstantConditions
-        final UserStyle globalStyle = new UserStyle(getContext());
+        final UserStyle globalStyle = UserStyle.createGlobal(getContext());
         final Groups styleGroups = mStyleViewModel.getStyle().getGroups();
 
-        for (final BooklistGroup group : BooklistGroup.getAllGroups(getContext(), globalStyle)) {
+        for (final BooklistGroup group : BooklistGroup.getAllGroups(globalStyle)) {
             group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
         }
 
@@ -221,9 +226,7 @@ public class StyleFragment
                 final SeekBarPreference preference = findPreference(key);
                 if (preference != null) {
                     preference.setMax(style.getGroups().size());
-                    //noinspection ConstantConditions
-                    preference.setSummary(String.valueOf(
-                            style.getTopLevel(getContext())));
+                    preference.setSummary(String.valueOf(style.getTopLevel()));
                 }
                 break;
             }
@@ -233,8 +236,7 @@ public class StyleFragment
                 final Preference preference = findPreference(key);
                 if (preference != null) {
                     //noinspection ConstantConditions
-                    preference.setSummary(
-                            style.getGroups().getSummaryText(getContext()));
+                    preference.setSummary(style.getGroups().getSummaryText(getContext()));
                 }
                 break;
             }
@@ -267,7 +269,7 @@ public class StyleFragment
     }
 
     public static class ResultContract
-            extends ActivityResultContract<ResultContract.Input, Bundle> {
+            extends ActivityResultContract<ResultContract.Input, ResultContract.Output> {
 
         @NonNull
         @Override
@@ -275,13 +277,14 @@ public class StyleFragment
                                    @NonNull final Input input) {
             return new Intent(context, SettingsHostingActivity.class)
                     .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
-                    .putExtra(UserStyle.BKEY_STYLE, input.style)
-                    .putExtra(StyleViewModel.BKEY_TEMPLATE_ID, input.templateStyleId);
+                    .putExtra(StyleViewModel.BKEY_ACTION, input.action)
+                    .putExtra(ListStyle.BKEY_STYLE_UUID, input.uuid)
+                    .putExtra(StyleViewModel.BKEY_SET_AS_PREFERRED, input.setAsPreferred);
         }
 
         @Override
         @Nullable
-        public Bundle parseResult(final int resultCode,
+        public Output parseResult(final int resultCode,
                                   @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
                 Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
@@ -290,19 +293,63 @@ public class StyleFragment
             if (intent == null || resultCode != Activity.RESULT_OK) {
                 return null;
             }
-            return intent.getExtras();
+
+            final Bundle data = intent.getExtras();
+            if (data == null) {
+                // should not actually ever be the case...
+                return null;
+            }
+
+            return new Output(
+                    Objects.requireNonNull(data.getString(StyleViewModel.BKEY_TEMPLATE_UUID),
+                                           "BKEY_TEMPLATE_UUID"),
+                    data.getBoolean(StyleViewModel.BKEY_STYLE_MODIFIED, false),
+                    data.getString(ListStyle.BKEY_STYLE_UUID));
         }
 
         public static class Input {
 
-            @NonNull
-            final UserStyle style;
-            final long templateStyleId;
+            @StyleViewModel.EditAction
+            final int action;
 
-            public Input(@NonNull final UserStyle style,
-                         final long templateStyleId) {
-                this.style = style;
-                this.templateStyleId = templateStyleId;
+            @NonNull
+            final String uuid;
+
+            /**
+             * If set to {@code true} the edited/cloned style will be set to preferred.
+             * If set to {@code false} the preferred state will not be touched.
+             */
+            final boolean setAsPreferred;
+
+            public Input(@StyleViewModel.EditAction final int action,
+                         @NonNull final String uuid,
+                         final boolean setAsPreferred) {
+                this.action = action;
+                this.uuid = uuid;
+                this.setAsPreferred = setAsPreferred;
+            }
+        }
+
+        public static class Output {
+
+            /**
+             * Either a new UUID if we cloned a style, or the UUID of the style we edited.
+             * Will be {@code null} if we edited the global style
+             */
+            @Nullable
+            public final String uuid;
+
+            /** The uuid which was passed into the {@link Input#uuid} for editing. */
+            @NonNull
+            final String templateUuid;
+            final boolean modified;
+
+            Output(@NonNull final String templateUuid,
+                   final boolean modified,
+                   @Nullable final String uuid) {
+                this.templateUuid = templateUuid;
+                this.modified = modified;
+                this.uuid = uuid;
             }
         }
     }

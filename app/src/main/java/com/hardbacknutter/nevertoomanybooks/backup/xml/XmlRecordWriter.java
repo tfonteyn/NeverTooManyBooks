@@ -39,7 +39,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -1019,12 +1017,16 @@ public class XmlRecordWriter
 
     /**
      * Supports a list of Styles.
-     * <p>
-     * - 'flat' preferences for the style.
-     * --- This includes the actual groups of the style: a CSV String of group ID's
-     * - Filters and Groups are flattened.
-     * - each filter/group has a typed tag
-     * - each preference in a group has a typed tag.
+     * <ul>
+     * <li>'flat' preferences for the style.</li>
+     * <li>Includes the actual groups of the style: a CSV String of group ID's</li>
+     * <li>Filters and Groups are flattened.</li>
+     * <li>each filter/group has a typed tag</li>
+     * <li>each preference in a group has a typed tag.</li>
+     * </ul>
+     * <strong>We write out the preferences for {@link BuiltinStyle} objects</strong>
+     * for reference and potential future usage.
+     * See {@link XmlRecordReader} for more comments.
      */
     static class StylesWriter
             implements EntityWriter<String> {
@@ -1037,11 +1039,7 @@ public class XmlRecordWriter
         private final Iterator<ListStyle> it;
 
         private ListStyle mCurrentStyle;
-        /**
-         * The Preferences from the current {@link UserStyle} and the groups that have PPrefs.
-         * Will be {@code null} for {@link BuiltinStyle}.
-         */
-        @Nullable
+        /** The Preferences from the current {@link ListStyle}. */
         private Map<String, PPref> mCurrentStylePPrefs;
 
         /**
@@ -1077,11 +1075,7 @@ public class XmlRecordWriter
         public boolean hasMoreElements() {
             if (it.hasNext()) {
                 mCurrentStyle = it.next();
-                if (mCurrentStyle instanceof UserStyle) {
-                    mCurrentStylePPrefs = ((UserStyle) mCurrentStyle).getPreferences();
-                } else {
-                    mCurrentStylePPrefs = null;
-                }
+                mCurrentStylePPrefs = mCurrentStyle.getRawPreferences();
                 return true;
             } else {
                 return false;
@@ -1105,9 +1099,6 @@ public class XmlRecordWriter
         public List<Pair<String, String>> getElementTagAttributes() {
             final List<Pair<String, String>> list = new ArrayList<>();
             list.add(new Pair<>(DBDefinitions.KEY_UUID, mCurrentStyle.getUuid()));
-
-            list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_BUILTIN,
-                                String.valueOf(mCurrentStyle instanceof BuiltinStyle)));
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_PREFERRED,
                                 String.valueOf(mCurrentStyle.isPreferred())));
             list.add(new Pair<>(DBDefinitions.KEY_STYLE_MENU_POSITION,
@@ -1118,20 +1109,13 @@ public class XmlRecordWriter
         @Override
         @NonNull
         public Set<String> getElementKeySet() {
-            if (mCurrentStyle instanceof UserStyle) {
-                //noinspection ConstantConditions
-                return mCurrentStylePPrefs.keySet();
-            } else {
-                // don't (try to) restore preferences for BuiltinStyle objects
-                return Collections.emptySet();
-            }
+            return mCurrentStylePPrefs.keySet();
         }
 
         @NonNull
         @Override
         public Object get(@NonNull final String key) {
-            //noinspection ConstantConditions
-            return Objects.requireNonNull(mCurrentStylePPrefs.get(key), key).getValue(mContext);
+            return Objects.requireNonNull(mCurrentStylePPrefs.get(key), key).getValue();
         }
     }
 }

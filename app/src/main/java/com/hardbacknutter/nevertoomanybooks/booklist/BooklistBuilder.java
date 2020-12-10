@@ -620,7 +620,7 @@ final class BooklistBuilder {
          * the fields applicable to the currently processed group, including its outer groups.
          *
          * As subsequent addGroup calls will modify this collection,
-         * we make a (shallow) copy of the list. (ArrayList as we'll need to parcel it)
+         * we make a (shallow) copy of the list.
          */
         group.setAccumulatedDomains(new ArrayList<>(mAccumulatedDomains));
     }

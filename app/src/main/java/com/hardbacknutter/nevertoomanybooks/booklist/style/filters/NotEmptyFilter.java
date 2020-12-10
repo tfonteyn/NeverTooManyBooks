@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 public class NotEmptyFilter
@@ -34,37 +34,40 @@ public class NotEmptyFilter
     /**
      * Constructor.
      *
-     * @param style     Style reference.
-     * @param labelId   string resource id to use as a display label
-     * @param key       preference key
-     * @param table     to use by the expression
-     * @param domainKey to use by the expression
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param labelId          string resource id to use as a display label
+     * @param key              preference key
+     * @param table            to use by the expression
+     * @param domainKey        to use by the expression
      */
-    public NotEmptyFilter(@NonNull final ListStyle style,
-                          @StringRes final int labelId,
-                          @NonNull final String key,
-                          @SuppressWarnings("SameParameterValue") @NonNull
-                          final TableDefinition table,
-                          @NonNull final String domainKey) {
-        super(style, labelId, key, table, domainKey);
+    NotEmptyFilter(final boolean isPersistent,
+                   @NonNull final StylePersistenceLayer persistenceLayer,
+                   @StringRes final int labelId,
+                   @NonNull final String key,
+                   @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
+                   @NonNull final String domainKey) {
+        super(isPersistent, persistenceLayer, labelId, key, table, domainKey);
     }
 
     /**
      * Copy constructor.
      *
-     * @param style  Style reference.
-     * @param filter to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param filter           to copy from
      */
-    public NotEmptyFilter(@NonNull final ListStyle style,
-                          @NonNull final NotEmptyFilter filter) {
-        super(style, filter);
+    NotEmptyFilter(final boolean isPersistent,
+                   @NonNull final StylePersistenceLayer persistenceLayer,
+                   @NonNull final NotEmptyFilter filter) {
+        super(isPersistent, persistenceLayer, filter);
     }
 
     @Override
     @Nullable
     public String getExpression(@NonNull final Context context) {
-        final Integer value = getValue(context);
-        if (!P_NOT_USED.equals(value)) {
+        final Integer value = getValue();
+        if (isActive(context)) {
             if (value == 0) {
                 return "((" + mTable.dot(mDomainKey) + " IS NULL)"
                        + " OR (" + mTable.dot(mDomainKey) + "=''))";

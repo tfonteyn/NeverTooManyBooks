@@ -20,30 +20,18 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 
 public class BuiltinStyle
         extends BooklistStyle {
-
-    /** {@link Parcelable}. */
-    public static final Creator<BuiltinStyle> CREATOR = new Creator<BuiltinStyle>() {
-        @Override
-        public BuiltinStyle createFromParcel(@NonNull final Parcel source) {
-            return new BuiltinStyle(source);
-        }
-
-        @Override
-        public BuiltinStyle[] newArray(final int size) {
-            return new BuiltinStyle[size];
-        }
-    };
 
     /**
      * Display name of this style.
@@ -71,7 +59,7 @@ public class BuiltinStyle
                  final boolean isPreferred,
                  final int menuPosition,
                  @NonNull final int... groupIds) {
-        super(context, uuid);
+        super(context, uuid, false);
         mId = id;
 
         mNameResId = nameId;
@@ -79,21 +67,11 @@ public class BuiltinStyle
         mIsPreferred = isPreferred;
         mMenuPosition = menuPosition;
 
-        initPrefs(context);
+        initPrefs(context, false);
 
         for (@BooklistGroup.Id final int groupId : groupIds) {
-            getGroups().add(BooklistGroup.newInstance(context, groupId, this));
+            getGroups().add(BooklistGroup.newInstance(groupId, false, this));
         }
-    }
-
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private BuiltinStyle(@NonNull final Parcel in) {
-        super(in);
-        mNameResId = in.readInt();
     }
 
     @Override
@@ -103,9 +81,22 @@ public class BuiltinStyle
     }
 
     @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        super.writeToParcel(dest, flags);
-        dest.writeInt(mNameResId);
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        final BuiltinStyle that = (BuiltinStyle) o;
+        return mNameResId == that.mNameResId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mNameResId);
     }
 }

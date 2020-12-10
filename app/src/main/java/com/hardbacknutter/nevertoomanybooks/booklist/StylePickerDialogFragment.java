@@ -36,10 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
@@ -160,25 +158,15 @@ public class StylePickerDialogFragment
         dismiss();
 
         //noinspection OptionalGetWithoutIsPresent
-        ListStyle selectedStyle =
+        final ListStyle selectedStyle =
                 mStyleList.stream()
-                          .filter(style -> mCurrentStyleUuid.equals(style.getUuid()))
+                          .filter(style -> mCurrentStyleUuid.equalsIgnoreCase(style.getUuid()))
                           .findFirst()
                           .get();
 
-        final long templateId = selectedStyle.getId();
-        if (selectedStyle instanceof BuiltinStyle) {
-            // clone a builtin style first
-            //noinspection ConstantConditions
-            selectedStyle = selectedStyle.clone(getContext());
-        }
-
-        // make sure it's preferred if it was not before.
-        selectedStyle.setPreferred(true);
-
         // use the activity so we get the results there.
         //noinspection ConstantConditions
-        ((BooksOnBookshelf) getActivity()).editStyle((UserStyle) selectedStyle, templateId);
+        ((BooksOnBookshelf) getActivity()).editStyle(selectedStyle, true);
     }
 
     /**
@@ -192,8 +180,8 @@ public class StylePickerDialogFragment
             mStyleList = StyleDAO.getStyles(context, db, mShowAllStyles);
             if (!mShowAllStyles && mCurrentStyleUuid != null) {
                 // make sure the currently selected style is in the list
-                if (mStyleList.stream()
-                              .noneMatch(style -> mCurrentStyleUuid.equals(style.getUuid()))) {
+                if (mStyleList.stream().noneMatch(style -> mCurrentStyleUuid
+                        .equalsIgnoreCase(style.getUuid()))) {
                     final ListStyle style = StyleDAO.getStyle(context, db, mCurrentStyleUuid);
                     if (style != null) {
                         mStyleList.add(style);

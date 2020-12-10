@@ -19,14 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import android.content.Context;
-import android.os.Parcel;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}.
@@ -38,9 +36,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 public class PBitmask
         implements PPref<Integer>, PInt {
 
-    /** The {@link ListStyle} this preference belongs to. */
+    /** The {@link StylePersistenceLayer} to use. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final ListStyle mStyle;
+    private final StylePersistenceLayer mPersistence;
 
     /** key for the Preference. */
     @NonNull
@@ -50,6 +49,8 @@ public class PBitmask
     private final Integer mDefaultValue;
     /** Valid bits. */
     private final int mMask;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -58,16 +59,19 @@ public class PBitmask
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
-     * @param style    Style reference.
-     * @param key      key of preference
-     * @param defValue default value
-     * @param mask     valid values bitmask
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param key              key of preference
+     * @param defValue         default value
+     * @param mask             valid values bitmask
      */
-    public PBitmask(@NonNull final ListStyle style,
+    public PBitmask(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
                     @NonNull final String key,
                     final int defValue,
                     final int mask) {
-        mStyle = style;
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
         mKey = key;
         mDefaultValue = defValue;
         mMask = mask;
@@ -76,18 +80,24 @@ public class PBitmask
     /**
      * Copy constructor.
      *
-     * @param style    Style reference.
-     * @param pBitmask to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param that             to copy from
      */
-    public PBitmask(@NonNull final ListStyle style,
-                    @NonNull final PBitmask pBitmask) {
-        mStyle = style;
-        mKey = pBitmask.mKey;
-        mDefaultValue = pBitmask.mDefaultValue;
+    public PBitmask(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @NonNull final PBitmask that) {
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
+        mKey = that.mKey;
+        mDefaultValue = that.mDefaultValue;
+        mNonPersistedValue = that.mNonPersistedValue;
 
-        mMask = pBitmask.mMask;
+        mMask = that.mMask;
 
-        mNonPersistedValue = pBitmask.mNonPersistedValue;
+        if (mPersisted) {
+            set(that.getValue());
+        }
     }
 
     @NonNull
@@ -98,60 +108,62 @@ public class PBitmask
 
     @Override
     public void set(@Nullable final Integer value) {
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().setBitmask(getKey(), mMask, value);
+        final Integer maskedValue = value != null ? value & mMask : null;
+        if (mPersisted) {
+            mPersistence.setBitmask(mKey, maskedValue);
         } else {
-            mNonPersistedValue = value;
+            mNonPersistedValue = maskedValue;
         }
     }
 
     @NonNull
     @Override
-    public Integer getValue(@NonNull final Context context) {
-        if (mStyle.isUserDefined()) {
-            final Integer value = mStyle.getSettings().getBitmask(context, getKey(), mMask);
+    public Integer getValue() {
+        if (mPersisted) {
+            final Integer value = mPersistence.getBitmask(mKey);
             if (value != null) {
-                return value;
+                return value & mMask;
             }
         } else if (mNonPersistedValue != null) {
-            return mNonPersistedValue;
+            return mNonPersistedValue & mMask;
         }
 
-        return mDefaultValue;
+        return mDefaultValue & mMask;
     }
 
-    public void writeToParcel(@NonNull final Parcel dest) {
-        if (mStyle.isUserDefined()) {
-            dest.writeValue(getValue(App.getAppContext()));
-        } else {
-            // Write the in-memory value to the parcel.
-            // Do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeValue(mNonPersistedValue);
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final PBitmask pBitmask = (PBitmask) o;
+        return mMask == pBitmask.mMask
+               && mPersisted == pBitmask.mPersisted
+               && mKey.equals(pBitmask.mKey)
+               && mDefaultValue.equals(pBitmask.mDefaultValue)
+               && Objects.equals(mNonPersistedValue, pBitmask.mNonPersistedValue);
     }
 
-    public void set(@NonNull final Parcel in) {
-        final Integer tmp = (Integer) in.readValue(getClass().getClassLoader());
-        if (tmp != null) {
-            set(tmp);
-        }
+    @Override
+    public int hashCode() {
+        return Objects
+                .hash(mPersistence, mKey, mDefaultValue, mMask, mPersisted, mNonPersistedValue);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "PBitmask{"
-               + "mStyle=" + mStyle.getUuid()
-               + ", mKey='" + mKey + '\''
-               + ", mDefaultValue=" + mDefaultValue
-               + "=" + Integer.toBinaryString(mDefaultValue)
-               + ", mMask=" + mMask
-               + "=" + Integer.toBinaryString(mMask)
+               + "mKey='" + mKey + '\''
+               + ", mDefaultValue=" + mDefaultValue + "=" + Integer.toBinaryString(mDefaultValue)
+               + ", mPersisted=" + mPersisted
                + ", mNonPersistedValue=" + mNonPersistedValue
                + (mNonPersistedValue != null ? "=" + Integer.toBinaryString(mNonPersistedValue)
                                              : "")
-               + ", value=`" + getValue(App.getAppContext()) + '`'
-               + "=" + Integer.toBinaryString(getValue(App.getAppContext()))
+               + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)
                + '}';
     }
 }

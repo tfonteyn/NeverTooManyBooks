@@ -368,7 +368,7 @@ public class Booklist
 
                 case PREF_REBUILD_PREFERRED_STATE:
                     // all rows will be collapsed/hidden; now adjust as required.
-                    mRowStateDAO.setAllNodes(mStyle.getTopLevel(context), false);
+                    mRowStateDAO.setAllNodes(mStyle.getTopLevel(), false);
                     break;
 
                 case PREF_REBUILD_EXPANDED:

@@ -19,14 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import android.content.Context;
-import android.os.Parcel;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 /**
  * Used for {@link androidx.preference.SeekBarPreference}.
@@ -36,9 +34,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 public class PInteger
         implements PPref<Integer>, PInt {
 
-    /** The {@link ListStyle} this preference belongs to. */
+    /** The {@link StylePersistenceLayer} to use. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final ListStyle mStyle;
+    private final StylePersistenceLayer mPersistence;
 
     /** key for the Preference. */
     @NonNull
@@ -46,6 +45,8 @@ public class PInteger
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final Integer mDefaultValue;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -54,14 +55,17 @@ public class PInteger
      * Constructor. Uses the global setting as the default value,
      * or the passed default if there is no global default.
      *
-     * @param style    Style reference.
-     * @param key      preference key
-     * @param defValue default value
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param key              preference key
+     * @param defValue         default value
      */
-    public PInteger(@NonNull final ListStyle style,
+    public PInteger(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
                     @NonNull final String key,
                     final int defValue) {
-        mStyle = style;
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
         mKey = key;
         mDefaultValue = defValue;
     }
@@ -69,16 +73,23 @@ public class PInteger
     /**
      * Copy constructor.
      *
-     * @param style    Style reference.
-     * @param pInteger to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param that             to copy from
      */
-    public PInteger(@NonNull final ListStyle style,
-                    @NonNull final PInteger pInteger) {
-        mStyle = style;
-        mKey = pInteger.mKey;
-        mDefaultValue = pInteger.mDefaultValue;
+    public PInteger(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @NonNull final PInteger that) {
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
+        mKey = that.mKey;
+        mDefaultValue = that.mDefaultValue;
 
-        mNonPersistedValue = pInteger.mNonPersistedValue;
+        mNonPersistedValue = that.mNonPersistedValue;
+
+        if (mPersisted) {
+            set(that.getValue());
+        }
     }
 
     @NonNull
@@ -89,8 +100,8 @@ public class PInteger
 
     @Override
     public void set(@Nullable final Integer value) {
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().setInt(getKey(), value);
+        if (mPersisted) {
+            mPersistence.setInt(getKey(), value);
         } else {
             mNonPersistedValue = value;
         }
@@ -98,9 +109,9 @@ public class PInteger
 
     @NonNull
     @Override
-    public Integer getValue(@NonNull final Context context) {
-        if (mStyle.isUserDefined()) {
-            final Integer value = mStyle.getSettings().getInteger(context, getKey());
+    public Integer getValue() {
+        if (mPersisted) {
+            final Integer value = mPersistence.getInteger(getKey());
             if (value != null) {
                 return value;
             }
@@ -111,32 +122,34 @@ public class PInteger
         return mDefaultValue;
     }
 
-    public void writeToParcel(@NonNull final Parcel dest) {
-        if (mStyle.isUserDefined()) {
-            dest.writeValue(getValue(App.getAppContext()));
-        } else {
-            // Write the in-memory value to the parcel.
-            // Do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeValue(mNonPersistedValue);
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final PInteger pInteger = (PInteger) o;
+        return mPersisted == pInteger.mPersisted
+               && mKey.equals(pInteger.mKey)
+               && mDefaultValue.equals(pInteger.mDefaultValue)
+               && Objects.equals(mNonPersistedValue, pInteger.mNonPersistedValue);
     }
 
-    public void set(@NonNull final Parcel in) {
-        final Integer tmp = (Integer) in.readValue(getClass().getClassLoader());
-        if (tmp != null) {
-            set(tmp);
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(mPersistence, mKey, mDefaultValue, mPersisted, mNonPersistedValue);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "PInteger{"
-               + "mStyle=" + mStyle.getUuid()
-               + ", mKey=`" + mKey + '`'
+               + "mKey=`" + mKey + '`'
                + ", mDefaultValue=" + mDefaultValue
+               + ", mPersisted=" + mPersisted
                + ", mNonPersistedValue=" + mNonPersistedValue
-               + ", value=" + getValue(App.getAppContext())
                + '}';
     }
 }

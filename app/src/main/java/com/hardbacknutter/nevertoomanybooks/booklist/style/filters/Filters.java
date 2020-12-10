@@ -17,13 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.booklist.style;
+package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
 import android.content.Context;
-import android.os.Parcel;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 
 import java.lang.annotation.Retention;
@@ -32,13 +32,11 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BitmaskFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BooleanFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.NotEmptyFilter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.StyleFilter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -49,9 +47,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 public class Filters {
 
     /** Booklist Filter - ListPreference. */
-    static final String PK_FILTER_ISBN = "style.booklist.filter.isbn";
+    public static final String PK_FILTER_READ = "style.booklist.filter.read";
     /** Booklist Filter - ListPreference. */
-    static final String PK_FILTER_READ = "style.booklist.filter.read";
+    static final String PK_FILTER_ISBN = "style.booklist.filter.isbn";
     /** Booklist Filter - ListPreference. */
     static final String PK_FILTER_SIGNED = "style.booklist.filter.signed";
     /** Booklist Filter - ListPreference. */
@@ -60,7 +58,6 @@ public class Filters {
     static final String PK_FILTER_ANTHOLOGY = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     static final String PK_FILTER_EDITIONS = "style.booklist.filter.editions";
-
     /**
      * All filters in an <strong>ordered</strong> map.
      */
@@ -69,68 +66,77 @@ public class Filters {
     /**
      * Constructor.
      *
-     * @param style Style reference.
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
      */
-    public Filters(@NonNull final ListStyle style) {
+    public Filters(final boolean isPersistent,
+                   @NonNull final StylePersistenceLayer persistenceLayer) {
 
-        mFilters.put(PK_FILTER_READ,
-                     new BooleanFilter(style, R.string.lbl_read,
-                                       PK_FILTER_READ,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_READ));
-
-        mFilters.put(PK_FILTER_SIGNED,
-                     new BooleanFilter(style, R.string.lbl_signed,
-                                       PK_FILTER_SIGNED,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_SIGNED));
-
-        mFilters.put(PK_FILTER_ANTHOLOGY,
-                     new BooleanFilter(style, R.string.lbl_anthology,
-                                       PK_FILTER_ANTHOLOGY,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_TOC_BITMASK));
-
-        mFilters.put(PK_FILTER_LEND,
-                     new BooleanFilter(style, R.string.lbl_lend_out,
-                                       PK_FILTER_LEND,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_LOANEE));
-
-        mFilters.put(PK_FILTER_EDITIONS,
-                     new BitmaskFilter(style, R.string.lbl_edition,
-                                       PK_FILTER_EDITIONS, 0, Book.Edition.BITMASK_ALL,
-                                       DBDefinitions.TBL_BOOKS,
-                                       DBDefinitions.KEY_EDITION_BITMASK));
-
-        mFilters.put(PK_FILTER_ISBN,
-                     new NotEmptyFilter(style, R.string.lbl_isbn,
-                                        PK_FILTER_ISBN,
-                                        DBDefinitions.TBL_BOOKS,
-                                        DBDefinitions.KEY_ISBN));
+        createFilters(isPersistent, persistenceLayer);
     }
 
     /**
      * Copy constructor.
      *
-     * @param style   Style reference.
-     * @param filters to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param that             to copy from
      */
-    public Filters(@NonNull final ListStyle style,
-                   @NonNull final Filters filters) {
-        for (final StyleFilter<?> filter : filters.mFilters.values()) {
-            final StyleFilter<?> clonedFilter;
-            if (filter instanceof BitmaskFilter) {
-                clonedFilter = new BitmaskFilter(style, (BitmaskFilter) filter);
-            } else if (filter instanceof BooleanFilter) {
-                clonedFilter = new BooleanFilter(style, (BooleanFilter) filter);
-            } else if (filter instanceof NotEmptyFilter) {
-                clonedFilter = new NotEmptyFilter(style, (NotEmptyFilter) filter);
-            } else {
-                throw new IllegalStateException("Clone not supported for " + filter);
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public Filters(final boolean isPersistent,
+                   @NonNull final StylePersistenceLayer persistenceLayer,
+                   @NonNull final Filters that) {
+
+        createFilters(isPersistent, persistenceLayer);
+        if (isPersistent) {
+            for (final Map.Entry<String, StyleFilter<?>> entry : mFilters.entrySet()) {
+                // raw type as we have <?> for both which can't be matched by the compiler.
+                final StyleFilter thisFilter = entry.getValue();
+                final StyleFilter thatFilter = that.mFilters.get(entry.getKey());
+                //noinspection ConstantConditions
+                thisFilter.set(thatFilter.getValue());
             }
-            mFilters.put(clonedFilter.getKey(), clonedFilter);
         }
+    }
+
+    private void createFilters(final boolean isPersistent,
+                               @NonNull final StylePersistenceLayer persistenceLayer) {
+        mFilters.put(PK_FILTER_READ,
+                     new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_read,
+                                       PK_FILTER_READ,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_READ));
+
+        mFilters.put(PK_FILTER_SIGNED,
+                     new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_signed,
+                                       PK_FILTER_SIGNED,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_SIGNED));
+
+        mFilters.put(PK_FILTER_ANTHOLOGY,
+                     new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_anthology,
+                                       PK_FILTER_ANTHOLOGY,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_TOC_BITMASK));
+
+        mFilters.put(PK_FILTER_LEND,
+                     new BooleanFilter(isPersistent, persistenceLayer, R.string.lbl_lend_out,
+                                       PK_FILTER_LEND,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_LOANEE));
+
+        mFilters.put(PK_FILTER_EDITIONS,
+                     new BitmaskFilter(isPersistent, persistenceLayer, R.string.lbl_edition,
+                                       PK_FILTER_EDITIONS,
+                                       DBDefinitions.TBL_BOOKS,
+                                       DBDefinitions.KEY_EDITION_BITMASK,
+                                       Book.Edition.BITMASK_ALL));
+
+        mFilters.put(PK_FILTER_ISBN,
+                     new NotEmptyFilter(isPersistent, persistenceLayer, R.string.lbl_isbn,
+                                        PK_FILTER_ISBN,
+                                        DBDefinitions.TBL_BOOKS,
+                                        DBDefinitions.KEY_ISBN));
     }
 
     /**
@@ -165,12 +171,11 @@ public class Filters {
      * @param value to use
      */
     @SuppressWarnings("SameParameterValue")
-    void setFilter(@Key @NonNull final String key,
-                   final boolean value) {
+    public void setFilter(@Key @NonNull final String key,
+                          final boolean value) {
         //noinspection ConstantConditions
         ((BooleanFilter) mFilters.get(key)).set(value);
     }
-
 
     @NonNull
     private List<String> getLabels(@NonNull final Context context,
@@ -208,34 +213,27 @@ public class Filters {
      *
      * @param map to add to
      */
-    void addToMap(@NonNull final Map<String, PPref> map) {
+    public void addToMap(@NonNull final Map<String, PPref> map) {
         for (final StyleFilter<?> filter : mFilters.values()) {
-            map.put(filter.getKey(), (PPref) filter);
+            map.put(filter.getKey(), filter);
         }
     }
 
-    /**
-     * Set the <strong>value</strong> from the Parcel.
-     *
-     * @param in parcel to read from
-     */
-    public void set(@NonNull final Parcel in) {
-        // the collection is ordered, so we don't need the keys.
-        for (final StyleFilter<?> filter : mFilters.values()) {
-            filter.set(in);
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Filters filters = (Filters) o;
+        return Objects.equals(mFilters, filters.mFilters);
     }
 
-    /**
-     * Write the <strong>value</strong> to the Parcel.
-     *
-     * @param dest parcel to write to
-     */
-    public void writeToParcel(@NonNull final Parcel dest) {
-        // the collection is ordered, so we don't write the keys.
-        for (final StyleFilter<?> filter : mFilters.values()) {
-            filter.writeToParcel(dest);
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(mFilters);
     }
 
     @NonNull

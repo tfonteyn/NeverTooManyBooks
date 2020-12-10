@@ -111,7 +111,7 @@ public final class AttrUtils {
     /**
      * Get a dimension (absolute) int value for the given attribute.
      *
-     * @param context Current context
+     * @param context Current context; <strong>DO NOT USE THE APPLICATION CONTEXT</strong>
      * @param attr    attribute id to resolve
      *
      * @return size in integer pixels

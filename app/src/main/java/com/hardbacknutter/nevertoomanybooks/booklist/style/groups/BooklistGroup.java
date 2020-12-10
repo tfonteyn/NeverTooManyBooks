@@ -21,8 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -46,10 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
@@ -138,21 +135,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  *          use a {@link BooklistAdapter}.GenericStringHolder otherwise add a new holder</li>
  * </ol>
  */
-public class BooklistGroup
-        implements Parcelable {
-
-    /** {@link Parcelable}. */
-    public static final Creator<BooklistGroup> CREATOR = new Creator<BooklistGroup>() {
-        @Override
-        public BooklistGroup createFromParcel(@NonNull final Parcel source) {
-            return new BooklistGroup(source);
-        }
-
-        @Override
-        public BooklistGroup[] newArray(final int size) {
-            return new BooklistGroup[size];
-        }
-    };
+public class BooklistGroup {
 
     /**
      * The ID's for the groups. <strong>Never change these</strong>,
@@ -200,8 +183,15 @@ public class BooklistGroup
     @VisibleForTesting
     public static final int GROUP_KEY_MAX = 31;
 
+    /** The {@link StylePersistenceLayer} to use. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    final StylePersistenceLayer mPersistence;
     @NonNull
     final ListStyle mStyle;
+
+    /** Flag indicating we should use the persistence store. */
+    final boolean mPersisted;
 
     /** The type of row/group we represent, see {@link GroupKey}. */
     @Id
@@ -224,11 +214,14 @@ public class BooklistGroup
      * @param style Style reference.
      */
     BooklistGroup(@Id final int id,
+                  final boolean isPersistent,
                   @NonNull final ListStyle style) {
         mId = id;
         mGroupKey = GroupKey.getGroupKey(mId);
 
+        mPersisted = isPersistent;
         mStyle = style;
+        mPersistence = mStyle.getPersistenceLayer();
     }
 
     /**
@@ -237,85 +230,62 @@ public class BooklistGroup
      * @param style Style reference.
      * @param group to copy from
      */
-    public BooklistGroup(@NonNull final ListStyle style,
+    public BooklistGroup(final boolean isPersistent,
+                         @NonNull final ListStyle style,
                          @NonNull final BooklistGroup group) {
+        mPersisted = isPersistent;
         mStyle = style;
+        mPersistence = mStyle.getPersistenceLayer();
+
         mId = group.mId;
-        mGroupKey = group.mGroupKey;
-    }
-
-
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    BooklistGroup(@NonNull final Parcel in) {
-        mId = in.readInt();
         mGroupKey = GroupKey.getGroupKey(mId);
-
-        // reconstruct the style.
-        @NonNull
-        final String uuid = Objects.requireNonNull(in.readString());
-        try (DAO db = new DAO(uuid)) {
-            if (!uuid.isEmpty()) {
-                mStyle = Objects.requireNonNull(StyleDAO.getStyle(App.getAppContext(), db, uuid));
-            } else {
-                mStyle = new UserStyle(App.getAppContext());
-            }
-        }
-
-        mAccumulatedDomains = new ArrayList<>();
-        in.readList(mAccumulatedDomains, getClass().getClassLoader());
     }
 
     /**
      * Create a new BooklistGroup of the specified id, creating any specific
      * subclasses as necessary.
      *
-     * @param context Current context
-     * @param id      of group to create
-     * @param style   Style reference.
+     * @param id           of group to create
+     * @param isPersistent flag
+     * @param style        Style reference.
      *
      * @return instance
      */
     @SuppressLint("SwitchIntDef")
     @NonNull
-    public static BooklistGroup newInstance(@NonNull final Context context,
-                                            @Id final int id,
+    public static BooklistGroup newInstance(@Id final int id,
+                                            final boolean isPersistent,
                                             @NonNull final ListStyle style) {
         switch (id) {
             case AUTHOR:
-                return new AuthorBooklistGroup(context, style);
+                return new AuthorBooklistGroup(isPersistent, style);
             case SERIES:
-                return new SeriesBooklistGroup(style);
+                return new SeriesBooklistGroup(isPersistent, style);
             case PUBLISHER:
-                return new PublisherBooklistGroup(style);
+                return new PublisherBooklistGroup(isPersistent, style);
             case BOOKSHELF:
-                return new BookshelfBooklistGroup(style);
+                return new BookshelfBooklistGroup(isPersistent, style);
 
             default:
-                return new BooklistGroup(id, style);
+                return new BooklistGroup(id, isPersistent, style);
         }
     }
 
     /**
      * Get a list of BooklistGroup's, one for each defined {@link GroupKey}'s.
      *
-     * @param context Current context
-     * @param style   Style reference.
+     * @param style Style reference.
      *
      * @return the list
      */
     @SuppressLint("WrongConstant")
     @NonNull
-    public static List<BooklistGroup> getAllGroups(@NonNull final Context context,
-                                                   @NonNull final ListStyle style) {
+    public static List<BooklistGroup> getAllGroups(@NonNull final ListStyle style) {
         final List<BooklistGroup> list = new ArrayList<>();
         // Get the set of all valid <strong>Group</strong> values.
         // In other words: all valid groups, <strong>except</strong> the BOOK.
         for (int id = 1; id <= GROUP_KEY_MAX; id++) {
-            list.add(newInstance(context, id, style));
+            list.add(newInstance(id, style instanceof UserStyle, style));
         }
         return list;
     }
@@ -447,7 +417,7 @@ public class BooklistGroup
      * @return a map with the prefs
      */
     @NonNull
-    public Map<String, PPref> getPreferences() {
+    public Map<String, PPref> getRawPreferences() {
         return new LinkedHashMap<>();
     }
 
@@ -464,21 +434,26 @@ public class BooklistGroup
                                       final boolean visible) {
     }
 
-    @SuppressWarnings("SameReturnValue")
     @Override
-    public int describeContents() {
-        return 0;
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final BooklistGroup that = (BooklistGroup) o;
+        return mPersisted == that.mPersisted
+               && mId == that.mId
+               && mGroupKey.equals(that.mGroupKey)
+               && Objects.equals(mAccumulatedDomains, that.mAccumulatedDomains);
     }
 
     @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeInt(mId);
-        // DO NOT PARCEL THE STYLE ... IT WOULD RECURSE WHEN PARCELING THE GROUPS
-        // Instead parcel the uuid and which can be used to reconstruct the style.
-        dest.writeString(mStyle.getUuid());
-        dest.writeList(mAccumulatedDomains);
-        // now the prefs for this class (none on this level for now)
+    public int hashCode() {
+        return Objects.hash(mPersistence, mPersisted, mId, mGroupKey, mAccumulatedDomains,
+                            // UUID only
+                            mStyle.getUuid());
     }
 
     @Override
@@ -487,10 +462,12 @@ public class BooklistGroup
         return "BooklistGroup{"
                + "mId=" + mId
                + ", mStyle=" + mStyle.getUuid()
+               + ", mPersisted=" + mPersisted
                + ", mGroupKey=" + mGroupKey
                + ", mAccumulatedDomains=" + mAccumulatedDomains
                + '}';
     }
+
 
     @IntDef({BOOK,
 
@@ -540,10 +517,6 @@ public class BooklistGroup
 
     }
 
-    /**
-     * No need to make this Parcelable, it's encapsulated in the BooklistGroup,
-     * but always reconstructed based on the ID alone.
-     */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public static final class GroupKey {
 
@@ -1067,6 +1040,27 @@ public class BooklistGroup
         @NonNull
         ArrayList<VirtualDomain> getBaseDomains() {
             return mBaseDomains;
+        }
+
+        @Override
+        public boolean equals(@Nullable final Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            final GroupKey groupKey = (GroupKey) o;
+            return mLabelId == groupKey.mLabelId &&
+                   mKeyPrefix.equals(groupKey.mKeyPrefix)
+                   && mKeyDomain.equals(groupKey.mKeyDomain)
+                   && mGroupDomains.equals(groupKey.mGroupDomains)
+                   && mBaseDomains.equals(groupKey.mBaseDomains);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(mLabelId, mKeyPrefix, mKeyDomain, mGroupDomains, mBaseDomains);
         }
 
         @NonNull

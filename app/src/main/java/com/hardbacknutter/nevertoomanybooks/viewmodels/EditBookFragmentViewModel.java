@@ -322,14 +322,12 @@ public class EditBookFragmentViewModel
      *     <li>return the visibility as set in the style.</li>
      * </ol>
      *
-     * @param context current context
      * @param global  Global preferences
      * @param cIdx    0..n image index
      *
      * @return {@code true} if in use
      */
-    public boolean isCoverUsed(@NonNull final Context context,
-                               @NonNull final SharedPreferences global,
+    public boolean isCoverUsed(@NonNull final SharedPreferences global,
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         // Globally disabled overrules style setting
@@ -342,7 +340,7 @@ public class EditBookFragmentViewModel
             return true;
         } else {
             // let the style decide
-            return mStyle.getDetailScreenBookFields().isShowCover(context, global, cIdx);
+            return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
         }
     }
 

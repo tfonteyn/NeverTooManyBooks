@@ -861,20 +861,21 @@ public class XmlRecordReader
             if (StyleDAO.BuiltinStyles.isBuiltin(uuid)) {
                 //noinspection ConstantConditions
                 mStyle = StyleDAO.getStyle(mContext, mDb, uuid);
+                // We do NOT read preferences for known builtin styles
                 mStylePrefs = null;
 
             } else {
                 // create a new Style object. This will not have any groups assigned to it...
-                mStyle = new UserStyle(mContext, uuid, tag.name);
+                mStyle = UserStyle.createFromImport(mContext, uuid, tag.name);
                 //... and hence, the Style Preferences won't have any group Preferences either.
                 // Reminder: the map mStylePrefs is a TEMPORARY map,
-                // but the elements IN this map ARE IN THE STYLE.
-                mStylePrefs = ((UserStyle) mStyle).getPreferences();
+                // but the elements IN this map ARE PART OF THE STYLE.
+                mStylePrefs = mStyle.getRawPreferences();
                 // So loop all groups, and get their Preferences.
                 // Do NOT add the group itself to the style at this point as our import
                 // might not actually have it.
-                for (final BooklistGroup group : BooklistGroup.getAllGroups(mContext, mStyle)) {
-                    mStylePrefs.putAll(group.getPreferences());
+                for (final BooklistGroup group : BooklistGroup.getAllGroups(mStyle)) {
+                    mStylePrefs.putAll(group.getRawPreferences());
                 }
             }
 
@@ -904,14 +905,14 @@ public class XmlRecordReader
                 // we now have the groups themselves (one of the 'flat' prefs) set on the style,
                 // so transfer their specific Preferences.
                 for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
-                    final Map<String, PPref> stylePrefs = ((UserStyle) mStyle).getPreferences();
-                    for (final PPref p : group.getPreferences().values()) {
+                    final Map<String, PPref> stylePrefs = mStyle.getRawPreferences();
+                    for (final PPref p : group.getRawPreferences().values()) {
                         // do we have this Preference ?
                         final PPref ourPPref = stylePrefs.get(p.getKey());
                         if (ourPPref != null) {
                             // if we do, update our value
                             //noinspection unchecked
-                            ourPPref.set(p.getValue(mContext));
+                            ourPPref.set(p.getValue());
                         }
                     }
                 }

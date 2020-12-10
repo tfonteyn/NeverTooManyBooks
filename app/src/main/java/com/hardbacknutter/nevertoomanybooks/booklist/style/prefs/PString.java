@@ -19,14 +19,12 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import android.content.Context;
-import android.os.Parcel;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import java.util.Objects;
+
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 /**
  * Used for {@link androidx.preference.EditTextPreference}.
@@ -34,9 +32,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 public class PString
         implements PPref<String> {
 
-    /** The {@link ListStyle} this preference belongs to. */
+    /** The {@link StylePersistenceLayer} to use. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final ListStyle mStyle;
+    private final StylePersistenceLayer mPersistence;
 
     /** key for the Preference. */
     @NonNull
@@ -44,6 +43,8 @@ public class PString
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final String mDefaultValue;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private String mNonPersistedValue;
@@ -52,12 +53,15 @@ public class PString
      * Constructor. Uses the global setting as the default value,
      * or {@code ""} if there is no global default.
      *
-     * @param style Style reference.
-     * @param key   preference key
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param key              preference key
      */
-    public PString(@NonNull final ListStyle style,
+    public PString(final boolean isPersistent,
+                   @NonNull final StylePersistenceLayer persistenceLayer,
                    @NonNull final String key) {
-        mStyle = style;
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
         mKey = key;
         mDefaultValue = "";
     }
@@ -65,16 +69,23 @@ public class PString
     /**
      * Copy constructor.
      *
-     * @param style   Style reference.
-     * @param pString to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param that             to copy from
      */
-    public PString(@NonNull final ListStyle style,
-                   @NonNull final PString pString) {
-        mStyle = style;
-        mKey = pString.mKey;
-        mDefaultValue = pString.mDefaultValue;
+    public PString(final boolean isPersistent,
+                   @NonNull final StylePersistenceLayer persistenceLayer,
+                   @NonNull final PString that) {
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
+        mKey = that.mKey;
+        mDefaultValue = that.mDefaultValue;
 
-        mNonPersistedValue = pString.mNonPersistedValue;
+        mNonPersistedValue = that.mNonPersistedValue;
+
+        if (mPersisted) {
+            set(that.getValue());
+        }
     }
 
     @NonNull
@@ -85,8 +96,8 @@ public class PString
 
     @Override
     public void set(@Nullable final String value) {
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().setString(getKey(), value);
+        if (mPersisted) {
+            mPersistence.setString(getKey(), value);
         } else {
             mNonPersistedValue = value;
         }
@@ -94,9 +105,9 @@ public class PString
 
     @NonNull
     @Override
-    public String getValue(@NonNull final Context context) {
-        if (mStyle.isUserDefined()) {
-            final String value = mStyle.getSettings().getString(context, getKey());
+    public String getValue() {
+        if (mPersisted) {
+            final String value = mPersistence.getString(getKey());
             if (value != null) {
                 return value;
             }
@@ -107,32 +118,34 @@ public class PString
         return mDefaultValue;
     }
 
-    public void writeToParcel(@NonNull final Parcel dest) {
-        if (mStyle.isUserDefined()) {
-            dest.writeValue(getValue(App.getAppContext()));
-        } else {
-            // Write the in-memory value to the parcel.
-            // Do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeValue(mNonPersistedValue);
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
         }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final PString pString = (PString) o;
+        return mPersisted == pString.mPersisted
+               && mKey.equals(pString.mKey)
+               && mDefaultValue.equals(pString.mDefaultValue)
+               && Objects.equals(mNonPersistedValue, pString.mNonPersistedValue);
     }
 
-    public void set(@NonNull final Parcel in) {
-        final String tmp = (String) in.readValue(getClass().getClassLoader());
-        if (tmp != null) {
-            set(tmp);
-        }
+    @Override
+    public int hashCode() {
+        return Objects.hash(mPersistence, mKey, mDefaultValue, mPersisted, mNonPersistedValue);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "PString{"
-               + "mStyle=" + mStyle.getUuid()
-               + ", mKey=`" + mKey + '`'
+               + "mKey=`" + mKey + '`'
                + ", mDefaultValue=`" + mDefaultValue + '`'
+               + ", mPersisted=" + mPersisted
                + ", mNonPersistedValue=`" + mNonPersistedValue + '`'
-               + ", value=`" + getValue(App.getAppContext()) + '`'
                + '}';
     }
 }

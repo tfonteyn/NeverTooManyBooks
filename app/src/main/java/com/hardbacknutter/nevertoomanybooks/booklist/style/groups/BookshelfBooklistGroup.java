@@ -20,16 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
@@ -55,20 +55,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 public class BookshelfBooklistGroup
         extends BooklistGroup {
 
-    /** {@link Parcelable}. */
-    public static final Creator<BookshelfBooklistGroup> CREATOR =
-            new Creator<BookshelfBooklistGroup>() {
-                @Override
-                public BookshelfBooklistGroup createFromParcel(@NonNull final Parcel source) {
-                    return new BookshelfBooklistGroup(source);
-                }
-
-                @Override
-                public BookshelfBooklistGroup[] newArray(final int size) {
-                    return new BookshelfBooklistGroup[size];
-                }
-            };
-
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_BOOKSHELF = "psk_style_bookshelf";
 
@@ -87,8 +73,9 @@ public class BookshelfBooklistGroup
      *
      * @param style Style reference.
      */
-    BookshelfBooklistGroup(@NonNull final ListStyle style) {
-        super(BOOKSHELF, style);
+    BookshelfBooklistGroup(final boolean isPersistent,
+                           @NonNull final ListStyle style) {
+        super(BOOKSHELF, isPersistent, style);
         mDisplayDomain = createDisplayDomain();
 
         initPrefs();
@@ -100,25 +87,13 @@ public class BookshelfBooklistGroup
      * @param style Style reference.
      * @param group to copy from
      */
-    BookshelfBooklistGroup(@NonNull final ListStyle style,
+    BookshelfBooklistGroup(final boolean isPersistent,
+                           @NonNull final ListStyle style,
                            @NonNull final BookshelfBooklistGroup group) {
-        super(style, group);
+        super(isPersistent, style, group);
         mDisplayDomain = createDisplayDomain();
 
-        mUnderEach = new PBoolean(mStyle, group.mUnderEach);
-    }
-
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private BookshelfBooklistGroup(@NonNull final Parcel in) {
-        super(in);
-        mDisplayDomain = createDisplayDomain();
-
-        initPrefs();
-        mUnderEach.set(in);
+        mUnderEach = new PBoolean(mPersisted, mPersistence, group.mUnderEach);
     }
 
     /**
@@ -135,7 +110,7 @@ public class BookshelfBooklistGroup
     }
 
     private void initPrefs() {
-        mUnderEach = new PBoolean(mStyle, PK_SHOW_BOOKS_UNDER_EACH);
+        mUnderEach = new PBoolean(mPersisted, mPersistence, PK_SHOW_BOOKS_UNDER_EACH);
     }
 
     @NonNull
@@ -150,18 +125,11 @@ public class BookshelfBooklistGroup
         return mDisplayDomain;
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        super.writeToParcel(dest, flags);
-        mUnderEach.writeToParcel(dest);
-    }
-
     @NonNull
     @Override
     @CallSuper
-    public Map<String, PPref> getPreferences() {
-        final Map<String, PPref> map = super.getPreferences();
+    public Map<String, PPref> getRawPreferences() {
+        final Map<String, PPref> map = super.getRawPreferences();
         map.put(mUnderEach.getKey(), mUnderEach);
         return map;
     }
@@ -179,12 +147,31 @@ public class BookshelfBooklistGroup
     /**
      * Get this preference.
      *
-     * @param context Current context
-     *
      * @return {@code true} if we want to show a book under each of its Bookshelves.
      */
-    public boolean showBooksUnderEach(@NonNull final Context context) {
-        return mUnderEach.isTrue(context);
+    public boolean showBooksUnderEach() {
+        return mUnderEach.isTrue();
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        final BookshelfBooklistGroup that = (BookshelfBooklistGroup) o;
+        return mDisplayDomain.equals(that.mDisplayDomain)
+               && Objects.equals(mUnderEach, that.mUnderEach);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mDisplayDomain, mUnderEach);
     }
 
     @Override

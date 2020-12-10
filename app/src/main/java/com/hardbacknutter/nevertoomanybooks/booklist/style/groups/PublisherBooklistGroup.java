@@ -20,16 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style.groups;
 
 import android.content.Context;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceManager;
 import androidx.preference.PreferenceScreen;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
@@ -51,20 +51,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PU
 public class PublisherBooklistGroup
         extends BooklistGroup {
 
-    /** {@link Parcelable}. */
-    public static final Creator<PublisherBooklistGroup> CREATOR =
-            new Creator<PublisherBooklistGroup>() {
-                @Override
-                public PublisherBooklistGroup createFromParcel(@NonNull final Parcel source) {
-                    return new PublisherBooklistGroup(source);
-                }
-
-                @Override
-                public PublisherBooklistGroup[] newArray(final int size) {
-                    return new PublisherBooklistGroup[size];
-                }
-            };
-
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_PUBLISHER = "psk_style_publisher";
 
@@ -82,8 +68,9 @@ public class PublisherBooklistGroup
      *
      * @param style Style reference.
      */
-    PublisherBooklistGroup(@NonNull final ListStyle style) {
-        super(PUBLISHER, style);
+    PublisherBooklistGroup(final boolean isPersistent,
+                           @NonNull final ListStyle style) {
+        super(PUBLISHER, isPersistent, style);
         mDisplayDomain = createDisplayDomain();
 
         initPrefs();
@@ -95,27 +82,14 @@ public class PublisherBooklistGroup
      * @param style Style reference.
      * @param group to copy from
      */
-    PublisherBooklistGroup(@NonNull final ListStyle style,
+    PublisherBooklistGroup(final boolean isPersistent,
+                           @NonNull final ListStyle style,
                            @NonNull final PublisherBooklistGroup group) {
-        super(style, group);
+        super(isPersistent, style, group);
         mDisplayDomain = createDisplayDomain();
 
-        mUnderEach = new PBoolean(mStyle, group.mUnderEach);
+        mUnderEach = new PBoolean(mPersisted, mPersistence, group.mUnderEach);
     }
-
-    /**
-     * {@link Parcelable} Constructor.
-     *
-     * @param in Parcel to construct the object from
-     */
-    private PublisherBooklistGroup(@NonNull final Parcel in) {
-        super(in);
-        mDisplayDomain = createDisplayDomain();
-
-        initPrefs();
-        mUnderEach.set(in);
-    }
-
 
     /**
      * Get the global default for this preference.
@@ -131,7 +105,7 @@ public class PublisherBooklistGroup
     }
 
     private void initPrefs() {
-        mUnderEach = new PBoolean(mStyle, PK_SHOW_BOOKS_UNDER_EACH);
+        mUnderEach = new PBoolean(mPersisted, mPersistence, PK_SHOW_BOOKS_UNDER_EACH);
     }
 
     @NonNull
@@ -146,18 +120,11 @@ public class PublisherBooklistGroup
         return mDisplayDomain;
     }
 
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        super.writeToParcel(dest, flags);
-        mUnderEach.writeToParcel(dest);
-    }
-
     @NonNull
     @Override
     @CallSuper
-    public Map<String, PPref> getPreferences() {
-        final Map<String, PPref> map = super.getPreferences();
+    public Map<String, PPref> getRawPreferences() {
+        final Map<String, PPref> map = super.getRawPreferences();
         map.put(mUnderEach.getKey(), mUnderEach);
         return map;
     }
@@ -176,12 +143,31 @@ public class PublisherBooklistGroup
     /**
      * Get this preference.
      *
-     * @param context Current context
-     *
      * @return {@code true} if we want to show a book under each of its Publishers.
      */
-    public boolean showBooksUnderEach(@NonNull final Context context) {
-        return mUnderEach.isTrue(context);
+    public boolean showBooksUnderEach() {
+        return mUnderEach.isTrue();
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        final PublisherBooklistGroup that = (PublisherBooklistGroup) o;
+        return mDisplayDomain.equals(that.mDisplayDomain)
+               && Objects.equals(mUnderEach, that.mUnderEach);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mDisplayDomain, mUnderEach);
     }
 
     @Override

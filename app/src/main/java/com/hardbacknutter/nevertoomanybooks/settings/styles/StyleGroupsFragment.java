@@ -130,7 +130,7 @@ public class StyleGroupsFragment
         // The adapter for the list.
         final GroupWrapperListAdapter listAdapter =
                 new GroupWrapperListAdapter(getContext(),
-                                            mStyleViewModel.createWrappedGroupList(getContext()),
+                                            mStyleViewModel.createWrappedGroupList(),
                                             vh -> mItemTouchHelper.startDrag(vh));
 
         mVb.groupList.setAdapter(listAdapter);

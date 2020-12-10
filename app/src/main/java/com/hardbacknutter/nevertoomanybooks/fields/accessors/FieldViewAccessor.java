@@ -144,6 +144,7 @@ public interface FieldViewAccessor<T, V extends View> {
      */
     default boolean isEmpty() {
         final T value = getValue();
+        //noinspection rawtypes
         return value == null
                || value instanceof Number && ((Number) value).doubleValue() == 0.0d
                || value instanceof Boolean && !(Boolean) value

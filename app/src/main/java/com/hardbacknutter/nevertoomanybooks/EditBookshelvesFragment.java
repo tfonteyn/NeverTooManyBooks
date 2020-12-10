@@ -190,7 +190,7 @@ public class EditBookshelvesFragment
             if (position != RecyclerView.NO_POSITION) {
                 //noinspection ConstantConditions
                 StandardDialogs.purgeBLNS(getContext(), R.string.lbl_bookshelf,
-                                          mVm.getBookshelf(position),
+                                          mVm.getBookshelf(position).getLabel(getContext()),
                                           () -> mVm.purgeBLNS());
             }
             return true;

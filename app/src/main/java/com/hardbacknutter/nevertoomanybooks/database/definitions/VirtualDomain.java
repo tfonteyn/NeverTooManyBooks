@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /**
  * A data class representing a domain + the sql column expression and optional sorting flag.
@@ -156,6 +157,25 @@ public class VirtualDomain
         } else {
             return "";
         }
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final VirtualDomain that = (VirtualDomain) o;
+        return mSorted == that.mSorted
+               && mDomain.equals(that.mDomain)
+               && Objects.equals(mExpression, that.mExpression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mDomain, mExpression, mSorted);
     }
 
     @Override

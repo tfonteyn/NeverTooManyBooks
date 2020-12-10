@@ -20,15 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
 import android.content.Context;
-import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.PreferenceManager;
 
+import java.util.Objects;
+
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -38,27 +39,32 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
  * <p>
  * Used for {@link androidx.preference.ListPreference}
  * The Preference uses 'select 1 of many' type and insists on a String.
- *
- * @see PInt
+ * <p>
+ * The default value is {@link #P_NOT_USED}.
+ * For now, it cannot be changed, but the logic is implemented so
+ * only a new constructor would need to be added.
  */
 abstract class IntStringFilter
         implements StyleFilter<Integer>, PInt {
 
-    static final Integer P_NOT_USED = -1;
+    private static final Integer P_NOT_USED = -1;
     @NonNull
     final TableDefinition mTable;
     @NonNull
     final String mDomainKey;
     @StringRes
     private final int mLabelId;
-    /** The {@link ListStyle} this preference belongs to. */
+    /** The {@link StylePersistenceLayer} to use. */
+    @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final ListStyle mStyle;
+    private final StylePersistenceLayer mPersistence;
     /** preference key. */
     @NonNull
     private final String mKey;
     @NonNull
     private final Integer mDefaultValue;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -67,18 +73,21 @@ abstract class IntStringFilter
      * Constructor.
      * Default value is {@code P_NOT_USED}.
      *
-     * @param style     Style reference.
-     * @param labelId   string resource id to use as a display label
-     * @param key       preference key
-     * @param table     to use by the expression
-     * @param domainKey to use by the expression
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param labelId          string resource id to use as a display label
+     * @param key              preference key
+     * @param table            to use by the expression
+     * @param domainKey        to use by the expression
      */
-    IntStringFilter(@NonNull final ListStyle style,
+    IntStringFilter(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
                     @StringRes final int labelId,
                     @NonNull final String key,
                     @SuppressWarnings("SameParameterValue") @NonNull final TableDefinition table,
                     @NonNull final String domainKey) {
-        mStyle = style;
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
         mKey = key;
         mDefaultValue = P_NOT_USED;
 
@@ -90,20 +99,33 @@ abstract class IntStringFilter
     /**
      * Copy constructor.
      *
-     * @param style  Style reference.
-     * @param filter to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param that             to copy from
      */
-    IntStringFilter(@NonNull final ListStyle style,
-                    @NonNull final IntStringFilter filter) {
-        mStyle = style;
-        mKey = filter.mKey;
-        mDefaultValue = filter.mDefaultValue;
+    IntStringFilter(final boolean isPersistent,
+                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @NonNull final IntStringFilter that) {
+        mPersisted = isPersistent;
+        mPersistence = persistenceLayer;
+        mKey = that.mKey;
+        mDefaultValue = that.mDefaultValue;
 
-        mLabelId = filter.mLabelId;
-        mTable = filter.mTable;
-        mDomainKey = filter.mDomainKey;
+        mLabelId = that.mLabelId;
+        mTable = that.mTable;
+        mDomainKey = that.mDomainKey;
 
-        mNonPersistedValue = filter.mNonPersistedValue;
+        mNonPersistedValue = that.mNonPersistedValue;
+
+        if (mPersisted) {
+            set(that.getValue());
+        }
+    }
+
+    @NonNull
+    @Override
+    public String getKey() {
+        return mKey;
     }
 
     @NonNull
@@ -114,16 +136,25 @@ abstract class IntStringFilter
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return !mDefaultValue.equals(getValue(context))
+        return !P_NOT_USED.equals(getValue())
                && DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
                                        mDomainKey);
     }
 
+    @Override
+    public void set(@Nullable final Integer value) {
+        if (mPersisted) {
+            mPersistence.setStringedInt(mKey, value);
+        } else {
+            mNonPersistedValue = value;
+        }
+    }
+
     @NonNull
     @Override
-    public Integer getValue(@NonNull final Context context) {
-        if (mStyle.isUserDefined()) {
-            final Integer value = mStyle.getSettings().getStringedInt(context, mKey);
+    public Integer getValue() {
+        if (mPersisted) {
+            final Integer value = mPersistence.getStringedInt(mKey);
             if (value != null) {
                 return value;
             }
@@ -134,61 +165,43 @@ abstract class IntStringFilter
         return mDefaultValue;
     }
 
-    @NonNull
     @Override
-    public String getKey() {
-        return mKey;
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final IntStringFilter that = (IntStringFilter) o;
+        return mLabelId == that.mLabelId
+               && mPersisted == that.mPersisted
+               && mTable.equals(that.mTable)
+               && mDomainKey.equals(that.mDomainKey)
+               && mKey.equals(that.mKey)
+               && mDefaultValue.equals(that.mDefaultValue)
+               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue);
     }
 
     @Override
-    public void set(@Nullable final Integer value) {
-        if (mStyle.isUserDefined()) {
-            mStyle.getSettings().setStringedInt(mKey, value);
-        } else {
-            mNonPersistedValue = value;
-        }
-    }
-
-    /**
-     * Set the <strong>value</strong> from the Parcel.
-     *
-     * @param in parcel to read from
-     */
-    public void set(@NonNull final Parcel in) {
-        final Integer tmp = (Integer) in.readValue(getClass().getClassLoader());
-        if (tmp != null) {
-            set(tmp);
-        }
-    }
-
-    public void writeToParcel(@NonNull final Parcel dest) {
-        if (mStyle.isUserDefined()) {
-            // write the actual value, this could be the default if we have no value, but that
-            // is what we want for user-defined styles anyhow.
-            dest.writeValue(getValue(App.getAppContext()));
-        } else {
-            // builtin ? write the in-memory value to the parcel
-            // do NOT use 'get' as that would return the default if the actual value is not set.
-            dest.writeValue(mNonPersistedValue);
-        }
+    public int hashCode() {
+        return Objects
+                .hash(mTable, mDomainKey, mLabelId, mPersistence, mKey, mDefaultValue, mPersisted,
+                      mNonPersistedValue);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "IntStringFilter{"
-               + "mStyle=" + mStyle.getUuid()
-               + ", mKey=`" + mKey + '`'
+               + "mKey=`" + mKey + '`'
                + ", mDefaultValue=" + mDefaultValue
+               + ", mPersisted=" + mPersisted
                + ", mNonPersistedValue=" + mNonPersistedValue
 
-               + ", mLabelId=" + mLabelId
+               + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
                + ", mTable=" + mTable
                + ", mDomainKey='" + mDomainKey + '\''
-               + ", isActive=" + isActive(App.getAppContext())
-               + ", expression=`" + getExpression(App.getAppContext()) + '\''
-
-               + ", value=" + getValue(App.getAppContext())
                + '}';
     }
 }

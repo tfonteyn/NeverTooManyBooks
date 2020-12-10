@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
  * <a href="https://issuetracker.google.com/issues/37015783">37015783</a>
  *
  * <a href="https://stackoverflow.com/questions/3821539#28466764">
- *     decimal-separator-comma-with-numberdecimal-inputtype-in-edittext</a>
+ * decimal-separator-comma-with-numberdecimal-inputtype-in-edittext</a>
  * <p>
  * But I test with Android 8.0 ... Americans just can't see beyond their border...
  * To be clear: parsing works fine; it's just the user not able to input the
@@ -491,7 +491,7 @@ public final class ParseUtils {
             return defValue;
         }
 
-        // we should never have an invalid setting the in the prefs... flw
+        // we should never have an invalid setting in the prefs... flw
         try {
             return Integer.parseInt(value);
         } catch (@NonNull final NumberFormatException ignore) {

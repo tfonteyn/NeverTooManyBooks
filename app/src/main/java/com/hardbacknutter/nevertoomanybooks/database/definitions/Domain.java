@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 
@@ -292,6 +293,34 @@ public class Domain
             }
         }
         return sql.toString();
+    }
+
+    @Override
+    public boolean equals(@Nullable final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Domain domain = (Domain) o;
+        return mIsPrimaryKey == domain.mIsPrimaryKey
+               && mIsNotNull == domain.mIsNotNull
+               && mIsNotBlank == domain.mIsNotBlank
+               && mIsPrePreparedOrderBy == domain.mIsPrePreparedOrderBy
+               && mIsCollationLocalized == domain.mIsCollationLocalized
+               && mName.equals(domain.mName)
+               && mType.equals(domain.mType)
+               && Objects.equals(mDefaultClause, domain.mDefaultClause)
+               && Objects.equals(mReferences, domain.mReferences);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects
+                .hash(mName, mIsPrimaryKey, mType, mIsNotNull, mIsNotBlank, mDefaultClause,
+                      mReferences,
+                      mIsPrePreparedOrderBy, mIsCollationLocalized);
     }
 
     public static class Builder {

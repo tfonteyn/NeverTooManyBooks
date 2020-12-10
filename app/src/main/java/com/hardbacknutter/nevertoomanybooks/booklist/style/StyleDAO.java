@@ -25,6 +25,7 @@ import android.database.Cursor;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -58,7 +60,6 @@ public final class StyleDAO {
 
     private StyleDAO() {
     }
-
 
     /**
      * Save the given style.
@@ -83,11 +84,6 @@ public final class StyleDAO {
         style.setId(db.getStyleIdByUuid(style.getUuid()));
 
         if (style.getId() == 0) {
-            if (BuildConfig.DEBUG /* always */) {
-                if (style instanceof BuiltinStyle) {
-                    throw new IllegalArgumentException("Builtin Style cannot be inserted");
-                }
-            }
             return insert(db, style);
 
         } else {
@@ -96,15 +92,15 @@ public final class StyleDAO {
     }
 
     /**
-     * Insert the given UserStyle.
+     * Insert the given style.
      *
      * @param db    Database Access
      * @param style to insert
      *
      * @return {@code true} on success
      */
-    public static boolean insert(@NonNull final DAO db,
-                                 @NonNull final ListStyle style) {
+    private static boolean insert(@NonNull final DAO db,
+                                  @NonNull final ListStyle style) {
 
         if (db.insert(style) > 0) {
             if (style instanceof UserStyle) {
@@ -137,7 +133,7 @@ public final class StyleDAO {
             } else if (style instanceof BuiltinStyle) {
                 BuiltinStyles.S_BUILTIN_STYLES.put(style.getUuid(), (BuiltinStyle) style);
             } else {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Unhandled style: " + style);
             }
             return true;
         }
@@ -163,14 +159,11 @@ public final class StyleDAO {
             SanityCheck.requirePositiveValue(style.getId(), "A new Style cannot be deleted");
         }
 
-        // sanity check
-        if (style instanceof BuiltinStyle) {
-            throw new IllegalArgumentException("A Builtin Style cannot be deleted");
-        }
-
         if (db.delete(style)) {
-            UserStyles.S_USER_STYLES.remove(style.getUuid());
-            context.deleteSharedPreferences(style.getUuid());
+            if (style instanceof UserStyle) {
+                UserStyles.S_USER_STYLES.remove(style.getUuid());
+                context.deleteSharedPreferences(style.getUuid());
+            }
             return true;
         }
         return false;
@@ -375,7 +368,7 @@ public final class StyleDAO {
                     final DataHolder rowData = new CursorRow(cursor);
                     while (cursor.moveToNext()) {
                         final String uuid = rowData.getString(DBDefinitions.KEY_UUID);
-                        map.put(uuid, new UserStyle(context, rowData));
+                        map.put(uuid, UserStyle.createFromDatabase(context, rowData));
                     }
                 }
 
@@ -410,7 +403,8 @@ public final class StyleDAO {
         static final String DEFAULT_STYLE_UUID = AUTHOR_THEN_SERIES_UUID;
 
         private static final int UNREAD_AUTHOR_THEN_SERIES_ID = -2;
-        private static final String UNREAD_AUTHOR_THEN_SERIES_UUID
+        @VisibleForTesting
+        public static final String UNREAD_AUTHOR_THEN_SERIES_UUID
                 = "f479e979-c43f-4b0b-9c5b-6942964749df";
 
         private static final int COMPACT_ID = -3;

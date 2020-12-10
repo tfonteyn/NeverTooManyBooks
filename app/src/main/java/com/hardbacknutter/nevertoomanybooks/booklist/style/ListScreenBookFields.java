@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Parcel;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -34,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
@@ -72,33 +72,38 @@ public class ListScreenBookFields
     /**
      * Constructor.
      *
-     * @param style Style reference.
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
      */
-    ListScreenBookFields(@NonNull final ListStyle style) {
+    ListScreenBookFields(final boolean isPersistent,
+                         @NonNull final StylePersistenceLayer persistenceLayer) {
 
-        mThumbnailScale = new PInteger(style, PK_COVER_SCALE, ListStyle.IMAGE_SCALE_DEFAULT);
+        mThumbnailScale = new PInteger(isPersistent, persistenceLayer, PK_COVER_SCALE,
+                                       ListStyle.IMAGE_SCALE_DEFAULT);
 
-        mFields.put(PK_COVERS, new PBoolean(style, PK_COVERS, true));
-        mFields.put(PK_AUTHOR, new PBoolean(style, PK_AUTHOR));
-        mFields.put(PK_PUBLISHER, new PBoolean(style, PK_PUBLISHER));
-        mFields.put(PK_PUB_DATE, new PBoolean(style, PK_PUB_DATE));
-        mFields.put(PK_ISBN, new PBoolean(style, PK_ISBN));
-        mFields.put(PK_FORMAT, new PBoolean(style, PK_FORMAT));
-        mFields.put(PK_LOCATION, new PBoolean(style, PK_LOCATION));
-        mFields.put(PK_RATING, new PBoolean(style, PK_RATING));
-        mFields.put(PK_BOOKSHELVES, new PBoolean(style, PK_BOOKSHELVES));
+        mFields.put(PK_COVERS, new PBoolean(isPersistent, persistenceLayer, PK_COVERS, true));
+        mFields.put(PK_AUTHOR, new PBoolean(isPersistent, persistenceLayer, PK_AUTHOR));
+        mFields.put(PK_PUBLISHER, new PBoolean(isPersistent, persistenceLayer, PK_PUBLISHER));
+        mFields.put(PK_PUB_DATE, new PBoolean(isPersistent, persistenceLayer, PK_PUB_DATE));
+        mFields.put(PK_ISBN, new PBoolean(isPersistent, persistenceLayer, PK_ISBN));
+        mFields.put(PK_FORMAT, new PBoolean(isPersistent, persistenceLayer, PK_FORMAT));
+        mFields.put(PK_LOCATION, new PBoolean(isPersistent, persistenceLayer, PK_LOCATION));
+        mFields.put(PK_RATING, new PBoolean(isPersistent, persistenceLayer, PK_RATING));
+        mFields.put(PK_BOOKSHELVES, new PBoolean(isPersistent, persistenceLayer, PK_BOOKSHELVES));
     }
 
     /**
      * Copy constructor.
      *
-     * @param style      Style reference.
-     * @param bookFields to copy from
+     * @param isPersistent     flag
+     * @param persistenceLayer Style reference.
+     * @param bookFields       to copy from
      */
-    ListScreenBookFields(@NonNull final ListStyle style,
+    ListScreenBookFields(final boolean isPersistent,
+                         @NonNull final StylePersistenceLayer persistenceLayer,
                          @NonNull final ListScreenBookFields bookFields) {
-        super(style, bookFields);
-        mThumbnailScale = new PInteger(style, bookFields.mThumbnailScale);
+        super(isPersistent, persistenceLayer, bookFields);
+        mThumbnailScale = new PInteger(isPersistent, persistenceLayer, bookFields.mThumbnailScale);
     }
 
     /**
@@ -112,8 +117,8 @@ public class ListScreenBookFields
     public int getCoverScale(@NonNull final Context context) {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (isShowField(context, global, PK_COVERS)) {
-            return mThumbnailScale.getValue(context);
+        if (isShowField(global, PK_COVERS)) {
+            return mThumbnailScale.getValue();
         }
         return ListStyle.IMAGE_SCALE_0_NOT_DISPLAYED;
     }
@@ -146,39 +151,39 @@ public class ListScreenBookFields
         final List<String> labels = new ArrayList<>();
 
         //noinspection ConstantConditions
-        if (mFields.get(PK_COVERS).isTrue(context)) {
+        if (mFields.get(PK_COVERS).isTrue()) {
             labels.add(context.getString(R.string.lbl_covers));
         }
         //noinspection ConstantConditions
-        if (mFields.get(PK_AUTHOR).isTrue(context)) {
+        if (mFields.get(PK_AUTHOR).isTrue()) {
             labels.add(context.getString(R.string.lbl_author));
         }
         //noinspection ConstantConditions
-        if (mFields.get(PK_PUBLISHER).isTrue(context)) {
+        if (mFields.get(PK_PUBLISHER).isTrue()) {
             labels.add(context.getString(R.string.lbl_publisher));
         }
         //noinspection ConstantConditions
-        if (mFields.get(PK_PUB_DATE).isTrue(context)) {
+        if (mFields.get(PK_PUB_DATE).isTrue()) {
             labels.add(context.getString(R.string.lbl_date_published));
         }
         //noinspection ConstantConditions
-        if (mFields.get(PK_ISBN).isTrue(context)) {
+        if (mFields.get(PK_ISBN).isTrue()) {
             labels.add(context.getString(R.string.lbl_isbn));
         }
         //noinspection ConstantConditions
-        if (mFields.get(PK_FORMAT).isTrue(context)) {
+        if (mFields.get(PK_FORMAT).isTrue()) {
             labels.add(context.getString(R.string.lbl_format));
         }
         //noinspection ConstantConditions
-        if (mFields.get(PK_LOCATION).isTrue(context)) {
+        if (mFields.get(PK_LOCATION).isTrue()) {
             labels.add(context.getString(R.string.lbl_location));
         }
         //noinspection ConstantConditions
-        if (mFields.get(PK_RATING).isTrue(context)) {
+        if (mFields.get(PK_RATING).isTrue()) {
             labels.add(context.getString(R.string.lbl_rating));
         }
         //noinspection ConstantConditions
-        if (mFields.get(PK_BOOKSHELVES).isTrue(context)) {
+        if (mFields.get(PK_BOOKSHELVES).isTrue()) {
             labels.add(context.getString(R.string.lbl_bookshelves_long));
         }
 
@@ -213,32 +218,32 @@ public class ListScreenBookFields
         map.put(mThumbnailScale.getKey(), mThumbnailScale);
     }
 
-    /**
-     * Set the <strong>value</strong> from the Parcel.
-     *
-     * @param in parcel to read from
-     */
-    public void set(@NonNull final Parcel in) {
-        super.set(in);
-        mThumbnailScale.set(in);
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+        final ListScreenBookFields that = (ListScreenBookFields) o;
+        return Objects.equals(mThumbnailScale, that.mThumbnailScale);
     }
 
-    /**
-     * Write the <strong>value</strong> to the Parcel.
-     *
-     * @param dest parcel to write to
-     */
-    public void writeToParcel(@NonNull final Parcel dest) {
-        super.writeToParcel(dest);
-        mThumbnailScale.writeToParcel(dest);
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), mThumbnailScale);
     }
 
     @NonNull
     @Override
     public String toString() {
         return "ListScreenBookFields{"
-               + "mThumbnailScale=" + mThumbnailScale
-               + ", mFields=" + mFields
+               + super.toString()
+               + ", mThumbnailScale=" + mThumbnailScale
                + '}';
     }
 

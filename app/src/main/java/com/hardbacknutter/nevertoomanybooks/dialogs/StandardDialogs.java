@@ -243,19 +243,19 @@ public final class StandardDialogs {
     /**
      * Purge {@link DBDefinitions#TBL_BOOK_LIST_NODE_STATE} for the given entity.
      *
-     * @param context   Current context
-     * @param label     resource string id for the type of entity
-     * @param entity    the entity (from which we'll display the label)
-     * @param onConfirm Runnable to execute if the user clicks the confirm button.
+     * @param context     Current context
+     * @param label       resource string id for the type of entity
+     * @param entityLabel the label of the entity
+     * @param onConfirm   Runnable to execute if the user clicks the confirm button.
      */
     public static void purgeBLNS(@NonNull final Context context,
                                  @StringRes final int label,
-                                 @NonNull final Entity entity,
+                                 @NonNull final String entityLabel,
                                  @NonNull final Runnable onConfirm) {
 
         final String msg = context.getString(R.string.info_purge_blns_item_name,
                                              context.getString(label),
-                                             entity.getLabel(context));
+                                             entityLabel);
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_warning)
                 .setTitle(R.string.lbl_purge_blns)
