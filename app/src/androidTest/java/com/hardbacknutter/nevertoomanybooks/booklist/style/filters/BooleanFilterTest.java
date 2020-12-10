@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -47,11 +48,11 @@ public class BooleanFilterTest {
     public void cc() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        final BooleanFilter p1 =
-                new BooleanFilter(false, mLayerMock, R.string.lbl_read,
-                                  Filters.PK_FILTER_READ,
-                                  DBDefinitions.TBL_BOOKS,
-                                  DBDefinitions.KEY_READ);
+        final BooleanFilter p1 = new BooleanFilter(
+                false, mLayerMock, R.string.lbl_read,
+                Filters.PK_FILTER_READ,
+                new VirtualDomain(DBDefinitions.DOM_BOOK_READ,
+                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)));
         p1.set(true);
 
         final BooleanFilter p2 = new BooleanFilter(false, mLayerMock, p1);

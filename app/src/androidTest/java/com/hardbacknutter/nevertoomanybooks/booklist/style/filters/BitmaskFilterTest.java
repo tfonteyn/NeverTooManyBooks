@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 import static org.junit.Assert.assertEquals;
@@ -47,13 +48,15 @@ public class BitmaskFilterTest {
     @Test
     public void cc() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final BitmaskFilter p1 =
-                new BitmaskFilter(false, mLayerMock, R.string.lbl_edition,
-                                  Filters.PK_FILTER_EDITION_BITMASK,
-                                  DBDefinitions.TBL_BOOKS,
-                                  DBDefinitions.KEY_EDITION_BITMASK,
-                                  Book.Edition.BITMASK_ALL);
+        final BitmaskFilter p1 = new BitmaskFilter(
+                false, mLayerMock, R.string.lbl_edition,
+                Filters.PK_FILTER_EDITION_BITMASK,
+                new VirtualDomain(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
+                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)),
+                Book.Edition.BITMASK_ALL);
+
         p1.set(Book.Edition.SIGNED | Book.Edition.LIMITED);
+        assertTrue(p1.isActive(context));
 
         final BitmaskFilter p2 = new BitmaskFilter(false, mLayerMock, p1);
         assertEquals(p1, p2);

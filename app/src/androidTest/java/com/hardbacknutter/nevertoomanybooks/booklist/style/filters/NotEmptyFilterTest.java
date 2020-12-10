@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -47,11 +48,11 @@ public class NotEmptyFilterTest {
     public void cc() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        final NotEmptyFilter p1 =
-                new NotEmptyFilter(false, mLayerMock, R.string.lbl_isbn,
-                                   Filters.PK_FILTER_ISBN,
-                                   DBDefinitions.TBL_BOOKS,
-                                   DBDefinitions.KEY_ISBN);
+        final NotEmptyFilter p1 = new NotEmptyFilter(
+                false, mLayerMock, R.string.lbl_isbn,
+                Filters.PK_FILTER_ISBN,
+                new VirtualDomain(DBDefinitions.DOM_BOOK_ISBN,
+                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
         p1.set(1);
 
         final NotEmptyFilter p2 = new NotEmptyFilter(false, mLayerMock, p1);
