@@ -103,16 +103,6 @@ public class SendBookEvent
                     context.startActivity(intent);
                 }));
 
-        // ENHANCE: Reinstate Goodreads search when Goodreads work.editions is available
-        // SEARCH GOODREADS
-//        menuItems.add(new ContextDialogItem(
-//                context.getString(R.string.progress_msg_searching_site,
-//                                  context.getString(R.string.site_goodreads)), () -> {
-//            Intent intent = new Intent(context, GoodreadsSearchActivity.class)
-//                    .putExtra(DBDefinitions.KEY_PK_ID, getBookId());
-//            context.startActivity(intent);
-//        }));
-
         super.addContextMenuItems(context, menuItems, db);
     }
 }

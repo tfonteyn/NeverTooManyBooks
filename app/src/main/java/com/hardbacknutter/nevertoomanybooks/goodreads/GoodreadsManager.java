@@ -369,7 +369,7 @@ public class GoodreadsManager {
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @return Bundle of GoodreadsWork objects
+     * @return Bundle of Goodreads book data
      *
      * @throws CredentialsException with GoodReads
      * @throws Http404Exception     the requested item was not found
@@ -398,7 +398,7 @@ public class GoodreadsManager {
      * @param fetchThumbnail Set to {@code true} if we want to get thumbnails
      * @param bookData       Bundle to update <em>(passed in to allow mocking)</em>
      *
-     * @return Bundle of GoodreadsWork objects
+     * @return Bundle with Goodreads book data
      *
      * @throws CredentialsException with GoodReads
      * @throws Http404Exception     the requested item was not found
