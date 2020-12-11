@@ -112,13 +112,13 @@ android {
     compileSdkVersion 29
 
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2020-10-08 world wide:
-    // 10.0     33.29
-    // 9.0      59.38
-    // 8.1      70.34
-    // 8.0      76.51
-    // 7.1      79.19
-    // 7.0      84.36
+    // 2020-12-11 world wide:
+    // 10.0     40.35
+    // 9.0      62.94
+    // 8.1      72.49
+    // 8.0      78.46
+    // 7.1      81.87
+    // 7.0      86.72
 
     // Android Studio 'new project' page (has not been updated since at least 2020-04-11)
     //  A       API     %
@@ -167,7 +167,7 @@ android {
 
         // 2020-03-27. Started getting "APIs Temporarily disabled" on LIBRARY_THING
         // searches and "Temporarily down on images.
-        // Last checked: 2020-05-21
+        // Confirmed in LT forums; The entire API is currently disabled because of work on LT2.
         buildConfigField('boolean', 'ENABLE_LIBRARY_THING', 'false')
         // but the alternative edition link still works (for now?).
         buildConfigField('boolean', 'ENABLE_LIBRARY_THING_ALT_ED', 'true')
