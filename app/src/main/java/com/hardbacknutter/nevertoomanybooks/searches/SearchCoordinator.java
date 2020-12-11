@@ -371,12 +371,13 @@ public class SearchCoordinator
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
-                SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(taskId);
+                final SearchEngineRegistry registry = SearchEngineRegistry.getInstance();
+                SearchEngineRegistry.Config config = registry.getByEngineId(taskId);
                 Log.d(TAG, "mSearchTaskListener.onFinished"
                            + "|finished=" + appContext.getString(config.getNameResId()));
 
                 for (final SearchTask searchTask : mActiveTasks) {
-                    config = SearchEngineRegistry.getByEngineId(searchTask.getTaskId());
+                    config = registry.getByEngineId(searchTask.getTaskId());
                     Log.d(TAG, "mSearchTaskListener.onFinished"
                                + "|running=" + appContext.getString(config.getNameResId()));
                 }
@@ -412,6 +413,7 @@ public class SearchCoordinator
                            + "|searchErrors=" + searchErrors);
 
                 if (DEBUG_SWITCHES.SEARCH_COORDINATOR_TIMERS) {
+                    final SearchEngineRegistry registry = SearchEngineRegistry.getInstance();
                     for (int i = 0; i < mSearchTasksStartTime.size(); i++) {
                         final long start = mSearchTasksStartTime.valueAt(i);
                         // use the key, not the index!
@@ -419,7 +421,7 @@ public class SearchCoordinator
                         final long end = mSearchTasksEndTime.get(key);
 
                         final String engineName = appContext.getString(
-                                SearchEngineRegistry.getByEngineId(key).getNameResId());
+                                registry.getByEngineId(key).getNameResId());
 
                         if (end != 0) {
                             Log.d(TAG, String.format(Locale.ENGLISH,
@@ -1137,9 +1139,9 @@ public class SearchCoordinator
         // no synchronized needed, at this point all other threads have finished.
         if (!mSearchFinishedMessages.isEmpty()) {
             final StringBuilder sb = new StringBuilder();
+            final SearchEngineRegistry registry = SearchEngineRegistry.getInstance();
             for (final Map.Entry<Integer, Exception> entry : mSearchFinishedMessages.entrySet()) {
-                final SearchEngineRegistry.Config config =
-                        SearchEngineRegistry.getByEngineId(entry.getKey());
+                final SearchEngineRegistry.Config config = registry.getByEngineId(entry.getKey());
                 final String engineName = context.getString(config.getNameResId());
                 final Exception exception = entry.getValue();
 

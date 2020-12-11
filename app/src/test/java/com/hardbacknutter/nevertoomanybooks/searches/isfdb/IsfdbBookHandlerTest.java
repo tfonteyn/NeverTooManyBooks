@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
@@ -55,7 +54,6 @@ class IsfdbBookHandlerTest
     @BeforeEach
     public void setUp() {
         super.setUp();
-        SearchEngineRegistry.create(mContext);
         mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(SearchSites.ISFDB).getSearchEngine(mContext, new MockCaller());
 

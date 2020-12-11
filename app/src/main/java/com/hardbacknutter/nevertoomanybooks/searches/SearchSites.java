@@ -56,7 +56,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  *          Configure the engine using {@link SearchEngineRegistry.Config}.
  *      </li>
  *
- *     <li>Add the {@link SearchEngine} class to {@link #registerSearchEngineClasses()}</li>
+ *     <li>Add the {@link SearchEngine} class to
+ *     {@link #registerSearchEngineClasses(SearchEngineRegistry)}</li>
  *
  *      <li>Add a new {@link Site} instance to the one or more list(s)
  *          in {@link #createSiteList}</li>
@@ -125,30 +126,30 @@ public final class SearchSites {
     }
 
     /**
-     * Register all {@link SearchEngine} classes; called during startup.
+     * Register all {@link SearchEngine} classes.
      */
-    public static void registerSearchEngineClasses() {
+    static void registerSearchEngineClasses(@NonNull final SearchEngineRegistry registry) {
         //dev note: we could scan for the annotation or for classes implementing the interface...
         // ... but that means traversing the class path. Not really worth the hassle.
         // For the BuildConfig.ENABLE_ usage: see app/build.gradle
 
         // NEWTHINGS: adding a new search engine: add the search engine class
         // The order added is not relevant
-        SearchEngineRegistry.add(AmazonSearchEngine.createConfig());
-        SearchEngineRegistry.add(GoodreadsSearchEngine.createConfig());
-        SearchEngineRegistry.add(IsfdbSearchEngine.createConfig());
-        SearchEngineRegistry.add(KbNlSearchEngine.createConfig());
-        SearchEngineRegistry.add(OpenLibrarySearchEngine.createConfig());
-        SearchEngineRegistry.add(StripInfoSearchEngine.createConfig());
+        registry.add(AmazonSearchEngine.createConfig())
+                .add(GoodreadsSearchEngine.createConfig())
+                .add(IsfdbSearchEngine.createConfig())
+                .add(KbNlSearchEngine.createConfig())
+                .add(OpenLibrarySearchEngine.createConfig())
+                .add(StripInfoSearchEngine.createConfig());
 
         if (BuildConfig.ENABLE_GOOGLE_BOOKS) {
-            SearchEngineRegistry.add(GoogleBooksSearchEngine.createConfig());
+            registry.add(GoogleBooksSearchEngine.createConfig());
         }
         if (BuildConfig.ENABLE_LAST_DODO) {
-            SearchEngineRegistry.add(LastDodoSearchEngine.createConfig());
+            registry.add(LastDodoSearchEngine.createConfig());
         }
         if (BuildConfig.ENABLE_LIBRARY_THING || BuildConfig.ENABLE_LIBRARY_THING_ALT_ED) {
-            SearchEngineRegistry.add(LibraryThingSearchEngine.createConfig());
+            registry.add(LibraryThingSearchEngine.createConfig());
         }
     }
 

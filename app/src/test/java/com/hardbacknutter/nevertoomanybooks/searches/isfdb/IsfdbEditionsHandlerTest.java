@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
@@ -55,7 +54,6 @@ class IsfdbEditionsHandlerTest
     @BeforeEach
     public void setUp() {
         super.setUp();
-        SearchEngineRegistry.create(mContext);
         mSearchEngine = (IsfdbSearchEngine) Site.Type.Data
                 .getSite(SearchSites.ISFDB).getSearchEngine(mContext, new MockCaller());
     }

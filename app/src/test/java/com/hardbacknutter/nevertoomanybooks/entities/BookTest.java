@@ -31,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_GOODREADS_BOOK;
@@ -65,8 +64,6 @@ class BookTest
         super.setUp();
 
         mBundleHelper = BundleMock.create();
-
-        SearchSites.registerSearchEngineClasses();
     }
 
     /** US english book, price in $. */

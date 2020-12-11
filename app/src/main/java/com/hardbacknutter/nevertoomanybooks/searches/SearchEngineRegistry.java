@@ -39,29 +39,43 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * A registry of all {@link SearchEngine} classes and their {@link Config}.
  */
 public final class SearchEngineRegistry {
 
-    /** All site configurations. */
-    private static final Map<Integer, Config> SITE_CONFIGS_MAP = new HashMap<>();
+    /** Singleton. */
+    @Nullable
+    private static SearchEngineRegistry sInstance;
 
+    /** All site configurations. */
+    private final Map<Integer, Config> SITE_CONFIGS_MAP = new HashMap<>();
+
+    /**
+     * Constructor. Use {@link #getInstance()}.
+     */
     private SearchEngineRegistry() {
     }
 
+    /**
+     * Create the singleton instance. Must be called during startup.
+     */
     public static void create(@NonNull final Context context) {
+        sInstance = new SearchEngineRegistry();
+        SearchSites.registerSearchEngineClasses(sInstance);
+        Site.Type.registerAllTypes(context);
+    }
 
-        SearchSites.registerSearchEngineClasses();
-
-        final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
-        final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-
-        for (final Site.Type type : Site.Type.values()) {
-            type.createList(context, systemLocale, userLocale);
-        }
+    /**
+     * Get the singleton instance.
+     *
+     * @return instance
+     */
+    @NonNull
+    public static SearchEngineRegistry getInstance() {
+        //noinspection ConstantConditions
+        return sInstance;
     }
 
     /**
@@ -69,8 +83,9 @@ public final class SearchEngineRegistry {
      *
      * @param config to register
      */
-    static void add(@NonNull final Config config) {
+    SearchEngineRegistry add(@NonNull final Config config) {
         SITE_CONFIGS_MAP.put(config.getEngineId(), config);
+        return this;
     }
 
     /**
@@ -79,7 +94,7 @@ public final class SearchEngineRegistry {
      * @return list
      */
     @NonNull
-    public static Collection<Config> getAll() {
+    public Collection<Config> getAll() {
         return SITE_CONFIGS_MAP.values();
     }
 
@@ -91,7 +106,7 @@ public final class SearchEngineRegistry {
      * @return Config
      */
     @NonNull
-    public static Config getByEngineId(@SearchSites.EngineId final int engineId) {
+    public Config getByEngineId(@SearchSites.EngineId final int engineId) {
         return Objects.requireNonNull(SITE_CONFIGS_MAP.get(engineId), "engine not found");
     }
 
@@ -103,7 +118,7 @@ public final class SearchEngineRegistry {
      * @return Optional Config
      */
     @NonNull
-    public static Optional<Config> getByViewId(@IdRes final int viewId) {
+    public Optional<Config> getByViewId(@IdRes final int viewId) {
         return SITE_CONFIGS_MAP.values().stream()
                                .filter(config -> config.getDomainViewId() == viewId)
                                .findFirst();
@@ -117,7 +132,7 @@ public final class SearchEngineRegistry {
      * @return Optional Config
      */
     @NonNull
-    public static Optional<Config> getByMenuId(@IdRes final int menuId) {
+    public Optional<Config> getByMenuId(@IdRes final int menuId) {
         return SITE_CONFIGS_MAP.values().stream()
                                .filter(config -> config.getDomainMenuId() == menuId)
                                .findFirst();
@@ -132,8 +147,8 @@ public final class SearchEngineRegistry {
      * @return the instance
      */
     @NonNull
-    public static SearchEngine createSearchEngine(@NonNull final Context context,
-                                                  @SearchSites.EngineId final int engineId) {
+    public SearchEngine createSearchEngine(@NonNull final Context context,
+                                           @SearchSites.EngineId final int engineId) {
         //noinspection ConstantConditions
         return SITE_CONFIGS_MAP.get(engineId).createSearchEngine(context);
     }
@@ -144,7 +159,7 @@ public final class SearchEngineRegistry {
      * @return list
      */
     @NonNull
-    public static List<Domain> getExternalIdDomains() {
+    public List<Domain> getExternalIdDomains() {
         return SITE_CONFIGS_MAP.values().stream()
                                .map(Config::getExternalIdDomain)
                                .filter(Objects::nonNull)

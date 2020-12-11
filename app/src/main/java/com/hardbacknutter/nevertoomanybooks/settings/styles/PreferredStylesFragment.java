@@ -252,7 +252,8 @@ public class PreferredStylesFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            TipManager.display(getContext(), R.string.tip_booklist_styles_editor, null);
+            TipManager.getInstance()
+                      .display(getContext(), R.string.tip_booklist_styles_editor, null);
         }
     }
 

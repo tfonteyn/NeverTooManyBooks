@@ -139,6 +139,8 @@ public class AmazonSearchEngine
     /** Parse the "x pages" string. */
     private final Pattern mPagesPattern;
 
+    private final AuthorTypeMapper mAuthorTypeMapper = new AuthorTypeMapper();
+
     /**
      * Constructor. Called using reflections, so <strong>MUST</strong> be <em>public</em>.
      *
@@ -190,8 +192,8 @@ public class AmazonSearchEngine
     public static String getSiteUrl(@NonNull final Context context) {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getString(PREFS_HOST_URL,
-                           SearchEngineRegistry.getByEngineId(SearchSites.AMAZON).getSiteUrl());
+                .getString(PREFS_HOST_URL, SearchEngineRegistry
+                        .getInstance().getByEngineId(SearchSites.AMAZON).getSiteUrl());
     }
 
     /**
@@ -443,7 +445,7 @@ public class AmazonSearchEngine
                         }
 
                         if (data != null) {
-                            author.addType(AuthorTypeMapper.map(siteLocale, data));
+                            author.addType(mAuthorTypeMapper.map(siteLocale, data));
                         }
                     }
                     mAuthors.add(author);

@@ -19,7 +19,10 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,6 +31,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Test the regular expressions used by {@link Series#from}.
  */
 class SeriesTest {
+
+    @BeforeAll
+    static void startUp() {
+        Logger.isJUnitTest = true;
+    }
 
     @Test
     void fromString00() {

@@ -804,7 +804,8 @@ public class DAOSql {
                     + ',' + TBL_BOOKS.dotAs(KEY_UTC_ADDED)
                     + ',' + TBL_BOOKS.dotAs(KEY_UTC_LAST_UPDATED));
 
-            for (final Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
+            for (final Domain domain : SearchEngineRegistry
+                    .getInstance().getExternalIdDomains()) {
                 sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(domain.getName()));
             }
 

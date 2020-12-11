@@ -161,9 +161,11 @@ public class SearchBookUpdatesFragment
         populateFields();
 
         if (savedInstanceState == null) {
-            TipManager.display(getContext(), R.string.tip_update_fields_from_internet, () ->
-                    Site.promptToRegister(getContext(), mVm.getSiteList(),
-                                          "update_from_internet", this::afterOnViewCreated));
+            TipManager.getInstance()
+                      .display(getContext(), R.string.tip_update_fields_from_internet, () ->
+                              Site.promptToRegister(getContext(), mVm.getSiteList(),
+                                                    "update_from_internet",
+                                                    this::afterOnViewCreated));
         } else {
             afterOnViewCreated();
         }

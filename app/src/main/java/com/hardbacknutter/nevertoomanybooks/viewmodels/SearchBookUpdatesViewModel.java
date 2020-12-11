@@ -193,7 +193,8 @@ public class SearchBookUpdatesViewModel
         addField(global, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
         addField(global, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
-        for (final SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
+        for (final SearchEngineRegistry.Config config : SearchEngineRegistry
+                .getInstance().getAll()) {
             final Domain domain = config.getExternalIdDomain();
             if (domain != null) {
                 addField(global, domain.getName(), config.getNameResId(), Overwrite);
@@ -271,9 +272,9 @@ public class SearchBookUpdatesViewModel
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param global Global preferences
-     * @param nameResId   Field label resource id
-     * @param cIdx        0..n image index
+     * @param global    Global preferences
+     * @param nameResId Field label resource id
+     * @param cIdx      0..n image index
      */
     private void addCoverField(@NonNull final SharedPreferences global,
                                @StringRes final int nameResId,
@@ -288,10 +289,10 @@ public class SearchBookUpdatesViewModel
     /**
      * Add a FieldUsage for a <strong>simple</strong> field if it has not been hidden by the user.
      *
-     * @param global Global preferences
-     * @param fieldId           Field name to use in FieldUsages, and as key for preferences.
-     * @param nameResId         Field label resource id
-     * @param defValue          default Usage for this field
+     * @param global    Global preferences
+     * @param fieldId   Field name to use in FieldUsages, and as key for preferences.
+     * @param nameResId Field label resource id
+     * @param defValue  default Usage for this field
      */
     private void addField(@NonNull final SharedPreferences global,
                           @NonNull final String fieldId,
@@ -441,7 +442,8 @@ public class SearchBookUpdatesViewModel
 
                     // Collect external ID's we can use
                     final SparseArray<String> externalIds = new SparseArray<>();
-                    for (final SearchEngineRegistry.Config config : SearchEngineRegistry.getAll()) {
+                    for (final SearchEngineRegistry.Config config : SearchEngineRegistry
+                            .getInstance().getAll()) {
                         final Domain domain = config.getExternalIdDomain();
                         if (domain != null) {
                             final String value = mCurrentBook.getString(domain.getName());

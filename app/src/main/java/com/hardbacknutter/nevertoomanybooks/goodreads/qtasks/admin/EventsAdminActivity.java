@@ -64,7 +64,7 @@ public class EventsAdminActivity
         QueueManager.getInstance().registerEventListener(mOnChangeListener);
 
         if (savedInstanceState == null) {
-            TipManager.display(this, R.string.tip_background_task_events, null);
+            TipManager.getInstance().display(this, R.string.tip_background_task_events, null);
         }
     }
 

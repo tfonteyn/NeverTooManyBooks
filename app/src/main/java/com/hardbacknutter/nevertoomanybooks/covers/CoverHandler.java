@@ -331,7 +331,8 @@ public class CoverHandler {
             // Just a submenu; skip, but display a hint if user is rotating a camera image
             if (mShowHintAboutRotating) {
                 //noinspection ConstantConditions
-                TipManager.display(context, R.string.tip_autorotate_camera_images, null);
+                TipManager.getInstance()
+                          .display(context, R.string.tip_autorotate_camera_images, null);
                 mShowHintAboutRotating = false;
             }
             return true;

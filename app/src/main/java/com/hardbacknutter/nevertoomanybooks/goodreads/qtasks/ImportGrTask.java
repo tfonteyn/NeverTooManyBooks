@@ -117,6 +117,8 @@ public class ImportGrTask
     @Nullable
     private transient Map<String, String> mBookshelfLookup;
 
+    private final AuthorTypeMapper mAuthorTypeMapper = new AuthorTypeMapper();
+
     /**
      * Constructor.
      *
@@ -507,7 +509,7 @@ public class ImportGrTask
                     final Author author = Author.from(name);
                     final String role = grAuthor.getString(Review.AUTHOR_ROLE);
                     if (role != null && !role.trim().isEmpty()) {
-                        author.setType(AuthorTypeMapper.map(bookLocale, role));
+                        author.setType(mAuthorTypeMapper.map(bookLocale, role));
                     }
                     authorList.add(author);
                 }

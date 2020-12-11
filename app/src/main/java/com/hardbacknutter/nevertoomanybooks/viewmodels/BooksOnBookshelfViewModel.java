@@ -124,7 +124,7 @@ public class BooksOnBookshelfViewModel
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
 
         // external site ID's
-        for (final Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
+        for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
             FIXED_DOMAIN_LIST.add(
                     new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }

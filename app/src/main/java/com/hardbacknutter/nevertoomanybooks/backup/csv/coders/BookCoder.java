@@ -132,7 +132,7 @@ public class BookCoder {
     public BookCoder(@NonNull final ListStyle defStyle) {
         mBookshelfCoder = new StringList<>(new BookshelfCoder(defStyle));
 
-        externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
+        externalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
     }
 
     @NonNull

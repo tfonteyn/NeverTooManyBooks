@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.RadioButton;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
@@ -120,7 +121,7 @@ public class SearchBookByExternalIdFragment
     }
 
     private void onSiteSelect(@NonNull final ConstraintRadioGroup group,
-                              final int viewId) {
+                              @IdRes final int viewId) {
 
         // on NOTHING selected
         if (viewId == View.NO_ID) {
@@ -139,7 +140,8 @@ public class SearchBookByExternalIdFragment
         // on false->true transition
 
         //noinspection OptionalGetWithoutIsPresent
-        final SearchEngineRegistry.Config config = SearchEngineRegistry.getByViewId(viewId).get();
+        final SearchEngineRegistry.Config config = SearchEngineRegistry
+                .getInstance().getByViewId(viewId).get();
         //noinspection ConstantConditions
         mSelectedSearchEngine = (SearchEngine.ByExternalId)
                 Site.Type.Data.getSite(config.getEngineId()).getSearchEngine(getContext());

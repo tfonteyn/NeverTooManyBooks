@@ -89,6 +89,7 @@ public abstract class ShowBookApiHandler
     @NonNull
     private final String mEBookString;
 
+    private final AuthorTypeMapper mAuthorTypeMapper = new AuthorTypeMapper();
 
     /** Local storage for Authors. */
     @NonNull
@@ -194,7 +195,8 @@ public abstract class ShowBookApiHandler
         if (mCurrentAuthorName != null && !mCurrentAuthorName.isEmpty()) {
             final Author author = Author.from(mCurrentAuthorName);
             if (mCurrentAuthorRole != null && !mCurrentAuthorRole.isEmpty()) {
-                author.setType(AuthorTypeMapper.map(getBookLocale(), mCurrentAuthorRole));
+
+                author.setType(mAuthorTypeMapper.map(getBookLocale(), mCurrentAuthorRole));
             }
             mAuthors.add(author);
             // reset for next

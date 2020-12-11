@@ -211,9 +211,10 @@ public class BookTest {
             throws DAO.DaoWriteException, IOException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+
         try (DAO db = new DAO(context, "book")) {
 
-            mBook[0] = prepareBook(context, db);
+            mBook[0] = prepareAndInsertBook(context, db);
             mBookId[0] = mBook[0].getId();
 
             /*
@@ -343,7 +344,7 @@ public class BookTest {
             throws DAO.DaoWriteException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (DAO db = new DAO(context, "ShowBookViewModel-prep")) {
-            mBook[0] = prepareBook(context, db);
+            mBook[0] = prepareAndInsertBook(context, db);
             mBookId[0] = mBook[0].getId();
         }
 
@@ -364,14 +365,17 @@ public class BookTest {
     /*
      * Create and insert a book.
      */
-    private Book prepareBook(@NonNull final Context context,
-                             @NonNull final DAO db)
+    private Book prepareAndInsertBook(@NonNull final Context context,
+                                      @NonNull final DAO db)
             throws DAO.DaoWriteException {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);
         book.putString(KEY_TITLE, Constants.BOOK_TITLE + "0");
         book.setStage(EntityStage.Stage.Dirty);
+
+        book.putLong(DBDefinitions.KEY_ESID_ISFDB, Constants.BOOK_ISFDB_123);
+        book.putString(DBDefinitions.KEY_ESID_LCCN, Constants.BOOK_LCCN_0);
 
         book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, mBookshelfList);
         book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthorList);
@@ -400,6 +404,12 @@ public class BookTest {
         final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
         assertFalse(uuid.isEmpty());
         assertEquals(BOOK_TITLE + "0", book.getString(KEY_TITLE));
+
+        assertEquals(Constants.BOOK_ISFDB_123, book.getLong(DBDefinitions.KEY_ESID_ISFDB));
+
+        // not saved, hence empty
+        assertEquals("", book.getString(DBDefinitions.KEY_ESID_LCCN));
+
 
         final ArrayList<Bookshelf> bookshelves = book
                 .getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);

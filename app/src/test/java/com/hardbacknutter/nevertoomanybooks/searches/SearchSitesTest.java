@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
@@ -35,18 +34,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class SearchSitesTest
         extends Base {
 
-    @Override
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-        setupSearchEnginePreferences();
-    }
-
     @Test
     void dumpEngines() {
-        SearchEngineRegistry.create(mContext);
-
-        final Collection<SearchEngineRegistry.Config> all = SearchEngineRegistry.getAll();
+        final Collection<SearchEngineRegistry.Config> all =
+                SearchEngineRegistry.getInstance().getAll();
         for (final SearchEngineRegistry.Config config : all) {
             assertNotNull(config);
             System.out.println("\n" + config);
@@ -55,15 +46,13 @@ class SearchSitesTest
 
     @Test
     void dumpSites() {
-        SearchEngineRegistry.create(mContext);
-
         for (final Site.Type type : Site.Type.values()) {
             final List<Site> sites = type.getSites();
             System.out.println("\n------------------------------------------\n\n" + type);
 
             for (final Site site : sites) {
                 final SearchEngineRegistry.Config config = SearchEngineRegistry
-                        .getByEngineId(site.engineId);
+                        .getInstance().getByEngineId(site.engineId);
                 assertNotNull(config);
                 final SearchEngine searchEngine = site.getSearchEngine(mContext);
                 assertNotNull(searchEngine);
@@ -75,15 +64,12 @@ class SearchSitesTest
 
     @Test
     void order() {
-        SearchEngineRegistry.create(mContext);
-
         final ArrayList<Site> sites = Site.Type.Data.getSites();
         // 4 should be removed, 128/256 added as loadPrefs will have been called
         assertEquals("64,32,16,8,2,1,128,256",
                      sites.stream()
                           .map(element -> String.valueOf(element.engineId))
                           .collect(Collectors.joining(",")));
-
 
         final List<Site> reordered = Site.Type.reorder(sites, "1,2,4,16,64,128,256,512");
         // 4/512 should be removed, 8/32 NOT added as loadPrefs will NOT have been called

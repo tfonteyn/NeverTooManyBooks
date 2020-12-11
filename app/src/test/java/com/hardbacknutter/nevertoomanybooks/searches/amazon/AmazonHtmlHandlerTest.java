@@ -31,7 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
@@ -46,7 +45,6 @@ class AmazonHtmlHandlerTest
     @BeforeEach
     public void setUp() {
         super.setUp();
-        SearchEngineRegistry.create(mContext);
         mSearchEngine = (AmazonSearchEngine) Site.Type.Data
                 .getSite(SearchSites.AMAZON).getSearchEngine(mContext, new MockCaller());
     }

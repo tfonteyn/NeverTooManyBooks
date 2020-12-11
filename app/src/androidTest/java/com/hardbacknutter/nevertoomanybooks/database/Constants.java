@@ -43,6 +43,10 @@ public class Constants {
     static final String[] COVER = {"0.jpg", "1.jpg"};
     private static final String BOOKSHELF = PREFIX + "BookshelfName";
 
+    // sample external id values
+    static final int BOOK_ISFDB_123 = 123;
+    static final String BOOK_LCCN_0 = "unused0";
+
     static String AuthorFullName(final int index) {
         return AUTHOR_GIVEN_NAME + index
                + " "

@@ -49,7 +49,7 @@ public final class FieldUsage {
     private Usage mUsage;
 
     /**
-     * private Constructor; use static creators instead.
+     * private Constructor; use factory methods instead.
      *
      * @param fieldId    key
      * @param labelResId Field label resource id

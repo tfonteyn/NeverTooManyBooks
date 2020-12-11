@@ -32,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
@@ -47,7 +46,6 @@ class LastDodoTest
     @BeforeEach
     public void setUp() {
         super.setUp();
-        SearchEngineRegistry.create(mContext);
         mSearchEngine = (LastDodoSearchEngine) Site.Type.Data
                 .getSite(SearchSites.LAST_DODO).getSearchEngine(mContext, new MockCaller());
     }

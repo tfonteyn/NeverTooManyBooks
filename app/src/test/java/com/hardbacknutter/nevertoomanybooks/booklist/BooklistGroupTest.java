@@ -22,15 +22,22 @@ package com.hardbacknutter.nevertoomanybooks.booklist;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 class BooklistGroupTest {
+
+    @BeforeAll
+    static void startUp() {
+        Logger.isJUnitTest = true;
+    }
 
     @Test
     void duplicates() {

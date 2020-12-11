@@ -87,7 +87,8 @@ public class LibraryThingRegistrationActivity
 
         // for the purist: we should call SearchEngine#getSiteUrl()
         // but it's extremely unlikely that LibraryThing would ever get a configurable url
-        final String siteUrl = SearchEngineRegistry.getByEngineId(SearchSites.LIBRARY_THING)
+        final String siteUrl = SearchEngineRegistry.getInstance()
+                                                   .getByEngineId(SearchSites.LIBRARY_THING)
                                                    .getSiteUrl();
 
         mVb.registerUrl.setOnClickListener(v -> {

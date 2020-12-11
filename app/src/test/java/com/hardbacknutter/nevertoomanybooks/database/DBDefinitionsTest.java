@@ -22,13 +22,20 @@ package com.hardbacknutter.nevertoomanybooks.database;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
 class DBDefinitionsTest {
+
+    @BeforeAll
+    static void startUp() {
+        Logger.isJUnitTest = true;
+    }
 
     @Test
     void duplicates() {

@@ -175,7 +175,7 @@ public interface SearchEngine {
     @AnyThread
     @NonNull
     default SearchEngineRegistry.Config getConfig() {
-        return SearchEngineRegistry.getByEngineId(getId());
+        return SearchEngineRegistry.getInstance().getByEngineId(getId());
     }
 
     /**
@@ -188,7 +188,8 @@ public interface SearchEngine {
     @AnyThread
     @NonNull
     default String getName(@NonNull final Context context) {
-        return context.getString(SearchEngineRegistry.getByEngineId(getId()).getNameResId());
+        return context.getString(SearchEngineRegistry.getInstance()
+                                                     .getByEngineId(getId()).getNameResId());
     }
 
     /**
@@ -201,7 +202,7 @@ public interface SearchEngine {
     @AnyThread
     @NonNull
     default String getSiteUrl() {
-        return SearchEngineRegistry.getByEngineId(getId()).getSiteUrl();
+        return SearchEngineRegistry.getInstance().getByEngineId(getId()).getSiteUrl();
     }
 
     /**
@@ -215,7 +216,7 @@ public interface SearchEngine {
     @AnyThread
     @NonNull
     default Locale getLocale() {
-        return SearchEngineRegistry.getByEngineId(getId()).getLocale();
+        return SearchEngineRegistry.getInstance().getByEngineId(getId()).getLocale();
     }
 
     /**
@@ -301,7 +302,8 @@ public interface SearchEngine {
     default TerminatorConnection createConnection(@NonNull final String url,
                                                   final boolean followRedirects)
             throws IOException {
-        final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
+        final SearchEngineRegistry.Config config = SearchEngineRegistry
+                .getInstance().getByEngineId(getId());
         final TerminatorConnection con = new TerminatorConnection(getAppContext(), url,
                                                                   config.getConnectTimeoutMs(),
                                                                   config.getReadTimeoutMs(),
@@ -326,7 +328,8 @@ public interface SearchEngine {
                              @Nullable final String bookId,
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @Nullable final ImageFileInfo.Size size) {
-        final SearchEngineRegistry.Config config = SearchEngineRegistry.getByEngineId(getId());
+        final SearchEngineRegistry.Config config = SearchEngineRegistry
+                .getInstance().getByEngineId(getId());
         final String filename = ImageUtils
                 .createFilename(config.getFilenameSuffix(), bookId, cIdx, size);
 
@@ -524,7 +527,8 @@ public interface SearchEngine {
          */
         @AnyThread
         default boolean supportsMultipleCoverSizes() {
-            return SearchEngineRegistry.getByEngineId(getId()).supportsMultipleCoverSizes();
+            return SearchEngineRegistry.getInstance().getByEngineId(getId())
+                                       .supportsMultipleCoverSizes();
         }
 
         /**

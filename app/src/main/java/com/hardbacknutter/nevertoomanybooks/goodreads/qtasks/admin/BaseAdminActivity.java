@@ -88,7 +88,7 @@ public abstract class BaseAdminActivity
     private void onItemClick(@NonNull final TQItem item) {
         // If it owns a hint, display it first
         if (item instanceof TipManager.TipOwner) {
-            TipManager.display(this, ((TipManager.TipOwner) item).getTip(), () ->
+            TipManager.getInstance().display(this, ((TipManager.TipOwner) item).getTip(), () ->
                     showContextDialog(item));
         } else {
             showContextDialog(item);

@@ -22,11 +22,13 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.SeriesCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -65,6 +67,11 @@ class SeriesStringListTest {
     private List<Series> mSeries;
 
     private StringList<Series> mCoder;
+
+    @BeforeAll
+    static void startUp() {
+        Logger.isJUnitTest = true;
+    }
 
     @BeforeEach
     void setUp() {

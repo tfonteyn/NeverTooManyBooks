@@ -959,7 +959,7 @@ public class Book
      */
     @VisibleForTesting
     void preprocessExternalIds(final boolean isNew) {
-        final List<Domain> domains = SearchEngineRegistry.getExternalIdDomains();
+        final List<Domain> domains = SearchEngineRegistry.getInstance().getExternalIdDomains();
 
         domains.stream()
                .filter(domain -> domain.getType().equals(ColumnInfo.TYPE_INTEGER))

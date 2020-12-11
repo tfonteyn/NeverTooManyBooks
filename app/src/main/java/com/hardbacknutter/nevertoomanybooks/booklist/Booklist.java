@@ -75,8 +75,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinition.KEY_FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinition.TBL_FTS_BOOKS;
 
 /**
  * Build and populate temporary tables with details of "flattened" books.
@@ -297,9 +295,10 @@ public class Booklist
             mFilters.add(context ->
                                  '(' + TBL_BOOKS.dot(KEY_PK_ID) + " IN ("
                                  // fetch the ID's only
-                                 + SELECT_ + KEY_FTS_BOOK_ID
-                                 + _FROM_ + TBL_FTS_BOOKS.getName()
-                                 + _WHERE_ + TBL_FTS_BOOKS.getName() + " MATCH '" + query + "')"
+                                 + SELECT_ + FtsDefinition.KEY_FTS_BOOK_ID
+                                 + _FROM_ + FtsDefinition.TBL_FTS_BOOKS.getName()
+                                 + _WHERE_ + FtsDefinition.TBL_FTS_BOOKS.getName()
+                                 + " MATCH '" + query + "')"
                                  + ')');
         }
     }

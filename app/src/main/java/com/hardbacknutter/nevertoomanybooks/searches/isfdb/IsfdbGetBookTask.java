@@ -83,7 +83,7 @@ public class IsfdbGetBookTask
         Thread.currentThread().setName(TAG);
 
         final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
-                SearchEngineRegistry.createSearchEngine(context, SearchSites.ISFDB);
+                SearchEngineRegistry.getInstance().createSearchEngine(context, SearchSites.ISFDB);
         searchEngine.setCaller(this);
 
         final boolean[] fetchThumbnails = {false, false};

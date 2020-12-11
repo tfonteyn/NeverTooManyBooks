@@ -40,7 +40,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
@@ -64,7 +63,6 @@ class StripInfoTest
     @BeforeEach
     public void setUp() {
         super.setUp();
-        SearchEngineRegistry.create(mContext);
         mSearchEngine = (StripInfoSearchEngine) Site.Type.Data
                 .getSite(SearchSites.STRIP_INFO_BE).getSearchEngine(mContext, new MockCaller());
     }

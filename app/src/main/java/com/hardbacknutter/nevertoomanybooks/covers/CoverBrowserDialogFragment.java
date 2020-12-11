@@ -467,6 +467,7 @@ public class CoverBrowserDialogFragment
                     holder.imageView.setOnClickListener(v -> onGalleryImageSelected(imageFileInfo));
 
                     holder.siteView.setText(SearchEngineRegistry
+                                                    .getInstance()
                                                     .getByEngineId(imageFileInfo.getEngineId())
                                                     .getNameResId());
 

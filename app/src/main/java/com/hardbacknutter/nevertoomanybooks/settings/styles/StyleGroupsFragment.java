@@ -142,7 +142,8 @@ public class StyleGroupsFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            TipManager.display(getContext(), R.string.tip_booklist_style_groups, null);
+            TipManager.getInstance().display(getContext(), R.string.tip_booklist_style_groups,
+                                             null);
         }
     }
 

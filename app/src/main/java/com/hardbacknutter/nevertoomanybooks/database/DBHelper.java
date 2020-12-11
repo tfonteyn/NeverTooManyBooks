@@ -546,7 +546,7 @@ public final class DBHelper
                + "  UPDATE " + TBL_BOOKS.getName() + " SET ";
 
         final StringBuilder eidSb = new StringBuilder();
-        for (final Domain domain : SearchEngineRegistry.getExternalIdDomains()) {
+        for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
             eidSb.append(domain.getName()).append("=null,");
         }
         body += eidSb.toString();

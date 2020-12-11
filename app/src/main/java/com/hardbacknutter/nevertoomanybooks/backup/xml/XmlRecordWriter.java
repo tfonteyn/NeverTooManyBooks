@@ -496,7 +496,8 @@ public class XmlRecordWriter
         int delta = 0;
         long lastUpdate = 0;
 
-        final List<Domain> externalIdDomains = SearchEngineRegistry.getExternalIdDomains();
+        final List<Domain> externalIdDomains = SearchEngineRegistry
+                .getInstance().getExternalIdDomains();
 
         try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
             writer.write('<' + XmlTags.TAG_BOOK_LIST);

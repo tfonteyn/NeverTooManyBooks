@@ -49,6 +49,7 @@ public final class ASyncExecutor {
      * order.  This serialization is global to a particular process.
      * Actual execution is done on {@link #MAIN}.
      */
+    @SuppressWarnings("WeakerAccess")
     public static final Executor SERIAL = new SerialExecutor();
     /** Log tag. */
     private static final String TAG = "ASyncExecutor";

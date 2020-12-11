@@ -63,14 +63,23 @@ public final class TipManager {
     private static final String PREF_PREFIX = "tips.";
     /** Preferences prefix for all tips. */
     private static final String PREF_TIP = PREF_PREFIX + "tip.";
-
+    private static TipManager sInstance;
     /** All tips managed by this class. */
-    private static final SparseArray<Tip> ALL = new SparseArray<>();
+    private final SparseArray<Tip> ALL = new SparseArray<>();
 
     private TipManager() {
     }
 
-    private static Tip getTip(@StringRes final int id) {
+    public static TipManager getInstance() {
+        synchronized (TipManager.class) {
+            if (sInstance == null) {
+                sInstance = new TipManager();
+            }
+            return sInstance;
+        }
+    }
+
+    private Tip getTip(@StringRes final int id) {
         Tip tip = ALL.get(id);
         if (tip == null) {
             if (id == R.string.tip_booklist_style_menu) {
@@ -119,7 +128,7 @@ public final class TipManager {
      *
      * @param context Current context
      */
-    public static void reset(@NonNull final Context context) {
+    public void reset(@NonNull final Context context) {
         // remove all. This has the benefit of removing any obsolete keys.
         reset(context, PREF_TIP);
         ALL.clear();
@@ -131,8 +140,8 @@ public final class TipManager {
      * @param context Current context
      * @param prefix  to match
      */
-    public static void reset(@NonNull final Context context,
-                             @NonNull final String prefix) {
+    public void reset(@NonNull final Context context,
+                      @NonNull final String prefix) {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         final SharedPreferences.Editor ed = global.edit();
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
@@ -153,10 +162,10 @@ public final class TipManager {
      *                (or not displayed at all).
      * @param args    Optional arguments for the tip string
      */
-    public static void display(@NonNull final Context context,
-                               @StringRes final int tipId,
-                               @Nullable final Runnable postRun,
-                               @Nullable final Object... args) {
+    public void display(@NonNull final Context context,
+                        @StringRes final int tipId,
+                        @Nullable final Runnable postRun,
+                        @Nullable final Object... args) {
         final Tip tip = getTip(tipId);
         if (tip == null) {
             if (BuildConfig.DEBUG /* always */) {
@@ -185,11 +194,11 @@ public final class TipManager {
      *                (or not displayed at all).
      * @param args    Optional arguments for the tip string
      */
-    public static void display(@NonNull final Context context,
-                               @NonNull final String tipKey,
-                               @StringRes final int tipId,
-                               @Nullable final Runnable postRun,
-                               @Nullable final Object... args) {
+    public void display(@NonNull final Context context,
+                        @NonNull final String tipKey,
+                        @StringRes final int tipId,
+                        @Nullable final Runnable postRun,
+                        @Nullable final Object... args) {
         final Tip tip = getTip(tipId);
         if (tip == null) {
             if (BuildConfig.DEBUG /* always */) {

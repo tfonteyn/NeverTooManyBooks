@@ -555,7 +555,7 @@ public class BooksOnBookshelf
         handleStandardSearchIntent(getIntent());
 
         if (savedInstanceState == null) {
-            TipManager.display(this, R.string.tip_book_list, null);
+            TipManager.getInstance().display(this, R.string.tip_book_list, null);
         }
     }
 

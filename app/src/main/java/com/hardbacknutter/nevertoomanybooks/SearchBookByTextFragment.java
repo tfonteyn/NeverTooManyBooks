@@ -118,7 +118,7 @@ public class SearchBookByTextFragment
         populatePublisherList();
 
         if (savedInstanceState == null) {
-            TipManager.display(getContext(), R.string.tip_book_search_by_text, () ->
+            TipManager.getInstance().display(getContext(), R.string.tip_book_search_by_text, () ->
                     Site.promptToRegister(getContext(), mCoordinator.getSiteList(),
                                           "searchByText", null));
         }

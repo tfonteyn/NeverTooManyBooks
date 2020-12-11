@@ -50,7 +50,7 @@ import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_WRITER;
  * <p>
  * Not based on MapperBase, as the mapping is int based.
  */
-public final class AuthorTypeMapper {
+public class AuthorTypeMapper {
 
     /** Log tag. */
     private static final String TAG = "AuthorTypeMapper";
@@ -138,8 +138,8 @@ public final class AuthorTypeMapper {
         // Design
     }
 
-    public static int map(@NonNull final Locale locale,
-                          @NonNull final String typeName) {
+    public int map(@NonNull final Locale locale,
+                   @NonNull final String typeName) {
         final Integer mapped = MAPPER.get(typeName.toLowerCase(locale).trim());
         if (mapped != null) {
             return mapped;
@@ -148,8 +148,5 @@ public final class AuthorTypeMapper {
         // unknown, log it for future enhancement.
         Logger.warn(App.getAppContext(), TAG, "map|typeName=`" + typeName + "`");
         return TYPE_UNKNOWN;
-    }
-
-    private AuthorTypeMapper() {
     }
 }

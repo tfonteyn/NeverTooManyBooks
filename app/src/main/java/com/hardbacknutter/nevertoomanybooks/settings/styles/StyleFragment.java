@@ -112,7 +112,8 @@ public class StyleFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            TipManager.display(getContext(), R.string.tip_booklist_style_properties, null);
+            TipManager.getInstance()
+                      .display(getContext(), R.string.tip_booklist_style_properties, null);
         }
     }
 

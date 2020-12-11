@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.SearchAdminActivity;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
+import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
  * Encapsulates a {@link SearchEngine} instance + the current enabled/disabled state.
@@ -238,7 +239,8 @@ public final class Site
     @NonNull
     public SearchEngine getSearchEngine(@NonNull final Context context) {
         if (mSearchEngine == null) {
-            mSearchEngine = SearchEngineRegistry.createSearchEngine(context, engineId);
+            mSearchEngine = SearchEngineRegistry
+                    .getInstance().createSearchEngine(context, engineId);
         }
 
         mSearchEngine.reset();
@@ -283,8 +285,10 @@ public final class Site
     @NonNull
     private String getPrefPrefix() {
         return PREF_PREFIX
-               + SearchEngineRegistry.getByEngineId(engineId).getPreferenceKey() + '.'
-               + mType.mTypeName + '.';
+               + SearchEngineRegistry.getInstance().getByEngineId(engineId).getPreferenceKey()
+               + '.'
+               + mType.mTypeName
+               + '.';
     }
 
     private void loadFromPrefs(@NonNull final SharedPreferences global) {
@@ -294,7 +298,6 @@ public final class Site
     private void saveToPrefs(@NonNull final SharedPreferences.Editor editor) {
         editor.putBoolean(getPrefPrefix() + PREF_SUFFIX_ENABLED, mEnabled);
     }
-
 
     @Override
     @NonNull
@@ -410,15 +413,30 @@ public final class Site
         }
 
         /**
-         * Create the list.
+         * Create the list for <strong>all</strong> types.
+         *
+         * @param context Current context
+         */
+        public static void registerAllTypes(@NonNull final Context context) {
+            final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
+            final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
+
+            // configure the site type enums.
+            for (final Type type : values()) {
+                type.createList(context, systemLocale, userLocale);
+            }
+        }
+
+        /**
+         * Create the list for <strong>this</strong> type.
          *
          * @param context      Current context
          * @param systemLocale device Locale <em>(passed in to allow mocking)</em>
          * @param userLocale   user locale <em>(passed in to allow mocking)</em>
          */
-        void createList(@NonNull final Context context,
-                        @NonNull final Locale systemLocale,
-                        @NonNull final Locale userLocale) {
+        private void createList(@NonNull final Context context,
+                                @NonNull final Locale systemLocale,
+                                @NonNull final Locale userLocale) {
 
             // re-create the global list for the type
             mList.clear();

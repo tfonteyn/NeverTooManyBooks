@@ -265,7 +265,7 @@ public class ShowBookFragment
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
-            TipManager.display(getContext(), R.string.tip_view_only_help, null);
+            TipManager.getInstance().display(getContext(), R.string.tip_view_only_help, null);
         }
     }
 

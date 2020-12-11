@@ -58,7 +58,7 @@ public class TasksAdminActivity
         QueueManager.getInstance().registerTaskListener(mOnChangeListener);
 
         if (savedInstanceState == null) {
-            TipManager.display(this, R.string.tip_background_tasks, null);
+            TipManager.getInstance().display(this, R.string.tip_background_tasks, null);
         }
     }
 

@@ -173,7 +173,7 @@ public class AuthorWorksFragment
         mVb.authorWorks.setAdapter(mAdapter);
 
         if (savedInstanceState == null) {
-            TipManager.display(context, R.string.tip_authors_works, null);
+            TipManager.getInstance().display(context, R.string.tip_authors_works, null);
         }
     }
 

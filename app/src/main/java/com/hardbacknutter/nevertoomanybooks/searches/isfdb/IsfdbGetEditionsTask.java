@@ -62,7 +62,7 @@ public class IsfdbGetEditionsTask
         Thread.currentThread().setName(TAG + mIsbn);
 
         final IsfdbSearchEngine searchEngine = (IsfdbSearchEngine)
-                SearchEngineRegistry.createSearchEngine(context, SearchSites.ISFDB);
+                SearchEngineRegistry.getInstance().createSearchEngine(context, SearchSites.ISFDB);
         searchEngine.setCaller(this);
 
         return searchEngine.fetchEditionsByIsbn(mIsbn);

@@ -53,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
@@ -128,7 +127,7 @@ public class MaintenanceFragment
         });
 
         mVb.btnResetTips.setOnClickListener(v -> {
-            TipManager.reset(v.getContext());
+            TipManager.getInstance().reset(v.getContext());
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.tip_reset_done, Snackbar.LENGTH_LONG).show();
         });
@@ -277,7 +276,6 @@ public class MaintenanceFragment
             //noinspection ConstantConditions
             if (db.getDBHelper().deleteAllContent(getContext(), db.getSyncDb())) {
                 AppDir.deleteAllContent(getContext());
-                SearchEngineRegistry.create(getContext());
                 //FIXME: restore all preferences.
 
                 final Intent resultIntent = new Intent()
