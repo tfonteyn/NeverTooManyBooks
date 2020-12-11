@@ -189,10 +189,9 @@ public class ExportFragment
         final ExportHelper helper = mExportViewModel.getExportHelper();
         final Set<ArchiveWriterRecord.Type> exportEntities = helper.getExporterEntries();
 
-        mVb.cbxBooks.setChecked(exportEntities.contains(
-                ArchiveWriterRecord.Type.Books));
+        mVb.cbxBooks.setChecked(exportEntities.contains(ArchiveWriterRecord.Type.Books));
         mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            helper.setExportEntry(ArchiveWriterRecord.Type.Cover, isChecked);
+            helper.setExportEntry(ArchiveWriterRecord.Type.Books, isChecked);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
 
@@ -205,18 +204,15 @@ public class ExportFragment
                 .setIncremental(checkedId == mVb.rbBooksIncremental.getId()));
 
 
-        mVb.cbxCovers.setChecked(exportEntities.contains(
-                ArchiveWriterRecord.Type.Cover));
+        mVb.cbxCovers.setChecked(exportEntities.contains(ArchiveWriterRecord.Type.Cover));
         mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
                 .setExportEntry(ArchiveWriterRecord.Type.Cover, isChecked));
 
-        mVb.cbxPrefs.setChecked(exportEntities.contains(
-                ArchiveWriterRecord.Type.Preferences));
+        mVb.cbxPrefs.setChecked(exportEntities.contains(ArchiveWriterRecord.Type.Preferences));
         mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
                 .setExportEntry(ArchiveWriterRecord.Type.Preferences, isChecked));
 
-        mVb.cbxStyles.setChecked(exportEntities.contains(
-                ArchiveWriterRecord.Type.Styles));
+        mVb.cbxStyles.setChecked(exportEntities.contains(ArchiveWriterRecord.Type.Styles));
         mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
                 .setExportEntry(ArchiveWriterRecord.Type.Styles, isChecked));
 

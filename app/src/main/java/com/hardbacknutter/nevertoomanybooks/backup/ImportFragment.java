@@ -323,8 +323,7 @@ public class ImportFragment
             mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
                     .setImportEntry(ArchiveReaderRecord.Type.Cover, isChecked));
 
-            mVb.cbxPrefs.setChecked(importEntries.contains(
-                    ArchiveReaderRecord.Type.Preferences));
+            mVb.cbxPrefs.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Preferences));
             mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
                     .setImportEntry(ArchiveReaderRecord.Type.Preferences, isChecked));
 
