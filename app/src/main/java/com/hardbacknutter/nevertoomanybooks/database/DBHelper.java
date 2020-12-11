@@ -368,9 +368,15 @@ public final class DBHelper
      * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
      * this will need to be added.
      *
-     * @param db Database Access
+     * @param context Current context
+     * @param db      Database Access
      */
-    public void createTriggers(@NonNull final SynchronizedDb db) {
+    public void createTriggers(final Context context,
+                               @NonNull final SynchronizedDb db) {
+
+        // Before we can install the triggers, we MUST (forcefully) make sure the external
+        // id columns are properly registered.
+        SearchEngineRegistry.create(context, true);
 
         String name;
         String body;
@@ -612,7 +618,7 @@ public final class DBHelper
         //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
         TBL_FTS_BOOKS.create(syncedDb, false);
 
-        createTriggers(syncedDb);
+        createTriggers(context, syncedDb);
     }
 
     /**
@@ -817,8 +823,9 @@ public final class DBHelper
 
         // Rebuild all indices
         recreateIndices(syncedDb);
+
         // Rebuild all triggers
-        createTriggers(syncedDb);
+        createTriggers(context, syncedDb);
     }
 
     @Override

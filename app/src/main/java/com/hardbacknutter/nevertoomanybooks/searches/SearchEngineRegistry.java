@@ -37,8 +37,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 
 /**
  * A registry of all {@link SearchEngine} classes and their {@link Config}.
@@ -60,11 +62,18 @@ public final class SearchEngineRegistry {
 
     /**
      * Create the singleton instance. Must be called during startup.
+     * Re-entrant, will only initialize once unless forced.
+     *
+     * @param context Current context
+     * @param force   when set, recreate forcefully
      */
-    public static void create(@NonNull final Context context) {
-        sInstance = new SearchEngineRegistry();
-        SearchSites.registerSearchEngineClasses(sInstance);
-        Site.Type.registerAllTypes(context);
+    public static void create(@NonNull final Context context,
+                              final boolean force) {
+        if (sInstance == null || force) {
+            sInstance = new SearchEngineRegistry();
+            SearchSites.registerSearchEngineClasses(sInstance);
+            Site.Type.registerAllTypes(context);
+        }
     }
 
     /**
@@ -95,6 +104,9 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public Collection<Config> getAll() {
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+        }
         return SITE_CONFIGS_MAP.values();
     }
 
@@ -119,6 +131,9 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public Optional<Config> getByViewId(@IdRes final int viewId) {
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+        }
         return SITE_CONFIGS_MAP.values().stream()
                                .filter(config -> config.getDomainViewId() == viewId)
                                .findFirst();
@@ -133,6 +148,9 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public Optional<Config> getByMenuId(@IdRes final int menuId) {
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+        }
         return SITE_CONFIGS_MAP.values().stream()
                                .filter(config -> config.getDomainMenuId() == menuId)
                                .findFirst();
@@ -149,6 +167,9 @@ public final class SearchEngineRegistry {
     @NonNull
     public SearchEngine createSearchEngine(@NonNull final Context context,
                                            @SearchSites.EngineId final int engineId) {
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+        }
         //noinspection ConstantConditions
         return SITE_CONFIGS_MAP.get(engineId).createSearchEngine(context);
     }
@@ -160,6 +181,9 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public List<Domain> getExternalIdDomains() {
+        if (BuildConfig.DEBUG /* always */) {
+            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+        }
         return SITE_CONFIGS_MAP.values().stream()
                                .map(Config::getExternalIdDomain)
                                .filter(Objects::nonNull)

@@ -67,7 +67,7 @@ public class OptimizeDbTask
             // small hack to make sure we always update the triggers.
             // Makes creating/modifying triggers MUCH easier.
             if (BuildConfig.DEBUG /* always */) {
-                db.getDBHelper().createTriggers(db.getSyncDb());
+                db.getDBHelper().createTriggers(context, db.getSyncDb());
             }
 
             db.getSyncDb().optimize();

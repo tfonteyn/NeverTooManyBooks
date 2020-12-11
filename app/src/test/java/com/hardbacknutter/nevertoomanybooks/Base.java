@@ -147,10 +147,10 @@ public class Base {
         setupLanguageMap(mContext);
 
         setupSearchEnginePreferences();
-        SearchEngineRegistry.create(mContext);
+        SearchEngineRegistry.create(mContext, true);
     }
 
-    public void setupLanguageMap(@NonNull final Context context) {
+    private void setupLanguageMap(@NonNull final Context context) {
         /*
          * SharedPreferences for the language map.
          */
@@ -183,7 +183,7 @@ public class Base {
                     .apply();
     }
 
-    protected void setupSearchEnginePreferences() {
+    private void setupSearchEnginePreferences() {
         mMockPreferences.edit()
                         .putString(Prefs.pk_ui_locale, AppLocale.SYSTEM_LANGUAGE)
                         // random some at true, some at false.
@@ -228,7 +228,7 @@ public class Base {
     /*
      * String resources.
      */
-    public void setupStringResources(@NonNull final Resources resources) {
+    private void setupStringResources(@NonNull final Resources resources) {
         when(resources.getString(eq(R.string.book_format_paperback))).thenReturn("Paperback");
         when(resources.getString(eq(R.string.book_format_softcover))).thenReturn("Softcover");
         when(resources.getString(eq(R.string.book_format_hardcover))).thenReturn("Hardcover");

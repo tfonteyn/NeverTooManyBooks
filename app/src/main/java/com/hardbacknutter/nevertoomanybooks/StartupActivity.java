@@ -189,8 +189,9 @@ public class StartupActivity
         // Remove the weak self-reference
         sStartupActivity.clear();
 
-        // Setup the search engines
-        SearchEngineRegistry.create(this);
+        // Setup the search engines; but don't force... DBHelper create/upgrade
+        // might already have set these up.
+        SearchEngineRegistry.create(this, false);
 
         // Create and start the Goodreads QueueManager. This (re)starts stored tasks.
         // Note this is not a startup-task; it just needs to be started at startup.
