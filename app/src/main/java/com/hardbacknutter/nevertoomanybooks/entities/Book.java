@@ -113,16 +113,6 @@ public class Book
      * Rating goes from 0 to 5 stars, in 0.5 increments.
      */
     public static final int RATING_STARS = 5;
-    /** Log tag. */
-    private static final String TAG = "Book";
-    /**
-     * Single front/back cover file specs.
-     * <p>
-     * <br>type: {@code String}
-     */
-    public static final String[] BKEY_TMP_FILE_SPEC = new String[]{
-            TAG + ":fileSpec:0",
-            TAG + ":fileSpec:1"};
     /**
      * Bundle key for {@code ParcelableArrayList<Author>}.
      * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
@@ -148,6 +138,16 @@ public class Book
      * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
     public static final String BKEY_BOOKSHELF_LIST = "bookshelf_list";
+    /** Log tag. */
+    private static final String TAG = "Book";
+    /**
+     * Single front/back cover file specs.
+     * <p>
+     * <br>type: {@code String}
+     */
+    public static final String[] BKEY_TMP_FILE_SPEC = new String[]{
+            TAG + ":fileSpec:0",
+            TAG + ":fileSpec:1"};
     /**
      * Bundle key for an {@code ArrayList<Long>} of book ID's.
      * <p>
@@ -1179,6 +1179,7 @@ public class Book
      *
      * @return the File after processing (either original, or a renamed/moved file)
      */
+    @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public File setCover(@NonNull final Context context,
                          @NonNull final DAO db,
@@ -1188,12 +1189,6 @@ public class Book
         if (mStage.getStage() == EntityStage.Stage.WriteAble
             || mStage.getStage() == EntityStage.Stage.Dirty) {
             // We're editing, use BKEY_TMP_FILE_SPEC storage.
-
-            // remove any previous temporary file for the given index
-            final String fileSpec = getString(BKEY_TMP_FILE_SPEC[cIdx]);
-            if (!fileSpec.isEmpty()) {
-                FileUtils.delete(new File(fileSpec));
-            }
 
             if (file != null) {
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
@@ -1218,13 +1213,14 @@ public class Book
                 putString(BKEY_TMP_FILE_SPEC[cIdx], "");
             }
 
+            // switch from WriteAble to Dirty (or from Dirty to Dirty)
             mStage.setStage(EntityStage.Stage.Dirty);
 
             // just return the incoming file, it has not been changed or renamed
             return file;
 
         } else {
-            // we're in read-only mode
+            // we're in read-only mode, use the UUID storage based file name
             final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
             SanityCheck.requireValue(uuid, "uuid");
 

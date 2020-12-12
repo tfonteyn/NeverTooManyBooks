@@ -144,37 +144,17 @@ public class EditBookFieldsFragment
         final ProgressBar progressBar = getActivity().findViewById(R.id.progressBar);
 
         if (mVm.isCoverUsed(global, 0)) {
-            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_0_width);
-            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_0_height);
-
-            mCoverHandler[0] = new CoverHandler(mVm.getDb(), 0, maxWidth, maxHeight);
-            mCoverHandler[0].onFragmentViewCreated(this);
-            mCoverHandler[0].setProgressBar(progressBar);
-            mCoverHandler[0].setBookSupplier(() -> mVm.getBook());
-
-            //noinspection ConstantConditions
-            mCoverHandler[0].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
-            //noinspection ConstantConditions
-            mCoverHandler[0].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
-
+            createCoverHandler(res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
+                               res.getDimensionPixelSize(R.dimen.cover_edit_0_height),
+                               0, progressBar);
         } else {
             mVb.coverImage0.setVisibility(View.GONE);
         }
 
         if (mVm.isCoverUsed(global, 1)) {
-            final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_edit_1_width);
-            final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_edit_1_height);
-
-            mCoverHandler[1] = new CoverHandler(mVm.getDb(), 1, maxWidth, maxHeight);
-            mCoverHandler[1].onFragmentViewCreated(this);
-            mCoverHandler[1].setProgressBar(progressBar);
-            mCoverHandler[1].setBookSupplier(() -> mVm.getBook());
-
-            //noinspection ConstantConditions
-            mCoverHandler[1].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
-            //noinspection ConstantConditions
-            mCoverHandler[1].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
-
+            createCoverHandler(res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
+                               res.getDimensionPixelSize(R.dimen.cover_edit_1_height),
+                               1, progressBar);
         } else {
             mVb.coverImage1.setVisibility(View.GONE);
         }
@@ -221,6 +201,21 @@ public class EditBookFieldsFragment
         mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
                 mVb.lblIsbn, mVb.isbn, mIsbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
+    }
+
+    private void createCoverHandler(final int maxWidth,
+                                    final int maxHeight,
+                                    final int cIdx,
+                                    @NonNull final ProgressBar progressBar) {
+        mCoverHandler[cIdx] = new CoverHandler(mVm.getDb(), cIdx, maxWidth, maxHeight);
+        mCoverHandler[cIdx].onFragmentViewCreated(this);
+        mCoverHandler[cIdx].setProgressBar(progressBar);
+        mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
+
+        //noinspection ConstantConditions
+        mCoverHandler[cIdx].setCoverBrowserTitleSupplier(() -> mVb.title.getText().toString());
+        //noinspection ConstantConditions
+        mCoverHandler[cIdx].setCoverBrowserIsbnSupplier(() -> mVb.isbn.getText().toString());
     }
 
     @Override

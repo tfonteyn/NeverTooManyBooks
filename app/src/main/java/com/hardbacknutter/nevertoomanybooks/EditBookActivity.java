@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
 
 /**
@@ -242,14 +241,6 @@ public class EditBookActivity
     void setResultsAndFinish() {
         setResult(Activity.RESULT_OK, mVm.getResultIntent());
         finish();
-    }
-
-    @Override
-    protected void onDestroy() {
-        // This is a good time to cleanup the cache.
-        // Out of precaution we only trash jpg files
-        AppDir.Cache.purge(App.getTaskContext(), true, file -> file.getName().endsWith(".jpg"));
-        super.onDestroy();
     }
 
     private static class TabAdapter

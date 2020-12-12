@@ -34,6 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * Run 'PRAGMA optimize' on our databases.
@@ -63,11 +64,16 @@ public class OptimizeDbTask
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));
+
+        // This is a 'better' time to cleanup the cache.
+        // Out of precaution we only trash jpg files
+        AppDir.Cache.purge(context, true, file -> file.getName().endsWith(".jpg"));
+
         try (DAO db = new DAO(TAG)) {
             // small hack to make sure we always update the triggers.
             // Makes creating/modifying triggers MUCH easier.
             if (BuildConfig.DEBUG /* always */) {
-                db.getDBHelper().createTriggers(context, db.getSyncDb());
+                db.getDBHelper().createTriggers(db.getSyncDb());
             }
 
             db.getSyncDb().optimize();
