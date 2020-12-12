@@ -73,11 +73,24 @@ public class SearchSitesTest {
         }
     }
 
+    /**
+     * 1  : google
+     * 2  : amazon
+     * 4  : library thing
+     * 8  : goodreads
+     * 16 : isfdb
+     * 32 : openlibrary
+     * 64 : KB NL
+     * 128: stripinfo.be
+     * 256: lastdodo.nl
+     * <p>
+     * default order (2020-12-12): 2,8,1,4,16,128,64,256,32
+     */
     @Test
     public void order() {
         final ArrayList<Site> sites = Site.Type.Data.getSites();
         // 4 should be removed, 128/256 added as loadPrefs will have been called
-        assertEquals("64,32,16,8,2,1,128,256",
+        assertEquals("2,8,1,16,128,64,256,32",
                      sites.stream()
                           .map(element -> String.valueOf(element.engineId))
                           .collect(Collectors.joining(",")));
