@@ -148,27 +148,29 @@ public abstract class SearchBookBaseFragment
 
     private void onSearchFinished(@NonNull final FinishedMessage<Bundle> message) {
         closeProgressDialog();
+        if (message.isNewEvent()) {
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
 
-        Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
+            final String searchErrors = message.result
+                    .getString(SearchCoordinator.BKEY_SEARCH_ERROR);
+            if (searchErrors != null) {
+                //noinspection ConstantConditions
+                new MaterialAlertDialogBuilder(getContext())
+                        .setIcon(R.drawable.ic_warning)
+                        .setTitle(R.string.warning_search_failed)
+                        .setMessage(searchErrors)
+                        .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                        .create()
+                        .show();
 
-        final String searchErrors = message.result.getString(SearchCoordinator.BKEY_SEARCH_ERROR);
-        if (searchErrors != null) {
-            //noinspection ConstantConditions
-            new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_warning)
-                    .setTitle(R.string.warning_search_failed)
-                    .setMessage(searchErrors)
-                    .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
-                    .create()
-                    .show();
+            } else if (!message.result.isEmpty()) {
+                onSearchResults(message.result);
 
-        } else if (!message.result.isEmpty()) {
-            onSearchResults(message.result);
-
-        } else {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_no_matching_book_found,
-                          Snackbar.LENGTH_LONG).show();
+            } else {
+                //noinspection ConstantConditions
+                Snackbar.make(getView(), R.string.warning_no_matching_book_found,
+                              Snackbar.LENGTH_LONG).show();
+            }
         }
     }
 
