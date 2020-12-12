@@ -90,7 +90,7 @@
             android:layout_marginStart="@dimen/field_margin"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/site_amazon"
+            app:layout_constraintTop_toBottomOf="@id/site_goodreads"
             tools:visibility="visible"
             />
 
