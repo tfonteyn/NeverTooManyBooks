@@ -19,25 +19,35 @@
  */
 package com.hardbacknutter.nevertoomanybooks.searches;
 
+import android.content.Context;
+
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 
-import com.hardbacknutter.nevertoomanybooks.Base;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+public class SearchSitesTest {
 
-class SearchSitesTest
-        extends Base {
+    private SearchEngineRegistry mEngineRegistry;
+
+    @Before
+    public void setup() {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        SearchEngineRegistry.create(context);
+        mEngineRegistry = SearchEngineRegistry.getInstance();
+    }
 
     @Test
-    void dumpEngines() {
-        final Collection<SearchEngineRegistry.Config> all =
-                SearchEngineRegistry.getInstance().getAll();
+    public void dumpEngines() {
+        final Collection<SearchEngineRegistry.Config> all = mEngineRegistry.getAll();
         for (final SearchEngineRegistry.Config config : all) {
             assertNotNull(config);
             System.out.println("\n" + config);
@@ -45,16 +55,17 @@ class SearchSitesTest
     }
 
     @Test
-    void dumpSites() {
+    public void dumpSites() {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         for (final Site.Type type : Site.Type.values()) {
             final List<Site> sites = type.getSites();
             System.out.println("\n------------------------------------------\n\n" + type);
 
             for (final Site site : sites) {
-                final SearchEngineRegistry.Config config = SearchEngineRegistry
-                        .getInstance().getByEngineId(site.engineId);
+                final SearchEngineRegistry.Config config =
+                        mEngineRegistry.getByEngineId(site.engineId);
                 assertNotNull(config);
-                final SearchEngine searchEngine = site.getSearchEngine(mContext);
+                final SearchEngine searchEngine = site.getSearchEngine(context);
                 assertNotNull(searchEngine);
 
                 System.out.println("\n" + config + "\n\n" + site + "\n\n" + searchEngine);
@@ -63,7 +74,7 @@ class SearchSitesTest
     }
 
     @Test
-    void order() {
+    public void order() {
         final ArrayList<Site> sites = Site.Type.Data.getSites();
         // 4 should be removed, 128/256 added as loadPrefs will have been called
         assertEquals("64,32,16,8,2,1,128,256",

@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.regex.Matcher;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -45,6 +46,9 @@ public abstract class SearchEngineBase
     @Nullable
     private Canceller mCaller;
 
+    @NonNull
+    private final SearchEngineRegistry.Config mConfig;
+
     /**
      * Constructor.
      *
@@ -55,6 +59,7 @@ public abstract class SearchEngineBase
                             @SearchSites.EngineId final int engineId) {
         mAppContext = appContext;
         mId = engineId;
+        mConfig = SearchEngineRegistry.getInstance().getByEngineId(mId);
     }
 
     /**
@@ -112,6 +117,30 @@ public abstract class SearchEngineBase
     @Override
     public Context getAppContext() {
         return mAppContext;
+    }
+
+    @NonNull
+    @Override
+    public SearchEngineRegistry.Config getConfig() {
+        return mConfig;
+    }
+
+    @NonNull
+    @Override
+    public String getName(@NonNull final Context context) {
+        return context.getString(mConfig.getNameResId());
+    }
+
+    @NonNull
+    @Override
+    public String getSiteUrl() {
+        return mConfig.getSiteUrl();
+    }
+
+    @NonNull
+    @Override
+    public Locale getLocale() {
+        return mConfig.getLocale();
     }
 
     @Override

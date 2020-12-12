@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks._mocks.os.BundleMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.ContextMock;
 import com.hardbacknutter.nevertoomanybooks._mocks.os.SharedPreferencesMock;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -147,7 +146,6 @@ public class Base {
         setupLanguageMap(mContext);
 
         setupSearchEnginePreferences();
-        SearchEngineRegistry.create(mContext, true);
     }
 
     private void setupLanguageMap(@NonNull final Context context) {

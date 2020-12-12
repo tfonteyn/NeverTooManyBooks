@@ -74,6 +74,124 @@ public interface SearchEngine {
     String TAG = "SearchEngine";
 
     /**
+     * Get the engine id.
+     *
+     * @return engine id
+     */
+    @AnyThread
+    @SearchSites.EngineId
+    int getId();
+
+    /**
+     * The <strong>Application</strong> context. Should not be used for UI interactions.
+     *
+     * @return <strong>Application</strong> context.
+     */
+    @AnyThread
+    @NonNull
+    Context getAppContext();
+
+    /**
+     * Get the configuration for this engine.
+     *
+     * @return config
+     */
+    @AnyThread
+    @NonNull
+    SearchEngineRegistry.Config getConfig();
+
+    /**
+     * Get the name for this engine.
+     *
+     * @param context Current context
+     *
+     * @return name
+     */
+    @AnyThread
+    @NonNull
+    String getName(@NonNull Context context);
+
+    /**
+     * Get the site url.
+     * <p>
+     * Override if the URL needs to be user configurable.
+     *
+     * @return url, including scheme.
+     */
+    @AnyThread
+    @NonNull
+    String getSiteUrl();
+
+    /**
+     * Get the Locale for this engine.
+     * <p>
+     * Override if the Locale needs to be user configurable.
+     * (Presumably depending on the site url: see {@link AmazonSearchEngine} for an example)
+     *
+     * @return site locale
+     */
+    @AnyThread
+    @NonNull
+    Locale getLocale();
+
+    /**
+     * Generic test to be implemented by individual site search managers to check if
+     * this site can be consider for searching.
+     * <p>
+     * Implementations can for example check for developer keys, ...
+     * <strong>Should NOT run network code / test for connection.</strong>
+     *
+     * @return {@code true} if we can consider this site for searching.
+     */
+    @AnyThread
+    default boolean isAvailable() {
+        return true;
+    }
+
+    /**
+     * Reset the engine, ready for a new search.
+     * This is called by {@link Site#getSearchEngine}.
+     * <p>
+     * The default implementation calls {@code setCaller(null)}.
+     * Custom implementations should do the same.
+     */
+    default void reset() {
+        setCaller(null);
+    }
+
+    default void setCaller(@Nullable final Canceller caller) {
+
+    }
+
+    @AnyThread
+    default boolean isCancelled() {
+        return false;
+    }
+
+    /**
+     * Optional to implement: sites which need a registration of some sorts.
+     * <p>
+     * Check if we have a key/account; if not alert the user.
+     *
+     * @param context        Current context; <strong>MUST</strong> be passed in
+     *                       as this call might do UI interaction.
+     * @param required       {@code true} if we <strong>must</strong> have access to the site.
+     *                       {@code false} if it would be beneficial but not mandatory.
+     * @param callerIdString String used to flag in preferences if we showed the alert from
+     *                       that caller already or not.
+     * @param onResult       called after user selects an outcome
+     *
+     * @return {@code true} if an alert is currently shown
+     */
+    @UiThread
+    default boolean promptToRegister(@NonNull final Context context,
+                                     final boolean required,
+                                     @Nullable final String callerIdString,
+                                     @Nullable final Consumer<RegistrationAction> onResult) {
+        return false;
+    }
+
+    /**
      * Show a registration request dialog.
      *
      * @param context        Current context
@@ -146,137 +264,6 @@ public interface SearchEngine {
     }
 
     /**
-     * Get the engine id.
-     * <p>
-     * Default implementation in {@link SearchEngineBase}.
-     *
-     * @return engine id
-     */
-    @AnyThread
-    @SearchSites.EngineId
-    int getId();
-
-    /**
-     * The <strong>Application</strong> context. Should not be used for UI interactions.
-     * <p>
-     * Default implementation in {@link SearchEngineBase}.
-     *
-     * @return <strong>Application</strong> context.
-     */
-    @AnyThread
-    @NonNull
-    Context getAppContext();
-
-    /**
-     * Get the configuration for this engine.
-     *
-     * @return config
-     */
-    @AnyThread
-    @NonNull
-    default SearchEngineRegistry.Config getConfig() {
-        return SearchEngineRegistry.getInstance().getByEngineId(getId());
-    }
-
-    /**
-     * Get the name for this engine.
-     *
-     * @param context Current context
-     *
-     * @return name
-     */
-    @AnyThread
-    @NonNull
-    default String getName(@NonNull final Context context) {
-        return context.getString(SearchEngineRegistry.getInstance()
-                                                     .getByEngineId(getId()).getNameResId());
-    }
-
-    /**
-     * Get the site url.
-     * <p>
-     * Override if the URL needs to be user configurable.
-     *
-     * @return url, including scheme.
-     */
-    @AnyThread
-    @NonNull
-    default String getSiteUrl() {
-        return SearchEngineRegistry.getInstance().getByEngineId(getId()).getSiteUrl();
-    }
-
-    /**
-     * Get the Locale for this engine.
-     * <p>
-     * Override if the Locale needs to be user configurable.
-     * (Presumably depending on the site url: see {@link AmazonSearchEngine} for an example)
-     *
-     * @return site locale
-     */
-    @AnyThread
-    @NonNull
-    default Locale getLocale() {
-        return SearchEngineRegistry.getInstance().getByEngineId(getId()).getLocale();
-    }
-
-    /**
-     * Generic test to be implemented by individual site search managers to check if
-     * this site can be consider for searching.
-     * <p>
-     * Implementations can for example check for developer keys, ...
-     * <strong>Should NOT run network code / test for connection.</strong>
-     *
-     * @return {@code true} if we can consider this site for searching.
-     */
-    @AnyThread
-    default boolean isAvailable() {
-        return true;
-    }
-
-    /**
-     * Reset the engine, ready for a new search.
-     * This is called by {@link Site#getSearchEngine}.
-     * <p>
-     * The default implementation calls {@code setCaller(null)}.
-     * Custom implementations should do the same.
-     */
-    default void reset() {
-        setCaller(null);
-    }
-
-    default void setCaller(@Nullable final Canceller caller) {
-
-    }
-
-    @AnyThread
-    default boolean isCancelled() {
-        return false;
-    }
-
-    /**
-     * Optional to implement: sites which need a registration of some sorts.
-     * <p>
-     * Check if we have a key/account; if not alert the user.
-     *
-     * @param context        Current context; <strong>MUST</strong> be passed in
-     *                       as this call might do UI interaction.
-     * @param required       {@code true} if we <strong>must</strong> have access to the site.
-     *                       {@code false} if it would be beneficial but not mandatory.
-     * @param callerIdString String used to flag in preferences if we showed the alert from
-     *                       that caller already or not.
-     * @param onResult       called after user selects an outcome
-     *
-     * @return {@code true} if an alert is currently shown
-     */
-    @UiThread
-    default boolean promptToRegister(@NonNull final Context context,
-                                     final boolean required,
-                                     @Nullable final String callerIdString,
-                                     @Nullable final Consumer<RegistrationAction> onResult) {
-        return false;
-    }
-
-    /**
      * Get the throttler for regulating network access.
      *
      * @return {@code null} no Throttler by default. Override as needed.
@@ -302,8 +289,7 @@ public interface SearchEngine {
     default TerminatorConnection createConnection(@NonNull final String url,
                                                   final boolean followRedirects)
             throws IOException {
-        final SearchEngineRegistry.Config config = SearchEngineRegistry
-                .getInstance().getByEngineId(getId());
+        final SearchEngineRegistry.Config config = getConfig();
         final TerminatorConnection con = new TerminatorConnection(getAppContext(), url,
                                                                   config.getConnectTimeoutMs(),
                                                                   config.getReadTimeoutMs(),
@@ -328,8 +314,7 @@ public interface SearchEngine {
                              @Nullable final String bookId,
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @Nullable final ImageFileInfo.Size size) {
-        final SearchEngineRegistry.Config config = SearchEngineRegistry
-                .getInstance().getByEngineId(getId());
+        final SearchEngineRegistry.Config config = getConfig();
         final String filename = ImageUtils
                 .createFilename(config.getFilenameSuffix(), bookId, cIdx, size);
 
@@ -527,8 +512,7 @@ public interface SearchEngine {
          */
         @AnyThread
         default boolean supportsMultipleCoverSizes() {
-            return SearchEngineRegistry.getInstance().getByEngineId(getId())
-                                       .supportsMultipleCoverSizes();
+            return getConfig().supportsMultipleCoverSizes();
         }
 
         /**

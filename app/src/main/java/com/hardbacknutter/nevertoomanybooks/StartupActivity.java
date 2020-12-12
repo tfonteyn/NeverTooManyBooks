@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
-import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
@@ -188,10 +187,6 @@ public class StartupActivity
     private void gotoMainScreen() {
         // Remove the weak self-reference
         sStartupActivity.clear();
-
-        // Setup the search engines; but don't force... DBHelper create/upgrade
-        // might already have set these up.
-        SearchEngineRegistry.create(this, false);
 
         // Create and start the Goodreads QueueManager. This (re)starts stored tasks.
         // Note this is not a startup-task; it just needs to be started at startup.

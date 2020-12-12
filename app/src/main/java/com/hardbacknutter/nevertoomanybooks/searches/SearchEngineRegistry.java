@@ -52,7 +52,7 @@ public final class SearchEngineRegistry {
     private static SearchEngineRegistry sInstance;
 
     /** All site configurations. */
-    private final Map<Integer, Config> SITE_CONFIGS_MAP = new HashMap<>();
+    private final Map<Integer, Config> mSiteConfigs = new HashMap<>();
 
     /**
      * Constructor. Use {@link #getInstance()}.
@@ -60,16 +60,8 @@ public final class SearchEngineRegistry {
     private SearchEngineRegistry() {
     }
 
-    /**
-     * Create the singleton instance. Must be called during startup.
-     * Re-entrant, will only initialize once unless forced.
-     *
-     * @param context Current context
-     * @param force   when set, recreate forcefully
-     */
-    public static void create(@NonNull final Context context,
-                              final boolean force) {
-        if (sInstance == null || force) {
+    public static void create(@NonNull final Context context) {
+        synchronized (SearchEngineRegistry.class) {
             sInstance = new SearchEngineRegistry();
             SearchSites.registerSearchEngineClasses(sInstance);
             Site.Type.registerAllTypes(context);
@@ -83,8 +75,7 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public static SearchEngineRegistry getInstance() {
-        //noinspection ConstantConditions
-        return sInstance;
+        return Objects.requireNonNull(sInstance, "SearchEngineRegistry not created");
     }
 
     /**
@@ -93,7 +84,7 @@ public final class SearchEngineRegistry {
      * @param config to register
      */
     SearchEngineRegistry add(@NonNull final Config config) {
-        SITE_CONFIGS_MAP.put(config.getEngineId(), config);
+        mSiteConfigs.put(config.getEngineId(), config);
         return this;
     }
 
@@ -105,9 +96,9 @@ public final class SearchEngineRegistry {
     @NonNull
     public Collection<Config> getAll() {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
         }
-        return SITE_CONFIGS_MAP.values();
+        return mSiteConfigs.values();
     }
 
     /**
@@ -119,7 +110,7 @@ public final class SearchEngineRegistry {
      */
     @NonNull
     public Config getByEngineId(@SearchSites.EngineId final int engineId) {
-        return Objects.requireNonNull(SITE_CONFIGS_MAP.get(engineId), "engine not found");
+        return Objects.requireNonNull(mSiteConfigs.get(engineId), "engine not found");
     }
 
     /**
@@ -132,11 +123,11 @@ public final class SearchEngineRegistry {
     @NonNull
     public Optional<Config> getByViewId(@IdRes final int viewId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
         }
-        return SITE_CONFIGS_MAP.values().stream()
-                               .filter(config -> config.getDomainViewId() == viewId)
-                               .findFirst();
+        return mSiteConfigs.values().stream()
+                           .filter(config -> config.getDomainViewId() == viewId)
+                           .findFirst();
     }
 
     /**
@@ -149,11 +140,11 @@ public final class SearchEngineRegistry {
     @NonNull
     public Optional<Config> getByMenuId(@IdRes final int menuId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
         }
-        return SITE_CONFIGS_MAP.values().stream()
-                               .filter(config -> config.getDomainMenuId() == menuId)
-                               .findFirst();
+        return mSiteConfigs.values().stream()
+                           .filter(config -> config.getDomainMenuId() == menuId)
+                           .findFirst();
     }
 
     /**
@@ -168,10 +159,10 @@ public final class SearchEngineRegistry {
     public SearchEngine createSearchEngine(@NonNull final Context context,
                                            @SearchSites.EngineId final int engineId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
         }
         //noinspection ConstantConditions
-        return SITE_CONFIGS_MAP.get(engineId).createSearchEngine(context);
+        return mSiteConfigs.get(engineId).createSearchEngine(context);
     }
 
     /**
@@ -182,12 +173,12 @@ public final class SearchEngineRegistry {
     @NonNull
     public List<Domain> getExternalIdDomains() {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(SITE_CONFIGS_MAP.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
         }
-        return SITE_CONFIGS_MAP.values().stream()
-                               .map(Config::getExternalIdDomain)
-                               .filter(Objects::nonNull)
-                               .collect(Collectors.toList());
+        return mSiteConfigs.values().stream()
+                           .map(Config::getExternalIdDomain)
+                           .filter(Objects::nonNull)
+                           .collect(Collectors.toList());
     }
 
     /**

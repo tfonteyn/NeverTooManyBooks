@@ -77,47 +77,47 @@ public class BooksOnBookshelfViewModel
     public static final String BKEY_BOOKSHELF = TAG + ":bs";
 
     /** The fixed list of domains we always need for building the book list. */
-    private static final Collection<VirtualDomain> FIXED_DOMAIN_LIST = new ArrayList<>();
+    private final Collection<VirtualDomain> mFixedDomainList = new ArrayList<>();
 
-    static {
-        FIXED_DOMAIN_LIST.add(
+    private void initFixedDomainList() {
+        mFixedDomainList.add(
                 // Title for displaying; do NOT sort on it
                 new VirtualDomain(
                         DBDefinitions.DOM_TITLE,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE)));
-        FIXED_DOMAIN_LIST.add(
+        mFixedDomainList.add(
                 // Title for sorting
                 new VirtualDomain(
                         DBDefinitions.DOM_TITLE_OB,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB),
                         VirtualDomain.SORT_ASC));
 
-        FIXED_DOMAIN_LIST.add(
+        mFixedDomainList.add(
                 // the book language is needed for reordering titles
                 new VirtualDomain(
                         DBDefinitions.DOM_BOOK_LANGUAGE,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LANGUAGE)));
 
-        FIXED_DOMAIN_LIST.add(
+        mFixedDomainList.add(
                 // Always get the read flag
                 new VirtualDomain(
                         DBDefinitions.DOM_BOOK_READ,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)));
 
-        FIXED_DOMAIN_LIST.add(
+        mFixedDomainList.add(
                 // Always get the Author ID
                 // (the need for the name will depend on the style).
                 new VirtualDomain(
                         DBDefinitions.DOM_FK_AUTHOR,
                         DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)));
 
-        FIXED_DOMAIN_LIST.add(
+        mFixedDomainList.add(
                 // We want the UUID for the book so we can get thumbnails
                 new VirtualDomain(
                         DBDefinitions.DOM_BOOK_UUID,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_UUID)));
 
-        FIXED_DOMAIN_LIST.add(
+        mFixedDomainList.add(
                 // Always get the ISBN
                 new VirtualDomain(
                         DBDefinitions.DOM_BOOK_ISBN,
@@ -125,7 +125,7 @@ public class BooksOnBookshelfViewModel
 
         // external site ID's
         for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
-            FIXED_DOMAIN_LIST.add(
+            mFixedDomainList.add(
                     new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }
     }
@@ -178,6 +178,8 @@ public class BooksOnBookshelfViewModel
                      @Nullable final Bundle args) {
 
         if (mDb == null) {
+            initFixedDomainList();
+
             mDb = new DAO(TAG);
 
             // first start of the activity, read from user preference
@@ -621,7 +623,7 @@ public class BooksOnBookshelfViewModel
             builder = new Booklist(mDb.getSyncDb(), style, mBookshelf, mRebuildState);
 
             // Add the fixed list of domains we always need.
-            for (final VirtualDomain domainDetails : FIXED_DOMAIN_LIST) {
+            for (final VirtualDomain domainDetails : mFixedDomainList) {
                 builder.addDomain(domainDetails);
             }
 

@@ -35,6 +35,7 @@ import org.acra.config.ToastConfigurationBuilder;
 import org.acra.file.Directory;
 
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 public class App
@@ -86,6 +87,13 @@ public class App
                                                .penaltyLog()
                                                .build());
         }
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        SearchEngineRegistry.create(getApplicationContext());
     }
 
     /**
