@@ -47,6 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
  */
 public final class SearchEngineRegistry {
 
+    private static final String ERROR_EMPTY_CONFIG_MAP = "empty config map";
+
     /** Singleton. */
     @Nullable
     private static SearchEngineRegistry sInstance;
@@ -83,6 +85,7 @@ public final class SearchEngineRegistry {
      *
      * @param config to register
      */
+    @NonNull
     SearchEngineRegistry add(@NonNull final Config config) {
         mSiteConfigs.put(config.getEngineId(), config);
         return this;
@@ -96,7 +99,7 @@ public final class SearchEngineRegistry {
     @NonNull
     public Collection<Config> getAll() {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
         return mSiteConfigs.values();
     }
@@ -123,7 +126,7 @@ public final class SearchEngineRegistry {
     @NonNull
     public Optional<Config> getByViewId(@IdRes final int viewId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
         return mSiteConfigs.values().stream()
                            .filter(config -> config.getDomainViewId() == viewId)
@@ -140,7 +143,7 @@ public final class SearchEngineRegistry {
     @NonNull
     public Optional<Config> getByMenuId(@IdRes final int menuId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
         return mSiteConfigs.values().stream()
                            .filter(config -> config.getDomainMenuId() == menuId)
@@ -159,7 +162,7 @@ public final class SearchEngineRegistry {
     public SearchEngine createSearchEngine(@NonNull final Context context,
                                            @SearchSites.EngineId final int engineId) {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
         //noinspection ConstantConditions
         return mSiteConfigs.get(engineId).createSearchEngine(context);
@@ -173,7 +176,7 @@ public final class SearchEngineRegistry {
     @NonNull
     public List<Domain> getExternalIdDomains() {
         if (BuildConfig.DEBUG /* always */) {
-            SanityCheck.requirePositiveValue(mSiteConfigs.size(), "empty config map");
+            SanityCheck.requirePositiveValue(mSiteConfigs.size(), ERROR_EMPTY_CONFIG_MAP);
         }
         return mSiteConfigs.values().stream()
                            .map(Config::getExternalIdDomain)
@@ -384,6 +387,9 @@ public final class SearchEngineRegistry {
 
         public static class Builder {
 
+            static final int FIVE_SECONDS = 5_000;
+            static final int TEN_SECONDS = 10_000;
+
             @NonNull
             private final Class<? extends SearchEngine> mClass;
 
@@ -414,9 +420,9 @@ public final class SearchEngineRegistry {
             @IdRes
             private int mDomainMenuId;
 
-            private int mConnectTimeoutMs = 5_000;
+            private int mConnectTimeoutMs = FIVE_SECONDS;
 
-            private int mReadTimeoutMs = 10_000;
+            private int mReadTimeoutMs = TEN_SECONDS;
 
             /** {@link SearchEngine.CoverByIsbn} only. */
             private boolean mSupportsMultipleCoverSizes;
