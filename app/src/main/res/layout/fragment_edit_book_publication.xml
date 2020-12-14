@@ -192,6 +192,7 @@
                 style="@style/EditText.Currency"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
+                tools:text="USD"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>

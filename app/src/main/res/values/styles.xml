@@ -65,13 +65,11 @@
         <item name="android:textAppearance">?attr/textAppearanceBody2</item>
     </style>
 
-    <!-- Book title (also used for TOC titles) gets a distinct style. -->
     <style name="Field.BookTitle">
         <item name="android:textStyle">italic</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
-    <!-- Book title gets a distinct style. -->
     <style name="Field.BookTitle.Large">
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
         <item name="android:textSize">22sp</item>
@@ -268,7 +266,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:textAlignment">viewEnd</item>
         <item name="android:inputType">text|textCapCharacters</item>
-        <item name="android:ems">5</item>
+        <item name="android:ems">6</item>
         <item name="android:maxLength">3</item>
         <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
@@ -321,6 +319,7 @@
 
     <!-- CheckBox - editable checkbox with custom icon -->
     <style name="RowButton.Checkable">
+        <item name="android:layout_marginStart">@dimen/row_checkable_btn_margin_start</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:button">?android:attr/textCheckMark</item>

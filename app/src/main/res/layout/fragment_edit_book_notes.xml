@@ -57,8 +57,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/lbl_read"
+            android:paddingStart="@dimen/field_margin"
+            android:paddingEnd="@dimen/field_margin"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:checked="true"
             />
@@ -159,6 +160,7 @@
                 style="@style/EditText.Currency"
                 android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
+                tools:text="EUR"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
