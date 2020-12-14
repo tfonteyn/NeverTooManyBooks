@@ -32,6 +32,7 @@
         android:id="@+id/cbx_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/row_checkable_btn_margin_start"
         android:focusable="false"
         android:text=""
         app:layout_constraintStart_toStartOf="parent"
@@ -86,8 +87,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/title"
         app:layout_constraintTop_toBottomOf="@id/sepBar"
-        tools:text="Last error: book not found"
         tools:ignore="SelectableText"
+        tools:text="Last error: book not found"
         />
 
     <TextView

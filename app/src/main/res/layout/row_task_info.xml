@@ -32,6 +32,7 @@
         android:id="@+id/cbx_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/row_checkable_btn_margin_start"
         android:focusable="false"
         android:text=""
         android:visibility="gone"
@@ -92,8 +93,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/sepBar"
-        tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT"
         tools:ignore="SelectableText"
+        tools:text="Retry 0 of 17, next at July 20, 2012 17:45:32 GMT"
         />
 
     <TextView
@@ -102,8 +103,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/description"
         app:layout_constraintTop_toBottomOf="@id/retry_info"
-        tools:text="Last error: book not found"
         tools:ignore="SelectableText"
+        tools:text="Last error: book not found"
         />
 
     <TextView
