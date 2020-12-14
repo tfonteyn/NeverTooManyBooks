@@ -725,17 +725,17 @@ public class BooksOnBookshelfViewModel
 
             // if we have a list of ID's, ignore other criteria
             if (mSearchCriteria.hasIdList()) {
-                builder.setFilterOnBookIdList(mSearchCriteria.getBookIdList());
+                builder.addFilterOnBookIdList(mSearchCriteria.getBookIdList());
 
             } else {
                 // Criteria supported by FTS
-                builder.setFilter(mSearchCriteria.getFtsAuthor(),
-                                  mSearchCriteria.getFtsTitle(),
-                                  mSearchCriteria.getFtsSeries(),
-                                  mSearchCriteria.getFtsPublisher(),
-                                  mSearchCriteria.getFtsKeywords());
+                builder.addFilterOnKeywords(mSearchCriteria.getFtsAuthor(),
+                                            mSearchCriteria.getFtsTitle(),
+                                            mSearchCriteria.getFtsSeries(),
+                                            mSearchCriteria.getFtsPublisher(),
+                                            mSearchCriteria.getFtsKeywords());
 
-                builder.setFilterOnLoanee(mSearchCriteria.getLoanee());
+                builder.addFilterOnLoanee(mSearchCriteria.getLoanee());
             }
 
             // if we have any criteria set at all, the build should expand the book list.

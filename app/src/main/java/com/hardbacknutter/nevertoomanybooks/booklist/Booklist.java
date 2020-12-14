@@ -283,11 +283,11 @@ public class Booklist
      * @param publisherName Publisher name related keywords to find
      * @param keywords      Keywords to find anywhere in book; this includes all above fields
      */
-    public void setFilter(@Nullable final String author,
-                          @Nullable final String title,
-                          @Nullable final String seriesTitle,
-                          @Nullable final String publisherName,
-                          @Nullable final String keywords) {
+    public void addFilterOnKeywords(@Nullable final String author,
+                                    @Nullable final String title,
+                                    @Nullable final String seriesTitle,
+                                    @Nullable final String publisherName,
+                                    @Nullable final String keywords) {
 
         final String query = FtsDefinition.createMatchString(author, title, seriesTitle,
                                                              publisherName, keywords);
@@ -310,7 +310,7 @@ public class Booklist
      *
      * @param filter the exact name of the person we lend books to.
      */
-    public void setFilterOnLoanee(@Nullable final String filter) {
+    public void addFilterOnLoanee(@Nullable final String filter) {
         if (filter != null && !filter.trim().isEmpty()) {
             mFilters.add(context ->
                                  "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
@@ -329,7 +329,7 @@ public class Booklist
      *
      * @param filter a list of book ID's.
      */
-    public void setFilterOnBookIdList(@Nullable final List<Long> filter) {
+    public void addFilterOnBookIdList(@Nullable final List<Long> filter) {
         if (filter != null && !filter.isEmpty()) {
             mFilters.add(new NumberListFilter(TBL_BOOKS, KEY_PK_ID, filter));
         }
