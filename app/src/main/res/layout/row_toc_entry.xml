@@ -31,6 +31,7 @@
     <TextView
         android:id="@+id/title"
         style="@style/Field.BookTitle"
+        android:layout_marginStart="@dimen/indent2"
         android:drawableStart="@drawable/ic_library_books"
         android:drawablePadding="@dimen/drawable_padding1"
         android:textIsSelectable="false"

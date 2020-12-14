@@ -160,6 +160,9 @@
     <!-- the width for a Button displaying an icon (24dp) and no text. -->
     <dimen name="icon_button_width">48dp</dimen>
 
+    <!-- indent for the check on a ROW_CHECKABLE_BTN. -->
+    <dimen name="row_checkable_btn_margin_start">12dp</dimen>
+
     <!-- generic drawable padding. -->
     <dimen name="drawable_padding1">4dp</dimen>
 
