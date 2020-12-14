@@ -24,33 +24,31 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 /**
  * Used for {@link androidx.preference.MultiSelectListPreference}.
  * <p>
  * We basically want a bitmask/int, but the Preference insists on a {@code Set<String>}
- *
- * @see PInt
  */
 public class PBitmask
         implements PPref<Integer>, PInt {
 
-    /** The {@link StylePersistenceLayer} to use. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final StylePersistenceLayer mPersistence;
-
     /** key for the Preference. */
     @NonNull
     private final String mKey;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
+    /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private final StylePersistenceLayer mPersistence;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final Integer mDefaultValue;
     /** Valid bits. */
     private final int mMask;
-    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
-    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -66,10 +64,15 @@ public class PBitmask
      * @param mask             valid values bitmask
      */
     public PBitmask(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @NonNull final String key,
                     final int defValue,
                     final int mask) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = key;
@@ -85,8 +88,13 @@ public class PBitmask
      * @param that             to copy from
      */
     public PBitmask(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @NonNull final PBitmask that) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = that.mKey;
@@ -110,6 +118,7 @@ public class PBitmask
     public void set(@Nullable final Integer value) {
         final Integer maskedValue = value != null ? value & mMask : null;
         if (mPersisted) {
+            //noinspection ConstantConditions
             mPersistence.setBitmask(mKey, maskedValue);
         } else {
             mNonPersistedValue = maskedValue;
@@ -120,6 +129,7 @@ public class PBitmask
     @Override
     public Integer getValue() {
         if (mPersisted) {
+            //noinspection ConstantConditions
             final Integer value = mPersistence.getBitmask(mKey);
             if (value != null) {
                 return value & mMask;
@@ -139,30 +149,30 @@ public class PBitmask
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final PBitmask pBitmask = (PBitmask) o;
-        return mMask == pBitmask.mMask
-               && mPersisted == pBitmask.mPersisted
-               && mKey.equals(pBitmask.mKey)
-               && mDefaultValue.equals(pBitmask.mDefaultValue)
-               && Objects.equals(mNonPersistedValue, pBitmask.mNonPersistedValue);
+        final PBitmask that = (PBitmask) o;
+        return mKey.equals(that.mKey)
+               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
+               && mDefaultValue.equals(that.mDefaultValue)
+               && mPersisted == that.mPersisted
+               && mMask == that.mMask;
     }
 
     @Override
     public int hashCode() {
-        return Objects
-                .hash(mPersistence, mKey, mDefaultValue, mMask, mPersisted, mNonPersistedValue);
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
+                            mMask);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "PBitmask{"
-               + "mKey='" + mKey + '\''
-               + ", mDefaultValue=" + mDefaultValue + "=" + Integer.toBinaryString(mDefaultValue)
-               + ", mPersisted=" + mPersisted
+               + "mKey=`" + mKey + '`'
                + ", mNonPersistedValue=" + mNonPersistedValue
                + (mNonPersistedValue != null ? "=" + Integer.toBinaryString(mNonPersistedValue)
                                              : "")
+               + ", mDefaultValue=" + mDefaultValue + "=" + Integer.toBinaryString(mDefaultValue)
+               + ", mPersisted=" + mPersisted
                + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)
                + '}';
     }

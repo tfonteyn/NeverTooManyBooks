@@ -24,29 +24,27 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 /**
  * Used for {@link androidx.preference.SeekBarPreference}.
- *
- * @see PInt
  */
 public class PInteger
         implements PPref<Integer>, PInt {
 
-    /** The {@link StylePersistenceLayer} to use. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final StylePersistenceLayer mPersistence;
-
     /** key for the Preference. */
     @NonNull
     private final String mKey;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
+    /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private final StylePersistenceLayer mPersistence;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final Integer mDefaultValue;
-    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
-    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -61,9 +59,14 @@ public class PInteger
      * @param defValue         default value
      */
     public PInteger(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @NonNull final String key,
                     final int defValue) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = key;
@@ -78,8 +81,13 @@ public class PInteger
      * @param that             to copy from
      */
     public PInteger(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @NonNull final PInteger that) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = that.mKey;
@@ -101,6 +109,7 @@ public class PInteger
     @Override
     public void set(@Nullable final Integer value) {
         if (mPersisted) {
+            //noinspection ConstantConditions
             mPersistence.setInt(getKey(), value);
         } else {
             mNonPersistedValue = value;
@@ -111,6 +120,7 @@ public class PInteger
     @Override
     public Integer getValue() {
         if (mPersisted) {
+            //noinspection ConstantConditions
             final Integer value = mPersistence.getInteger(getKey());
             if (value != null) {
                 return value;
@@ -130,16 +140,16 @@ public class PInteger
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final PInteger pInteger = (PInteger) o;
-        return mPersisted == pInteger.mPersisted
-               && mKey.equals(pInteger.mKey)
-               && mDefaultValue.equals(pInteger.mDefaultValue)
-               && Objects.equals(mNonPersistedValue, pInteger.mNonPersistedValue);
+        final PInteger that = (PInteger) o;
+        return mKey.equals(that.mKey)
+               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
+               && mDefaultValue.equals(that.mDefaultValue)
+               && mPersisted == that.mPersisted;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mPersistence, mKey, mDefaultValue, mPersisted, mNonPersistedValue);
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted);
     }
 
     @Override
@@ -147,9 +157,9 @@ public class PInteger
     public String toString() {
         return "PInteger{"
                + "mKey=`" + mKey + '`'
+               + ", mNonPersistedValue=" + mNonPersistedValue
                + ", mDefaultValue=" + mDefaultValue
                + ", mPersisted=" + mPersisted
-               + ", mNonPersistedValue=" + mNonPersistedValue
                + '}';
     }
 }

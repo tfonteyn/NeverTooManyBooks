@@ -29,6 +29,7 @@ import androidx.preference.PreferenceManager;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -48,21 +49,24 @@ abstract class IntStringFilter
         implements StyleFilter<Integer>, PInt {
 
     private static final Integer P_NOT_USED = -1;
+
     @NonNull
-    final VirtualDomain mVirtualDomain;
-    @StringRes
-    private final int mLabelId;
-    /** The {@link StylePersistenceLayer} to use. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final StylePersistenceLayer mPersistence;
-    /** preference key. */
+    protected final VirtualDomain mVirtualDomain;
+    /** key for the Preference. */
     @NonNull
     private final String mKey;
-    @NonNull
-    private final Integer mDefaultValue;
     /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
     private final boolean mPersisted;
+    /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private final StylePersistenceLayer mPersistence;
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final Integer mDefaultValue;
+    @StringRes
+    private final int mLabelId;
+
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -78,10 +82,15 @@ abstract class IntStringFilter
      * @param virtualDomain    to use by the expression
      */
     IntStringFilter(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @StringRes final int labelId,
                     @NonNull final String key,
                     @NonNull final VirtualDomain virtualDomain) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = key;
@@ -100,8 +109,13 @@ abstract class IntStringFilter
      * @param that             to copy from
      */
     IntStringFilter(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @NonNull final IntStringFilter that) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = that.mKey;
@@ -145,6 +159,7 @@ abstract class IntStringFilter
     @Override
     public void set(@Nullable final Integer value) {
         if (mPersisted) {
+            //noinspection ConstantConditions
             mPersistence.setStringedInt(mKey, value);
         } else {
             mNonPersistedValue = value;
@@ -155,6 +170,7 @@ abstract class IntStringFilter
     @Override
     public Integer getValue() {
         if (mPersisted) {
+            //noinspection ConstantConditions
             final Integer value = mPersistence.getStringedInt(mKey);
             if (value != null) {
                 return value;
@@ -175,19 +191,19 @@ abstract class IntStringFilter
             return false;
         }
         final IntStringFilter that = (IntStringFilter) o;
-        return mLabelId == that.mLabelId
-               && mPersisted == that.mPersisted
-               && mVirtualDomain.equals(that.mVirtualDomain)
-               && mKey.equals(that.mKey)
+        return mKey.equals(that.mKey)
+               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
                && mDefaultValue.equals(that.mDefaultValue)
-               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue);
+               && mPersisted == that.mPersisted
+
+               && mLabelId == that.mLabelId
+               && mVirtualDomain.equals(that.mVirtualDomain);
     }
 
     @Override
     public int hashCode() {
-        return Objects
-                .hash(mVirtualDomain, mLabelId, mPersistence, mKey, mDefaultValue, mPersisted,
-                      mNonPersistedValue);
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
+                            mLabelId, mVirtualDomain);
     }
 
     @Override
@@ -195,9 +211,9 @@ abstract class IntStringFilter
     public String toString() {
         return "IntStringFilter{"
                + "mKey=`" + mKey + '`'
+               + ", mNonPersistedValue=" + mNonPersistedValue
                + ", mDefaultValue=" + mDefaultValue
                + ", mPersisted=" + mPersisted
-               + ", mNonPersistedValue=" + mNonPersistedValue
 
                + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
                + ", mVirtualDomain=" + mVirtualDomain

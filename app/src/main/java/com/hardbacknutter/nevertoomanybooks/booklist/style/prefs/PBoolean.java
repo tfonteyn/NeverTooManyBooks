@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 
 /**
@@ -32,19 +33,18 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer
 public class PBoolean
         implements PPref<Boolean> {
 
-    /** The {@link StylePersistenceLayer} to use. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final StylePersistenceLayer mPersistence;
-
     /** key for the Preference. */
     @NonNull
     private final String mKey;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
+    /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private final StylePersistenceLayer mPersistence;
     /** in-memory default to use when value==null, or when the backend does not contain the key. */
     @NonNull
     private final Boolean mDefaultValue;
-    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
-    private final boolean mPersisted;
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Boolean mNonPersistedValue;
@@ -58,7 +58,7 @@ public class PBoolean
      * @param key              preference key
      */
     public PBoolean(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @NonNull final String key) {
         this(isPersistent, persistenceLayer, key, false);
     }
@@ -73,9 +73,14 @@ public class PBoolean
      * @param defValue         default value
      */
     public PBoolean(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @NonNull final String key,
                     final boolean defValue) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = key;
@@ -90,8 +95,13 @@ public class PBoolean
      * @param that             to copy from
      */
     public PBoolean(final boolean isPersistent,
-                    @NonNull final StylePersistenceLayer persistenceLayer,
+                    @Nullable final StylePersistenceLayer persistenceLayer,
                     @NonNull final PBoolean that) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = that.mKey;
@@ -113,6 +123,7 @@ public class PBoolean
     @Override
     public void set(@Nullable final Boolean value) {
         if (mPersisted) {
+            //noinspection ConstantConditions
             mPersistence.setBoolean(getKey(), value);
         } else {
             mNonPersistedValue = value;
@@ -123,6 +134,7 @@ public class PBoolean
     @Override
     public Boolean getValue() {
         if (mPersisted) {
+            //noinspection ConstantConditions
             final Boolean value = mPersistence.getBoolean(getKey());
             if (value != null) {
                 return value;
@@ -146,16 +158,16 @@ public class PBoolean
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final PBoolean pBoolean = (PBoolean) o;
-        return mPersisted == pBoolean.mPersisted
-               && mKey.equals(pBoolean.mKey)
-               && mDefaultValue.equals(pBoolean.mDefaultValue)
-               && Objects.equals(mNonPersistedValue, pBoolean.mNonPersistedValue);
+        final PBoolean that = (PBoolean) o;
+        return mKey.equals(that.mKey)
+               && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
+               && mDefaultValue.equals(that.mDefaultValue)
+               && mPersisted == that.mPersisted;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mPersistence, mKey, mDefaultValue, mPersisted, mNonPersistedValue);
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted);
     }
 
     @Override
@@ -163,9 +175,9 @@ public class PBoolean
     public String toString() {
         return "PBoolean{"
                + "mKey=`" + mKey + '`'
+               + ", mNonPersistedValue=" + mNonPersistedValue
                + ", mDefaultValue=" + mDefaultValue
                + ", mPersisted=" + mPersisted
-               + ", mNonPersistedValue=" + mNonPersistedValue
                + '}';
     }
 }

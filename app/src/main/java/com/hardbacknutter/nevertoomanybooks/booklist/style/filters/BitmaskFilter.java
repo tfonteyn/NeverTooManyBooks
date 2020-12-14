@@ -29,6 +29,7 @@ import androidx.preference.PreferenceManager;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -40,26 +41,26 @@ public class BitmaskFilter
     /** See {@link com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference}. */
     private static final String ACTIVE = ".active";
 
+    /** key for the Preference. */
+    @NonNull
+    private final String mKey;
+    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
+    private final boolean mPersisted;
+    /** The {@link StylePersistenceLayer} to use. Must be NonNull if {@link #mPersisted} == true. */
+    @SuppressWarnings("FieldNotUsedInToString")
+    @Nullable
+    private final StylePersistenceLayer mPersistence;
+
+    /** in-memory default to use when value==null, or when the backend does not contain the key. */
+    @NonNull
+    private final Integer mDefaultValue;
     @NonNull
     private final VirtualDomain mVirtualDomain;
     @StringRes
     private final int mLabelId;
-    /** The {@link StylePersistenceLayer} to use. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final StylePersistenceLayer mPersistence;
-    /** key for the Preference. */
-    @NonNull
-    private final String mKey;
-    /** in-memory default to use when value==null, or when the backend does not contain the key. */
-    @NonNull
-    private final Integer mDefaultValue;
-    /** Flag indicating we should use the persistence store, or use {@link #mNonPersistedValue}. */
-    private final boolean mPersisted;
 
     /** Valid bits. */
     private final int mMask;
-
     /** in memory value used for non-persistence situations. */
     @Nullable
     private Integer mNonPersistedValue;
@@ -77,20 +78,25 @@ public class BitmaskFilter
      * @param mask             valid values bitmask
      */
     BitmaskFilter(final boolean isPersistent,
-                  @NonNull final StylePersistenceLayer persistenceLayer,
+                  @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
                   @NonNull final VirtualDomain virtualDomain,
                   @NonNull final Integer mask) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = key;
         mDefaultValue = 0;
 
-        mMask = mask;
-
         mLabelId = labelId;
         mVirtualDomain = virtualDomain;
+
+        mMask = mask;
     }
 
     /**
@@ -101,17 +107,22 @@ public class BitmaskFilter
      * @param that             to copy from
      */
     BitmaskFilter(final boolean isPersistent,
-                  @NonNull final StylePersistenceLayer persistenceLayer,
+                  @Nullable final StylePersistenceLayer persistenceLayer,
                   @NonNull final BitmaskFilter that) {
+        if (BuildConfig.DEBUG /* always */) {
+            if (isPersistent && persistenceLayer == null) {
+                throw new IllegalStateException();
+            }
+        }
         mPersisted = isPersistent;
         mPersistence = persistenceLayer;
         mKey = that.mKey;
         mDefaultValue = that.mDefaultValue;
 
-        mMask = that.mMask;
-
         mLabelId = that.mLabelId;
         mVirtualDomain = new VirtualDomain(that.mVirtualDomain);
+
+        mMask = that.mMask;
 
         mNonPersistedValue = that.mNonPersistedValue;
         mNonPersistedValueIsActive = that.mNonPersistedValueIsActive;
@@ -133,6 +144,12 @@ public class BitmaskFilter
         return context.getString(mLabelId);
     }
 
+    @NonNull
+    @Override
+    public VirtualDomain getVirtualDomain() {
+        return mVirtualDomain;
+    }
+
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
@@ -141,6 +158,7 @@ public class BitmaskFilter
         }
 
         if (mPersisted) {
+            //noinspection ConstantConditions
             return mPersistence.getNonGlobalBoolean(mKey + ACTIVE);
         } else {
             return mNonPersistedValueIsActive;
@@ -169,19 +187,15 @@ public class BitmaskFilter
         return null;
     }
 
-    @NonNull
-    @Override
-    public VirtualDomain getVirtualDomain() {
-        return mVirtualDomain;
-    }
 
     @Override
     public void set(@Nullable final Integer value) {
-
         if (mPersisted) {
             if (value != null) {
+                //noinspection ConstantConditions
                 mPersistence.setBitmask(mKey, value & mMask);
             } else {
+                //noinspection ConstantConditions
                 mPersistence.setBitmask(mKey, null);
             }
         } else {
@@ -199,6 +213,7 @@ public class BitmaskFilter
     @Override
     public Integer getValue() {
         if (mPersisted) {
+            //noinspection ConstantConditions
             final Integer value = mPersistence.getBitmask(mKey);
             if (value != null) {
                 return value & mMask;
@@ -219,37 +234,42 @@ public class BitmaskFilter
             return false;
         }
         final BitmaskFilter that = (BitmaskFilter) o;
-        return mLabelId == that.mLabelId
-               && mMask == that.mMask
-               && mPersisted == that.mPersisted
-               && mVirtualDomain.equals(that.mVirtualDomain)
-               && mKey.equals(that.mKey)
-               && mDefaultValue.equals(that.mDefaultValue)
+        return mKey.equals(that.mKey)
                && Objects.equals(mNonPersistedValue, that.mNonPersistedValue)
-               && mNonPersistedValueIsActive == that.mNonPersistedValueIsActive;
+               && mDefaultValue.equals(that.mDefaultValue)
+               && mPersisted == that.mPersisted
+
+               && mLabelId == that.mLabelId
+               && mVirtualDomain.equals(that.mVirtualDomain)
+
+               && mNonPersistedValueIsActive == that.mNonPersistedValueIsActive
+               && mMask == that.mMask;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mLabelId, mVirtualDomain, mPersistence, mKey, mDefaultValue, mMask,
-                            mPersisted, mNonPersistedValue, mNonPersistedValueIsActive);
+        return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
+                            mLabelId, mVirtualDomain,
+                            mNonPersistedValueIsActive,
+                            mMask);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "BitmaskFilter{"
-               + "mKey='" + mKey + '\''
-               + ", mDefaultValue=" + mDefaultValue + "=" + Integer.toBinaryString(mDefaultValue)
-               + ", mPersisted=" + mPersisted
+               + "mKey=`" + mKey + '`'
+               + ", mNonPersistedValueIsActive=" + mNonPersistedValueIsActive
                + ", mNonPersistedValue=" + mNonPersistedValue
                + (mNonPersistedValue != null ? "=" + Integer.toBinaryString(mNonPersistedValue)
                                              : "")
-               + ", mNonPersistedValueIsActive=" + mNonPersistedValueIsActive
-               + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)
+               + ", mDefaultValue=" + mDefaultValue + "=" + Integer.toBinaryString(mDefaultValue)
+               + ", mPersisted=" + mPersisted
 
                + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
-               + ", mVirtualDomain='" + mVirtualDomain + '\''
+               + ", mVirtualDomain=" + mVirtualDomain
+
+               + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)
                + '}';
     }
 }
