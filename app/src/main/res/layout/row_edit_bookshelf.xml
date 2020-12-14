@@ -33,6 +33,7 @@
         android:id="@+id/name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
