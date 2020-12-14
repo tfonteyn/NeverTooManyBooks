@@ -32,6 +32,7 @@
         android:id="@+id/field"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
         android:textAppearance="?attr/textAppearanceListItemSecondary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/cbx_usage"
