@@ -34,11 +34,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
 public class BitmaskFilter
         implements StyleFilter<Integer>, PInt {
 
-    /** See {@link com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference}. */
+    /** See {@link TriStateMultiSelectListPreference}. */
     private static final String ACTIVE = ".active";
 
     /** key for the Preference. */
@@ -106,9 +107,9 @@ public class BitmaskFilter
      * @param persistenceLayer Style reference.
      * @param that             to copy from
      */
-    BitmaskFilter(final boolean isPersistent,
-                  @Nullable final StylePersistenceLayer persistenceLayer,
-                  @NonNull final BitmaskFilter that) {
+    private BitmaskFilter(final boolean isPersistent,
+                          @Nullable final StylePersistenceLayer persistenceLayer,
+                          @NonNull final BitmaskFilter that) {
         if (BuildConfig.DEBUG /* always */) {
             if (isPersistent && persistenceLayer == null) {
                 throw new IllegalStateException();
@@ -130,6 +131,13 @@ public class BitmaskFilter
         if (mPersisted) {
             set(that.getValue());
         }
+    }
+
+    @Override
+    @NonNull
+    public BitmaskFilter clone(final boolean isPersistent,
+                               @Nullable final StylePersistenceLayer persistenceLayer) {
+        return new BitmaskFilter(isPersistent, persistenceLayer, this);
     }
 
     @NonNull

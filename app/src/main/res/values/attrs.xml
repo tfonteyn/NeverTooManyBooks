@@ -44,7 +44,7 @@
         </attr>
     </declare-styleable>
 
-    <declare-styleable name="BitmaskPreference">
+    <declare-styleable name="DisregardablePreference">
         <attr name="disregardButtonText" format="string" />
         <attr name="disregardSummaryText" format="string" />
     </declare-styleable>

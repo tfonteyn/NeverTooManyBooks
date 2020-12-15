@@ -27,6 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +36,8 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PCsvString;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PStringCollection;
 
 /**
  * Encapsulate the list of {@code BooklistGroup} with backend storage in a preference,
@@ -52,10 +53,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
  * <p>
  * All of them are written as a CSV String to preserve the order.
  *
- * @see PCsvString
+ * @see PStringCollection
  */
 public class Groups
-        implements PPref<ArrayList<Integer>>, PCsvString {
+        implements PPref<ArrayList<Integer>>, PStringCollection {
 
     /** Style group preferences. */
     public static final String PK_STYLE_GROUPS = "style.booklist.groups";
@@ -240,7 +241,7 @@ public class Groups
     @Override
     public ArrayList<Integer> getValue() {
         if (mPersisted) {
-            final ArrayList<Integer> value = mStyle.getPersistenceLayer().getIntList(mKey);
+            final ArrayList<Integer> value = mStyle.getPersistenceLayer().getStringedIntList(mKey);
             if (value != null) {
                 return value;
             }
@@ -252,17 +253,14 @@ public class Groups
     }
 
     @Override
-    public void setCsv(@Nullable final String values) {
+    public void setStringCollection(@NonNull final Collection<String> values) {
         if (mPersisted) {
-            mStyle.getPersistenceLayer().setString(mKey, values);
+            mStyle.getPersistenceLayer()
+                  .setString(mKey, TextUtils.join(PStringCollection.DELIM, values));
         } else {
-            // Not implemented for now, and in fact not needed/used for now (2020-03-11)
-            // Problem is that we'd need to split the incoming CSV string, and re-create the list.
-            // But on this level, we don't know the real type of the elements in the Csv string.
-            // i.o.w. this needs to be implemented in a concrete class.
-            // Aside of that, current usage is that a List is concatenated to a Csv String and
-            // given to this method. Implementing the non-persistent branch would bring a
-            // pointless double conversion.
+            // Not implemented as this logic branch is never used.
+            // Current usage of this method is limited to importing a style, which obviously
+            // always will require a persistence layer.
             throw new UnsupportedOperationException();
         }
     }
@@ -270,7 +268,7 @@ public class Groups
     @Override
     public void set(@Nullable final ArrayList<Integer> value) {
         if (mPersisted) {
-            mStyle.getPersistenceLayer().setIntList(mKey, value);
+            mStyle.getPersistenceLayer().setStringedIntList(mKey, value);
         } else {
             mNonPersistedValue.clear();
             if (value != null) {

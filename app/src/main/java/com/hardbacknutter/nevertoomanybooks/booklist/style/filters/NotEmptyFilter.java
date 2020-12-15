@@ -41,7 +41,7 @@ public class NotEmptyFilter
      * @param virtualDomain    to use by the expression
      */
     NotEmptyFilter(final boolean isPersistent,
-                   @NonNull final StylePersistenceLayer persistenceLayer,
+                   @Nullable final StylePersistenceLayer persistenceLayer,
                    @StringRes final int labelId,
                    @NonNull final String key,
                    @NonNull final VirtualDomain virtualDomain) {
@@ -55,10 +55,17 @@ public class NotEmptyFilter
      * @param persistenceLayer Style reference.
      * @param filter           to copy from
      */
-    NotEmptyFilter(final boolean isPersistent,
-                   @NonNull final StylePersistenceLayer persistenceLayer,
-                   @NonNull final NotEmptyFilter filter) {
+    private NotEmptyFilter(final boolean isPersistent,
+                           @Nullable final StylePersistenceLayer persistenceLayer,
+                           @NonNull final NotEmptyFilter filter) {
         super(isPersistent, persistenceLayer, filter);
+    }
+
+    @Override
+    @NonNull
+    public NotEmptyFilter clone(final boolean isPersistent,
+                                @Nullable final StylePersistenceLayer persistenceLayer) {
+        return new NotEmptyFilter(isPersistent, persistenceLayer, this);
     }
 
     @Override

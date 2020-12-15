@@ -35,12 +35,30 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
+
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_EDITION_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_ISBN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_SIGNED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_TOC_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SIGNED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 
 /**
  * Encapsulate Filters and all related data/logic.
@@ -59,6 +77,9 @@ public class Filters {
     public static final String PK_FILTER_TOC_BITMASK = "style.booklist.filter.anthology";
     /** Booklist Filter - MultiSelectListPreference. */
     public static final String PK_FILTER_EDITION_BITMASK = "style.booklist.filter.editions";
+    /** Booklist Filter - MultiSelectListPreference. */
+    public static final String PK_FILTER_BOOKSHELVES = "style.booklist.filter.bookshelves";
+
     /**
      * All filters in an <strong>ordered</strong> map.
      */
@@ -75,34 +96,44 @@ public class Filters {
 
         mFilters.put(PK_FILTER_READ, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_read, PK_FILTER_READ,
-                new VirtualDomain(DBDefinitions.DOM_BOOK_READ,
-                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ))));
+                new VirtualDomain(DOM_BOOK_READ, TBL_BOOKS.dot(KEY_READ))));
 
         mFilters.put(PK_FILTER_SIGNED, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_signed, PK_FILTER_SIGNED,
-                new VirtualDomain(DBDefinitions.DOM_BOOK_SIGNED,
-                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED))));
+                new VirtualDomain(DOM_BOOK_SIGNED, TBL_BOOKS.dot(KEY_SIGNED))));
 
         mFilters.put(PK_FILTER_TOC_BITMASK, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_anthology, PK_FILTER_TOC_BITMASK,
-                new VirtualDomain(DBDefinitions.DOM_BOOK_TOC_BITMASK,
-                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TOC_BITMASK))));
+                new VirtualDomain(DOM_BOOK_TOC_BITMASK, TBL_BOOKS.dot(KEY_TOC_BITMASK))));
 
         mFilters.put(PK_FILTER_LOANEE, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_lend_out, PK_FILTER_LOANEE,
-                new VirtualDomain(DBDefinitions.DOM_LOANEE,
-                                  DBDefinitions.TBL_BOOK_LOANEE.dot(DBDefinitions.KEY_LOANEE))));
-
-        mFilters.put(PK_FILTER_EDITION_BITMASK, new BitmaskFilter(
-                isPersistent, persistenceLayer, R.string.lbl_edition, PK_FILTER_EDITION_BITMASK,
-                new VirtualDomain(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)),
-                Book.Edition.BITMASK_ALL));
+                new VirtualDomain(DOM_LOANEE, TBL_BOOK_LOANEE.dot(KEY_LOANEE))));
 
         mFilters.put(PK_FILTER_ISBN, new NotEmptyFilter(
                 isPersistent, persistenceLayer, R.string.lbl_isbn, PK_FILTER_ISBN,
-                new VirtualDomain(DBDefinitions.DOM_BOOK_ISBN,
-                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN))));
+                new VirtualDomain(DOM_BOOK_ISBN, TBL_BOOKS.dot(KEY_ISBN))));
+
+        mFilters.put(PK_FILTER_EDITION_BITMASK, new BitmaskFilter(
+                isPersistent, persistenceLayer, R.string.lbl_edition, PK_FILTER_EDITION_BITMASK,
+                new VirtualDomain(DOM_BOOK_EDITION_BITMASK, TBL_BOOKS.dot(KEY_EDITION_BITMASK)),
+                Book.Edition.BITMASK_ALL));
+
+        //URGENT: filtering on bookshelves:
+        // this and related code all works fine, but is clashing with how
+        // a single bookshelf is the 'main' in the BoB view.
+        // i.e.
+        // - selection of a bookshelf versus 'all books' in the BoB spinner
+        // and the use of it as a single item filter
+        // - bookshelves as groups in the BoB builder
+        // - this new filtering on multiple bookshelves
+        if (BuildConfig.ENABLE_STYLE_BOOKSHELF_FILTER) {
+            mFilters.put(PK_FILTER_BOOKSHELVES, new IntListFilter(
+                    isPersistent, persistenceLayer, R.string.lbl_bookshelves_long,
+                    PK_FILTER_BOOKSHELVES,
+                    new VirtualDomain(DOM_BOOKSHELF_NAME,
+                                      TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF))));
+        }
     }
 
     /**
@@ -116,19 +147,7 @@ public class Filters {
                    @NonNull final StylePersistenceLayer persistenceLayer,
                    @NonNull final Filters that) {
         for (final StyleFilter<?> filter : that.mFilters.values()) {
-            final StyleFilter<?> clonedFilter;
-            if (filter instanceof BitmaskFilter) {
-                clonedFilter = new BitmaskFilter(isPersistent, persistenceLayer,
-                                                 (BitmaskFilter) filter);
-            } else if (filter instanceof BooleanFilter) {
-                clonedFilter = new BooleanFilter(isPersistent, persistenceLayer,
-                                                 (BooleanFilter) filter);
-            } else if (filter instanceof NotEmptyFilter) {
-                clonedFilter = new NotEmptyFilter(isPersistent, persistenceLayer,
-                                                  (NotEmptyFilter) filter);
-            } else {
-                throw new IllegalStateException("Clone not supported for " + filter);
-            }
+            final StyleFilter<?> clonedFilter = filter.clone(isPersistent, persistenceLayer);
             mFilters.put(clonedFilter.getKey(), clonedFilter);
         }
     }
@@ -243,7 +262,8 @@ public class Filters {
                 PK_FILTER_SIGNED,
                 PK_FILTER_LOANEE,
                 PK_FILTER_TOC_BITMASK,
-                PK_FILTER_EDITION_BITMASK})
+                PK_FILTER_EDITION_BITMASK,
+                PK_FILTER_BOOKSHELVES})
     @Retention(RetentionPolicy.SOURCE)
     @interface Key {
 

@@ -41,7 +41,7 @@ public class BooleanFilter
      * @param virtualDomain    to use by the expression
      */
     BooleanFilter(final boolean isPersistent,
-                  @NonNull final StylePersistenceLayer persistenceLayer,
+                  @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
                   @SuppressWarnings("SameParameterValue")
@@ -56,10 +56,17 @@ public class BooleanFilter
      * @param persistenceLayer Style reference.
      * @param filter           to copy from
      */
-    BooleanFilter(final boolean isPersistent,
-                  @NonNull final StylePersistenceLayer persistenceLayer,
-                  @NonNull final BooleanFilter filter) {
+    private BooleanFilter(final boolean isPersistent,
+                          @Nullable final StylePersistenceLayer persistenceLayer,
+                          @NonNull final BooleanFilter filter) {
         super(isPersistent, persistenceLayer, filter);
+    }
+
+    @Override
+    @NonNull
+    public BooleanFilter clone(final boolean isPersistent,
+                               @Nullable final StylePersistenceLayer persistenceLayer) {
+        return new BooleanFilter(isPersistent, persistenceLayer, this);
     }
 
     @Override

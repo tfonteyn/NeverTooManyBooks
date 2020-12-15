@@ -62,7 +62,7 @@
             />
 
         <!--        -->
-        <com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference
+        <com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:dialogMessage="@string/info_filter_edition"
             android:entries="@array/pe_bob_filter_edition"
@@ -81,5 +81,13 @@
             android:title="@string/lbl_isbn"
             />
 
+        <com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference
+            android:defaultValue="@array/empty_array"
+            android:dialogMessage="@string/info_filter_edition"
+            android:icon="@drawable/ic_filter_list"
+            android:key="style.booklist.filter.bookshelves"
+            android:title="@string/lbl_bookshelves_long"
+            app:disregardButtonText="@string/bookshelf_all_books" />
+        />
     </PreferenceCategory>
 </PreferenceScreen>

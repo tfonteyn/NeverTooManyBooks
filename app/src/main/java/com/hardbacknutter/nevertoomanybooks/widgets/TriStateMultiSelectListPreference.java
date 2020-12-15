@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BitmaskFilter;
 
 /**
- * Allows a user to select 0 or more checkboxes (forming a bitmask) or select to disregard
+ * Allows a user to select 0 or more checkboxes or use the neutral-button to disregard
  * the entire setting.
  * <p>
  * The latter is handled with a secondary preference key (originalKey + ".active")
@@ -55,14 +55,14 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.BitmaskFilter
  *
  * <pre>
  *     {@code
- *         <declare-styleable name="BitmaskPreference">
+ *         <declare-styleable name="TriStateMultiSelectListPreference">
  *           <attr name="disregardButtonText" format="string" />
  *           <attr name="disregardSummaryText" format="string" />
  *         </declare-styleable>
  *     }
  * </pre>
  */
-public class BitmaskPreference
+public class TriStateMultiSelectListPreference
         extends MultiSelectListPreference {
 
     /** See {@link BitmaskFilter}. */
@@ -82,28 +82,28 @@ public class BitmaskPreference
     @Nullable
     private Boolean mActive;
 
-    public BitmaskPreference(@NonNull final Context context,
-                             @Nullable final AttributeSet attrs,
-                             final int defStyleAttr,
-                             final int defStyleRes) {
+    public TriStateMultiSelectListPreference(@NonNull final Context context,
+                                             @Nullable final AttributeSet attrs,
+                                             final int defStyleAttr,
+                                             final int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);
     }
 
-    public BitmaskPreference(@NonNull final Context context,
-                             @Nullable final AttributeSet attrs,
-                             final int defStyleAttr) {
+    public TriStateMultiSelectListPreference(@NonNull final Context context,
+                                             @Nullable final AttributeSet attrs,
+                                             final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context, attrs);
     }
 
-    public BitmaskPreference(@NonNull final Context context,
-                             @Nullable final AttributeSet attrs) {
+    public TriStateMultiSelectListPreference(@NonNull final Context context,
+                                             @Nullable final AttributeSet attrs) {
         super(context, attrs);
         init(context, attrs);
     }
 
-    public BitmaskPreference(@NonNull final Context context) {
+    public TriStateMultiSelectListPreference(@NonNull final Context context) {
         super(context);
     }
 
@@ -111,12 +111,12 @@ public class BitmaskPreference
                      @Nullable final AttributeSet attrs) {
         if (attrs != null) {
             final TypedArray ta = context.getTheme().obtainStyledAttributes(
-                    attrs, R.styleable.BitmaskPreference, 0, 0);
+                    attrs, R.styleable.DisregardablePreference, 0, 0);
             try {
                 mDisregardButtonText =
-                        ta.getString(R.styleable.BitmaskPreference_disregardButtonText);
+                        ta.getString(R.styleable.DisregardablePreference_disregardButtonText);
                 mDisregardSummaryText =
-                        ta.getString(R.styleable.BitmaskPreference_disregardSummaryText);
+                        ta.getString(R.styleable.DisregardablePreference_disregardSummaryText);
             } finally {
                 ta.recycle();
             }
@@ -192,7 +192,7 @@ public class BitmaskPreference
      *         }
      * </pre>
      */
-    public static class BitmaskPreferenceDialogFragment
+    public static class TSMSLPreferenceDialogFragment
             extends PreferenceDialogFragmentCompat {
 
         public static final String TAG = "BitmaskPreferenceDialog";
@@ -223,11 +223,11 @@ public class BitmaskPreference
          * @param preference   for this dialog
          */
         public static void launch(@NonNull final Fragment hostFragment,
-                                  @NonNull final BitmaskPreference preference) {
+                                  @NonNull final TriStateMultiSelectListPreference preference) {
             final Bundle args = new Bundle(1);
             args.putString(ARG_KEY, preference.getKey());
 
-            final DialogFragment frag = new BitmaskPreferenceDialogFragment();
+            final DialogFragment frag = new TSMSLPreferenceDialogFragment();
             frag.setArguments(args);
             // Using setTargetFragment + getParentFragmentManager
             // which is required by PreferenceDialogFragmentCompat
@@ -242,7 +242,8 @@ public class BitmaskPreference
             super.onCreate(savedInstanceState);
 
             if (savedInstanceState == null) {
-                final MultiSelectListPreference preference = (BitmaskPreference) getPreference();
+                final MultiSelectListPreference preference =
+                        (TriStateMultiSelectListPreference) getPreference();
 
                 if (preference.getEntries() == null || preference.getEntryValues() == null) {
                     throw new IllegalStateException(
@@ -312,7 +313,7 @@ public class BitmaskPreference
         protected void onPrepareDialogBuilder(@NonNull final AlertDialog.Builder builder) {
             super.onPrepareDialogBuilder(builder);
 
-            final String neutralText = ((BitmaskPreference) getPreference())
+            final String neutralText = ((TriStateMultiSelectListPreference) getPreference())
                     .getDisregardButtonText();
             if (neutralText != null) {
                 builder.setNeutralButton(neutralText, (d, w) -> mUnused = true);
@@ -321,7 +322,8 @@ public class BitmaskPreference
 
         @Override
         public void onDialogClosed(final boolean positiveResult) {
-            final BitmaskPreference preference = (BitmaskPreference) getPreference();
+            final TriStateMultiSelectListPreference preference =
+                    (TriStateMultiSelectListPreference) getPreference();
 
             // a tat annoying... we only get whether the user clicked the BUTTON_POSITIVE
             // or not; which is why we need to use the mUnused variable.

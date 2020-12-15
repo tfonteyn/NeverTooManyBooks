@@ -23,20 +23,23 @@ import android.content.Context;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import java.util.ArrayList;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class BitmaskFilterTest {
+public class IntListFilterTest {
 
     private StylePersistenceLayer mLayerMock;
 
@@ -48,19 +51,20 @@ public class BitmaskFilterTest {
     @Test
     public void cc() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final BitmaskFilter p1 = new BitmaskFilter(
-                false, mLayerMock, R.string.lbl_edition,
-                Filters.PK_FILTER_EDITION_BITMASK,
-                new VirtualDomain(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)),
-                Book.Edition.BITMASK_ALL);
+        final IntListFilter p1 = new IntListFilter(
+                false, mLayerMock, R.string.lbl_bookshelves_long,
+                Filters.PK_FILTER_BOOKSHELVES,
+                new VirtualDomain(DOM_BOOKSHELF_NAME, TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF)));
 
-        p1.set(Book.Edition.SIGNED | Book.Edition.LIMITED);
+        final ArrayList<Integer> value = new ArrayList<>();
+        value.add(1);
+        value.add(13);
+        p1.set(value);
         assertTrue(p1.isActive(context));
 
-        final BitmaskFilter p2 = p1.clone(false, mLayerMock);
+        final IntListFilter p2 = p1.clone(false, mLayerMock);
         assertEquals(p1, p2);
-        assertEquals(Book.Edition.SIGNED | Book.Edition.LIMITED, (int) p2.getValue());
+        assertEquals(p1.getValue(), p2.getValue());
         assertTrue(p2.isActive(context));
     }
 }

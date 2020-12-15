@@ -19,14 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist.style.prefs;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
+
+import java.util.Collection;
 
 /**
  * Passthrough support.
  */
-public interface PCsvString {
+public interface PStringCollection {
 
     String DELIM = ",";
 
-    void setCsv(@Nullable String values);
+    void setStringCollection(@NonNull Collection<String> values);
 }

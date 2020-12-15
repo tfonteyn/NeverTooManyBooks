@@ -55,7 +55,7 @@ public class BooleanFilterTest {
                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)));
         p1.set(true);
 
-        final BooleanFilter p2 = new BooleanFilter(false, mLayerMock, p1);
+        final BooleanFilter p2 = p1.clone(false, mLayerMock);
         assertEquals(p1, p2);
         assertEquals(1, (int) p2.getValue());
         assertTrue(p2.isActive(context));

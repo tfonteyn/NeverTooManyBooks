@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StylePersistenceLayerBundle
         implements StylePersistenceLayer {
@@ -121,12 +122,32 @@ public class StylePersistenceLayerBundle
     }
 
     @Override
-    public void setIntList(@NonNull final String key,
-                           @Nullable final ArrayList<Integer> value) {
+    public void setStringedIntList(@NonNull final String key,
+                                   @Nullable final List<Integer> value) {
         if (value == null) {
             b.remove(key);
         } else {
-            b.putIntegerArrayList(key, value);
+            b.putIntegerArrayList(key, new ArrayList<>(value));
+        }
+    }
+
+    @Nullable
+    @Override
+    public ArrayList<Integer> getStringedIntList(@NonNull final String key) {
+        if (b.containsKey(key)) {
+            return b.getIntegerArrayList(key);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void setIntList(@NonNull final String key,
+                           @Nullable final List<Integer> value) {
+        if (value == null) {
+            b.remove(key);
+        } else {
+            b.putIntegerArrayList(key, new ArrayList<>(value));
         }
     }
 

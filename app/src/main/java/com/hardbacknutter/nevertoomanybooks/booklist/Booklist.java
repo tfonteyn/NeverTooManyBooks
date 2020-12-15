@@ -272,6 +272,31 @@ public class Booklist
         }
     }
 
+//    /**
+//     * Filter on the specified Bookshelves. Uses an <strong>OR</strong> type filter.
+//     * The filter will only be added if the current style does not contain the Bookshelf group.
+//     *
+//     * @param bookshelves to filter on
+//     */
+//    public void addFilterOnBookshelf(@Nullable final List<Bookshelf> bookshelves) {
+//        //
+//        if (bookshelves != null && !bookshelves.isEmpty()
+//            && !mStyle.getGroups().contains(BooklistGroup.BOOKSHELF)) {
+//
+//            if (bookshelves.size() == 1) {
+//                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID)
+//                                  + '=' + bookshelves.get(0).getId() + ')');
+//            } else {
+//                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID)
+//                                  + " IN (" + bookshelves.stream()
+//                                                         .map(Bookshelf::getId)
+//                                                         .map(String::valueOf)
+//                                                         .collect(Collectors.joining(","))
+//                                  + "))");
+//            }
+//        }
+//    }
+
     /**
      * Adds the FTS book table for a keyword match.
      * <p>
@@ -342,10 +367,11 @@ public class Booklist
      * @param context Current context
      */
     public void build(@NonNull final Context context) {
+        final boolean isFilteredOnBookshelves = !mBookshelf.isAllBooks();
 
         // Construct the list table and all needed structures.
         final BooklistBuilder helper = new BooklistBuilder(mInstanceId,
-                                                           mStyle, mBookshelf,
+                                                           mStyle, isFilteredOnBookshelves,
                                                            mRebuildState);
         helper.preBuild(context, mBookDomains.values(), mFilters);
 

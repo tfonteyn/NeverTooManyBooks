@@ -36,7 +36,7 @@ import androidx.preference.PreferenceScreen;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.widgets.BitmaskPreference;
+import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
 /**
  * Base settings page. This handles:
@@ -122,22 +122,22 @@ public abstract class BasePreferenceFragment
 
 
     /**
-     * BitmaskPreference get a custom Dialog were the neutral button displays
+     * TriStateMultiSelectListPreference get a custom Dialog were the neutral button displays
      * the "unused" option.
      *
      * <br><br>{@inheritDoc}
      */
     @Override
     public void onDisplayPreferenceDialog(@NonNull final Preference preference) {
-        if (preference instanceof BitmaskPreference) {
+        if (preference instanceof TriStateMultiSelectListPreference) {
             // getParentFragmentManager is required by PreferenceDialogFragmentCompat
             // as the latter insists on using setTargetFragment to communicate back.
 
             // check if dialog is already showing
             if (getParentFragmentManager().findFragmentByTag(
-                    BitmaskPreference.BitmaskPreferenceDialogFragment.TAG) == null) {
-                BitmaskPreference.BitmaskPreferenceDialogFragment
-                        .launch(this, (BitmaskPreference) preference);
+                    TriStateMultiSelectListPreference.TSMSLPreferenceDialogFragment.TAG) == null) {
+                TriStateMultiSelectListPreference.TSMSLPreferenceDialogFragment
+                        .launch(this, (TriStateMultiSelectListPreference) preference);
             }
             return;
         }
@@ -182,21 +182,22 @@ public abstract class BasePreferenceFragment
             return ((EditTextPreference) preference).getText();
         }
 
-        if (preference instanceof BitmaskPreference) {
-            final BitmaskPreference bmp = (BitmaskPreference) preference;
-            if (!bmp.isActive()) {
-                return bmp.getDisregardSummaryText();
+        if (preference instanceof TriStateMultiSelectListPreference) {
+            final TriStateMultiSelectListPreference p =
+                    (TriStateMultiSelectListPreference) preference;
+            if (!p.isActive()) {
+                return p.getDisregardSummaryText();
             }
-            // if it is in use, drop through to MultiSelectListPreference
+            // if it is active, drop through to MultiSelectListPreference
         }
 
         if (preference instanceof MultiSelectListPreference) {
-            final MultiSelectListPreference msp = (MultiSelectListPreference) preference;
+            final MultiSelectListPreference p = (MultiSelectListPreference) preference;
             final StringBuilder text = new StringBuilder();
-            for (final String s : msp.getValues()) {
-                final int index = msp.findIndexOfValue(s);
+            for (final String s : p.getValues()) {
+                final int index = p.findIndexOfValue(s);
                 if (index >= 0) {
-                    text.append(msp.getEntries()[index]).append('\n');
+                    text.append(p.getEntries()[index]).append('\n');
 
                 } else {
                     // This re-surfaces sometimes after a careless dev. change.
@@ -204,13 +205,13 @@ public abstract class BasePreferenceFragment
                     Logger.error(getContext(), TAG, new Throwable(),
                                  "MultiSelectListPreference:"
                                  + "\n s=" + s
-                                 + "\n key=" + msp.getKey()
-                                 + "\n entries=" + TextUtils.join(",", msp.getEntries())
-                                 + "\n entryValues=" + TextUtils.join(",", msp.getEntryValues())
-                                 + "\n values=" + msp.getValues());
+                                 + "\n key=" + p.getKey()
+                                 + "\n entries=" + TextUtils.join(",", p.getEntries())
+                                 + "\n entryValues=" + TextUtils.join(",", p.getEntryValues())
+                                 + "\n values=" + p.getValues());
                 }
-
             }
+
             if (text.length() > 0) {
                 return text;
             } else {

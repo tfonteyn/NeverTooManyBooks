@@ -68,10 +68,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PCsvString;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PStringCollection;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -965,9 +965,9 @@ public class XmlRecordReader
         public void putStringSet(@NonNull final String key,
                                  @NonNull final Collection<String> value) {
             if (mStylePrefs != null) {
-                final PCsvString p = (PCsvString) mStylePrefs.get(key);
+                final PStringCollection p = (PStringCollection) mStylePrefs.get(key);
                 if (p != null) {
-                    p.setCsv(TextUtils.join(PCsvString.DELIM, value));
+                    p.setStringCollection(value);
                 }
             }
         }
@@ -976,9 +976,9 @@ public class XmlRecordReader
         public void putStringList(@NonNull final String key,
                                   @NonNull final Collection<String> value) {
             if (mStylePrefs != null) {
-                final PCsvString p = (PCsvString) mStylePrefs.get(key);
+                final PStringCollection p = (PStringCollection) mStylePrefs.get(key);
                 if (p != null) {
-                    p.setCsv(TextUtils.join(PCsvString.DELIM, value));
+                    p.setStringCollection(value);
                 }
             }
         }

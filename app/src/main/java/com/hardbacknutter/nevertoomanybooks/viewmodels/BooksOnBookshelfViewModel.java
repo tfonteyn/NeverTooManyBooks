@@ -78,6 +78,30 @@ public class BooksOnBookshelfViewModel
 
     /** The fixed list of domains we always need for building the book list. */
     private final Collection<VirtualDomain> mFixedDomainList = new ArrayList<>();
+    /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
+    private final SearchCriteria mSearchCriteria = new SearchCriteria();
+    /** Cache for all bookshelves. */
+    private final List<Bookshelf> mBookshelfList = new ArrayList<>();
+    /** Database Access. */
+    private DAO mDb;
+    /**
+     * Flag (potentially) set when coming back from another Activity.
+     * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
+     */
+    private boolean mForceRebuildInOnResume;
+    /** Flag to indicate that a list has been successfully loaded. */
+    private boolean mListHasBeenLoaded;
+    /** Currently selected bookshelf. */
+    @Nullable
+    private Bookshelf mBookshelf;
+    /** The row id we want the new list to display more-or-less in the center. */
+    private long mDesiredCentralBookId;
+    /** Preferred booklist state in next rebuild. */
+    @Booklist.ListRebuildMode
+    private int mRebuildState;
+    /** Current displayed list. */
+    @Nullable
+    private Booklist mBooklist;
 
     private void initFixedDomainList() {
         mFixedDomainList.add(
@@ -129,31 +153,6 @@ public class BooksOnBookshelfViewModel
                     new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }
     }
-
-    /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
-    private final SearchCriteria mSearchCriteria = new SearchCriteria();
-    /** Cache for all bookshelves. */
-    private final List<Bookshelf> mBookshelfList = new ArrayList<>();
-    /** Database Access. */
-    private DAO mDb;
-    /**
-     * Flag (potentially) set when coming back from another Activity.
-     * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
-     */
-    private boolean mForceRebuildInOnResume;
-    /** Flag to indicate that a list has been successfully loaded. */
-    private boolean mListHasBeenLoaded;
-    /** Currently selected bookshelf. */
-    @Nullable
-    private Bookshelf mBookshelf;
-    /** The row id we want the new list to display more-or-less in the center. */
-    private long mDesiredCentralBookId;
-    /** Preferred booklist state in next rebuild. */
-    @Booklist.ListRebuildMode
-    private int mRebuildState;
-    /** Current displayed list. */
-    @Nullable
-    private Booklist mBooklist;
 
     @Override
     protected void onCleared() {
@@ -253,11 +252,9 @@ public class BooksOnBookshelfViewModel
      */
     public void reloadBookshelfList(@NonNull final Context context) {
         mBookshelfList.clear();
-        mBookshelfList.add(
-                Bookshelf.getBookshelf(context, mDb, Bookshelf.ALL_BOOKS, Bookshelf.ALL_BOOKS));
+        mBookshelfList.add(Bookshelf.getBookshelf(context, mDb, Bookshelf.ALL_BOOKS));
         mBookshelfList.addAll(mDb.getBookshelves());
     }
-
 
     /**
      * Find the position of the currently set Bookshelf in the Spinner.
@@ -657,8 +654,7 @@ public class BooksOnBookshelfViewModel
             // Add the conditional domains; style level.
             final ListScreenBookFields bookFields = style.getListScreenBookFields();
 
-            if (bookFields.isShowField(global,
-                                       ListScreenBookFields.PK_BOOKSHELVES)) {
+            if (bookFields.isShowField(global, ListScreenBookFields.PK_BOOKSHELVES)) {
                 // This collects a CSV list of the bookshelves the book is on.
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
@@ -666,8 +662,7 @@ public class BooksOnBookshelfViewModel
             }
 
             // we fetch ONLY the primary author
-            if (bookFields.isShowField(global,
-                                       ListScreenBookFields.PK_AUTHOR)) {
+            if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_AUTHOR_FORMATTED, DAOSql.SqlColumns
                         .getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
@@ -675,45 +670,39 @@ public class BooksOnBookshelfViewModel
             }
 
             // for now, don't get the author type.
-            //  if (bookFields.isShowField(context, prefs,
-            //                             BooklistStyle.pk_book_show_author_type)) {
-            //      builder.addDomain(new VirtualDomain(
-            //              DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
-            //              DBDefinitions.TBL_BOOK_AUTHOR
-            //              .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
-            //  }
+//              if (bookFields.isShowField(context, ListScreenBookFields.PK_AUTHOR_TYPE)) {
+//                  builder.addDomain(new VirtualDomain(
+//                          DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
+//                          DBDefinitions.TBL_BOOK_AUTHOR
+//                          .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
+//              }
 
-            if (bookFields.isShowField(global,
-                                       ListScreenBookFields.PK_PUBLISHER)) {
+            if (bookFields.isShowField(global, ListScreenBookFields.PK_PUBLISHER)) {
                 // Collect a CSV list of the publishers of the book
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_PUBLISHER_NAME_CSV,
                         DAOSql.SqlColumns.EXP_PUBLISHER_NAME_CSV));
             }
 
-            if (bookFields.isShowField(global,
-                                       ListScreenBookFields.PK_PUB_DATE)) {
+            if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_DATE_PUBLISHED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED)));
             }
 
-            if (bookFields.isShowField(global,
-                                       ListScreenBookFields.PK_FORMAT)) {
+            if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_FORMAT,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT)));
             }
 
-            if (bookFields.isShowField(global,
-                                       ListScreenBookFields.PK_LOCATION)) {
+            if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_LOCATION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
             }
 
-            if (bookFields.isShowField(global,
-                                       ListScreenBookFields.PK_RATING)) {
+            if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
                 builder.addDomain(new VirtualDomain(
                         DBDefinitions.DOM_BOOK_RATING,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_RATING)));

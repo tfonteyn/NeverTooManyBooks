@@ -55,7 +55,7 @@ public class NotEmptyFilterTest {
                                   DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
         p1.set(1);
 
-        final NotEmptyFilter p2 = new NotEmptyFilter(false, mLayerMock, p1);
+        final NotEmptyFilter p2 = p1.clone(false, mLayerMock);
         assertEquals(p1, p2);
         assertEquals(1, (int) p2.getValue());
         assertTrue(p2.isActive(context));

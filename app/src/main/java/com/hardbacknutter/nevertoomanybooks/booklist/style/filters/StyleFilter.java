@@ -22,9 +22,11 @@ package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 
@@ -50,4 +52,8 @@ public interface StyleFilter<T>
 
     @NonNull
     VirtualDomain getVirtualDomain();
+
+    @NonNull
+    StyleFilter<T> clone(boolean isPersistent,
+                         @Nullable StylePersistenceLayer persistenceLayer);
 }

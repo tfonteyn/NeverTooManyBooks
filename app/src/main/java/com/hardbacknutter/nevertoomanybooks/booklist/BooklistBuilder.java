@@ -52,7 +52,6 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
@@ -169,15 +168,14 @@ final class BooklistBuilder {
      *
      * @param instanceId   of the {@link Booklist} to create a unique table name
      * @param style        to apply to the list
-     * @param bookshelf    to use
      * @param rebuildState the mode to use for restoring the saved state.
      */
     BooklistBuilder(final int instanceId,
                     @NonNull final ListStyle style,
-                    @NonNull final Bookshelf bookshelf,
+                    final boolean isFilteredOnBookshelf,
                     @Booklist.ListRebuildMode final int rebuildState) {
         mStyle = style;
-        mFilteredOnBookshelf = !bookshelf.isAllBooks();
+        mFilteredOnBookshelf = isFilteredOnBookshelf;
         mRebuildState = rebuildState;
 
         /*

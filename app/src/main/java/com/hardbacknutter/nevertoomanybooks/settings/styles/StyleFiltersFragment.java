@@ -25,12 +25,18 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 
+import java.util.ArrayList;
+
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 /**
  * Used/defined in xml/preferences_styles.xml
@@ -38,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 @Keep
 public class StyleFiltersFragment
         extends StyleBaseFragment {
+
+    private static final String TAG = "StyleFiltersFragment";
 
     @Override
     @CallSuper
@@ -75,6 +83,27 @@ public class StyleFiltersFragment
         preference = findPreference(Filters.PK_FILTER_ISBN);
         if (preference != null) {
             preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_ISBN));
+        }
+
+        final MultiSelectListPreference bookshelves = findPreference(Filters.PK_FILTER_BOOKSHELVES);
+        if (bookshelves != null) {
+            if (BuildConfig.ENABLE_STYLE_BOOKSHELF_FILTER) {
+                bookshelves.setVisible(true);
+                try (DAO db = new DAO(TAG)) {
+                    final ArrayList<Bookshelf> list = db.getBookshelves();
+                    bookshelves.setEntryValues(
+                            list.stream()
+                                .map(bookshelf -> String.valueOf(bookshelf.getId()))
+                                .toArray(String[]::new));
+
+                    bookshelves.setEntries(
+                            list.stream().map(Bookshelf::getName)
+                                .toArray(String[]::new));
+                }
+
+            } else {
+                bookshelves.setVisible(false);
+            }
         }
     }
 }
