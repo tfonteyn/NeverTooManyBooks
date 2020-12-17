@@ -130,8 +130,8 @@ public class BookshelfBooklistGroup
     @NonNull
     @Override
     @CallSuper
-    public Map<String, PPref> getRawPreferences() {
-        final Map<String, PPref> map = super.getRawPreferences();
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = super.getRawPreferences();
         map.put(mUnderEach.getKey(), mUnderEach);
         return map;
     }

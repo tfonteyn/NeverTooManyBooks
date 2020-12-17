@@ -419,7 +419,7 @@ public class BooklistGroup {
      * @return a map with the prefs
      */
     @NonNull
-    public Map<String, PPref> getRawPreferences() {
+    public Map<String, PPref<?>> getRawPreferences() {
         return new LinkedHashMap<>();
     }
 

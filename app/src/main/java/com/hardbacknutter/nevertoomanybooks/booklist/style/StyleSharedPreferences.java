@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PStringCollection;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 
 /**
  * Encapsulate the SharedPreferences access for styles.
@@ -278,7 +278,7 @@ public class StyleSharedPreferences
             mStylePrefs.edit().remove(key).apply();
         } else {
             mStylePrefs.edit()
-                       .putString(key, TextUtils.join(PStringCollection.DELIM, value))
+                       .putString(key, TextUtils.join(PIntList.DELIM, value))
                        .apply();
         }
     }
@@ -308,7 +308,7 @@ public class StyleSharedPreferences
     @NonNull
     private ArrayList<Integer> getIntListFromCsv(@NonNull final String csvString) {
         try {
-            return Arrays.stream(csvString.split(PStringCollection.DELIM))
+            return Arrays.stream(csvString.split(PIntList.DELIM))
                          .map(Integer::parseInt)
                          .collect(Collectors.toCollection(ArrayList::new));
 

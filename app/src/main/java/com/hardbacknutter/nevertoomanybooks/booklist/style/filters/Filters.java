@@ -29,6 +29,7 @@ import androidx.annotation.StringDef;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -222,14 +223,19 @@ public class Filters {
     }
 
     /**
-     * Add all filters (both active and non-active) to the given map.
+     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Provides low-level access to all preferences.<br>
+     * This should only be called for export/import.
      *
-     * @param map to add to
+     * @return flat map
      */
-    public void addToMap(@NonNull final Map<String, PPref> map) {
+    @NonNull
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = new HashMap<>();
         for (final StyleFilter<?> filter : mFilters.values()) {
             map.put(filter.getKey(), filter);
         }
+        return map;
     }
 
     @Override

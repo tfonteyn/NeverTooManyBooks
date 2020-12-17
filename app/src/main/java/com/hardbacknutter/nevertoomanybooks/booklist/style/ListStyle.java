@@ -248,14 +248,14 @@ public interface ListStyle {
     int getPrimaryAuthorType(@NonNull Context context);
 
     /**
-     * Get all of the preferences of this Style and its groups/filters.<br>
+     * Get a flat map with accumulated preferences for this object and it's children.<br>
      * Provides low-level access to all preferences.<br>
      * This should only be called for export/import.
      *
-     * @return flat map with accumulated preferences for this style and it's groups.
+     * @return flat map
      */
     @NonNull
-    Map<String, PPref> getRawPreferences();
+    Map<String, PPref<?>> getRawPreferences();
 
     @IntDef(flag = true, value = {HEADER_SHOW_BOOK_COUNT,
                                   HEADER_SHOW_STYLE_NAME,

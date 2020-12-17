@@ -61,18 +61,15 @@ public class UserStyle
      *
      * @param context Current context
      * @param uuid    UUID of the style
-     * @param name    name of the style
      *
      * @see com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader
      */
     private UserStyle(@NonNull final Context context,
-                      @NonNull final String uuid,
-                      @NonNull final String name) {
+                      @NonNull final String uuid) {
         super(context, uuid, true);
         mId = 0;
 
         initPrefs(context, true);
-        mPersistenceLayer.setString(PK_STYLE_NAME, name);
     }
 
     /**
@@ -154,9 +151,8 @@ public class UserStyle
     }
 
     public static UserStyle createFromImport(@NonNull final Context context,
-                                             @NonNull final String uuid,
-                                             @NonNull final String name) {
-        return new UserStyle(context, uuid, name);
+                                             @NonNull final String uuid) {
+        return new UserStyle(context, uuid);
     }
 
     public void setName(@NonNull final String name) {

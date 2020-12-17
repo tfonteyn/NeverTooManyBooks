@@ -176,8 +176,8 @@ public class AuthorBooklistGroup
     @NonNull
     @Override
     @CallSuper
-    public Map<String, PPref> getRawPreferences() {
-        final Map<String, PPref> map = super.getRawPreferences();
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = super.getRawPreferences();
         map.put(mUnderEach.getKey(), mUnderEach);
         map.put(mPrimaryType.getKey(), mPrimaryType);
         return map;

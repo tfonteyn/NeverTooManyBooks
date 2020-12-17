@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +37,8 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PStringCollection;
 
 /**
  * Encapsulate the list of {@code BooklistGroup} with backend storage in a preference,
@@ -53,10 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PStringCollecti
  * <p>
  * All of them are written as a CSV String to preserve the order.
  *
- * @see PStringCollection
+ * @see PIntList
  */
 public class Groups
-        implements PPref<ArrayList<Integer>>, PStringCollection {
+        implements PPref<ArrayList<Integer>>, PIntList {
 
     /** Style group preferences. */
     public static final String PK_STYLE_GROUPS = "style.booklist.groups";
@@ -93,8 +94,8 @@ public class Groups
         mKey = PK_STYLE_GROUPS;
         mDefaultValue = new ArrayList<>();
         mNonPersistedValue = new ArrayList<>();
-
-        initGroupMap();
+        // initial load of the groups
+        initGroupMap(getValue());
     }
 
     /**
@@ -116,15 +117,14 @@ public class Groups
         if (mPersisted) {
             set(that.getValue());
         }
-
-        // init the individual groups AFTER the value of the Groups is set,
-        initGroupMap();
     }
 
-    private void initGroupMap() {
-        // The group map objects are build using the 'getValue()' list of group id's
-        for (@BooklistGroup.Id final int id : getValue()) {
-            mGroupMap.put(id, BooklistGroup.newInstance(id, mPersisted, mStyle));
+    private void initGroupMap(@Nullable final Collection<Integer> value) {
+        mGroupMap.clear();
+        if (value != null) {
+            for (@BooklistGroup.Id final int id : value) {
+                mGroupMap.put(id, BooklistGroup.newInstance(id, mPersisted, mStyle));
+            }
         }
     }
 
@@ -253,19 +253,6 @@ public class Groups
     }
 
     @Override
-    public void setStringCollection(@NonNull final Collection<String> values) {
-        if (mPersisted) {
-            mStyle.getPersistenceLayer()
-                  .setString(mKey, TextUtils.join(PStringCollection.DELIM, values));
-        } else {
-            // Not implemented as this logic branch is never used.
-            // Current usage of this method is limited to importing a style, which obviously
-            // always will require a persistence layer.
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    @Override
     public void set(@Nullable final ArrayList<Integer> value) {
         if (mPersisted) {
             mStyle.getPersistenceLayer().setStringedIntList(mKey, value);
@@ -275,6 +262,9 @@ public class Groups
                 mNonPersistedValue.addAll(value);
             }
         }
+
+        // init the individual groups AFTER the value of the Groups is changed
+        initGroupMap(value);
     }
 
     public void clear() {
@@ -335,15 +325,22 @@ public class Groups
     }
 
     /**
-     * Add all entries to the given map.
+     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Provides low-level access to all preferences.<br>
+     * This should only be called for export/import.
      *
-     * @param map to add to
+     * @return flat map
      */
-    public void addToMap(@NonNull final Map<String, PPref> map) {
-        // for each group used by the style, add its specific preferences to our list
+    @NonNull
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = new HashMap<>();
+        // the actual groups which is a list of integers => the group id's
+        map.put(mKey, this);
+        // flatten each group specific preferences
         for (final BooklistGroup group : getGroupList()) {
             map.putAll(group.getRawPreferences());
         }
+        return map;
     }
 
     @Override

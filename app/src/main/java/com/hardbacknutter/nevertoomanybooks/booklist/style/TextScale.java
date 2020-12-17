@@ -28,6 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -155,12 +156,17 @@ public class TextScale {
     }
 
     /**
-     * Add all entries to the given map.
+     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Provides low-level access to all preferences.<br>
+     * This should only be called for export/import.
      *
-     * @param map to add to
+     * @return flat map
      */
-    void addToMap(@NonNull final Map<String, PPref> map) {
+    @NonNull
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = new HashMap<>();
         map.put(mScale.getKey(), mScale);
+        return map;
     }
 
     @Override

@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -105,10 +106,20 @@ public abstract class BookFields {
         mFields.get(key).set(show);
     }
 
-    void addToMap(@NonNull final Map<String, PPref> map) {
+    /**
+     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Provides low-level access to all preferences.<br>
+     * This should only be called for export/import.
+     *
+     * @return flat map
+     */
+    @NonNull
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = new HashMap<>();
         for (final PBoolean field : mFields.values()) {
             map.put(field.getKey(), field);
         }
+        return map;
     }
 
     @Override

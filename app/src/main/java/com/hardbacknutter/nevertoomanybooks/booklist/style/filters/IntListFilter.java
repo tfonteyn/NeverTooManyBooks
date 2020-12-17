@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.booklist.style.filters;
 
 import android.content.Context;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,7 +27,6 @@ import androidx.annotation.StringRes;
 import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -36,7 +34,7 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PStringCollection;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 
@@ -44,10 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
  * an SQL WHERE clause (column IN (a,b,c,...)
  */
 public class IntListFilter
-        implements StyleFilter<ArrayList<Integer>>, PStringCollection {
+        implements StyleFilter<ArrayList<Integer>>, PIntList {
 
     private static final String ACTIVE = ".active";
-    private static final String TAG = "IntListFilter";
     /** key for the Preference. */
     @NonNull
     private final String mKey;
@@ -187,29 +184,6 @@ public class IntListFilter
             }
         }
         return null;
-    }
-
-    @Override
-    public void setStringCollection(@NonNull final Collection<String> values) {
-        if (mPersisted) {
-            try {
-                //noinspection ConstantConditions
-                mPersistence.setIntList(mKey, values.stream()
-                                                    .map(Integer::parseInt)
-                                                    .collect(Collectors.toList()));
-            } catch (@NonNull final NumberFormatException e) {
-                // should not happen unless we had a bug while previously writing the pref.
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.d(TAG, "values=`" + values + '`', e);
-                }
-                // in which case we bail out gracefully
-            }
-        } else {
-            // Not implemented as this logic branch is never used.
-            // Current usage of this method is limited to importing a style, which obviously
-            // always will require a persistence layer.
-            throw new UnsupportedOperationException();
-        }
     }
 
     @Override

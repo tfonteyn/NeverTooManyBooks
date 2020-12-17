@@ -200,13 +200,17 @@ public class ListScreenBookFields
     }
 
     /**
-     * Add all filters (both active and non-active) to the given map.
+     * Get a flat map with accumulated preferences for this object and it's children.<br>
+     * Provides low-level access to all preferences.<br>
+     * This should only be called for export/import.
      *
-     * @param map to add to
+     * @return flat map
      */
-    void addToMap(@NonNull final Map<String, PPref> map) {
-        super.addToMap(map);
+    @NonNull
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = super.getRawPreferences();
         map.put(mThumbnailScale.getKey(), mThumbnailScale);
+        return map;
     }
 
     @Override

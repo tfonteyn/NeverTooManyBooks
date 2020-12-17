@@ -449,26 +449,24 @@ public abstract class BooklistStyle
 
 
     @NonNull
-    public Map<String, PPref> getRawPreferences() {
-        final Map<String, PPref> tmpMap = new HashMap<>();
+    public Map<String, PPref<?>> getRawPreferences() {
+        final Map<String, PPref<?>> map = new HashMap<>();
 
-        tmpMap.put(mExpansionLevel.getKey(), mExpansionLevel);
-        tmpMap.put(mGroupRowPreferredHeight.getKey(), mGroupRowPreferredHeight);
-        tmpMap.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
+        map.put(mExpansionLevel.getKey(), mExpansionLevel);
+        map.put(mGroupRowPreferredHeight.getKey(), mGroupRowPreferredHeight);
+        map.put(mShowHeaderInfo.getKey(), mShowHeaderInfo);
 
-        tmpMap.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
-        tmpMap.put(mSortAuthorByGivenName.getKey(), mSortAuthorByGivenName);
+        map.put(mShowAuthorByGivenName.getKey(), mShowAuthorByGivenName);
+        map.put(mSortAuthorByGivenName.getKey(), mSortAuthorByGivenName);
 
-        mTextScale.addToMap(tmpMap);
+        map.putAll(mTextScale.getRawPreferences());
+        map.putAll(mListScreenBookFields.getRawPreferences());
+        map.putAll(mDetailScreenBookFields.getRawPreferences());
 
-        mListScreenBookFields.addToMap(tmpMap);
-        mDetailScreenBookFields.addToMap(tmpMap);
+        map.putAll(mFilters.getRawPreferences());
+        map.putAll(mGroups.getRawPreferences());
 
-        tmpMap.put(mGroups.getKey(), mGroups);
-        mFilters.addToMap(tmpMap);
-        mGroups.addToMap(tmpMap);
-
-        return tmpMap;
+        return map;
     }
 
     @NonNull
