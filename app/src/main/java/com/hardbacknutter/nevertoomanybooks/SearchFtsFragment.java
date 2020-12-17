@@ -72,6 +72,8 @@ public class SearchFtsFragment
     private static final int TIMER_TICK_MS = 250;
     /** 1 second idle trigger. */
     private static final int NANO_TO_SECONDS = 1_000_000_000;
+    /** The maximum number of suggestions we'll show during a live search. */
+    private static final int MAX_SUGGESTIONS = 20;
 
     /** Handle inter-thread messages. */
     private final Handler mHandler = new Handler();
@@ -388,7 +390,7 @@ public class SearchFtsFragment
                                                                    mSeriesTitleSearchText,
                                                                    mPublisherNameSearchText,
                                                                    mKeywordsSearchText,
-                                                                   20)) {
+                                                                   MAX_SUGGESTIONS)) {
                     // Null return means searchFts thought the parameters were effectively blank.
                     if (cursor != null) {
                         count = cursor.getCount();
