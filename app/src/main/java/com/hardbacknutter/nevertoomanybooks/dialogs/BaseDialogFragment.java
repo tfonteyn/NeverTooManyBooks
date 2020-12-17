@@ -41,7 +41,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Objects;
@@ -83,8 +82,6 @@ public abstract class BaseDialogFragment
     @Nullable
     private View mButtonPanel;
     private Toolbar mToolbar;
-    @Nullable
-    private Button mOkButton;
     /** Show the dialog fullscreen (default) or as a floating dialog. */
     private boolean mFullscreen;
     private boolean mForceFullscreen;
@@ -247,10 +244,10 @@ public abstract class BaseDialogFragment
             final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
             if (menuItem != null) {
                 // the ok-button is a button inside the action view of the toolbar menu item
-                mOkButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
-                if (mOkButton != null) {
-                    mOkButton.setText(menuItem.getTitle());
-                    mOkButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem));
+                final Button okButton = menuItem.getActionView().findViewById(R.id.btn_confirm);
+                if (okButton != null) {
+                    okButton.setText(menuItem.getTitle());
+                    okButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem));
                 }
             }
 
@@ -263,11 +260,11 @@ public abstract class BaseDialogFragment
                 if (menuItem != null) {
                     menuItem.setVisible(false);
                     // the ok-button is a simple button on the button panel.
-                    mOkButton = mButtonPanel.findViewById(R.id.btn_ok);
-                    if (mOkButton != null) {
-                        mOkButton.setVisibility(View.VISIBLE);
-                        mOkButton.setText(menuItem.getTitle());
-                        mOkButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem));
+                    final Button okButton = mButtonPanel.findViewById(R.id.btn_ok);
+                    if (okButton != null) {
+                        okButton.setVisibility(View.VISIBLE);
+                        okButton.setText(menuItem.getTitle());
+                        okButton.setOnClickListener(v -> onToolbarMenuItemClick(menuItem));
                     }
                 }
 
@@ -309,11 +306,6 @@ public abstract class BaseDialogFragment
         return false;
     }
 
-    @NonNull
-    public Button requireConfirmButton() {
-        return Objects.requireNonNull(mOkButton, "mConfirmButton");
-    }
-
     @Override
     @CallSuper
     public void onDismiss(@NonNull final DialogInterface dialog) {
@@ -347,25 +339,6 @@ public abstract class BaseDialogFragment
                              @NonNull final CharSequence error) {
         til.setError(error);
         til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
-    }
-
-    /**
-     * Show an error message, and finish the Activity after a delay.
-     * <p>
-     * Not sure if this approach is a really good solution, but it will have to do for now.
-     *
-     * @param body     (optional) view to make invisible
-     * @param stringId message id to show
-     */
-    protected void finishActivityWithErrorMessage(@Nullable final View body,
-                                                  @StringRes final int stringId) {
-        if (body != null) {
-            body.setVisibility(View.INVISIBLE);
-        }
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), stringId, Snackbar.LENGTH_LONG).show();
-        //noinspection ConstantConditions
-        getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
     }
 
     /**
