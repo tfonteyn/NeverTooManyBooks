@@ -53,10 +53,10 @@ public interface RecordWriter
     int getVersion();
 
     /**
-     * Wrapper.
+     * Wrapper: write to the given File.
      *
      * @param context          Current context
-     * @param file             File to write to
+     * @param out              File to write to
      * @param entry            The set of entries which should be read (if supported)
      * @param options          what to write and how
      * @param progressListener Progress and cancellation interface
@@ -67,18 +67,57 @@ public interface RecordWriter
      */
     @WorkerThread
     default ExportResults write(@NonNull final Context context,
-                                @NonNull final File file,
+                                @NonNull final File out,
                                 @NonNull final Set<ArchiveWriterRecord.Type> entry,
                                 @ExportHelper.Options final int options,
                                 @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (OutputStream os = new FileOutputStream(file);
+        try (OutputStream os = new FileOutputStream(out);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
             return write(context, writer, entry, options, progressListener);
         }
     }
 
+    /**
+     * Wrapper: write to the given OutputStream.
+     *
+     * @param context          Current context
+     * @param out              OutputStream to write to
+     * @param entry            The set of entries which should be read (if supported)
+     * @param options          what to write and how
+     * @param progressListener Progress and cancellation interface
+     *
+     * @return {@link ExportResults}
+     *
+     * @throws IOException on failure
+     */
+    @WorkerThread
+    default ExportResults write(@NonNull final Context context,
+                                @NonNull final OutputStream out,
+                                @NonNull final Set<ArchiveWriterRecord.Type> entry,
+                                @ExportHelper.Options final int options,
+                                @NonNull final ProgressListener progressListener)
+            throws IOException {
+        try (Writer osw = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+             Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
+            return write(context, writer, entry, options, progressListener);
+        }
+    }
+
+    /**
+     * The method which must be implemented.
+     *
+     * @param context          Current context
+     * @param writer           Writer to write to
+     * @param entry            The set of entries which should be read (if supported)
+     * @param options          what to write and how
+     * @param progressListener Progress and cancellation interface
+     *
+     * @return {@link ExportResults}
+     *
+     * @throws IOException on failure
+     */
     @WorkerThread
     ExportResults write(@NonNull Context context,
                         @NonNull Writer writer,

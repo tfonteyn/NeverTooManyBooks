@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
@@ -112,7 +113,8 @@ public class XmlArchiveWriterTest {
         try (DAO db = new DAO(TAG)) {
             for (final ListStyle style : StyleDAO.getStyles(context, db, true)) {
                 if (style instanceof UserStyle) {
-                    db.delete(style);
+                    StyleDAO.delete(context, db, style);
+
                 } else if (style instanceof BuiltinStyle) {
                     style.setPreferred(false);
                     style.setMenuPosition((int) -style.getId());
@@ -147,7 +149,25 @@ public class XmlArchiveWriterTest {
 
             for (final ListStyle style : styles) {
                 final ListStyle cloned = mClonedStyles.get(style.getUuid());
-                assertEquals(cloned, style);
+                // the id of the styles will always be different,
+                // so we assert that the individual settings
+                // and the actual preferences are equal.
+                assertNotNull(cloned);
+                assertEquals(cloned.getLabel(context), style.getLabel(context));
+                assertEquals(cloned.getUuid(), style.getUuid());
+                assertEquals(cloned.getMenuPosition(), style.getMenuPosition());
+                assertEquals(cloned.isPreferred(), style.isPreferred());
+
+                final Map<String, PPref<?>> stylePrefs = style.getRawPreferences();
+                final Map<String, PPref<?>> clonedPrefs = cloned.getRawPreferences();
+
+                assertEquals(stylePrefs.size(), clonedPrefs.size());
+
+                for (final PPref<?> p : stylePrefs.values()) {
+                    //noinspection ConstantConditions
+                    assertEquals(p.getValue(),
+                                 clonedPrefs.get(p.getKey()).getValue());
+                }
             }
         }
     }

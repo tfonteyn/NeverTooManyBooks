@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
@@ -142,13 +143,8 @@ public abstract class ArchiveReaderAbstract
             if (record == null) {
                 throw new InvalidArchiveException(ERROR_INVALID_HEADER);
             }
-            final ArchiveReaderRecord.Encoding recordEncoding = record.getEncoding();
-            if (recordEncoding == null) {
-                throw new InvalidArchiveException(ERROR_INVALID_HEADER);
-            }
 
-            // read the INFO and store for re-use
-            switch (recordEncoding) {
+            switch (record.getEncoding()) {
                 case Xml:
                     mArchiveInfo = getXmlReader(context).readArchiveHeader(record);
                     break;
@@ -163,6 +159,7 @@ public abstract class ArchiveReaderAbstract
 
                 case Csv:
                 case Cover:
+                case Unknown:
                 default:
                     throw new InvalidArchiveException(ERROR_INVALID_HEADER);
             }
@@ -205,6 +202,9 @@ public abstract class ArchiveReaderAbstract
 
         final boolean readBooks = importEntries.contains(ArchiveReaderRecord.Type.Books);
         final boolean readCovers = importEntries.contains(ArchiveReaderRecord.Type.Cover);
+        if (readCovers) {
+            mCoverReader = new CoverRecordReader();
+        }
 
         // progress counters
         int estimatedSteps = 1;
@@ -227,12 +227,11 @@ public abstract class ArchiveReaderAbstract
             // Seek the styles record first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
             if (readStyles) {
-                progressListener
-                        .publishProgressStep(1, context.getString(R.string.lbl_styles_long));
+                progressListener.publishProgressStep(
+                        1, context.getString(R.string.lbl_styles_long));
                 final ArchiveReaderRecord record = seek(ArchiveReaderRecord.Type.Styles);
                 if (record != null) {
-                    mResults.add(getXmlReader(context).read(context, record, mHelper.getOptions(),
-                                                            progressListener));
+                    readRecord(context, record, progressListener);
                     readStyles = false;
                 }
                 closeInputStream();
@@ -243,15 +242,10 @@ public abstract class ArchiveReaderAbstract
                 progressListener.publishProgressStep(1, context.getString(R.string.lbl_settings));
                 final ArchiveReaderRecord record = seek(ArchiveReaderRecord.Type.Preferences);
                 if (record != null) {
-                    mResults.add(getXmlReader(context).read(context, record, mHelper.getOptions(),
-                                                            progressListener));
+                    readRecord(context, record, progressListener);
                     readPrefs = false;
                 }
                 closeInputStream();
-            }
-
-            if (readCovers) {
-                mCoverReader = new CoverRecordReader();
             }
 
             // Get first record.
@@ -260,42 +254,45 @@ public abstract class ArchiveReaderAbstract
             // process each entry based on type, unless we are cancelled.
             while (record != null && !progressListener.isCancelled()) {
                 final ArchiveReaderRecord.Type recordType = record.getType();
-                if (recordType != null) {
-                    switch (recordType) {
-                        case Cover: {
-                            if (readCovers) {
-                                readCoverRecord(context, record, progressListener);
-                            }
-                            break;
+                switch (recordType) {
+                    case Cover: {
+                        if (readCovers) {
+                            readRecord(context, record, progressListener);
                         }
-                        case Books: {
-                            if (readBooks) {
-                                readBooksRecord(context, record, progressListener);
-                            }
-                            break;
-                        }
-                        case Preferences: {
-                            // yes, we have already read them at the start.
-                            // Leaving the code as we might support multiple entries in the future.
-                            if (readPrefs) {
-                                readPrefsRecord(context, record, progressListener);
-                            }
-                            break;
-                        }
-                        case Styles: {
-                            // yes, we have already read them at the start.
-                            // Leaving the code as we might support multiple entries in the future.
-                            if (readStyles) {
-                                readStylesRecord(context, record, progressListener);
-                            }
-                            break;
-                        }
-                        case InfoHeader:
-                            // skip, already handled.
-                        default: {
-                            break;
-                        }
+                        break;
                     }
+                    case Books: {
+                        if (readBooks) {
+                            readRecord(context, record, progressListener);
+                        }
+                        break;
+                    }
+                    case Preferences: {
+                        // yes, we have already read them at the start.
+                        // Leaving the code as we might support multiple entries in the future.
+                        if (readPrefs) {
+                            progressListener.publishProgressStep(
+                                    1, context.getString(R.string.lbl_settings));
+                            readRecord(context, record, progressListener);
+                        }
+                        break;
+                    }
+                    case Styles: {
+                        // yes, we have already read them at the start.
+                        // Leaving the code as we might support multiple entries in the future.
+                        if (readStyles) {
+                            progressListener.publishProgressStep(
+                                    1, context.getString(R.string.lbl_styles_long));
+                            readRecord(context, record, progressListener);
+                        }
+                        break;
+                    }
+                    case InfoHeader:
+                        // skip, already handled.
+                    case Unknown:
+                    case AutoDetect:
+                    default:
+                        break;
                 }
                 record = next();
             }
@@ -313,65 +310,47 @@ public abstract class ArchiveReaderAbstract
         return mResults;
     }
 
-    private void readStylesRecord(@NonNull final Context context,
-                                  @NonNull final ArchiveReaderRecord record,
-                                  @NonNull final ProgressListener progressListener)
-            throws IOException {
-        progressListener.publishProgressStep(1, context.getString(R.string.lbl_styles_long));
-        mResults.add(getXmlReader(context)
-                             .read(context, record, mHelper.getOptions(), progressListener));
-    }
-
-    private void readPrefsRecord(@NonNull final Context context,
-                                 @NonNull final ArchiveReaderRecord record,
-                                 @NonNull final ProgressListener progressListener)
-            throws IOException {
-        progressListener.publishProgressStep(1, context.getString(R.string.lbl_settings));
-        mResults.add(getXmlReader(context)
-                             .read(context, record, mHelper.getOptions(), progressListener));
-    }
-
-    private void readCoverRecord(@NonNull final Context context,
-                                 @NonNull final ArchiveReaderRecord record,
-                                 @NonNull final ProgressListener progressListener) {
-        //noinspection ConstantConditions
-        mResults.add(mCoverReader.read(context, record, mHelper.getOptions(), progressListener));
-        // send accumulated progress for the total nr of covers
-        final String msg = String.format(mProgressMessage,
-                                         mCoversText,
-                                         mResults.coversCreated,
-                                         mResults.coversUpdated,
-                                         mResults.coversSkipped);
-        progressListener.publishProgressStep(1, msg);
-    }
-
-    private void readBooksRecord(@NonNull final Context context,
-                                 @NonNull final ArchiveReaderRecord record,
-                                 @NonNull final ProgressListener progressListener)
+    private void readRecord(@NonNull final Context context,
+                            @NonNull final ArchiveReaderRecord record,
+                            @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
         final ArchiveReaderRecord.Encoding recordEncoding = record.getEncoding();
-        if (recordEncoding != null) {
-            switch (recordEncoding) {
-                case Csv:
-                    try (RecordReader recordReader = new CsvRecordReader(context, mDb)) {
-                        mResults.add(recordReader.read(context, record, mHelper.getOptions(),
-                                                       progressListener));
-                    }
-                    break;
-
-                case Json:
-                    try (RecordReader recordReader = new JsonRecordReader(context, mDb)) {
-                        mResults.add(recordReader.read(context, record, mHelper.getOptions(),
-                                                       progressListener));
-                    }
-                    break;
-
-                case Cover:
-                case Xml:
-                default:
-                    // not applicable
-                    break;
+        switch (recordEncoding) {
+            case Xml: {
+                mResults.add(getXmlReader(context).read(context, record, mHelper.getOptions(),
+                                                        progressListener));
+                break;
             }
+            case Json: {
+                try (RecordReader recordReader = new JsonRecordReader(context, mDb)) {
+                    mResults.add(recordReader.read(context, record, mHelper.getOptions(),
+                                                   progressListener));
+                }
+                break;
+            }
+            case Csv: {
+                try (RecordReader recordReader = new CsvRecordReader(context, mDb)) {
+                    mResults.add(recordReader.read(context, record, mHelper.getOptions(),
+                                                   progressListener));
+                }
+                break;
+            }
+            case Cover: {
+                //noinspection ConstantConditions
+                mResults.add(mCoverReader.read(context, record, mHelper.getOptions(),
+                                               progressListener));
+                // send accumulated progress for the total nr of covers
+                final String msg = String.format(mProgressMessage,
+                                                 mCoversText,
+                                                 mResults.coversCreated,
+                                                 mResults.coversUpdated,
+                                                 mResults.coversSkipped);
+                progressListener.publishProgressStep(1, msg);
+                break;
+            }
+            case Unknown:
+            default:
+                break;
         }
     }
 

@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * EXPERIMENTAL: only meant to be run from a test. Hardcoded for books only.
+ * TESTING ONLY: meant to be run from an androidTest as a means of testing individual records.
  */
 public class JsonArchiveReader
         implements ArchiveReader {
@@ -55,6 +55,10 @@ public class JsonArchiveReader
     @NonNull
     private final DAO mDb;
 
+    /** By default we will auto-detect the record type and read <strong>all</strong> found. */
+    @NonNull
+    private ArchiveReaderRecord.Type mTypeToRead = ArchiveReaderRecord.Type.AutoDetect;
+
     /**
      * Constructor.
      *
@@ -63,6 +67,17 @@ public class JsonArchiveReader
     public JsonArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
         mDb = new DAO(TAG);
+    }
+
+    /**
+     * Force reading a particular record type.
+     *
+     * @param typeToRead override
+     */
+    @VisibleForTesting
+    void setTypeToRead(@SuppressWarnings("SameParameterValue")
+                       @NonNull final ArchiveReaderRecord.Type typeToRead) {
+        mTypeToRead = typeToRead;
     }
 
     @NonNull
@@ -80,9 +95,10 @@ public class JsonArchiveReader
         }
 
         try (RecordReader recordReader = new JsonRecordReader(context, mDb)) {
+            // wrap the entire input into a single record.
             final ArchiveReaderRecord record =
-                    new JsonArchiveRecord(ArchiveReaderRecord.Type.Books,
-                                          mHelper.getArchiveName(context), is);
+                    new JsonArchiveRecord(mTypeToRead, mHelper.getArchiveName(context), is);
+
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {
             is.close();

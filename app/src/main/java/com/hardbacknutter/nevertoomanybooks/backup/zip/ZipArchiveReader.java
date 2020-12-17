@@ -145,12 +145,12 @@ public class ZipArchiveReader
             mEntry = entry;
         }
 
-        @Nullable
+        @NonNull
         public Type getType() {
             return Type.getType(mEntry.getName());
         }
 
-        @Nullable
+        @NonNull
         @Override
         public Encoding getEncoding() {
             return Encoding.getEncoding(mEntry.getName());

@@ -69,9 +69,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PStringCollection;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -146,7 +146,6 @@ public class XmlRecordReader
 
         final ImportResults results = new ImportResults();
         final ArchiveReaderRecord.Type recordType = record.getType();
-        if (recordType != null) {
             switch (recordType) {
                 case Styles: {
                     final StylesReader stylesReader = new StylesReader(context, mDb);
@@ -168,11 +167,12 @@ public class XmlRecordReader
 
                 case Books:
                 case Cover:
+                case AutoDetect:
+                case Unknown:
                 default:
-                    // not implemented.
                     break;
             }
-        }
+
         return results;
     }
 
@@ -806,7 +806,7 @@ public class XmlRecordReader
          * but the elements IN this map ARE.
          */
         @Nullable
-        private Map<String, PPref> mStylePrefs;
+        private Map<String, PPref<?>> mStylePrefs;
 
         /** A counter to track how many styles we have read. */
         private int mStylesRead;
@@ -865,8 +865,10 @@ public class XmlRecordReader
                 mStylePrefs = null;
 
             } else {
-                // create a new Style object. This will not have any groups assigned to it...
-                mStyle = UserStyle.createFromImport(mContext, uuid, tag.name);
+                mStyle = UserStyle.createFromImport(mContext, uuid);
+                ((UserStyle) mStyle).setName(tag.name);
+
+                // This will not have any groups assigned to it...
                 //... and hence, the Style Preferences won't have any group Preferences either.
                 // Reminder: the map mStylePrefs is a TEMPORARY map,
                 // but the elements IN this map ARE PART OF THE STYLE.
@@ -905,14 +907,23 @@ public class XmlRecordReader
                 // we now have the groups themselves (one of the 'flat' prefs) set on the style,
                 // so transfer their specific Preferences.
                 for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
-                    final Map<String, PPref> stylePrefs = mStyle.getRawPreferences();
-                    for (final PPref p : group.getRawPreferences().values()) {
-                        // do we have this Preference ?
-                        final PPref ourPPref = stylePrefs.get(p.getKey());
-                        if (ourPPref != null) {
-                            // if we do, update our value
-                            //noinspection unchecked
-                            ourPPref.set(p.getValue());
+                    for (final PPref<?> dest : group.getRawPreferences().values()) {
+                        // do we have this Preference in the imported data?
+                        //noinspection ConstantConditions
+                        final PPref<?> source = mStylePrefs.get(dest.getKey());
+                        if (source != null) {
+                            if (dest instanceof PInt) {
+                                ((PInt) dest).set(((PInt) source).getValue());
+
+                            } else if (dest instanceof PBoolean) {
+                                ((PBoolean) dest).set(((PBoolean) source).getValue());
+
+                            } else if (dest instanceof PString) {
+                                ((PString) dest).set(((PString) source).getValue());
+
+                            } else if (dest instanceof PIntList) {
+                                ((PIntList) dest).set(((PIntList) source).getValue());
+                            }
                         }
                     }
                 }
@@ -965,7 +976,7 @@ public class XmlRecordReader
         public void putStringSet(@NonNull final String key,
                                  @NonNull final Collection<String> value) {
             if (mStylePrefs != null) {
-                final PStringCollection p = (PStringCollection) mStylePrefs.get(key);
+                final PIntList p = (PIntList) mStylePrefs.get(key);
                 if (p != null) {
                     p.setStringCollection(value);
                 }
@@ -976,7 +987,7 @@ public class XmlRecordReader
         public void putStringList(@NonNull final String key,
                                   @NonNull final Collection<String> value) {
             if (mStylePrefs != null) {
-                final PStringCollection p = (PStringCollection) mStylePrefs.get(key);
+                final PIntList p = (PIntList) mStylePrefs.get(key);
                 if (p != null) {
                     p.setStringCollection(value);
                 }

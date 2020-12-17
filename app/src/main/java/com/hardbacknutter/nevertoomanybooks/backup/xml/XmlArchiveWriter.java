@@ -110,7 +110,9 @@ public class XmlArchiveWriter
         mTmpBooksFile.deleteOnExit();
 
         try (RecordWriter recordWriter = new XmlRecordWriter(mHelper.getUtcDateTimeSince())) {
-            return recordWriter.write(context, mTmpBooksFile, types,
+            return recordWriter.write(context,
+                                      mTmpBooksFile,
+                                      types,
                                       mHelper.getOptions(),
                                       progressListener);
         }

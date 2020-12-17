@@ -24,12 +24,9 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -58,15 +55,15 @@ public abstract class ArchiveWriterAbstract
      * The format/version is shared between writers.
      * A concrete writer merely defines the archive.
      * <ul>
-     *     <li>v3:
+     *     <li>v3: WIP
      *         <ul>
      *             <li>header: json</li>
-     *             <li>styles: xml</li>
+     *             <li>styles: json</li>
      *             <li>preferences: xml</li>
      *             <li>books: json</li>
      *         </ul>
      *     </li>
-     *     <li>v2:
+     *     <li>v2: default hardcoded.
      *         <ul>
      *             <li>header: xml</li>
      *             <li>styles: xml</li>
@@ -76,11 +73,11 @@ public abstract class ArchiveWriterAbstract
      *     </li>
      *     <li>v1: obsolete</li>
      * </ul>
+     * <p>
+     * RELEASE: set correct archiver version
      */
     protected static final int VERSION = 2;
 
-    /** Buffer for the Writer. */
-    private static final int BUFFER_SIZE = 65535;
     private static final String FILE_EXT_XML = ".xml";
     private static final String FILE_EXT_JSON = ".json";
     private static final String FILE_EXT_CSV = ".csv";
@@ -109,11 +106,6 @@ public abstract class ArchiveWriterAbstract
         return VERSION;
     }
 
-    /**
-     * Default implementation: write as JSON.
-     *
-     * <br><br>{@inheritDoc}
-     */
     @SuppressWarnings("ConstantConditions")
     @Override
     public void writeHeader(@NonNull final Context context,
@@ -140,29 +132,44 @@ public abstract class ArchiveWriterAbstract
         }
     }
 
-    /**
-     * Default implementation: write as XML.
-     *
-     * <br><br>{@inheritDoc}
-     */
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void writeStyles(@NonNull final Context context,
                             @NonNull final ProgressListener progressListener)
             throws IOException {
-        // Write the styles as XML to a byte array.
-        final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             RecordWriter recordWriter = new XmlRecordWriter()) {
 
-            mResults.add(recordWriter.write(context, writer,
-                                            EnumSet.of(ArchiveWriterRecord.Type.Styles),
-                                            mHelper.getOptions(),
-                                            progressListener));
+        switch (VERSION) {
+            case 3: {
+                final ByteArrayOutputStream data = new ByteArrayOutputStream();
+                try (RecordWriter recordWriter = new JsonRecordWriter(null)) {
+                    mResults.add(recordWriter.write(context, data,
+                                                    EnumSet.of(ArchiveWriterRecord.Type.Styles),
+                                                    mHelper.getOptions(),
+                                                    progressListener));
+                }
+                // and store the array
+                putByteArray(ArchiveWriterRecord.Type.Styles.getName() + FILE_EXT_JSON,
+                             data.toByteArray(), true);
+                break;
+            }
+            case 2: {
+                // Write the styles as XML to a byte array.
+                final ByteArrayOutputStream data = new ByteArrayOutputStream();
+                try (RecordWriter recordWriter = new XmlRecordWriter()) {
+                    mResults.add(recordWriter.write(context, data,
+                                                    EnumSet.of(ArchiveWriterRecord.Type.Styles),
+                                                    mHelper.getOptions(),
+                                                    progressListener));
+                }
+                // and store the array
+                putByteArray(ArchiveWriterRecord.Type.Styles.getName() + FILE_EXT_XML,
+                             data.toByteArray(), true);
+                break;
+            }
+            default:
+                throw new IllegalStateException();
         }
-        // and store the array
-        putByteArray(ArchiveWriterRecord.Type.Styles.getName() + FILE_EXT_XML,
-                     data.toByteArray(), true);
+
     }
 
     /**
@@ -176,11 +183,8 @@ public abstract class ArchiveWriterAbstract
             throws IOException {
         // Write the preferences as XML to a byte array.
         final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE);
-             RecordWriter recordWriter = new XmlRecordWriter()) {
-
-            mResults.add(recordWriter.write(context, writer,
+        try (RecordWriter recordWriter = new XmlRecordWriter()) {
+            mResults.add(recordWriter.write(context, data,
                                             EnumSet.of(ArchiveWriterRecord.Type.Preferences),
                                             mHelper.getOptions(),
                                             progressListener));

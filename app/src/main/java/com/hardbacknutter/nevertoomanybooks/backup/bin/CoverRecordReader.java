@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup.bin;
 
 import android.content.Context;
 
@@ -29,6 +29,8 @@ import java.io.InputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -49,6 +51,11 @@ public class CoverRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @ImportHelper.Options final int options,
                               @NonNull final ProgressListener progressListener) {
+
+        // Sanity check
+        if (record.getType() != ArchiveReaderRecord.Type.Cover) {
+            throw new IllegalStateException("not a cover record");
+        }
 
         final ImportResults results = new ImportResults();
         results.coversProcessed = 1;

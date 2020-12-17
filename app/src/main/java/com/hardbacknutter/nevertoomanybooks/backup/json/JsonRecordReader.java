@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -69,6 +70,7 @@ public class JsonRecordReader
     private final String mBooksString;
     @NonNull
     private final String mProgressMessage;
+    @NonNull
     private final JsonCoder<Book> mBookCoder;
 
     private ImportResults mResults;
@@ -101,22 +103,48 @@ public class JsonRecordReader
 
         mResults = new ImportResults();
 
-        final String content = record.asString();
-        if (content.isEmpty()) {
-            return mResults;
-        }
+        final ArchiveReaderRecord.Type recordType = record.getType();
+        if (recordType != ArchiveReaderRecord.Type.Unknown) {
+            final String content = record.asString();
+            if (!content.isEmpty()) {
+                try {
+                    final JSONObject root = new JSONObject(content);
 
-        try {
-            final JSONObject root = new JSONObject(content);
-            // any books to decode ?
-            final JSONArray books = root.optJSONArray(JsonTags.BOOK_LIST);
-            if (books != null) {
-                readBooks(context, options, books, progressListener);
+                    if (recordType == ArchiveReaderRecord.Type.Styles
+                        || recordType == ArchiveReaderRecord.Type.AutoDetect) {
+                        final JSONArray jsonStyles = root.optJSONArray(ListStyleCoder.STYLE_LIST);
+                        if (jsonStyles != null) {
+                            //noinspection SimplifyStreamApiCallChains
+                            new ListStyleCoder(context, mDb)
+                                    .decode(jsonStyles)
+                                    .stream()
+                                    .forEach(listStyle -> StyleDAO.updateOrInsert(mDb, listStyle));
+                            mResults.styles = jsonStyles.length();
+                        }
+                    }
+
+//                if (recordType == ArchiveReaderRecord.Type.Preferences
+//                    || recordType == ArchiveReaderRecord.Type.AutoDetect) {
+//
+//                }
+
+                    if (recordType == ArchiveReaderRecord.Type.Books
+                        || recordType == ArchiveReaderRecord.Type.AutoDetect) {
+                        final JSONArray jsonBooks = root.optJSONArray(BookCoder.BOOK_LIST);
+                        if (jsonBooks != null) {
+                            readBooks(context, options, jsonBooks, progressListener);
+                        }
+                    }
+
+                    if (recordType == ArchiveReaderRecord.Type.InfoHeader) {
+                        throw new IllegalStateException("call #readInfo instead");
+                    }
+
+                } catch (@NonNull final JSONException e) {
+                    throw new ImportException(context.getString(R.string.error_import_failed), e);
+                }
             }
-        } catch (@NonNull final JSONException e) {
-            throw new ImportException(context.getString(R.string.error_import_failed), e);
         }
-
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "read|mResults=" + mResults);
         }
@@ -125,7 +153,7 @@ public class JsonRecordReader
 
     private void readBooks(@NonNull final Context context,
                            @ImportHelper.Options final int options,
-                           final JSONArray books,
+                           @NonNull final JSONArray books,
                            @NonNull final ProgressListener progressListener)
             throws JSONException {
         final boolean updatesMustSync =

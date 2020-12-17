@@ -36,12 +36,12 @@ public interface ArchiveWriterRecord {
     enum Type {
         /** Archive information. ONLY ONE PER ARCHIVE. */
         InfoHeader("info"),
-        /** Book list. ONLY ONE PER ARCHIVE. */
-        Books("books"),
-        /** Preferences file. ONLY ONE PER ARCHIVE. */
-        Preferences("preferences"),
         /** BooklistStyles file. ONLY ONE PER ARCHIVE. */
         Styles("styles"),
+        /** Preferences file. ONLY ONE PER ARCHIVE. */
+        Preferences("preferences"),
+        /** Book list. ONLY ONE PER ARCHIVE. */
+        Books("books"),
         /** Covers, multiple per archive. */
         Cover("image");
 

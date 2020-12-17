@@ -50,11 +50,11 @@ public class SharedPreferencesCoder
             throws JSONException {
 
         final JSONObject out = new JSONObject();
-        for (final Map.Entry<String, ?> entry : element.getAll().entrySet()) {
-            final String key = entry.getKey();
+        for (final Map.Entry<String, ?> source : element.getAll().entrySet()) {
+            final String key = source.getKey();
             // skip the acra settings
             if (!key.startsWith("acra")) {
-                final Object value = entry.getValue();
+                final Object value = source.getValue();
                 if (value != null) {
                     out.put(key, value);
                 }

@@ -256,7 +256,7 @@ public class XmlRecordWriter
     private int writeStyles(@NonNull final Context context,
                             @NonNull final Writer writer)
             throws IOException {
-        final Collection<ListStyle> styles = StyleDAO.getStyles(context, mDb, false);
+        final Collection<ListStyle> styles = StyleDAO.getStyles(context, mDb, true);
         if (!styles.isEmpty()) {
             toXml(writer, new StylesWriter(context, styles));
         }
@@ -781,7 +781,7 @@ public class XmlRecordWriter
      *
      * @param <K> Type of the collection key
      */
-    interface EntityWriter<K> {
+    public interface EntityWriter<K> {
 
         /**
          * Get the top-root tag name.
@@ -1041,7 +1041,7 @@ public class XmlRecordWriter
 
         private ListStyle mCurrentStyle;
         /** The Preferences from the current {@link ListStyle}. */
-        private Map<String, PPref> mCurrentStylePPrefs;
+        private Map<String, PPref<?>> mCurrentStylePPrefs;
 
         /**
          * Constructor.

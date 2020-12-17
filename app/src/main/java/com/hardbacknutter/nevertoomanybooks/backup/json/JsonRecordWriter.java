@@ -30,18 +30,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -93,7 +97,24 @@ public class JsonRecordWriter
         final JSONObject output = new JSONObject();
 
         try {
-            if (entry.contains(ArchiveWriterRecord.Type.Books)) {
+            if (entry.contains(ArchiveWriterRecord.Type.Styles)
+                && !progressListener.isCancelled()) {
+                progressListener.publishProgressStep(1, context.getString(R.string.lbl_styles));
+                final List<ListStyle> styles = StyleDAO.getStyles(context, mDb, true);
+                if (!styles.isEmpty()) {
+                    final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
+                    output.put(ListStyleCoder.STYLE_LIST, coder.encode(styles));
+                }
+                results.styles = styles.size();
+            }
+
+//            if (entry.contains(ArchiveWriterRecord.Type.Preferences)
+//                && !progressListener.isCancelled()) {
+//                progressListener.publishProgressStep(1, context.getString(R.string.lbl_settings));
+//            }
+
+            if (entry.contains(ArchiveWriterRecord.Type.Books)
+                && !progressListener.isCancelled()) {
                 final boolean collectCoverFilenames = entry.contains(
                         ArchiveWriterRecord.Type.Cover);
 
@@ -133,9 +154,10 @@ public class JsonRecordWriter
                 }
 
                 if (bookArray.length() > 0) {
-                    output.put(JsonTags.BOOK_LIST, bookArray);
+                    output.put(BookCoder.BOOK_LIST, bookArray);
                 }
             }
+
         } catch (@NonNull final JSONException e) {
             throw new IOException(e);
         }

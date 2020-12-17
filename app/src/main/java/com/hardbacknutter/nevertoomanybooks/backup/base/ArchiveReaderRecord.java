@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -60,7 +59,7 @@ public interface ArchiveReaderRecord {
      *
      * @return Type
      */
-    @Nullable
+    @NonNull
     Type getType();
 
     /**
@@ -68,7 +67,7 @@ public interface ArchiveReaderRecord {
      *
      * @return Encoding
      */
-    @Nullable
+    @NonNull
     Encoding getEncoding();
 
     /**
@@ -142,10 +141,17 @@ public interface ArchiveReaderRecord {
         // Json: can detect its own format; but importing standalone files is not supported
 
         InfoHeader("info"),
-        Preferences("preferences"),
         Styles("styles"),
+        Preferences("preferences"),
         Books("books"),
-        Cover("");
+        Cover(""),
+        /**
+         * ENHANCE: A special type indicating the reader is supposed to auto-detect the type(s).
+         * Not supported by all readers. Not sure this is a good approach though; might change.
+         */
+        AutoDetect(""),
+        /** The record type could not be detected. */
+        Unknown("");
 
         /** Log tag. */
         private static final String TAG = "Type";
@@ -164,7 +170,7 @@ public interface ArchiveReaderRecord {
          *
          * @return the record type
          */
-        @Nullable
+        @NonNull
         public static Type getType(@NonNull final String entryName) {
             final String name = entryName.toLowerCase(AppLocale.getInstance().getSystemLocale());
 
@@ -175,7 +181,7 @@ public interface ArchiveReaderRecord {
             }
 
             Logger.warn(App.getAppContext(), TAG, "getType|Unknown entry=" + entryName);
-            return null;
+            return Unknown;
         }
     }
 
@@ -186,7 +192,8 @@ public interface ArchiveReaderRecord {
         Xml(".+\\.xml$"),
         Csv(".+\\.csv$"),
         Json(".+\\.json$"),
-        Cover(".+\\.(?:jpg|png)$");
+        Cover(".+\\.(?:jpg|png)$"),
+        Unknown(".*");
 
         /** Log tag. */
         private static final String TAG = "Encoding";
@@ -205,7 +212,7 @@ public interface ArchiveReaderRecord {
          *
          * @return the encoding
          */
-        @Nullable
+        @NonNull
         public static Encoding getEncoding(@NonNull final String entryName) {
             final String name = entryName.toLowerCase(AppLocale.getInstance().getSystemLocale());
 
@@ -221,7 +228,7 @@ public interface ArchiveReaderRecord {
             }
 
             Logger.warn(App.getAppContext(), TAG, "getEncoding|Unknown entry=" + entryName);
-            return null;
+            return Unknown;
         }
     }
 }

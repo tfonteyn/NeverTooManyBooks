@@ -117,7 +117,7 @@ public class CsvArchiveReader
             mIs = is;
         }
 
-        @Nullable
+        @NonNull
         public Type getType() {
             return Type.Books;
         }

@@ -107,9 +107,6 @@ public class CsvRecordReader
     /** Log tag. */
     private static final String TAG = "CsvRecordReader";
 
-    /** Buffer for the Reader. */
-    private static final int BUFFER_SIZE = 65535;
-
     /** log error string. */
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
 
@@ -158,12 +155,25 @@ public class CsvRecordReader
 
         mResults = new ImportResults();
 
-        // Read the whole file content into a list of lines.
-        final List<String> content = record.asList();
-        if (content.isEmpty()) {
-            return mResults;
+        if (record.getType() == ArchiveReaderRecord.Type.Books) {
+            // Read the whole file content into a list of lines.
+            final List<String> books = record.asList();
+            if (!books.isEmpty()) {
+                readBooks(context, options, books, progressListener);
+            }
         }
 
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
+            Log.d(TAG, "read|mResults=" + mResults);
+        }
+        return mResults;
+    }
+
+    private void readBooks(@NonNull final Context context,
+                           @ImportHelper.Options final int options,
+                           @NonNull final List<String> books,
+                           @NonNull final ProgressListener progressListener)
+            throws ImportException {
         final boolean updatesMustSync =
                 (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
         final boolean updatesMayOverwrite =
@@ -171,7 +181,7 @@ public class CsvRecordReader
 
         // First line in the import file must be the column names.
         // Store them to use as keys into the book.
-        final String[] csvColumnNames = parse(context, 0, content.get(0));
+        final String[] csvColumnNames = parse(context, 0, books.get(0));
         // sanity check: make sure they are lower case
         for (int i = 0; i < csvColumnNames.length; i++) {
             csvColumnNames[i] = csvColumnNames[i].toLowerCase(mUserLocale);
@@ -195,12 +205,12 @@ public class CsvRecordReader
         SyncLock txLock = null;
         try {
             // not perfect, but good enough
-            if (progressListener.getMaxPos() < content.size()) {
-                progressListener.setMaxPos(content.size());
+            if (progressListener.getMaxPos() < books.size()) {
+                progressListener.setMaxPos(books.size());
             }
 
             // Iterate through each imported row or until cancelled
-            while (row < content.size() && !progressListener.isCancelled()) {
+            while (row < books.size() && !progressListener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
                 if (mDb.inTransaction() && txRowCount > 10) {
                     mDb.setTransactionSuccessful();
@@ -213,7 +223,7 @@ public class CsvRecordReader
                 txRowCount++;
 
                 try {
-                    final String[] csvDataRow = parse(context, row, content.get(row));
+                    final String[] csvDataRow = parse(context, row, books.get(row));
 
                     if (csvDataRow.length != csvColumnNames.length) {
                         throw new ImportException(context.getString(
@@ -279,11 +289,6 @@ public class CsvRecordReader
 
         // minus 1 to compensate for the last increment
         mResults.booksProcessed = row - 1;
-
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-            Log.d(TAG, "read|mResults=" + mResults);
-        }
-        return mResults;
     }
 
     private void handleRowException(@NonNull final Context context,
