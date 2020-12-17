@@ -149,7 +149,7 @@ public class Booklist
     private final ListStyle mStyle;
     /** Show only books on this bookshelf. */
     @NonNull
-    private final Bookshelf mBookshelf;
+    private final List<Bookshelf> mBookshelves = new ArrayList<>();
     @SuppressWarnings("FieldNotUsedInToString")
     @ListRebuildMode
     private int mRebuildState;
@@ -231,21 +231,14 @@ public class Booklist
                   new Throwable());
         }
 
-        // Allocate ID
         mInstanceId = ID_COUNTER.incrementAndGet();
+
         mSyncedDb = db;
         mStyle = style;
-        mBookshelf = bookshelf;
+        mBookshelves.add(bookshelf);
         mRebuildState = rebuildState;
 
         mStmtManager = new SqlStatementManager(mSyncedDb, TAG + "|Booklist");
-
-        // Filter on the specified Bookshelf.
-        // The filter will only be added if the current style does not contain the Bookshelf group.
-        if (!mBookshelf.isAllBooks()
-            && !mStyle.getGroups().contains(BooklistGroup.BOOKSHELF)) {
-            mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID) + '=' + mBookshelf.getId() + ')');
-        }
     }
 
     /**
@@ -271,31 +264,6 @@ public class Booklist
             throw new IllegalArgumentException("Duplicate domain=" + vDomain.getName());
         }
     }
-
-//    /**
-//     * Filter on the specified Bookshelves. Uses an <strong>OR</strong> type filter.
-//     * The filter will only be added if the current style does not contain the Bookshelf group.
-//     *
-//     * @param bookshelves to filter on
-//     */
-//    public void addFilterOnBookshelf(@Nullable final List<Bookshelf> bookshelves) {
-//        //
-//        if (bookshelves != null && !bookshelves.isEmpty()
-//            && !mStyle.getGroups().contains(BooklistGroup.BOOKSHELF)) {
-//
-//            if (bookshelves.size() == 1) {
-//                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID)
-//                                  + '=' + bookshelves.get(0).getId() + ')');
-//            } else {
-//                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID)
-//                                  + " IN (" + bookshelves.stream()
-//                                                         .map(Bookshelf::getId)
-//                                                         .map(String::valueOf)
-//                                                         .collect(Collectors.joining(","))
-//                                  + "))");
-//            }
-//        }
-//    }
 
     /**
      * Adds the FTS book table for a keyword match.
@@ -361,13 +329,42 @@ public class Booklist
     }
 
     /**
+     * Filter on the specified Bookshelves. Uses an <strong>OR</strong> type filter.
+     * The filter will only be added if the current style does not contain the Bookshelf group.
+     * This is in <strong>addition</strong> to the main bookshelf.
+     *
+     * @param bookshelves to filter on
+     */
+    public void addFilterOnBookshelf(@NonNull final List<Bookshelf> bookshelves) {
+        mBookshelves.addAll(bookshelves);
+    }
+
+    /**
      * Clear and build the temporary list of books.
      * Criteria must be set before calling this method with one or more of the setCriteria calls.
      *
      * @param context Current context
      */
     public void build(@NonNull final Context context) {
-        final boolean isFilteredOnBookshelves = !mBookshelf.isAllBooks();
+
+        final boolean isFilteredOnBookshelves = !mBookshelves.get(0).isAllBooks();
+
+        // Filter on the specified Bookshelves.
+        // The filter will only be added if the current style does not contain the Bookshelf group.
+        if (isFilteredOnBookshelves && !mStyle.getGroups().contains(BooklistGroup.BOOKSHELF)) {
+            if (mBookshelves.size() == 1) {
+                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID)
+                                  + '=' + mBookshelves.get(0).getId()
+                                  + ')');
+            } else {
+                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID)
+                                  + " IN (" + mBookshelves.stream()
+                                                          .map(Bookshelf::getId)
+                                                          .map(String::valueOf)
+                                                          .collect(Collectors.joining(","))
+                                  + "))");
+            }
+        }
 
         // Construct the list table and all needed structures.
         final BooklistBuilder helper = new BooklistBuilder(mInstanceId,
@@ -383,7 +380,7 @@ public class Booklist
             mNavTable = tables.second;
 
             mRowStateDAO = new BooklistNodeDAO(mSyncedDb, mStmtManager, mListTable,
-                                               mStyle, mBookshelf);
+                                               mStyle, mBookshelves.get(0));
 
             switch (mRebuildState) {
                 case PREF_REBUILD_SAVED_STATE:
@@ -881,7 +878,7 @@ public class Booklist
                + ", mTotalBooks=" + mTotalBooks
                + ", mDistinctBooks=" + mDistinctBooks
                + ", mFilters=" + mFilters
-               + ", mBookshelf=" + mBookshelf
+               + ", mBookshelf=" + mBookshelves
                + '}';
     }
 
