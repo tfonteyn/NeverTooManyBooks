@@ -120,6 +120,8 @@ public class BooklistAdapter
     /** Whether to use the covers DAO caching. */
     private final boolean mImageCachingEnabled;
     private final boolean mReorderTitleForDisplaying;
+    /** caching the book condition strings. */
+    private final String[] mConditionDescriptions;
     /** A collection of 'in-use' flags for the fields we might display. */
     private FieldsInUse mFieldsInUse;
     /** List style to apply. */
@@ -151,7 +153,9 @@ public class BooklistAdapter
         mInflater = LayoutInflater.from(context);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
         mImageCachingEnabled = ImageUtils.isImageCachingEnabled(context);
+
         mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
+        mConditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
 
         mReorderTitleForDisplaying = ItemWithTitle.isReorderTitleForDisplaying(context);
 
@@ -390,10 +394,10 @@ public class BooklistAdapter
             }
         }
 
-        final Context context = parent.getContext();
-        final TextScale textScale = mStyle.getTextScale();
         // Scale text/padding (recursively) if required
+        final TextScale textScale = mStyle.getTextScale();
         if (!textScale.isDefaultScale()) {
+            final Context context = parent.getContext();
             scaleTextViews(view,
                            textScale.getFontSizeInSpUnits(context),
                            textScale.getPaddingFactor(context));
@@ -485,17 +489,17 @@ public class BooklistAdapter
                 }
             }
             case BooklistGroup.CONDITION: {
-                if (text == null || text.isEmpty()) {
-                    return context.getString(R.string.unknown);
-                } else {
+                if (text != null && !text.isEmpty()) {
                     try {
                         final int i = Integer.parseInt(text);
-                        return context.getResources().getStringArray(R.array.conditions_book)[i];
-                    } catch (@NonNull final NumberFormatException
-                            | IndexOutOfBoundsException ignore) {
-                        return context.getString(R.string.unknown);
+                        if (i < mConditionDescriptions.length) {
+                            return mConditionDescriptions[i];
+                        }
+                    } catch (@NonNull final NumberFormatException ignore) {
+                        // ignore
                     }
                 }
+                return context.getString(R.string.unknown);
             }
             case BooklistGroup.RATING: {
                 // This is the text based formatting, as used by the level/scroller text.
@@ -776,7 +780,7 @@ public class BooklistAdapter
          * Constructor. Initialized by the adapter.
          *
          * @param context Current context
-         * @param style        Style reference.
+         * @param style   Style reference.
          */
         FieldsInUse(@NonNull final Context context,
                     @NonNull final ListStyle style) {
