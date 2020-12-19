@@ -199,6 +199,8 @@
     <string name="lbl_archive_type_backup_info">Полное резервное копирование / восстановление архива</string>
     <string name="lbl_archive_type_xml">Экспорт XML (%1$s)</string>
     <string name="lbl_archive_format_xml_info">Все данные в формате XML.</string>
+    <string name="lbl_archive_type_json">Экспорт JSON (%1$s)</string>
+    <string name="lbl_archive_format_json_info">Все данные в формате JSON.</string>
     <string name="lbl_archive_is_export_only">Это только для экспорта данных; импорт не поддерживается.</string>
     <string name="lbl_author">Автор</string>
     <string name="lbl_author_type">Тип автора</string>

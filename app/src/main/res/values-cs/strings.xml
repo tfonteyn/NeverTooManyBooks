@@ -199,7 +199,9 @@
     <string name="lbl_archive_type_backup">Záložní kopie (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Úplný archiv zálohy / obnovy</string>
     <string name="lbl_archive_type_xml">Export XML (%1$s)</string>
+    <string name="lbl_archive_type_json">Export JSON (%1$s)</string>
     <string name="lbl_archive_format_xml_info">Všechna data ve formátu XML.</string>
+    <string name="lbl_archive_format_json_info">Všechna data ve formátu JSON.</string>
     <string name="lbl_archive_is_export_only">Toto je pouze pro export dat; import není podporován.</string>
     <string name="lbl_author">Autor</string>
     <string name="lbl_author_type">Typ autora</string>

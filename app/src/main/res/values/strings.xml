@@ -1486,6 +1486,11 @@
     <string name="lbl_archive_format_xml_info">All data in XML format.</string>
 
     <!-- Text in a spinner dropdown. Must be fairly short. -->
+    <string name="lbl_archive_type_json">JSON export (%1$s)</string>
+    <!-- Explanatory note for 'lbl_archive_type_json' -->
+    <string name="lbl_archive_format_json_info">All data in JSON format.</string>
+
+    <!-- Text in a spinner dropdown. Must be fairly short. -->
     <string name="lbl_archive_type_db">Database file (%1$s)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_format_db_info">The SQLite database.</string>

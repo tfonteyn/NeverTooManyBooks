@@ -215,6 +215,7 @@
     <string name="lbl_archive_type_csv">Boeken (%1$s)</string>
     <string name="lbl_archive_type_db">Databasebestand (%1$s)</string>
     <string name="lbl_archive_type_xml">XML-export (%1$s)</string>
+    <string name="lbl_archive_type_json">JSON-export (%1$s)</string>
     <string name="lbl_author_type_artist">illustraties</string>
     <string name="lbl_author_type_colorist">Inkleurder</string>
     <string name="lbl_author_type_contributor">Medewerker</string>
@@ -685,4 +686,5 @@
     <string name="unknown_title">[Onbekende titel]</string>
     <string name="error_import_csv_column_count_mismatch">Onjuist aantal kolommen in rij %1$d</string>
     <string name="error_import_csv_line">Onbekende fout in rij %1$d</string>
+    <string name="lbl_archive_format_json_info">Alle gegevens in JSON formaat.</string>
 </resources>

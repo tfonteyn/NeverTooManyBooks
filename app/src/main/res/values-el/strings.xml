@@ -200,7 +200,9 @@
     <string name="lbl_archive_type_backup">Αντίγραφο ασφαλείας (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
     <string name="lbl_archive_type_xml">Εξαγωγή XML (%1$s)</string>
+    <string name="lbl_archive_type_json">Εξαγωγή JSON (%1$s)</string>
     <string name="lbl_archive_format_xml_info">Όλα τα δεδομένα σε μορφή XML.</string>
+    <string name="lbl_archive_format_json_info">Όλα τα δεδομένα σε μορφή JSON.</string>
     <string name="lbl_archive_is_export_only">Αυτό προορίζεται μόνο για εξαγωγή δεδομένων. η εισαγωγή δεν υποστηρίζεται.</string>
     <string name="lbl_author">Συγγραφέας</string>
     <string name="lbl_author_type">Τύπος συγγραφέα</string>

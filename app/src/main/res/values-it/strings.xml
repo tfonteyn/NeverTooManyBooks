@@ -201,6 +201,8 @@
     <string name="lbl_archive_type_backup_info">Archivio completo di backup / ripristino</string>
     <string name="lbl_archive_type_xml">Esportazione XML (%1$s)</string>
     <string name="lbl_archive_format_xml_info">Tutti i dati in formato XML.</string>
+    <string name="lbl_archive_type_json">Esportazione JSON (%1$s)</string>
+    <string name="lbl_archive_format_json_info">Tutti i dati in formato JSON.</string>
     <string name="lbl_archive_is_export_only">Questo è solo per l\'esportazione dei dati; l\'importazione non è supportata.</string>
     <string name="lbl_author">Autore</string>
     <string name="lbl_author_type">Tipo di autore</string>

@@ -200,7 +200,9 @@
     <string name="lbl_archive_type_backup">Yedek kopya (%1$s)</string>
     <string name="lbl_archive_type_backup_info">Tam Yedekleme / Geri Yükleme arşivi</string>
     <string name="lbl_archive_type_xml">XML dışa aktarma (%1$s)</string>
+    <string name="lbl_archive_type_json">JSON dışa aktarma (%1$s)</string>
     <string name="lbl_archive_format_xml_info">Tüm veriler XML formatında.</string>
+    <string name="lbl_archive_format_json_info">Tüm veriler JSON formatında.</string>
     <string name="lbl_archive_is_export_only">Bu yalnızca verileri dışa aktarmak içindir; içe aktarma desteklenmez.</string>
     <string name="lbl_author">Yazar</string>
     <string name="lbl_author_type">Yazar tipi</string>

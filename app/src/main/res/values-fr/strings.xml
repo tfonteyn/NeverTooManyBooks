@@ -219,6 +219,7 @@
     <string name="lbl_archive_type_csv">Livres (%1$s)</string>
     <string name="lbl_archive_type_db">Fichier de base de données (%1$s)</string>
     <string name="lbl_archive_type_xml">Exportation XML (%1$s)</string>
+    <string name="lbl_archive_type_json">Exportation JSON (%1$s)</string>
     <string name="lbl_author_type_artist">dessins</string>
     <string name="lbl_author_type_colorist">Coloriste</string>
     <string name="lbl_author_type_contributor">Collaborateur</string>
@@ -689,4 +690,5 @@
     <string name="unknown_title">[Titre inconnu]</string>
     <string name="error_import_csv_column_count_mismatch">Nombre de colonnes incorrect dans la ligne %1$d</string>
     <string name="error_import_csv_line">Erreur inconnue à la ligne %1$d</string>
+    <string name="lbl_archive_format_json_info">Toutes les données au format JSON.</string>
 </resources>
