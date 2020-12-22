@@ -30,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
@@ -64,5 +65,13 @@ public class AboutFragment
 
         mVb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
+
+        // just running this on the UI thread...
+        try (DAO db = new DAO(TAG)) {
+            mVb.bookCount.setText(String.valueOf(db.countBooks()));
+            mVb.seriesCount.setText(String.valueOf(db.countSeries()));
+            mVb.authorCount.setText(String.valueOf(db.countAuthors()));
+            mVb.publisherCount.setText(String.valueOf(db.countPublishers()));
+        }
     }
 }

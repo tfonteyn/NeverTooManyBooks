@@ -68,12 +68,93 @@
         />
 
     <TextView
+        android:id="@+id/lbl_books"
+        style="@style/Field.Label"
+        android:layout_marginTop="24dp"
+        android:text="@string/lbl_books"
+        app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
+        />
+
+    <TextView
+        android:id="@+id/lbl_series"
+        style="@style/Field.Label"
+        android:text="@string/lbl_series"
+        app:layout_constraintTop_toBottomOf="@id/lbl_books"
+        />
+
+    <TextView
+        android:id="@+id/lbl_authors"
+        style="@style/Field.Label"
+        android:text="@string/lbl_authors"
+        app:layout_constraintTop_toBottomOf="@id/lbl_series"
+        />
+
+    <TextView
+        android:id="@+id/lbl_publishers"
+        style="@style/Field.Label"
+        android:text="@string/lbl_publishers"
+        app:layout_constraintTop_toBottomOf="@id/lbl_authors"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_labels_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="lbl_books,lbl_authors,lbl_publishers"
+        />
+
+    <TextView
+        android:id="@+id/book_count"
+        style="@style/Field.Generic.Inline.Small"
+        android:layout_width="@dimen/about_number_field_width"
+        android:gravity="end"
+        android:textIsSelectable="true"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_books"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        tools:text="1234"
+        />
+
+    <TextView
+        android:id="@+id/series_count"
+        style="@style/Field.Generic.Inline.Small"
+        android:layout_width="@dimen/about_number_field_width"
+        android:gravity="end"
+        android:textIsSelectable="true"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_series"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        tools:text="234"
+        />
+
+    <TextView
+        android:id="@+id/author_count"
+        style="@style/Field.Generic.Inline.Small"
+        android:layout_width="@dimen/about_number_field_width"
+        android:gravity="end"
+        android:textIsSelectable="true"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_authors"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        tools:text="567"
+        />
+
+    <TextView
+        android:id="@+id/publisher_count"
+        style="@style/Field.Generic.Inline.Small"
+        android:layout_width="@dimen/about_number_field_width"
+        android:gravity="end"
+        android:textIsSelectable="true"
+        app:layout_constraintBaseline_toBaselineOf="@id/lbl_publishers"
+        app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
+        tools:text="89"
+        />
+
+    <TextView
         android:id="@+id/contacts"
         style="@style/Text.Header"
         android:layout_marginStart="@dimen/field_margin"
         android:layout_marginTop="24dp"
         android:text="@string/lbl_about_contact"
-        app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
+        app:layout_constraintTop_toBottomOf="@id/lbl_publishers"
         />
 
     <Button
