@@ -2193,8 +2193,25 @@ public class DAO
      * @return number of books
      */
     public long countBooks() {
-        try (SynchronizedStatement stmt = mSyncedDb
-                .compileStatement(DAOSql.SqlCount.BOOKS)) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlCount.BOOKS)) {
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    public long countSeries() {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlCount.SERIES)) {
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    public long countAuthors() {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlCount.AUTHORS)) {
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    public long countPublishers() {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlCount.PUBLISHERS)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }

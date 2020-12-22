@@ -397,6 +397,12 @@ public class DAOSql {
          */
         static final String BOOKS =
                 "SELECT COUNT(*) FROM " + TBL_BOOKS.getName();
+        static final String SERIES =
+                "SELECT COUNT(*) FROM " + TBL_SERIES.getName();
+        static final String AUTHORS =
+                "SELECT COUNT(*) FROM " + TBL_AUTHORS.getName();
+        static final String PUBLISHERS =
+                "SELECT COUNT(*) FROM " + TBL_PUBLISHERS.getName();
 
         /**
          * Count the number of {@link Book}'s in a {@link Series}.
