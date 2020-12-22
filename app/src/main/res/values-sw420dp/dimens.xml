@@ -26,8 +26,6 @@
     land: w683dp h387dp
 -->
 <resources>
-    <dimen name="fixed_screen_width">420dp</dimen>
-
     <!-- Material large text size is 22sp. -->
     <dimen name="editText_isbn_textSize">22sp</dimen>
 </resources>

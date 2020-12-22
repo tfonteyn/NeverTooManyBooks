@@ -31,8 +31,4 @@
     <!-- dialog specific settings. -->
     <dimen name="floating_dialogs_styles_picker_height">520dp</dimen>
     <dimen name="floating_dialogs_cover_browser_width">500dp</dimen>
-
-    <dimen name="floating_dialogs_export_options_width">420dp</dimen>
-    <dimen name="floating_dialogs_import_options_width">360dp</dimen>
-
 </resources>

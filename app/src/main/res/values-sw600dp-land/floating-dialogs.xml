@@ -23,7 +23,4 @@
 <resources>
     <dimen name="floating_dialogs_styles_picker_height">460dp</dimen>
     <dimen name="floating_dialogs_cover_browser_width">800dp</dimen>
-
-    <dimen name="floating_dialogs_export_options_width">600dp</dimen>
-    <dimen name="floating_dialogs_import_options_width">550dp</dimen>
 </resources>

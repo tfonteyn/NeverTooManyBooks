@@ -37,8 +37,6 @@
     <!-- dialog specific settings. -->
     <dimen name="floating_dialogs_styles_picker_height">100dp</dimen>
     <dimen name="floating_dialogs_cover_browser_width">100dp</dimen>
-    <dimen name="floating_dialogs_export_options_width">100dp</dimen>
-    <dimen name="floating_dialogs_import_options_width">100dp</dimen>
 
     <!--
         Copy of "material:abc_alert_dialog_button_bar_height" which is used as minHeight for a button.

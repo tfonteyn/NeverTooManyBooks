@@ -25,5 +25,4 @@
     land:  w640dp h336dp
 -->
 <resources>
-    <dimen name="fixed_screen_width">360dp</dimen>
 </resources>
