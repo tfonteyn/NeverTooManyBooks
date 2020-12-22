@@ -913,12 +913,6 @@ public class Book
                    // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date
                    if (date.length() > 10) {
                        putString(key, date.substring(0, 10));
-                       if (BuildConfig.DEBUG /* always */) {
-                           Logger.d(TAG, "preprocessDates",
-                                    "key=" + key
-                                    + "|in=`" + date + '`'
-                                    + "|out=`" + getString(key) + '`');
-                       }
                    }
                });
 
@@ -933,12 +927,6 @@ public class Book
                    // and if so, replace it with a space
                    if (date.length() > 10 && date.charAt(10) == 'T') {
                        putString(key, T.matcher(date).replaceFirst(" "));
-                       if (BuildConfig.DEBUG /* always */) {
-                           Logger.d(TAG, "preprocessDates",
-                                    "key=" + key
-                                    + "|in=`" + date + '`'
-                                    + "|out=`" + getString(key) + '`');
-                       }
                    }
                });
     }
