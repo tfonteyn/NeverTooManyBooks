@@ -86,26 +86,15 @@ public final class XmlUtils {
      * String values are automatically encoded.
      *
      * @return the tag, or an empty string if the value was empty.
-     *
-     * @throws IOException on failure
      */
     @NonNull
     private static String tag(@NonNull final String tag,
                               @Nullable final String name,
-                              @NonNull final Object value)
-            throws IOException {
-        if (value instanceof String) {
-            final String valueString = value.toString();
-            if (!valueString.isEmpty()) {
-                // strings are encoded
-                return '<' + tag + nameAttr(name) + attr(ATTR_VALUE, String.valueOf(value))
-                       + "/>\n";
-            } else {
-                return "";
-            }
+                              @NonNull final String value) {
+        if (!value.isEmpty()) {
+            return '<' + tag + nameAttr(name) + attr(ATTR_VALUE, value) + "/>\n";
         } else {
-            // non-strings as-is; for boolean this means: true,false
-            return typedTag(name, value);
+            return "";
         }
     }
 
@@ -421,7 +410,7 @@ public final class XmlUtils {
      * @return string representation of the attribute, with leading space; or an empty string.
      */
     @NonNull
-    static String nameAttr(@Nullable final String value) {
+    private static String nameAttr(@Nullable final String value) {
         if (value != null && !value.isEmpty()) {
             return ' ' + ATTR_NAME + "=\"" + value + '"';
         } else {
