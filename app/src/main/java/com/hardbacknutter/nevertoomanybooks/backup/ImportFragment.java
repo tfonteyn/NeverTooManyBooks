@@ -61,11 +61,11 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -187,21 +187,20 @@ public class ImportFragment
             getActivity().finish();
 
         } else {
-            //noinspection ConstantConditions
-            final ImportHelper helper = mVm.createImportHelper(getContext(), uri);
-
+            final ImportHelper helper;
             try {
-                helper.validateArchive(getContext());
+                //noinspection ConstantConditions
+                helper = mVm.createImportHelper(getContext(), uri);
             } catch (@NonNull final IOException | InvalidArchiveException e) {
                 onImportNotSupported();
                 return;
             }
 
-            final ArchiveType archiveType = helper.getArchiveType();
-            switch (archiveType) {
+            final ArchiveEncoding archiveEncoding = helper.getArchiveEncoding();
+            switch (archiveEncoding) {
                 case Csv:
                     // Default: new books and sync updates
-                    helper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+                    helper.setImportEntry(RecordType.Books, true);
                     helper.setUpdatesMustSync();
 
                     //URGENT: should make a backup before ANY csv import!
@@ -220,25 +219,31 @@ public class ImportFragment
                 case Zip:
                 case Tar:
                     // Default: update all entries and sync updates
-                    helper.setImportEntry(ArchiveReaderRecord.Type.Styles, true);
-                    helper.setImportEntry(ArchiveReaderRecord.Type.Preferences, true);
-                    helper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
-                    helper.setImportEntry(ArchiveReaderRecord.Type.Cover, true);
+                    helper.setImportEntry(RecordType.Styles, true);
+                    helper.setImportEntry(RecordType.Preferences, true);
+                    helper.setImportEntry(RecordType.Books, true);
+                    helper.setImportEntry(RecordType.Cover, true);
                     helper.setUpdatesMustSync();
                     showScreen();
                     break;
 
                 case SqLiteDb:
                     // Default: new books only
-                    helper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+                    helper.setImportEntry(RecordType.Books, true);
                     helper.setSkipUpdates();
                     showScreen();
                     break;
 
                 case Json:
-                    //ENHANCE: import from JSON not exposed to the user yet
+                    helper.setImportEntry(RecordType.Styles, true);
+                    helper.setImportEntry(RecordType.Preferences, true);
+                    helper.setImportEntry(RecordType.Books, true);
+                    helper.setUpdatesMustSync();
+                    showScreen();
+                    break;
+
                 case Xml:
-                case Unknown:
+                    // we can import Styles and Preferences from xml, but there is no point.
                 default:
                     onImportNotSupported();
                     break;
@@ -271,28 +276,21 @@ public class ImportFragment
      */
     private void showScreen() {
         final ImportHelper helper = mVm.getImportHelper();
-        final Set<ArchiveReaderRecord.Type> importEntries = helper.getImportEntries();
 
         //noinspection ConstantConditions
         final String displayName = helper.getArchiveName(getContext());
         mVb.archiveName.setText(displayName);
 
-        ArchiveInfo archiveInfo = null;
-        try {
-            archiveInfo = helper.getArchiveInfo(getContext());
-        } catch (@NonNull final IOException | InvalidArchiveException ignore) {
-            // ignore; we would not be in this class unless the info was valid or null
-        }
+        final ArchiveMetaData archiveMetaData = helper.getArchiveMetaData();
+        if (archiveMetaData != null) {
+            final StringJoiner info = new StringJoiner("\n");
 
-        if (archiveInfo != null) {
-            final StringJoiner info = new StringJoiner(", ");
-
-            final int bookCount = archiveInfo.getBookCount();
+            final int bookCount = archiveMetaData.getBookCount();
             if (bookCount > 0) {
                 info.add(getString(R.string.name_colon_value,
                                    getString(R.string.lbl_books), String.valueOf(bookCount)));
             }
-            final int coverCount = archiveInfo.getCoverCount();
+            final int coverCount = archiveMetaData.getCoverCount();
             if (coverCount > 0) {
                 info.add(getString(R.string.name_colon_value,
                                    getString(R.string.lbl_covers), String.valueOf(coverCount)));
@@ -307,30 +305,13 @@ public class ImportFragment
             mVb.archiveContent.setVisibility(View.GONE);
         }
 
-        if (helper.archiveCanOnlyHaveBooks()) {
-            // remove all non-book options if we're importing from a file/archive
-            // which only contains books.
-            mVb.cbxGroup.setVisibility(View.GONE);
+        final Set<RecordType> entries = helper.getImportEntries();
 
-        } else {
-            mVb.cbxBooks.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Books));
-            mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                helper.setImportEntry(ArchiveReaderRecord.Type.Books, isChecked);
-                mVb.rbBooksGroup.setEnabled(isChecked);
-            });
-
-            mVb.cbxCovers.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Cover));
-            mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setImportEntry(ArchiveReaderRecord.Type.Cover, isChecked));
-
-            mVb.cbxPrefs.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Preferences));
-            mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setImportEntry(ArchiveReaderRecord.Type.Preferences, isChecked));
-
-            mVb.cbxStyles.setChecked(importEntries.contains(ArchiveReaderRecord.Type.Styles));
-            mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                    .setImportEntry(ArchiveReaderRecord.Type.Styles, isChecked));
-        }
+        mVb.cbxBooks.setChecked(entries.contains(RecordType.Books));
+        mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            helper.setImportEntry(RecordType.Books, isChecked);
+            mVb.rbBooksGroup.setEnabled(isChecked);
+        });
 
         mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdates());
         mVb.rbUpdatedBooksSkipInfo.setOnClickListener(StandardDialogs::infoPopup);
@@ -352,6 +333,44 @@ public class ImportFragment
                 helper.setUpdatesMustSync();
             }
         });
+
+        mVb.cbxCovers.setChecked(entries.contains(RecordType.Cover));
+        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setImportEntry(RecordType.Cover, isChecked));
+
+        mVb.cbxStyles.setChecked(entries.contains(RecordType.Styles));
+        mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setImportEntry(RecordType.Styles, isChecked));
+
+        mVb.cbxPrefs.setChecked(entries.contains(RecordType.Preferences));
+        mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setImportEntry(RecordType.Preferences, isChecked));
+
+        switch (helper.getArchiveEncoding()) {
+            case Zip:
+            case Tar: {
+                // all options available
+                mVb.cbxGroup.setVisibility(View.VISIBLE);
+                break;
+            }
+            case Json: {
+                // all options, except covers
+                mVb.cbxGroup.setVisibility(View.VISIBLE);
+                mVb.cbxCovers.setVisibility(View.GONE);
+                break;
+            }
+            case Csv:
+            case SqLiteDb: {
+                // show only the book options
+                mVb.cbxGroup.setVisibility(View.GONE);
+                break;
+            }
+
+            case Xml:
+                // shouldn't even get here
+                onImportNotSupported();
+                break;
+        }
 
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
@@ -481,7 +500,7 @@ public class ImportFragment
     private String createReport(@NonNull final ImportResults result) {
 
         final Context context = getContext();
-        final StringJoiner report = new StringJoiner("\n", "• ", "");
+        final StringJoiner report = new StringJoiner("\n");
         report.setEmptyValue("");
 
         //TODO: RTL

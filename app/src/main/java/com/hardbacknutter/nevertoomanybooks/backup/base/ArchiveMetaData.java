@@ -22,20 +22,14 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -43,20 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 /**
  * Class to encapsulate the INFO block from an archive.
  */
-public class ArchiveInfo
-        implements Parcelable {
+public class ArchiveMetaData {
 
-    public static final Creator<ArchiveInfo> CREATOR = new Creator<ArchiveInfo>() {
-        @Override
-        public ArchiveInfo createFromParcel(@NonNull final Parcel in) {
-            return new ArchiveInfo(in);
-        }
-
-        @Override
-        public ArchiveInfo[] newArray(final int size) {
-            return new ArchiveInfo[size];
-        }
-    };
     /** Version of archiver used to write this archive. */
     private static final String INFO_ARCHIVER_VERSION = "ArchVersion";
     /** Creation Date of archive (in SQL format). */
@@ -74,6 +56,7 @@ public class ArchiveInfo
 
     private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
     private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
+
     /** Bundle retrieved from the archive for this instance. */
     @NonNull
     private final Bundle mInfo;
@@ -81,8 +64,15 @@ public class ArchiveInfo
     /**
      * Constructor used while reading from an Archive.
      */
-    public ArchiveInfo() {
+    public ArchiveMetaData() {
         mInfo = new Bundle();
+    }
+
+    /**
+     * Constructor used while reading from an Archive.
+     */
+    public ArchiveMetaData(@NonNull final Bundle from) {
+        mInfo = from;
     }
 
     /**
@@ -90,68 +80,43 @@ public class ArchiveInfo
      *
      * @param context Current context
      * @param version of the archive structure
+     * @param data    to add to the header bundle
      */
-    public ArchiveInfo(@NonNull final Context context,
-                       final int version) {
-        mInfo = new Bundle();
+    @NonNull
+    public static ArchiveMetaData create(@NonNull final Context context,
+                                         final int version,
+                                         @NonNull final ExportResults data) {
 
-        mInfo.putInt(INFO_ARCHIVER_VERSION, version);
-        mInfo.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
-        mInfo.putString(INFO_CREATION_DATE,
-                        LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-
+        final ArchiveMetaData metaData = new ArchiveMetaData();
+        // Pure info/debug information
+        metaData.mInfo.putInt(INFO_ARCHIVER_VERSION, version);
+        metaData.mInfo.putInt(INFO_DATABASE_VERSION, DBHelper.DATABASE_VERSION);
         final PackageInfoWrapper info = PackageInfoWrapper.create(context);
-        mInfo.putString(INFO_APP_PACKAGE, info.getPackageName());
-        mInfo.putString(INFO_APP_VERSION_NAME, info.getVersionName());
-        mInfo.putLong(INFO_APP_VERSION_CODE, info.getVersionCode());
-        mInfo.putInt(INFO_SDK, Build.VERSION.SDK_INT);
-    }
+        metaData.mInfo.putString(INFO_APP_PACKAGE, info.getPackageName());
+        metaData.mInfo.putString(INFO_APP_VERSION_NAME, info.getVersionName());
+        metaData.mInfo.putLong(INFO_APP_VERSION_CODE, info.getVersionCode());
+        metaData.mInfo.putInt(INFO_SDK, Build.VERSION.SDK_INT);
 
-    /**
-     * Constructor. Used when reading JSON info from an archive.
-     */
-    public ArchiveInfo(@NonNull final JSONObject from)
-            throws IOException {
-        try {
-            mInfo = new BundleCoder().decode(from);
-        } catch (@NonNull final JSONException e) {
-            throw new IOException(e);
+        // the actual data the user will care about
+        metaData.mInfo.putString(INFO_CREATION_DATE, LocalDateTime.now().format(
+                DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        if (data.getBookCount() > 0) {
+            metaData.mInfo.putInt(INFO_NUMBER_OF_BOOKS, data.getBookCount());
         }
-    }
-
-    protected ArchiveInfo(@NonNull final Parcel in) {
-        //noinspection ConstantConditions
-        mInfo = in.readBundle(getClass().getClassLoader());
-    }
-
-    @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeBundle(mInfo);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
+        if (data.getCoverCount() > 0) {
+            metaData.mInfo.putInt(INFO_NUMBER_OF_COVERS, data.getCoverCount());
+        }
+        return metaData;
     }
 
     /**
-     * Get the raw bundle, this is used for writing out the info block to the backup archive.
+     * Get the raw bundle, this is used for reading out the info block to the backup archive.
      *
      * @return the bundle with all settings.
      */
     @NonNull
     public Bundle getBundle() {
         return mInfo;
-    }
-
-    /**
-     * Get the version of the Archiver that wrote this archive.
-     *
-     * @return archive version
-     */
-    public int getArchiveVersion() {
-        return mInfo.getInt(INFO_ARCHIVER_VERSION);
     }
 
     /**
@@ -167,22 +132,12 @@ public class ArchiveInfo
     }
 
     /**
-     * Get the version of the <strong>application</strong> this archive was generated from.
+     * Get the version of the Archiver that wrote this archive.
      *
-     * @return version
+     * @return archive version
      */
-    private long getAppVersionCode() {
-        // old archives used an Integer, newer use Long.
-        final Object version = mInfo.get(INFO_APP_VERSION_CODE);
-        if (version == null) {
-            return 0;
-        } else {
-            try {
-                return (long) version;
-            } catch (@NonNull final ClassCastException e) {
-                return 0;
-            }
-        }
+    public int getArchiveVersion() {
+        return mInfo.getInt(INFO_ARCHIVER_VERSION);
     }
 
     /**
@@ -194,8 +149,23 @@ public class ArchiveInfo
         return mInfo.getInt(INFO_DATABASE_VERSION, 0);
     }
 
-    public void setDatabaseVersionCode(final int version) {
-        mInfo.putInt(INFO_DATABASE_VERSION, version);
+    /**
+     * Get the version of the <strong>application</strong> this archive was generated from.
+     *
+     * @return version
+     */
+    public long getAppVersionCode() {
+        // old archives used an Integer, newer use Long.
+        final Object version = mInfo.get(INFO_APP_VERSION_CODE);
+        if (version == null) {
+            return 0;
+        } else {
+            try {
+                return (long) version;
+            } catch (@NonNull final ClassCastException e) {
+                return 0;
+            }
+        }
     }
 
     /**
@@ -218,7 +188,6 @@ public class ArchiveInfo
         mInfo.putInt(INFO_NUMBER_OF_BOOKS, count);
     }
 
-
     /**
      * Check if the archive has a known number of covers.
      * Will return {@code false} if there is no number (or if the number is 0).
@@ -235,10 +204,6 @@ public class ArchiveInfo
         return mInfo.getInt(INFO_NUMBER_OF_COVERS);
     }
 
-    void setCoverCount(final int count) {
-        mInfo.putInt(INFO_NUMBER_OF_COVERS, count);
-    }
-
     /**
      * This is partially a debug method and partially a basic check to see if the info
      * block looks more or less correct.
@@ -253,27 +218,10 @@ public class ArchiveInfo
         }
     }
 
-    /**
-     * Covert to json.
-     *
-     * @return a JSON object
-     *
-     * @throws IOException on failure
-     */
-    @NonNull
-    JSONObject toJson()
-            throws IOException {
-        try {
-            return new BundleCoder().encode(mInfo);
-        } catch (@NonNull final JSONException e) {
-            throw new IOException(e);
-        }
-    }
-
     @Override
     @NonNull
     public String toString() {
-        return "ArchiveInfo{"
+        return "ArchiveMetaData{"
                + "mInfo=" + mInfo
                + '}';
     }

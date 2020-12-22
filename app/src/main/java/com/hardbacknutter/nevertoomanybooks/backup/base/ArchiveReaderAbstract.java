@@ -30,35 +30,51 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * This is the base for full-fledged archives which can contain
- * all {@link ArchiveReaderRecord.Type}.
+ * all {@link RecordType}.
  * <p>
- * Note: not split in two classes like the ArchiveWriter abstract and abstract-base.
+ * It's encoding-agnostic with the exception of {@link RecordEncoding#Cover}.
+ * <p>
+ * Currently supported formats.
+ * <ul>
+ *     <li>v3:
+ *         <ul>
+ *             <li>{@link RecordType#MetaData} :    {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Styles} :      {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Preferences} : {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Books} :       {@link RecordEncoding#Json}</li>
+ *             <li>Multiple {@link RecordType#Cover}</li>
+ *         </ul>
+ *     </li>
+ *     <li>v2:
+ *         <ul>
+ *             <li>{@link RecordType#MetaData} :    {@link RecordEncoding#Xml}</li>
+ *             <li>{@link RecordType#Styles} :      {@link RecordEncoding#Xml}</li>
+ *             <li>{@link RecordType#Preferences} : {@link RecordEncoding#Xml}</li>
+ *             <li>{@link RecordType#Books} :       {@link RecordEncoding#Csv}</li>
+ *             <li>Multiple {@link RecordType#Cover}</li>
+ *         </ul>
+ *     </li>
+ *     <li>v1: obsolete</li>
+ * </ul>
  */
 public abstract class ArchiveReaderAbstract
         implements ArchiveReader {
 
     /** Log tag. */
     private static final String TAG = "ArchiveReaderAbstract";
-    /** Buffer for {@link #openInputStream()}. */
-    private static final int BUFFER_SIZE = 65535;
     /** Database Access. */
     @NonNull
     private final DAO mDb;
@@ -75,13 +91,13 @@ public abstract class ArchiveReaderAbstract
     /** The accumulated results. */
     @NonNull
     private final ImportResults mResults = new ImportResults();
+
+    /** Re-usable cover reader. */
     @Nullable
-    private XmlRecordReader mXmlReader;
-    @Nullable
-    private CoverRecordReader mCoverReader;
+    private RecordReader mCoverReader;
     /** The INFO data read from the start of the archive. */
     @Nullable
-    private ArchiveInfo mArchiveInfo;
+    private ArchiveMetaData mArchiveMetaData;
 
     /**
      * Constructor.
@@ -103,12 +119,12 @@ public abstract class ArchiveReaderAbstract
     @Override
     public void validate(@NonNull final Context context)
             throws IOException, InvalidArchiveException {
-        if (mArchiveInfo == null) {
-            mArchiveInfo = readHeader(context);
+        if (mArchiveMetaData == null) {
+            mArchiveMetaData = readMetaData(context);
         }
 
         // the info block will/can do more checks.
-        mArchiveInfo.validate();
+        mArchiveMetaData.validate();
     }
 
     @NonNull
@@ -118,15 +134,7 @@ public abstract class ArchiveReaderAbstract
         if (is == null) {
             throw new IOException("Could not resolve uri=" + mHelper.getUri());
         }
-        return new BufferedInputStream(is, BUFFER_SIZE);
-    }
-
-    @NonNull
-    private XmlRecordReader getXmlReader(@NonNull final Context context) {
-        if (mXmlReader == null) {
-            mXmlReader = new XmlRecordReader(context, mDb);
-        }
-        return mXmlReader;
+        return new BufferedInputStream(is, RecordReader.BUFFER_SIZE);
     }
 
     /**
@@ -136,48 +144,39 @@ public abstract class ArchiveReaderAbstract
      */
     @NonNull
     @Override
-    public ArchiveInfo readHeader(@NonNull final Context context)
+    public ArchiveMetaData readMetaData(@NonNull final Context context)
             throws IOException, InvalidArchiveException {
-        if (mArchiveInfo == null) {
-            final ArchiveReaderRecord record = seek(ArchiveReaderRecord.Type.InfoHeader);
+        if (mArchiveMetaData == null) {
+            final ArchiveReaderRecord record = seek(RecordType.MetaData);
             if (record == null) {
                 throw new InvalidArchiveException(ERROR_INVALID_HEADER);
             }
 
-            switch (record.getEncoding()) {
-                case Xml:
-                    mArchiveInfo = getXmlReader(context).readArchiveHeader(record);
-                    break;
-
-                case Json:
-                    try {
-                        mArchiveInfo = new ArchiveInfo(new JSONObject(record.asString()));
-                    } catch (@NonNull final JSONException e) {
-                        throw new InvalidArchiveException(e);
-                    }
-                    break;
-
-                case Csv:
-                case Cover:
-                case Unknown:
-                default:
-                    throw new InvalidArchiveException(ERROR_INVALID_HEADER);
+            final Optional<RecordEncoding> encoding = record.getEncoding();
+            if (encoding.isPresent()) {
+                try (RecordReader recordReader = encoding
+                        .get().createReader(context, mDb, mHelper.getImportEntries())) {
+                    mArchiveMetaData = recordReader.readMetaData(record);
+                }
             }
 
             // We MUST reset the stream here, so the caller gets a pristine stream.
             closeInputStream();
         }
 
-        return mArchiveInfo;
+        if (mArchiveMetaData == null) {
+            throw new InvalidArchiveException(ERROR_INVALID_HEADER);
+        }
+        return mArchiveMetaData;
     }
 
     /**
      * Do a full import.
      * <ol>
-     *     <li>The header is assumed to already have been read by {@link #readHeader(Context)}</li>
-     *     <li>Seek and read {@link ArchiveReaderRecord.Type#Styles}</li>
-     *     <li>Seek and read {@link ArchiveReaderRecord.Type#Preferences}</li>
-     *     <li>read sequentially and read records as encountered.</li>
+     * <li>The header is assumed to already have been read by {@link #readMetaData(Context)}</li>
+     * <li>Seek and read {@link RecordType#Styles}</li>
+     * <li>Seek and read {@link RecordType#Preferences}</li>
+     * <li>read sequentially and read records as encountered.</li>
      * </ol>
      *
      * @param context          Current context
@@ -195,28 +194,50 @@ public abstract class ArchiveReaderAbstract
                               @NonNull final ProgressListener progressListener)
             throws IOException, ImportException, InvalidArchiveException {
 
-        final Set<ArchiveReaderRecord.Type> importEntries = mHelper.getImportEntries();
+        // Sanity check: the archive info should have been read during the validate phase
+        Objects.requireNonNull(mArchiveMetaData, "info");
 
-        boolean readStyles = importEntries.contains(ArchiveReaderRecord.Type.Styles);
-        boolean readPrefs = importEntries.contains(ArchiveReaderRecord.Type.Preferences);
-
-        final boolean readBooks = importEntries.contains(ArchiveReaderRecord.Type.Books);
-        final boolean readCovers = importEntries.contains(ArchiveReaderRecord.Type.Cover);
-        if (readCovers) {
+        if (mHelper.getImportEntries().contains(RecordType.Cover)) {
             mCoverReader = new CoverRecordReader();
         }
 
-        // progress counters
-        int estimatedSteps = 1;
+        final int archiveVersion = mArchiveMetaData.getArchiveVersion();
+        switch (archiveVersion) {
+            case 4:
+                // future...
+                final ArchiveReaderRecord record = seek(RecordType.AutoDetect);
+                if (record != null) {
+                    readRecord(context, record, progressListener);
+                }
+                break;
+            case 3:
+            case 2:
+                readV2(context, mArchiveMetaData, mHelper.getImportEntries(), progressListener);
+                break;
+            case 1:
+                throw new InvalidArchiveException("v1 no longer supported");
+
+            default:
+                throw new InvalidArchiveException("version=" + archiveVersion);
+        }
+
+        return mResults;
+    }
+
+    private void readV2(@NonNull final Context context,
+                        @NonNull final ArchiveMetaData archiveMetaData,
+                        @NonNull final Set<RecordType> importEntries,
+                        @NonNull final ProgressListener progressListener)
+            throws InvalidArchiveException, IOException, ImportException {
 
         try {
-            // Sanity check: the archive info should have been read during the validate phase
-            Objects.requireNonNull(mArchiveInfo, "info");
+            final boolean readBooks = importEntries.contains(RecordType.Books);
+            final boolean readCovers = importEntries.contains(RecordType.Cover);
 
-            estimatedSteps += mArchiveInfo.getBookCount();
+            int estimatedSteps = 1 + archiveMetaData.getBookCount();
             if (readCovers) {
-                if (mArchiveInfo.hasCoverCount()) {
-                    estimatedSteps += mArchiveInfo.getCoverCount();
+                if (archiveMetaData.hasCoverCount()) {
+                    estimatedSteps += archiveMetaData.getCoverCount();
                 } else {
                     // We don't have a count, so assume each book has 1 cover.
                     estimatedSteps *= 2;
@@ -226,24 +247,23 @@ public abstract class ArchiveReaderAbstract
 
             // Seek the styles record first.
             // We'll need them to resolve styles referenced in Preferences and Bookshelves.
-            if (readStyles) {
+            if (importEntries.contains(RecordType.Styles)) {
                 progressListener.publishProgressStep(
                         1, context.getString(R.string.lbl_styles_long));
-                final ArchiveReaderRecord record = seek(ArchiveReaderRecord.Type.Styles);
+                final ArchiveReaderRecord record = seek(RecordType.Styles);
                 if (record != null) {
                     readRecord(context, record, progressListener);
-                    readStyles = false;
                 }
                 closeInputStream();
             }
 
             // Seek the preferences record next, so we can apply any prefs while reading data.
-            if (readPrefs) {
-                progressListener.publishProgressStep(1, context.getString(R.string.lbl_settings));
-                final ArchiveReaderRecord record = seek(ArchiveReaderRecord.Type.Preferences);
+            if (importEntries.contains(RecordType.Preferences)) {
+                progressListener.publishProgressStep(
+                        1, context.getString(R.string.lbl_settings));
+                final ArchiveReaderRecord record = seek(RecordType.Preferences);
                 if (record != null) {
                     readRecord(context, record, progressListener);
-                    readPrefs = false;
                 }
                 closeInputStream();
             }
@@ -253,46 +273,13 @@ public abstract class ArchiveReaderAbstract
 
             // process each entry based on type, unless we are cancelled.
             while (record != null && !progressListener.isCancelled()) {
-                final ArchiveReaderRecord.Type recordType = record.getType();
-                switch (recordType) {
-                    case Cover: {
-                        if (readCovers) {
-                            readRecord(context, record, progressListener);
-                        }
-                        break;
+                if (record.getType().isPresent()) {
+                    final RecordType recordType = record.getType().get();
+                    if (recordType == RecordType.Cover && readCovers) {
+                        readRecord(context, record, progressListener);
+                    } else if (recordType == RecordType.Books && readBooks) {
+                        readRecord(context, record, progressListener);
                     }
-                    case Books: {
-                        if (readBooks) {
-                            readRecord(context, record, progressListener);
-                        }
-                        break;
-                    }
-                    case Preferences: {
-                        // yes, we have already read them at the start.
-                        // Leaving the code as we might support multiple entries in the future.
-                        if (readPrefs) {
-                            progressListener.publishProgressStep(
-                                    1, context.getString(R.string.lbl_settings));
-                            readRecord(context, record, progressListener);
-                        }
-                        break;
-                    }
-                    case Styles: {
-                        // yes, we have already read them at the start.
-                        // Leaving the code as we might support multiple entries in the future.
-                        if (readStyles) {
-                            progressListener.publishProgressStep(
-                                    1, context.getString(R.string.lbl_styles_long));
-                            readRecord(context, record, progressListener);
-                        }
-                        break;
-                    }
-                    case InfoHeader:
-                        // skip, already handled.
-                    case Unknown:
-                    case AutoDetect:
-                    default:
-                        break;
                 }
                 record = next();
             }
@@ -303,39 +290,18 @@ public abstract class ArchiveReaderAbstract
                 // ignore
             }
         }
-
-        // do a cleanup after we finished reading
-        mDb.purge();
-
-        return mResults;
     }
 
     private void readRecord(@NonNull final Context context,
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
             throws IOException, ImportException {
-        final ArchiveReaderRecord.Encoding recordEncoding = record.getEncoding();
-        switch (recordEncoding) {
-            case Xml: {
-                mResults.add(getXmlReader(context).read(context, record, mHelper.getOptions(),
-                                                        progressListener));
-                break;
-            }
-            case Json: {
-                try (RecordReader recordReader = new JsonRecordReader(context, mDb)) {
-                    mResults.add(recordReader.read(context, record, mHelper.getOptions(),
-                                                   progressListener));
-                }
-                break;
-            }
-            case Csv: {
-                try (RecordReader recordReader = new CsvRecordReader(context, mDb)) {
-                    mResults.add(recordReader.read(context, record, mHelper.getOptions(),
-                                                   progressListener));
-                }
-                break;
-            }
-            case Cover: {
+
+        final Optional<RecordEncoding> encoding = record.getEncoding();
+        if (encoding.isPresent()) {
+
+            // there will be many covers... we're re-use a single RecordReader
+            if (encoding.get() == RecordEncoding.Cover) {
                 //noinspection ConstantConditions
                 mResults.add(mCoverReader.read(context, record, mHelper.getOptions(),
                                                progressListener));
@@ -346,11 +312,16 @@ public abstract class ArchiveReaderAbstract
                                                  mResults.coversUpdated,
                                                  mResults.coversSkipped);
                 progressListener.publishProgressStep(1, msg);
-                break;
+
+            } else {
+                // everything else, keep it clean and create a new reader for each entry.
+                try (RecordReader recordReader = encoding
+                        .get().createReader(context, mDb, mHelper.getImportEntries())) {
+
+                    mResults.add(recordReader.read(context, record, mHelper.getOptions(),
+                                                   progressListener));
+                }
             }
-            case Unknown:
-            default:
-                break;
         }
     }
 
@@ -365,9 +336,6 @@ public abstract class ArchiveReaderAbstract
             throws IOException {
         closeInputStream();
 
-        if (mXmlReader != null) {
-            mXmlReader.close();
-        }
         if (mCoverReader != null) {
             mCoverReader.close();
         }
@@ -399,7 +367,7 @@ public abstract class ArchiveReaderAbstract
      * @throws IOException             on failure
      */
     @Nullable
-    protected abstract ArchiveReaderRecord seek(@NonNull ArchiveReaderRecord.Type type)
+    protected abstract ArchiveReaderRecord seek(@NonNull RecordType type)
             throws InvalidArchiveException, IOException;
 
     /**

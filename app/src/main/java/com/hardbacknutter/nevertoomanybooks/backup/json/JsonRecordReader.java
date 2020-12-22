@@ -26,10 +26,12 @@ import android.util.Log;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.Set;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,11 +43,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -55,6 +61,32 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
+/**
+ * Supports two levels of Archive records.
+ * <ol>
+ *     <li>Single level: a record will contain ONE of
+ *     <ul>
+ *         <li>{@link RecordType#MetaData}</li>
+ *         <li>{@link RecordType#Styles}</li>
+ *         <li>{@link RecordType#Preferences}</li>
+ *         <li>{@link RecordType#Books}</li>
+ *     </ul>
+ *     </li>
+ *     <li>All-in-one: top level: {@link JsonCoder#TAG_APPLICATION_ROOT}, which contains:
+ *     <ul>
+ *         <li>{@link RecordType#MetaData}</li>
+ *         <li>{@link RecordType#AutoDetect}, which in turn contains:
+ *         <ul>
+ *              <li>{@link RecordType#Styles}</li>
+ *              <li>{@link RecordType#Preferences}</li>
+ *              <li>{@link RecordType#Books}</li>
+ *         </ul>
+ *         </li>
+ *     </ul>
+ *
+ *     </li>
+ * </ol>
+ */
 public class JsonRecordReader
         implements RecordReader {
 
@@ -72,25 +104,41 @@ public class JsonRecordReader
     private final String mProgressMessage;
     @NonNull
     private final JsonCoder<Book> mBookCoder;
-
+    @NonNull
+    private final Set<RecordType> mImportEntriesAllowed;
     private ImportResults mResults;
 
     /**
      * Constructor.
      * <p>
-     * Only supports {@link ArchiveReaderRecord.Type#Books}.
+     * Only supports {@link RecordType#Books}.
      *
-     * @param context Current context
-     * @param db      Database Access;
+     * @param context              Current context
+     * @param db                   Database Access;
+     * @param importEntriesAllowed the record types we're allowed to read
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
-                            @NonNull final DAO db) {
+                            @NonNull final DAO db,
+                            @NonNull final Set<RecordType> importEntriesAllowed) {
         mDb = db;
+        mImportEntriesAllowed = importEntriesAllowed;
+
         mBookCoder = new BookCoder(StyleDAO.getDefault(context, mDb));
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
+    }
+
+    @Override
+    @NonNull
+    public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
+            throws IOException {
+        try {
+            return new ArchiveMetaData(new BundleCoder().decode(new JSONObject(record.asString())));
+        } catch (@NonNull final JSONException e) {
+            throw new IOException(e);
+        }
     }
 
     @Override
@@ -103,48 +151,63 @@ public class JsonRecordReader
 
         mResults = new ImportResults();
 
-        final ArchiveReaderRecord.Type recordType = record.getType();
-        if (recordType != ArchiveReaderRecord.Type.Unknown) {
-            final String content = record.asString();
-            if (!content.isEmpty()) {
-                try {
-                    final JSONObject root = new JSONObject(content);
+        if (record.getType().isPresent()) {
+            final RecordType recordType = record.getType().get();
+            if (recordType == RecordType.MetaData) {
+                throw new IllegalStateException("call #readMetaData instead");
+            }
 
-                    if (recordType == ArchiveReaderRecord.Type.Styles
-                        || recordType == ArchiveReaderRecord.Type.AutoDetect) {
-                        final JSONArray jsonStyles = root.optJSONArray(ListStyleCoder.STYLE_LIST);
-                        if (jsonStyles != null) {
+            try {
+                JSONObject root = new JSONObject(record.asString());
+
+                // All-in-one archive ? descend to the actual data object
+                if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
+                    root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT);
+                    root = root.getJSONObject(RecordType.AutoDetect.getName());
+                }
+
+                if (mImportEntriesAllowed.contains(recordType)
+                    || recordType == RecordType.AutoDetect) {
+
+                    if (recordType == RecordType.Styles
+                        || recordType == RecordType.AutoDetect) {
+
+                        final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
+                        if (jsonRoot != null) {
                             //noinspection SimplifyStreamApiCallChains
                             new ListStyleCoder(context, mDb)
-                                    .decode(jsonStyles)
+                                    .decode(jsonRoot)
                                     .stream()
                                     .forEach(listStyle -> StyleDAO.updateOrInsert(mDb, listStyle));
-                            mResults.styles = jsonStyles.length();
+                            mResults.styles = jsonRoot.length();
                         }
                     }
 
-//                if (recordType == ArchiveReaderRecord.Type.Preferences
-//                    || recordType == ArchiveReaderRecord.Type.AutoDetect) {
-//
-//                }
-
-                    if (recordType == ArchiveReaderRecord.Type.Books
-                        || recordType == ArchiveReaderRecord.Type.AutoDetect) {
-                        final JSONArray jsonBooks = root.optJSONArray(BookCoder.BOOK_LIST);
-                        if (jsonBooks != null) {
-                            readBooks(context, options, jsonBooks, progressListener);
+                    if (recordType == RecordType.Preferences
+                        || recordType == RecordType.AutoDetect) {
+                        final JSONObject jsonRoot = root.optJSONObject(
+                                RecordType.Preferences.getName());
+                        if (jsonRoot != null) {
+                            new SharedPreferencesCoder(
+                                    PreferenceManager.getDefaultSharedPreferences(context))
+                                    .decode(jsonRoot);
+                            mResults.preferences = 1;
                         }
                     }
 
-                    if (recordType == ArchiveReaderRecord.Type.InfoHeader) {
-                        throw new IllegalStateException("call #readInfo instead");
+                    if (recordType == RecordType.Books
+                        || recordType == RecordType.AutoDetect) {
+                        final JSONArray jsonRoot = root.optJSONArray(RecordType.Books.getName());
+                        if (jsonRoot != null) {
+                            readBooks(context, options, jsonRoot, progressListener);
+                        }
                     }
-
-                } catch (@NonNull final JSONException e) {
-                    throw new ImportException(context.getString(R.string.error_import_failed), e);
                 }
+            } catch (@NonNull final JSONException e) {
+                throw new ImportException(context.getString(R.string.error_import_failed), e);
             }
         }
+
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "read|mResults=" + mResults);
         }

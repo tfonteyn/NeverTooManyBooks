@@ -21,12 +21,20 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -35,67 +43,60 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordWriter;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
- * Default implementation of format-specific methods.
+ * Implementation of <strong>encoding-agnostic</strong> {@link ArchiveWriter} methods.
+ * <p>
+ * The {@link #write(Context, ProgressListener)} method executes the interface method flow.
+ * <p>
+ * 2020-12-21: we've moved to only having a single child class:
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter}
+ * so we could eliminate this class. But let's keep it open for the future for now.
  */
 public abstract class ArchiveWriterAbstract
-        extends ArchiveWriterAbstractBase
-        implements ArchiveWriter.SupportsArchiveHeader,
-                   ArchiveWriter.SupportsPreferences,
-                   ArchiveWriter.SupportsStyles {
+        implements ArchiveWriter {
+
+    /** Log tag. */
+    private static final String TAG = "ArchiveWriterAbstract";
 
     /**
-     * The format/version is shared between writers.
-     * A concrete writer merely defines the archive.
-     * <ul>
-     *     <li>v3: WIP
-     *         <ul>
-     *             <li>header: json</li>
-     *             <li>styles: json</li>
-     *             <li>preferences: xml</li>
-     *             <li>books: json</li>
-     *         </ul>
-     *     </li>
-     *     <li>v2: default hardcoded.
-     *         <ul>
-     *             <li>header: xml</li>
-     *             <li>styles: xml</li>
-     *             <li>preferences: xml</li>
-     *             <li>books: csv</li>
-     *         </ul>
-     *     </li>
-     *     <li>v1: obsolete</li>
-     * </ul>
+     * See {@link ArchiveReaderAbstract} class docs for the version descriptions.
      * <p>
      * RELEASE: set correct archiver version
      */
-    protected static final int VERSION = 2;
+    private static final int VERSION = 3;
 
-    private static final String FILE_EXT_XML = ".xml";
-    private static final String FILE_EXT_JSON = ".json";
-    private static final String FILE_EXT_CSV = ".csv";
+    /**
+     * Arbitrary number of steps added to the progress max value.
+     * This covers the styles/prefs/etc... and a small extra safety.
+     */
+    private static final int EXTRA_STEPS = 10;
+    /** Database Access. */
+    @NonNull
+    protected final DAO mDb;
+    /** Export configuration. */
+    @NonNull
+    private final ExportHelper mHelper;
+    /** The accumulated results. */
+    @NonNull
+    private final ExportResults mResults = new ExportResults();
 
     /** {@link #prepareBooks} writes to this file; {@link #writeBooks} copies it to the archive. */
     @Nullable
     private File mTmpBooksFile;
-    private String mBooksFileExtension;
 
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param helper  export configuration
+     * @param helper export configuration
      */
-    protected ArchiveWriterAbstract(@NonNull final Context context,
-                                    @NonNull final ExportHelper helper) {
-        super(context, helper);
+    protected ArchiveWriterAbstract(@NonNull final ExportHelper helper) {
+        mHelper = helper;
+        mDb = new DAO(TAG);
     }
 
     /**
@@ -106,180 +107,215 @@ public abstract class ArchiveWriterAbstract
         return VERSION;
     }
 
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public void writeHeader(@NonNull final Context context,
-                            @NonNull final ArchiveInfo archiveInfo)
-            throws IOException {
-
-        switch (VERSION) {
-            case 3: {
-                putString(ArchiveWriterRecord.Type.InfoHeader.getName() + FILE_EXT_JSON,
-                          archiveInfo.toJson().toString());
-                break;
-            }
-            case 2: {
-                final byte[] header;
-                try (XmlRecordWriter writer = new XmlRecordWriter()) {
-                    header = writer.createArchiveHeader(archiveInfo);
-                }
-                putByteArray(ArchiveWriterRecord.Type.InfoHeader.getName() + FILE_EXT_XML,
-                             header, true);
-                break;
-            }
-            default:
-                throw new IllegalStateException();
-        }
-    }
-
-    @SuppressWarnings("ConstantConditions")
-    @Override
-    public void writeStyles(@NonNull final Context context,
-                            @NonNull final ProgressListener progressListener)
-            throws IOException {
-
-        switch (VERSION) {
-            case 3: {
-                final ByteArrayOutputStream data = new ByteArrayOutputStream();
-                try (RecordWriter recordWriter = new JsonRecordWriter(null)) {
-                    mResults.add(recordWriter.write(context, data,
-                                                    EnumSet.of(ArchiveWriterRecord.Type.Styles),
-                                                    mHelper.getOptions(),
-                                                    progressListener));
-                }
-                // and store the array
-                putByteArray(ArchiveWriterRecord.Type.Styles.getName() + FILE_EXT_JSON,
-                             data.toByteArray(), true);
-                break;
-            }
-            case 2: {
-                // Write the styles as XML to a byte array.
-                final ByteArrayOutputStream data = new ByteArrayOutputStream();
-                try (RecordWriter recordWriter = new XmlRecordWriter()) {
-                    mResults.add(recordWriter.write(context, data,
-                                                    EnumSet.of(ArchiveWriterRecord.Type.Styles),
-                                                    mHelper.getOptions(),
-                                                    progressListener));
-                }
-                // and store the array
-                putByteArray(ArchiveWriterRecord.Type.Styles.getName() + FILE_EXT_XML,
-                             data.toByteArray(), true);
-                break;
-            }
-            default:
-                throw new IllegalStateException();
-        }
-
-    }
 
     /**
-     * Default implementation: write as XML.
+     * Do a full backup.
      *
-     * <br><br>{@inheritDoc}
-     */
-    @Override
-    public void writePreferences(@NonNull final Context context,
-                                 @NonNull final ProgressListener progressListener)
-            throws IOException {
-        // Write the preferences as XML to a byte array.
-        final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (RecordWriter recordWriter = new XmlRecordWriter()) {
-            mResults.add(recordWriter.write(context, data,
-                                            EnumSet.of(ArchiveWriterRecord.Type.Preferences),
-                                            mHelper.getOptions(),
-                                            progressListener));
-        }
-        // and store the array
-        putByteArray(ArchiveWriterRecord.Type.Preferences.getName() + FILE_EXT_XML,
-                     data.toByteArray(), true);
-    }
-
-    /**
-     * Default implementation: write as a temporary CSV file,
-     * to be added to the archive in {@link #writeBooks}.
-     * <p>
-     * Updates progress.
+     * @param context          Current context
+     * @param progressListener to send progress updates to
      *
-     * <br><br>{@inheritDoc}
+     * @throws IOException on failure
      */
-    @SuppressWarnings("ConstantConditions")
+    @NonNull
     @Override
-    public ExportResults prepareBooks(@NonNull final Context context,
-                                      @NonNull final ProgressListener progressListener)
+    @WorkerThread
+    public ExportResults write(@NonNull final Context context,
+                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        // Filter to valid options for this step.
-        final Set<ArchiveWriterRecord.Type> types = EnumSet.noneOf(ArchiveWriterRecord.Type.class);
+        // do a cleanup before we start writing
+        mDb.purge();
 
-        if (mHelper.getExporterEntries().contains(ArchiveWriterRecord.Type.Books)) {
-            types.add(ArchiveWriterRecord.Type.Books);
-        }
-        if (mHelper.getExporterEntries().contains(ArchiveWriterRecord.Type.Cover)) {
-            types.add(ArchiveWriterRecord.Type.Cover);
-        }
+        final Set<RecordType> exportEntities = mHelper.getExporterEntries();
 
-        // Get a temp file and set for delete
-        mTmpBooksFile = File.createTempFile("books_", ".tmp");
-        mTmpBooksFile.deleteOnExit();
+        final boolean writeCovers = this instanceof SupportsCovers
+                                    && exportEntities.contains(RecordType.Cover);
 
-        switch (VERSION) {
-            case 3: {
-                mBooksFileExtension = FILE_EXT_JSON;
-                try (RecordWriter recordWriter =
-                             new JsonRecordWriter(mHelper.getUtcDateTimeSince())) {
-                    return recordWriter.write(context, mTmpBooksFile, types,
-                                              mHelper.getOptions(),
-                                              progressListener);
-                }
-            }
-            case 2: {
-                mBooksFileExtension = FILE_EXT_CSV;
-                try (RecordWriter recordWriter =
-                             new CsvRecordWriter(mHelper.getUtcDateTimeSince())) {
-                    return recordWriter.write(context, mTmpBooksFile, types,
-                                              mHelper.getOptions(),
-                                              progressListener);
-                }
-            }
-            default:
-                throw new IllegalStateException();
-        }
-    }
-
-    /**
-     * Default implementation: write the file as prepared in {@link #prepareBooks}.
-     *
-     * <br><br>{@inheritDoc}
-     */
-    @Override
-    public void writeBooks(@NonNull final Context context,
-                           @NonNull final ProgressListener progressListener)
-            throws IOException {
         try {
-            Objects.requireNonNull(mTmpBooksFile);
-            putFile(ArchiveWriterRecord.Type.Books.getName() + mBooksFileExtension,
-                    mTmpBooksFile, true);
+            int steps = mDb.countBooksForExport(mHelper.getUtcDateTimeSince());
+            if (writeCovers) {
+                // assume 1 book == 1 cover
+                steps = 2 * steps;
+            }
+            // set as an estimated max value
+            progressListener.setMaxPos(steps + EXTRA_STEPS);
+
+            // Prepare data/files we need information of BEFORE we can write the archive header
+            if (!progressListener.isCancelled()
+                && exportEntities.contains(RecordType.Books)) {
+                prepareBooks(context, progressListener);
+            }
+
+            // Recalculate the progress max value using the exact number of books/covers
+            // which will now include the back-covers.
+            progressListener.setMaxPos(mResults.getBookCount()
+                                       + mResults.getCoverCount()
+                                       + EXTRA_STEPS);
+
+            // Start with the archive header
+            writeMetaData(ArchiveMetaData.create(context, getVersion(), mResults));
+
+            // Write styles first, and preferences next! This will facilitate & speedup
+            // importing as we'll be seeking in the input archive for these.
+
+            if (!progressListener.isCancelled()
+                && exportEntities.contains(RecordType.Styles)) {
+                writeRecord(context, RecordType.Styles, getEncoding(RecordType.Styles),
+                            progressListener);
+            }
+
+            if (!progressListener.isCancelled()
+                && exportEntities.contains(RecordType.Preferences)) {
+                writeRecord(context, RecordType.Preferences, getEncoding(RecordType.Preferences),
+                            progressListener);
+            }
+
+            // Add the previously generated books file.
+            if (!progressListener.isCancelled()
+                && exportEntities.contains(RecordType.Books)) {
+                writeBooks();
+            }
+
+            // Always do the covers as the last step
+            if (!progressListener.isCancelled() && writeCovers && mResults.getCoverCount() > 0) {
+                ((SupportsCovers) this).writeCovers(context, progressListener);
+            }
+
         } finally {
-            FileUtils.delete(mTmpBooksFile);
+            // closing a very large archive may take a while, so keep the progress dialog open
+            progressListener.setIndeterminate(true);
+            progressListener.publishProgressStep(
+                    0, context.getString(R.string.progress_msg_please_wait));
+            // reset; won't take effect until the next publish call.
+            progressListener.setIndeterminate(null);
         }
+
+        return mResults;
     }
 
     /**
-     * An archive agnostic default implementation for writing cover files.
+     * Write a {@link RecordType#MetaData} record.
+     *
+     * @param metaData the bundle of information to write
+     *
+     * @throws IOException on failure
+     */
+    private void writeMetaData(@NonNull final ArchiveMetaData metaData)
+            throws IOException {
+
+        final RecordEncoding encoding = getEncoding(RecordType.MetaData);
+
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             Writer bw = new BufferedWriter(osw, 1024);
+             RecordWriter recordWriter = encoding.createWriter(mHelper.getUtcDateTimeSince())) {
+            recordWriter.writeMetaData(bw, metaData);
+        }
+
+        putByteArray(RecordType.MetaData.getName() + encoding.getExtension(),
+                     os.toByteArray(), true);
+    }
+
+    /**
+     * Writes a single record. One of:
+     * <ul>
+     *     <li>{@link RecordType#Styles}</li>
+     *     <li>{@link RecordType#Preferences}</li>
+     * </ul>
+     *
+     * @param context          Current context
+     * @param recordType       of record
+     * @param encoding         for the record
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    private void writeRecord(@NonNull final Context context,
+                             @NonNull final RecordType recordType,
+                             @NonNull final RecordEncoding encoding,
+                             @NonNull final ProgressListener progressListener)
+            throws IOException {
+
+        final ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
+             RecordWriter recordWriter = encoding.createWriter(mHelper.getUtcDateTimeSince())) {
+            mResults.add(recordWriter.write(context, bw, EnumSet.of(recordType),
+                                            mHelper.getOptions(), progressListener));
+        }
+        putByteArray(recordType.getName() + encoding.getExtension(), os.toByteArray(), true);
+    }
+
+    /**
+     * Prepare the Books and Covers.
      * <p>
-     * Write each cover file as collected in {@link #prepareBooks}
-     * to the archive.
-     * <p>
-     * FIXME: not implemented as a RecordWriter,
-     * as we need to access the previous ExportResults object.
+     * For each book which will be exported, the {@link RecordWriter} implementation should call
+     * {@link ExportResults#addBook(long)} and {@link ExportResults#addCover(String)} as needed.
      *
      * @param context          Current context
      * @param progressListener Listener to receive progress information.
      *
      * @throws IOException on failure
      */
-    protected void writeCoversDefImpl(@NonNull final Context context,
-                                      @NonNull final ProgressListener progressListener)
+    private void prepareBooks(@NonNull final Context context,
+                              @NonNull final ProgressListener progressListener)
+            throws IOException {
+
+        final RecordEncoding encoding = getEncoding(RecordType.Books);
+
+        // Filter to valid options for this step.
+        final Set<RecordType> recordTypes = EnumSet.noneOf(RecordType.class);
+
+        if (mHelper.getExporterEntries().contains(RecordType.Books)) {
+            recordTypes.add(RecordType.Books);
+        }
+        if (mHelper.getExporterEntries().contains(RecordType.Cover)) {
+            recordTypes.add(RecordType.Cover);
+        }
+
+        mTmpBooksFile = File.createTempFile("books_", encoding.getExtension());
+        mTmpBooksFile.deleteOnExit();
+        try (OutputStream os = new FileOutputStream(mTmpBooksFile);
+             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
+             RecordWriter recordWriter = encoding.createWriter(mHelper.getUtcDateTimeSince())) {
+            mResults.add(recordWriter.write(context, bw, recordTypes, mHelper.getOptions(),
+                                            progressListener));
+        }
+    }
+
+    /**
+     * Write the books.
+     *
+     * @throws IOException on failure
+     */
+    private void writeBooks()
+            throws IOException {
+        Objects.requireNonNull(mTmpBooksFile);
+
+        final String filename =
+                RecordType.Books.getName() + getEncoding(RecordType.Books).getExtension();
+        try {
+            putFile(filename, mTmpBooksFile, true);
+        } finally {
+            FileUtils.delete(mTmpBooksFile);
+        }
+    }
+
+    /**
+     * An archive-agnostic default implementation for writing cover files.
+     * Not supported by all child classes.
+     * <p>
+     * Write each cover file as collected in {@link #prepareBooks}
+     * to the archive.
+     *
+     * @param context          Current context
+     * @param progressListener Listener to receive progress information.
+     *
+     * @throws IOException on failure
+     */
+    public void writeCovers(@NonNull final Context context,
+                            @NonNull final ProgressListener progressListener)
             throws IOException {
 
         progressListener.publishProgressStep(0, context.getString(R.string.lbl_covers_long));
@@ -289,12 +325,10 @@ public abstract class ArchiveWriterAbstract
         long lastUpdate = 0;
 
         final String coverStr = context.getString(R.string.lbl_covers);
-
         for (final String filename : mResults.getCoverFileNames()) {
-            final File cover = AppDir.Covers.getFile(context, filename);
             // We're using jpg, png.. don't bother compressing.
             // Compressing might actually make some image files bigger!
-            putFile(filename, cover, false);
+            putFile(filename, AppDir.Covers.getFile(context, filename), false);
             exported++;
 
             delta++;
@@ -310,19 +344,9 @@ public abstract class ArchiveWriterAbstract
         }
     }
 
-    /**
-     * Write a generic string to the archive.
-     *
-     * @param name    for the entry
-     * @param content to store in the archive as bytes
-     *
-     * @throws IOException on failure
-     */
-    public void putString(@NonNull final String name,
-                          @NonNull final String content)
-            throws IOException {
-        putByteArray(name, content.getBytes(StandardCharsets.UTF_8), true);
-    }
+    @NonNull
+    @AnyThread
+    protected abstract RecordEncoding getEncoding(@NonNull final RecordType recordType);
 
     /**
      * Write a generic byte array to the archive.
@@ -333,11 +357,10 @@ public abstract class ArchiveWriterAbstract
      *
      * @throws IOException on failure
      */
-    public abstract void putByteArray(@NonNull String name,
-                                      @NonNull byte[] bytes,
-                                      @SuppressWarnings("SameParameterValue") boolean compress)
+    protected abstract void putByteArray(@NonNull String name,
+                                         @NonNull byte[] bytes,
+                                         @SuppressWarnings("SameParameterValue") boolean compress)
             throws IOException;
-
 
     /**
      * Write a generic file to the archive.
@@ -348,8 +371,36 @@ public abstract class ArchiveWriterAbstract
      *
      * @throws IOException on failure
      */
-    protected abstract void putFile(@NonNull String name,
-                                    @NonNull File file,
-                                    boolean compress)
+    protected abstract void putFile(@NonNull final String name,
+                                    @NonNull final File file,
+                                    final boolean compress)
             throws IOException;
+
+    /**
+     * Concrete writer should override and close its output.
+     *
+     * @throws IOException on failure
+     */
+    @Override
+    @CallSuper
+    public void close()
+            throws IOException {
+        mDb.close();
+    }
+
+    public interface SupportsCovers {
+
+        /**
+         * Write the covers.
+         *
+         * @param context          Current context
+         * @param progressListener Listener to receive progress information.
+         *
+         * @throws IOException on failure
+         */
+        @WorkerThread
+        void writeCovers(@NonNull Context context,
+                         @NonNull ProgressListener progressListener)
+                throws IOException;
+    }
 }

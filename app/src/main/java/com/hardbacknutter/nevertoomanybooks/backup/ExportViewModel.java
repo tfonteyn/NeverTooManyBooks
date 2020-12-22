@@ -25,6 +25,8 @@ import androidx.lifecycle.ViewModel;
 public class ExportViewModel
         extends ViewModel {
 
+    private boolean mQuickOptionsAlreadyShown;
+
     /** Export configuration. */
     @NonNull
     private final ExportHelper mExportHelper = new ExportHelper();
@@ -32,5 +34,14 @@ public class ExportViewModel
     @NonNull
     ExportHelper getExportHelper() {
         return mExportHelper;
+    }
+
+    boolean isQuickOptionsAlreadyShown() {
+        return mQuickOptionsAlreadyShown;
+    }
+
+    void setQuickOptionsAlreadyShown(
+            @SuppressWarnings("SameParameterValue") final boolean quickOptionsAlreadyShown) {
+        mQuickOptionsAlreadyShown = quickOptionsAlreadyShown;
     }
 }

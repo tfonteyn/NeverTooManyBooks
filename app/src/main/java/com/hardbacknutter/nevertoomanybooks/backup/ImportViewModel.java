@@ -28,8 +28,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
+import java.io.IOException;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class ImportViewModel
@@ -57,7 +59,8 @@ public class ImportViewModel
 
     @NonNull
     ImportHelper createImportHelper(@NonNull final Context context,
-                                    @NonNull final Uri uri) {
+                                    @NonNull final Uri uri)
+            throws IOException, InvalidArchiveException {
         mImportHelper = new ImportHelper(context, uri);
         return mImportHelper;
     }

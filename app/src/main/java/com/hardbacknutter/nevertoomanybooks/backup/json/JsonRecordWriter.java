@@ -20,11 +20,13 @@
 package com.hardbacknutter.nevertoomanybooks.backup.json;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,11 +42,14 @@ import org.json.JSONObject;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -53,15 +58,16 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * <ul>Supports:
- *      <li>{@link ArchiveWriterRecord.Type#Styles}</li>
- *      <li>{@link ArchiveWriterRecord.Type#Preferences}</li>
- *      <li>{@link ArchiveWriterRecord.Type#Books}</li>
+ *      <li>{@link RecordType#MetaData}</li>
+ *      <li>{@link RecordType#Styles}</li>
+ *      <li>{@link RecordType#Preferences}</li>
+ *      <li>{@link RecordType#Books}</li>
  * </ul>
  */
 public class JsonRecordWriter
         implements RecordWriter {
 
-    /** The format version of this exporter. */
+    /** The format version of this RecordWriter. */
     public static final int VERSION = 1;
 
     /** Log tag. */
@@ -86,37 +92,52 @@ public class JsonRecordWriter
     }
 
     @Override
+    public void writeMetaData(@NonNull final Writer writer,
+                              @NonNull final ArchiveMetaData metaData)
+            throws IOException {
+        try {
+            writer.write(new BundleCoder().encode(metaData.getBundle()).toString());
+        } catch (@NonNull final JSONException e) {
+            throw new IOException(e);
+        }
+    }
+
+    @Override
+    @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
-                               @NonNull final Set<ArchiveWriterRecord.Type> entry,
+                               @NonNull final Set<RecordType> entries,
                                @ExportHelper.Options final int options,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
         final ExportResults results = new ExportResults();
-        final JSONObject output = new JSONObject();
+        final JSONObject jsonData = new JSONObject();
 
         try {
-            if (entry.contains(ArchiveWriterRecord.Type.Styles)
+            if (entries.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgressStep(1, context.getString(R.string.lbl_styles));
                 final List<ListStyle> styles = StyleDAO.getStyles(context, mDb, true);
                 if (!styles.isEmpty()) {
                     final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
-                    output.put(ListStyleCoder.STYLE_LIST, coder.encode(styles));
+                    jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
                 }
                 results.styles = styles.size();
             }
 
-//            if (entry.contains(ArchiveWriterRecord.Type.Preferences)
-//                && !progressListener.isCancelled()) {
-//                progressListener.publishProgressStep(1, context.getString(R.string.lbl_settings));
-//            }
-
-            if (entry.contains(ArchiveWriterRecord.Type.Books)
+            if (entries.contains(RecordType.Preferences)
                 && !progressListener.isCancelled()) {
-                final boolean collectCoverFilenames = entry.contains(
-                        ArchiveWriterRecord.Type.Cover);
+                progressListener.publishProgressStep(1, context.getString(R.string.lbl_settings));
+                final JsonCoder<SharedPreferences> coder = new SharedPreferencesCoder();
+                jsonData.put(RecordType.Preferences.getName(),
+                             coder.encode(PreferenceManager.getDefaultSharedPreferences(context)));
+                results.preferences = 1;
+            }
+
+            if (entries.contains(RecordType.Books)
+                && !progressListener.isCancelled()) {
+                final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
 
                 final JsonCoder<Book> coder = new BookCoder(StyleDAO.getDefault(context, mDb));
 
@@ -154,7 +175,7 @@ public class JsonRecordWriter
                 }
 
                 if (bookArray.length() > 0) {
-                    output.put(BookCoder.BOOK_LIST, bookArray);
+                    jsonData.put(RecordType.Books.getName(), bookArray);
                 }
             }
 
@@ -162,9 +183,9 @@ public class JsonRecordWriter
             throw new IOException(e);
         }
 
-        // Write the complete json output
-        if (output.length() > 0) {
-            writer.write(output.toString());
+        // Write the complete json output in one go
+        if (jsonData.length() > 0) {
+            writer.write(jsonData.toString());
         }
         return results;
     }

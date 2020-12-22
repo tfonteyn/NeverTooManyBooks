@@ -61,7 +61,7 @@ public class ArchiveWriterTask
     @Override
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
+            throws IOException {
         Thread.currentThread().setName(TAG);
 
         ExportResults results = null;

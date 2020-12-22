@@ -36,10 +36,18 @@ public class SharedPreferencesCoder
     @Nullable
     private final SharedPreferences mOut;
 
+    /**
+     * Constructor for encoding.
+     */
     public SharedPreferencesCoder() {
         mOut = null;
     }
 
+    /**
+     * Constructor for decoding.
+     *
+     * @param out the SharedPreferences to write to
+     */
     public SharedPreferencesCoder(@NonNull final SharedPreferences out) {
         mOut = out;
     }
@@ -75,19 +83,22 @@ public class SharedPreferencesCoder
         while (keys.hasNext()) {
             final String key = keys.next();
             final Object o = data.get(key);
+            // JSONObject Tokenizer returns Integer, Long, or Double,
+            // in that order (never a float)
             if (o instanceof String) {
                 ed.putString(key, (String) o);
 
-            } else if (o instanceof Long) {
-                ed.putLong(key, (long) o);
+            } else if (o instanceof Boolean) {
+                ed.putBoolean(key, (boolean) o);
+
             } else if (o instanceof Integer) {
                 ed.putInt(key, (int) o);
 
-            } else if (o instanceof Float) {
-                ed.putFloat(key, (long) o);
+            } else if (o instanceof Long) {
+                ed.putLong(key, (long) o);
 
-            } else if (o instanceof Boolean) {
-                ed.putBoolean(key, (boolean) o);
+            } else if (o instanceof Double) {
+                ed.putFloat(key, (float) o);
             }
         }
         ed.apply();

@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -60,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 /**
  * Implementation of {@link RecordReader} that reads a CSV file.
  * <ul>Supports:
- *      <li>{@link ArchiveReaderRecord.Type#Books}</li>
+ *      <li>{@link RecordType#Books}</li>
  * </ul>
  * <p>
  * A CSV file which was not written by this app, should be careful about encoding the following
@@ -129,7 +130,7 @@ public class CsvRecordReader
     /**
      * Constructor.
      * <p>
-     * Only supports {@link ArchiveReaderRecord.Type#Books}.
+     * Only supports {@link RecordType#Books}.
      *
      * @param context Current context
      * @param db      Database Access;
@@ -154,12 +155,13 @@ public class CsvRecordReader
             throws IOException, ImportException {
 
         mResults = new ImportResults();
-
-        if (record.getType() == ArchiveReaderRecord.Type.Books) {
-            // Read the whole file content into a list of lines.
-            final List<String> books = record.asList();
-            if (!books.isEmpty()) {
-                readBooks(context, options, books, progressListener);
+        if (record.getType().isPresent()) {
+            if (record.getType().get() == RecordType.Books) {
+                // Read the whole file content into a list of lines.
+                final List<String> books = record.asList();
+                if (!books.isEmpty()) {
+                    readBooks(context, options, books, progressListener);
+                }
             }
         }
 

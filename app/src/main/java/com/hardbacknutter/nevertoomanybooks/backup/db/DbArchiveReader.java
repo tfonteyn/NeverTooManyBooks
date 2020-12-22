@@ -34,9 +34,9 @@ import java.io.InputStream;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -131,15 +131,15 @@ public class DbArchiveReader
             }
         }
 
-        throw new InvalidArchiveException(ArchiveType.ERROR_NO_READER_AVAILABLE);
+        throw new InvalidArchiveException(ArchiveEncoding.ERROR_NO_READER_AVAILABLE);
     }
 
     @Nullable
     @Override
-    public ArchiveInfo readHeader(@NonNull final Context context)
+    public ArchiveMetaData readMetaData(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
         if (mDelegateReader != null) {
-            return mDelegateReader.readHeader(context);
+            return mDelegateReader.readMetaData(context);
         } else {
             return null;
         }

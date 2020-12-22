@@ -24,8 +24,10 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
@@ -37,40 +39,30 @@ import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
- * Archive types (formats) (partially) supported.
+ * Archive encoding (formats) (partially) supported.
  * <p>
  * This is the top level, i.e. the actual file we read/write.
  * Handled by {@link ArchiveReader} and {@link ArchiveWriter}.
  */
-public enum ArchiveType {
+public enum ArchiveEncoding {
     /** The default full backup/restore support. Text files are compressed, images are not. */
     Zip(".zip"),
     /** Books as a CSV file; full support for export/import. */
     Csv(".csv"),
-    /**
-     * Books as a JSON file; full support for export/import.
-     * <p>
-     * ENHANCE: JSON export/import is experimental, not exposed to the user yet.
-     * Added as top-level for easy testing only.
-     * Real usage will likely be limited as part of a zip archive.
-     */
+    /** Books, Styles, Preferences in a JSON file; full support for export/import. */
     Json(".json"),
     /** XML <strong>Export only</strong>. */
     Xml(".xml"),
     /** Database. */
     SqLiteDb(".db"),
     /** The legacy full backup/restore support. NOT compressed. */
-    Tar(".tar"),
-    /** The archive we tried to read from was not identified. */
-    Unknown("");
+    Tar(".tar");
 
     public static final String ERROR_NO_READER_AVAILABLE = "No reader available";
     public static final String ERROR_NO_WRITER_AVAILABLE = "No writer available";
@@ -78,7 +70,12 @@ public enum ArchiveType {
     @NonNull
     private final String mExtension;
 
-    ArchiveType(@NonNull final String extension) {
+    /**
+     * Constructor.
+     *
+     * @param extension to use as the proposed archive filename extension
+     */
+    ArchiveEncoding(@NonNull final String extension) {
         mExtension = extension;
     }
 
@@ -88,11 +85,11 @@ public enum ArchiveType {
      * @param context Current context
      * @param uri     to read
      *
-     * @return ArchiveType
+     * @return ArchiveEncoding
      */
     @NonNull
-    public static ArchiveType fromUri(@NonNull final Context context,
-                                      @NonNull final Uri uri) {
+    public static Optional<ArchiveEncoding> fromUri(@NonNull final Context context,
+                                                    @NonNull final Uri uri) {
 
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is != null) {
@@ -103,14 +100,14 @@ public enum ArchiveType {
                 // zip file, offset 0, "PK{3}{4}"
                 if (len > 4
                     && b[0] == 0x50 && b[1] == 0x4B && b[2] == 0x03 && b[3] == 0x04) {
-                    return Zip;
+                    return Optional.of(Zip);
                 }
 
                 // tar file: offset 0x101, the string "ustar"
                 if (len > 0x110
                     && b[0x101] == 0x75 && b[0x102] == 0x73 && b[0x103] == 0x74
                     && b[0x104] == 0x61 && b[0x105] == 0x72) {
-                    return Tar;
+                    return Optional.of(Tar);
                 }
 
                 // sqlite v3, offset 0, 53 51 4c 69 74 65 20 66 6f 72 6d 61 74 20 33 00
@@ -120,14 +117,14 @@ public enum ArchiveType {
                     && b[4] == 0x74 && b[5] == 0x65 && b[6] == 0x20 && b[7] == 0x66
                     && b[8] == 0x6f && b[9] == 0x72 && b[10] == 0x6d && b[11] == 0x61
                     && b[12] == 0x74 && b[13] == 0x20 && b[14] == 0x33 && b[15] == 0x00) {
-                    return SqLiteDb;
+                    return Optional.of(SqLiteDb);
                 }
 
                 // xml file, offset 0, the string "<?xml "
                 if (len > 5
                     && b[0] == 0x3c && b[1] == 0x3f && b[2] == 0x78 && b[3] == 0x6d
                     && b[4] == 0x6c && b[5] == 0x20) {
-                    return Xml;
+                    return Optional.of(Xml);
                 }
 
 
@@ -136,7 +133,7 @@ public enum ArchiveType {
                 if (len > 6
                     && b[0] == 0x22 && b[1] == 0x5f && b[2] == 0x69
                     && b[3] == 0x64 && b[4] == 0x22 && b[5] == 0x2c) {
-                    return Csv;
+                    return Optional.of(Csv);
                 }
 
                 // json file as we write them out, offset 0, the string "{\""
@@ -147,7 +144,7 @@ public enum ArchiveType {
                 // We use them for testing only.
                 if (len > 2
                     && b[0] == 0x7b && b[1] == 0x22) {
-                    return Json;
+                    return Optional.of(Json);
                 }
             }
         } catch (@NonNull final IOException ignore) {
@@ -165,17 +162,27 @@ public enum ArchiveType {
         Pattern pattern = Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
                                           Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         if (pattern.matcher(uriInfo.displayName).find()) {
-            return Csv;
+            return Optional.of(Csv);
         }
 
         pattern = Pattern.compile("^.*\\.json( \\(\\d+\\))?$",
                                   Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         if (pattern.matcher(uriInfo.displayName).find()) {
-            return Json;
+            return Optional.of(Json);
         }
 
         // give up.
-        return Unknown;
+        return Optional.empty();
+    }
+
+    /**
+     * Get the <strong>proposed</strong> archive file extension for writing an output file.
+     *
+     * @return file name extension starting with a '.'
+     */
+    @NonNull
+    public String getFileExt() {
+        return mExtension;
     }
 
     /**
@@ -190,8 +197,8 @@ public enum ArchiveType {
      * @throws IOException             on other failures
      */
     @NonNull
-    public ArchiveReader createArchiveReader(@NonNull final Context context,
-                                             @NonNull final ImportHelper helper)
+    public ArchiveReader createReader(@NonNull final Context context,
+                                      @NonNull final ImportHelper helper)
             throws InvalidArchiveException, IOException {
 
         final ArchiveReader reader;
@@ -217,10 +224,7 @@ public enum ArchiveType {
                 break;
 
             case Xml:
-                reader = new XmlArchiveReader(context, helper);
-                break;
-
-            case Unknown:
+                // reading from xml is not supported
             default:
                 throw new InvalidArchiveException(ERROR_NO_READER_AVAILABLE);
         }
@@ -238,26 +242,22 @@ public enum ArchiveType {
      *
      * @return a new writer
      *
-     * @throws InvalidArchiveException on failure to produce a supported writer
-     * @throws IOException             on other failures
+     * @throws FileNotFoundException on ...
      */
     @NonNull
-    public ArchiveWriter createArchiveWriter(@NonNull final Context context,
-                                             @NonNull final ExportHelper helper)
-            throws InvalidArchiveException, IOException {
+    public ArchiveWriter createWriter(@NonNull final Context context,
+                                      @NonNull final ExportHelper helper)
+            throws FileNotFoundException {
 
         switch (this) {
             case Zip:
                 return new ZipArchiveWriter(context, helper);
 
             case Xml:
-                return new XmlArchiveWriter(context, helper);
+                return new XmlArchiveWriter(helper);
 
             case Csv:
                 return new CsvArchiveWriter(helper);
-
-            case Tar:
-                return new TarArchiveWriter(context, helper);
 
             case SqLiteDb:
                 return new DbArchiveWriter(helper);
@@ -265,19 +265,10 @@ public enum ArchiveType {
             case Json:
                 return new JsonArchiveWriter(helper);
 
-            case Unknown:
+            case Tar:
+                // writing to tar is no longer supported
             default:
-                throw new InvalidArchiveException(ERROR_NO_WRITER_AVAILABLE);
+                throw new IllegalStateException(ERROR_NO_WRITER_AVAILABLE);
         }
-    }
-
-    /**
-     * Get the <strong>proposed</strong> archive file extension for writing an output file.
-     *
-     * @return file name extension starting with a '.'
-     */
-    @NonNull
-    public String getFileExt() {
-        return mExtension;
     }
 }

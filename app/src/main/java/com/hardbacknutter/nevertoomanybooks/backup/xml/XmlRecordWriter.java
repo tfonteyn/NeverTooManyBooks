@@ -26,35 +26,22 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
-import androidx.preference.PreferenceManager;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -68,40 +55,14 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
 /**
  * <ul>Supports:
- *      <li>{@link ArchiveWriterRecord.Type#InfoHeader}</li>
- *      <li>{@link ArchiveWriterRecord.Type#Styles}</li>
- *      <li>{@link ArchiveWriterRecord.Type#Preferences}</li>
- *      <li>{@link ArchiveWriterRecord.Type#Books}</li>
+ *      <li>{@link RecordType#Books}</li>
  * </ul>
- *
- * <strong>WARNING: EXPERIMENTAL</strong> There are two types of XML here.
- * <ul>Type based, where the tag name is the type. Used by:
- *      <li>{@link ArchiveInfo}</li>
- *      <li>{@link android.content.SharedPreferences}</li>
- *      <li>{@link ListStyle}</li>
- * </ul>
- * <ul>Reason:
- *      <li>more or less flat objects (Bundle or Bundle-like)</li>
- *      <li>can be generically written (and read), so future adding/remove
- *          entries requires no changes here</li>
- *      <li>really only useful to the application itself</li>
- *      <li>write and read support</li>
- * </ul>
- * <ul>Database column name based. Used by:
- *      <li>{@link Bookshelf}</li>
- *      <li>{@link Author}</li>
- *      <li>{@link Series}</li>
- *      <li>{@link Publisher}</li>
- *      <li>{@link Book}</li>
- * </ul>
- * <ul>Reason:
+ * <ul>
  *      <li>EXPERIMENTAL - format can/will change</li>
  *      <li>meant for loading on a computer to create reports or whatever...</li>
- *      <li>not bound to the application itself.</li>
  *      <li>write (export) only.</li>
  *      <li>NO LINK TABLES YET</li>
  * </ul>
@@ -109,26 +70,26 @@ import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 public class XmlRecordWriter
         implements RecordWriter {
 
-    /** The format version of this exporter. */
-    public static final int VERSION = 2;
+    /** The format version of this RecordWriter. */
+    private static final int VERSION = 2;
 
     /** Log tag. */
     private static final String TAG = "XmlRecordWriter";
 
     /** individual format versions of table based data. */
-    private static final int XML_EXPORTER_BOOKSHELVES_VERSION = 1;
-    private static final int XML_EXPORTER_AUTHORS_VERSION = 1;
-    private static final int XML_EXPORTER_SERIES_VERSION = 1;
-    private static final int XML_EXPORTER_PUBLISHER_VERSION = 1;
-    private static final int XML_EXPORTER_TOC_VERSION = 1;
-    private static final int XML_EXPORTER_BOOKS_VERSION = 1;
-    /** individual format version of Preferences. */
-    private static final int XML_EXPORTER_PREFERENCES_VERSION = 1;
-    /** individual format version of Styles. */
-    private static final int XML_EXPORTER_STYLES_VERSION = 1;
+    private static final int VERSION_BOOKSHELVES = 1;
+    private static final int VERSION_AUTHORS = 1;
+    private static final int VERSION_SERIES = 1;
+    private static final int VERSION_PUBLISHERS = 1;
+    private static final int VERSION_TOC_LIST = 1;
+    private static final int VERSION_BOOKS = 1;
 
-    /** suffix for progress messages. */
-    private static final String XML_SUFFIX = " (xml)";
+    private static final String TAG_BOOKSHELF = "bookshelf";
+    private static final String TAG_AUTHOR = "author";
+    private static final String TAG_SERIES = "series";
+    private static final String TAG_PUBLISHER = "publisher";
+    private static final String TAG_TOC_ENTRY = "tocentry";
+    private static final String TAG_BOOK = "book";
 
     /** Database Access. */
     @NonNull
@@ -138,158 +99,73 @@ public class XmlRecordWriter
 
     /**
      * Constructor.
-     */
-    public XmlRecordWriter() {
-        this(null);
-    }
-
-    /**
-     * Constructor.
      *
      * @param utcSinceDateTime (optional) UTC based date to select only items
      *                         modified or added since.
      */
-    @SuppressWarnings("WeakerAccess")
     @AnyThread
     public XmlRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
-
         mUtcSinceDateTime = utcSinceDateTime;
         mDb = new DAO(TAG);
     }
 
     @Override
-    public int getVersion() {
-        return VERSION;
+    public void writeMetaData(@NonNull final Writer writer,
+                              @NonNull final ArchiveMetaData metaData)
+            throws IOException {
+
+        final Bundle bundle = metaData.getBundle();
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<").append(RecordType.MetaData.getName()).append(">\n");
+        for (final String name : bundle.keySet()) {
+            sb.append(XmlUtils.typedTag(name, Objects.requireNonNull(bundle.get(name), name)));
+        }
+        sb.append("</").append(RecordType.MetaData.getName()).append(">\n");
+
+        writer.write(sb.toString());
     }
 
     @Override
+    @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
-                               @NonNull final Set<ArchiveWriterRecord.Type> entry,
+                               @NonNull final Set<RecordType> entries,
                                @ExportHelper.Options final int options,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
         final ExportResults results = new ExportResults();
 
-        if (entry.contains(ArchiveWriterRecord.Type.Styles)
-            && !progressListener.isCancelled()) {
-            progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_styles) + XML_SUFFIX);
-            results.styles = writeStyles(context, writer);
-        }
+        if (entries.contains(RecordType.Books)) {
 
-        if (entry.contains(ArchiveWriterRecord.Type.Preferences)
-            && !progressListener.isCancelled()) {
-            progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_settings) + XML_SUFFIX);
-            results.preferences = writePreferences(context, writer);
-        }
-
-        if (entry.contains(ArchiveWriterRecord.Type.Books)
-            && !progressListener.isCancelled()) {
             // parsing will be faster if these go in the order done here.
             progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_bookshelves_long) + XML_SUFFIX);
+                    1, context.getString(R.string.lbl_bookshelves_long));
             writeBookshelves(writer, progressListener);
 
             progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_authors) + XML_SUFFIX);
+                    1, context.getString(R.string.lbl_authors));
             writeAuthors(writer, progressListener);
 
             progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_series_multiple) + XML_SUFFIX);
+                    1, context.getString(R.string.lbl_series_multiple));
             writeSeries(writer, progressListener);
 
             progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_publishers) + XML_SUFFIX);
+                    1, context.getString(R.string.lbl_publishers));
             writePublishers(writer, progressListener);
 
             progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_table_of_content) + XML_SUFFIX);
+                    1, context.getString(R.string.lbl_table_of_content));
             writeToc(writer, progressListener);
 
-            progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_books) + XML_SUFFIX);
-            final boolean collectCoverFilenames = entry.contains(
-                    ArchiveWriterRecord.Type.Cover);
-            results.add(writeBooks(context, collectCoverFilenames, writer, progressListener));
+            progressListener.publishProgressStep(1, context.getString(R.string.lbl_books));
+            results.add(writeBooks(context, writer, mUtcSinceDateTime,
+                                   entries.contains(RecordType.Cover),
+                                   progressListener));
         }
 
         return results;
-    }
-
-    /**
-     * Write/convert the archive information header (as XML) to a byte array.
-     *
-     * @param info the archive information
-     *
-     * @return a byte[]  ready to stream into the archive
-     *
-     * @throws IOException on failure
-     */
-    @NonNull
-    public byte[] createArchiveHeader(@NonNull final ArchiveInfo info)
-            throws IOException {
-
-        final ByteArrayOutputStream data = new ByteArrayOutputStream();
-        try (Writer osw = new OutputStreamWriter(data, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
-            toXml(writer, new InfoWriter(info));
-        }
-
-        return data.toByteArray();
-    }
-
-    /**
-     * Write out the styles.
-     * <p>
-     * We write all user-defined (in full) and builtin (without prefs) styles.
-     *
-     * @param context Current context
-     * @param writer  writer
-     *
-     * @return number of styles written
-     *
-     * @throws IOException on failure
-     */
-    private int writeStyles(@NonNull final Context context,
-                            @NonNull final Writer writer)
-            throws IOException {
-        final Collection<ListStyle> styles = StyleDAO.getStyles(context, mDb, true);
-        if (!styles.isEmpty()) {
-            toXml(writer, new StylesWriter(context, styles));
-        }
-        return styles.size();
-    }
-
-
-    /**
-     * Write out the user preferences.
-     *
-     * @param context Current context
-     * @param writer  writer
-     *
-     * @return number of preferences written (always 1)
-     *
-     * @throws IOException on failure
-     */
-    private int writePreferences(@NonNull final Context context,
-                                 @NonNull final Writer writer)
-            throws IOException {
-
-        final Map<String, ?> all = PreferenceManager.getDefaultSharedPreferences(context).getAll();
-
-        // remove the acra settings
-        final Iterator<String> it = all.keySet().iterator();
-        while (it.hasNext()) {
-            final String key = it.next();
-            if (key.startsWith("acra")) {
-                it.remove();
-            }
-        }
-        toXml(writer, new PreferencesWriter(context, all, null));
-        return 1;
     }
 
     /**
@@ -305,14 +181,14 @@ public class XmlRecordWriter
             throws IOException {
 
         try (Cursor cursor = mDb.fetchBookshelves()) {
-            writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
-            writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKSHELVES_VERSION));
+            writer.write('<' + Book.BKEY_BOOKSHELF_LIST);
+            writer.write(XmlUtils.versionAttr(VERSION_BOOKSHELVES));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
             writer.write(">\n");
 
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                writer.write('<' + XmlTags.TAG_BOOKSHELF);
+                writer.write('<' + TAG_BOOKSHELF);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOKSHELF_NAME,
                                            rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME)));
@@ -320,7 +196,7 @@ public class XmlRecordWriter
                                            rowData.getString(DBDefinitions.KEY_UUID)));
                 writer.write("/>\n");
             }
-            writer.write("</" + XmlTags.TAG_BOOKSHELF_LIST + ">\n");
+            writer.write("</" + Book.BKEY_BOOKSHELF_LIST + ">\n");
         }
     }
 
@@ -337,15 +213,14 @@ public class XmlRecordWriter
             throws IOException {
 
         try (Cursor cursor = mDb.fetchAuthors()) {
-            writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
-            writer.write(XmlUtils.versionAttr(XML_EXPORTER_AUTHORS_VERSION));
+            writer.write('<' + Book.BKEY_AUTHOR_LIST);
+            writer.write(XmlUtils.versionAttr(VERSION_AUTHORS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
             writer.write(">\n");
 
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-
-                writer.write('<' + XmlTags.TAG_AUTHOR);
+                writer.write('<' + TAG_AUTHOR);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
 
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
@@ -359,7 +234,7 @@ public class XmlRecordWriter
                                                    DBDefinitions.KEY_AUTHOR_IS_COMPLETE)));
                 writer.write("/>\n");
             }
-            writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">\n");
+            writer.write("</" + Book.BKEY_AUTHOR_LIST + ">\n");
         }
     }
 
@@ -376,15 +251,14 @@ public class XmlRecordWriter
             throws IOException {
 
         try (Cursor cursor = mDb.fetchSeries()) {
-            writer.write('<' + XmlTags.TAG_SERIES_LIST);
-            writer.write(XmlUtils.versionAttr(XML_EXPORTER_SERIES_VERSION));
+            writer.write('<' + Book.BKEY_SERIES_LIST);
+            writer.write(XmlUtils.versionAttr(VERSION_SERIES));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
             writer.write(">\n");
 
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-
-                writer.write('<' + XmlTags.TAG_SERIES);
+                writer.write('<' + TAG_SERIES);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_SERIES_TITLE,
                                            rowData.getString(DBDefinitions.KEY_SERIES_TITLE)));
@@ -393,7 +267,7 @@ public class XmlRecordWriter
                                                    DBDefinitions.KEY_SERIES_IS_COMPLETE)));
                 writer.write("/>\n");
             }
-            writer.write("</" + XmlTags.TAG_SERIES_LIST + ">\n");
+            writer.write("</" + Book.BKEY_SERIES_LIST + ">\n");
         }
     }
 
@@ -410,21 +284,20 @@ public class XmlRecordWriter
             throws IOException {
 
         try (Cursor cursor = mDb.fetchPublishers()) {
-            writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
-            writer.write(XmlUtils.versionAttr(XML_EXPORTER_PUBLISHER_VERSION));
+            writer.write('<' + Book.BKEY_PUBLISHER_LIST);
+            writer.write(XmlUtils.versionAttr(VERSION_PUBLISHERS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
             writer.write(">\n");
 
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-
-                writer.write('<' + XmlTags.TAG_PUBLISHER);
+                writer.write('<' + TAG_PUBLISHER);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PUBLISHER_NAME,
                                            rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME)));
                 writer.write("/>\n");
             }
-            writer.write("</" + XmlTags.TAG_PUBLISHER_LIST + ">\n");
+            writer.write("</" + Book.BKEY_PUBLISHER_LIST + ">\n");
         }
     }
 
@@ -440,8 +313,8 @@ public class XmlRecordWriter
                           @NonNull final ProgressListener progressListener)
             throws IOException {
         try (Cursor cursor = mDb.fetchTocs()) {
-            writer.write('<' + XmlTags.TAG_TOC_ENTRY_LIST);
-            writer.write(XmlUtils.versionAttr(XML_EXPORTER_TOC_VERSION));
+            writer.write('<' + Book.BKEY_TOC_LIST);
+            writer.write(XmlUtils.versionAttr(VERSION_TOC_LIST));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
             writer.write(">\n");
 
@@ -449,30 +322,27 @@ public class XmlRecordWriter
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
                 // the tag is written as a single line (no line-feeds)
-                writer.write('<' + XmlTags.TAG_TOC_ENTRY);
+                writer.write('<' + TAG_TOC_ENTRY);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_TITLE,
-                        rowData.getString(DBDefinitions.KEY_TITLE)));
-                writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                        rowData.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
-
-                // close the start tag
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE,
+                                           rowData.getString(DBDefinitions.KEY_TITLE)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                                           rowData.getString(
+                                                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
                 writer.write(">");
 
-                // Write Authors as list, allowing for future expansion to multiple authors/toc
-                writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
+                // Write Authors as a list, allowing for future expansion to multiple authors/toc
+                writer.write('<' + Book.BKEY_AUTHOR_LIST);
                 writer.write(XmlUtils.sizeAttr(1));
                 writer.write(">");
-                writer.write('<' + XmlTags.TAG_AUTHOR);
+                writer.write('<' + DBDefinitions.KEY_FK_AUTHOR);
                 writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_FK_AUTHOR)));
                 writer.write("/>");
-                writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">");
+                writer.write("</" + Book.BKEY_AUTHOR_LIST + ">");
 
-                writer.write("</" + XmlTags.TAG_TOC_ENTRY + ">\n");
+                writer.write("</" + TAG_TOC_ENTRY + ">\n");
             }
-            writer.write("</" + XmlTags.TAG_TOC_ENTRY_LIST + ">\n");
+            writer.write("</" + Book.BKEY_TOC_LIST + ">\n");
         }
     }
 
@@ -486,8 +356,9 @@ public class XmlRecordWriter
      * @throws IOException on failure
      */
     private ExportResults writeBooks(@NonNull final Context context,
-                                     final boolean collectCoverFilenames,
                                      @NonNull final Writer writer,
+                                     @Nullable final LocalDateTime utcSinceDateTime,
+                                     final boolean collectCoverFilenames,
                                      @NonNull final ProgressListener progressListener)
             throws IOException {
 
@@ -499,9 +370,9 @@ public class XmlRecordWriter
         final List<Domain> externalIdDomains = SearchEngineRegistry
                 .getInstance().getExternalIdDomains();
 
-        try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
-            writer.write('<' + XmlTags.TAG_BOOK_LIST);
-            writer.write(XmlUtils.versionAttr(XML_EXPORTER_BOOKS_VERSION));
+        try (Cursor cursor = mDb.fetchBooksForExport(utcSinceDateTime)) {
+            writer.write('<' + RecordType.Books.getName());
+            writer.write(XmlUtils.versionAttr(VERSION_BOOKS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
             writer.write(">\n");
 
@@ -516,8 +387,7 @@ public class XmlRecordWriter
                     title = context.getString(R.string.unknown_title);
                 }
 
-                // it's a buffered writer, no need to first StringBuilder the line.
-                writer.write('<' + XmlTags.TAG_BOOK);
+                writer.write('<' + TAG_BOOK);
                 writer.write(XmlUtils.idAttr(book.getLong(DBDefinitions.KEY_PK_ID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE, title));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_ISBN,
@@ -562,14 +432,12 @@ public class XmlRecordWriter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_CONDITION,
                                            book.getInt(DBDefinitions.KEY_BOOK_CONDITION)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_CONDITION_COVER,
-                                           book.getInt(
-                                                   DBDefinitions.KEY_BOOK_CONDITION_COVER)));
+                                           book.getInt(DBDefinitions.KEY_BOOK_CONDITION_COVER)));
 
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID,
                                            book.getDouble(DBDefinitions.KEY_PRICE_PAID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                                           book.getString(
-                                                   DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
+                                           book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_ACQUIRED,
                                            book.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_LOCATION,
@@ -612,76 +480,76 @@ public class XmlRecordWriter
                 final ArrayList<Author> authors =
                         book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
                 if (!authors.isEmpty()) {
-                    writer.write('<' + XmlTags.TAG_AUTHOR_LIST);
+                    writer.write('<' + Book.BKEY_AUTHOR_LIST);
                     writer.write(XmlUtils.sizeAttr(authors.size()));
                     writer.write(">");
                     for (final Author author : authors) {
-                        writer.write('<' + XmlTags.TAG_AUTHOR);
+                        writer.write('<' + DBDefinitions.KEY_FK_AUTHOR);
                         writer.write(XmlUtils.idAttr(author.getId()));
                         writer.write("/>");
                     }
-                    writer.write("</" + XmlTags.TAG_AUTHOR_LIST + ">\n");
+                    writer.write("</" + Book.BKEY_AUTHOR_LIST + ">\n");
                 }
 
                 final ArrayList<Series> seriesList =
                         book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
                 if (!seriesList.isEmpty()) {
-                    writer.write('<' + XmlTags.TAG_SERIES_LIST);
+                    writer.write('<' + Book.BKEY_SERIES_LIST);
                     writer.write(XmlUtils.sizeAttr(seriesList.size()));
                     writer.write(">");
                     for (final Series series : seriesList) {
-                        writer.write('<' + XmlTags.TAG_SERIES);
+                        writer.write('<' + DBDefinitions.KEY_FK_SERIES);
                         writer.write(XmlUtils.idAttr(series.getId()));
                         writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
                                                    series.getNumber()));
                         writer.write("/>");
                     }
-                    writer.write("</" + XmlTags.TAG_SERIES_LIST + ">\n");
+                    writer.write("</" + Book.BKEY_SERIES_LIST + ">\n");
                 }
 
                 final ArrayList<Publisher> publishers =
                         book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
                 if (!publishers.isEmpty()) {
-                    writer.write('<' + XmlTags.TAG_PUBLISHER_LIST);
+                    writer.write('<' + Book.BKEY_PUBLISHER_LIST);
                     writer.write(XmlUtils.sizeAttr(publishers.size()));
                     writer.write(">");
                     for (final Publisher publisher : publishers) {
-                        writer.write('<' + XmlTags.TAG_PUBLISHER);
+                        writer.write('<' + DBDefinitions.KEY_FK_PUBLISHER);
                         writer.write(XmlUtils.idAttr(publisher.getId()));
                         writer.write("/>");
                     }
-                    writer.write("</" + XmlTags.TAG_PUBLISHER_LIST + ">\n");
+                    writer.write("</" + Book.BKEY_PUBLISHER_LIST + ">\n");
                 }
 
                 final ArrayList<Bookshelf> bookshelves =
                         book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
                 if (!bookshelves.isEmpty()) {
-                    writer.write('<' + XmlTags.TAG_BOOKSHELF_LIST);
+                    writer.write('<' + Book.BKEY_BOOKSHELF_LIST);
                     writer.write(XmlUtils.sizeAttr(bookshelves.size()));
                     writer.write(">");
                     for (final Bookshelf bookshelf : bookshelves) {
-                        writer.write('<' + XmlTags.TAG_BOOKSHELF);
+                        writer.write('<' + DBDefinitions.KEY_FK_BOOKSHELF);
                         writer.write(XmlUtils.idAttr(bookshelf.getId()));
                         writer.write("/>");
                     }
-                    writer.write("</" + XmlTags.TAG_BOOKSHELF_LIST + ">\n");
+                    writer.write("</" + Book.BKEY_BOOKSHELF_LIST + ">\n");
                 }
 
                 final ArrayList<TocEntry> tocEntries =
                         book.getParcelableArrayList(Book.BKEY_TOC_LIST);
                 if (!tocEntries.isEmpty()) {
-                    writer.write('<' + XmlTags.TAG_TOC_ENTRY_LIST);
+                    writer.write('<' + Book.BKEY_TOC_LIST);
                     writer.write(XmlUtils.sizeAttr(tocEntries.size()));
                     writer.write(">");
                     for (final TocEntry tocEntry : tocEntries) {
-                        writer.write('<' + XmlTags.TAG_TOC_ENTRY);
+                        writer.write('<' + DBDefinitions.KEY_FK_TOC_ENTRY);
                         writer.write(XmlUtils.idAttr(tocEntry.getId()));
                         writer.write("/>");
                     }
-                    writer.write("</" + XmlTags.TAG_TOC_ENTRY_LIST + ">\n");
+                    writer.write("</" + Book.BKEY_TOC_LIST + ">\n");
                 }
 
-                writer.write("</" + XmlTags.TAG_BOOK + ">\n");
+                writer.write("</" + TAG_BOOK + ">\n");
 
                 results.addBook(book.getId());
 
@@ -702,421 +570,19 @@ public class XmlRecordWriter
                     delta = 0;
                 }
             }
-            writer.write("</" + XmlTags.TAG_BOOK_LIST + ">\n");
+            writer.write("</" + RecordType.Books.getName() + ">\n");
         }
 
         return results;
     }
 
-    /**
-     * Internal routine that uses the passed {@link EntityWriter} to convert
-     * and send collection data to an XML file.
-     *
-     * @param writer   where to send the XML to
-     * @param accessor the EntityReader to convert the object to XML
-     *
-     * @throws IOException on failure
-     */
-    private void toXml(@NonNull final Writer writer,
-                       @NonNull final EntityWriter<String> accessor)
-            throws IOException {
-
-        // the list root does not get a version number,  individual elements do.
-        final String listRoot = accessor.getRootTag();
-        writer.write('<');
-        writer.write(listRoot);
-        writer.write(XmlUtils.versionAttr(accessor.getRootTagVersionAttribute()));
-        writer.write(XmlUtils.sizeAttr(accessor.getRootTagSizeAttribute()));
-        writer.write(">\n");
-
-        // loop through all elements
-        while (accessor.hasMoreElements()) {
-            // start with an element, optionally add a set of attributes
-            writer.write('<');
-            writer.write(accessor.getElementTag());
-
-            final long idAttr = accessor.getElementTagIdAttribute();
-            if (idAttr != 0) {
-                writer.write(XmlUtils.idAttr(idAttr));
-            }
-            final String nameAttr = accessor.getElementTagNameAttribute();
-            if (nameAttr != null) {
-                writer.write(XmlUtils.nameAttr(nameAttr));
-            }
-            final List<Pair<String, String>> otherAttr = accessor.getElementTagAttributes();
-            if (otherAttr != null && !otherAttr.isEmpty()) {
-                for (final Pair<String, String> attr : otherAttr) {
-                    writer.write(XmlUtils.attr(attr.first, attr.second));
-                }
-            }
-            writer.write(">\n");
-
-            // loop through all keys of the element
-            // IMPORTANT: get the keys for each iteration, as they might be different
-            // from element to element.
-            for (final String name : accessor.getElementKeySet()) {
-                writer.write(XmlUtils.typedTag(name, accessor.get(name)));
-            }
-            // end of element.
-            writer.write("</");
-            writer.write(accessor.getElementTag());
-            writer.write(">\n");
-        }
-
-        // close the list.
-        writer.write("</");
-        writer.write(listRoot);
-        writer.write(">\n");
+    @Override
+    public int getVersion() {
+        return VERSION;
     }
 
     @Override
     public void close() {
         mDb.close();
-    }
-
-    /**
-     * Provide translator between Collections, and XML tags/attributes.
-     * <p>
-     * Supports 2-layer deep/flat xml output; i.e. a list (tag) of elements (one tag per element)
-     *
-     * @param <K> Type of the collection key
-     */
-    public interface EntityWriter<K> {
-
-        /**
-         * Get the top-root tag name.
-         *
-         * @return root tag name
-         */
-        @NonNull
-        String getRootTag();
-
-        /**
-         * Get the top-root tag version attribute.
-         *
-         * @return version
-         */
-        long getRootTagVersionAttribute();
-
-        /**
-         * Get the size of the list.
-         *
-         * @return size
-         */
-        int getRootTagSizeAttribute();
-
-        /**
-         * Check if the collection has more elements.
-         * <p>
-         * See {@link XmlRecordReader.StylesReader} for an example
-         *
-         * @return {@code true} if there are
-         */
-        boolean hasMoreElements();
-
-        /**
-         * Get the element tag for each item in the collection.
-         *
-         * @return root
-         */
-        @NonNull
-        String getElementTag();
-
-        /**
-         * Get a list of name=value pairs to add as attributes to the element tag.
-         * Optional; {@code null} by default.
-         *
-         * @return list, or {@code null}
-         */
-        @Nullable
-        default List<Pair<String, String>> getElementTagAttributes() {
-            return null;
-        }
-
-        /**
-         * Get the element id attribute for each item in the collection.
-         * Optional; {@code 0} by default.
-         *
-         * @return name, or {@code null}
-         */
-        default long getElementTagIdAttribute() {
-            return 0;
-        }
-
-        /**
-         * Get the element tag name attribute for each item in the collection.
-         * Optional. {@code null} by default.
-         *
-         * @return name, or {@code null}
-         */
-        @Nullable
-        default String getElementTagNameAttribute() {
-            return null;
-        }
-
-        /**
-         * Get the collection of keys for the <strong>current</strong> element.
-         * i.e. the XML writer assumes that each element can have a different key set.
-         *
-         * @return keys
-         */
-        Set<K> getElementKeySet();
-
-        /**
-         * Get the object for the specified key of the current element.
-         *
-         * @return object
-         */
-        @NonNull
-        Object get(@NonNull K key);
-    }
-
-    /**
-     * Supports a single INFO block.
-     */
-    static class InfoWriter
-            implements EntityWriter<String> {
-
-        /** The data we'll be writing. */
-        @NonNull
-        private final ArchiveInfo mInfo;
-
-        @NonNull
-        private final Bundle mBundle;
-
-        private boolean mHasMore = true;
-
-        /**
-         * Constructor.
-         *
-         * @param info block to write.
-         */
-        InfoWriter(@NonNull final ArchiveInfo info) {
-            mInfo = info;
-            mBundle = mInfo.getBundle();
-        }
-
-        @Override
-        @NonNull
-        public String getRootTag() {
-            return XmlTags.TAG_INFO_LIST;
-        }
-
-        @Override
-        public long getRootTagVersionAttribute() {
-            return mInfo.getArchiveVersion();
-        }
-
-        @Override
-        public int getRootTagSizeAttribute() {
-            return 1;
-        }
-
-        @Override
-        public boolean hasMoreElements() {
-            final boolean hasMore = mHasMore;
-            mHasMore = false;
-            return hasMore;
-        }
-
-        @Override
-        @NonNull
-        public String getElementTag() {
-            return XmlTags.TAG_INFO;
-        }
-
-        @Override
-        @NonNull
-        public Set<String> getElementKeySet() {
-            return mBundle.keySet();
-        }
-
-        @Override
-        @NonNull
-        public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(mBundle.get(key), key);
-        }
-    }
-
-    /**
-     * Supports a single Preferences block.
-     */
-    static class PreferencesWriter
-            implements EntityWriter<String> {
-
-        @Nullable
-        private final String mName;
-        @NonNull
-        private final Context mContext;
-        @NonNull
-        private final Map<String, ?> mMap;
-
-        private boolean mHasMore = true;
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         * @param map     to read from
-         * @param name    (optional) of the SharedPreference
-         */
-        PreferencesWriter(@NonNull final Context context,
-                          @NonNull final Map<String, ?> map,
-                          @SuppressWarnings("SameParameterValue") @Nullable final String name) {
-            mContext = context;
-            mMap = map;
-            mName = name;
-        }
-
-        @Override
-        @NonNull
-        public String getRootTag() {
-            return XmlTags.TAG_PREFERENCES_LIST;
-        }
-
-        @Override
-        public long getRootTagVersionAttribute() {
-            return PackageInfoWrapper.create(mContext).getVersionCode();
-        }
-
-        @Override
-        public int getRootTagSizeAttribute() {
-            return XML_EXPORTER_PREFERENCES_VERSION;
-        }
-
-        @Override
-        public boolean hasMoreElements() {
-            final boolean hasMore = mHasMore;
-            mHasMore = false;
-            return hasMore;
-        }
-
-        @Override
-        @NonNull
-        public String getElementTag() {
-            return XmlTags.TAG_PREFERENCES;
-        }
-
-        @Nullable
-        @Override
-        public String getElementTagNameAttribute() {
-            return mName;
-        }
-
-        @NonNull
-        @Override
-        public Set<String> getElementKeySet() {
-            return mMap.keySet();
-        }
-
-        @Override
-        @NonNull
-        public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(mMap.get(key), key);
-        }
-    }
-
-    /**
-     * Supports a list of Styles.
-     * <ul>
-     * <li>'flat' preferences for the style.</li>
-     * <li>Includes the actual groups of the style: a CSV String of group ID's</li>
-     * <li>Filters and Groups are flattened.</li>
-     * <li>each filter/group has a typed tag</li>
-     * <li>each preference in a group has a typed tag.</li>
-     * </ul>
-     * <strong>We write out the preferences for {@link BuiltinStyle} objects</strong>
-     * for reference and potential future usage.
-     * See {@link XmlRecordReader} for more comments.
-     */
-    static class StylesWriter
-            implements EntityWriter<String> {
-
-        @NonNull
-        private final Context mContext;
-        @NonNull
-        private final Collection<ListStyle> mStyles;
-        @NonNull
-        private final Iterator<ListStyle> it;
-
-        private ListStyle mCurrentStyle;
-        /** The Preferences from the current {@link ListStyle}. */
-        private Map<String, PPref<?>> mCurrentStylePPrefs;
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         * @param styles  list of styles to write
-         */
-        StylesWriter(@NonNull final Context context,
-                     @NonNull final Collection<ListStyle> styles) {
-            mContext = context;
-            mStyles = styles;
-            it = styles.iterator();
-        }
-
-        @Override
-        @NonNull
-        public String getRootTag() {
-            return XmlTags.TAG_STYLE_LIST;
-        }
-
-        @Override
-        public long getRootTagVersionAttribute() {
-            return XmlRecordWriter.XML_EXPORTER_STYLES_VERSION;
-        }
-
-        @Override
-        public int getRootTagSizeAttribute() {
-            return mStyles.size();
-        }
-
-        @Override
-        public boolean hasMoreElements() {
-            if (it.hasNext()) {
-                mCurrentStyle = it.next();
-                mCurrentStylePPrefs = mCurrentStyle.getRawPreferences();
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        @NonNull
-        @Override
-        public String getElementTag() {
-            return XmlTags.TAG_STYLE;
-        }
-
-        @NonNull
-        @Override
-        public String getElementTagNameAttribute() {
-            return mCurrentStyle.getLabel(mContext);
-        }
-
-        @Nullable
-        @Override
-        public List<Pair<String, String>> getElementTagAttributes() {
-            final List<Pair<String, String>> list = new ArrayList<>();
-            list.add(new Pair<>(DBDefinitions.KEY_UUID, mCurrentStyle.getUuid()));
-            list.add(new Pair<>(DBDefinitions.KEY_STYLE_IS_PREFERRED,
-                                String.valueOf(mCurrentStyle.isPreferred())));
-            list.add(new Pair<>(DBDefinitions.KEY_STYLE_MENU_POSITION,
-                                String.valueOf(mCurrentStyle.getMenuPosition())));
-            return list;
-        }
-
-        @Override
-        @NonNull
-        public Set<String> getElementKeySet() {
-            return mCurrentStylePPrefs.keySet();
-        }
-
-        @NonNull
-        @Override
-        public Object get(@NonNull final String key) {
-            return Objects.requireNonNull(mCurrentStylePPrefs.get(key), key).getValue();
-        }
     }
 }

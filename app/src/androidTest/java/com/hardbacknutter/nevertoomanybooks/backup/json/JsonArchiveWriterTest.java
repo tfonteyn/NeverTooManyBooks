@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
@@ -36,13 +37,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -52,31 +52,40 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 public class JsonArchiveWriterTest {
 
     private static final String TAG = "JsonArchiveWriterTest";
 
+    private long mBookInDb;
+    private int mNrOfStyles;
+
+    @Before
+    public void count() {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        try (DAO db = new DAO(TAG)) {
+            mBookInDb = db.countBooks();
+
+            mNrOfStyles = StyleDAO.getStyles(context, db, true).size();
+        }
+        if (mBookInDb < 10) {
+            throw new IllegalStateException("need at least 10 books for testing");
+        }
+    }
+
     @Test
     public void styles()
-            throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException {
+            throws IOException, InvalidArchiveException, ImportException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + "-styles.json");
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
-        final int nrOfStyles;
-        try (DAO db = new DAO(TAG)) {
-            nrOfStyles = StyleDAO.getStyles(context, db, true).size();
-        }
-
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(
-                ArchiveWriterRecord.Type.Styles);
+        final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Styles);
 
-        exportHelper.setArchiveType(ArchiveType.Json);
+        exportHelper.setArchiveEncoding(ArchiveEncoding.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -88,19 +97,19 @@ public class JsonArchiveWriterTest {
         assertEquals(0, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
         assertEquals(0, exportResults.preferences);
-        assertEquals(nrOfStyles, exportResults.styles);
+        assertEquals(mNrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         final ImportResults importResults;
 
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Styles, true);
+        importHelper.setImportEntry(RecordType.Styles, true);
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-            final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNull(archiveInfo);
+            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
+            assertNull(archiveMetaData);
 
-            ((JsonArchiveReader) reader).setTypeToRead(ArchiveReaderRecord.Type.Styles);
+            ((JsonArchiveReader) reader).setTypeToRead(RecordType.Styles);
 
             importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
         }
@@ -115,23 +124,19 @@ public class JsonArchiveWriterTest {
         //noinspection ResultOfMethodCallIgnored
         file.delete();
 
-        final long bookInDb;
-        try (DAO db = new DAO(TAG)) {
-            bookInDb = db.countBooks();
-        }
-        if (bookInDb < 10) {
-            throw new IllegalStateException("need at least 10 books for testing");
-        }
-
         final ExportResults exportResults;
 
         final ExportHelper exportHelper = new ExportHelper(
-                ArchiveWriterRecord.Type.Books,
-                // write out styles just to have them in the output file.
-                // No further tests with styles in this method.
-                ArchiveWriterRecord.Type.Styles);
+                RecordType.MetaData,
+                RecordType.Books
+//                ,
+//                // write out styles/prefs just to have them in the output file.
+//                // No further tests with them in this method.
+//                RecordType.Preferences,
+//                RecordType.Styles
+        );
 
-        exportHelper.setArchiveType(ArchiveType.Json);
+        exportHelper.setArchiveEncoding(ArchiveEncoding.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -140,10 +145,10 @@ public class JsonArchiveWriterTest {
         // assume success; a failure would have thrown an exception
         exportHelper.onSuccess(context);
 
-        assertEquals(bookInDb, exportResults.getBookCount());
+        assertEquals(mBookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
-        assertEquals(0, exportResults.preferences);
-        assertTrue(exportResults.styles > 0);
+//        assertEquals(1, exportResults.preferences);
+//        assertEquals(mNrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
         // Now modify/delete some books. We have at least 10 books to play with
@@ -164,11 +169,11 @@ public class JsonArchiveWriterTest {
         final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
         ImportResults importResults;
 
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+        importHelper.setImportEntry(RecordType.Books, true);
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-            final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNull(archiveInfo);
+            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
+            assertNull(archiveMetaData);
 
             importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
         }
@@ -182,12 +187,12 @@ public class JsonArchiveWriterTest {
 
 
 
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+        importHelper.setImportEntry(RecordType.Books, true);
         importHelper.setUpdatesMayOverwrite();
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-            final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNull(archiveInfo);
+            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
+            assertNull(archiveMetaData);
 
             importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
         }
@@ -196,7 +201,7 @@ public class JsonArchiveWriterTest {
 
         assertEquals(0, importResults.booksCreated);
         // we did an overwrite of ALL books
-        assertEquals(bookInDb, importResults.booksUpdated);
+        assertEquals(mBookInDb, importResults.booksUpdated);
         // so we skipped none
         assertEquals(0, importResults.booksSkipped);
     }

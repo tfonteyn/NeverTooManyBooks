@@ -29,7 +29,12 @@ import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDate;
@@ -43,10 +48,9 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -72,13 +76,13 @@ public class ExportHelper {
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** What is going to be exported. */
     @NonNull
-    private final Set<ArchiveWriterRecord.Type> mExportEntries;
+    private final Set<RecordType> mExportEntries;
     /** Picked by the user; where we write to. */
     @Nullable
     private Uri mUri;
     /** Set by the user; defaults to ZIP. */
     @NonNull
-    private ArchiveType mArchiveType = ArchiveType.Zip;
+    private ArchiveEncoding mArchiveEncoding = ArchiveEncoding.Zip;
     /** Bitmask. Contains extra options for the {@link RecordWriter}. */
     @Options
     private int mOptions;
@@ -86,12 +90,11 @@ public class ExportHelper {
     @Nullable
     private LocalDateTime mFromUtcDateTime;
 
-
     /**
      * Constructor.
      */
     public ExportHelper() {
-        mExportEntries = EnumSet.allOf(ArchiveWriterRecord.Type.class);
+        mExportEntries = EnumSet.allOf(RecordType.class);
     }
 
     /**
@@ -100,7 +103,7 @@ public class ExportHelper {
      * @param exportEntries to write
      */
     @VisibleForTesting
-    public ExportHelper(@NonNull final ArchiveWriterRecord.Type... exportEntries) {
+    public ExportHelper(@NonNull final RecordType... exportEntries) {
         mExportEntries = EnumSet.copyOf(Arrays.asList(exportEntries));
     }
 
@@ -112,11 +115,11 @@ public class ExportHelper {
     @NonNull
     String getDefaultUriName() {
         return "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-               + mArchiveType.getFileExt();
+               + mArchiveEncoding.getFileExt();
     }
 
-    public void setArchiveType(@NonNull final ArchiveType archiveType) {
-        mArchiveType = archiveType;
+    public void setArchiveEncoding(@NonNull final ArchiveEncoding archiveEncoding) {
+        mArchiveEncoding = archiveEncoding;
     }
 
     /**
@@ -141,18 +144,16 @@ public class ExportHelper {
      *
      * @return a new writer
      *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     *                                 (this would be a bug)
-     * @throws IOException             on failure
+     * @throws FileNotFoundException on ...
      */
     @NonNull
     public ArchiveWriter createArchiveWriter(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
+            throws FileNotFoundException {
 
         if (BuildConfig.DEBUG /* always */) {
             Objects.requireNonNull(mUri, "uri");
             if (mExportEntries.isEmpty()) {
-                throw new IllegalStateException("mExportEntities is empty");
+                throw new IllegalStateException("mExportEntries.isEmpty()");
             }
         }
 
@@ -162,23 +163,25 @@ public class ExportHelper {
             mFromUtcDateTime = null;
         }
 
-        return mArchiveType.createArchiveWriter(context, this);
+        return mArchiveEncoding.createWriter(context, this);
     }
 
     /**
-     * Get the temporary File to write to.
+     * Create/get the OutputStream to write to.
      * When writing is done (success <strong>and</strong> failure),
      * {@link #onSuccess} / {@link #onError} must be called as needed.
      *
      * @param context Current context
      *
-     * @return File
+     * @return OutputStream
+     *
+     * @throws FileNotFoundException on ...
      */
     @NonNull
-    public File getTempOutputFile(@NonNull final Context context) {
-        return AppDir.Cache.getFile(context, TEMP_FILE_NAME);
+    public OutputStream createOutputStream(@NonNull final Context context)
+            throws FileNotFoundException {
+        return new FileOutputStream(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
     }
-
 
     /**
      * Should be called after a successful write.
@@ -191,7 +194,13 @@ public class ExportHelper {
             throws IOException {
         // The output file is now properly closed, export it to the user Uri
         final File tmpOutput = AppDir.Cache.getFile(context, TEMP_FILE_NAME);
-        FileUtils.copy(context, tmpOutput, getUri());
+
+        try (InputStream is = new FileInputStream(tmpOutput);
+             OutputStream os = context.getContentResolver().openOutputStream(getUri())) {
+            if (os != null) {
+                FileUtils.copy(is, os);
+            }
+        }
 
         // if the backup was a full backup remember that.
         if ((mOptions & OPTION_INCREMENTAL) != 0) {
@@ -265,7 +274,7 @@ public class ExportHelper {
     }
 
 
-    void setExportEntry(@NonNull final ArchiveWriterRecord.Type entry,
+    void setExportEntry(@NonNull final RecordType entry,
                         final boolean isSet) {
         if (isSet) {
             mExportEntries.add(entry);
@@ -274,8 +283,13 @@ public class ExportHelper {
         }
     }
 
+    /**
+     * Get the currently selected entry types that will be exported.
+     *
+     * @return set
+     */
     @NonNull
-    public Set<ArchiveWriterRecord.Type> getExporterEntries() {
+    public Set<RecordType> getExporterEntries() {
         return mExportEntries;
     }
 
@@ -309,7 +323,7 @@ public class ExportHelper {
                + "mExportEntities=" + mExportEntries
                + ", mOptions=0b" + Integer.toBinaryString(mOptions) + ": " + options.toString()
                + ", mUri=" + mUri
-               + ", mArchiveType=" + mArchiveType
+               + ", mArchiveEncoding=" + mArchiveEncoding
                + ", mFromUtcDateTime=" + mFromUtcDateTime
                + '}';
     }

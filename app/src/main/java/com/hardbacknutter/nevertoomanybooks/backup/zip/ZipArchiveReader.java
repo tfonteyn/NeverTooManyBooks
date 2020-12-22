@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipInputStream;
@@ -35,10 +36,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderAbstract;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 
-/**
- * Implementation of ZIP-specific reader functions.
- */
+
 public class ZipArchiveReader
         extends ArchiveReaderAbstract {
 
@@ -62,7 +63,7 @@ public class ZipArchiveReader
 
     @Override
     @Nullable
-    public ArchiveReaderRecord seek(@NonNull final ArchiveReaderRecord.Type type)
+    public ArchiveReaderRecord seek(@NonNull final RecordType type)
             throws InvalidArchiveException, IOException {
         try {
             ZipEntry entry;
@@ -72,7 +73,8 @@ public class ZipArchiveReader
                     return null;
                 }
 
-                if (type == ArchiveReaderRecord.Type.getType(entry.getName())) {
+                final Optional<RecordType> detectedType = RecordType.getType(entry.getName());
+                if (detectedType.isPresent() && type == detectedType.get()) {
                     return new ZipArchiveRecord(this, entry);
                 }
             }
@@ -146,14 +148,14 @@ public class ZipArchiveReader
         }
 
         @NonNull
-        public Type getType() {
-            return Type.getType(mEntry.getName());
+        public Optional<RecordType> getType() {
+            return RecordType.getType(mEntry.getName());
         }
 
         @NonNull
         @Override
-        public Encoding getEncoding() {
-            return Encoding.getEncoding(mEntry.getName());
+        public Optional<RecordEncoding> getEncoding() {
+            return RecordEncoding.getEncoding(mEntry.getName());
         }
 
         @NonNull

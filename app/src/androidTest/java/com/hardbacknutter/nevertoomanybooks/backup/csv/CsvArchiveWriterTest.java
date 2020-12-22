@@ -41,13 +41,12 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -83,9 +82,8 @@ public class CsvArchiveWriterTest {
 
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(
-                ArchiveWriterRecord.Type.Books);
-        exportHelper.setArchiveType(ArchiveType.Csv);
+        final ExportHelper exportHelper = new ExportHelper(RecordType.Books);
+        exportHelper.setArchiveEncoding(ArchiveEncoding.Csv);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -130,11 +128,11 @@ public class CsvArchiveWriterTest {
         ImportResults importResults;
 
 
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+        importHelper.setImportEntry(RecordType.Books, true);
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-            final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNull(archiveInfo);
+            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
+            assertNull(archiveMetaData);
 
             importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
         }
@@ -147,12 +145,12 @@ public class CsvArchiveWriterTest {
         assertEquals(exportCount - 1, importResults.booksSkipped);
 
 
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+        importHelper.setImportEntry(RecordType.Books, true);
         importHelper.setUpdatesMayOverwrite();
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-            final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNull(archiveInfo);
+            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
+            assertNull(archiveMetaData);
 
             importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
         }

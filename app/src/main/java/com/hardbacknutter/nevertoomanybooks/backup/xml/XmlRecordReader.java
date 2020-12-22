@@ -44,6 +44,7 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,9 +61,10 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -85,16 +87,22 @@ import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
 /**
  * <ul>Supports:
- *      <li>{@link ArchiveReaderRecord.Type#InfoHeader}</li>
- *      <li>{@link ArchiveReaderRecord.Type#Styles}</li>
- *      <li>{@link ArchiveReaderRecord.Type#Preferences}</li>
+ *      <li>{@link RecordType#MetaData}</li>
+ *      <li>{@link RecordType#Styles}</li>
+ *      <li>{@link RecordType#Preferences}</li>
  * </ul>
  *
  * <strong>Important</strong>: The sax parser closes streams, which is not good
  * on a Tar archive entry. This class uses a {@link BufferedReaderNoClose} to get around that.
- * <p>
- * TODO: unify the handling of simple elements and set/list elements.
+ *
+ * @deprecated the main backup to a zip file is moving towards storing all text data in JSON
+ * We're keeping this XML reader for a while longer so we're able to read older backups;
+ * i.e. {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract} version 2.
+ * See {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderAbstract}
+ * class docs for the version descriptions.
  */
+@SuppressWarnings("DeprecatedIsStillUsed")
+@Deprecated
 public class XmlRecordReader
         implements RecordReader {
 
@@ -103,9 +111,6 @@ public class XmlRecordReader
 
     private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD =
             "Unable to process XML record ";
-
-    /** Buffer for the Reader. */
-    private static final int BUFFER_SIZE = 65535;
 
     /** Database Access. */
     @NonNull
@@ -124,16 +129,32 @@ public class XmlRecordReader
     /** a simple Holder for the current tag name and attributes. Pushed/pulled on the stack. */
     private TagInfo mTag;
 
+    @NonNull
+    private final Set<RecordType> mImportEntriesAllowed;
+
     /**
      * Constructor.
      *
-     * @param context Current context
-     * @param db      Database Access;
+     * @param context              Current context
+     * @param db                   Database Access;
+     * @param importEntriesAllowed the record types we're allowed to read
      */
     public XmlRecordReader(@NonNull final Context context,
-                           @NonNull final DAO db) {
+                           @NonNull final DAO db,
+                           @NonNull final Set<RecordType> importEntriesAllowed) {
         mDb = db;
+        mImportEntriesAllowed = importEntriesAllowed;
+
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
+    }
+
+    @Override
+    @NonNull
+    public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
+            throws IOException {
+        final ArchiveMetaData info = new ArchiveMetaData();
+        fromXml(record, new InfoReader(info));
+        return info;
     }
 
     @Override
@@ -145,52 +166,30 @@ public class XmlRecordReader
             throws IOException {
 
         final ImportResults results = new ImportResults();
-        final ArchiveReaderRecord.Type recordType = record.getType();
-            switch (recordType) {
-                case Styles: {
+
+        if (record.getType().isPresent()) {
+            final RecordType recordType = record.getType().get();
+            if (recordType == RecordType.MetaData) {
+                throw new IllegalStateException("call #readMetaData instead");
+            }
+
+            if (mImportEntriesAllowed.contains(recordType)) {
+                if (recordType == RecordType.Styles) {
                     final StylesReader stylesReader = new StylesReader(context, mDb);
                     fromXml(record, stylesReader);
                     //TODO: we should update the menu order in the database here
                     results.styles += stylesReader.getStylesRead();
-                    break;
-                }
-                case Preferences: {
+
+                } else if (recordType == RecordType.Preferences) {
                     final SharedPreferences.Editor ed = PreferenceManager
                             .getDefaultSharedPreferences(context).edit();
                     fromXml(record, new PreferencesReader(ed));
                     ed.apply();
                     results.preferences++;
-                    break;
                 }
-                case InfoHeader:
-                    throw new IllegalStateException("call #readInfo instead");
-
-                case Books:
-                case Cover:
-                case AutoDetect:
-                case Unknown:
-                default:
-                    break;
             }
-
+        }
         return results;
-    }
-
-    /**
-     * Read the archive information block.
-     *
-     * @param record to read data from
-     *
-     * @return the archive info
-     *
-     * @throws IOException on failure
-     */
-    @NonNull
-    public ArchiveInfo readArchiveHeader(@NonNull final ArchiveReaderRecord record)
-            throws IOException {
-        final ArchiveInfo info = new ArchiveInfo();
-        fromXml(record, new InfoReader(info));
-        return info;
     }
 
     /**
@@ -218,7 +217,7 @@ public class XmlRecordReader
             // Don't close this stream
             final InputStream is = record.getInputStream();
             final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-            final BufferedReader reader = new BufferedReaderNoClose(isr, BUFFER_SIZE);
+            final BufferedReader reader = new BufferedReaderNoClose(isr, RecordReader.BUFFER_SIZE);
             final InputSource source = new InputSource(reader);
 
             final SAXParser parser = factory.newSAXParser();
@@ -234,8 +233,8 @@ public class XmlRecordReader
 
     private void buildFilters(@NonNull final XmlFilter rootFilter,
                               @NonNull final EntityReader<String> accessor) {
-        final String listRootElement = accessor.getListRoot();
-        final String rootElement = accessor.getElementRoot();
+        final String listRootElement = accessor.getRootTag();
+        final String rootElement = accessor.getElementTag();
         // used to read in Set/List data
         final Collection<String> currentStringList = new ArrayList<>();
 
@@ -376,7 +375,7 @@ public class XmlRecordReader
                  .setEndAction(endTypedTag);
 
         /*
-         * The exporter is generating List/Set tags with String/Int sub tags properly,
+         * The RecordWriter is generating List/Set tags with String/Int sub tags properly,
          * but importing an Element in a Collection is always done as a String in a List (for now?)
          */
         // set/list elements with attributes.
@@ -477,13 +476,13 @@ public class XmlRecordReader
          * @return the tag name for the list
          */
         @NonNull
-        String getListRoot();
+        String getRootTag();
 
         /**
          * @return the tag name for an element in the list
          */
         @NonNull
-        String getElementRoot();
+        String getElementTag();
 
         /**
          * Callback at the start of each element in the list.
@@ -620,29 +619,30 @@ public class XmlRecordReader
     }
 
     /**
-     * Supports a *single* {@link XmlTags#TAG_INFO} block,
-     * enclosed inside a {@link XmlTags#TAG_INFO_LIST}.
+     * Supports a *single* {@link RecordType#MetaData} block,
+     * enclosed inside a {@link InfoReader#TAG_ROOT}.
      */
     static class InfoReader
             implements EntityReader<String> {
 
+        static final String TAG_ROOT = "info-list";
         @NonNull
         private final Bundle mBundle;
 
-        InfoReader(@NonNull final ArchiveInfo info) {
+        InfoReader(@NonNull final ArchiveMetaData info) {
             mBundle = info.getBundle();
         }
 
         @Override
         @NonNull
-        public String getListRoot() {
-            return XmlTags.TAG_INFO_LIST;
+        public String getRootTag() {
+            return TAG_ROOT;
         }
 
         @Override
         @NonNull
-        public String getElementRoot() {
-            return XmlTags.TAG_INFO;
+        public String getElementTag() {
+            return RecordType.MetaData.getName();
         }
 
         @Override
@@ -698,11 +698,13 @@ public class XmlRecordReader
     }
 
     /**
-     * Supports a *single* {@link XmlTags#TAG_PREFERENCES} block,
-     * enclosed inside a {@link XmlTags#TAG_PREFERENCES_LIST}.
+     * Supports a *single* {@link RecordType#Preferences} block,
+     * enclosed inside a {@link PreferencesReader#TAG_ROOT}.
      */
-    static class PreferencesReader
+    public static class PreferencesReader
             implements EntityReader<String> {
+
+        static final String TAG_ROOT = "preferences-list";
 
         private final SharedPreferences.Editor mEditor;
 
@@ -717,14 +719,14 @@ public class XmlRecordReader
 
         @Override
         @NonNull
-        public String getListRoot() {
-            return XmlTags.TAG_PREFERENCES_LIST;
+        public String getRootTag() {
+            return TAG_ROOT;
         }
 
         @Override
         @NonNull
-        public String getElementRoot() {
-            return XmlTags.TAG_PREFERENCES;
+        public String getElementTag() {
+            return RecordType.Preferences.getName();
         }
 
         @Override
@@ -780,8 +782,8 @@ public class XmlRecordReader
     }
 
     /**
-     * Supports a *list* of {@link XmlTags#TAG_STYLE} block,
-     * enclosed inside a {@link XmlTags#TAG_STYLE_LIST}
+     * Supports a *list* of {@link StylesReader#TAG_ELEMENT} block,
+     * enclosed inside a {@link RecordType#Styles}
      * <p>
      * See {@link XmlRecordWriter} :
      * * Filters and Groups are flattened.
@@ -789,8 +791,11 @@ public class XmlRecordReader
      * * - actual groups are written as a set of ID's
      * * - each preference in a group has a tag.
      */
-    static class StylesReader
+    public static class StylesReader
             implements EntityReader<String> {
+
+        static final String TAG_ROOT = "style-list";
+        static final String TAG_ELEMENT = "style";
 
         @NonNull
         private final Context mContext;
@@ -829,14 +834,14 @@ public class XmlRecordReader
 
         @Override
         @NonNull
-        public String getListRoot() {
-            return XmlTags.TAG_STYLE_LIST;
+        public String getRootTag() {
+            return TAG_ROOT;
         }
 
         @NonNull
         @Override
-        public String getElementRoot() {
-            return XmlTags.TAG_STYLE;
+        public String getElementTag() {
+            return TAG_ELEMENT;
         }
 
         /**

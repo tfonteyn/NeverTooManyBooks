@@ -29,19 +29,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
-/**
- * TESTING ONLY: meant to be run from an androidTest as a means of testing individual records.
- */
 public class JsonArchiveReader
         implements ArchiveReader {
 
@@ -57,7 +57,7 @@ public class JsonArchiveReader
 
     /** By default we will auto-detect the record type and read <strong>all</strong> found. */
     @NonNull
-    private ArchiveReaderRecord.Type mTypeToRead = ArchiveReaderRecord.Type.AutoDetect;
+    private RecordType mTypeToRead = RecordType.AutoDetect;
 
     /**
      * Constructor.
@@ -76,7 +76,7 @@ public class JsonArchiveReader
      */
     @VisibleForTesting
     void setTypeToRead(@SuppressWarnings("SameParameterValue")
-                       @NonNull final ArchiveReaderRecord.Type typeToRead) {
+                       @NonNull final RecordType typeToRead) {
         mTypeToRead = typeToRead;
     }
 
@@ -94,7 +94,9 @@ public class JsonArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (RecordReader recordReader = new JsonRecordReader(context, mDb)) {
+        try (RecordReader recordReader =
+                     new JsonRecordReader(context, mDb, mHelper.getImportEntries())) {
+
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record =
                     new JsonArchiveRecord(mTypeToRead, mHelper.getArchiveName(context), is);
@@ -116,7 +118,7 @@ public class JsonArchiveReader
             implements ArchiveReaderRecord {
 
         @NonNull
-        private final Type mType;
+        private final RecordType mType;
         @NonNull
         private final String mName;
 
@@ -130,7 +132,7 @@ public class JsonArchiveReader
          * @param name of this record
          * @param is   InputStream to use
          */
-        JsonArchiveRecord(@NonNull final Type type,
+        JsonArchiveRecord(@NonNull final RecordType type,
                           @NonNull final String name,
                           @NonNull final InputStream is) {
             mType = type;
@@ -140,14 +142,14 @@ public class JsonArchiveReader
 
         @NonNull
         @Override
-        public Type getType() {
-            return mType;
+        public Optional<RecordType> getType() {
+            return Optional.of(mType);
         }
 
         @NonNull
         @Override
-        public Encoding getEncoding() {
-            return Encoding.Json;
+        public Optional<RecordEncoding> getEncoding() {
+            return Optional.of(RecordEncoding.Json);
         }
 
         @NonNull

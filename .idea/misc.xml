@@ -73,6 +73,7 @@
   </component>
   <component name="ProjectResources">
     <resource url="https://checkstyle.org/dtds/configuration_1_3.dtd" location="$PROJECT_DIR$" />
+    <xml-schema-version>XMLSchema_1_1</xml-schema-version>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />

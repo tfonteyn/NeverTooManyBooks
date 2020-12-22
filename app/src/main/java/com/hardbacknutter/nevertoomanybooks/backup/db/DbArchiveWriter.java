@@ -23,7 +23,12 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -37,6 +42,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
  */
 public class DbArchiveWriter
         implements ArchiveWriter {
+
+    /** 1 mb buffer. */
+    private static final int BUFFER_SIZE = 1_024_000;
 
     /** Export configuration. */
     @NonNull
@@ -62,7 +70,13 @@ public class DbArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        FileUtils.copy(DBHelper.getDatabasePath(context), mHelper.getTempOutputFile(context));
+        try (OutputStream os = new BufferedOutputStream(
+                mHelper.createOutputStream(context), BUFFER_SIZE);
+             InputStream is = new BufferedInputStream(new FileInputStream(
+                     DBHelper.getDatabasePath(context)), BUFFER_SIZE)) {
+            FileUtils.copy(is, os);
+        }
+
         final ExportResults results = new ExportResults();
         results.database = true;
         return results;

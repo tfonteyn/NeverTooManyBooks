@@ -46,9 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Money;
 public class BookCoder
         implements JsonCoder<Book> {
 
-    /** JSON Object tag for the array of books. */
-    public static final String BOOK_LIST = "book_list";
-
     private final JsonCoder<Author> mAuthorCoder = new AuthorCoder();
     private final JsonCoder<Publisher> mPublisherCoder = new PublisherCoder();
     private final JsonCoder<Series> mSeriesCoder = new SeriesCoder();

@@ -21,18 +21,13 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 
+import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
-import java.io.BufferedWriter;
 import java.io.Closeable;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
@@ -46,71 +41,35 @@ public interface RecordWriter
     int BUFFER_SIZE = 65535;
 
     /**
-     * Get the format version that this exporter is writing out.
+     * Get the format version that this RecordWriter is writing out.
      *
      * @return the version
      */
+    @AnyThread
     int getVersion();
 
     /**
-     * Wrapper: write to the given File.
+     * Write a {@link RecordType#MetaData} record.
      *
-     * @param context          Current context
-     * @param out              File to write to
-     * @param entry            The set of entries which should be read (if supported)
-     * @param options          what to write and how
-     * @param progressListener Progress and cancellation interface
-     *
-     * @return {@link ExportResults}
+     * @param writer   Writer to write to
+     * @param metaData the bundle of information to write
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    default ExportResults write(@NonNull final Context context,
-                                @NonNull final File out,
-                                @NonNull final Set<ArchiveWriterRecord.Type> entry,
-                                @ExportHelper.Options final int options,
-                                @NonNull final ProgressListener progressListener)
+    default void writeMetaData(@NonNull final Writer writer,
+                               @NonNull final ArchiveMetaData metaData)
             throws IOException {
-        try (OutputStream os = new FileOutputStream(out);
-             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
-            return write(context, writer, entry, options, progressListener);
-        }
+        // do nothing
     }
 
     /**
-     * Wrapper: write to the given OutputStream.
-     *
-     * @param context          Current context
-     * @param out              OutputStream to write to
-     * @param entry            The set of entries which should be read (if supported)
-     * @param options          what to write and how
-     * @param progressListener Progress and cancellation interface
-     *
-     * @return {@link ExportResults}
-     *
-     * @throws IOException on failure
-     */
-    @WorkerThread
-    default ExportResults write(@NonNull final Context context,
-                                @NonNull final OutputStream out,
-                                @NonNull final Set<ArchiveWriterRecord.Type> entry,
-                                @ExportHelper.Options final int options,
-                                @NonNull final ProgressListener progressListener)
-            throws IOException {
-        try (Writer osw = new OutputStreamWriter(out, StandardCharsets.UTF_8);
-             Writer writer = new BufferedWriter(osw, BUFFER_SIZE)) {
-            return write(context, writer, entry, options, progressListener);
-        }
-    }
-
-    /**
-     * The method which must be implemented.
+     * Write a set of {@link RecordType} records.
+     * Unsupported record types should/will be silently skipped.
      *
      * @param context          Current context
      * @param writer           Writer to write to
-     * @param entry            The set of entries which should be read (if supported)
+     * @param entries          The set of entries which should be written.
      * @param options          what to write and how
      * @param progressListener Progress and cancellation interface
      *
@@ -119,9 +78,10 @@ public interface RecordWriter
      * @throws IOException on failure
      */
     @WorkerThread
+    @NonNull
     ExportResults write(@NonNull Context context,
                         @NonNull Writer writer,
-                        @NonNull Set<ArchiveWriterRecord.Type> entry,
+                        @NonNull Set<RecordType> entries,
                         @ExportHelper.Options int options,
                         @NonNull ProgressListener progressListener)
             throws IOException;

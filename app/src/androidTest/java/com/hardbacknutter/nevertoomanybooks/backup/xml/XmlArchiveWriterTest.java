@@ -26,63 +26,41 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 public class XmlArchiveWriterTest {
 
     private static final String TAG = "XmlArchiveWriterTest";
 
-    private final Map<String, ListStyle> mClonedStyles = new HashMap<>();
+    private long mBookInDb;
 
     @Before
-    public void cloneStyles() {
+    public void count() {
         try (DAO db = new DAO(TAG)) {
-            final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-            for (final ListStyle style : StyleDAO.getStyles(context, db, true)) {
-                // Clone WITH THE SAME ID/UUID.
-                // This is not a test of cloning, but we simply need to make a 1:1 copy here.
-                // Cast to access internal VisibleForTesting clone method
-                final UserStyle clonedStyle = ((BooklistStyle) style)
-                        .clone(context, style.getId(), style.getUuid(), true);
-                mClonedStyles.put(style.getUuid(), clonedStyle);
-            }
+            mBookInDb = db.countBooks();
+        }
+        if (mBookInDb < 10) {
+            throw new IllegalStateException("need at least 10 books for testing");
         }
     }
 
     @Test
     public void write()
-            throws IOException, InvalidArchiveException, ImportException {
+            throws IOException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + ".xml");
@@ -91,10 +69,10 @@ public class XmlArchiveWriterTest {
 
         final ExportResults exportResults;
 
-        final ExportHelper exportHelper = new ExportHelper(
-                ArchiveWriterRecord.Type.Styles,
-                ArchiveWriterRecord.Type.Preferences);
-        exportHelper.setArchiveType(ArchiveType.Xml);
+        // doesn't actually matter what we specify here.
+        // The XmlArchiveWriter is hardcoded to always/only write Books.
+        final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Books);
+        exportHelper.setArchiveEncoding(ArchiveEncoding.Xml);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -103,72 +81,10 @@ public class XmlArchiveWriterTest {
         // assume success; a failure would have thrown an exception
         exportHelper.onSuccess(context);
 
-        assertEquals(0, exportResults.getBookCount());
+        assertEquals(mBookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
-        assertEquals(1, exportResults.preferences);
-        assertEquals(mClonedStyles.size(), exportResults.styles);
+        assertEquals(0, exportResults.preferences);
+        assertEquals(0, exportResults.styles);
         assertFalse(exportResults.database);
-
-        // remove all user, reset all builtin
-        try (DAO db = new DAO(TAG)) {
-            for (final ListStyle style : StyleDAO.getStyles(context, db, true)) {
-                if (style instanceof UserStyle) {
-                    StyleDAO.delete(context, db, style);
-
-                } else if (style instanceof BuiltinStyle) {
-                    style.setPreferred(false);
-                    style.setMenuPosition((int) -style.getId());
-                    StyleDAO.update(db, style);
-                } else {
-                    throw new IllegalStateException("Unhandled style: " + style);
-                }
-            }
-
-            final ArrayList<ListStyle> styles = StyleDAO.getStyles(context, db, true);
-            assertEquals(StyleDAO.BuiltinStyles.MAX_ID, -styles.size());
-        }
-
-
-        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
-        final ImportResults importResults;
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Styles, true);
-        try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
-
-            final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNotNull(archiveInfo);
-
-            importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
-        }
-
-        assertEquals(exportResults.styles, importResults.styles);
-
-        try (DAO db = new DAO(TAG)) {
-            // the database reflects what we imported; compare that with what we cloned before
-            final ArrayList<ListStyle> styles = StyleDAO.getStyles(context, db, true);
-            assertEquals(mClonedStyles.size(), styles.size());
-
-            for (final ListStyle style : styles) {
-                final ListStyle cloned = mClonedStyles.get(style.getUuid());
-                // the id of the styles will always be different,
-                // so we assert that the individual settings
-                // and the actual preferences are equal.
-                assertNotNull(cloned);
-                assertEquals(cloned.getLabel(context), style.getLabel(context));
-                assertEquals(cloned.getUuid(), style.getUuid());
-                assertEquals(cloned.getMenuPosition(), style.getMenuPosition());
-                assertEquals(cloned.isPreferred(), style.isPreferred());
-
-                final Map<String, PPref<?>> stylePrefs = style.getRawPreferences();
-                final Map<String, PPref<?>> clonedPrefs = cloned.getRawPreferences();
-
-                assertEquals(stylePrefs.size(), clonedPrefs.size());
-
-                for (final PPref<?> p : stylePrefs.values()) {
-                    //noinspection ConstantConditions
-                    assertEquals(p.getValue(),
-                                 clonedPrefs.get(p.getKey()).getValue());
-                }
-            }
-        }
     }
 }

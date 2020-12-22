@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -154,7 +154,7 @@ class CalibreArchiveReader
     private final boolean mOverwriteBooks;
 
     @Nullable
-    private ArchiveInfo mArchiveInfo;
+    private ArchiveMetaData mArchiveMetaData;
 
     /**
      * Constructor.
@@ -187,21 +187,20 @@ class CalibreArchiveReader
 
     @Nullable
     @Override
-    public ArchiveInfo readHeader(@NonNull final Context context)
+    public ArchiveMetaData readMetaData(@NonNull final Context context)
             throws IOException {
-        if (mArchiveInfo == null) {
+        if (mArchiveMetaData == null) {
             // construct the header
-            mArchiveInfo = new ArchiveInfo();
-            mArchiveInfo.setDatabaseVersionCode(mCalibreDb.getVersion());
+            mArchiveMetaData = new ArchiveMetaData();
             try (SQLiteStatement stmt = mCalibreDb.compileStatement(SQL_COUNT_BOOKS)) {
                 final int nrOfBooks = (int) stmt.simpleQueryForLong();
-                mArchiveInfo.setBookCount(nrOfBooks);
+                mArchiveMetaData.setBookCount(nrOfBooks);
             } catch (@NonNull final SQLiteDoneException e) {
                 throw new IOException(e);
             }
         }
 
-        return mArchiveInfo;
+        return mArchiveMetaData;
     }
 
     @NonNull

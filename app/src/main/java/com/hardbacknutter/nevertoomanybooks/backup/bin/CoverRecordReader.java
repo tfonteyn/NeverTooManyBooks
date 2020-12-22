@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -38,6 +39,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * FIXME: currently we import covers without checking if we actually have the book.
+ *
+ * <strong>Warning:</strong> this class will be reused for reading multiple covers.
+ * Do not add/use class globals.
  */
 public class CoverRecordReader
         implements RecordReader {
@@ -53,7 +57,8 @@ public class CoverRecordReader
                               @NonNull final ProgressListener progressListener) {
 
         // Sanity check
-        if (record.getType() != ArchiveReaderRecord.Type.Cover) {
+        if (record.getType().isPresent()
+            && record.getType().get() != RecordType.Cover) {
             throw new IllegalStateException("not a cover record");
         }
 
@@ -91,6 +96,7 @@ public class CoverRecordReader
                     return results;
                 }
             }
+
             // Don't close this stream
             final InputStream is = record.getInputStream();
             dstFile = FileUtils.copyInputStream(context, is, dstFile);

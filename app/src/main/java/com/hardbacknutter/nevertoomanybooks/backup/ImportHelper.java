@@ -35,20 +35,19 @@ import java.util.Set;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 public class ImportHelper {
 
     /**
      * New Books/Covers are always imported
-     * (if {@link ArchiveWriterRecord.Type#Books} is set obviously).
+     * (if {@link RecordType#Books} is set obviously).
      * <p>
      * Existing Books/Covers handling:
      * <ul>
@@ -66,13 +65,12 @@ public class ImportHelper {
     private final Uri mUri;
     /** Constructed from the Uri. */
     @NonNull
-    private final ArchiveType mArchiveType;
+    private final ArchiveEncoding mArchiveEncoding;
     /** What is going to be imported. */
     @NonNull
-    private final Set<ArchiveReaderRecord.Type> mImportEntries =
-            EnumSet.of(ArchiveReaderRecord.Type.InfoHeader);
+    private final Set<RecordType> mImportEntries = EnumSet.of(RecordType.MetaData);
     @Nullable
-    private ArchiveInfo mArchiveInfo;
+    private final ArchiveMetaData mArchiveMetaData;
     /** Bitmask.  Contains extra options for the {@link RecordReader}. */
     @Options
     private int mOptions;
@@ -82,35 +80,20 @@ public class ImportHelper {
      *
      * @param context Current context
      * @param uri     to read from
+     *
+     * @throws InvalidArchiveException on failure to recognise a supported archive
+     * @throws IOException             on other failures
      */
     public ImportHelper(@NonNull final Context context,
-                        @NonNull final Uri uri) {
+                        @NonNull final Uri uri)
+            throws IOException, InvalidArchiveException {
         mUri = uri;
-        mArchiveType = ArchiveType.fromUri(context, mUri);
-        // Note: don't pre-create the reader here. No need + it needs a reference to 'this'
-    }
+        mArchiveEncoding = ArchiveEncoding.fromUri(context, mUri).orElseThrow(
+                () -> new InvalidArchiveException(mUri.toString()));
 
-
-    /**
-     * Check if the archive provides <strong>ONLY</strong> books to import.
-     * (i.e. it does NOT contain Preferences, Styles, Covers,...)
-     *
-     * @return {@code true} if this archive contains only Books
-     */
-    boolean archiveCanOnlyHaveBooks() {
-        // Not added to the ArchiveType class as this API is a bit shaky...
-        switch (mArchiveType) {
-            case Csv:
-            case Json:
-            case SqLiteDb:
-                return true;
-
-            case Zip:
-            case Xml:
-            case Tar:
-            case Unknown:
-            default:
-                return false;
+        // read the archive info block which will do more validation.
+        try (ArchiveReader reader = createArchiveReader(context)) {
+            mArchiveMetaData = reader.readMetaData(context);
         }
     }
 
@@ -143,63 +126,32 @@ public class ImportHelper {
      * @return type
      */
     @NonNull
-    ArchiveType getArchiveType() {
-        return mArchiveType;
+    ArchiveEncoding getArchiveEncoding() {
+        return mArchiveEncoding;
     }
 
     @NonNull
     public ArchiveReader createArchiveReader(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
+            throws IOException, InvalidArchiveException {
         if (BuildConfig.DEBUG /* always */) {
             if (mImportEntries.isEmpty()) {
                 throw new IllegalStateException("mImportEntries is empty");
             }
         }
-        return mArchiveType.createArchiveReader(context, this);
+        return mArchiveEncoding.createReader(context, this);
     }
 
     /**
-     * Validate the selected archive.
-     *
-     * <strong>Dev. note:</strong> this is just a semantic wrapper
-     * around {@link #getArchiveInfo(Context)}.
-     *
-     * @param context Current context
-     *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on other failures
-     */
-    void validateArchive(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
-        // pre-read the archive info block which will do the actual validation.
-        getArchiveInfo(context);
-    }
-
-    /**
-     * Get the {@link ArchiveInfo}.
-     * <p>
-     * TODO: allows us to show the info contained to the user without starting an actual import.
-     *
-     * @param context Current context
+     * Get the {@link ArchiveMetaData}.
      *
      * @return the info bundle, or {@code null} if the archive does not provide info
-     *
-     * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on other failures
      */
     @Nullable
-    ArchiveInfo getArchiveInfo(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
-        if (mArchiveInfo == null) {
-            try (ArchiveReader reader = createArchiveReader(context)) {
-                mArchiveInfo = reader.readHeader(context);
-            }
-        }
-        return mArchiveInfo;
+    ArchiveMetaData getArchiveMetaData() {
+        return mArchiveMetaData;
     }
 
-
-    public void setImportEntry(@NonNull final ArchiveReaderRecord.Type recordType,
+    public void setImportEntry(@NonNull final RecordType recordType,
                                final boolean isSet) {
         if (isSet) {
             mImportEntries.add(recordType);
@@ -209,7 +161,7 @@ public class ImportHelper {
     }
 
     @NonNull
-    public Set<ArchiveReaderRecord.Type> getImportEntries() {
+    public Set<RecordType> getImportEntries() {
         return mImportEntries;
     }
 
@@ -263,8 +215,8 @@ public class ImportHelper {
                + "mImportEntries=" + mImportEntries
                + ", mOptions=0b" + Integer.toBinaryString(mOptions) + ": " + options.toString()
                + ", mUri=" + mUri
-               + ", mArchiveType=" + mArchiveType
-               + ", mArchiveInfo=" + mArchiveInfo
+               + ", mArchiveEncoding=" + mArchiveEncoding
+               + ", mArchiveMetaData=" + mArchiveMetaData
                + '}';
     }
 

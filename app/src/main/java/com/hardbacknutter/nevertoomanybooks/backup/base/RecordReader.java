@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -36,6 +37,24 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  */
 public interface RecordReader
         extends Closeable {
+
+    /** Buffer for the readers. */
+    int BUFFER_SIZE = 65535;
+
+    /**
+     * Read the archive information block.
+     *
+     * @param record to read data from
+     *
+     * @return the archive info
+     *
+     * @throws IOException on failure
+     */
+    @Nullable
+    default ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
+            throws IOException {
+        return null;
+    }
 
     /**
      * Read an {@link ArchiveReaderRecord}.
@@ -67,5 +86,4 @@ public interface RecordReader
             throws IOException {
         // do nothing
     }
-
 }

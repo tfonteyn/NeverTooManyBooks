@@ -36,31 +36,33 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveInfo;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class ZipArchiveWriterTest {
 
     private static final String TAG = "ZipArchiveWriterTest";
 
     private long mBookInDb;
-
+    private int mNrOfStyles;
     @Before
     public void count() {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (DAO db = new DAO(TAG)) {
             mBookInDb = db.countBooks();
+
+            mNrOfStyles = StyleDAO.getStyles(context, db, true).size();
         }
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
@@ -77,11 +79,13 @@ public class ZipArchiveWriterTest {
 
         final ExportResults exportResults;
 
+        // Full backup except covers.
         final ExportHelper exportHelper = new ExportHelper(
-                ArchiveWriterRecord.Type.Books,
-                ArchiveWriterRecord.Type.Preferences,
-                ArchiveWriterRecord.Type.Styles);
-        exportHelper.setArchiveType(ArchiveType.Zip);
+                RecordType.MetaData,
+                RecordType.Books,
+                RecordType.Preferences,
+                RecordType.Styles);
+        exportHelper.setArchiveEncoding(ArchiveEncoding.Zip);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -92,8 +96,8 @@ public class ZipArchiveWriterTest {
 
         assertEquals(mBookInDb, exportResults.getBookCount());
         assertEquals(0, exportResults.getCoverCount());
-        assertTrue(exportResults.preferences > 0);
-        assertTrue(exportResults.styles > 0);
+        assertEquals(1, exportResults.preferences);
+        assertEquals(mNrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
         final long exportCount = exportResults.getBookCount();
@@ -102,14 +106,14 @@ public class ZipArchiveWriterTest {
         final ImportResults importResults;
 
         // only NEW books, hence 0/0 created/updated as outcome of the test
-        importHelper.setImportEntry(ArchiveReaderRecord.Type.Books, true);
+        importHelper.setImportEntry(RecordType.Books, true);
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
-            final ArchiveInfo archiveInfo = reader.readHeader(context);
-            assertNotNull(archiveInfo);
+            final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
+            assertNotNull(archiveMetaData);
 
-            assertEquals(mBookInDb, archiveInfo.getBookCount());
-            assertEquals(0, archiveInfo.getCoverCount());
+            assertEquals(mBookInDb, archiveMetaData.getBookCount());
+            assertEquals(0, archiveMetaData.getCoverCount());
 
             importResults = reader.read(context, new TestProgressListener(TAG + ":header"));
         }

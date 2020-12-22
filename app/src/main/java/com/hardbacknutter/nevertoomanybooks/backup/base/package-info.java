@@ -19,12 +19,12 @@
  */
 
 /**
- * This package contains the format agnostic classes.
+ * This package contains the encoding-agnostic classes.
  * <p>
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ExportHelper}
  * is setup by the user UI, and determines the
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType}
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding}
  * of the given archive.
  * <p>
  * The ExportHelper is passed to:
@@ -33,12 +33,12 @@
  * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter}
  * <p>
  * The ArchiveWriter gets the desired list of entries it needs to write from the helper.
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord.Type}
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.RecordType}
  * Writing starts with the header in a fixed format suitable for the archive type
  * Next it loops over the entries, and for each entry
- * invokes an exporter that can write that entry in the desired format.
+ * invokes an RecordWriter that can write that entry in the desired format.
  * {@link com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter}
- * The output from the exporter is then streamed into the actual archive.
+ * The output from the RecordWriter is then streamed into the actual archive.
  * <p>
  * When done, the ArchiveWriter copies the archive file to to a {@link android.net.Uri}
  * and reports back to the task... back to the user UI with:
@@ -49,7 +49,7 @@
  * <p>
  * {@link com.hardbacknutter.nevertoomanybooks.backup.ImportHelper}
  * is setup by the user UI, inspects the Uri and determines the
- * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveType}
+ * {@link com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding}
  * of the given archive.
  * <p>
  * The helper is passed to:
@@ -67,6 +67,6 @@
  * and finally passes the result back to the task... back to the user UI.
  * <p>
  * In short:
- * Uri -> Helper -> ArchiveType -> ArchiveReader -> LOOP(ArchiveReaderRecord -> RecordReader) -> Results
+ * Uri -> Helper -> ArchiveEncoding -> ArchiveReader -> LOOP(ArchiveReaderRecord -> RecordReader) -> Results
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;

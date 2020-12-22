@@ -53,7 +53,7 @@ public interface ArchiveReader
     }
 
     /**
-     * Get the {@link ArchiveInfo} object read from the backup.
+     * Get the {@link ArchiveMetaData} object read from the backup.
      * The default implementation returns {@code null}.
      *
      * @param context Current context
@@ -64,7 +64,7 @@ public interface ArchiveReader
      * @throws IOException             on other failures
      */
     @Nullable
-    default ArchiveInfo readHeader(@NonNull final Context context)
+    default ArchiveMetaData readMetaData(@NonNull final Context context)
             throws InvalidArchiveException, IOException {
         return null;
     }

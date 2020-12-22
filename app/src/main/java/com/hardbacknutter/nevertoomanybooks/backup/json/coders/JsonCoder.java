@@ -30,6 +30,8 @@ import org.json.JSONObject;
 
 public interface JsonCoder<T> {
 
+    String TAG_APPLICATION_ROOT = "NeverTooManyBooks";
+
     @NonNull
     JSONObject encode(@NonNull T element)
             throws JSONException;

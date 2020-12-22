@@ -102,26 +102,6 @@
         app:layout_constraintTop_toBottomOf="@id/rb_books_incremental"
         />
 
-    <CheckBox
-        android:id="@+id/cbx_prefs"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="@string/lbl_settings"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_covers"
-        />
-
-    <CheckBox
-        android:id="@+id/cbx_styles"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="@string/lbl_styles"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
-        />
-
     <View
         android:id="@+id/formatDivider"
         android:layout_width="0dp"
@@ -129,7 +109,7 @@
         android:background="?attr/dividerHorizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cbx_styles"
+        app:layout_constraintTop_toBottomOf="@id/cbx_covers"
         />
 
     <TextView

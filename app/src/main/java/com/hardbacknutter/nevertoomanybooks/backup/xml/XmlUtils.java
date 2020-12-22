@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 /**
  * Minimalist builder for XML tags and attributes.
  */
-final class XmlUtils {
+public final class XmlUtils {
 
     /** File header. */
     static final String XML_VERSION_1_0_ENCODING_UTF_8 =
@@ -90,9 +90,9 @@ final class XmlUtils {
      * @throws IOException on failure
      */
     @NonNull
-    public static String tag(@NonNull final String tag,
-                             @Nullable final String name,
-                             @NonNull final Object value)
+    private static String tag(@NonNull final String tag,
+                              @Nullable final String name,
+                              @NonNull final Object value)
             throws IOException {
         if (value instanceof String) {
             final String valueString = value.toString();
@@ -115,11 +115,10 @@ final class XmlUtils {
      *
      * @return the tag, or an empty string if the value was empty.
      */
-    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static String tagWithBody(@NonNull final String tag,
-                                     @Nullable final String name,
-                                     @NonNull final Object value) {
+    private static String tagWithBody(@NonNull final String tag,
+                                      @Nullable final String name,
+                                      @NonNull final Object value) {
 
         final String valueString = value.toString();
         if (!valueString.isEmpty()) {
@@ -319,7 +318,7 @@ final class XmlUtils {
      * 'lang' library I suppose.... maybe some day.
      */
     @NonNull
-    public static String decode(@Nullable final String data) {
+    static String decode(@Nullable final String data) {
         if (data == null || "null".equalsIgnoreCase(data) || data.trim().isEmpty()) {
             return "";
         }

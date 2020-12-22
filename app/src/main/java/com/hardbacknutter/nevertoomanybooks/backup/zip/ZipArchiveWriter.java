@@ -28,7 +28,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -37,25 +36,18 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 
 /**
  * Implementation of ZIP-specific writer functions.
- * Uses the default format of {@link ArchiveWriterAbstract}
- * <p>
- * Compared to tar file, the results are as expected:
- * - the xml/csv compression is huge
- * - image compression minimal
  */
 public class ZipArchiveWriter
         extends ArchiveWriterAbstract
-        implements ArchiveWriter.SupportsCovers {
-
-    /** Buffer for {@link #mOutputStream}. */
-    private static final int BUFFER_SIZE = 65535;
+        implements ArchiveWriterAbstract.SupportsCovers {
 
     /** The output stream for the archive. */
     @NonNull
@@ -67,23 +59,32 @@ public class ZipArchiveWriter
      * @param context Current context
      * @param helper  export configuration
      *
-     * @throws FileNotFoundException on failure
+     * @throws FileNotFoundException on ...
      */
     public ZipArchiveWriter(@NonNull final Context context,
                             @NonNull final ExportHelper helper)
             throws FileNotFoundException {
-        super(context, helper);
+        super(helper);
 
         mOutputStream = new ZipOutputStream(new BufferedOutputStream(
-                new FileOutputStream(helper.getTempOutputFile(context)), BUFFER_SIZE));
+                helper.createOutputStream(context), RecordWriter.BUFFER_SIZE));
     }
 
+    @NonNull
     @Override
-    public void writeCovers(@NonNull final Context context,
-                            @NonNull final ProgressListener progressListener)
-            throws IOException {
-        // delegate to the default implementation
-        writeCoversDefImpl(context, progressListener);
+    public RecordEncoding getEncoding(@NonNull final RecordType recordType) {
+        switch (recordType) {
+            case MetaData:
+            case Styles:
+            case Preferences:
+            case Books:
+            case AutoDetect:
+                return RecordEncoding.Json;
+            case Cover:
+                return RecordEncoding.Cover;
+            default:
+                throw new IllegalArgumentException(recordType.toString());
+        }
     }
 
     @Override
@@ -113,11 +114,20 @@ public class ZipArchiveWriter
         }
     }
 
-    @Override
     public void putFile(@NonNull final String name,
                         @NonNull final File file,
                         final boolean compress)
             throws IOException {
+
+        // First convert to byte[] or use the original File code below
+        // does not seem to make much difference... either way, we're still reading the file
+        // data twice
+//        final ByteArrayOutputStream tmpOs = new ByteArrayOutputStream();
+//        try (InputStream is = new FileInputStream(file)) {
+//            FileUtils.copy(is, tmpOs);
+//        }
+//        putByteArray(name, tmpOs.toByteArray(), compress);
+
 
         final ZipEntry entry = new ZipEntry(name);
         entry.setTime(file.lastModified());

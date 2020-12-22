@@ -29,13 +29,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
+import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -82,6 +85,7 @@ public class CsvArchiveReader
         try (RecordReader recordReader = new CsvRecordReader(context, mDb)) {
             final ArchiveReaderRecord record =
                     new CsvArchiveRecord(mHelper.getArchiveName(context), is);
+
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {
             is.close();
@@ -118,14 +122,14 @@ public class CsvArchiveReader
         }
 
         @NonNull
-        public Type getType() {
-            return Type.Books;
+        public Optional<RecordType> getType() {
+            return Optional.of(RecordType.Books);
         }
 
         @NonNull
         @Override
-        public Encoding getEncoding() {
-            return Encoding.Csv;
+        public Optional<RecordEncoding> getEncoding() {
+            return Optional.of(RecordEncoding.Csv);
         }
 
         @NonNull

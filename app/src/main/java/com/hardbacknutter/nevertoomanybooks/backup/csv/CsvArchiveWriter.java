@@ -23,16 +23,23 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.EnumSet;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
- * A flat file export of books only into a csv file.
+ * Hardcoded to only write {@link RecordType#Books} into an CSV file.
  */
 public class CsvArchiveWriter
         implements ArchiveWriter {
@@ -63,12 +70,13 @@ public class CsvArchiveWriter
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (RecordWriter recordWriter = new CsvRecordWriter(mHelper.getUtcDateTimeSince())) {
-            return recordWriter.write(context,
-                                      mHelper.getTempOutputFile(context),
-                                      mHelper.getExporterEntries(),
-                                      mHelper.getOptions(),
-                                      progressListener);
+        try (OutputStream os = mHelper.createOutputStream(context);
+             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
+             RecordWriter recordWriter = new CsvRecordWriter(mHelper.getUtcDateTimeSince())) {
+
+            return recordWriter.write(context, bw, EnumSet.of(RecordType.Books),
+                                      mHelper.getOptions(), progressListener);
         }
     }
 }

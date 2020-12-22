@@ -34,7 +34,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterRecord;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
@@ -44,13 +44,13 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
  * <ul>Supports:
- *      <li>{@link ArchiveWriterRecord.Type#Books}</li>
+ *      <li>{@link RecordType#Books}</li>
  * </ul>
  */
 public class CsvRecordWriter
         implements RecordWriter {
 
-    /** The format version of this exporter. */
+    /** The format version of this RecordWriter. */
     public static final int VERSION = 1;
 
     /** Log tag. */
@@ -76,18 +76,19 @@ public class CsvRecordWriter
     }
 
     @Override
+    @NonNull
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
-                               @NonNull final Set<ArchiveWriterRecord.Type> entry,
+                               @NonNull final Set<RecordType> entries,
                                @ExportHelper.Options final int options,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 
         final ExportResults results = new ExportResults();
 
-        if (entry.contains(ArchiveWriterRecord.Type.Books)) {
-            final boolean collectCoverFilenames = entry.contains(
-                    ArchiveWriterRecord.Type.Cover);
+        if (entries.contains(RecordType.Books)) {
+
+            final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
             final BookCoder bookCoder = new BookCoder(StyleDAO.getDefault(context, mDb));
 
             int delta = 0;

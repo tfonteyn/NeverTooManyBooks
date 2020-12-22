@@ -46,10 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 public class ListStyleCoder
         implements JsonCoder<ListStyle> {
 
-    /** JSON Object tag for the array of styles. */
-    public static final String STYLE_LIST = "style_list";
-
-    private static final String STYLE_PREFS = "settings";
+    /** The sub-tag for the array with the style settings. */
+    private static final String STYLE_SETTINGS = "settings";
 
     @NonNull
     private final Context mContext;
@@ -101,7 +99,7 @@ public class ListStyleCoder
                     dest.put(source.getKey(), new JSONArray(((PIntList) source).getValue()));
                 }
             }
-            out.put(STYLE_PREFS, dest);
+            out.put(STYLE_SETTINGS, dest);
         }
         return out;
     }
@@ -122,7 +120,7 @@ public class ListStyleCoder
             style = UserStyle.createFromImport(mContext, uuid);
 
             // any element in the source which we don't know, will simply be ignored.
-            final JSONObject source = data.getJSONObject(STYLE_PREFS);
+            final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
 
             // This values list will have the 'Groups' preference itself,
             // but it will be empty, and hence the list will not have any group preferences
