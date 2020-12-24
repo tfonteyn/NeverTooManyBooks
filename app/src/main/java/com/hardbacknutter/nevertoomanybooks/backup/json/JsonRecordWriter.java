@@ -115,6 +115,9 @@ public class JsonRecordWriter
         final JSONObject jsonData = new JSONObject();
 
         try {
+            // Write styles first, and preferences next! This will facilitate & speedup
+            // importing as we'll be seeking in the input archive for these.
+
             if (entries.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgressStep(1, context.getString(R.string.lbl_styles));

@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
  * and can be missing.
  */
 public class BookshelfCoder
-        implements StringList.Factory<Bookshelf> {
+        implements StringList.Coder<Bookshelf> {
 
     private static final char[] ESCAPE_CHARS = {'(', ')'};
     @NonNull

@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
  * and can be missing.
  */
 public class SeriesCoder
-        implements StringList.Factory<Series> {
+        implements StringList.Coder<Series> {
 
     private static final char[] ESCAPE_CHARS = {'(', ')'};
 

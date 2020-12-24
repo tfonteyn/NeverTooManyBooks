@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
  * and can be missing.
  */
 public class PublisherCoder
-        implements StringList.Factory<Publisher> {
+        implements StringList.Coder<Publisher> {
 
     private static final char[] ESCAPE_CHARS = {'(', ')'};
 

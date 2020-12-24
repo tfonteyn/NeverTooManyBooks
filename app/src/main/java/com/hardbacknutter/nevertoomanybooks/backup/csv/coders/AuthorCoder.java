@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
  * and can be missing.
  */
 public class AuthorCoder
-        implements StringList.Factory<Author> {
+        implements StringList.Coder<Author> {
 
     /** String encoding use: separator between family name and given-names. */
     private static final char NAME_SEPARATOR = ',';

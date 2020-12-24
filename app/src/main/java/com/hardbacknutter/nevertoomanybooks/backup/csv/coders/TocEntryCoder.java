@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
  * and can be missing.
  */
 public class TocEntryCoder
-        implements StringList.Factory<TocEntry> {
+        implements StringList.Coder<TocEntry> {
 
     /**
      * Find the publication year in a string like "some title (1978-04-22)".

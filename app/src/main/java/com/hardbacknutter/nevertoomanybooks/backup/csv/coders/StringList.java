@@ -30,24 +30,24 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
- * A StringList contains a list of elements, separated by the {@link Factory#getElementSeparator()}.
+ * A StringList contains a list of elements, separated by the {@link Coder#getElementSeparator()}.
  * <p>
- * Each element is a list of objects separated by the {@link Factory#getObjectSeparator()}.
+ * Each element is a list of objects separated by the {@link Coder#getObjectSeparator()}.
  *
  * @param <E> the type of the elements stored in the string.
  */
 public class StringList<E> {
 
     @NonNull
-    private final Factory<E> mFactory;
+    private final Coder<E> mCoder;
 
     /**
      * Constructor.
      *
-     * @param factory that can encode/decode strings to objects and vice versa.
+     * @param coder that can encode/decode strings to objects and vice versa.
      */
-    public StringList(@NonNull final Factory<E> factory) {
-        mFactory = factory;
+    public StringList(@NonNull final Coder<E> coder) {
+        mCoder = coder;
     }
 
     /**
@@ -56,7 +56,7 @@ public class StringList<E> {
      * @return instance
      */
     public static StringList<String> newInstance() {
-        return new StringList<>(new Factory<String>() {
+        return new StringList<>(new Coder<String>() {
             @NonNull
             @Override
             public String encode(@NonNull final String obj) {
@@ -80,7 +80,7 @@ public class StringList<E> {
      */
     @NonNull
     public ArrayList<E> decodeList(@Nullable final CharSequence stringList) {
-        return decode(stringList, mFactory.getElementSeparator(), false);
+        return decode(stringList, mCoder.getElementSeparator(), false);
     }
 
     /**
@@ -92,11 +92,11 @@ public class StringList<E> {
      */
     @NonNull
     public List<E> decodeElement(@Nullable final CharSequence stringList) {
-        return decode(stringList, mFactory.getObjectSeparator(), false);
+        return decode(stringList, mCoder.getObjectSeparator(), false);
     }
 
     /**
-     * Decode a string list separated by 'delimiter' and encoded by {@link Factory#escape}.
+     * Decode a string list separated by 'delimiter' and encoded by {@link Coder#escape}.
      * The elements will be decoded by the factory.
      *
      * @param stringList String representing the list
@@ -151,7 +151,7 @@ public class StringList<E> {
                     final String element = sb.toString().trim();
                     if (allowBlank || !element.isEmpty()) {
                         // decode it using the objects factory and add it to the list
-                        list.add(mFactory.decode(element));
+                        list.add(mCoder.decode(element));
                     }
                     // reset, and start on the next element
                     sb.setLength(0);
@@ -165,7 +165,7 @@ public class StringList<E> {
         // It's important to send back even an empty item.
         final String element = sb.toString().trim();
         if (allowBlank || !element.isEmpty()) {
-            list.add(mFactory.decode(element));
+            list.add(mCoder.decode(element));
         }
         return list;
     }
@@ -181,8 +181,8 @@ public class StringList<E> {
     public String encodeList(@NonNull final Collection<E> list) {
         // The factory will encode each element, and we simply concat all of them.
         return list.stream()
-                   .map(mFactory::encode)
-                   .collect(Collectors.joining(String.valueOf(mFactory.getElementSeparator())));
+                   .map(mCoder::encode)
+                   .collect(Collectors.joining(String.valueOf(mCoder.getElementSeparator())));
     }
 
     /**
@@ -194,15 +194,15 @@ public class StringList<E> {
      */
     @NonNull
     public String encodeElement(@NonNull final E element) {
-        return mFactory.encode(element);
+        return mCoder.encode(element);
     }
 
     /**
-     * A factory is responsible for encoding and decoding <strong>individual</strong> elements.
+     * A Coder is responsible for encoding and decoding <strong>individual</strong> elements.
      *
      * @param <E> type of element.
      */
-    public interface Factory<E> {
+    public interface Coder<E> {
 
         /**
          * Encode an object to a String representation.
