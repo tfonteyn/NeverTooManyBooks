@@ -88,7 +88,7 @@ public class ImportHelper {
                         @NonNull final Uri uri)
             throws IOException, InvalidArchiveException {
         mUri = uri;
-        mArchiveEncoding = ArchiveEncoding.fromUri(context, mUri).orElseThrow(
+        mArchiveEncoding = ArchiveEncoding.getEncoding(context, mUri).orElseThrow(
                 () -> new InvalidArchiveException(mUri.toString()));
 
         // read the archive info block which will do more validation.
@@ -147,7 +147,7 @@ public class ImportHelper {
      * @return the info bundle, or {@code null} if the archive does not provide info
      */
     @Nullable
-    ArchiveMetaData getArchiveMetaData() {
+    public ArchiveMetaData getArchiveMetaData() {
         return mArchiveMetaData;
     }
 

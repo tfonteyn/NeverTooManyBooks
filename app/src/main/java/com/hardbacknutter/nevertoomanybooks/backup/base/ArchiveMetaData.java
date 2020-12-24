@@ -57,6 +57,8 @@ public class ArchiveMetaData {
     private static final String INFO_NUMBER_OF_BOOKS = "NumBooks";
     private static final String INFO_NUMBER_OF_COVERS = "NumCovers";
 
+    private static final String ERROR_MISSING_VERSION_INFORMATION = "Missing version information";
+
     /** Bundle retrieved from the archive for this instance. */
     @NonNull
     private final Bundle mInfo;
@@ -136,7 +138,7 @@ public class ArchiveMetaData {
      *
      * @return archive version
      */
-    public int getArchiveVersion() {
+    int getArchiveVersion() {
         return mInfo.getInt(INFO_ARCHIVER_VERSION);
     }
 
@@ -214,7 +216,7 @@ public class ArchiveMetaData {
             throws InvalidArchiveException {
         // extremely simple check: the archiver version field must be present
         if (!mInfo.containsKey(INFO_ARCHIVER_VERSION)) {
-            throw new InvalidArchiveException("Missing version information");
+            throw new InvalidArchiveException(ERROR_MISSING_VERSION_INFORMATION);
         }
     }
 

@@ -212,7 +212,7 @@ public abstract class ArchiveWriterAbstract
             recordWriter.writeMetaData(bw, metaData);
         }
 
-        putByteArray(RecordType.MetaData.getName() + encoding.getExtension(),
+        putByteArray(RecordType.MetaData.getName() + encoding.getFileExt(),
                      os.toByteArray(), true);
     }
 
@@ -243,7 +243,7 @@ public abstract class ArchiveWriterAbstract
             mResults.add(recordWriter.write(context, bw, EnumSet.of(recordType),
                                             mHelper.getOptions(), progressListener));
         }
-        putByteArray(recordType.getName() + encoding.getExtension(), os.toByteArray(), true);
+        putByteArray(recordType.getName() + encoding.getFileExt(), os.toByteArray(), true);
     }
 
     /**
@@ -273,7 +273,7 @@ public abstract class ArchiveWriterAbstract
             recordTypes.add(RecordType.Cover);
         }
 
-        mTmpBooksFile = File.createTempFile("books_", encoding.getExtension());
+        mTmpBooksFile = File.createTempFile("books_", encoding.getFileExt());
         mTmpBooksFile.deleteOnExit();
         try (OutputStream os = new FileOutputStream(mTmpBooksFile);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
@@ -294,7 +294,7 @@ public abstract class ArchiveWriterAbstract
         Objects.requireNonNull(mTmpBooksFile);
 
         final String filename =
-                RecordType.Books.getName() + getEncoding(RecordType.Books).getExtension();
+                RecordType.Books.getName() + getEncoding(RecordType.Books).getFileExt();
         try {
             putFile(filename, mTmpBooksFile, true);
         } finally {

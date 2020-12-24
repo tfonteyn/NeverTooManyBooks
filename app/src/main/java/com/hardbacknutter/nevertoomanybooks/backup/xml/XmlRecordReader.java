@@ -125,12 +125,10 @@ public class XmlRecordReader
      * but it's clean and future proof
      */
     private final Deque<TagInfo> mTagStack = new ArrayDeque<>();
-
-    /** a simple Holder for the current tag name and attributes. Pushed/pulled on the stack. */
-    private TagInfo mTag;
-
     @NonNull
     private final Set<RecordType> mImportEntriesAllowed;
+    /** a simple Holder for the current tag name and attributes. Pushed/pulled on the stack. */
+    private TagInfo mTag;
 
     /**
      * Constructor.
@@ -152,9 +150,9 @@ public class XmlRecordReader
     @NonNull
     public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
             throws IOException {
-        final ArchiveMetaData info = new ArchiveMetaData();
-        fromXml(record, new InfoReader(info));
-        return info;
+        final ArchiveMetaData metaData = new ArchiveMetaData();
+        fromXml(record, new InfoReader(metaData));
+        return metaData;
     }
 
     @Override
@@ -169,9 +167,6 @@ public class XmlRecordReader
 
         if (record.getType().isPresent()) {
             final RecordType recordType = record.getType().get();
-            if (recordType == RecordType.MetaData) {
-                throw new IllegalStateException("call #readMetaData instead");
-            }
 
             if (mImportEntriesAllowed.contains(recordType)) {
                 if (recordType == RecordType.Styles) {
@@ -214,9 +209,15 @@ public class XmlRecordReader
         final DefaultHandler handler = new XmlResponseParser(rootFilter);
 
         try {
+            // Alternative which saves us from having to use BufferedReaderNoClose
+//            final String content = record.asString();
+//            final StringReader reader = new StringReader(content);
+//            final InputSource source = new InputSource(reader);
+
             // Don't close this stream
             final InputStream is = record.getInputStream();
             final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+            // The sax parser closes streams, which is not good on a Tar archive entry.
             final BufferedReader reader = new BufferedReaderNoClose(isr, RecordReader.BUFFER_SIZE);
             final InputSource source = new InputSource(reader);
 

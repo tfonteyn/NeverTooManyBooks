@@ -36,7 +36,7 @@ public interface ArchiveReader
 
     String ERROR_INVALID_INPUT = "File/type is not supported";
     String ERROR_INVALID_HEADER = "Header is invalid / not found";
-
+    String ERROR_NO_READER_AVAILABLE = "No reader available";
 
     /**
      * Checks if the current archive looks valid.

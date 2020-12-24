@@ -71,7 +71,7 @@ public enum RecordEncoding {
     }
 
     /**
-     * Detect the type of the passed name.
+     * Detect the encoding based on the passed name.
      *
      * @param entryName to get the type of (case insensitive)
      *
@@ -82,7 +82,7 @@ public enum RecordEncoding {
         final String name = entryName.toLowerCase(AppLocale.getInstance().getSystemLocale());
 
         // (faster?) shortcut check for covers
-        if (name.endsWith(".jpg") || name.endsWith(".png")) {
+        if (name.endsWith(".jpg")) {
             return Optional.of(Cover);
         }
 
@@ -96,8 +96,13 @@ public enum RecordEncoding {
         return Optional.empty();
     }
 
+    /**
+     * Get the file extension for writing an output file.
+     *
+     * @return file name extension starting with a '.'
+     */
     @NonNull
-    public String getExtension() {
+    public String getFileExt() {
         return mExtension;
     }
 
@@ -112,31 +117,33 @@ public enum RecordEncoding {
                 return new XmlRecordWriter(utcSinceDateTime);
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
-                throw new IllegalStateException();
+                throw new IllegalStateException(ArchiveWriter.ERROR_NO_WRITER_AVAILABLE);
             default:
                 break;
         }
-        throw new IllegalStateException();
+        throw new IllegalStateException(ArchiveWriter.ERROR_NO_WRITER_AVAILABLE);
     }
 
     @NonNull
     public RecordReader createReader(@NonNull final Context context,
                                      @NonNull final DAO db,
-                                     @NonNull final Set<RecordType> importEntriesAllowed) {
+                                     @NonNull final Set<RecordType> importEntriesAllowed)
+            throws InvalidArchiveException {
         switch (this) {
             case Json:
                 return new JsonRecordReader(context, db, importEntriesAllowed);
             case Csv:
                 return new CsvRecordReader(context, db);
             case Xml:
+                //noinspection deprecation
                 return new XmlRecordReader(context, db, importEntriesAllowed);
             case Cover:
                 // discourage creating a new CoverRecordReader for each cover.
-                throw new IllegalStateException("A CoverRecordReader should be re-used");
+                throw new IllegalStateException("CoverRecordReader should be re-used");
                 // return new CoverRecordReader();
             default:
                 break;
         }
-        throw new IllegalStateException();
+        throw new InvalidArchiveException(ArchiveReader.ERROR_NO_READER_AVAILABLE);
     }
 }

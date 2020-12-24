@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
@@ -39,7 +40,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 
-
+/**
+ * Implementation of ZIP-specific reader functions.
+ */
 public class ZipArchiveReader
         extends ArchiveReaderAbstract {
 
@@ -105,11 +108,11 @@ public class ZipArchiveReader
      *
      * @return the stream
      *
-     * @throws IOException on failure
+     * @throws FileNotFoundException on ...
      */
     @NonNull
     private ZipInputStream getInputStream()
-            throws IOException {
+            throws FileNotFoundException {
         if (mInputStream == null) {
             mInputStream = new ZipInputStream(openInputStream());
         }
@@ -178,7 +181,7 @@ public class ZipArchiveReader
         @NonNull
         @Override
         public InputStream getInputStream()
-                throws IOException {
+                throws FileNotFoundException {
             // The reader can open/close the stream at will, so always ask the reader
             return mReader.getInputStream();
         }

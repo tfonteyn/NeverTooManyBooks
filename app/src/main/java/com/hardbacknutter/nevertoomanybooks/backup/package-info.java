@@ -28,7 +28,8 @@
  * <li>xml: books only</li>
  * <li>zip: all data in json format + covers == full backup</li>
  * </ul>
- * zip can be forced to contain csv encoded books and/or xml encoded preferences/styles
+ * zip can be forced (by changing the version number in the code + recompiling)
+ * to contain csv encoded books and/or xml encoded preferences/styles
  *
  * <ul>Archives read:
  * <li>csv: books only</li>
@@ -42,5 +43,6 @@
  * <p>
  * Not all combinations are implemented (which would be rather pointless) but there are more
  * implementations than really needed.
+ *
  */
 package com.hardbacknutter.nevertoomanybooks.backup;

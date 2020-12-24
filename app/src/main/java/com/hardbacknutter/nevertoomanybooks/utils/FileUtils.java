@@ -75,6 +75,11 @@ public final class FileUtils {
     /** Bytes to Kb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
     private static final int TO_KILOBYTES = 1_000;
 
+    private static final String ERROR_FAILED_TO_RENAME = "Failed to rename: ";
+    private static final String ERROR_COULD_NOT_RESOLVE_URI = "Could not resolve uri=";
+    private static final String ERROR_UNKNOWN_SCHEME_FOR_URI = "Unknown scheme for uri: ";
+    private static final String ERROR_COULD_NOT_CREATE_FILE = "Could not create file=";
+
     private FileUtils() {
     }
 
@@ -124,12 +129,10 @@ public final class FileUtils {
             if (source.renameTo(destination)) {
                 return;
             }
-            throw new IOException("failed to rename source=" + source
-                                  + " TO destination=" + destination);
+            throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination);
 
         } catch (@NonNull final SecurityException | NullPointerException e) {
-            throw new IOException("failed to rename source=" + source
-                                  + " TO destination=" + destination, e);
+            throw new IOException(ERROR_FAILED_TO_RENAME + source + " TO " + destination, e);
         }
     }
 
@@ -186,14 +189,14 @@ public final class FileUtils {
 
         final DocumentFile destinationFile = destDir.createFile(mimeType, file.getName());
         if (destinationFile == null) {
-            throw new IOException("Could not create file=" + file.getName());
+            throw new IOException(ERROR_COULD_NOT_CREATE_FILE + file.getName());
         }
 
         final Uri destinationUri = destinationFile.getUri();
         try (InputStream is = new FileInputStream(file);
              OutputStream os = context.getContentResolver().openOutputStream(destinationUri)) {
             if (os == null) {
-                throw new IOException("Could not resolve uri=" + destinationUri);
+                throw new IOException(ERROR_COULD_NOT_RESOLVE_URI + destinationUri);
             }
             copy(is, os);
         }
@@ -401,7 +404,7 @@ public final class FileUtils {
             }
         }
 
-        throw new IllegalStateException("unknown scheme for uri: " + uri);
+        throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + uri);
     }
 
     /**

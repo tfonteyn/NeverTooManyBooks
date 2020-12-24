@@ -56,65 +56,67 @@ public class CoverRecordReader
                               @ImportHelper.Options final int options,
                               @NonNull final ProgressListener progressListener) {
 
-        // Sanity check
-        if (record.getType().isPresent()
-            && record.getType().get() != RecordType.Cover) {
-            throw new IllegalStateException("not a cover record");
-        }
-
         final ImportResults results = new ImportResults();
-        results.coversProcessed = 1;
 
-        try {
-            // see if we have this file already
-            File dstFile = AppDir.Covers.getFile(context, record.getName());
-            final boolean exists = dstFile.exists();
+        if (record.getType().isPresent()) {
+            final RecordType recordType = record.getType().get();
 
-            if (exists) {
-                final boolean updatesMustSync =
-                        (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
-                final boolean updatesMayOverwrite =
-                        (options & ImportHelper.OPTION_UPDATES_MAY_OVERWRITE) != 0;
+            if (recordType == RecordType.Cover) {
+                results.coversProcessed = 1;
 
-                // If we should sync (and indeed overwrites are allowed),
-                // check which is newer, the local file, or the imported file.
-                if (updatesMustSync && updatesMayOverwrite) {
-                    // shift 16 bits to get to +- 1 minute precision.
-                    // Using pure milliseconds will create far to many false positives
-                    final long importFileDate =
-                            record.getLastModifiedEpochMilli() >> FILE_LM_PRECISION;
-                    final long existingFileDate = dstFile.lastModified() >> FILE_LM_PRECISION;
-                    if (existingFileDate > importFileDate) {
-                        results.coversSkipped++;
-                        return results;
+                try {
+                    // see if we have this file already
+                    File dstFile = AppDir.Covers.getFile(context, record.getName());
+                    final boolean exists = dstFile.exists();
+
+                    if (exists) {
+                        final boolean updatesMustSync =
+                                (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
+                        final boolean updatesMayOverwrite =
+                                (options & ImportHelper.OPTION_UPDATES_MAY_OVERWRITE) != 0;
+
+                        // If we should sync (and indeed overwrites are allowed),
+                        // check which is newer, the local file, or the imported file.
+                        if (updatesMustSync && updatesMayOverwrite) {
+                            // shift 16 bits to get to +- 1 minute precision.
+                            // Using pure milliseconds will create far to many false positives
+                            final long importFileDate =
+                                    record.getLastModifiedEpochMilli() >> FILE_LM_PRECISION;
+                            final long existingFileDate =
+                                    dstFile.lastModified() >> FILE_LM_PRECISION;
+                            if (existingFileDate > importFileDate) {
+                                results.coversSkipped++;
+                                return results;
+                            }
+                        }
+
+                        // We're not syncing, are we allowed to overwrite at all ?
+                        if (!updatesMayOverwrite) {
+                            results.coversSkipped++;
+                            return results;
+                        }
                     }
-                }
 
-                // We're not syncing, are we allowed to overwrite at all ?
-                if (!updatesMayOverwrite) {
+                    // Don't close this stream; Also; this comes from a zip/tar archive
+                    // which will give us a buffered stream; do not buffer twice.
+                    final InputStream is = record.getInputStream();
+                    dstFile = FileUtils.copyInputStream(context, is, dstFile);
+
+                    if (ImageUtils.isAcceptableSize(dstFile)) {
+                        //noinspection ResultOfMethodCallIgnored
+                        dstFile.setLastModified(record.getLastModifiedEpochMilli());
+                        if (exists) {
+                            results.coversUpdated++;
+                        } else {
+                            results.coversCreated++;
+                        }
+                    }
+                } catch (@NonNull final IOException ignore) {
+                    // we don't want to quit importing just because one cover fails.
                     results.coversSkipped++;
-                    return results;
                 }
             }
-
-            // Don't close this stream
-            final InputStream is = record.getInputStream();
-            dstFile = FileUtils.copyInputStream(context, is, dstFile);
-
-            if (ImageUtils.isAcceptableSize(dstFile)) {
-                //noinspection ResultOfMethodCallIgnored
-                dstFile.setLastModified(record.getLastModifiedEpochMilli());
-                if (exists) {
-                    results.coversUpdated++;
-                } else {
-                    results.coversCreated++;
-                }
-            }
-        } catch (@NonNull final IOException ignore) {
-            // we don't want to quit importing just because one cover fails.
-            results.coversSkipped++;
         }
-
         return results;
     }
 }

@@ -153,9 +153,6 @@ public class JsonRecordReader
 
         if (record.getType().isPresent()) {
             final RecordType recordType = record.getType().get();
-            if (recordType == RecordType.MetaData) {
-                throw new IllegalStateException("call #readMetaData instead");
-            }
 
             try {
                 JSONObject root = new JSONObject(record.asString());
@@ -185,8 +182,9 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Preferences
                         || recordType == RecordType.AutoDetect) {
-                        final JSONObject jsonRoot = root.optJSONObject(
-                                RecordType.Preferences.getName());
+
+                        final JSONObject jsonRoot =
+                                root.optJSONObject(RecordType.Preferences.getName());
                         if (jsonRoot != null) {
                             new SharedPreferencesCoder(
                                     PreferenceManager.getDefaultSharedPreferences(context))
@@ -197,6 +195,7 @@ public class JsonRecordReader
 
                     if (recordType == RecordType.Books
                         || recordType == RecordType.AutoDetect) {
+
                         final JSONArray jsonRoot = root.optJSONArray(RecordType.Books.getName());
                         if (jsonRoot != null) {
                             readBooks(context, options, jsonRoot, progressListener);
@@ -206,10 +205,6 @@ public class JsonRecordReader
             } catch (@NonNull final JSONException e) {
                 throw new ImportException(context.getString(R.string.error_import_failed), e);
             }
-        }
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "read|mResults=" + mResults);
         }
         return mResults;
     }

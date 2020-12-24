@@ -27,8 +27,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -107,10 +109,9 @@ public abstract class ArchiveReaderAbstract
      */
     protected ArchiveReaderAbstract(@NonNull final Context context,
                                     @NonNull final ImportHelper helper) {
+        mHelper = helper;
         mDb = new DAO(TAG);
         mContentResolver = context.getContentResolver();
-
-        mHelper = helper;
 
         mCoversText = context.getString(R.string.lbl_covers);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
@@ -129,10 +130,10 @@ public abstract class ArchiveReaderAbstract
 
     @NonNull
     protected InputStream openInputStream()
-            throws IOException {
+            throws FileNotFoundException {
         final InputStream is = mContentResolver.openInputStream(mHelper.getUri());
         if (is == null) {
-            throw new IOException("Could not resolve uri=" + mHelper.getUri());
+            throw new FileNotFoundException(mHelper.getUri().toString());
         }
         return new BufferedInputStream(is, RecordReader.BUFFER_SIZE);
     }
@@ -155,7 +156,7 @@ public abstract class ArchiveReaderAbstract
             final Optional<RecordEncoding> encoding = record.getEncoding();
             if (encoding.isPresent()) {
                 try (RecordReader recordReader = encoding
-                        .get().createReader(context, mDb, mHelper.getImportEntries())) {
+                        .get().createReader(context, mDb, EnumSet.of(RecordType.MetaData))) {
                     mArchiveMetaData = recordReader.readMetaData(record);
                 }
             }
@@ -205,14 +206,11 @@ public abstract class ArchiveReaderAbstract
         switch (archiveVersion) {
             case 4:
                 // future...
-                final ArchiveReaderRecord record = seek(RecordType.AutoDetect);
-                if (record != null) {
-                    readRecord(context, record, progressListener);
-                }
+                readV4(context, progressListener);
                 break;
             case 3:
             case 2:
-                readV2(context, mArchiveMetaData, mHelper.getImportEntries(), progressListener);
+                readV2(context, progressListener);
                 break;
             case 1:
                 throw new InvalidArchiveException("v1 no longer supported");
@@ -224,20 +222,33 @@ public abstract class ArchiveReaderAbstract
         return mResults;
     }
 
-    private void readV2(@NonNull final Context context,
-                        @NonNull final ArchiveMetaData archiveMetaData,
-                        @NonNull final Set<RecordType> importEntries,
+    private void readV4(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
             throws InvalidArchiveException, IOException, ImportException {
 
+        ArchiveReaderRecord record = seek(RecordType.AutoDetect);
+        while (record != null && !progressListener.isCancelled()) {
+            if (record.getType().isPresent()) {
+                readRecord(context, record, progressListener);
+            }
+            record = next();
+        }
+    }
+
+    private void readV2(@NonNull final Context context,
+                        @NonNull final ProgressListener progressListener)
+            throws InvalidArchiveException, IOException, ImportException {
+
+        final Set<RecordType> importEntries = mHelper.getImportEntries();
         try {
             final boolean readBooks = importEntries.contains(RecordType.Books);
             final boolean readCovers = importEntries.contains(RecordType.Cover);
 
-            int estimatedSteps = 1 + archiveMetaData.getBookCount();
+            //noinspection ConstantConditions
+            int estimatedSteps = 1 + mArchiveMetaData.getBookCount();
             if (readCovers) {
-                if (archiveMetaData.hasCoverCount()) {
-                    estimatedSteps += archiveMetaData.getCoverCount();
+                if (mArchiveMetaData.hasCoverCount()) {
+                    estimatedSteps += mArchiveMetaData.getCoverCount();
                 } else {
                     // We don't have a count, so assume each book has 1 cover.
                     estimatedSteps *= 2;
@@ -295,12 +306,12 @@ public abstract class ArchiveReaderAbstract
     private void readRecord(@NonNull final Context context,
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException {
+            throws IOException, ImportException, InvalidArchiveException {
 
         final Optional<RecordEncoding> encoding = record.getEncoding();
         if (encoding.isPresent()) {
 
-            // there will be many covers... we're re-use a single RecordReader
+            // there will be many covers... we're re-using a single RecordReader
             if (encoding.get() == RecordEncoding.Cover) {
                 //noinspection ConstantConditions
                 mResults.add(mCoverReader.read(context, record, mHelper.getOptions(),

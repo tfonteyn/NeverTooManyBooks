@@ -64,9 +64,6 @@ public enum ArchiveEncoding {
     /** The legacy full backup/restore support. NOT compressed. */
     Tar(".tar");
 
-    public static final String ERROR_NO_READER_AVAILABLE = "No reader available";
-    public static final String ERROR_NO_WRITER_AVAILABLE = "No writer available";
-
     @NonNull
     private final String mExtension;
 
@@ -80,7 +77,7 @@ public enum ArchiveEncoding {
     }
 
     /**
-     * Detect the type based on the input Uri.
+     * Detect the encoding based on the input Uri.
      *
      * @param context Current context
      * @param uri     to read
@@ -88,8 +85,8 @@ public enum ArchiveEncoding {
      * @return ArchiveEncoding
      */
     @NonNull
-    public static Optional<ArchiveEncoding> fromUri(@NonNull final Context context,
-                                                    @NonNull final Uri uri) {
+    public static Optional<ArchiveEncoding> getEncoding(@NonNull final Context context,
+                                                        @NonNull final Uri uri) {
 
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is != null) {
@@ -186,6 +183,44 @@ public enum ArchiveEncoding {
     }
 
     /**
+     * Create an {@link ArchiveWriter} based on the type.
+     *
+     * @param context Current context
+     * @param helper  writer configuration
+     *
+     * @return a new writer
+     *
+     * @throws FileNotFoundException on ...
+     */
+    @NonNull
+    public ArchiveWriter createWriter(@NonNull final Context context,
+                                      @NonNull final ExportHelper helper)
+            throws FileNotFoundException {
+
+        switch (this) {
+            case Zip:
+                return new ZipArchiveWriter(context, helper);
+
+            case Xml:
+                return new XmlArchiveWriter(helper);
+
+            case Csv:
+                return new CsvArchiveWriter(helper);
+
+            case SqLiteDb:
+                return new DbArchiveWriter(helper);
+
+            case Json:
+                return new JsonArchiveWriter(helper);
+
+            case Tar:
+                // writing to tar is no longer supported
+            default:
+                throw new IllegalStateException(ArchiveWriter.ERROR_NO_WRITER_AVAILABLE);
+        }
+    }
+
+    /**
      * Create an {@link ArchiveReader} based on the type.
      *
      * @param context Current context
@@ -226,49 +261,11 @@ public enum ArchiveEncoding {
             case Xml:
                 // reading from xml is not supported
             default:
-                throw new InvalidArchiveException(ERROR_NO_READER_AVAILABLE);
+                throw new InvalidArchiveException(ArchiveReader.ERROR_NO_READER_AVAILABLE);
         }
 
         reader.validate(context);
         return reader;
     }
 
-
-    /**
-     * Create an {@link ArchiveWriter} based on the type.
-     *
-     * @param context Current context
-     * @param helper  writer configuration
-     *
-     * @return a new writer
-     *
-     * @throws FileNotFoundException on ...
-     */
-    @NonNull
-    public ArchiveWriter createWriter(@NonNull final Context context,
-                                      @NonNull final ExportHelper helper)
-            throws FileNotFoundException {
-
-        switch (this) {
-            case Zip:
-                return new ZipArchiveWriter(context, helper);
-
-            case Xml:
-                return new XmlArchiveWriter(helper);
-
-            case Csv:
-                return new CsvArchiveWriter(helper);
-
-            case SqLiteDb:
-                return new DbArchiveWriter(helper);
-
-            case Json:
-                return new JsonArchiveWriter(helper);
-
-            case Tar:
-                // writing to tar is no longer supported
-            default:
-                throw new IllegalStateException(ERROR_NO_WRITER_AVAILABLE);
-        }
-    }
 }

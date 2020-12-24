@@ -34,7 +34,6 @@ import java.io.InputStream;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
@@ -79,14 +78,12 @@ public class DbArchiveReader
 
         mHelper = helper;
 
-        // Copy the file from the uri to a place where we can access it as a database.
         try (InputStream is = context.getContentResolver().openInputStream(mHelper.getUri())) {
             if (is == null) {
-                // openInputStream can return null, just pretend we couldn't find the file.
-                // Should never happen - flw
                 throw new FileNotFoundException(mHelper.getUri().toString());
             }
 
+            // Copy the file from the uri to a place where we can access it as a database.
             File tmpDb = AppDir.Cache.getFile(context, System.nanoTime() + ".db");
             tmpDb = FileUtils.copyInputStream(context, is, tmpDb);
             if (tmpDb != null) {
@@ -131,7 +128,7 @@ public class DbArchiveReader
             }
         }
 
-        throw new InvalidArchiveException(ArchiveEncoding.ERROR_NO_READER_AVAILABLE);
+        throw new InvalidArchiveException(ArchiveReader.ERROR_NO_READER_AVAILABLE);
     }
 
     @Nullable

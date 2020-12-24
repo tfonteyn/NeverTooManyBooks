@@ -117,12 +117,13 @@ public class CsvRecordReader
 
     @NonNull
     private final Locale mUserLocale;
-    /** cached localized "Books" string. */
+    /** cached localized progress string. */
     @NonNull
     private final String mBooksString;
+    /** cached localized progress string. */
     @NonNull
     private final String mProgressMessage;
-
+    @NonNull
     private final BookCoder mBookCoder;
 
     private ImportResults mResults;
@@ -155,6 +156,7 @@ public class CsvRecordReader
             throws IOException, ImportException {
 
         mResults = new ImportResults();
+
         if (record.getType().isPresent()) {
             if (record.getType().get() == RecordType.Books) {
                 // Read the whole file content into a list of lines.

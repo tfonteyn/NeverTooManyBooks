@@ -55,10 +55,6 @@ public class JsonArchiveReader
     @NonNull
     private final DAO mDb;
 
-    /** By default we will auto-detect the record type and read <strong>all</strong> found. */
-    @NonNull
-    private RecordType mTypeToRead = RecordType.AutoDetect;
-
     /**
      * Constructor.
      *
@@ -67,17 +63,6 @@ public class JsonArchiveReader
     public JsonArchiveReader(@NonNull final ImportHelper helper) {
         mHelper = helper;
         mDb = new DAO(TAG);
-    }
-
-    /**
-     * Force reading a particular record type.
-     *
-     * @param typeToRead override
-     */
-    @VisibleForTesting
-    void setTypeToRead(@SuppressWarnings("SameParameterValue")
-                       @NonNull final RecordType typeToRead) {
-        mTypeToRead = typeToRead;
     }
 
     @NonNull
@@ -89,17 +74,15 @@ public class JsonArchiveReader
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
         if (is == null) {
-            // openInputStream can return null, just pretend we couldn't find the file.
-            // Should never happen - flw
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (RecordReader recordReader =
-                     new JsonRecordReader(context, mDb, mHelper.getImportEntries())) {
+        try (RecordReader recordReader = new JsonRecordReader(
+                context, mDb, mHelper.getImportEntries())) {
 
             // wrap the entire input into a single record.
-            final ArchiveReaderRecord record =
-                    new JsonArchiveRecord(mTypeToRead, mHelper.getArchiveName(context), is);
+            final ArchiveReaderRecord record = new JsonArchiveRecord(
+                    mHelper.getArchiveName(context), is);
 
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {
@@ -118,8 +101,6 @@ public class JsonArchiveReader
             implements ArchiveReaderRecord {
 
         @NonNull
-        private final RecordType mType;
-        @NonNull
         private final String mName;
 
         /** The record source stream. */
@@ -132,10 +113,8 @@ public class JsonArchiveReader
          * @param name of this record
          * @param is   InputStream to use
          */
-        JsonArchiveRecord(@NonNull final RecordType type,
-                          @NonNull final String name,
+        JsonArchiveRecord(@NonNull final String name,
                           @NonNull final InputStream is) {
-            mType = type;
             mName = name;
             mIs = is;
         }
@@ -143,7 +122,7 @@ public class JsonArchiveReader
         @NonNull
         @Override
         public Optional<RecordType> getType() {
-            return Optional.of(mType);
+            return Optional.of(RecordType.AutoDetect);
         }
 
         @NonNull

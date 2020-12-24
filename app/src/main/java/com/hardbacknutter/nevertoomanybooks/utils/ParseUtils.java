@@ -57,9 +57,13 @@ import java.util.regex.Pattern;
 public final class ParseUtils {
 
     /** log error string. */
-    private static final String ERROR_INVALID_BOOLEAN_S = "Invalid boolean, s=`";
+    private static final String ERROR_NOT_A_BOOLEAN = "Not a boolean: ";
+    private static final String ERROR_NOT_A_FLOAT = "Not a float: ";
+    private static final String ERROR_NOT_A_DOUBLE = "Not a double: ";
+
     /** See {@link #toAscii}. */
     private static final Pattern ASCII_PATTERN = Pattern.compile("[^\\p{ASCII}]");
+
 
     private ParseUtils() {
     }
@@ -262,7 +266,7 @@ public final class ParseUtils {
             if (emptyIsFalse) {
                 return false;
             } else {
-                throw new NumberFormatException(ERROR_INVALID_BOOLEAN_S + source + '`');
+                throw new NumberFormatException(ERROR_NOT_A_BOOLEAN + source);
             }
         } else {
             // we only do english terms, as it's expected that these come from some
@@ -287,7 +291,7 @@ public final class ParseUtils {
                     try {
                         return Integer.parseInt(stringValue) != 0;
                     } catch (@NonNull final NumberFormatException e) {
-                        throw new NumberFormatException(ERROR_INVALID_BOOLEAN_S + source + '`');
+                        throw new NumberFormatException(ERROR_NOT_A_BOOLEAN + source);
                     }
             }
         }
@@ -367,7 +371,7 @@ public final class ParseUtils {
             }
         }
 
-        throw new NumberFormatException("not a float: " + source);
+        throw new NumberFormatException(ERROR_NOT_A_FLOAT + source);
     }
 
     /**
@@ -457,7 +461,7 @@ public final class ParseUtils {
                 // ignore
             }
         }
-        throw new NumberFormatException("not a double: " + source);
+        throw new NumberFormatException(ERROR_NOT_A_DOUBLE + source);
     }
 
     /**

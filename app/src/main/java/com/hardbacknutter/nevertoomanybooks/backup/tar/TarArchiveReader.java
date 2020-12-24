@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -113,11 +114,11 @@ public class TarArchiveReader
      *
      * @return the stream
      *
-     * @throws IOException on failure
+     * @throws FileNotFoundException on ...
      */
     @NonNull
     private TarArchiveInputStream getInputStream()
-            throws IOException {
+            throws FileNotFoundException {
         if (mInputStream == null) {
             mInputStream = new TarArchiveInputStream(openInputStream());
         }
@@ -180,7 +181,7 @@ public class TarArchiveReader
         @NonNull
         @Override
         public InputStream getInputStream()
-                throws IOException {
+                throws FileNotFoundException {
             // The reader can open/close the stream at will, so always ask the reader
             return mReader.getInputStream();
         }

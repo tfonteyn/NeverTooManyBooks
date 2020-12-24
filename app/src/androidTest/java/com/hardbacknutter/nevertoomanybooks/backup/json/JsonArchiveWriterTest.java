@@ -109,8 +109,6 @@ public class JsonArchiveWriterTest {
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
             assertNull(archiveMetaData);
 
-            ((JsonArchiveReader) reader).setTypeToRead(RecordType.Styles);
-
             importResults = reader.read(context, new TestProgressListener(TAG + ":import"));
         }
         assertEquals(exportResults.styles, importResults.styles);

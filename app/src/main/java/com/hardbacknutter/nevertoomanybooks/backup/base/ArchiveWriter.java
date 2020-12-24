@@ -34,6 +34,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 public interface ArchiveWriter
         extends Closeable {
 
+    String ERROR_NO_WRITER_AVAILABLE = "No writer available";
+
     /**
      * Get the format version that this archiver is writing out.
      *

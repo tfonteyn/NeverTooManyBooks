@@ -77,14 +77,12 @@ public class CsvArchiveReader
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
         if (is == null) {
-            // openInputStream can return null, just pretend we couldn't find the file.
-            // Should never happen - flw
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
         try (RecordReader recordReader = new CsvRecordReader(context, mDb)) {
-            final ArchiveReaderRecord record =
-                    new CsvArchiveRecord(mHelper.getArchiveName(context), is);
+            final ArchiveReaderRecord record = new CsvArchiveRecord(
+                    mHelper.getArchiveName(context), is);
 
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {
