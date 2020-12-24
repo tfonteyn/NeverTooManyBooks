@@ -172,7 +172,6 @@ public class XmlRecordReader
                 if (recordType == RecordType.Styles) {
                     final StylesReader stylesReader = new StylesReader(context, mDb);
                     fromXml(record, stylesReader);
-                    //TODO: we should update the menu order in the database here
                     results.styles += stylesReader.getStylesRead();
 
                 } else if (recordType == RecordType.Preferences) {
@@ -887,6 +886,7 @@ public class XmlRecordReader
                 }
             }
 
+            // not bothering with slightly older backups where the 'preferred' flag was a PPref
             boolean isPreferred;
             try {
                 isPreferred = ParseUtils.parseBoolean(tag.attrs.getValue(

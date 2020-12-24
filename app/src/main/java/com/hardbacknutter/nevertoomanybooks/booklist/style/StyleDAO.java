@@ -50,6 +50,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 /** Utility class encapsulating database access and internal in-memory caches. */
 public final class StyleDAO {
 
+    /** Log tag. */
+    private static final String TAG = "StyleDAO";
+
     /**
      * Preference for the current default style UUID to use.
      * Stored in global shared preferences.
@@ -169,7 +172,23 @@ public final class StyleDAO {
         return false;
     }
 
+    /**
+     * Convenience wrapper that gets called after an import to re-sort all styles.
+     *
+     * @param context Current context
+     */
+    public static void updateMenuOrder(final Context context) {
+        try (DAO db = new DAO(TAG)) {
+            updateMenuOrder(db, getStyles(context, db, true));
+        }
+    }
 
+    /**
+     * Sort the incoming list of styles according to their preferred status.
+     *
+     * @param db     Database access
+     * @param styles list to sort and update
+     */
     public static void updateMenuOrder(@NonNull final DAO db,
                                        @NonNull final Collection<ListStyle> styles) {
         int order = 0;
@@ -390,7 +409,9 @@ public final class StyleDAO {
         // and make sure a row is added to the database styles table.
         // next max is -20
         public static final int MAX_ID = -19;
-
+        @VisibleForTesting
+        public static final String UNREAD_AUTHOR_THEN_SERIES_UUID
+                = "f479e979-c43f-4b0b-9c5b-6942964749df";
         /**
          * Note the hardcoded negative ID's.
          * These id/uuid's should NEVER be changed as they will
@@ -399,17 +420,11 @@ public final class StyleDAO {
         static final int AUTHOR_THEN_SERIES_ID = -1;
         private static final String AUTHOR_THEN_SERIES_UUID
                 = "6a82c4c0-48f1-4130-8a62-bbf478ffe184";
-
         /**
          * Absolute/initial default.
          */
         public static final String DEFAULT_STYLE_UUID = AUTHOR_THEN_SERIES_UUID;
-
         private static final int UNREAD_AUTHOR_THEN_SERIES_ID = -2;
-        @VisibleForTesting
-        public static final String UNREAD_AUTHOR_THEN_SERIES_UUID
-                = "f479e979-c43f-4b0b-9c5b-6942964749df";
-
         private static final int COMPACT_ID = -3;
         private static final String COMPACT_UUID
                 = "5e4c3137-a05f-4c4c-853a-bd1dacb6cd16";
