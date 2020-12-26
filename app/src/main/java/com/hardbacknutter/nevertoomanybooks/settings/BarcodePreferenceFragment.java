@@ -29,10 +29,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.util.Pair;
 import androidx.preference.ListPreference;
 
-import java.util.List;
+import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
@@ -54,23 +53,23 @@ public class BarcodePreferenceFragment
         final ListPreference preference = findPreference(Prefs.pk_camera_id_scan_barcode);
         if (preference != null) {
             //noinspection ConstantConditions
-            final List<Pair<String, Integer>> list = CameraDetection.getCameras(getContext());
-            final int max = list.size() + 1;
+            final Map<String, Integer> cameras = CameraDetection.getCameras(getContext());
+            final int max = cameras.size() + 1;
 
             // the camera lens-facing values in text
             final CharSequence[] entries = new CharSequence[max];
             // the camera id
             final CharSequence[] entryValues = new CharSequence[max];
 
+            int i = 0;
             entries[0] = getString(R.string.system_default);
             entryValues[0] = "-1";
-
-            for (int i = 1; i <= list.size(); i++) {
-                final Pair<String, Integer> camera = list.get(i - 1);
+            for (final Map.Entry<String, Integer> camera : cameras.entrySet()) {
+                i++;
                 // the camera id
-                entryValues[i] = camera.first;
+                entryValues[i] = camera.getKey();
                 // We're assuming there will only be one front and/or one back camera.
-                switch (camera.second) {
+                switch (camera.getValue()) {
                     case CameraMetadata.LENS_FACING_FRONT:
                         entries[i] = getString(R.string.camera_front);
                         break;

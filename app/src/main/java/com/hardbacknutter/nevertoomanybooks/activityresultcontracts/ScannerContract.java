@@ -37,7 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.CameraDetection;
+import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 
 /**
  * <ul>
@@ -51,19 +52,42 @@ public class ScannerContract
     /** Log tag. */
     private static final String TAG = "ScannerContract";
 
+    /**
+     * Optionally beep if the scan succeeded.
+     *
+     * @param context Current context
+     */
+    public static void onValidBarcodeBeep(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
+            SoundManager.playFile(context, R.raw.beep_high);
+        }
+    }
+
+    /**
+     * Optionally beep if the scan failed.
+     *
+     * @param context Current context
+     */
+    public static void onInvalidBarcodeBeep(@NonNull final Context context) {
+        if (PreferenceManager.getDefaultSharedPreferences(context)
+                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
+            SoundManager.playFile(context, R.raw.beep_low);
+        }
+    }
+
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Fragment fragment) {
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        // By default -1, which for the IntentIntegrator call means 'no preference'
-        final int cameraId = ParseUtils.getIntListPref(global, Prefs.pk_camera_id_scan_barcode, -1);
+
         // Beep when a barcode was recognised
         final boolean beep = global.getBoolean(Prefs.pk_sounds_scan_found_barcode, true);
 
         final IntentIntegrator integrator = IntentIntegrator.forSupportFragment(fragment);
-        integrator.setCameraId(cameraId);
+        integrator.setCameraId(CameraDetection.getPreferredCameraId(context, global));
         integrator.setOrientationLocked(false);
         integrator.setPrompt(context.getString(R.string.zxing_msg_default_status));
         integrator.setBeepEnabled(beep);
@@ -84,4 +108,5 @@ public class ScannerContract
         // parse and return the barcode
         return IntentIntegrator.parseActivityResult(resultCode, intent).getContents();
     }
+
 }
