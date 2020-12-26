@@ -354,7 +354,7 @@ public class SearchCoordinator
     /**
      * Clear all search criteria.
      */
-    public void clearSearchText() {
+    public void clearSearchCriteria() {
         mExternalIdSearchText = null;
         mIsbnSearchText = "";
         mAuthorSearchText = "";
@@ -462,7 +462,7 @@ public class SearchCoordinator
         SanityCheck.requireValue(externalIdSearchText, "externalIdSearchText");
 
         // remove all other criteria (this is CRUCIAL)
-        clearSearchText();
+        clearSearchCriteria();
 
         mExternalIdSearchText = new SparseArray<>();
         mExternalIdSearchText.put(searchEngine.getId(), externalIdSearchText);

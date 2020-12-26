@@ -243,8 +243,8 @@ public class SearchBookByTextFragment
     }
 
     @Override
-    void onClearPreviousSearchCriteria() {
-        super.onClearPreviousSearchCriteria();
+    void onClearSearchCriteria() {
+        super.onClearSearchCriteria();
         mVb.author.setText("");
         mVb.title.setText("");
         mVb.publisher.setText("");

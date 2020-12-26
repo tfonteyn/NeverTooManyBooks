@@ -33,6 +33,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -222,8 +223,8 @@ public abstract class SearchBookBaseFragment
      * Make sure to always call the super.
      */
     @CallSuper
-    void onClearPreviousSearchCriteria() {
-        mCoordinator.clearSearchText();
+    void onClearSearchCriteria() {
+        mCoordinator.clearSearchCriteria();
     }
 
     /**
@@ -289,12 +290,18 @@ public abstract class SearchBookBaseFragment
      */
     void onSearchResults(@NonNull final Bundle bookData) {
         mEditBookFoundLauncher.launch(bookData);
-        onClearPreviousSearchCriteria();
+        onClearSearchCriteria();
     }
 
     protected void showError(@NonNull final TextInputLayout til,
                              @NonNull final CharSequence error) {
         til.setError(error);
+        til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
+    }
+
+    protected void showError(@NonNull final TextInputLayout til,
+                             @StringRes final int error) {
+        til.setError(getString(error));
         til.postDelayed(() -> til.setError(null), BaseActivity.ERROR_DELAY_MS);
     }
 }

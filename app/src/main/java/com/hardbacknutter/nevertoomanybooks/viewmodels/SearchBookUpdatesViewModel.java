@@ -421,7 +421,7 @@ public class SearchBookUpdatesViewModel
 
                 if (!mCurrentFieldsWanted.isEmpty()) {
                     // remove all other criteria (this is CRUCIAL)
-                    clearSearchText();
+                    clearSearchCriteria();
                     boolean canSearch = false;
 
                     final String isbnStr = mCurrentBook.getString(DBDefinitions.KEY_ISBN);

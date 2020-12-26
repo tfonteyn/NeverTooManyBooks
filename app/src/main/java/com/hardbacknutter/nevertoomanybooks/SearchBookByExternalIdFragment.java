@@ -207,7 +207,7 @@ public class SearchBookByExternalIdFragment
         //noinspection ConstantConditions
         if (mVb.externalId.getText().toString().trim().isEmpty()
             || mVb.sitesGroup.getCheckedRadioButtonId() == View.NO_ID) {
-            showError(mVb.lblExternalId, getString(R.string.warning_requires_site_and_id));
+            showError(mVb.lblExternalId, R.string.warning_requires_site_and_id);
             return false;
         }
         return true;
@@ -238,8 +238,8 @@ public class SearchBookByExternalIdFragment
     }
 
     @Override
-    void onClearPreviousSearchCriteria() {
-        super.onClearPreviousSearchCriteria();
+    void onClearSearchCriteria() {
+        super.onClearSearchCriteria();
         mVb.externalId.setText("");
     }
 }
