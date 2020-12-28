@@ -838,17 +838,17 @@ public class DAOSql {
                 SELECT_ + KEY_FK_BOOK + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
                 + _WHERE_ + KEY_FK_TOC_ENTRY + "=?";
         /**
-         * Find the {@link Book} id based on a search for the ISBN (both 10 & 13).
+         * Find the {@link Book} id+title based on a search for the ISBN (both 10 & 13).
          */
         static final String BY_VALID_ISBN =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                SELECT_ + KEY_PK_ID + ',' + KEY_TITLE + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + KEY_ISBN + " LIKE ? OR " + KEY_ISBN + " LIKE ?";
         /**
-         * Find the {@link Book} id based on a search for the ISBN.
+         * Find the {@link Book} id+title based on a search for the ISBN.
          * The isbn need not be valid and can in fact be any code whatsoever.
          */
         static final String BY_ISBN =
-                SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKS.getName()
+                SELECT_ + KEY_PK_ID + ',' + KEY_TITLE + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + KEY_ISBN + " LIKE ?";
 
         static final String BOOK_TITLES_FOR_TOC =

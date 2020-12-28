@@ -3204,15 +3204,15 @@ public class DAO
     }
 
     /**
-     * Get a list of book ID's (most often just the one) for the given ISBN.
+     * Get a list of book id/title's (most often just the one) for the given ISBN.
      *
      * @param isbn to search for; can be generic/non-valid
      *
-     * @return list with book ID's
+     * @return list with book id/title
      */
     @NonNull
-    public ArrayList<Long> getBookIdsByIsbn(@NonNull final ISBN isbn) {
-        final ArrayList<Long> list = new ArrayList<>();
+    public ArrayList<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN isbn) {
+        final ArrayList<Pair<Long, String>> list = new ArrayList<>();
         // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,
         // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
@@ -3220,22 +3220,23 @@ public class DAO
                     DAOSql.SqlSelect.BY_VALID_ISBN,
                     new String[]{isbn.asText(ISBN.TYPE_ISBN10), isbn.asText(ISBN.TYPE_ISBN13)})) {
                 while (cursor.moveToNext()) {
-                    list.add(cursor.getLong(0));
+                    list.add(new Pair<>(cursor.getLong(0),
+                                        cursor.getString(1)));
                 }
             }
-            return list;
-
         } else {
             // otherwise just search on the string as-is; regardless of validity
             // (this would actually include valid ISBN-13 in the 979 range).
             try (Cursor cursor = mSyncedDb.rawQuery(DAOSql.SqlSelect.BY_ISBN,
                                                     new String[]{isbn.asText()})) {
                 while (cursor.moveToNext()) {
-                    list.add(cursor.getLong(0));
+                    list.add(new Pair<>(cursor.getLong(0),
+                                        cursor.getString(1)));
                 }
             }
-            return list;
         }
+
+        return list;
     }
 
 
@@ -3658,7 +3659,7 @@ public class DAO
     public boolean bookExistsByIsbn(@NonNull final String isbnStr) {
         //TODO: optimize this call
         final ISBN isbn = ISBN.createISBN(isbnStr);
-        return !getBookIdsByIsbn(isbn).isEmpty();
+        return !getBookIdAndTitlesByIsbn(isbn).isEmpty();
     }
 
 
