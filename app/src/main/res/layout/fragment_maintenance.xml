@@ -87,7 +87,7 @@
             android:id="@+id/btn_debug_send_mail"
             style="@style/MenuButton"
             android:text="@string/lbl_send_debug"
-            app:icon="@drawable/ic_baseline_bug_report"
+            app:icon="@drawable/ic_bug_report"
             />
 
         <Button
