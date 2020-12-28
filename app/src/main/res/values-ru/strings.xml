@@ -63,7 +63,7 @@
     <string name="btn_email">Написать письмо</string>
     <string name="btn_options">опции</string>
     <string name="action_reset">Сбросить</string>
-    <string name="btn_scan_barcode">Сканирование штрих-кода</string>
+    <string name="menu_scan_barcode">Сканирование штрих-кода</string>
     <string name="btn_learn_more">Подробнее</string>
     <string name="btn_this_book">Эта книга</string>
     <string name="bytes">%.0f байт</string>

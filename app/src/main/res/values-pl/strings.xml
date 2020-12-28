@@ -63,7 +63,7 @@
     <string name="btn_email">Wyślij e-maila</string>
     <string name="btn_options">Opcje</string>
     <string name="action_reset">Resetuj</string>
-    <string name="btn_scan_barcode">Zeskanuj kod kreskowy</string>
+    <string name="menu_scan_barcode">Zeskanuj kod kreskowy</string>
     <string name="btn_learn_more">Więcej informacji</string>
     <string name="btn_this_book">Ta książka</string>
     <string name="bytes">%.0fB</string>

@@ -64,7 +64,7 @@
     <string name="btn_email">Invia email</string>
     <string name="btn_options">Opzioni</string>
     <string name="action_reset">Reimposta</string>
-    <string name="btn_scan_barcode">Scansione codice a barre</string>
+    <string name="menu_scan_barcode">Scansione codice a barre</string>
     <string name="btn_learn_more">Ulteriori informazioni</string>
     <string name="btn_this_book">Questo libro</string>
     <string name="bytes">%.0fB</string>

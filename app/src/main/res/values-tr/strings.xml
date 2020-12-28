@@ -64,7 +64,7 @@
     <string name="btn_email">E-posta</string>
     <string name="btn_options">Seçenekler</string>
     <string name="action_reset">Sıfırla</string>
-    <string name="btn_scan_barcode">Barkod tara</string>
+    <string name="menu_scan_barcode">Barkod tara</string>
     <string name="btn_learn_more">Daha fazla bilgi</string>
     <string name="btn_this_book">Bu kitap</string>
     <string name="bytes">%.0fB</string>

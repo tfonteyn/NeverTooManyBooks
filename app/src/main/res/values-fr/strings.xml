@@ -74,7 +74,7 @@
     <string name="btn_less_ellipsis">Moins…</string>
     <string name="btn_more_ellipsis">Plus…</string>
     <string name="btn_options">Options</string>
-    <string name="btn_scan_barcode">Scan code à barres</string>
+    <string name="menu_scan_barcode">Scan code à barres</string>
     <string name="btn_show_list">Afficher la liste</string>
     <string name="btn_this_book">Ce livre</string>
     <string name="bytes">%.0f octets</string>

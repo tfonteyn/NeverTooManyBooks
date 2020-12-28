@@ -1037,8 +1037,12 @@
     <!-- button text for import/export dialogs -->
     <string name="btn_options">Options</string>
 
-    <!-- Button; where we can use a long text. Should also show icon: res/drawable/ic_barcode -->
-    <string name="btn_scan_barcode">Scan barcode</string>
+    <!-- Menu / button content description text. Icon: res/drawable/ic_barcode -->
+    <string name="menu_scan_barcode">Scan barcode</string>
+    <!-- Menu / button content description text. Icon: res/drawable/ic_barcode_batch -->
+    <string name="menu_scan_barcode_batch_start">Start batch scanning</string>
+    <!-- Menu / button content description text. Icon: res/drawable/ic_barcode_batch_process -->
+    <string name="menu_scan_barcode_batch_continue">Continue batch processing</string>
 
     <string name="btn_show_list">Show list</string>
 
@@ -1611,5 +1615,7 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+    <string name="lbl_queue">Queue</string>
+    <string name="btn_clear_queue">Clear queue</string>
 
 </resources>

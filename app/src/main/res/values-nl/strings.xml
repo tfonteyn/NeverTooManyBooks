@@ -71,7 +71,7 @@
     <string name="btn_less_ellipsis">Minder…</string>
     <string name="btn_more_ellipsis">Meer…</string>
     <string name="btn_options">Opties</string>
-    <string name="btn_scan_barcode">Scan barcode</string>
+    <string name="menu_scan_barcode">Scan barcode</string>
     <string name="btn_show_list">Lijst weergeven</string>
     <string name="btn_this_book">Dit boek</string>
     <string name="bytes">%.0fB</string>

@@ -64,7 +64,7 @@
     <string name="btn_email">Ηλεκτρονικό ταχυδρομείο</string>
     <string name="btn_options">Επιλογές</string>
     <string name="action_reset">Επαναφορά</string>
-    <string name="btn_scan_barcode">Σάρωση γραμμωτού κώδικα</string>
+    <string name="menu_scan_barcode">Σάρωση γραμμωτού κώδικα</string>
     <string name="btn_learn_more">Μάθετε περισσότερα</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="bytes">%.0fB</string>
