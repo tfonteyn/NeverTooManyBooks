@@ -19,7 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,23 +33,22 @@ import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.PreferenceManager;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.SoundManager;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByIsbnViewModel;
 
@@ -59,49 +60,32 @@ public class SearchBookByIsbnFragment
 
     /** Log tag. */
     public static final String TAG = "BookSearchByIsbnFrag";
-
-    public static final String BKEY_SCAN_MODE = TAG + ":scanMode";
-    private static final String BKEY_FIRST_START = TAG + ":firstStart";
     private static final String BKEY_STARTED = TAG + ":started";
 
-    /** {@code true} if we are in scan mode. */
-    private boolean mInScanMode;
-    /** Only start the scanner automatically upon the very first start of the fragment. */
-    private boolean mFirstStart = true;
     /** flag indicating the scanner is already started. */
     private boolean mScannerStarted;
-    /** The scanner. */
-    private ActivityResultLauncher<Fragment> mScannerLauncher;
-    /** After a successful scan/search, the data is offered for editing. */
-    private final ActivityResultLauncher<Long> mEditExistingBookLauncher =
-            registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
+
     /** View Binding. */
     private FragmentBooksearchByIsbnBinding mVb;
     /** manage the validation check next to the field. */
     private ISBN.ValidationTextWatcher mIsbnValidationTextWatcher;
     private ISBN.CleanupTextWatcher mIsbnCleanupTextWatcher;
-
     private SearchBookByIsbnViewModel mVm;
+    /** After a successful scan/search, the data is offered for editing. */
+    private final ActivityResultLauncher<Long> mEditExistingBookLauncher =
+            registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
+    /** The scanner. */
+    private final ActivityResultLauncher<Fragment> mScannerLauncher =
+            registerForActivityResult(new ScannerContract(), this::onBarcodeScanned);
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (args != null) {
-            mInScanMode = args.getBoolean(BKEY_SCAN_MODE, false);
-            mFirstStart = args.getBoolean(BKEY_FIRST_START, true);
-            mScannerStarted = args.getBoolean(BKEY_STARTED, false);
+        if (savedInstanceState != null) {
+            mScannerStarted = savedInstanceState.getBoolean(BKEY_STARTED, false);
         }
-
-        mScannerLauncher = registerForActivityResult(new ScannerContract(), barCode -> {
-            mScannerStarted = false;
-            if (barCode != null) {
-                mVb.isbn.setText(barCode);
-                prepareSearch(barCode);
-            }
-        });
     }
 
     @NonNull
@@ -125,7 +109,7 @@ public class SearchBookByIsbnFragment
         super.onViewCreated(view, savedInstanceState);
 
         mVm = new ViewModelProvider(this).get(SearchBookByIsbnViewModel.class);
-        mVm.init();
+        mVm.init(getArguments());
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.lbl_search_isbn);
@@ -156,12 +140,18 @@ public class SearchBookByIsbnFragment
 
         mIsbnCleanupTextWatcher = new ISBN.CleanupTextWatcher(mVb.isbn, isbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnCleanupTextWatcher);
-        mIsbnValidationTextWatcher = new ISBN.ValidationTextWatcher(
-                mVb.lblIsbn, mVb.isbn, isbnValidityCheck);
+
+        mIsbnValidationTextWatcher =
+                new ISBN.ValidationTextWatcher(mVb.lblIsbn, mVb.isbn, isbnValidityCheck);
         mVb.isbn.addTextChangedListener(mIsbnValidationTextWatcher);
 
-        //noinspection ConstantConditions
-        mVb.btnSearch.setOnClickListener(v -> prepareSearch(mVb.isbn.getText().toString().trim()));
+        mVb.btnSearch.setOnClickListener(this::onBarcodeEntered);
+
+        mVb.btnClearQueue.setOnClickListener(v -> {
+            mVm.getScanQueue().clear();
+            mVb.queue.removeAllViews();
+            mVb.queueGroup.setVisibility(View.GONE);
+        });
 
         //noinspection VariableNotUsedInsideIf
         if (savedInstanceState == null) {
@@ -174,10 +164,10 @@ public class SearchBookByIsbnFragment
     }
 
     private void afterOnViewCreated() {
-        // only auto-start scanner the first time this fragment starts
-        if (mInScanMode && mFirstStart) {
-            mFirstStart = false;
+        if (mVm.isAutoStart()) {
             scan();
+        } else {
+            populateQueueView();
         }
     }
 
@@ -185,11 +175,22 @@ public class SearchBookByIsbnFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        menu.add(Menu.NONE, R.id.MENU_SCAN_BARCODE, 0, R.string.btn_scan_barcode)
+        final Resources r = getResources();
+        menu.add(Menu.NONE, R.id.MENU_SCAN_BARCODE,
+                 r.getInteger(R.integer.MENU_ORDER_SCAN_BARCODE),
+                 R.string.menu_scan_barcode)
             .setIcon(R.drawable.ic_barcode)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(Menu.NONE, R.id.MENU_ISBN_VALIDITY_STRICT, 0, R.string.lbl_strict_isbn)
+        menu.add(Menu.NONE, R.id.MENU_SCAN_BARCODE_BATCH,
+                 r.getInteger(R.integer.MENU_ORDER_SCAN_BARCODE_BATCH),
+                 R.string.menu_scan_barcode_batch_start)
+            .setIcon(R.drawable.ic_barcode_batch)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
+        menu.add(Menu.NONE, R.id.MENU_ISBN_VALIDITY_STRICT,
+                 r.getInteger(R.integer.MENU_ORDER_SEARCH_STRICT_ISBN),
+                 R.string.lbl_strict_isbn)
             .setCheckable(true)
             .setChecked(mCoordinator.isStrictIsbn())
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
@@ -202,7 +203,12 @@ public class SearchBookByIsbnFragment
         final int itemId = item.getItemId();
 
         if (itemId == R.id.MENU_SCAN_BARCODE) {
-            mInScanMode = true;
+            mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
+            scan();
+            return true;
+
+        } else if (itemId == R.id.MENU_SCAN_BARCODE_BATCH) {
+            mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_MODE_BATCH);
             scan();
             return true;
 
@@ -230,8 +236,6 @@ public class SearchBookByIsbnFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(BKEY_SCAN_MODE, mInScanMode);
-        outState.putBoolean(BKEY_FIRST_START, mFirstStart);
         outState.putBoolean(BKEY_STARTED, mScannerStarted);
     }
 
@@ -245,58 +249,130 @@ public class SearchBookByIsbnFragment
         }
     }
 
-    /**
-     * Search with ISBN or, if allowed, with a generic code.
-     *
-     * @param userEntry text to search for.
-     */
-    private void prepareSearch(@NonNull final String userEntry) {
+    private void onBarcodeScanned(@Nullable String barCode) {
+        mScannerStarted = false;
 
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.FAKE_BARCODE_SCANNER) {
+            // Goodreads best books of 2020
+            final String[] TEST_CODES = {
+                    // random == 0 -> cancel scanning
+                    null,
+                    "9780316310420",
+                    "9781250762849",
+                    "9781524763169",
+                    "9780062868930",
+                    "9781786892713",
+                    "9780349701462",
+                    "9781635574043",
+                    "9781538719985",
+                    "9780593230251",
+                    "9780063032491",
+                    };
+            final int random = (int) Math.floor(Math.random() * 10);
+            barCode = TEST_CODES[random];
+            Log.d(TAG, "onBarcodeScanned|Faking barcode=" + barCode);
+        }
+
+        if (barCode != null) {
+            final boolean strictIsbn = mCoordinator.isStrictIsbn();
+            final ISBN code = new ISBN(barCode, strictIsbn);
+
+            if (code.isValid(strictIsbn)) {
+                if (strictIsbn) {
+                    //noinspection ConstantConditions
+                    ScannerContract.onValidBarcodeBeep(getContext());
+                }
+
+                if (mVm.getScannerMode() == SearchBookByIsbnViewModel.SCANNER_MODE_BATCH) {
+                    // batch mode, queue the code (but avoid duplicates), and scan next book
+                    final List<ISBN> scanQueue = mVm.getScanQueue();
+                    if (!scanQueue.contains(code)) {
+                        scanQueue.add(code);
+                    }
+                    scan();
+
+                } else {
+                    // single-scan mode, keep the scanner on and go edit the book
+                    mVb.isbn.setText(code.asText());
+                    prepareSearch(code);
+                }
+            } else {
+                //noinspection ConstantConditions
+                ScannerContract.onInvalidBarcodeBeep(getContext());
+                showError(mVb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code,
+                                                 code.asText()));
+
+                if (mVm.getScannerMode() == SearchBookByIsbnViewModel.SCANNER_MODE_BATCH) {
+                    // batch mode, scan next book
+                    scan();
+                } else {
+                    // single-scan mode, quit scanning, let the user edit the code
+                    mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_OFF);
+                    mVb.isbn.setText(code.asText());
+                }
+            }
+
+        } else if (mVm.getScannerMode() == SearchBookByIsbnViewModel.SCANNER_MODE_BATCH) {
+            // no barcode received, batch mode, quit scanning and present the queue to the user
+            mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_OFF);
+            populateQueueView();
+
+        } else {
+            // no barcode received, single-scan mode, quit scanning
+            mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_OFF);
+        }
+    }
+
+    /**
+     * The user entered a barcode and clicked the search button.
+     */
+    private void onBarcodeEntered(@NonNull final View btn) {
+        //noinspection ConstantConditions
+        final String userEntry = mVb.isbn.getText().toString().trim();
         final boolean strictIsbn = mCoordinator.isStrictIsbn();
         final ISBN code = new ISBN(userEntry, strictIsbn);
 
-        // not a valid code ?
-        if (!code.isValid(strictIsbn)) {
-            if (mInScanMode) {
-                onInvalidBarcodeBeep();
-            }
-
+        if (code.isValid(strictIsbn)) {
+            prepareSearch(code);
+        } else {
             showError(mVb.lblIsbn, getString(R.string.warning_x_is_not_a_valid_code, userEntry));
-
-            if (mInScanMode) {
-                scan();
-            }
-            return;
         }
+    }
 
-        // at this point, we know we have a searchable code
+    /**
+     * Search with ISBN or, if allowed, with a generic code.
+     *
+     * @param code to search for
+     */
+    private void prepareSearch(@NonNull final ISBN code) {
         mCoordinator.setIsbnSearchText(code.asText());
 
-        if (strictIsbn && mInScanMode) {
-            onValidBarcodeBeep();
-        }
-
         // See if ISBN already exists in our database, if not then start the search.
-        final ArrayList<Long> existingIds = mVm.getBookIdsByIsbn(code);
+        final ArrayList<Pair<Long, String>> existingIds = mVm.getBookIdAndTitlesByIsbn(code);
         if (existingIds.isEmpty()) {
             startSearch();
+
         } else {
+            // always quit scanning as the safe option, the user can restart the scanner,
+            // or restart the queue processing at will.
+            mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_OFF);
+
             // we always use the first one... really should offer the user a choice.
-            final long firstFound = existingIds.get(0);
+            final long firstFound = existingIds.get(0).first;
+            // Show the "title (isbn)" with a caution message
+            final String msg = getString(R.string.a_bracket_b_bracket,
+                                         existingIds.get(0).second, code.asText())
+                               + "\n\n" + getString(R.string.confirm_duplicate_book_message);
+
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_warning)
                     .setTitle(R.string.lbl_duplicate_book)
-                    .setMessage(R.string.confirm_duplicate_book_message)
+                    .setMessage(msg)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)
                     // User aborts this isbn
-                    .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                        onClearPreviousSearchCriteria();
-                        if (mInScanMode) {
-                            scan();
-                        }
-                    })
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> onClearSearchCriteria())
                     // User wants to review the existing book
                     .setNeutralButton(R.string.action_edit, (d, w)
                             -> mEditExistingBookLauncher.launch(firstFound))
@@ -315,8 +391,7 @@ public class SearchBookByIsbnFragment
         // So a valid result means we either need a title, or a third field.
         final String title = bookData.getString(DBDefinitions.KEY_TITLE);
         if ((title == null || title.isEmpty()) && bookData.size() <= 2) {
-            Snackbar.make(mVb.isbn, R.string.warning_no_matching_book_found,
-                          Snackbar.LENGTH_LONG).show();
+            showError(mVb.lblIsbn, R.string.warning_no_matching_book_found);
             return;
         }
         // edit book
@@ -326,44 +401,55 @@ public class SearchBookByIsbnFragment
     @Override
     void onSearchCancelled() {
         super.onSearchCancelled();
-        // Leave scan mode until the user manually starts it again
-        mInScanMode = false;
+        // Quit scan mode until the user manually starts it again
+        mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_OFF);
     }
 
     @Override
-    void onClearPreviousSearchCriteria() {
-        super.onClearPreviousSearchCriteria();
-        mVb.isbn.setText("");
+    void onClearSearchCriteria() {
+        super.onClearSearchCriteria();
+        //mVb.isbn.setText("");
     }
 
     @Override
     void onBookEditingDone(@Nullable final Bundle data) {
         super.onBookEditingDone(data);
-        // go scan next book until the user cancels scanning.
-        if (mInScanMode) {
+        if (mVm.getScannerMode() == SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE) {
+            // scan another book until the user cancels
             scan();
         }
     }
 
-    /**
-     * Optionally beep if the scan succeeded.
-     */
-    private void onValidBarcodeBeep() {
-        //noinspection ConstantConditions
-        if (PreferenceManager.getDefaultSharedPreferences(getContext())
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_valid, false)) {
-            SoundManager.playFile(getContext(), R.raw.beep_high);
+    private void populateQueueView() {
+        if (mVb.queue.getChildCount() > 0) {
+            mVb.queue.removeAllViews();
         }
+
+        //noinspection SimplifyStreamApiCallChains
+        mVm.getScanQueue().stream().forEachOrdered(code -> {
+            //noinspection ConstantConditions
+            final Chip chip = new Chip(getContext(), null, R.attr.appChipQueueStyle);
+            // RTL-friendly Chip Layout
+            chip.setLayoutDirection(View.LAYOUT_DIRECTION_LOCALE);
+            chip.setOnClickListener(v -> {
+                final ISBN clickedCode = removeFromQueue(v);
+                mVb.isbn.setText(clickedCode.asText());
+                prepareSearch(clickedCode);
+            });
+            chip.setOnCloseIconClickListener(this::removeFromQueue);
+            chip.setTag(code);
+            chip.setText(code.asText());
+            mVb.queue.addView(chip);
+        });
+
+        mVb.queueGroup.setVisibility(mVb.queue.getChildCount() > 0 ? View.VISIBLE : View.GONE);
     }
 
-    /**
-     * Optionally beep if the scan failed.
-     */
-    private void onInvalidBarcodeBeep() {
-        //noinspection ConstantConditions
-        if (PreferenceManager.getDefaultSharedPreferences(getContext())
-                             .getBoolean(Prefs.pk_sounds_scan_isbn_invalid, true)) {
-            SoundManager.playFile(getContext(), R.raw.beep_low);
-        }
+    private ISBN removeFromQueue(@NonNull final View chip) {
+        final ISBN code = (ISBN) chip.getTag();
+        mVb.queue.removeView(chip);
+        mVb.queueGroup.setVisibility(mVb.queue.getChildCount() > 0 ? View.VISIBLE : View.GONE);
+        mVm.getScanQueue().remove(code);
+        return code;
     }
 }

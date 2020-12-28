@@ -82,6 +82,7 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
         <item name="appChipDisplayStyle">@style/Field.Chip.Display</item>
         <item name="appChipFilterStyle">@style/Field.Chip.Filter</item>
+        <item name="appChipQueueStyle">@style/Field.Chip.Queue</item>
 
         <!-- MaterialComponents overrides. -->
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>

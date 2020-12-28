@@ -24,6 +24,7 @@
     <!-- Chip components created from code use these style attr values. -->
     <attr name="appChipDisplayStyle" format="reference" />
     <attr name="appChipFilterStyle" format="reference" />
+    <attr name="appChipQueueStyle" format="reference" />
 
     <!-- The card "cardBackgroundColor" for a book on the BoB screen. -->
     <attr name="appBookCardBackgroundColor" format="reference|color" />

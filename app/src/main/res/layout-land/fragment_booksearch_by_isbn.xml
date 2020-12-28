@@ -29,7 +29,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="center_horizontal"
     >
@@ -38,7 +38,7 @@
         android:id="@+id/lbl_isbn"
         style="@style/Envelope.EditText.Isbn"
         app:layout_constraintEnd_toStartOf="@id/isbn_del"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier_keypad_start"
         app:layout_constraintTop_toTopOf="parent"
         >
 
@@ -75,7 +75,7 @@
         style="@style/IsbnKeyPad.NumberButton"
         android:text="1"
         app:layout_constraintEnd_toStartOf="@id/key_2"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier_keypad_start"
         app:layout_constraintTop_toBottomOf="@id/keypadSpacer"
         tools:ignore="HardcodedText"
         />
@@ -105,7 +105,7 @@
         style="@style/IsbnKeyPad.NumberButton"
         android:text="4"
         app:layout_constraintEnd_toStartOf="@id/key_5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier_keypad_start"
         app:layout_constraintTop_toBottomOf="@id/key_1"
         tools:ignore="HardcodedText"
         />
@@ -135,7 +135,7 @@
         style="@style/IsbnKeyPad.NumberButton"
         android:text="7"
         app:layout_constraintEnd_toStartOf="@id/key_8"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier_keypad_start"
         app:layout_constraintTop_toBottomOf="@id/key_4"
         tools:ignore="HardcodedText"
         />
@@ -165,7 +165,7 @@
         style="@style/IsbnKeyPad.NumberButton"
         android:text="X"
         app:layout_constraintEnd_toStartOf="@id/key_0"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barrier_keypad_start"
         app:layout_constraintTop_toBottomOf="@id/key_7"
         tools:ignore="HardcodedText"
         />
@@ -187,6 +187,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/key_0"
         app:layout_constraintTop_toBottomOf="@id/key_9"
+        />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_keypad_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="end"
+        app:constraint_referenced_ids="lbl_queue,queue"
         />
 
     <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
@@ -220,41 +228,38 @@
         android:contentDescription="@string/btn_clear_queue"
         android:src="@drawable/ic_chip_close_circle"
         app:layout_constraintStart_toEndOf="@id/lbl_queue"
-        app:layout_constraintTop_toBottomOf="@id/btn_search"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/queue"
         style="@style/Field.ChipGroup"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/border1"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/lbl_isbn"
         app:layout_constraintStart_toStartOf="@id/lbl_queue"
         app:layout_constraintTop_toBottomOf="@id/lbl_queue"
         tools:visibility="visible"
         >
-
         <!--        <com.google.android.material.chip.Chip-->
         <!--            android:layout_width="wrap_content"-->
         <!--            android:layout_height="wrap_content"-->
-        <!--            app:closeIconVisible="true"-->
         <!--            tools:text="@sample/data.json/isbn/d13"-->
+        <!--            app:closeIconVisible="true"-->
         <!--            />-->
-
         <!--        <com.google.android.material.chip.Chip-->
         <!--            android:layout_width="wrap_content"-->
         <!--            android:layout_height="wrap_content"-->
-        <!--            app:closeIconVisible="true"-->
         <!--            tools:text="@sample/data.json/isbn/d13"-->
+        <!--            app:closeIconVisible="true"-->
         <!--            />-->
-
         <!--        <com.google.android.material.chip.Chip-->
         <!--            android:layout_width="wrap_content"-->
         <!--            android:layout_height="wrap_content"-->
-        <!--            app:closeIconVisible="true"-->
         <!--            tools:text="@sample/data.json/isbn/d13"-->
+        <!--            app:closeIconVisible="true"-->
         <!--            />-->
     </com.google.android.material.chip.ChipGroup>
 

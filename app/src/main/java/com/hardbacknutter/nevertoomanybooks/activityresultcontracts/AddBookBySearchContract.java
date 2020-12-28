@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.SearchBookByIsbnFragment;
 import com.hardbacknutter.nevertoomanybooks.SearchBookByTextFragment;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByIsbnViewModel;
 
 /**
  * <ul>
@@ -60,7 +61,8 @@ public class AddBookBySearchContract
 
             case Scan:
                 intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookByIsbnFragment.TAG)
-                      .putExtra(SearchBookByIsbnFragment.BKEY_SCAN_MODE, true);
+                      .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
+                                SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
                 break;
 
             case ExternalId:

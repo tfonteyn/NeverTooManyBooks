@@ -127,13 +127,21 @@
         <item name="ensureMinTouchTargetSize">true</item>
         -->
     <style name="Field.Chip.Display" parent="Base.Widget.MaterialComponents.Chip">
+        <item name="closeIconVisible">false</item>
+        <item name="android:checkable">false</item>
+        <item name="android:clickable">false</item>
+
         <item name="chipCornerRadius">12dp</item>
         <item name="chipMinHeight">24dp</item>
         <item name="android:textSize">12sp</item>
         <item name="ensureMinTouchTargetSize">false</item>
-        <item name="closeIconVisible">false</item>
+    </style>
+
+    <!-- Queue type view: the user can tap the chip for actioning, or tap the close icon to remove it -->
+    <style name="Field.Chip.Queue" parent="Base.Widget.MaterialComponents.Chip">
+        <item name="closeIconVisible">true</item>
         <item name="android:checkable">false</item>
-        <item name="android:clickable">false</item>
+        <item name="android:clickable">true</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -286,10 +294,10 @@
 
     <!-- Base style for the isbn search keyboard; not to be used directly in layouts. -->
     <style name="IsbnKeyPad" parent="Widget.MaterialComponents.Button">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">0dp</item>
-        <item name="android:layout_marginStart">@dimen/isbn_key_pad_key_margin</item>
-        <item name="android:layout_marginEnd">@dimen/isbn_key_pad_key_margin</item>
+        <item name="android:layout_width">@dimen/isbn_keypad_key_width</item>
+        <item name="android:layout_height">@dimen/isbn_keypad_key_height</item>
+        <item name="android:layout_marginStart">@dimen/isbn_keypad_key_margin</item>
+        <item name="android:layout_marginEnd">@dimen/isbn_keypad_key_margin</item>
     </style>
 
     <!-- 0..9 and X -->
@@ -301,8 +309,9 @@
     </style>
 
     <style name="IsbnKeyPad.BackspaceButton">
-        <item name="android:paddingLeft">@dimen/isbn_key_pad_backspace_button_icon_padding_left</item>
-        <item name="android:layout_width">@dimen/isbn_key_pad_backspace_button_width</item>
+        <item name="android:paddingLeft">@dimen/isbn_keypad_backspace_key_icon_padding</item>
+        <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="icon">@drawable/ic_backspace</item>
     </style>
 

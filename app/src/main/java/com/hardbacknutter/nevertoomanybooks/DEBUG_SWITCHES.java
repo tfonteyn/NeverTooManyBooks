@@ -103,6 +103,9 @@ public final class DEBUG_SWITCHES {
     /** Enable strict mode reporting on network,disc,... usage. */
     public static final boolean STRICT_MODE = false;
 
+
+    public static final boolean FAKE_BARCODE_SCANNER = false;
+
     private DEBUG_SWITCHES() {
     }
 }
