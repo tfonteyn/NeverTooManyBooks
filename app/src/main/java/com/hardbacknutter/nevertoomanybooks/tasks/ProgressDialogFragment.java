@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
@@ -192,7 +193,15 @@ public class ProgressDialogFragment
                                 final int currentPosition,
                                 final int maxPosition) {
 
-        mVb.progressBar.setIndeterminate(isIndeterminate);
+        if (mVb.progressBar.isIndeterminate() != isIndeterminate) {
+            // Flipping the new com.google.android.material.progressindicator.*
+            // from determinate to indeterminate requires this step.
+            // For simplicity, we do it the other way around as well.
+            mVb.progressBar.setVisibility(View.INVISIBLE);
+            mVb.progressBar.setIndeterminate(isIndeterminate);
+            mVb.progressBar.setVisibility(View.VISIBLE);
+        }
+
         mVb.progressBar.setProgress(currentPosition);
         if (!isIndeterminate && maxPosition > 0) {
             mVb.progressBar.setMax(maxPosition);
