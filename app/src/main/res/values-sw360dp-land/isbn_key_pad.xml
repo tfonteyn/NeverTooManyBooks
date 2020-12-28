@@ -25,7 +25,5 @@
     land:  w640dp h336dp
 -->
 <resources>
-    <!-- Reminder: standard toolbar height is 56dp.
-         i.e. 336 - 56 = 240 -->
-    <dimen name="isbn_key_pad_max_height">280dp</dimen>
+    <dimen name="isbn_keypad_key_height">64dp</dimen>
 </resources>
