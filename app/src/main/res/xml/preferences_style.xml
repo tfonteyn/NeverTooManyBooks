@@ -110,7 +110,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_baseline_format_line_spacing_24"
+            android:icon="@drawable/ic_format_line_spacing"
             android:key="style.booklist.group.height"
             android:summaryOff="@string/size_small"
             android:summaryOn="@string/size_large"
