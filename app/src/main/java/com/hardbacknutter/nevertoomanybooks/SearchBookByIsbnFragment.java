@@ -20,6 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
@@ -39,9 +41,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.chip.Chip;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
@@ -61,10 +64,10 @@ public class SearchBookByIsbnFragment
     /** Log tag. */
     public static final String TAG = "BookSearchByIsbnFrag";
     private static final String BKEY_STARTED = TAG + ":started";
-
+    /** See remarks in {@link com.hardbacknutter.nevertoomanybooks.backup.ImportFragment}. */
+    private static final String MIME_TYPES = "*/*";
     /** flag indicating the scanner is already started. */
     private boolean mScannerStarted;
-
     /** View Binding. */
     private FragmentBooksearchByIsbnBinding mVb;
     /** manage the validation check next to the field. */
@@ -77,6 +80,9 @@ public class SearchBookByIsbnFragment
     /** The scanner. */
     private final ActivityResultLauncher<Fragment> mScannerLauncher =
             registerForActivityResult(new ScannerContract(), this::onBarcodeScanned);
+    /** Importing a list of ISBN. */
+    private final ActivityResultLauncher<String> mOpenUriLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -188,6 +194,12 @@ public class SearchBookByIsbnFragment
             .setIcon(R.drawable.ic_barcode_batch)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
+        menu.add(Menu.NONE, R.id.MENU_SCAN_BARCODE_IMPORT,
+                 r.getInteger(R.integer.MENU_ORDER_SCAN_BARCODE_IMPORT),
+                 R.string.menu_import)
+            .setIcon(R.drawable.ic_file_download)
+            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+
         menu.add(Menu.NONE, R.id.MENU_ISBN_VALIDITY_STRICT,
                  r.getInteger(R.integer.MENU_ORDER_SEARCH_STRICT_ISBN),
                  R.string.lbl_strict_isbn)
@@ -210,6 +222,10 @@ public class SearchBookByIsbnFragment
         } else if (itemId == R.id.MENU_SCAN_BARCODE_BATCH) {
             mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_MODE_BATCH);
             scan();
+            return true;
+
+        } else if (itemId == R.id.MENU_SCAN_BARCODE_IMPORT) {
+            mOpenUriLauncher.launch(MIME_TYPES);
             return true;
 
         } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
@@ -284,11 +300,8 @@ public class SearchBookByIsbnFragment
                 }
 
                 if (mVm.getScannerMode() == SearchBookByIsbnViewModel.SCANNER_MODE_BATCH) {
-                    // batch mode, queue the code (but avoid duplicates), and scan next book
-                    final List<ISBN> scanQueue = mVm.getScanQueue();
-                    if (!scanQueue.contains(code)) {
-                        scanQueue.add(code);
-                    }
+                    // batch mode, queue the code, and scan next book
+                    mVm.addToQueue(code);
                     scan();
 
                 } else {
@@ -417,6 +430,20 @@ public class SearchBookByIsbnFragment
         if (mVm.getScannerMode() == SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE) {
             // scan another book until the user cancels
             scan();
+        }
+    }
+
+    private void onOpenUri(@Nullable final Uri uri) {
+        if (uri != null) {
+            try {
+                //noinspection ConstantConditions
+                mVm.readQueue(getContext(), uri, mCoordinator.isStrictIsbn());
+            } catch (@NonNull final IOException ignore) {
+                Snackbar.make(mVb.getRoot(), R.string.error_import_failed, Snackbar.LENGTH_LONG)
+                        .show();
+            }
+
+            populateQueueView();
         }
     }
 
