@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 import android.content.Context;
 import android.net.Uri;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -35,8 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -45,28 +42,17 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
-import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 public class ExportHelper {
-
-    /**
-     * Do an incremental backup.
-     * <ul>
-     *     <li>0: all books</li>
-     *     <li>1: books added/updated since last backup</li>
-     * </ul>
-     */
-    static final int OPTION_INCREMENTAL = 1;
 
     /** Log tag. */
     private static final String TAG = "ExportHelper";
@@ -83,9 +69,14 @@ public class ExportHelper {
     /** Set by the user; defaults to ZIP. */
     @NonNull
     private ArchiveEncoding mArchiveEncoding = ArchiveEncoding.Zip;
-    /** Bitmask. Contains extra options for the {@link RecordWriter}. */
-    @Options
-    private int mOptions;
+    /**
+     * Do an incremental backup.
+     * <ul>
+     *     <li>{@code false}: all books</li>
+     *     <li>{@code true}: books added/updated since last backup</li>
+     * </ul>
+     */
+    private boolean mIncremental;
     /** Incremental backup; the date of the last full backup. */
     @Nullable
     private LocalDateTime mFromUtcDateTime;
@@ -157,7 +148,8 @@ public class ExportHelper {
             }
         }
 
-        if ((mOptions & OPTION_INCREMENTAL) != 0) {
+        // set the date before we pass control to the writer.
+        if (mIncremental) {
             mFromUtcDateTime = getLastFullBackupDate(context);
         } else {
             mFromUtcDateTime = null;
@@ -203,7 +195,7 @@ public class ExportHelper {
         }
 
         // if the backup was a full backup remember that.
-        if ((mOptions & OPTION_INCREMENTAL) != 0) {
+        if (!mIncremental) {
             setLastFullBackupDate(context);
         }
 
@@ -223,17 +215,14 @@ public class ExportHelper {
 
 
     /**
-     * Get the date-since.
+     * For an incremental backup: get the date of the last full backup.
+     * Returns {@code null} if a full backup is requested.
      *
      * @return date (UTC based), or {@code null} if not in use
      */
     @Nullable
     public LocalDateTime getUtcDateTimeSince() {
-        if ((mOptions & OPTION_INCREMENTAL) != 0) {
-            return mFromUtcDateTime;
-        } else {
-            return null;
-        }
+        return mFromUtcDateTime;
     }
 
     /**
@@ -295,42 +284,22 @@ public class ExportHelper {
 
 
     boolean isIncremental() {
-        return (mOptions & OPTION_INCREMENTAL) != 0;
+        return mIncremental;
     }
 
-    void setIncremental(final boolean isSet) {
-        if (isSet) {
-            mOptions |= OPTION_INCREMENTAL;
-        } else {
-            mOptions &= ~OPTION_INCREMENTAL;
-        }
-    }
-
-    @Options
-    public int getOptions() {
-        return mOptions;
+    void setIncremental(final boolean incremental) {
+        mIncremental = incremental;
     }
 
     @Override
     @NonNull
     public String toString() {
-        final StringJoiner options = new StringJoiner(",", "[", "]");
-        if ((mOptions & OPTION_INCREMENTAL) != 0) {
-            options.add("INCREMENTAL");
-        }
-
         return "ExportHelper{"
                + "mExportEntities=" + mExportEntries
-               + ", mOptions=0b" + Integer.toBinaryString(mOptions) + ": " + options.toString()
                + ", mUri=" + mUri
                + ", mArchiveEncoding=" + mArchiveEncoding
+               + ", mIncremental=" + mIncremental
                + ", mFromUtcDateTime=" + mFromUtcDateTime
                + '}';
-    }
-
-    @IntDef(flag = true, value = OPTION_INCREMENTAL)
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface Options {
-
     }
 }

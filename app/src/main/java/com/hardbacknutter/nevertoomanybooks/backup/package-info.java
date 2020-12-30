@@ -29,7 +29,7 @@
  * <li>zip: all data in json format + covers == full backup</li>
  * </ul>
  * zip can be forced (by changing the version number in the code + recompiling)
- * to contain csv encoded books and/or xml encoded preferences/styles
+ * to contain csv encoded books
  *
  * <ul>Archives read:
  * <li>csv: books only</li>
