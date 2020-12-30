@@ -240,8 +240,7 @@ public abstract class ArchiveWriterAbstract
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
              RecordWriter recordWriter = encoding.createWriter(mHelper.getUtcDateTimeSince())) {
-            mResults.add(recordWriter.write(context, bw, EnumSet.of(recordType),
-                                            mHelper.getOptions(), progressListener));
+            mResults.add(recordWriter.write(context, bw, EnumSet.of(recordType), progressListener));
         }
         putByteArray(recordType.getName() + encoding.getFileExt(), os.toByteArray(), true);
     }
@@ -279,8 +278,7 @@ public abstract class ArchiveWriterAbstract
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
              RecordWriter recordWriter = encoding.createWriter(mHelper.getUtcDateTimeSince())) {
-            mResults.add(recordWriter.write(context, bw, recordTypes, mHelper.getOptions(),
-                                            progressListener));
+            mResults.add(recordWriter.write(context, bw, recordTypes, progressListener));
         }
     }
 

@@ -102,9 +102,7 @@ public class JsonArchiveWriter
             // 2. container object
             bw.write("\"" + RecordType.AutoDetect.getName() + "\":");
             // 3. the actual data inside the container
-            results = recordWriter.write(context, bw,
-                                         EnumSet.of(RecordType.Books),
-                                         mHelper.getOptions(),
+            results = recordWriter.write(context, bw, EnumSet.of(RecordType.Books),
                                          progressListener);
             // 4. the metadata
             bw.write(",\"" + RecordType.MetaData.getName() + "\":");

@@ -75,8 +75,7 @@ public class CsvArchiveWriter
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
              RecordWriter recordWriter = new CsvRecordWriter(mHelper.getUtcDateTimeSince())) {
 
-            return recordWriter.write(context, bw, EnumSet.of(RecordType.Books),
-                                      mHelper.getOptions(), progressListener);
+            return recordWriter.write(context, bw, EnumSet.of(RecordType.Books), progressListener);
         }
     }
 }

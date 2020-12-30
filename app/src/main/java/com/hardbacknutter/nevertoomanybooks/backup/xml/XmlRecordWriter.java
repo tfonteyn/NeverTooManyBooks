@@ -37,7 +37,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
@@ -130,7 +129,6 @@ public class XmlRecordWriter
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
                                @NonNull final Set<RecordType> entries,
-                               @ExportHelper.Options final int options,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 

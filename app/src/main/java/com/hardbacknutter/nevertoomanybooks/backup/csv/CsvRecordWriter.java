@@ -32,7 +32,6 @@ import java.io.Writer;
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
@@ -80,7 +79,6 @@ public class CsvRecordWriter
     public ExportResults write(@NonNull final Context context,
                                @NonNull final Writer writer,
                                @NonNull final Set<RecordType> entries,
-                               @ExportHelper.Options final int options,
                                @NonNull final ProgressListener progressListener)
             throws IOException {
 

@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -70,7 +69,6 @@ public interface RecordWriter
      * @param context          Current context
      * @param writer           Writer to write to
      * @param entries          The set of entries which should be written.
-     * @param options          what to write and how
      * @param progressListener Progress and cancellation interface
      *
      * @return {@link ExportResults}
@@ -82,7 +80,6 @@ public interface RecordWriter
     ExportResults write(@NonNull Context context,
                         @NonNull Writer writer,
                         @NonNull Set<RecordType> entries,
-                        @ExportHelper.Options int options,
                         @NonNull ProgressListener progressListener)
             throws IOException;
 

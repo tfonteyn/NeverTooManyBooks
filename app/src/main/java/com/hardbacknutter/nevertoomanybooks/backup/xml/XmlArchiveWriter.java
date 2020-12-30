@@ -89,8 +89,7 @@ public class XmlArchiveWriter
                      + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(VERSION) + ">\n");
 
             final ExportResults results =
-                    recordWriter.write(context, bw, EnumSet.of(RecordType.Books),
-                                       mHelper.getOptions(), progressListener);
+                    recordWriter.write(context, bw, EnumSet.of(RecordType.Books), progressListener);
 
             recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
 
