@@ -52,13 +52,6 @@
             android:key="ui.theme"
             android:title="@string/pt_ui_theme" />
 
-        <Preference
-            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
-            android:icon="@drawable/ic_visibility"
-            android:key="psk_fields_visibility"
-            android:title="@string/pg_ui_field_visibility"
-            />
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -184,6 +177,14 @@
 
     <PreferenceCategory
         android:title="@string/lbl_advanced_options">
+
+        <Preference
+            android:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
+            android:icon="@drawable/ic_visibility"
+            android:key="psk_fields_visibility"
+            android:title="@string/pg_ui_field_visibility"
+            />
+
         <SwitchPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_tab"
