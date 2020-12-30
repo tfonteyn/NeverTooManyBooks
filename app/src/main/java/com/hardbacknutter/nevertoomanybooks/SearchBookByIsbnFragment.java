@@ -254,7 +254,7 @@ public class SearchBookByIsbnFragment
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.FAKE_BARCODE_SCANNER) {
             // Goodreads best books of 2020
-            final String[] TEST_CODES = {
+            final String[] testCodes = {
                     // random == 0 -> cancel scanning
                     null,
                     "9780316310420",
@@ -269,7 +269,7 @@ public class SearchBookByIsbnFragment
                     "9780063032491",
                     };
             final int random = (int) Math.floor(Math.random() * 10);
-            barCode = TEST_CODES[random];
+            barCode = testCodes[random];
             Log.d(TAG, "onBarcodeScanned|Faking barcode=" + barCode);
         }
 
