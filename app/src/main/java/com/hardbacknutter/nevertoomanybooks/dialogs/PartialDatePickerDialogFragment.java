@@ -147,7 +147,16 @@ public class PartialDatePickerDialogFragment
         mDialogTitleId = args.getInt(BKEY_DIALOG_TITLE);
         mFieldId = args.getInt(BKEY_FIELD_ID);
 
-        setupDate(savedInstanceState);
+        if (savedInstanceState == null) {
+            // BKEY_DATE is only present in the original args
+            parseDate(args.getString(BKEY_DATE));
+        } else {
+            // These are only present in the savedInstanceState
+            mYear = savedInstanceState.getInt(SIS_YEAR);
+            mMonth = savedInstanceState.getInt(SIS_MONTH);
+            mDay = savedInstanceState.getInt(SIS_BKEY_DAY);
+        }
+
         // can't have a 0 year. (but month/day can be 0)
         // The user can/should use the "clear" button if they want no date at all.
         if (mYear == 0) {
@@ -315,25 +324,6 @@ public class PartialDatePickerDialogFragment
                     parent.addView(y);
                     break;
             }
-        }
-    }
-
-    /**
-     * Common setup for the pickers.
-     *
-     * @param savedInstanceState from #onCreateDialog
-     */
-    private void setupDate(@Nullable final Bundle savedInstanceState) {
-
-        final Bundle args = savedInstanceState != null ? savedInstanceState : requireArguments();
-        if (args.containsKey(BKEY_DATE)) {
-            // BKEY_DATE is only present in the original args
-            parseDate(args.getString(BKEY_DATE));
-        } else {
-            // These are only present in the savedInstanceState
-            mYear = args.getInt(SIS_YEAR);
-            mMonth = args.getInt(SIS_MONTH);
-            mDay = args.getInt(SIS_BKEY_DAY);
         }
     }
 

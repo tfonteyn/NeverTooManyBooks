@@ -87,21 +87,19 @@ public class SearchBookByExternalIdFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mVm = new ViewModelProvider(this)
-                .get(SearchBookByExternalIdViewModel.class);
+        mVm = new ViewModelProvider(this).get(SearchBookByExternalIdViewModel.class);
 
         //noinspection ConstantConditions
         getActivity().setTitle(R.string.fab_add_book_by_external_id);
 
-        final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
-        if (args != null) {
-            final int checkedId = args.getInt(SIS_SELECTED_RB_ID, View.NO_ID);
+        if (savedInstanceState != null) {
+            final int checkedId = savedInstanceState.getInt(SIS_SELECTED_RB_ID, View.NO_ID);
             if (checkedId != View.NO_ID) {
                 final RadioButton btn = mVb.getRoot().findViewById(checkedId);
                 if (btn.getVisibility() == View.VISIBLE) {
                     btn.setChecked(true);
                     mVb.externalId.setEnabled(true);
-                    mVb.externalId.setText(args.getString(SIS_USER_INPUT, ""));
+                    mVb.externalId.setText(savedInstanceState.getString(SIS_USER_INPUT, ""));
                 }
             }
         }
