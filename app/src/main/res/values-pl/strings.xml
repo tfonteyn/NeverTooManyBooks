@@ -63,7 +63,7 @@
     <string name="btn_email">Wyślij e-maila</string>
     <string name="btn_options">Opcje</string>
     <string name="action_reset">Resetuj</string>
-    <string name="menu_scan_barcode">Zeskanuj kod kreskowy</string>
+    <string name="menu_barcode_scan">Zeskanuj kod kreskowy</string>
     <string name="btn_learn_more">Więcej informacji</string>
     <string name="btn_this_book">Ta książka</string>
     <string name="bytes">%.0fB</string>
@@ -683,4 +683,7 @@
     <string name="unknown_title">[Nieznany tytuł]</string>
     <string name="error_import_csv_column_count_mismatch">Nieprawidłowa liczba kolumn w wierszu %1$d</string>
     <string name="error_import_csv_line">Nieznany błąd w wierszu %1$d</string>
+    <string name="menu_barcode_scan_continuous">Skanuj w sposób ciągły</string>
+    <string name="lbl_queue">Kolejka</string>
+    <string name="btn_clear_queue">Wyczyść kolejkę</string>
 </resources>

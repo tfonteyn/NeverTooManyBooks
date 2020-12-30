@@ -63,7 +63,7 @@
     <string name="btn_email">Poslat e-mail</string>
     <string name="btn_options">Možnosti</string>
     <string name="action_reset">Resetovat</string>
-    <string name="menu_scan_barcode">Naskenujte čárový kód</string>
+    <string name="menu_barcode_scan">Naskenujte čárový kód</string>
     <string name="btn_learn_more">Další informace</string>
     <string name="btn_this_book">Tato kniha</string>
     <string name="bytes">%.0fB</string>
@@ -684,4 +684,7 @@
     <string name="unknown_title">[Neznámý název]</string>
     <string name="error_import_csv_column_count_mismatch">Nesprávný počet sloupců v řádku %1$d</string>
     <string name="error_import_csv_line">Neznámá chyba v řádku %1$d</string>
+    <string name="menu_barcode_scan_continuous">Skenujte nepřetržitě</string>
+    <string name="lbl_queue">Fronta</string>
+    <string name="btn_clear_queue">Vymazat frontu</string>
 </resources>

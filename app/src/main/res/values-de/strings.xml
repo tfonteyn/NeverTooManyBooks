@@ -73,7 +73,7 @@
     <string name="btn_less_ellipsis">Weniger…</string>
     <string name="btn_more_ellipsis">Mehr…</string>
     <string name="btn_options">Optionen</string>
-    <string name="menu_scan_barcode">Barcode scannen</string>
+    <string name="menu_barcode_scan">Barcode scannen</string>
     <string name="btn_show_list">Liste anzeigen</string>
     <string name="btn_this_book">Dieses Buch</string>
     <string name="bytes">%.0fB</string>
@@ -689,4 +689,7 @@
     <string name="error_import_csv_column_count_mismatch">Falsche Spaltenanzahl in Zeile %1$d</string>
     <string name="error_import_csv_line">Unbekannter Fehler in Zeile %1$d</string>
     <string name="lbl_archive_format_json_info">Alle Daten im JSON-Format.</string>
+    <string name="menu_barcode_scan_continuous">Durchgehend scannen</string>
+    <string name="lbl_queue">Warteschlange</string>
+    <string name="btn_clear_queue">Warteschlange löschen</string>
 </resources>

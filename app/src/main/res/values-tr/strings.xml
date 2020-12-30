@@ -64,7 +64,7 @@
     <string name="btn_email">E-posta</string>
     <string name="btn_options">Seçenekler</string>
     <string name="action_reset">Sıfırla</string>
-    <string name="menu_scan_barcode">Barkod tara</string>
+    <string name="menu_barcode_scan">Barkod tara</string>
     <string name="btn_learn_more">Daha fazla bilgi</string>
     <string name="btn_this_book">Bu kitap</string>
     <string name="bytes">%.0fB</string>
@@ -684,4 +684,7 @@
     <string name="unknown_title">[Bilinmeyen başlık]</string>
     <string name="error_import_csv_column_count_mismatch">Satırda yanlış sütun sayısı %1$d</string>
     <string name="error_import_csv_line">%1$d. satırda bilinmeyen hata</string>
+    <string name="menu_barcode_scan_continuous">Sürekli tara</string>
+    <string name="lbl_queue">Kuyruk</string>
+    <string name="btn_clear_queue">Sırayı temizle</string>
 </resources>

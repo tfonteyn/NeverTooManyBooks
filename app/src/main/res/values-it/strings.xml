@@ -64,7 +64,7 @@
     <string name="btn_email">Invia email</string>
     <string name="btn_options">Opzioni</string>
     <string name="action_reset">Reimposta</string>
-    <string name="menu_scan_barcode">Scansione codice a barre</string>
+    <string name="menu_barcode_scan">Scansione codice a barre</string>
     <string name="btn_learn_more">Ulteriori informazioni</string>
     <string name="btn_this_book">Questo libro</string>
     <string name="bytes">%.0fB</string>
@@ -686,4 +686,7 @@
     <string name="unknown_title">[Titolo sconosciuto]</string>
     <string name="error_import_csv_column_count_mismatch">Conteggio colonne errato nella riga %1$d</string>
     <string name="error_import_csv_line">Errore sconosciuto nella riga %1$d</string>
+    <string name="menu_barcode_scan_continuous">Scansiona continuamente</string>
+    <string name="lbl_queue">Coda</string>
+    <string name="btn_clear_queue">Cancella coda</string>
 </resources>

@@ -64,7 +64,7 @@
     <string name="btn_email">Ηλεκτρονικό ταχυδρομείο</string>
     <string name="btn_options">Επιλογές</string>
     <string name="action_reset">Επαναφορά</string>
-    <string name="menu_scan_barcode">Σάρωση γραμμωτού κώδικα</string>
+    <string name="menu_barcode_scan">Σάρωση γραμμωτού κώδικα</string>
     <string name="btn_learn_more">Μάθετε περισσότερα</string>
     <string name="btn_this_book">Αυτό το βιβλίο</string>
     <string name="bytes">%.0fB</string>
@@ -688,4 +688,7 @@
     <string name="unknown_title">[Άγνωστος τίτλος]</string>
     <string name="error_import_csv_column_count_mismatch">Λανθασμένος αριθμός στηλών στη σειρά %1$d</string>
     <string name="error_import_csv_line">Άγνωστο σφάλμα στη σειρά %1$d</string>
+    <string name="menu_barcode_scan_continuous">Σάρωση συνεχώς</string>
+    <string name="lbl_queue">Ουρά</string>
+    <string name="btn_clear_queue">Εκκαθάριση ουράς</string>
 </resources>

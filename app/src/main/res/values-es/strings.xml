@@ -65,7 +65,7 @@
     <string name="btn_email">Enviar correo</string>
     <string name="btn_options">Opciones</string>
     <string name="action_reset">Restablecer</string>
-    <string name="menu_scan_barcode">Escanear código de barras</string>
+    <string name="menu_barcode_scan">Escanear código de barras</string>
     <string name="btn_learn_more">Más información</string>
     <string name="btn_this_book">Este libro</string>
     <string name="bytes">%.0fB</string>
@@ -687,4 +687,7 @@
     <string name="unknown_title">[Título desconocido]</string>
     <string name="error_import_csv_column_count_mismatch">Recuento de columnas incorrecto en la fila %1$d</string>
     <string name="error_import_csv_line">Error desconocido en la fila %1$d</string>
+    <string name="menu_barcode_scan_continuous">Escanear continuamente</string>
+    <string name="lbl_queue">Cola</string>
+    <string name="btn_clear_queue">Borrar cola</string>
 </resources>

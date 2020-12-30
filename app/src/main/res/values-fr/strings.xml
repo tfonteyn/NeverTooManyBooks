@@ -74,7 +74,7 @@
     <string name="btn_less_ellipsis">Moins…</string>
     <string name="btn_more_ellipsis">Plus…</string>
     <string name="btn_options">Options</string>
-    <string name="menu_scan_barcode">Scan code à barres</string>
+    <string name="menu_barcode_scan">Scan code à barres</string>
     <string name="btn_show_list">Afficher la liste</string>
     <string name="btn_this_book">Ce livre</string>
     <string name="bytes">%.0f octets</string>
@@ -691,4 +691,7 @@
     <string name="error_import_csv_column_count_mismatch">Nombre de colonnes incorrect dans la ligne %1$d</string>
     <string name="error_import_csv_line">Erreur inconnue à la ligne %1$d</string>
     <string name="lbl_archive_format_json_info">Toutes les données au format JSON.</string>
+    <string name="menu_barcode_scan_continuous">Scanner en continu</string>
+    <string name="lbl_queue">File d\'attente</string>
+    <string name="btn_clear_queue">Effacer la file d\'attente</string>
 </resources>

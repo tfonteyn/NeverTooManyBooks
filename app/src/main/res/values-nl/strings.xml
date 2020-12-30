@@ -71,7 +71,7 @@
     <string name="btn_less_ellipsis">Minder…</string>
     <string name="btn_more_ellipsis">Meer…</string>
     <string name="btn_options">Opties</string>
-    <string name="menu_scan_barcode">Scan barcode</string>
+    <string name="menu_barcode_scan">Scan barcode</string>
     <string name="btn_show_list">Lijst weergeven</string>
     <string name="btn_this_book">Dit boek</string>
     <string name="bytes">%.0fB</string>
@@ -687,4 +687,7 @@
     <string name="error_import_csv_column_count_mismatch">Onjuist aantal kolommen in rij %1$d</string>
     <string name="error_import_csv_line">Onbekende fout in rij %1$d</string>
     <string name="lbl_archive_format_json_info">Alle gegevens in JSON formaat.</string>
+    <string name="menu_barcode_scan_continuous">Scan continu</string>
+    <string name="lbl_queue">Wachtrij</string>
+    <string name="btn_clear_queue">Wachtrij wissen</string>
 </resources>
