@@ -98,6 +98,8 @@ public class Booklist
     public static final int PREF_REBUILD_PREFERRED_STATE = 3;
     /** Log tag. */
     public static final String TAG = "Booklist";
+
+    private static final String SELECT_COUNT = "SELECT COUNT(*)";
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
@@ -438,7 +440,7 @@ public class Booklist
     public int countBooks() {
         if (mTotalBooks == -1) {
             final SynchronizedStatement stmt = mStmtManager.get(STMT_COUNT_BOOKS, () ->
-                    "SELECT COUNT(*)"
+                    SELECT_COUNT
                     + _FROM_ + mListTable.getName()
                     + _WHERE_ + KEY_BL_NODE_GROUP + "=?");
 
@@ -458,7 +460,7 @@ public class Booklist
      */
     int countVisibleRows() {
         final SynchronizedStatement stmt = mStmtManager.get(STMT_COUNT_VISIBLE_ROWS, () ->
-                "SELECT COUNT(*)"
+                SELECT_COUNT
                 + _FROM_ + mListTable.getName()
                 + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1");
 
