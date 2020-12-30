@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -180,34 +179,16 @@ public class SearchBookByIsbnFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-
-        final Resources r = getResources();
-        menu.add(Menu.NONE, R.id.MENU_BARCODE_SCAN,
-                 r.getInteger(R.integer.MENU_ORDER_BARCODE_SCAN),
-                 R.string.menu_barcode_scan)
-            .setIcon(R.drawable.ic_barcode)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
-
-        menu.add(Menu.NONE, R.id.MENU_BARCODE_SCAN_BATCH,
-                 r.getInteger(R.integer.MENU_ORDER_BARCODE_SCAN_BATCH),
-                 R.string.menu_barcode_scan_continuous)
-            .setIcon(R.drawable.ic_barcode_batch)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        menu.add(Menu.NONE, R.id.MENU_BARCODE_IMPORT,
-                 r.getInteger(R.integer.MENU_ORDER_BARCODE_IMPORT),
-                 R.string.menu_import)
-            .setIcon(R.drawable.ic_file_download)
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
-
-        menu.add(Menu.NONE, R.id.MENU_ISBN_VALIDITY_STRICT,
-                 r.getInteger(R.integer.MENU_ORDER_SEARCH_STRICT_ISBN),
-                 R.string.lbl_strict_isbn)
-            .setCheckable(true)
-            .setChecked(mCoordinator.isStrictIsbn())
-            .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-
+        inflater.inflate(R.menu.search_by_isbn, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        menu.findItem(R.id.MENU_ISBN_VALIDITY_STRICT)
+            .setChecked(mCoordinator.isStrictIsbn());
     }
 
     @Override
@@ -230,7 +211,6 @@ public class SearchBookByIsbnFragment
 
         } else if (itemId == R.id.MENU_ISBN_VALIDITY_STRICT) {
             final boolean checked = !item.isChecked();
-            item.setChecked(checked);
             mCoordinator.setStrictIsbn(checked);
 
             final int validity = checked ? ISBN.VALIDITY_STRICT : ISBN.VALIDITY_NONE;

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@id/MENU_BARCODE_SCAN"
+        android:icon="@drawable/ic_barcode"
+        android:orderInCategory="@integer/MENU_ORDER_BARCODE_SCAN"
+        android:title="@string/menu_barcode_scan"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@id/MENU_BARCODE_SCAN_BATCH"
+        android:icon="@drawable/ic_barcode_batch"
+        android:orderInCategory="@integer/MENU_ORDER_BARCODE_SCAN_BATCH"
+        android:title="@string/menu_barcode_scan_continuous"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@id/MENU_BARCODE_IMPORT"
+        android:orderInCategory="@integer/MENU_ORDER_BARCODE_IMPORT"
+        android:title="@string/menu_import"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@id/MENU_ISBN_VALIDITY_STRICT"
+        android:checkable="true"
+        android:orderInCategory="@integer/MENU_ORDER_SEARCH_STRICT_ISBN"
+        android:title="@string/lbl_strict_isbn"
+        app:showAsAction="never" />
+
+</menu>
