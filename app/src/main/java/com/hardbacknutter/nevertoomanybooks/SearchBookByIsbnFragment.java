@@ -182,20 +182,20 @@ public class SearchBookByIsbnFragment
                                     @NonNull final MenuInflater inflater) {
 
         final Resources r = getResources();
-        menu.add(Menu.NONE, R.id.MENU_SCAN_BARCODE,
-                 r.getInteger(R.integer.MENU_ORDER_SCAN_BARCODE),
-                 R.string.menu_scan_barcode)
+        menu.add(Menu.NONE, R.id.MENU_BARCODE_SCAN,
+                 r.getInteger(R.integer.MENU_ORDER_BARCODE_SCAN),
+                 R.string.menu_barcode_scan)
             .setIcon(R.drawable.ic_barcode)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
-        menu.add(Menu.NONE, R.id.MENU_SCAN_BARCODE_BATCH,
-                 r.getInteger(R.integer.MENU_ORDER_SCAN_BARCODE_BATCH),
-                 R.string.menu_scan_barcode_batch_start)
+        menu.add(Menu.NONE, R.id.MENU_BARCODE_SCAN_BATCH,
+                 r.getInteger(R.integer.MENU_ORDER_BARCODE_SCAN_BATCH),
+                 R.string.menu_barcode_scan_continuous)
             .setIcon(R.drawable.ic_barcode_batch)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
-        menu.add(Menu.NONE, R.id.MENU_SCAN_BARCODE_IMPORT,
-                 r.getInteger(R.integer.MENU_ORDER_SCAN_BARCODE_IMPORT),
+        menu.add(Menu.NONE, R.id.MENU_BARCODE_IMPORT,
+                 r.getInteger(R.integer.MENU_ORDER_BARCODE_IMPORT),
                  R.string.menu_import)
             .setIcon(R.drawable.ic_file_download)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -214,17 +214,17 @@ public class SearchBookByIsbnFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.MENU_SCAN_BARCODE) {
+        if (itemId == R.id.MENU_BARCODE_SCAN) {
             mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
             scan();
             return true;
 
-        } else if (itemId == R.id.MENU_SCAN_BARCODE_BATCH) {
+        } else if (itemId == R.id.MENU_BARCODE_SCAN_BATCH) {
             mVm.setScannerMode(SearchBookByIsbnViewModel.SCANNER_MODE_BATCH);
             scan();
             return true;
 
-        } else if (itemId == R.id.MENU_SCAN_BARCODE_IMPORT) {
+        } else if (itemId == R.id.MENU_BARCODE_IMPORT) {
             mOpenUriLauncher.launch(MIME_TYPES);
             return true;
 
