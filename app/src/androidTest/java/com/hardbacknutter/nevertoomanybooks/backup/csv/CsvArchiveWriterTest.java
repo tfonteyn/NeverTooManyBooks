@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.csv;
 import android.content.Context;
 import android.net.Uri;
 
+import androidx.annotation.NonNull;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.BufferedReader;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -105,6 +107,9 @@ public class CsvArchiveWriterTest {
                 new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
             // -1 for the header line.
             exportCount = reader.lines().count() - 1;
+        } catch (@NonNull final UncheckedIOException e) {
+            //noinspection ConstantConditions
+            throw e.getCause();
         }
         assertEquals(mBookInDb, exportCount);
 

@@ -33,11 +33,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -288,16 +290,16 @@ public class OpenLibrarySearchEngine
     @NonNull
     String readResponseStream(@NonNull final InputStream is)
             throws IOException {
-        final StringBuilder response = new StringBuilder();
         // Don't close this stream!
         final InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
         final BufferedReader reader = new BufferedReader(isr);
-        String line;
 
-        while ((line = reader.readLine()) != null) {
-            response.append(line);
+        try {
+            return reader.lines().collect(Collectors.joining());
+        } catch (@NonNull final UncheckedIOException e) {
+            //noinspection ConstantConditions
+            throw e.getCause();
         }
-        return response.toString();
     }
 
 

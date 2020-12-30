@@ -26,10 +26,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Interface provided by every record read from an archive file.
@@ -103,12 +104,12 @@ public interface ArchiveReaderRecord {
         final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
         final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
 
-        final StringBuilder content = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            content.append(line);
+        try {
+            return reader.lines().collect(Collectors.joining());
+        } catch (@NonNull final UncheckedIOException e) {
+            //noinspection ConstantConditions
+            throw e.getCause();
         }
-        return content.toString();
     }
 
     /**
@@ -126,11 +127,11 @@ public interface ArchiveReaderRecord {
         final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
         final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
 
-        final List<String> content = new ArrayList<>();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            content.add(line);
+        try {
+            return reader.lines().collect(Collectors.toList());
+        } catch (@NonNull final UncheckedIOException e) {
+            //noinspection ConstantConditions
+            throw e.getCause();
         }
-        return content;
     }
 }
