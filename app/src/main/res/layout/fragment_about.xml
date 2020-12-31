@@ -35,6 +35,7 @@
         android:layout_height="@dimen/app_logo"
         android:contentDescription="@string/app_name"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
+        android:layout_marginStart="@dimen/indent2"
         android:src="@drawable/ic_nevertoomanybooks_about"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -72,6 +73,7 @@
         style="@style/Field.Label"
         android:layout_marginTop="24dp"
         android:text="@string/lbl_books"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barrier_header_bottom"
         />
 
@@ -79,6 +81,7 @@
         android:id="@+id/lbl_series"
         style="@style/Field.Label"
         android:text="@string/lbl_series"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_books"
         />
 
@@ -86,6 +89,7 @@
         android:id="@+id/lbl_authors"
         style="@style/Field.Label"
         android:text="@string/lbl_authors"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_series"
         />
 
@@ -93,6 +97,7 @@
         android:id="@+id/lbl_publishers"
         style="@style/Field.Label"
         android:text="@string/lbl_publishers"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_authors"
         />
 
@@ -154,6 +159,7 @@
         android:layout_marginStart="@dimen/field_margin"
         android:layout_marginTop="24dp"
         android:text="@string/lbl_about_contact"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_publishers"
         />
 
@@ -162,7 +168,7 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/border2"
+        android:layout_marginStart="@dimen/field_margin"
         android:text="@string/lbl_sourcecode_url"
         app:icon="@drawable/ic_link"
         app:layout_constraintStart_toStartOf="@id/contacts"
