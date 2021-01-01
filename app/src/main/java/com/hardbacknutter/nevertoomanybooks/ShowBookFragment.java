@@ -31,7 +31,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -224,9 +223,6 @@ public class ShowBookFragment
                 mVm.getBookAtPosition(mVb.pager.getCurrentItem())
                    .getId()));
 
-        // simple indeterminate progress spinner to show while doing lengthy cover work.
-        final ProgressBar progressBar = getActivity().findViewById(R.id.progressBar);
-
         final SharedPreferences global = PreferenceManager
                 .getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
@@ -237,7 +233,7 @@ public class ShowBookFragment
 
             mCoverHandler[0] = new CoverHandler(mVm.getDb(), 0, maxWidth, maxHeight);
             mCoverHandler[0].onFragmentViewCreated(this);
-            mCoverHandler[0].setProgressBar(progressBar);
+            mCoverHandler[0].setProgressBar(mVb.coverOperationProgressBar);
             mCoverHandler[0].setBookSupplier(
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }
@@ -248,7 +244,7 @@ public class ShowBookFragment
 
             mCoverHandler[1] = new CoverHandler(mVm.getDb(), 1, maxWidth, maxHeight);
             mCoverHandler[1].onFragmentViewCreated(this);
-            mCoverHandler[1].setProgressBar(progressBar);
+            mCoverHandler[1].setProgressBar(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }

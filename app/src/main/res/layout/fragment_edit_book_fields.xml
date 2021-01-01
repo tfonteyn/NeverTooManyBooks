@@ -45,6 +45,20 @@
             tools:src="@sample/covers"
             />
 
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/cover_operation_progress_bar"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:elevation="@dimen/progress_z"
+            android:indeterminate="true"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/coverImage0"
+            app:layout_constraintEnd_toEndOf="@id/coverImage1"
+            app:layout_constraintStart_toStartOf="@id/coverImage0"
+            app:layout_constraintTop_toTopOf="@id/coverImage0"
+            tools:visibility="visible"
+            />
+
         <ImageView
             android:id="@+id/coverImage1"
             style="@style/CoverImage"

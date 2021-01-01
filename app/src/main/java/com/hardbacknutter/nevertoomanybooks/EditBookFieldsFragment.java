@@ -139,14 +139,10 @@ public class EditBookFieldsFragment
                 .getDefaultSharedPreferences(getContext());
         final Resources res = getResources();
 
-        // simple indeterminate progress spinner to show while doing lengthy work.
-        //noinspection ConstantConditions
-        final ProgressBar progressBar = getActivity().findViewById(R.id.progressBar);
-
         if (mVm.isCoverUsed(global, 0)) {
             createCoverHandler(res.getDimensionPixelSize(R.dimen.cover_edit_0_width),
                                res.getDimensionPixelSize(R.dimen.cover_edit_0_height),
-                               0, progressBar);
+                               0, mVb.coverOperationProgressBar);
         } else {
             mVb.coverImage0.setVisibility(View.GONE);
         }
@@ -154,7 +150,7 @@ public class EditBookFieldsFragment
         if (mVm.isCoverUsed(global, 1)) {
             createCoverHandler(res.getDimensionPixelSize(R.dimen.cover_edit_1_width),
                                res.getDimensionPixelSize(R.dimen.cover_edit_1_height),
-                               1, progressBar);
+                               1, mVb.coverOperationProgressBar);
         } else {
             mVb.coverImage1.setVisibility(View.GONE);
         }

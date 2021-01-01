@@ -60,16 +60,6 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             />
 
-        <com.google.android.material.progressindicator.CircularProgressIndicator
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:elevation="@dimen/progress_z"
-            android:indeterminate="true"
-            android:visibility="gone"
-            tools:visibility="visible"
-            />
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.navigation.NavigationView
