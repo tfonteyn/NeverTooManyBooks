@@ -264,9 +264,8 @@ class CalibreArchiveReader
 
                 book.clearData();
 
-                // We're not keeping the Calibre id other than for lookups during import
                 final int calibreId = source.getInt(colId);
-                // keep the Calibre UUID
+                book.putInt(DBDefinitions.KEY_CALIBRE_ID, calibreId);
                 final String calibreUuid = source.getString(colUuid);
                 book.putString(DBDefinitions.KEY_CALIBRE_UUID, calibreUuid);
 
@@ -305,9 +304,7 @@ class CalibreArchiveReader
                 // process the book
                 try {
                     // check if the book exists in our database, and fetch it's id.
-                    final long databaseBookId = mDb
-                            .getBookIdFromKey(DBDefinitions.KEY_CALIBRE_UUID,
-                                              calibreUuid);
+                    final long databaseBookId = mDb.getBookIdFromCalibreUuid(calibreUuid);
 
                     //Note: do NOT try and find it by ISBN. Keep Calibre strictly separate.
                     // We don't want to overwrite physical copies!

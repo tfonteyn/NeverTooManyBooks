@@ -60,10 +60,18 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_BL_TOP_POS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_CALIBRE_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ESID_LAST_DODO_NL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_PREFERRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
@@ -84,6 +92,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS_CALIBRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
@@ -105,7 +114,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 13;
+    public static final int DATABASE_VERSION = 14;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -658,12 +667,12 @@ public final class DBHelper
         final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
         if (oldVersion < 2) {
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_BOOK_COLOR);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_BOOK_COLOR);
         }
         if (oldVersion < 3) {
             TBL_BOOKS.alterTableAddColumns(syncedDb,
-                                           DBDefinitions.DOM_BOOK_CONDITION,
-                                           DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER);
+                                           DOM_BOOK_CONDITION,
+                                           DOM_BOOK_CONDITION_DUST_COVER);
         }
         if (oldVersion < 4) {
             // bug fix: this was modifying the books last update-date each time a bookshelf
@@ -677,8 +686,8 @@ public final class DBHelper
         }
         if (oldVersion < 6) {
             TBL_BOOKSHELF.alterTableAddColumns(syncedDb,
-                                               DBDefinitions.DOM_BOOKSHELF_BL_TOP_POS,
-                                               DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET);
+                                               DOM_BOOKSHELF_BL_TOP_POS,
+                                               DOM_BOOKSHELF_BL_TOP_OFFSET);
 
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
@@ -747,10 +756,10 @@ public final class DBHelper
                   .remove("startup.lastVersion")
                   .apply();
 
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_ESID_LAST_DODO_NL);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_ESID_LAST_DODO_NL);
         }
         if (oldVersion < 9) {
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DBDefinitions.DOM_CALIBRE_UUID);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_CALIBRE_UUID);
         }
         if (oldVersion < 10) {
             // moved to FTS4
@@ -798,13 +807,25 @@ public final class DBHelper
             }
             global.edit().remove("bookList.style.preferred.order").apply();
         }
+        if (oldVersion < 14) {
+            TBL_BOOKS_CALIBRE.create(syncedDb, true);
+            syncedDb.execSQL("INSERT INTO " + TBL_BOOKS_CALIBRE.getName()
+                             + '(' + KEY_FK_BOOK + ',' + KEY_CALIBRE_UUID + ')'
+                             + " SELECT " + KEY_PK_ID + ',' + KEY_CALIBRE_UUID
+                             + " FROM " + TBL_BOOKS.getName()
+                             + " WHERE " + KEY_CALIBRE_UUID + " IS NOT NULL");
+            syncedDb.execSQL("UPDATE " + TBL_BOOKS.getName()
+                             + " SET " + KEY_CALIBRE_UUID + "=NULL");
+        }
 
         //URGENT: the use of recreateAndReload is dangerous right now and can break updates.
         // It's fine in the db12 update but should no longer be used & must be replaced
+        // More specifically: the recreateAndReload routine can only be used ONCE per table.
+        // We'll need to keep previous table definitions as BC used to do.
 
-        //TODO: if at a future time we make a change that requires to copy/reload the books table,
-        // we should at the same time change DOM_UTC_LAST_SYNC_DATE_GOODREADS
-        // See note in the DBDefinitions class.
+        //TODO: if at a future time we make a change that requires to copy/reload the books table:
+        // 1. change DOM_UTC_LAST_SYNC_DATE_GOODREADS -> See note in the DBDefinitions class.
+        // 2. remove the column "clb_uuid"
 
         //TODO:  prefs.edit()
         // .remove("scanner.preferred")

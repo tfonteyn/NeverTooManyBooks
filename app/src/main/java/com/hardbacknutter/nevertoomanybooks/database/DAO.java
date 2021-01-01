@@ -99,6 +99,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
@@ -132,6 +134,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS_CALIBRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
@@ -522,6 +525,7 @@ public class DAO
 
             // next we add the links to series, authors,...
             insertBookLinks(context, book, flags);
+            insertCalibreData(book);
             // and populate the search suggestions table
             ftsInsert(context, newBookId);
 
@@ -605,6 +609,7 @@ public class DAO
                 book.putString(KEY_BOOK_UUID, uuid);
 
                 insertBookLinks(context, book, flags);
+                updateCalibreData(book);
                 ftsUpdate(context, book.getId());
 
                 if (!book.storeCovers(context)) {
@@ -624,6 +629,52 @@ public class DAO
             if (txLock != null) {
                 mSyncedDb.endTransaction(txLock);
             }
+        }
+    }
+
+
+    /**
+     * Insert the Calibre bridging data.
+     *
+     * @param book A collection with the columns to be set. May contain extra data.
+     *
+     * @throws DaoWriteException on failure
+     */
+    private void insertCalibreData(@NonNull final Book book)
+            throws DaoWriteException {
+        // Using CV for now as a quick implementation.
+        // At a later stage we should implement a 'filter' method to collect
+        // all calibre values.
+        final ContentValues cv = new ContentValues();
+        cv.put(KEY_FK_BOOK, book.getId());
+        cv.put(KEY_CALIBRE_ID, book.getInt(KEY_CALIBRE_ID));
+        cv.put(KEY_CALIBRE_UUID, book.getString(KEY_CALIBRE_UUID));
+
+        final long rowId = mSyncedDb.insert(TBL_BOOKS_CALIBRE.getName(), null, cv);
+        if (rowId <= 0) {
+            throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
+        }
+    }
+
+    /**
+     * Update the Calibre bridging data.
+     *
+     * @param book A collection with the columns to be set. May contain extra data.
+     *
+     * @throws DaoWriteException on failure
+     */
+    private void updateCalibreData(@NonNull final Book book)
+            throws DaoWriteException {
+
+        final ContentValues cv = new ContentValues();
+        cv.put(KEY_FK_BOOK, book.getId());
+        cv.put(KEY_CALIBRE_ID, book.getInt(KEY_CALIBRE_ID));
+
+        final int rowsAffected = mSyncedDb.update(TBL_BOOKS_CALIBRE.getName(), cv,
+                                                  KEY_CALIBRE_UUID + "=?",
+                                                  new String[]{book.getString(KEY_CALIBRE_UUID)});
+        if (rowsAffected != 1) {
+            throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
         }
     }
 
@@ -3241,21 +3292,19 @@ public class DAO
 
 
     /**
-     * Check that a book with the passed key=value exists and return the id of the book, or zero.
+     * Check that a book with the passed Calibre UUID exists and return the id of the book, or zero.
      *
-     * @param key   column name
-     * @param value id/value for the key
+     * @param uuid Calibre UUID
      *
      * @return id of the book, or 0 'new' if not found
      */
     @IntRange(from = 0)
-    public long getBookIdFromKey(@NonNull final String key,
-                                 @NonNull final String value) {
-        final String sql = "SELECT " + KEY_PK_ID + " FROM " + TBL_BOOKS.getName()
-                           + " WHERE " + key + "=?";
+    public long getBookIdFromCalibreUuid(@NonNull final String uuid) {
+        final String sql = "SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOKS_CALIBRE.getName()
+                           + " WHERE " + KEY_CALIBRE_UUID + "=?";
 
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-            stmt.bindString(1, value);
+            stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
         }
     }

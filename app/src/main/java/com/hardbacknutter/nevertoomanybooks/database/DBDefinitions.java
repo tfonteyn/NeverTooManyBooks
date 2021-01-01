@@ -111,6 +111,9 @@ public final class DBDefinitions {
     /** User defined styles. */
     public static final TableDefinition TBL_BOOKLIST_STYLES;
 
+    /** A bridge to a Calibre database. Partially imported date. */
+    public static final TableDefinition TBL_BOOKS_CALIBRE;
+
     /** Keeps track of nodes in the list across application restarts. */
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
 
@@ -271,7 +274,9 @@ public final class DBDefinitions {
     public static final Domain DOM_ESID_STRIP_INFO_BE;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_ESID_LAST_DODO_NL;
-    /** {@link #TBL_BOOKS}. */
+
+    /** {@link #TBL_BOOKS_CALIBRE}. */
+    public static final Domain DOM_CALIBRE_ID;
     public static final Domain DOM_CALIBRE_UUID;
 
     /** {@link #TBL_BOOK_LOANEE}. */
@@ -415,9 +420,11 @@ public final class DBDefinitions {
 
 
     /**
-     * It's external to this app, but NOT an "external Site id"
+     * External to this app, but NOT an "external Site id"
      * as it comes from a user importing their Calibre database.
+     * {@link #TBL_BOOKS_CALIBRE}.
      */
+    public static final String KEY_CALIBRE_ID = "clb_id";
     public static final String KEY_CALIBRE_UUID = "clb_uuid";
 
     /** {@link #TBL_BOOKSHELF}. */
@@ -585,6 +592,8 @@ public final class DBDefinitions {
         TBL_BOOK_PUBLISHER = new TableDefinition("book_publisher").setAlias("bp");
         TBL_BOOK_LOANEE = new TableDefinition("loan").setAlias("l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology").setAlias("bat");
+
+        TBL_BOOKS_CALIBRE = new TableDefinition("book_calibre_bridge").setAlias("bcb");
 
         TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles").setAlias("bls");
 
@@ -951,8 +960,11 @@ public final class DBDefinitions {
         DOM_ESID_LAST_DODO_NL =
                 new Domain.Builder(KEY_ESID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER).build();
 
-
-        // Used for imports; not an actual website
+        /* ======================================================================================
+         *  Calibre bridge table domains
+         * ====================================================================================== */
+        DOM_CALIBRE_ID =
+                new Domain.Builder(KEY_CALIBRE_ID, ColumnInfo.TYPE_INTEGER).build();
         DOM_CALIBRE_UUID =
                 new Domain.Builder(KEY_CALIBRE_UUID, ColumnInfo.TYPE_TEXT).build();
 
@@ -1135,7 +1147,6 @@ public final class DBDefinitions {
                              // optional: add engine specific DOM
                              DOM_UTC_LAST_SYNC_DATE_GOODREADS,
 
-                             DOM_CALIBRE_UUID,
                              // internal data
                              DOM_BOOK_UUID,
                              DOM_UTC_ADDED,
@@ -1152,7 +1163,6 @@ public final class DBDefinitions {
                  .addIndex(KEY_ESID_ISFDB, false, DOM_ESID_ISFDB)
                  .addIndex(KEY_ESID_OPEN_LIBRARY, false, DOM_ESID_OPEN_LIBRARY)
                  .addIndex(KEY_ESID_STRIP_INFO_BE, false, DOM_ESID_STRIP_INFO_BE)
-                 .addIndex(KEY_CALIBRE_UUID, false, DOM_CALIBRE_UUID)
         // we probably do not need this one (and have not created it)
         //.addIndex(KEY_ESID_LIBRARY_THING, false, DOM_ESID_LIBRARY_THING)
         ;
@@ -1269,6 +1279,13 @@ public final class DBDefinitions {
                             .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_TOC_ENTRIES.getName(), TBL_BOOK_TOC_ENTRIES);
 
+        TBL_BOOKS_CALIBRE.addDomains(DOM_FK_BOOK,
+                                     DOM_CALIBRE_ID,
+                                     DOM_CALIBRE_UUID)
+                         .setPrimaryKey(DOM_FK_BOOK)
+                         .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                         .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);
+        ALL_TABLES.put(TBL_BOOKS_CALIBRE.getName(), TBL_BOOKS_CALIBRE);
 
         TBL_BOOKLIST_STYLES.addDomains(DOM_PK_ID,
                                        DOM_STYLE_IS_BUILTIN,

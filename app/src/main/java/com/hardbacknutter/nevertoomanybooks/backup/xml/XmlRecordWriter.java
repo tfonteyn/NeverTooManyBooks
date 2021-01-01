@@ -446,6 +446,9 @@ public class XmlRecordWriter
                                            book.getBoolean(DBDefinitions.KEY_SIGNED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
                                            book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_ID,
+                                           book.getInt(DBDefinitions.KEY_CALIBRE_ID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_UUID,
                                            book.getString(DBDefinitions.KEY_CALIBRE_UUID)));
                 // external ID's
