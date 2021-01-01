@@ -24,16 +24,16 @@ package com.hardbacknutter.nevertoomanybooks.goodreads.api;
  */
 public final class XmlTags {
 
-    static final String XML_GOODREADS_RESPONSE = "GoodreadsResponse";
+    public static final String XML_GOODREADS_RESPONSE = "GoodreadsResponse";
 
-    static final String XML_ID = "id";
-    static final String XML_NAME = "name";
+    public static final String XML_ID = "id";
+    public static final String XML_NAME = "name";
 
-    static final String XML_WORK = "work";
+    public static final String XML_WORK = "work";
     static final String XML_BODY = "body";
 
-    static final String XML_SEARCH = "search";
-    static final String XML_RESULTS = "results";
+    public static final String XML_SEARCH = "search";
+    public static final String XML_RESULTS = "results";
 
     /** Used in paging. */
     static final String XML_START = "start";
@@ -51,7 +51,7 @@ public final class XmlTags {
     static final String XML_POPULAR_SHELVES = "popular_shelves";
     static final String XML_EXCLUSIVE_FLAG = "exclusive_flag";
 
-    static final String XML_TITLE = "title";
+    public static final String XML_TITLE = "title";
     static final String XML_TITLE_WITHOUT_SERIES = "title_without_series";
     static final String XML_ORIGINAL_TITLE = "original_title";
 
@@ -60,8 +60,8 @@ public final class XmlTags {
     static final String XML_ASIN = "asin";
 
     static final String XML_AUTHORS = "authors";
-    static final String XML_AUTHOR = "author";
-    static final String XML_ROLE = "role";
+    public static final String XML_AUTHOR = "author";
+    public static final String XML_ROLE = "role";
 
     static final String XML_SERIES = "series";
     static final String XML_SERIES_WORK = "series_work";
@@ -71,12 +71,12 @@ public final class XmlTags {
     static final String XML_PUBLICATION_YEAR = "publication_year";
     static final String XML_PUBLICATION_MONTH = "publication_month";
     static final String XML_PUBLICATION_DAY = "publication_day";
-    static final String XML_ORIGINAL_PUBLICATION_YEAR = "original_publication_year";
-    static final String XML_ORIGINAL_PUBLICATION_MONTH = "original_publication_month";
-    static final String XML_ORIGINAL_PUBLICATION_DAY = "original_publication_day";
+    public static final String XML_ORIGINAL_PUBLICATION_YEAR = "original_publication_year";
+    public static final String XML_ORIGINAL_PUBLICATION_MONTH = "original_publication_month";
+    public static final String XML_ORIGINAL_PUBLICATION_DAY = "original_publication_day";
 
     static final String XML_BOOK = "book";
-    static final String XML_BEST_BOOK = "best_book";
+    public static final String XML_BEST_BOOK = "best_book";
     static final String XML_NUM_PAGES = "num_pages";
     static final String XML_DESCRIPTION = "description";
     static final String XML_COUNTRY_CODE = "country_code";
@@ -85,8 +85,8 @@ public final class XmlTags {
     static final String XML_RATING = "rating";
     static final String XML_AVERAGE_RATING = "average_rating";
     static final String XML_USER_POSITION = "user_position";
-    static final String XML_SMALL_IMAGE_URL = "small_image_url";
-    static final String XML_IMAGE_URL = "image_url";
+    public static final String XML_SMALL_IMAGE_URL = "small_image_url";
+    public static final String XML_IMAGE_URL = "image_url";
     static final String XML_STARTED_AT = "started_at";
     static final String XML_READ_AT = "read_at";
 

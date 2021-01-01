@@ -100,10 +100,10 @@ public abstract class ApiHandler {
      * @throws Http404Exception     the URL was not found
      * @throws IOException          on other failures
      */
-    void executeGet(@NonNull final String url,
-                    @Nullable final Map<String, String> parameterMap,
-                    final boolean requiresSignature,
-                    @Nullable final DefaultHandler requestHandler)
+    protected void executeGet(@NonNull final String url,
+                              @Nullable final Map<String, String> parameterMap,
+                              final boolean requiresSignature,
+                              @Nullable final DefaultHandler requestHandler)
             throws CredentialsException, Http404Exception, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
