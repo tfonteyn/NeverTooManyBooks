@@ -90,7 +90,6 @@ public class SearchBookUpdatesFragment
     private ProgressDialogFragment mProgressDialog;
     /** View Binding. */
     private FragmentUpdateFromInternetBinding mVb;
-    private Toolbar mToolbar;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -112,20 +111,20 @@ public class SearchBookUpdatesFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
+        final Toolbar toolbar = getActivity().findViewById(R.id.toolbar);
 
         final Bundle args = getArguments();
 
         // optional activity title
         if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
-            mToolbar.setTitle(args.getString(BKEY_SCREEN_TITLE));
+            toolbar.setTitle(args.getString(BKEY_SCREEN_TITLE));
         } else {
-            mToolbar.setTitle(R.string.lbl_select_fields);
+            toolbar.setTitle(R.string.lbl_select_fields);
         }
 
         // optional activity subtitle
         if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
-            mToolbar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
+            toolbar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
         }
 
         mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);
