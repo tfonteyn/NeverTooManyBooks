@@ -32,6 +32,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import org.junit.Before;
@@ -53,6 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -76,7 +81,9 @@ public class CsvArchiveWriterTest {
 
     @Test
     public void write()
-            throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException {
+            throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException,
+                   CertificateException, NoSuchAlgorithmException,
+                   KeyStoreException, KeyManagementException, GeneralParsingException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + ".csv");
         //noinspection ResultOfMethodCallIgnored
@@ -85,7 +92,7 @@ public class CsvArchiveWriterTest {
         final ExportResults exportResults;
 
         final ExportHelper exportHelper = new ExportHelper(RecordType.Books);
-        exportHelper.setArchiveEncoding(ArchiveEncoding.Csv);
+        exportHelper.setEncoding(ArchiveEncoding.Csv);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -129,7 +136,7 @@ public class CsvArchiveWriterTest {
             db.update(context, book, 0);
         }
 
-        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.withUri(context, Uri.fromFile(file));
         ImportResults importResults;
 
 

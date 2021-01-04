@@ -35,6 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -114,7 +115,7 @@ public class AddBookToShelfApiHandler
      */
     public long add(final long grBookId,
                     @NonNull final Collection<String> shelfNames)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         mReviewId = 0;
         final Map<String, String> parameters = new HashMap<>();
@@ -141,7 +142,7 @@ public class AddBookToShelfApiHandler
      */
     public long add(final long grBookId,
                     @NonNull final String shelfName)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         return send(grBookId, shelfName, false);
     }
@@ -165,7 +166,7 @@ public class AddBookToShelfApiHandler
      */
     public void remove(final long grBookId,
                        @NonNull final String shelfName)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         send(grBookId, shelfName, true);
     }
@@ -186,7 +187,7 @@ public class AddBookToShelfApiHandler
     private long send(final long grBookId,
                       @NonNull final String shelfName,
                       final boolean isRemove)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         mReviewId = 0;
         final Map<String, String> parameters = new HashMap<>();

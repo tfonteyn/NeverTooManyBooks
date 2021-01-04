@@ -278,6 +278,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS_CALIBRE}. */
     public static final Domain DOM_CALIBRE_ID;
     public static final Domain DOM_CALIBRE_UUID;
+    public static final Domain DOM_CALIBRE_FILE_URL;
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
@@ -426,6 +427,7 @@ public final class DBDefinitions {
      */
     public static final String KEY_CALIBRE_ID = "clb_id";
     public static final String KEY_CALIBRE_UUID = "clb_uuid";
+    public static final String KEY_CALIBRE_FILE_URL = "clb_file_url";
 
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf_name";
@@ -967,6 +969,8 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_CALIBRE_ID, ColumnInfo.TYPE_INTEGER).build();
         DOM_CALIBRE_UUID =
                 new Domain.Builder(KEY_CALIBRE_UUID, ColumnInfo.TYPE_TEXT).build();
+        DOM_CALIBRE_FILE_URL =
+                new Domain.Builder(KEY_CALIBRE_FILE_URL, ColumnInfo.TYPE_TEXT).build();
 
         /* ======================================================================================
          *  Loanee domains
@@ -1281,7 +1285,8 @@ public final class DBDefinitions {
 
         TBL_BOOKS_CALIBRE.addDomains(DOM_FK_BOOK,
                                      DOM_CALIBRE_ID,
-                                     DOM_CALIBRE_UUID)
+                                     DOM_CALIBRE_UUID,
+                                     DOM_CALIBRE_FILE_URL)
                          .setPrimaryKey(DOM_FK_BOOK)
                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
                          .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);

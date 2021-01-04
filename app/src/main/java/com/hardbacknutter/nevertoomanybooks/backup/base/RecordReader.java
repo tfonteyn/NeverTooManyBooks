@@ -31,6 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Implements Closeable to enforce a cleanup structure.
@@ -52,7 +53,7 @@ public interface RecordReader
      */
     @Nullable
     default ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws IOException {
+            throws IOException, GeneralParsingException {
         return null;
     }
 
@@ -74,7 +75,7 @@ public interface RecordReader
                        @NonNull ArchiveReaderRecord record,
                        @ImportHelper.Options int options,
                        @NonNull ProgressListener progressListener)
-            throws IOException, ImportException;
+            throws IOException, ImportException, GeneralParsingException;
 
     /**
      * Override if the implementation needs to close something.

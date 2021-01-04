@@ -72,7 +72,7 @@ public class XmlArchiveWriterTest {
         // doesn't actually matter what we specify here.
         // The XmlArchiveWriter is hardcoded to always/only write Books.
         final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Books);
-        exportHelper.setArchiveEncoding(ArchiveEncoding.Xml);
+        exportHelper.setEncoding(ArchiveEncoding.Xml);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {

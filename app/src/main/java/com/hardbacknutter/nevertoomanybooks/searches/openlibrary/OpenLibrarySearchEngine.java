@@ -59,6 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * <a href="https://openlibrary.org/developers/api">API</a>
@@ -184,7 +185,7 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -202,7 +203,7 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -254,7 +255,7 @@ public class OpenLibrarySearchEngine
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchThumbnail,
                            @NonNull final Bundle bookData)
-            throws IOException {
+            throws IOException, GeneralParsingException {
         // get and store the result into a string.
         final String response;
         try (TerminatorConnection con = createConnection(url, true);
@@ -270,8 +271,7 @@ public class OpenLibrarySearchEngine
         try {
             handleResponse(new JSONObject(response), fetchThumbnail, bookData);
         } catch (@NonNull final JSONException e) {
-            // wrap parser exceptions in an IOException
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
 
         checkForSeriesNameInTitle(bookData);

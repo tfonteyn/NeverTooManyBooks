@@ -98,8 +98,8 @@
     <string name="error_import_failed">Import se nezdařil.</string>
     <string name="error_import_file_not_recognized">Vybraný soubor není rozpoznán.</string>
     <string name="error_network_please_connect">Připojte se prosím k internetu.</string>
-    <string name="error_network_io">Se serverem nelze komunikovat. Zkuste to později.</string>
-    <string name="error_network_timeout">Spojení se serverem vypršelo.</string>
+    <string name="httpErrorIO">Se serverem nelze komunikovat. Zkuste to později.</string>
+    <string name="httpErrorTimeout">Spojení se serverem vypršelo.</string>
     <string name="error_no_image_editor">Nebyl nalezen žádný editor obrázků</string>
     <string name="X_error_not_available">%1$s není k dispozici</string>
     <string name="error_search_failed_network">Otevřete Nastavení a zkontrolujte předvolby sítě a vyhledávacího webu.\nZkontrolujte také nastavení sítě v zařízení</string>
@@ -454,7 +454,7 @@
     <string name="pt_search_reformat_format">Standardizujte názvy „formát knihy“</string>
     <string name="pt_search_uses_publisher">Vyhledávání používá vydavatele</string>
     <string name="pt_show_author_name_given_first">Formátování jména autora</string>
-    <string name="pt_show_goodreads">Zobrazit nabídky Goodreads</string>
+    <string name="X_pt_show_goodreads">Zobrazit nabídky Goodreads</string>
     <string name="pt_show_title_reordered">Zobrazit tituly jako</string>
     <string name="pt_site_settings">Nastavení webových stránek</string>
     <string name="pt_sort_author_name_given_first">Třídění autorských jmen</string>
@@ -581,11 +581,11 @@
     <string name="warning_if_day_set_month_and_year_must_be">Je-li zadán den, musí být také uveden měsíc i rok.</string>
     <string name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Všechny uložené změny se aplikují u všech záznamů</string>
-    <string name="warning_import_be_cautious">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
+    <string name="warning_import_csv">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
     <string name="warning_import_csv_failed_lines_lots">Analýza linek CSV se nezdařila pro linky \n%1$s\n a další.</string>
     <string name="warning_import_csv_failed_lines_some">Analýza linek CSV se nezdařila pro řádky \n%1$s\n</string>
     <string name="warning_import_old_archive">Tato volba není podporována u starších verzí archivu.</string>
-    <string name="warning_import_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
     <string name="warning_no_isbn_stored_for_book">Kniha nemá uložen ISBN</string>
     <string name="warning_no_matching_book_found">Nebyla nalezena odpovídající kniha</string>
@@ -687,4 +687,12 @@
     <string name="menu_barcode_scan_continuous">Skenujte nepřetržitě</string>
     <string name="lbl_queue">Fronta</string>
     <string name="btn_clear_queue">Vymazat frontu</string>
+    <string name="enabled">Povoleno</string>
+    <string name="lbl_calibre_content_server">Server obsahu Calibre</string>
+    <string name="menu_import_calibre">Importovat (Calibre)</string>
+    <string name="httpErrorFailedSslHandshake">Nelze navázat bezpečné připojení.</string>
+    <string name="httpErrorAuth">Nelze provést ověření.</string>
+    <string name="httpError">Došlo k chybě sítě.</string>
+    <string name="httpErrorFile">Do souboru nelze získat přístup.</string>
+    <string name="httpErrorFileNotFound">Požadovaný soubor nelze najít.</string>
 </resources>

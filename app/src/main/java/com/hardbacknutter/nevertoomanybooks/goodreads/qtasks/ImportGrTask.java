@@ -69,6 +69,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.AuthorTypeMapper;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Import all a users 'reviews' from Goodreads; a users 'reviews' consists of all the books that
@@ -224,7 +225,8 @@ public class ImportGrTask
                 if (mStartDate == null) {
                     mStartDate = startDate;
                 }
-            } catch (@NonNull final CredentialsException | Http404Exception | IOException e) {
+            } catch (@NonNull final CredentialsException | Http404Exception
+                    | GeneralParsingException | IOException e) {
                 setLastException(e);
                 return false;
             }

@@ -30,7 +30,7 @@ import androidx.annotation.Nullable;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.SearchBookByExternalIdFragment;
 import com.hardbacknutter.nevertoomanybooks.SearchBookByIsbnFragment;
 import com.hardbacknutter.nevertoomanybooks.SearchBookByTextFragment;
@@ -52,26 +52,29 @@ public class AddBookBySearchContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final By by) {
-        final Intent intent = new Intent(context, HostingActivity.class);
+        final Intent intent = new Intent(context, FragmentHostActivity.class);
 
         switch (by) {
             case Isbn:
-                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookByIsbnFragment.TAG);
+                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
+                                SearchBookByIsbnFragment.TAG);
                 break;
 
             case Scan:
-                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookByIsbnFragment.TAG)
+                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
+                                SearchBookByIsbnFragment.TAG)
                       .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
                                 SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
                 break;
 
             case ExternalId:
-                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG,
+                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
                                 SearchBookByExternalIdFragment.TAG);
                 break;
 
             case Text:
-                intent.putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookByTextFragment.TAG);
+                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
+                                SearchBookByTextFragment.TAG);
                 break;
         }
 

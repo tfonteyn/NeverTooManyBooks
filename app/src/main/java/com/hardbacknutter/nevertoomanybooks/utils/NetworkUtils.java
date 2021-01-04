@@ -33,6 +33,7 @@ import androidx.preference.PreferenceManager;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
@@ -131,7 +132,7 @@ public final class NetworkUtils {
     @WorkerThread
     public static void ping(@NonNull final Context context,
                             @NonNull final String urlStr)
-            throws NetworkUnavailableException, IOException {
+            throws NetworkUnavailableException, UnknownHostException, IOException {
 
         if (!isNetworkAvailable(context)) {
             throw new NetworkUnavailableException(

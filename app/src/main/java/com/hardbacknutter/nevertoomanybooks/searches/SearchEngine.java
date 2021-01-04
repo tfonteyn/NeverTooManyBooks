@@ -50,8 +50,10 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
+import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * The interface a search engine for a {@link Site} needs to implement.
@@ -289,8 +291,11 @@ public interface SearchEngine {
     default TerminatorConnection createConnection(@NonNull final String url,
                                                   final boolean followRedirects)
             throws IOException {
+        // can we reach the site at all ?
+        NetworkUtils.ping(getAppContext(), url);
+
         final SearchEngineRegistry.Config config = getConfig();
-        final TerminatorConnection con = new TerminatorConnection(getAppContext(), url,
+        final TerminatorConnection con = new TerminatorConnection(url, null,
                                                                   config.getConnectTimeoutMs(),
                                                                   config.getReadTimeoutMs(),
                                                                   getThrottler());
@@ -372,7 +377,7 @@ public interface SearchEngine {
         @NonNull
         Bundle searchByExternalId(@NonNull String externalId,
                                   @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException;
+                throws CredentialsException, IOException, GeneralParsingException;
     }
 
     /** Optional. Every engine should really implement this. */
@@ -395,7 +400,7 @@ public interface SearchEngine {
         @NonNull
         Bundle searchByIsbn(@NonNull String validIsbn,
                             @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException;
+                throws CredentialsException, IOException, GeneralParsingException;
 
         /**
          * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
@@ -439,7 +444,7 @@ public interface SearchEngine {
         @NonNull
         Bundle searchByBarcode(@NonNull String barcode,
                                @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException;
+                throws CredentialsException, IOException, GeneralParsingException;
     }
 
     /**
@@ -477,7 +482,7 @@ public interface SearchEngine {
                       @Nullable String title,
                       @Nullable String publisher,
                       @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException;
+                throws CredentialsException, IOException, GeneralParsingException;
     }
 
     /** Optional. */
@@ -608,7 +613,8 @@ public interface SearchEngine {
                     return new File(imageList.get(0)).getAbsolutePath();
                 }
 
-            } catch (@NonNull final CredentialsException | IOException e) {
+            } catch (@NonNull
+            final CredentialsException | IOException | GeneralParsingException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "getCoverImageFallback", e);
                 }
@@ -634,6 +640,6 @@ public interface SearchEngine {
         @WorkerThread
         @NonNull
         List<String> searchAlternativeEditions(@NonNull String validIsbn)
-                throws CredentialsException, IOException;
+                throws CredentialsException, IOException, GeneralParsingException;
     }
 }

@@ -35,10 +35,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
  * Hosting activity for generic fragments <strong>without</strong>
  * a DrawerLayout/NavigationView side panel.
  */
-public class HostingActivity
+public class FragmentHostActivity
         extends BaseActivity {
 
-    private static final String TAG = "HostingActivity";
+    private static final String TAG = "FragmentHostActivity";
     public static final String BKEY_FRAGMENT_TAG = TAG + ":fragment";
 
     @Override

@@ -114,11 +114,11 @@
     <string name="error_import_failed">Import mislukt.</string>
     <string name="error_import_file_not_recognized">Het geselecteerde bestand is niet herkend.</string>
     <string name="error_import_file_not_supported">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
-    <string name="error_network_io">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
+    <string name="httpErrorIO">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
     <string name="error_network_please_connect">Maak verbinding met internet.</string>
     <string name="error_network_site_access_failed">Er was een netwerkprobleem terwijl je probeerde toegang te krijgen tot %1$s. Controleer of de website in de lucht is en als het probleem aanhoudt maak dan contact met ondersteuning.</string>
     <string name="error_network_site_has_problems">De website heeft problemen.</string>
-    <string name="error_network_timeout">Er is een time-out voor de serververbinding opgetreden.</string>
+    <string name="httpErrorTimeout">Er is een time-out voor de serververbinding opgetreden.</string>
     <string name="error_no_image_editor">Geen foto-editor gevonden</string>
     <string name="error_search_failed_network">Open de instellingen en controleer uw netwerk- en zoeksite-voorkeuren.\nControleer ook de netwerkinstellingen van uw apparaat</string>
     <string name="error_search_x_failed_y">Zoeken op %1$s is mislukt: %2$s</string>
@@ -482,7 +482,7 @@
     <string name="pt_search_reformat_format">Standaardiseer namen van „boekformaten”</string>
     <string name="pt_search_uses_publisher">Zoeken maakt gebruik van de uitgever</string>
     <string name="pt_show_author_name_given_first">Opmaak van auteursnamen</string>
-    <string name="pt_show_goodreads">Toon Goodreads-menu\'s</string>
+    <string name="X_pt_show_goodreads">Toon Goodreads-menu\'s</string>
     <string name="pt_show_title_reordered">Toon titels als</string>
     <string name="pt_show_titles_reordered_off">De titel</string>
     <string name="pt_show_titles_reordered_on">titel, De</string>
@@ -599,11 +599,11 @@
     <string name="warning_image_copy_failed">Afbeelding kan niet worden gekopieerd.</string>
     <string name="warning_image_not_found">Afbeelding kan niet worden gevonden.</string>
     <string name="warning_immediate_global_changes">Let op: Veranderingen worden direct en globaal toegepast!</string>
-    <string name="warning_import_be_cautious">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als je een veld in een exportbestand hebt veranderd. Als je een nieuw boek item hebt gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
+    <string name="warning_import_csv">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als je een veld in een exportbestand hebt veranderd. Als je een nieuw boek item hebt gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
     <string name="warning_import_csv_failed_lines_lots">Het parseren van CSV is mislukt voor regels \n%1$s\n en andere.</string>
     <string name="warning_import_csv_failed_lines_some">CSV-parsering is mislukt voor regels \n%1$s\n</string>
     <string name="warning_import_old_archive">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
-    <string name="warning_import_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
     <string name="warning_no_isbn_stored_for_book">Geen ISBN opgeslagen voor boek</string>
     <string name="warning_no_matching_book_found">Geen overeenkomstig boek gevonden</string>
@@ -690,4 +690,12 @@
     <string name="menu_barcode_scan_continuous">Scan continu</string>
     <string name="lbl_queue">Wachtrij</string>
     <string name="btn_clear_queue">Wachtrij wissen</string>
+    <string name="lbl_calibre_content_server">Calibre-inhoudsserver</string>
+    <string name="enabled">Ingeschakeld</string>
+    <string name="menu_import_calibre">Importeren (Calibre)</string>
+    <string name="httpErrorFailedSslHandshake">Er kan geen beveiligde verbinding tot stand worden gebracht.</string>
+    <string name="httpError">Er is een netwerkfout opgetreden.</string>
+    <string name="httpErrorAuth">Kan niet verifiëren.</string>
+    <string name="httpErrorFile">Kan het bestand niet openen.</string>
+    <string name="httpErrorFileNotFound">Kan het opgevraagde bestand niet vinden.</string>
 </resources>

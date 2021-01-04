@@ -120,7 +120,8 @@ public class BookCoder {
             + COMMA + '"' + DBDefinitions.KEY_UTC_ADDED + '"'
 
             + COMMA + '"' + DBDefinitions.KEY_CALIBRE_ID + '"'
-            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_UUID + '"';
+            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_UUID + '"'
+            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_FILE_URL + '"';
 
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
@@ -195,8 +196,11 @@ public class BookCoder {
         line.add(encode(book.getString(DBDefinitions.KEY_GENRE)));
         line.add(encode(book.getString(DBDefinitions.KEY_LANGUAGE)));
         line.add(encode(book.getString(DBDefinitions.KEY_UTC_ADDED)));
+
         line.add(encode(book.getInt(DBDefinitions.KEY_CALIBRE_ID)));
         line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_UUID)));
+        line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_FILE_URL)));
+
         // external ID's
         for (final Domain domain : externalIdDomains) {
             line.add(encode(book.getString(domain.getName())));

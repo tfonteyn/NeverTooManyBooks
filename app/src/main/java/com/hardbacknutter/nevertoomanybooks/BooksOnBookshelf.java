@@ -69,10 +69,11 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportFromUriContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
@@ -110,6 +111,8 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
@@ -170,6 +173,12 @@ public class BooksOnBookshelf
     /** Bring up the Goodreads synchronization options. */
     private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
             new GoodreadsAdminFragment.ResultContract(), data -> setGoodreadsMenuVisibility());
+
+    private final ActivityResultLauncher<Bundle> mCalibreSettingsLauncher =
+            registerForActivityResult(
+                    new SettingsHostActivity.ResultContract(CalibrePreferencesFragment.TAG),
+                    data -> setCalibreMenuVisibility());
+
     /** Make a backup. */
     private final ActivityResultLauncher<Void> mExportLauncher = registerForActivityResult(
             new ExportFragment.ResultContract(), success -> {});
@@ -196,10 +205,9 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<Bundle> mDuplicateLauncher = registerForActivityResult(
             new EditBookFromBundleContract(), this::onBookEditingDone);
 
-
     /** Do an import. */
-    private final ActivityResultLauncher<Void> mImportLauncher = registerForActivityResult(
-            new ImportFragment.ResultContract(), importResults -> {
+    private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
+            new ImportFromUriContract(), importResults -> {
                 if (importResults != null) {
                     if (importResults.styles > 0) {
                         // Force a refresh of the cached styles
@@ -243,7 +251,6 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<AuthorWorksFragment.ResultContract.Input>
             mAuthorWorksLauncher = registerForActivityResult(
             new AuthorWorksFragment.ResultContract(), this::onBookEditingDone);
-
 
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> mManageBookshelvesLauncher =
@@ -514,8 +521,9 @@ public class BooksOnBookshelf
         mGrSendOneBookTask.onFailure().observe(this, this::onGrFailure);
         mGrSendOneBookTask.onFinished().observe(this, this::onGrFinished);
 
-        // show/hide the Goodreads menu
+        // show/hide the sync menus
         setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(global));
+        setNavigationItemVisibility(R.id.nav_calibre, CalibreContentServer.isShowSyncMenus(global));
 
         // The booklist.
         //noinspection ConstantConditions
@@ -654,6 +662,16 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.nav_goodreads) {
             mGoodreadsLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.nav_calibre) {
+            final String url = CalibreContentServer.getHostUrl(this);
+            if (!url.isEmpty()) {
+                mImportLauncher.launch(url);
+            } else {
+                // redirect to settings and ask user to setup.
+                mCalibreSettingsLauncher.launch(null);
+            }
             return true;
         }
 

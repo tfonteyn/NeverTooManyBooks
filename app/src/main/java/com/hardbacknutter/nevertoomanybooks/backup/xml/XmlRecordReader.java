@@ -81,6 +81,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -149,7 +150,7 @@ public class XmlRecordReader
     @Override
     @NonNull
     public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws IOException {
+            throws IOException, GeneralParsingException {
         final ArchiveMetaData metaData = new ArchiveMetaData();
         fromXml(record, new InfoReader(metaData));
         return metaData;
@@ -161,7 +162,7 @@ public class XmlRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @ImportHelper.Options final int unused,
                               @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final ImportResults results = new ImportResults();
 
@@ -196,7 +197,7 @@ public class XmlRecordReader
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
                          @NonNull final EntityReader<String> accessor)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         // we need an uber-root to hang our tree on.
         final XmlFilter rootFilter = new XmlFilter("");
@@ -227,7 +228,7 @@ public class XmlRecordReader
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "fromXml", e);
             }
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
     }
 

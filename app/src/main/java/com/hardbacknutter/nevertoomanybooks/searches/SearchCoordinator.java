@@ -1181,7 +1181,7 @@ public class SearchCoordinator
             text = context.getString(R.string.error_site_authentication_failed, engineName);
 
         } else if (exception instanceof SocketTimeoutException) {
-            text = context.getString(R.string.error_network_timeout);
+            text = context.getString(R.string.httpErrorTimeout);
 
         } else if (exception instanceof MalformedURLException) {
             text = context.getString(R.string.error_search_failed_network);

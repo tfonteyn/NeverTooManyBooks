@@ -52,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Base class for all Goodreads handler classes.
@@ -104,7 +105,7 @@ public abstract class ApiHandler {
                               @Nullable final Map<String, String> parameterMap,
                               final boolean requiresSignature,
                               @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeGet|url=\"" + url + '\"');
@@ -148,7 +149,7 @@ public abstract class ApiHandler {
                      @Nullable final Map<String, String> parameterMap,
                      @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                      @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executePost|url=\"" + url + '\"');
@@ -217,7 +218,7 @@ public abstract class ApiHandler {
      */
     private void execute(@NonNull final HttpURLConnection request,
                          @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
@@ -269,7 +270,7 @@ public abstract class ApiHandler {
      */
     private void parseResponse(@NonNull final HttpURLConnection request,
                                @Nullable final DefaultHandler requestHandler)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         try (InputStream is = request.getInputStream()) {
             final SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -280,7 +281,7 @@ public abstract class ApiHandler {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "parseResponse", e);
             }
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
     }
 

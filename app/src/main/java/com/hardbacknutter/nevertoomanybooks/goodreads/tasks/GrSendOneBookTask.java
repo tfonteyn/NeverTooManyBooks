@@ -42,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Start a background task that exports a single books to Goodreads.
@@ -119,7 +120,7 @@ public class GrSendOneBookTask
         } catch (@NonNull final CredentialsException e) {
             return new GrStatus(GrStatus.FAILED_CREDENTIALS);
 
-        } catch (@NonNull final Http404Exception e) {
+        } catch (@NonNull final Http404Exception | GeneralParsingException e) {
             return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
 
         } catch (@NonNull final IOException e) {

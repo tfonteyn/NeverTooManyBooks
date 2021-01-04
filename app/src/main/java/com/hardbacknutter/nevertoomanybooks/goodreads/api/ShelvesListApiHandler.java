@@ -35,6 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -74,7 +75,7 @@ public class ShelvesListApiHandler
 
     @NonNull
     public Map<String, GoodreadsShelf> getAll()
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final Map<String, GoodreadsShelf> map = new HashMap<>();
         int page = 1;
@@ -112,7 +113,7 @@ public class ShelvesListApiHandler
      */
     @NonNull
     private Bundle get(final int page)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, mGrAuth.getUserId());
 

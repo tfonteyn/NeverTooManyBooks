@@ -646,7 +646,7 @@ public class CsvRecordReader
                                 if (sb.length() > 0) {
                                     // Fields with inner quotes MUST be escaped
                                     final String msg = context.getString(
-                                            R.string.warning_import_unescaped_quote, row, pos);
+                                            R.string.warning_import_csv_unescaped_quote, row, pos);
                                     throw new ImportException(msg);
                                 } else {
                                     inQuotes = true;

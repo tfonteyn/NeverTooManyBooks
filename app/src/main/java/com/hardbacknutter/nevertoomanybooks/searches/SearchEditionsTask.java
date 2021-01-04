@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Fetch alternative edition isbn's.
@@ -87,7 +88,8 @@ public class SearchEditionsTask
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                         .searchAlternativeEditions(mIsbn));
 
-            } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
+            } catch (@NonNull final CredentialsException | IOException
+                    | GeneralParsingException | RuntimeException e) {
                 // Silently ignore individual failures, we'll return what we get from
                 // the sites that worked.
                 Logger.error(context, TAG, e);

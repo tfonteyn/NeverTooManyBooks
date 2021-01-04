@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * A minimal implementation of {@link ArchiveReader} which reads a plain CSV file with books.
@@ -70,9 +72,10 @@ public class CsvArchiveReader
 
     @NonNull
     @Override
+    @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException {
+            throws IOException, ImportException, GeneralParsingException {
 
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
@@ -82,7 +85,7 @@ public class CsvArchiveReader
 
         try (RecordReader recordReader = new CsvRecordReader(context, mDb)) {
             final ArchiveReaderRecord record = new CsvArchiveRecord(
-                    mHelper.getArchiveName(context), is);
+                    mHelper.getUriInfo(context).getDisplayName(), is);
 
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {

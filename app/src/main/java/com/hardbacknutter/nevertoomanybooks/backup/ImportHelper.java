@@ -24,26 +24,32 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
-public class ImportHelper {
+public final class ImportHelper {
 
     /**
      * New Books/Covers are always imported
@@ -60,40 +66,103 @@ public class ImportHelper {
     public static final int OPTION_UPDATES_MAY_OVERWRITE = 1;
     public static final int OPTION_UPDATES_MUST_SYNC = 1 << 1;
 
-    /** Picked by the user; where we read from. */
+    /** <strong>Where</strong> we read from. */
     @NonNull
     private final Uri mUri;
-    /** Constructed from the Uri. */
+    /** <strong>How</strong> to read from the Uri. */
     @NonNull
-    private final ArchiveEncoding mArchiveEncoding;
-    /** What is going to be imported. */
+    private final ArchiveEncoding mEncoding;
+    /** <strong>What</strong> is going to be imported. */
     @NonNull
-    private final Set<RecordType> mImportEntries = EnumSet.of(RecordType.MetaData);
-    @Nullable
-    private final ArchiveMetaData mArchiveMetaData;
+    private final Set<RecordType> mImportEntries = EnumSet.noneOf(RecordType.class);
+
     /** Bitmask.  Contains extra options for the {@link RecordReader}. */
     @Options
     private int mOptions;
 
     /**
-     * Constructor.
+     * Private constructor. Use the factory methods instead.
+     *
+     * @param uri      to read from
+     * @param encoding which the uri uses
+     */
+    private ImportHelper(@NonNull final Uri uri,
+                         @NonNull final ArchiveEncoding encoding) {
+        mUri = uri;
+        mEncoding = encoding;
+        initWithDefault();
+    }
+
+    /**
+     * Constructor using a generic Uri. The encoding will be determined from the Uri.
      *
      * @param context Current context
      * @param uri     to read from
      *
      * @throws InvalidArchiveException on failure to recognise a supported archive
-     * @throws IOException             on other failures
      */
-    public ImportHelper(@NonNull final Context context,
-                        @NonNull final Uri uri)
-            throws IOException, InvalidArchiveException {
-        mUri = uri;
-        mArchiveEncoding = ArchiveEncoding.getEncoding(context, mUri).orElseThrow(
-                () -> new InvalidArchiveException(mUri.toString()));
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public static ImportHelper withUri(@NonNull final Context context,
+                                       @NonNull final Uri uri)
+            throws FileNotFoundException, InvalidArchiveException {
+        final ArchiveEncoding encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
+                () -> new InvalidArchiveException(uri.toString()));
 
-        // read the archive info block which will do more validation.
-        try (ArchiveReader reader = createArchiveReader(context)) {
-            mArchiveMetaData = reader.readMetaData(context);
+        return new ImportHelper(uri, encoding);
+    }
+
+    /**
+     * Constructor for a Calibre content server.
+     *
+     * @param hostUrl for a Calibre content server.
+     */
+    static ImportHelper withCalibreUrl(@NonNull final String hostUrl) {
+        return new ImportHelper(Uri.parse(hostUrl), ArchiveEncoding.CalibreCS);
+    }
+
+    private void initWithDefault() {
+        mImportEntries.clear();
+        mImportEntries.add(RecordType.MetaData);
+
+        switch (mEncoding) {
+            case Csv:
+                // Default: new books and sync updates
+                mImportEntries.add(RecordType.Books);
+                setUpdatesMustSync();
+                break;
+
+            case Zip:
+            case Tar:
+                // Default: update all entries and sync updates
+                mImportEntries.add(RecordType.Styles);
+                mImportEntries.add(RecordType.Preferences);
+                mImportEntries.add(RecordType.Books);
+                mImportEntries.add(RecordType.Cover);
+                setUpdatesMustSync();
+                break;
+
+            case SqLiteDb:
+                // Default: new books only
+                mImportEntries.add(RecordType.Books);
+                setSkipUpdates();
+                break;
+
+            case Json:
+                mImportEntries.add(RecordType.Styles);
+                mImportEntries.add(RecordType.Preferences);
+                mImportEntries.add(RecordType.Books);
+                setUpdatesMustSync();
+                break;
+
+            case CalibreCS:
+                mImportEntries.add(RecordType.Books);
+                mImportEntries.add(RecordType.Cover);
+                setUpdatesMustSync();
+                break;
+
+            case Xml:
+            default:
+                break;
         }
     }
 
@@ -108,47 +177,45 @@ public class ImportHelper {
     }
 
     /**
-     * Get the name of the archive (based on the Uri).
+     * Get the {@link FileUtils.UriInfo} of the archive (based on the Uri/Encoding).
      *
      * @param context Current context
      *
-     * @return name
+     * @return info
      */
     @NonNull
-    public String getArchiveName(@NonNull final Context context) {
-        final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(context, mUri);
-        return uriInfo.displayName;
+    public FileUtils.UriInfo getUriInfo(@NonNull final Context context) {
+        if (mEncoding == ArchiveEncoding.CalibreCS) {
+            final String displayName = context.getString(R.string.lbl_calibre_content_server);
+            return new FileUtils.UriInfo(mUri, displayName, 0);
+        } else {
+            return FileUtils.getUriInfo(context, mUri);
+        }
     }
 
     /**
-     * Get the archive type as detected from the uri.
+     * Get the encoding of the source.
      *
-     * @return type
+     * @return encoding
      */
     @NonNull
-    ArchiveEncoding getArchiveEncoding() {
-        return mArchiveEncoding;
+    ArchiveEncoding getEncoding() {
+        return mEncoding;
     }
 
+
     @NonNull
+    @WorkerThread
     public ArchiveReader createArchiveReader(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
+            throws IOException, InvalidArchiveException, GeneralParsingException,
+                   CertificateException, NoSuchAlgorithmException,
+                   KeyStoreException, KeyManagementException {
         if (BuildConfig.DEBUG /* always */) {
             if (mImportEntries.isEmpty()) {
                 throw new IllegalStateException("mImportEntries is empty");
             }
         }
-        return mArchiveEncoding.createReader(context, this);
-    }
-
-    /**
-     * Get the {@link ArchiveMetaData}.
-     *
-     * @return the info bundle, or {@code null} if the archive does not provide info
-     */
-    @Nullable
-    public ArchiveMetaData getArchiveMetaData() {
-        return mArchiveMetaData;
+        return mEncoding.createReader(context, this);
     }
 
     public void setImportEntry(@NonNull final RecordType recordType,
@@ -166,11 +233,13 @@ public class ImportHelper {
     }
 
 
-    boolean isSkipUpdates() {
+    @SuppressWarnings("WeakerAccess")
+    public boolean isSkipUpdates() {
         return (mOptions & (OPTION_UPDATES_MAY_OVERWRITE | OPTION_UPDATES_MUST_SYNC)) == 0;
     }
 
-    void setSkipUpdates() {
+    @SuppressWarnings("WeakerAccess")
+    public void setSkipUpdates() {
         mOptions &= ~OPTION_UPDATES_MAY_OVERWRITE;
         mOptions &= ~OPTION_UPDATES_MUST_SYNC;
     }
@@ -180,7 +249,6 @@ public class ImportHelper {
                && (mOptions & OPTION_UPDATES_MUST_SYNC) == 0;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void setUpdatesMayOverwrite() {
         mOptions |= OPTION_UPDATES_MAY_OVERWRITE;
         mOptions &= ~OPTION_UPDATES_MUST_SYNC;
@@ -190,7 +258,8 @@ public class ImportHelper {
         return (mOptions & (OPTION_UPDATES_MAY_OVERWRITE | OPTION_UPDATES_MUST_SYNC)) != 0;
     }
 
-    void setUpdatesMustSync() {
+    @SuppressWarnings("WeakerAccess")
+    public void setUpdatesMustSync() {
         mOptions |= OPTION_UPDATES_MAY_OVERWRITE;
         mOptions |= OPTION_UPDATES_MUST_SYNC;
     }
@@ -212,11 +281,10 @@ public class ImportHelper {
         }
 
         return "ImportHelper{"
-               + "mImportEntries=" + mImportEntries
+               + "mUri=" + mUri
+               + ", mArchiveEncoding=" + mEncoding
+               + ", mImportEntries=" + mImportEntries
                + ", mOptions=0b" + Integer.toBinaryString(mOptions) + ": " + options.toString()
-               + ", mUri=" + mUri
-               + ", mArchiveEncoding=" + mArchiveEncoding
-               + ", mArchiveMetaData=" + mArchiveMetaData
                + '}';
     }
 

@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Hardcoded to only write {@link RecordType#Books} into a JSON file.
@@ -87,7 +88,7 @@ public class JsonArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final ExportResults results;
 

@@ -335,8 +335,8 @@ public class SearchFtsFragment
         @Override
         public Intent createIntent(@NonNull final Context context,
                                    @NonNull final SearchCriteria criteria) {
-            final Intent intent = new Intent(context, HostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchFtsFragment.TAG);
+            final Intent intent = new Intent(context, FragmentHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchFtsFragment.TAG);
             criteria.to(intent);
             return intent;
         }

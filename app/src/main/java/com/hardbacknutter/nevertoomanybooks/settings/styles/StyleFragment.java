@@ -25,12 +25,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
@@ -41,7 +43,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
@@ -52,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostingActivity;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 
 /**
  * Main fragment to edit a Style.
@@ -95,6 +97,11 @@ public class StyleFragment
 
         if (savedInstanceState != null) {
             mNameSet = savedInstanceState.getBoolean(SIS_NAME_SET);
+        }
+
+        final EditTextPreference preference = findPreference(UserStyle.PK_STYLE_NAME);
+        if (preference != null) {
+            preference.setOnBindEditTextListener(TextView::setSingleLine);
         }
 
         // Cover on LIST screen
@@ -276,8 +283,8 @@ public class StyleFragment
         @Override
         public Intent createIntent(@NonNull final Context context,
                                    @NonNull final Input input) {
-            return new Intent(context, SettingsHostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
+            return new Intent(context, SettingsHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
                     .putExtra(StyleViewModel.BKEY_ACTION, input.action)
                     .putExtra(ListStyle.BKEY_STYLE_UUID, input.uuid)
                     .putExtra(StyleViewModel.BKEY_SET_AS_PREFERRED, input.setAsPreferred);

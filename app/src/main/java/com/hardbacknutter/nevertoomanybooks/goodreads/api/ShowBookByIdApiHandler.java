@@ -29,6 +29,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * book.show   —   Get the reviews for a book given a Goodreads book id.
@@ -72,7 +73,7 @@ public class ShowBookByIdApiHandler
     public Bundle searchByExternalId(final long grBookId,
                                      @NonNull final boolean[] fetchThumbnail,
                                      @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final String url = String.format(BY_ID, grBookId, mGrAuth.getDevKey());
         return searchBook(url, fetchThumbnail, bookData);

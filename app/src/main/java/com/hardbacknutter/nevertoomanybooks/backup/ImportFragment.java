@@ -24,6 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.system.ErrnoException;
+import android.system.Os;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,7 +36,6 @@ import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,7 +49,10 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
@@ -56,16 +60,16 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import javax.net.ssl.SSLException;
+
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
+import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -73,10 +77,8 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
-/**
- * This fragment is a blank screen and all actions are done using dialogs (fullscreen and actual).
- */
 public class ImportFragment
         extends Fragment {
 
@@ -95,12 +97,11 @@ public class ImportFragment
      * Also see {@link #mOpenUriLauncher}.
      */
     private static final String MIME_TYPES = "*/*";
-
     /**
      * The ViewModel and the {@link #mArchiveReaderTask} could be folded into one object,
      * but we're trying to keep task logic separate for now.
      */
-    private ImportViewModel mVm;
+    protected ImportViewModel mVm;
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -111,11 +112,9 @@ public class ImportFragment
                     getActivity().finish();
                 }
             };
-    private ArchiveReaderTask mArchiveReaderTask;
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
     /** View Binding. */
     private FragmentImportBinding mVb;
+    private ArchiveReadMetaDataTask mReadMetaDataTask;
     /**
      * The launcher for picking a Uri to read from.
      *
@@ -124,6 +123,9 @@ public class ImportFragment
      */
     private final ActivityResultLauncher<String> mOpenUriLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
+    private ArchiveReaderTask mArchiveReaderTask;
+    @Nullable
+    private ProgressDialogFragment mProgressDialog;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -146,6 +148,22 @@ public class ImportFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
+        mVm.init(getArguments());
+
+        mReadMetaDataTask = new ViewModelProvider(this).get(ArchiveReadMetaDataTask.class);
+        mReadMetaDataTask.onFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mReadMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+
+        mArchiveReaderTask = new ViewModelProvider(this).get(ArchiveReaderTask.class);
+        mArchiveReaderTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
+        mArchiveReaderTask.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
+        mArchiveReaderTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mArchiveReaderTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
+
         final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         //noinspection ConstantConditions
         actionBar.setTitle(R.string.lbl_import);
@@ -154,25 +172,34 @@ public class ImportFragment
             actionBar.setSubtitle(R.string.lbl_import_options);
         }
 
-        getActivity().getOnBackPressedDispatcher()
-                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
-
-        mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
-
-        mArchiveReaderTask = new ViewModelProvider(this).get(ArchiveReaderTask.class);
-        mArchiveReaderTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mArchiveReaderTask.onCancelled().observe(getViewLifecycleOwner(), this::onImportCancelled);
-        mArchiveReaderTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
-        mArchiveReaderTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
-
-
         if (!mVm.hasUri()) {
             // start the import process by asking the user for a Uri
             mOpenUriLauncher.launch(MIME_TYPES);
         } else {
+            // or if we already have a uri when called,
             // or e.g. after a screen rotation, just show the screen/options again
             showScreen();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull final Menu menu,
+                                    @NonNull final MenuInflater inflater) {
+        inflater.inflate(R.menu.toolbar_import, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
+        button.setText(menuItem.getTitle());
+        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
+        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
+            mArchiveReaderTask.start(mVm.getImportHelper());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -192,24 +219,23 @@ public class ImportFragment
             try {
                 //noinspection ConstantConditions
                 helper = mVm.createImportHelper(getContext(), uri);
-            } catch (@NonNull final IOException | InvalidArchiveException e) {
-                onImportNotSupported();
+
+            } catch (@NonNull final InvalidArchiveException e) {
+                onImportNotSupported(R.string.error_import_file_not_supported);
+                return;
+            } catch (@NonNull final FileNotFoundException e) {
+                onImportNotSupported(R.string.error_import_file_not_recognized);
                 return;
             }
 
-            final ArchiveEncoding archiveEncoding = helper.getArchiveEncoding();
-            switch (archiveEncoding) {
+            switch (helper.getEncoding()) {
                 case Csv:
-                    // Default: new books and sync updates
-                    helper.setImportEntry(RecordType.Books, true);
-                    helper.setUpdatesMustSync();
-
                     //URGENT: should make a backup before ANY csv import!
                     //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.ic_warning)
                             .setTitle(R.string.lbl_import_book_data)
-                            .setMessage(R.string.warning_import_be_cautious)
+                            .setMessage(R.string.warning_import_csv)
                             .setNegativeButton(android.R.string.cancel,
                                                (d, w) -> getActivity().finish())
                             .setPositiveButton(android.R.string.ok, (d, w) -> showScreen())
@@ -219,57 +245,18 @@ public class ImportFragment
 
                 case Zip:
                 case Tar:
-                    // Default: update all entries and sync updates
-                    helper.setImportEntry(RecordType.Styles, true);
-                    helper.setImportEntry(RecordType.Preferences, true);
-                    helper.setImportEntry(RecordType.Books, true);
-                    helper.setImportEntry(RecordType.Cover, true);
-                    helper.setUpdatesMustSync();
-                    showScreen();
-                    break;
-
                 case SqLiteDb:
-                    // Default: new books only
-                    helper.setImportEntry(RecordType.Books, true);
-                    helper.setSkipUpdates();
-                    showScreen();
-                    break;
-
                 case Json:
-                    helper.setImportEntry(RecordType.Styles, true);
-                    helper.setImportEntry(RecordType.Preferences, true);
-                    helper.setImportEntry(RecordType.Books, true);
-                    helper.setUpdatesMustSync();
+                case CalibreCS:
                     showScreen();
                     break;
 
                 case Xml:
-                    // we can import Styles and Preferences from xml, but there is no point.
                 default:
-                    onImportNotSupported();
+                    onImportNotSupported(R.string.error_import_file_not_supported);
                     break;
             }
         }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(@NonNull final Menu menu,
-                                    @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_import, menu);
-
-        final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
-        final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
-        button.setText(menuItem.getTitle());
-        button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
-        if (item.getItemId() == R.id.MENU_ACTION_CONFIRM) {
-            mArchiveReaderTask.startImport(mVm.getImportHelper());
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -278,33 +265,12 @@ public class ImportFragment
     private void showScreen() {
         final ImportHelper helper = mVm.getImportHelper();
 
+        // Hide the content field, and start the metadata task which will provide the content
+        mVb.archiveContent.setVisibility(View.INVISIBLE);
+        mReadMetaDataTask.start(helper);
+
         //noinspection ConstantConditions
-        final String displayName = helper.getArchiveName(getContext());
-        mVb.archiveName.setText(displayName);
-
-        final ArchiveMetaData archiveMetaData = helper.getArchiveMetaData();
-        if (archiveMetaData != null) {
-            final StringJoiner info = new StringJoiner("\n");
-
-            final int bookCount = archiveMetaData.getBookCount();
-            if (bookCount > 0) {
-                info.add(getString(R.string.name_colon_value,
-                                   getString(R.string.lbl_books), String.valueOf(bookCount)));
-            }
-            final int coverCount = archiveMetaData.getCoverCount();
-            if (coverCount > 0) {
-                info.add(getString(R.string.name_colon_value,
-                                   getString(R.string.lbl_covers), String.valueOf(coverCount)));
-            }
-            if (info.length() > 0) {
-                mVb.archiveContent.setText(info.toString());
-                mVb.archiveContent.setVisibility(View.VISIBLE);
-            } else {
-                mVb.archiveContent.setVisibility(View.GONE);
-            }
-        } else {
-            mVb.archiveContent.setVisibility(View.GONE);
-        }
+        mVb.archiveName.setText(helper.getUriInfo(getContext()).getDisplayName());
 
         final Set<RecordType> entries = helper.getImportEntries();
 
@@ -313,6 +279,19 @@ public class ImportFragment
             helper.setImportEntry(RecordType.Books, isChecked);
             mVb.rbBooksGroup.setEnabled(isChecked);
         });
+
+        mVb.cbxCovers.setChecked(entries.contains(RecordType.Cover));
+        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setImportEntry(RecordType.Cover, isChecked));
+
+        mVb.cbxStyles.setChecked(entries.contains(RecordType.Styles));
+        mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setImportEntry(RecordType.Styles, isChecked));
+
+        mVb.cbxPrefs.setChecked(entries.contains(RecordType.Preferences));
+        mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
+                .setImportEntry(RecordType.Preferences, isChecked));
+
 
         mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdates());
         mVb.rbUpdatedBooksSkipInfo.setOnClickListener(StandardDialogs::infoPopup);
@@ -335,86 +314,89 @@ public class ImportFragment
             }
         });
 
-        mVb.cbxCovers.setChecked(entries.contains(RecordType.Cover));
-        mVb.cbxCovers.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setImportEntry(RecordType.Cover, isChecked));
-
-        mVb.cbxStyles.setChecked(entries.contains(RecordType.Styles));
-        mVb.cbxStyles.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setImportEntry(RecordType.Styles, isChecked));
-
-        mVb.cbxPrefs.setChecked(entries.contains(RecordType.Preferences));
-        mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setImportEntry(RecordType.Preferences, isChecked));
-
-        switch (helper.getArchiveEncoding()) {
+        // Set the visibility depending on the encoding
+        switch (helper.getEncoding()) {
             case Zip:
             case Tar: {
                 // all options available
-                mVb.cbxGroup.setVisibility(View.VISIBLE);
+                mVb.cbxBooks.setVisibility(View.VISIBLE);
+                mVb.cbxCovers.setVisibility(View.VISIBLE);
+                mVb.cbxPrefs.setVisibility(View.VISIBLE);
+                mVb.cbxStyles.setVisibility(View.VISIBLE);
                 break;
             }
             case Json: {
                 // all options, except covers
-                mVb.cbxGroup.setVisibility(View.VISIBLE);
+                mVb.cbxBooks.setVisibility(View.VISIBLE);
                 mVb.cbxCovers.setVisibility(View.GONE);
+                mVb.cbxPrefs.setVisibility(View.VISIBLE);
+                mVb.cbxStyles.setVisibility(View.VISIBLE);
                 break;
             }
             case Csv:
             case SqLiteDb: {
                 // show only the book options
-                mVb.cbxGroup.setVisibility(View.GONE);
+                mVb.cbxBooks.setVisibility(View.GONE);
+                mVb.cbxCovers.setVisibility(View.GONE);
+                mVb.cbxPrefs.setVisibility(View.GONE);
+                mVb.cbxStyles.setVisibility(View.GONE);
                 break;
             }
+            case CalibreCS:
+                mVb.cbxBooks.setEnabled(false);
+                mVb.cbxBooks.setVisibility(View.VISIBLE);
+                mVb.cbxCovers.setVisibility(View.VISIBLE);
+                mVb.cbxStyles.setVisibility(View.GONE);
+                mVb.cbxPrefs.setVisibility(View.GONE);
+                break;
 
             case Xml:
                 // shouldn't even get here
-                onImportNotSupported();
+                onImportNotSupported(R.string.error_import_file_not_supported);
                 break;
         }
 
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            mProgressDialog = getOrCreateProgressDialog();
+    private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
+        final ArchiveMetaData archiveMetaData = message.result;
+        if (archiveMetaData != null) {
+            final StringJoiner info = new StringJoiner("\n");
+
+            // If this is a Calibre import, show the library name
+            final String calibreLibrary = archiveMetaData.getBundle().getString(
+                    CalibreContentServerReader.ARCH_MD_DEFAULT_LIBRARY);
+            if (calibreLibrary != null && !calibreLibrary.isEmpty()) {
+                info.add(calibreLibrary);
+            }
+
+            final int bookCount = archiveMetaData.getBookCount();
+            if (bookCount > 0) {
+                info.add(getString(R.string.name_colon_value,
+                                   getString(R.string.lbl_books), String.valueOf(bookCount)));
+            }
+            final int coverCount = archiveMetaData.getCoverCount();
+            if (coverCount > 0) {
+                info.add(getString(R.string.name_colon_value,
+                                   getString(R.string.lbl_covers), String.valueOf(coverCount)));
+            }
+            if (info.length() > 0) {
+                mVb.archiveContent.setText(info.toString());
+                mVb.archiveContent.setVisibility(View.VISIBLE);
+            } else {
+                mVb.archiveContent.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            mVb.archiveContent.setVisibility(View.INVISIBLE);
         }
-        mProgressDialog.onProgress(message);
     }
 
-    @NonNull
-    private ProgressDialogFragment getOrCreateProgressDialog() {
-        final FragmentManager fm = getChildFragmentManager();
-
-        // get dialog after a fragment restart
-        ProgressDialogFragment dialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-        // not found? create it
-        if (dialog == null) {
-            dialog = ProgressDialogFragment.newInstance(
-                    getString(R.string.lbl_importing), false, true);
-            dialog.show(fm, ProgressDialogFragment.TAG);
-        }
-
-        // hook the task up.
-        dialog.setCanceller(mArchiveReaderTask);
-
-        return dialog;
-    }
-
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }
-
-    private void onImportNotSupported() {
+    private void onImportNotSupported(@StringRes final int stringResId) {
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
                 .setIcon(R.drawable.ic_error)
-                .setMessage(R.string.error_import_file_not_supported)
+                .setMessage(stringResId)
                 .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                 .create()
                 .show();
@@ -453,7 +435,7 @@ public class ImportFragment
     }
 
     /**
-     * Import finished/failed: Step 1: Process the result.
+     * Import finished: Step 1: Process the message.
      *
      * @param message to process
      */
@@ -468,7 +450,7 @@ public class ImportFragment
     }
 
     /**
-     * Import finished: Step 2: Inform the user.
+     * Import finished/cancelled: Step 2: Inform the user.
      *
      * @param titleId for the dialog title; reports success or cancelled.
      * @param result  of the import
@@ -494,7 +476,6 @@ public class ImportFragment
                 .create()
                 .show();
     }
-
 
     /**
      * Transform the successful result data into a user friendly report.
@@ -581,14 +562,50 @@ public class ImportFragment
         if (e instanceof InvalidArchiveException) {
             msg = getString(R.string.error_import_file_not_supported);
 
+        } else if (e instanceof GeneralSecurityException) {
+            // There was something wrong with certificates/key on OUR end
+            // CertificateException, NoSuchAlgorithmException,
+            // KeyStoreException, KeyManagementException
+            //TODO: give user detailed message
+            msg = getString(R.string.httpErrorFailedSslHandshake);
+
+        } else if (e instanceof SSLException) {
+            // There was something wrong with certificates/key on the REMOTE end
+            //TODO: give user detailed message
+            msg = getString(R.string.httpErrorFailedSslHandshake);
+
         } else if (e instanceof ImportException) {
             msg = e.getLocalizedMessage();
 
-        } else if (e instanceof IOException) {
-            //ENHANCE: if (message.exception.getCause() instanceof ErrnoException) {
-            //           int errno = ((ErrnoException) message.exception.getCause()).errno;
+        } else if (e instanceof GeneralParsingException) {
+            // Either the remote end gave us garbage, or the data format changed
+            // and we failed to decode it
+            msg = getString(R.string.error_network_site_has_problems);
             //noinspection ConstantConditions
-            msg = StandardDialogs.createBadError(getContext(), R.string.error_storage_not_readable);
+            Logger.error(getContext(), TAG, e, msg);
+
+        } else if (e instanceof FileNotFoundException) {
+            msg = getString(R.string.httpErrorFile);
+
+        } else if (e instanceof IOException) {
+            // catch all, potentially look at cause.
+            final Throwable cause = e.getCause();
+            if (cause != null) {
+                if (cause instanceof ErrnoException) {
+                    //TODO: give user detailed message
+                    final int errno = ((ErrnoException) cause).errno;
+                    msg = Os.strerror(errno);
+                } else if (cause instanceof SQLException) {
+                    //TODO: give user detailed message
+                    msg = getString(R.string.error_unknown_long);
+                }
+            }
+
+            if (msg == null) {
+                //noinspection ConstantConditions
+                msg = StandardDialogs
+                        .createBadError(getContext(), R.string.error_storage_not_readable);
+            }
         }
 
         // generic unknown message
@@ -599,29 +616,37 @@ public class ImportFragment
         return msg;
     }
 
-    public static class ResultContract
-            extends ActivityResultContract<Void, ImportResults> {
+    protected void onProgress(@NonNull final ProgressMessage message) {
+        if (mProgressDialog == null) {
+            mProgressDialog = getOrCreateProgressDialog();
+        }
+        mProgressDialog.onProgress(message);
+    }
 
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @Nullable final Void aVoid) {
-            return new Intent(context, HostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, ImportFragment.TAG);
+    @NonNull
+    private ProgressDialogFragment getOrCreateProgressDialog() {
+        final FragmentManager fm = getChildFragmentManager();
+
+        // get dialog after a fragment restart
+        ProgressDialogFragment dialog = (ProgressDialogFragment)
+                fm.findFragmentByTag(ProgressDialogFragment.TAG);
+        // not found? create it
+        if (dialog == null) {
+            dialog = ProgressDialogFragment.newInstance(
+                    getString(R.string.lbl_importing), false, true);
+            dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
-        @Override
-        @Nullable
-        public ImportResults parseResult(final int resultCode,
-                                         @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-            }
+        // hook the task up.
+        dialog.setCanceller(mArchiveReaderTask);
 
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return null;
-            }
-            return intent.getParcelableExtra(ImportResults.BKEY_IMPORT_RESULTS);
+        return dialog;
+    }
+
+    private void closeProgressDialog() {
+        if (mProgressDialog != null) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
     }
 }

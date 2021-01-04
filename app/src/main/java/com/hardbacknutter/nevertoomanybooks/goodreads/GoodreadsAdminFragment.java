@@ -45,7 +45,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentGoodreadsAdminBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -220,8 +220,8 @@ public class GoodreadsAdminFragment
         @Override
         public Intent createIntent(@NonNull final Context context,
                                    @Nullable final Void aVoid) {
-            return new Intent(context, HostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
+            return new Intent(context, FragmentHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, GoodreadsAdminFragment.TAG);
         }
 
         @Override

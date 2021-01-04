@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Hardcoded to only write {@link RecordType#Books} into an CSV file.
@@ -68,7 +69,7 @@ public class CsvArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         try (OutputStream os = mHelper.createOutputStream(context);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);

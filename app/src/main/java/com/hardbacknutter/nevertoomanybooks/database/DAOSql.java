@@ -55,6 +55,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_FILE_URL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
@@ -823,7 +824,8 @@ public class DAOSql {
 
             // LEFT OUTER JOIN, columns default to NULL
             sqlBookTmp.append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_ID))
-                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_UUID));
+                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_UUID))
+                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_FILE_URL));
 
             // COALESCE nulls to "" for the LEFT OUTER JOIN'ed LOANEE name
             sqlBookTmp.append(",COALESCE(").append(TBL_BOOK_LOANEE.dot(KEY_LOANEE)).append(", '')")

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ @Copyright 2020 HardBackNutter
+  ~ @License GNU General Public License
+  ~
+  ~ This file is part of NeverTooManyBooks.
+  ~
+  ~ NeverTooManyBooks is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ NeverTooManyBooks is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  ~ See the GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/site_calibre">
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="calibre.showMenu"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/enabled" />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="calibre.showMenu"
+            android:icon="@drawable/ic_link"
+            android:inputType="textUri|text"
+            android:key="calibre.host.url"
+            android:selectAllOnFocus="true"
+            android:summary="@string/hint_empty_field"
+            android:title="@string/lbl_calibre_content_server" />
+
+        <Preference
+            android:dependency="calibre.showMenu"
+            android:icon="@drawable/ic_security"
+            android:key="psk_ca_from_file"
+            android:summary="@string/hint_empty_field"
+            android:title="@string/lbl_calibre_content_server_ca_cert"
+            />
+    </PreferenceCategory>
+
+</PreferenceScreen>

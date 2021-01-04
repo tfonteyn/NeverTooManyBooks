@@ -29,6 +29,7 @@ import android.util.Log;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -123,7 +124,11 @@ class CalibreArchiveReader
     private static final String SQL_SELECT_IDENTIFIERS =
             "SELECT identifiers.type, identifiers.val FROM identifiers "
             + " WHERE identifiers.book=?";
-    /** Read all custom column definitions. */
+    /**
+     * Read all custom column definitions.
+     * The 'label' is the actual column/lookup name.
+     * Not to be confused with the 'name' which is the displayed string!
+     */
     private static final String SQL_SELECT_CUSTOM_COLUMNS =
             "SELECT id, label, datatype FROM custom_columns";
     /** Read a single custom column. The index must be string-substituted. */
@@ -147,12 +152,9 @@ class CalibreArchiveReader
     private final String mEBookString;
     @NonNull
     private final String mProgressMessage;
-
-    private Collection<CustomColumn> mCustomColumns;
-
     private final boolean mSyncBooks;
     private final boolean mOverwriteBooks;
-
+    private Collection<CustomColumn> mCustomColumns;
     @Nullable
     private ArchiveMetaData mArchiveMetaData;
 
@@ -187,6 +189,7 @@ class CalibreArchiveReader
 
     @Nullable
     @Override
+    @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
             throws IOException {
         if (mArchiveMetaData == null) {
@@ -204,6 +207,7 @@ class CalibreArchiveReader
     }
 
     @NonNull
+    @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener) {
 
@@ -275,11 +279,6 @@ class CalibreArchiveReader
                 book.putString(DBDefinitions.KEY_UTC_LAST_UPDATED,
                                source.getString(colLastModified));
 
-                // it's an eBook - duh!
-                book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
-                // assign to current shelf.
-                book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST).add(bookshelf);
-
                 // There is a "books_series_link" table which indicates you could have a book
                 // belong to multiple series, BUT the Calibre UI does not support this and
                 // the book number in the series is stored in the books table.
@@ -291,15 +290,15 @@ class CalibreArchiveReader
                     if (!seriesNr.isEmpty() && !"0.0".equals(seriesNr)) {
                         series.setNumber(seriesNr);
                     }
-                    final ArrayList<Series> seriesList = new ArrayList<>();
-                    seriesList.add(series);
-                    book.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
+                    book.getParcelableArrayList(Book.BKEY_SERIES_LIST)
+                        .add(series);
                 }
 
                 handleAuthor(book, calibreId);
                 handlePublishers(book, calibreId);
                 handleIdentifiers(book, calibreId);
                 handleCustomColumns(book, calibreId);
+                //handleFileUrl(book, calibreId);
 
                 // process the book
                 try {
@@ -338,6 +337,11 @@ class CalibreArchiveReader
 
                     } else {
                         // The book does NOT exist in our database
+                        // it's an eBook - duh!
+                        book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
+                        // assign to current shelf.
+                        book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST).add(bookshelf);
+
                         final long insId = mDb.insert(context, book,
                                                       DAO.BOOK_FLAG_IS_BATCH_OPERATION);
                         results.booksCreated++;
@@ -379,31 +383,26 @@ class CalibreArchiveReader
 
     private void handleAuthor(@NonNull final Book book,
                               final int calibreId) {
-        final ArrayList<Author> mAuthors = new ArrayList<>();
+        final ArrayList<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_AUTHORS,
                                                  new String[]{String.valueOf(calibreId)})) {
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);
-                mAuthors.add(Author.from(name));
+                authors.add(Author.from(name));
             }
-        }
-        if (!mAuthors.isEmpty()) {
-            book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthors);
         }
     }
 
     private void handlePublishers(@NonNull final Book book,
                                   final int calibreId) {
-        final ArrayList<Publisher> mPublishers = new ArrayList<>();
+        final ArrayList<Publisher> publishers =
+                book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_PUBLISHERS,
                                                  new String[]{String.valueOf(calibreId)})) {
             while (cursor.moveToNext()) {
                 final String name = cursor.getString(0);
-                mPublishers.add(Publisher.from(name));
+                publishers.add(Publisher.from(name));
             }
-        }
-        if (!mPublishers.isEmpty()) {
-            book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, mPublishers);
         }
     }
 
@@ -483,14 +482,10 @@ class CalibreArchiveReader
     private Collection<CustomColumn> readCustomColumns() {
         final Collection<CustomColumn> customColumns = new ArrayList<>();
         try (Cursor cursor = mCalibreDb.rawQuery(SQL_SELECT_CUSTOM_COLUMNS, null)) {
-            int id;
-            String label;
-            // The datatype as used in Calibre.
-            String datatype;
             while (cursor.moveToNext()) {
-                id = cursor.getInt(0);
-                label = cursor.getString(1);
-                datatype = cursor.getString(2);
+                final int id = cursor.getInt(0);
+                final String label = cursor.getString(1);
+                final String datatype = cursor.getString(2);
 
                 final CustomColumn cc = new CustomColumn(id, label);
                 switch (cc.label) {

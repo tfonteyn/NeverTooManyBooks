@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlDumpParser;
 
 /**
@@ -97,7 +98,7 @@ public class ReviewEditApiHandler
                        @IntRange(from = 0, to = 5) final int rating,
                        //@Nullable final String privateNotes,
                        @Nullable final String review)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final String url = String.format(URL, reviewId);
         final Map<String, String> parameters = new HashMap<>();

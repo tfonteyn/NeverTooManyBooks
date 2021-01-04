@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin.SendBookEvent
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public abstract class SendBooksGrTaskBase
         extends BaseTQTask {
@@ -147,7 +148,7 @@ public abstract class SendBooksGrTaskBase
         } catch (@NonNull final CredentialsException e) {
             setLastExtStatus(GrStatus.FAILED_CREDENTIALS, e);
 
-        } catch (@NonNull final Http404Exception e) {
+        } catch (@NonNull final Http404Exception | GeneralParsingException e) {
             setLastExtStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS, e);
             storeEvent(new GrNoMatchEvent(grManager.getAppContext(), bookId));
             mNotFound++;

@@ -27,7 +27,7 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screenBorder"
     android:visibility="invisible"
-    tools:context=".HostingActivity"
+    tools:context=".FragmentHostActivity"
     tools:visibility="visible"
     >
 

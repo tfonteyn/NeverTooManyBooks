@@ -49,6 +49,14 @@
 
     <!-- visibility set from code. -->
     <item
+        android:id="@+id/nav_calibre"
+        android:icon="@drawable/ic_sync"
+        android:title="@string/menu_import_calibre"
+        android:visible="false"
+        tools:visible="true" />
+
+    <!-- visibility set from code. -->
+    <item
         android:id="@+id/nav_goodreads"
         android:icon="@drawable/ic_goodreads"
         android:title="@string/site_goodreads"

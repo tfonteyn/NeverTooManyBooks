@@ -25,6 +25,7 @@ import android.content.Context;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
@@ -42,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * This is the base for full-fledged archives which can contain
@@ -119,7 +121,7 @@ public abstract class ArchiveReaderAbstract
 
     @Override
     public void validate(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
+            throws IOException, InvalidArchiveException, GeneralParsingException {
         if (mArchiveMetaData == null) {
             mArchiveMetaData = readMetaData(context);
         }
@@ -145,8 +147,9 @@ public abstract class ArchiveReaderAbstract
      */
     @NonNull
     @Override
+    @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws IOException, InvalidArchiveException {
+            throws IOException, InvalidArchiveException, GeneralParsingException {
         if (mArchiveMetaData == null) {
             final ArchiveReaderRecord record = seek(RecordType.MetaData);
             if (record == null) {
@@ -191,9 +194,10 @@ public abstract class ArchiveReaderAbstract
      */
     @NonNull
     @Override
+    @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException, InvalidArchiveException {
+            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException {
 
         // Sanity check: the archive info should have been read during the validate phase
         Objects.requireNonNull(mArchiveMetaData, "info");
@@ -224,7 +228,7 @@ public abstract class ArchiveReaderAbstract
 
     private void readV4(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, IOException, ImportException {
+            throws InvalidArchiveException, IOException, ImportException, GeneralParsingException {
 
         ArchiveReaderRecord record = seek(RecordType.AutoDetect);
         while (record != null && !progressListener.isCancelled()) {
@@ -237,7 +241,7 @@ public abstract class ArchiveReaderAbstract
 
     private void readV2(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, IOException, ImportException {
+            throws InvalidArchiveException, IOException, ImportException, GeneralParsingException {
 
         final Set<RecordType> importEntries = mHelper.getImportEntries();
         try {
@@ -306,7 +310,7 @@ public abstract class ArchiveReaderAbstract
     private void readRecord(@NonNull final Context context,
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException, InvalidArchiveException {
+            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException {
 
         final Optional<RecordEncoding> encoding = record.getEncoding();
         if (encoding.isPresent()) {
@@ -363,6 +367,7 @@ public abstract class ArchiveReaderAbstract
      * @throws IOException on failure
      */
     @Nullable
+    @WorkerThread
     protected abstract ArchiveReaderRecord next()
             throws InvalidArchiveException, IOException;
 
@@ -378,6 +383,7 @@ public abstract class ArchiveReaderAbstract
      * @throws IOException             on failure
      */
     @Nullable
+    @WorkerThread
     protected abstract ArchiveReaderRecord seek(@NonNull RecordType type)
             throws InvalidArchiveException, IOException;
 

@@ -100,8 +100,8 @@
     <string name="error_import_failed">İçe aktarma başarısız.</string>
     <string name="error_import_file_not_recognized">Seçilen dosya tanınmıyor.</string>
     <string name="error_network_please_connect">Lütfen İnternet\'e bağlanın.</string>
-    <string name="error_network_io">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
-    <string name="error_network_timeout">Sunucuya bağlanma işlemi zaman aşımına uğradı.</string>
+    <string name="httpErrorIO">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
+    <string name="httpErrorTimeout">Sunucuya bağlanma işlemi zaman aşımına uğradı.</string>
     <string name="error_no_image_editor">Resim editörü bulunamadı</string>
     <string name="X_error_not_available">%1$s kullanılamıyor</string>
     <string name="error_search_failed_network">Lütfen Ayarlar\'ı açın ve ağ ve Arama Sitesi tercihlerinizi kontrol edin.\nAyrıca cihaz ağ ayarlarınızı da kontrol edin.</string>
@@ -457,7 +457,7 @@
     <string name="pt_search_reformat_format">“Kitap formatı” adlarını standartlaştırın</string>
     <string name="pt_search_uses_publisher">Arama yayıncı kullanıyor</string>
     <string name="pt_show_author_name_given_first">Yazar adı biçimlendirme</string>
-    <string name="pt_show_goodreads">Goodreads menülerini göster</string>
+    <string name="X_pt_show_goodreads">Goodreads menülerini göster</string>
     <string name="pt_show_title_reordered">Başlıkları farklı göster</string>
     <string name="pt_site_settings">Web sitesi ayarları</string>
     <string name="pt_sort_author_name_given_first">Yazar adı sıralama</string>
@@ -584,11 +584,11 @@
     <string name="warning_if_day_set_month_and_year_must_be">Eğer gün belirtmiş iseniz hem ay hem yıl bölümlerini de doldurmalısınız.</string>
     <string name="warning_if_month_set_year_must_be">Eğer bir ay belirtmiş iseniz yıl da belirtmelisiniz.</string>
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır</string>
-    <string name="warning_import_be_cautious">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
+    <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
     <string name="warning_import_csv_failed_lines_lots">CSV ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
     <string name="warning_import_csv_failed_lines_some">CSV ayrıştırma \n%1$s\n satırları için başarısız oldu.</string>
     <string name="warning_import_old_archive">Bu seçenek eski arşiv sürümleri için geçerli değildir.</string>
-    <string name="warning_import_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
+    <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok</string>
     <string name="warning_no_isbn_stored_for_book">Bu kitap için bir ISBN depolanmamış</string>
     <string name="warning_no_matching_book_found">Eşleşen kitap bulunamadı</string>
@@ -687,4 +687,12 @@
     <string name="menu_barcode_scan_continuous">Sürekli tara</string>
     <string name="lbl_queue">Kuyruk</string>
     <string name="btn_clear_queue">Sırayı temizle</string>
+    <string name="lbl_calibre_content_server">Calibre İçerik Sunucusu</string>
+    <string name="enabled">Etkin</string>
+    <string name="menu_import_calibre">Ithal etmek (Calibre)</string>
+    <string name="httpError">Bir ağ hatası oluştu.</string>
+    <string name="httpErrorAuth">Kimlik doğrulanamadı.</string>
+    <string name="httpErrorFailedSslHandshake">Güvenli bağlantı oluşturulamadı.</string>
+    <string name="httpErrorFile">Dosyaya erişilemedi.</string>
+    <string name="httpErrorFileNotFound">İstenen dosya bulunamadı.</string>
 </resources>

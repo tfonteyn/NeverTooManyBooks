@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * <ul>Supports:
@@ -93,11 +94,11 @@ public class JsonRecordWriter
     @Override
     public void writeMetaData(@NonNull final Writer writer,
                               @NonNull final ArchiveMetaData metaData)
-            throws IOException {
+            throws IOException, GeneralParsingException {
         try {
             writer.write(new BundleCoder().encode(metaData.getBundle()).toString());
         } catch (@NonNull final JSONException e) {
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
     }
 
@@ -107,7 +108,7 @@ public class JsonRecordWriter
                                @NonNull final Writer writer,
                                @NonNull final Set<RecordType> entries,
                                @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
@@ -181,7 +182,7 @@ public class JsonRecordWriter
             }
 
         } catch (@NonNull final JSONException e) {
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
 
         // Write the complete json output in one go

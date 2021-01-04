@@ -95,8 +95,7 @@ public class AmazonSearchEngine
     /** Preferences prefix. */
     private static final String PREF_KEY = "amazon";
     /** Type: {@code String}. */
-    @VisibleForTesting
-    public static final String PREFS_HOST_URL = PREF_KEY + ".host.url";
+    public static final String PK_HOST_URL = PREF_KEY + ".host.url";
 
     /** Log tag. */
     private static final String TAG = "AmazonSearchEngine";
@@ -192,7 +191,7 @@ public class AmazonSearchEngine
     public static String getSiteUrl(@NonNull final Context context) {
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
-                .getString(PREFS_HOST_URL, SearchEngineRegistry
+                .getString(PK_HOST_URL, SearchEngineRegistry
                         .getInstance().getByEngineId(SearchSites.AMAZON).getSiteUrl());
     }
 

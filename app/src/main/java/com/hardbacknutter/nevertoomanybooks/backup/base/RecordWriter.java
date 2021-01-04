@@ -32,6 +32,7 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public interface RecordWriter
         extends Closeable {
@@ -58,7 +59,7 @@ public interface RecordWriter
     @WorkerThread
     default void writeMetaData(@NonNull final Writer writer,
                                @NonNull final ArchiveMetaData metaData)
-            throws IOException {
+            throws IOException, GeneralParsingException {
         // do nothing
     }
 
@@ -81,7 +82,7 @@ public interface RecordWriter
                         @NonNull Writer writer,
                         @NonNull Set<RecordType> entries,
                         @NonNull ProgressListener progressListener)
-            throws IOException;
+            throws IOException, GeneralParsingException;
 
 
     /**

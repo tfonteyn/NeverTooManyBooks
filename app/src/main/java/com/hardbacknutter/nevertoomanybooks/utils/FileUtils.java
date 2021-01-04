@@ -362,13 +362,18 @@ public final class FileUtils {
      * @param context Current context
      * @param uri     to inspect
      *
-     * @return a Pair with (name,size)
+     * @return a UriInfo
      */
     @NonNull
     public static UriInfo getUriInfo(@NonNull final Context context,
                                      @NonNull final Uri uri) {
 
-        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+        final String scheme = uri.getScheme();
+        if (scheme == null) {
+            throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + uri);
+        }
+
+        if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
             final ContentResolver contentResolver = context.getContentResolver();
             try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
@@ -379,7 +384,7 @@ public final class FileUtils {
                     // sanity check, according to the android.provider.OpenableColumns
                     // documentation, the name and size MUST be present.
                     if (name != null && !name.isEmpty()) {
-                        return new UriInfo(name, size);
+                        return new UriInfo(uri, name, size);
 
                         //    for (final String cName : cursor.getColumnNames()) {
                         //        //0 = "document_id"
@@ -393,15 +398,17 @@ public final class FileUtils {
                     }
                 }
             }
-        } else if (ContentResolver.SCHEME_FILE.equals(uri.getScheme())) {
+        } else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
             final String path = uri.getPath();
             if (path != null) {
                 final File file = new File(path);
                 // sanity check
                 if (file.exists()) {
-                    return new UriInfo(file.getName(), file.length());
+                    return new UriInfo(uri, file.getName(), file.length());
                 }
             }
+        } else if (scheme.startsWith("http")) {
+            return new UriInfo(uri, uri.toString(), 0);
         }
 
         throw new IllegalStateException(ERROR_UNKNOWN_SCHEME_FOR_URI + uri);
@@ -433,13 +440,31 @@ public final class FileUtils {
     public static class UriInfo {
 
         @NonNull
-        public final String displayName;
-        public final long size;
+        private final Uri mUri;
+        @NonNull
+        private final String mDisplayName;
+        private final long mSize;
 
-        UriInfo(@NonNull final String displayName,
-                final long size) {
-            this.displayName = displayName;
-            this.size = size;
+        public UriInfo(@NonNull final Uri uri,
+                       @NonNull final String displayName,
+                       final long size) {
+            mUri = uri;
+            mDisplayName = displayName;
+            mSize = size;
+        }
+
+        @NonNull
+        public Uri getUri() {
+            return mUri;
+        }
+
+        @NonNull
+        public String getDisplayName() {
+            return mDisplayName;
+        }
+
+        public long getSize() {
+            return mSize;
         }
     }
 }

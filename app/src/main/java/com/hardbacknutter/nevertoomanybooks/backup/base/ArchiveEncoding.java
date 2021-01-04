@@ -23,13 +23,19 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
@@ -39,10 +45,13 @@ import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Archive encoding (formats) (partially) supported.
@@ -62,7 +71,11 @@ public enum ArchiveEncoding {
     /** Database. */
     SqLiteDb(".db"),
     /** The legacy full backup/restore support. NOT compressed. */
-    Tar(".tar");
+    Tar(".tar"),
+    /** A Calibre Content Server. */
+    CalibreCS("");
+
+    private static final String TAG = "ArchiveEncoding";
 
     @NonNull
     private final String mExtension;
@@ -86,7 +99,8 @@ public enum ArchiveEncoding {
      */
     @NonNull
     public static Optional<ArchiveEncoding> getEncoding(@NonNull final Context context,
-                                                        @NonNull final Uri uri) {
+                                                        @NonNull final Uri uri)
+            throws FileNotFoundException {
 
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is != null) {
@@ -144,8 +158,14 @@ public enum ArchiveEncoding {
                     return Optional.of(Json);
                 }
             }
-        } catch (@NonNull final IOException ignore) {
-            // ignore
+        } catch (@NonNull final FileNotFoundException e) {
+            throw e;
+
+        } catch (@NonNull final IOException e) {
+            // log in debug, but otherwise skip to extension detection
+            if (BuildConfig.DEBUG /* always */) {
+                Logger.d(TAG, "getEncoding", e, "uri=" + uri.toString());
+            }
         }
 
         // If the magic bytes check did not work out for csv/json,
@@ -158,13 +178,13 @@ public enum ArchiveEncoding {
         final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(context, uri);
         Pattern pattern = Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
                                           Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-        if (pattern.matcher(uriInfo.displayName).find()) {
+        if (pattern.matcher(uriInfo.getDisplayName()).find()) {
             return Optional.of(Csv);
         }
 
         pattern = Pattern.compile("^.*\\.json( \\(\\d+\\))?$",
                                   Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
-        if (pattern.matcher(uriInfo.displayName).find()) {
+        if (pattern.matcher(uriInfo.getDisplayName()).find()) {
             return Optional.of(Json);
         }
 
@@ -213,6 +233,8 @@ public enum ArchiveEncoding {
             case Json:
                 return new JsonArchiveWriter(helper);
 
+            case CalibreCS:
+                // not supported yet
             case Tar:
                 // writing to tar is no longer supported
             default:
@@ -232,9 +254,12 @@ public enum ArchiveEncoding {
      * @throws IOException             on other failures
      */
     @NonNull
+    @WorkerThread
     public ArchiveReader createReader(@NonNull final Context context,
                                       @NonNull final ImportHelper helper)
-            throws InvalidArchiveException, IOException {
+            throws InvalidArchiveException, IOException, GeneralParsingException,
+                   CertificateException, NoSuchAlgorithmException,
+                   KeyStoreException, KeyManagementException {
 
         final ArchiveReader reader;
         switch (this) {
@@ -256,6 +281,10 @@ public enum ArchiveEncoding {
 
             case Json:
                 reader = new JsonArchiveReader(helper);
+                break;
+
+            case CalibreCS:
+                reader = new CalibreContentServerReader(context, helper);
                 break;
 
             case Xml:

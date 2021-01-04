@@ -127,10 +127,10 @@
             android:theme="@style/Theme.App.FullScreen" />
 
         <activity
-            android:name=".HostingActivity"
+            android:name=".FragmentHostActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
 
-        <activity android:name=".settings.SettingsHostingActivity" />
+        <activity android:name=".settings.SettingsHostActivity" />
         <activity android:name=".settings.SearchAdminActivity" />
 
         <activity

@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Implementation of <strong>encoding-agnostic</strong> {@link ArchiveWriter} methods.
@@ -115,7 +116,7 @@ public abstract class ArchiveWriterAbstract
     @WorkerThread
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         // do a cleanup before we start writing
         mDb.purge();
@@ -210,7 +211,7 @@ public abstract class ArchiveWriterAbstract
      */
     private File prepareBooks(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final RecordEncoding encoding = getEncoding(RecordType.Books);
 
@@ -247,7 +248,7 @@ public abstract class ArchiveWriterAbstract
      */
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final ArchiveMetaData metaData = ArchiveMetaData.create(context, getVersion(), data);
 
@@ -282,7 +283,7 @@ public abstract class ArchiveWriterAbstract
                              @NonNull final RecordType recordType,
                              @NonNull final RecordEncoding encoding,
                              @NonNull final ProgressListener progressListener)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);

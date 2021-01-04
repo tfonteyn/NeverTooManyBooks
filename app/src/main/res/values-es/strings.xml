@@ -100,8 +100,8 @@
     <string name="error_import_failed">La importación falló.</string>
     <string name="error_import_file_not_recognized">El archivo seleccionado no se reconoce.</string>
     <string name="error_network_please_connect">Debes conectarte a Internet.</string>
-    <string name="error_network_io">No se ha podido establecer comunicación con el servidor. Inténtalo de nuevo más tarde.</string>
-    <string name="error_network_timeout">Se ha agotado el tiempo de espera de conexión con el servidor.</string>
+    <string name="httpErrorIO">No se ha podido establecer comunicación con el servidor. Inténtalo de nuevo más tarde.</string>
+    <string name="httpErrorTimeout">Se ha agotado el tiempo de espera de conexión con el servidor.</string>
     <string name="error_no_image_editor">No se encontró editor de imágenes</string>
     <string name="X_error_not_available">%1$s no disponible</string>
     <string name="error_search_failed_network">Abra la Configuración y verifique su red y las preferencias de Buscar en el sitio.\nCompruebe también la configuración de red de su dispositivo</string>
@@ -457,7 +457,7 @@
     <string name="pt_search_reformat_format">Estandarizar nombres de «formato de libro»</string>
     <string name="pt_search_uses_publisher">Búsqueda utiliza editor</string>
     <string name="pt_show_author_name_given_first">Formato de nombre de autor</string>
-    <string name="pt_show_goodreads">Mostrar menús de Goodreads</string>
+    <string name="X_pt_show_goodreads">Mostrar menús de Goodreads</string>
     <string name="pt_show_title_reordered">Mostrar títulos como</string>
     <string name="pt_show_titles_reordered_off">El título</string>
     <string name="pt_show_titles_reordered_on">título, El</string>
@@ -587,11 +587,11 @@
     <string name="warning_if_day_set_month_and_year_must_be">Si se especifica un día, deben especificarse también el mes y el año.</string>
     <string name="warning_if_month_set_year_must_be">Si se especifica el mes, debe especificarse también el año.</string>
     <string name="warning_immediate_global_changes">NOTA: Todos los cambios guardados se aplican de manera instantánea y global</string>
-    <string name="warning_import_be_cautious">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
+    <string name="warning_import_csv">¡Atención! La importación de datos puede actualizar los datos de libros existentes con nueva información si el ID del fichero de importación existe ya en la base de datos. Esto puede ser aceptable si se modifica un campo de un fichero exportado. Si crea un registro para un nuevo libro, compruebe que el campo ID está en blanco.</string>
     <string name="warning_import_csv_failed_lines_lots">El análisis CSV falló para las líneas \n%1$s\n y otras.</string>
     <string name="warning_import_csv_failed_lines_some">El análisis CSV falló para las líneas \n%1$s\n</string>
     <string name="warning_import_old_archive">Esta opción no está soportada para versiones de archivo antiguas.</string>
-    <string name="warning_import_unescaped_quote">Carácter de comillas sin escapes en la fila %1$d, posición %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Carácter de comillas sin escapes en la fila %1$d, posición %2$d</string>
     <string name="warning_no_editions">No hay información adicional de edición disponible</string>
     <string name="warning_no_isbn_stored_for_book">No se ha guardado ISBN para el libro</string>
     <string name="warning_no_matching_book_found">No se ha encontrado ningún libro</string>
@@ -690,4 +690,12 @@
     <string name="menu_barcode_scan_continuous">Escanear continuamente</string>
     <string name="lbl_queue">Cola</string>
     <string name="btn_clear_queue">Borrar cola</string>
+    <string name="enabled">Habilitado</string>
+    <string name="lbl_calibre_content_server">Servidor de contenido de Calibre</string>
+    <string name="menu_import_calibre">Importar (Calibre)</string>
+    <string name="httpError">Se ha producido un error de red.</string>
+    <string name="httpErrorAuth">No se ha podido autenticar.</string>
+    <string name="httpErrorFailedSslHandshake">No se ha podido establecer una conexión segura.</string>
+    <string name="httpErrorFile">No se ha podido acceder al archivo.</string>
+    <string name="httpErrorFileNotFound">No se ha podido encontrar el archivo solicitado.</string>
 </resources>

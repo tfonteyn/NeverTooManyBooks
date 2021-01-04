@@ -27,8 +27,9 @@
         <EditTextPreference
             android:defaultValue="https://www.amazon.com"
             android:icon="@drawable/ic_link"
-            android:inputType="textUri"
+            android:inputType="textUri|text"
             android:key="amazon.host.url"
+            android:selectAllOnFocus="true"
             android:title="@string/site_amazon" />
 
     </PreferenceCategory>

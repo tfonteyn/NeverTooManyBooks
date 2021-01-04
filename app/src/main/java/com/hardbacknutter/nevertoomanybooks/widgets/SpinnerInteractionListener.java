@@ -33,7 +33,7 @@ import androidx.annotation.NonNull;
  * In general, I've found that there are many different events that can trigger the
  * onItemSelected method, and it is difficult to keep track of all of them. Instead,
  * I found it simpler to use an OnTouchListener to only respond to user-initiated changes.
- * </em>>
+ * </em>
  * <pre>
  * {@code
  *

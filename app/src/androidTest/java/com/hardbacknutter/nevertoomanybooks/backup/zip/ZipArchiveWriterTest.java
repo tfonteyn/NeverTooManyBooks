@@ -26,6 +26,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -45,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -71,7 +76,9 @@ public class ZipArchiveWriterTest {
 
     @Test
     public void write()
-            throws IOException, InvalidArchiveException, ImportException {
+            throws IOException, InvalidArchiveException, ImportException,
+                   CertificateException, NoSuchAlgorithmException,
+                   KeyStoreException, KeyManagementException, GeneralParsingException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
@@ -85,7 +92,7 @@ public class ZipArchiveWriterTest {
                 RecordType.Books,
                 RecordType.Preferences,
                 RecordType.Styles);
-        exportHelper.setArchiveEncoding(ArchiveEncoding.Zip);
+        exportHelper.setEncoding(ArchiveEncoding.Zip);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -102,7 +109,7 @@ public class ZipArchiveWriterTest {
 
         final long exportCount = exportResults.getBookCount();
 
-        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.withUri(context, Uri.fromFile(file));
         final ImportResults importResults;
 
         // only NEW books, hence 0/0 created/updated as outcome of the test

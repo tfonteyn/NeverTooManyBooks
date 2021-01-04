@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * <a href="https://www.kb.nl/">Koninklijke Bibliotheek (KB), Nederland.</a>
@@ -113,7 +114,7 @@ public class KbNlSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -130,7 +131,7 @@ public class KbNlSearchEngine
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "searchByIsbn", e);
             }
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
 
         checkForSeriesNameInTitle(bookData);

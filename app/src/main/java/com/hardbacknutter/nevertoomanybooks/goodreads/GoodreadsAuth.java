@@ -380,8 +380,7 @@ public class GoodreadsAuth {
      */
     @WorkerThread
     boolean handleAuthenticationAfterAuthorization(@NonNull final Context context)
-            throws AuthorizationException,
-                   IOException {
+            throws AuthorizationException, IOException {
 
         // Get the temporarily saved request tokens.
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);

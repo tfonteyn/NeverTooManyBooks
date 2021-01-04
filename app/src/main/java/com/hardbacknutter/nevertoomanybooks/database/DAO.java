@@ -99,6 +99,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_FILE_URL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
@@ -649,6 +650,7 @@ public class DAO
         cv.put(KEY_FK_BOOK, book.getId());
         cv.put(KEY_CALIBRE_ID, book.getInt(KEY_CALIBRE_ID));
         cv.put(KEY_CALIBRE_UUID, book.getString(KEY_CALIBRE_UUID));
+        cv.put(KEY_CALIBRE_FILE_URL, book.getString(KEY_CALIBRE_FILE_URL));
 
         final long rowId = mSyncedDb.insert(TBL_BOOKS_CALIBRE.getName(), null, cv);
         if (rowId <= 0) {
@@ -669,6 +671,7 @@ public class DAO
         final ContentValues cv = new ContentValues();
         cv.put(KEY_FK_BOOK, book.getId());
         cv.put(KEY_CALIBRE_ID, book.getInt(KEY_CALIBRE_ID));
+        cv.put(KEY_CALIBRE_FILE_URL, book.getString(KEY_CALIBRE_FILE_URL));
 
         final int rowsAffected = mSyncedDb.update(TBL_BOOKS_CALIBRE.getName(), cv,
                                                   KEY_CALIBRE_UUID + "=?",
@@ -3305,6 +3308,24 @@ public class DAO
 
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindString(1, uuid);
+            return stmt.simpleQueryForLongOrZero();
+        }
+    }
+
+    /**
+     * Check that a book with the passed Calibre ID exists and return the id of the book, or zero.
+     *
+     * @param calibreId Calibre ID
+     *
+     * @return id of the book, or 0 'new' if not found
+     */
+    @IntRange(from = 0)
+    public long getBookIdFromCalibreId(final int calibreId) {
+        final String sql = "SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOKS_CALIBRE.getName()
+                           + " WHERE " + KEY_CALIBRE_ID + "=?";
+
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+            stmt.bindLong(1, calibreId);
             return stmt.simpleQueryForLongOrZero();
         }
     }

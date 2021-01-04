@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIsbnApiHandl
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * This is a layer between the API handler classes and the Goodreads sync tasks.
@@ -79,13 +80,13 @@ public class GoodreadsManager {
     /** Log tag. */
     private static final String TAG = "GoodreadsManager";
     /** Whether to show any Goodreads sync menus at all. */
-    public static final String PREFS_SHOW_MENUS = PREF_KEY + ".showMenu";
+    private static final String PK_SHOW_MENUS = PREF_KEY + ".showMenu";
     /** Whether to collect genre string from the popular bookshelves. */
-    private static final String PREFS_COLLECT_GENRE = PREF_KEY + ".search.collect.genre";
+    private static final String PK_COLLECT_GENRE = PREF_KEY + ".search.collect.genre";
     /** last id we send to Goodreads. */
-    private static final String PREFS_LAST_BOOK_SEND = PREF_KEY + ".last.send.id";
+    private static final String PK_LAST_BOOK_SEND = PREF_KEY + ".last.send.id";
     /** last time we synced with Goodreads. */
-    private static final String PREFS_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
+    private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
     @NonNull
     protected final Context mAppContext;
 
@@ -136,35 +137,35 @@ public class GoodreadsManager {
      * @return {@code true} if menus should be shown
      */
     public static boolean isShowSyncMenus(@NonNull final SharedPreferences global) {
-        return global.getBoolean(PREFS_SHOW_MENUS, true);
+        return global.getBoolean(PK_SHOW_MENUS, true);
     }
 
     public static boolean isCollectGenre(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(PREFS_COLLECT_GENRE, true);
+                                .getBoolean(PK_COLLECT_GENRE, true);
     }
 
     @Nullable
     public static String getLastSyncDate(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getString(PREFS_LAST_SYNC_DATE, null);
+                                .getString(PK_LAST_SYNC_DATE, null);
     }
 
     public static void putLastSyncDate(@NonNull final Context context,
                                        @Nullable final String lastSyncDate) {
         PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putString(PREFS_LAST_SYNC_DATE, lastSyncDate)
+                         .edit().putString(PK_LAST_SYNC_DATE, lastSyncDate)
                          .apply();
     }
 
     public long getLastBookIdSend() {
         return PreferenceManager.getDefaultSharedPreferences(mAppContext)
-                                .getLong(PREFS_LAST_BOOK_SEND, 0);
+                                .getLong(PK_LAST_BOOK_SEND, 0);
     }
 
     public void putLastBookIdSend(final long lastBookSend) {
         PreferenceManager.getDefaultSharedPreferences(mAppContext)
-                         .edit().putLong(PREFS_LAST_BOOK_SEND, lastBookSend)
+                         .edit().putLong(PK_LAST_BOOK_SEND, lastBookSend)
                          .apply();
     }
 
@@ -200,7 +201,7 @@ public class GoodreadsManager {
     @GrStatus.Status
     public int sendOneBook(@NonNull final DAO db,
                            @NonNull final DataHolder bookData)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
 
@@ -379,7 +380,7 @@ public class GoodreadsManager {
     private Bundle getBookById(@IntRange(from = 1) final long grBookId,
                                @NonNull final boolean[] fetchThumbnail,
                                @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(grBookId, "grBookId");
@@ -408,7 +409,7 @@ public class GoodreadsManager {
     private Bundle getBookByIsbn(@NonNull final String validIsbn,
                                  @NonNull final boolean[] fetchThumbnail,
                                  @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         if (mShowBookByIsbnApiHandler == null) {
             mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mAppContext, mGoodreadsAuth);
@@ -429,7 +430,7 @@ public class GoodreadsManager {
      */
     @NonNull
     private GoodreadsShelves getShelves()
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         if (mShelvesList == null) {
             final ShelvesListApiHandler handler =
@@ -454,7 +455,7 @@ public class GoodreadsManager {
     private long addBookToShelf(final long grBookId,
                                 @SuppressWarnings("SameParameterValue")
                                 @NonNull final String shelfName)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
@@ -476,7 +477,7 @@ public class GoodreadsManager {
      */
     private long addBookToShelf(final long grBookId,
                                 @NonNull final Collection<String> shelfNames)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
@@ -496,7 +497,7 @@ public class GoodreadsManager {
      */
     private void removeBookFromShelf(final long grBookId,
                                      @NonNull final String shelfName)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);

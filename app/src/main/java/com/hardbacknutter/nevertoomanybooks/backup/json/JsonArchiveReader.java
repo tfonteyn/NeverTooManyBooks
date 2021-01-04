@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public class JsonArchiveReader
         implements ArchiveReader {
@@ -67,9 +69,10 @@ public class JsonArchiveReader
 
     @NonNull
     @Override
+    @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException {
+            throws IOException, ImportException, GeneralParsingException {
 
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());
@@ -82,7 +85,7 @@ public class JsonArchiveReader
 
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
-                    mHelper.getArchiveName(context), is);
+                    mHelper.getUriInfo(context).getDisplayName(), is);
 
             return recordReader.read(context, record, mHelper.getOptions(), progressListener);
         } finally {

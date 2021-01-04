@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.SearchBookUpdatesFragment;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -55,8 +55,8 @@ public class UpdateBookContract
         bookIdList.add(book.getId());
 
         //noinspection ConstantConditions
-        return new Intent(context, HostingActivity.class)
-                .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
+        return new Intent(context, FragmentHostActivity.class)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
                 .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
                 .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, book.getTitle())
                 .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE,

@@ -26,12 +26,17 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Input: {@link ImportHelper}.
@@ -52,7 +57,7 @@ public class ArchiveReaderTask
      * @param helper import configuration
      */
     @UiThread
-    public void startImport(@NonNull final ImportHelper helper) {
+    public void start(@NonNull final ImportHelper helper) {
         mHelper = helper;
         execute(R.id.TASK_ID_IMPORT);
     }
@@ -61,7 +66,10 @@ public class ArchiveReaderTask
     @Override
     @WorkerThread
     protected ImportResults doWork(@NonNull final Context context)
-            throws IOException, ImportException, InvalidArchiveException {
+            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException,
+            // the next 4 are all GeneralSecurityException
+                   CertificateException, NoSuchAlgorithmException,
+                   KeyStoreException, KeyManagementException {
         Thread.currentThread().setName(TAG);
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {

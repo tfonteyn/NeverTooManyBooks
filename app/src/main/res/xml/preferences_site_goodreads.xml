@@ -24,7 +24,15 @@
     <PreferenceCategory
         android:title="@string/site_goodreads">
 
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="goodreads.showMenu"
+            android:summaryOff="@string/no"
+            android:summaryOn="@string/yes"
+            android:title="@string/enabled" />
+
         <Preference
+            android:dependency="goodreads.showMenu"
             android:icon="@drawable/ic_security"
             android:key="pa_credentials"
             android:title="@string/lbl_credentials">
@@ -32,15 +40,8 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_goodreads"
-            android:key="goodreads.showMenu"
-            android:summaryOff="@string/no"
-            android:summaryOn="@string/yes"
-            android:title="@string/pt_show_goodreads" />
-
-        <SwitchPreference
-            android:defaultValue="true"
-            android:icon="@drawable/ic_cloud_download"
+            android:dependency="goodreads.showMenu"
+            android:icon="@drawable/ic_library_books"
             android:key="goodreads.search.collect.genre"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

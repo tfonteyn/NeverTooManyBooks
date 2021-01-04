@@ -32,7 +32,7 @@ import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.SearchBookUpdatesFragment;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -49,8 +49,8 @@ public class UpdateBooklistContract
     @Override
     public Intent createIntent(@NonNull final Context context,
                                @NonNull final Input input) {
-        final Intent intent = new Intent(context, HostingActivity.class)
-                .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
+        final Intent intent = new Intent(context, FragmentHostActivity.class)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
                 .putExtra(Book.BKEY_BOOK_ID_LIST, input.bookIdList);
 
         if (input.subTitle != null) {

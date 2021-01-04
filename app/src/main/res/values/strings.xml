@@ -108,22 +108,38 @@
     <string name="acra_resReportSendSuccessToast">Thank you!</string>
 
     <!-- ####################################################################################### -->
+    <!-- ========== HTTP(S) error messages; copied from:
+         "https://github.com/aosp-mirror/platform_frameworks_base/blob/master/core/
+            res/res/values/strings.xml"
+    -->
+    <!-- ####################################################################################### -->
+    <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
+    <string name="httpErrorIO">Couldn\'t communicate with the server. Try again later.</string>
+    <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
+    <string name="httpErrorTimeout">The connection to the server timed out.</string>
+    <!-- [VERIFIED] - Displayed when a web request failed because the a secure connection couldn't be made to the server.-->
+    <string name="httpErrorFailedSslHandshake">Couldn\'t establish a secure connection.</string>
+    <!-- [VERIFIED] - Displayed when a web request failed because the authentication failed. -->
+    <string name="httpErrorAuth">Couldn\'t authenticate.</string>
+    <!-- [VERIFIED] - Displayed when a web request failed with a generic network error. -->
+    <string name="httpError">There was a network error.</string>
+    <!-- [VERIFIED] - Displayed when a request failed because we failed to open the file. -->
+    <string name="httpErrorFile">Couldn\'t access the file.</string>
+    <!-- [VERIFIED] - Displayed when a request failed because the file wasn't found. -->
+    <string name="httpErrorFileNotFound">Couldn\'t find the requested file.</string>
+
+    <!-- ####################################################################################### -->
     <!-- ========== General error messages ========== -->
     <!-- ####################################################################################### -->
 
     <string name="error_if_the_problem_persists">If the problem persists, contact support via the “%1$s” option at the bottom of the settings page.</string>
 
-
     <string name="error_unknown">An unknown error occurred.</string>
     <string name="error_unknown_long">An unexpected error has occurred, please send the details to support via the “Admin” page from the main menu.</string>
 
-
     <!-- [VERIFIED] -->
     <string name="error_network_please_connect">Please connect to the internet.</string>
-    <!-- [VERIFIED] - Displayed when a web request failed because there was an input or output error. -->
-    <string name="error_network_io">Couldn\'t communicate with the server. Try again later.</string>
-    <!-- [VERIFIED] - Displayed when a web request failed because the request timed out -->
-    <string name="error_network_timeout">The connection to the server timed out.</string>
+
     <string name="error_network_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
     <!-- A website did respond to a request, but the response was not valid.
          We report to the user that the site is not working as expected. -->
@@ -144,10 +160,20 @@
     <string name="error_backup_failed">Backup Failed.</string>
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
-    <!-- The user selected a file to import that was not recognised as a valid archive. -->
+
+    <!-- The user selected a file to import that was not recognised as a valid archive.
+        or, we got a FileNotFoundException when opening the selected file.
+
+        Dev Note: The latter sometimes happens when the device file manager WAS SHOWING the file,
+        and the user was able to select it... but in reality the file was NOT present.
+        This is either a bug in the Android systems we tested on, or some weird caching is going on.
+        Either way: not something we can fix.
+        -->
     <string name="error_import_file_not_recognized">The selected file is not recognized.</string>
+
     <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
     <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
+
     <!-- Displayed when a CSV import fails -->
     <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
     <string name="error_import_csv_line">Unknown error in row %1$d</string>
@@ -171,7 +197,7 @@
     <!-- ####################################################################################### -->
     <!-- ========== Warning messages ========== -->
     <!-- ####################################################################################### -->
-    <string name="warning_import_be_cautious">
+    <string name="warning_import_csv">
         Warning. Importing data may update existing book records with new information if the
         uuid column is not present and the id in the import file is the same as an existing id.
         This is usually fine if you changed a field in an exported file. If you created a new book record,
@@ -183,9 +209,10 @@
     <!-- Importing a CSV book list partially failed with more than 10 lines failing.
          Only 10 line numbers will be listed -->
     <string name="warning_import_csv_failed_lines_lots">CSV parsing failed for lines \n%1$s\n and others.</string>
+    <!-- Importing a CSV book list; individual lines can fail. Report the exact position.
+         This is a warning only; import will continue. -->
+    <string name="warning_import_csv_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
 
-    <!-- Importing a CSV book list; individual lines can fail. Report the exact position. -->
-    <string name="warning_import_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
 
     <!-- Explanatory note associated with import options not available with older archives. -->
     <string name="warning_import_old_archive">This option is not supported for older archive versions.</string>
@@ -613,6 +640,9 @@
     <string name="gr_tq_generic_task_info">Task ID %1$d, Queued at %2$s</string>
     <string name="gr_tq_events_recorded" tools:ignore="PluralsCandidate">(%1$d events recorded)</string>
 
+    <string name="lbl_calibre_content_server">Calibre Content Server</string>
+    <string name="lbl_calibre_content_server_ca_cert">CA Certificate</string>
+
     <!-- ####################################################################################### -->
     <!-- == Global preference settings - TODO: prune duplicate strings == -->
     <!-- ####################################################################################### -->
@@ -632,9 +662,6 @@
     <string name="pe_ui_theme_light">Light</string>
     <!-- Preference screen; opens a new screen listing all Fields. -->
     <string name="pg_ui_field_visibility">Field Visibility</string>
-
-    <!-- SwitchPreference -->
-    <string name="pt_show_goodreads">Show Goodreads menus</string>
 
     <!-- SwitchPreference - How to display titles. -->
     <string name="pt_show_title_reordered">Show titles as</string>
@@ -855,6 +882,8 @@
 
     <!-- Navigation panel menu option -->
     <string name="menu_import">Import</string>
+    <string name="menu_import_calibre">Import (Calibre)</string>
+
     <!-- Dialog title. -->
     <string name="lbl_import">Import</string>
     <!-- Button text. Must be short. -->
@@ -1272,6 +1301,9 @@
     <string name="done">Done</string>
     <string name="unused">unused</string>
 
+    <!-- Generic string. -->
+    <string name="enabled">Enabled</string>
+
     <!-- e.g. indicates nothing was selected; nothing was done. -->
     <string name="none">None</string>
     <string name="strict">Strict</string>
@@ -1595,7 +1627,9 @@
     <string name="X_anthology_titles">Anthology Titles</string>
     <!-- [VERIFIED] -->
     <string name="X_use_default_setting">Use default values</string>
+
     <string name="X_gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
+    <string name="X_pt_show_goodreads">Show Goodreads menus</string>
 
     <string name="X_lbl_send_mail">Send email…</string>
     <string name="X_lbl_select_image">Select image…</string>
@@ -1615,5 +1649,5 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-
+    <string name="invalid">Invalid</string>
 </resources>

@@ -23,12 +23,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModel;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
@@ -38,6 +39,9 @@ public class ImportViewModel
         extends ViewModel
         implements ResultIntent {
 
+    private static final String TAG = "ImportViewModel";
+    public static final String BKEY_URI = TAG + ":uri";
+
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
@@ -46,10 +50,27 @@ public class ImportViewModel
     @Nullable
     private ImportHelper mImportHelper;
 
-    @Override
+    private boolean mInitWasCalled;
+
+    public void init(@Nullable final Bundle args) {
+        if (!mInitWasCalled) {
+            mInitWasCalled = true;
+            if (args != null) {
+                final String uri = args.getString(BKEY_URI);
+                if (uri != null) {
+                    mImportHelper = ImportHelper.withCalibreUrl(uri);
+                }
+            }
+        }
+    }
+
     @NonNull
-    public Intent getResultIntent() {
-        return mResultIntent;
+    ImportHelper createImportHelper(@NonNull final Context context,
+                                    @NonNull final Uri uri)
+            throws InvalidArchiveException, FileNotFoundException {
+
+        mImportHelper = ImportHelper.withUri(context, uri);
+        return mImportHelper;
     }
 
     boolean hasUri() {
@@ -58,16 +79,14 @@ public class ImportViewModel
     }
 
     @NonNull
-    ImportHelper createImportHelper(@NonNull final Context context,
-                                    @NonNull final Uri uri)
-            throws IOException, InvalidArchiveException {
-        mImportHelper = new ImportHelper(context, uri);
-        return mImportHelper;
-    }
-
-    @NonNull
     ImportHelper getImportHelper() {
         return Objects.requireNonNull(mImportHelper);
+    }
+
+    @Override
+    @NonNull
+    public Intent getResultIntent() {
+        return mResultIntent;
     }
 
     @NonNull

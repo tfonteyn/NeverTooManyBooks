@@ -57,7 +57,7 @@ import java.util.StringJoiner;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
@@ -69,10 +69,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
-/**
- * This fragment is a blank screen and all actions are done using dialogs (fullscreen and actual).
- */
 public class ExportFragment
         extends Fragment {
 
@@ -219,7 +217,7 @@ public class ExportFragment
         list.add(getString(R.string.lbl_archive_type_db, ArchiveEncoding.SqLiteDb.getFileExt()));
 
         // The default selection is index 0, ZIP format.
-        helper.setArchiveEncoding(ArchiveEncoding.Zip);
+        helper.setEncoding(ArchiveEncoding.Zip);
         mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
         mVb.archiveFormatInfoLong.setText("");
 
@@ -259,7 +257,7 @@ public class ExportFragment
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.setArchiveEncoding(ArchiveEncoding.Zip);
+                helper.setEncoding(ArchiveEncoding.Zip);
                 helper.setExportEntry(RecordType.Styles, true);
                 helper.setExportEntry(RecordType.Preferences, true);
 
@@ -277,7 +275,7 @@ public class ExportFragment
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.setArchiveEncoding(ArchiveEncoding.Csv);
+                helper.setEncoding(ArchiveEncoding.Csv);
                 helper.setExportEntry(RecordType.Styles, false);
                 helper.setExportEntry(RecordType.Preferences, false);
 
@@ -295,7 +293,7 @@ public class ExportFragment
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_json_info);
                 mVb.archiveFormatInfoLong.setText("");
 
-                helper.setArchiveEncoding(ArchiveEncoding.Json);
+                helper.setEncoding(ArchiveEncoding.Json);
                 helper.setExportEntry(RecordType.Styles, false);
                 helper.setExportEntry(RecordType.Preferences, false);
 
@@ -313,7 +311,7 @@ public class ExportFragment
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
-                helper.setArchiveEncoding(ArchiveEncoding.Xml);
+                helper.setEncoding(ArchiveEncoding.Xml);
                 helper.setExportEntry(RecordType.Styles, false);
                 helper.setExportEntry(RecordType.Preferences, false);
 
@@ -331,7 +329,7 @@ public class ExportFragment
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
                 mVb.archiveFormatInfoLong.setText(R.string.lbl_archive_is_export_only);
 
-                helper.setArchiveEncoding(ArchiveEncoding.SqLiteDb);
+                helper.setEncoding(ArchiveEncoding.SqLiteDb);
                 helper.setExportEntry(RecordType.Styles, false);
                 helper.setExportEntry(RecordType.Preferences, false);
 
@@ -367,7 +365,7 @@ public class ExportFragment
         if (uri != null) {
             final ExportHelper exportHelper = mExportViewModel.getExportHelper();
             exportHelper.setUri(uri);
-            mArchiveWriterTask.startExport(exportHelper);
+            mArchiveWriterTask.start(exportHelper);
         }
     }
 
@@ -436,7 +434,11 @@ public class ExportFragment
                                      @Nullable final Exception e) {
         String msg = null;
 
-        if (e instanceof IOException) {
+        if (e instanceof GeneralParsingException) {
+            //TODO: give user detailed message
+            msg = getString(R.string.error_unknown_long);
+
+        } else if (e instanceof IOException) {
             // see if we can find the exact cause
             if (e.getCause() instanceof ErrnoException) {
                 final int errno = ((ErrnoException) e.getCause()).errno;
@@ -483,15 +485,15 @@ public class ExportFragment
                             .setTitle(R.string.progress_end_backup_success)
                             .setPositiveButton(R.string.done, (d, w) -> getActivity().finish());
 
-            final Uri uri = exportHelper.getUri();
-            final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(getContext(), uri);
+            final FileUtils.UriInfo uriInfo = exportHelper.getUriInfo(getContext());
             final String report = createReport(uriInfo, message.result);
 
-            if (uriInfo.size > 0 && uriInfo.size < MAX_FILE_SIZE_FOR_EMAIL) {
+            final long size = uriInfo.getSize();
+            if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
                 dialogBuilder.setMessage(report + "\n\n"
                                          + getString(R.string.confirm_email_export))
                              .setNeutralButton(R.string.btn_email, (d, w) ->
-                                     onExportEmail(uri, report));
+                                     onExportEmail(uriInfo.getUri(), report));
             } else {
                 dialogBuilder.setMessage(report);
             }
@@ -550,7 +552,7 @@ public class ExportFragment
         //noinspection ConstantConditions
         return report.toString() + "\n\n" + context.getString(
                 R.string.progress_end_export_success, "",
-                uriInfo.displayName, FileUtils.formatFileSize(context, uriInfo.size));
+                uriInfo.getDisplayName(), FileUtils.formatFileSize(context, uriInfo.getSize()));
     }
 
     /**
@@ -597,8 +599,8 @@ public class ExportFragment
         @Override
         public Intent createIntent(@NonNull final Context context,
                                    @Nullable final Void aVoid) {
-            return new Intent(context, HostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+            return new Intent(context, FragmentHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
         }
 
         @Override

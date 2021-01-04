@@ -315,8 +315,10 @@ public final class ImageUtils {
                     os.write(image);
                 }
             } else {
-                try (TerminatorConnection con = new TerminatorConnection(
-                        context, url, connectTimeout, readTimeout, throttler)) {
+                try (TerminatorConnection con = new TerminatorConnection(url, null,
+                                                                         connectTimeout,
+                                                                         readTimeout,
+                                                                         throttler)) {
                     file = FileUtils.copyInputStream(context, con.getInputStream(), file);
                 }
             }

@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.ElementContext;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -282,7 +283,7 @@ public abstract class ShowBookApiHandler
     @Nullable
     String searchCoverImage(@NonNull final String url,
                             @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         mBookData = bookData;
 
@@ -313,7 +314,7 @@ public abstract class ShowBookApiHandler
     Bundle searchBook(@NonNull final String url,
                       @NonNull final boolean[] fetchThumbnail,
                       @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         mBookData = bookData;
 

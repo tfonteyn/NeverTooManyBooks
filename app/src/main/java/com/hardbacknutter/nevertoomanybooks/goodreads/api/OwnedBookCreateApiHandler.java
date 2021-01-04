@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * TODO: OwnedBookCreateApiHandler WORK IN PROGRESS. Dates are likely not handled correctly yet.
@@ -76,7 +77,7 @@ class OwnedBookCreateApiHandler
      */
     public long create(@NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGrAuth);
         final long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
@@ -106,7 +107,7 @@ class OwnedBookCreateApiHandler
      */
     public void create(final long grBookId,
                        @Nullable final String dateAcquired)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final Map<String, String> parameters = new HashMap<>();
         parameters.put("owned_book[book_id]", String.valueOf(grBookId));

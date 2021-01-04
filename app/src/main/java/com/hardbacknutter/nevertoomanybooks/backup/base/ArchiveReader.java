@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -30,6 +31,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public interface ArchiveReader
         extends Closeable {
@@ -47,8 +49,9 @@ public interface ArchiveReader
      * @throws InvalidArchiveException on failure to recognise a supported archive
      * @throws IOException             on other failures
      */
+    @WorkerThread
     default void validate(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
+            throws InvalidArchiveException, IOException, GeneralParsingException {
         // do nothing
     }
 
@@ -64,8 +67,9 @@ public interface ArchiveReader
      * @throws IOException             on other failures
      */
     @Nullable
+    @WorkerThread
     default ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
+            throws InvalidArchiveException, IOException, GeneralParsingException {
         return null;
     }
 
@@ -84,9 +88,10 @@ public interface ArchiveReader
      * @throws InvalidArchiveException on failure to recognise a supported archive
      */
     @NonNull
+    @WorkerThread
     ImportResults read(@NonNull Context context,
                        @NonNull ProgressListener progressListener)
-            throws IOException, ImportException, InvalidArchiveException;
+            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException;
 
     /**
      * Override if the implementation needs to close something.

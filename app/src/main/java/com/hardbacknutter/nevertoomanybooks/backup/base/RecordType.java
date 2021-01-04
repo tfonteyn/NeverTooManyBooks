@@ -88,11 +88,11 @@ public enum RecordType {
 
     private static final String TAG = "RecordType";
 
-    /** Used as the fixed archive entry name when <strong>WRITING</strong>>. */
+    /** Used as the fixed archive entry name when <strong>WRITING</strong>. */
     @NonNull
     private final String mName;
 
-    /** Used to detect the archive entry name when <strong>READING</strong>>. */
+    /** Used to detect the archive entry name when <strong>READING</strong>. */
     @NonNull
     private final String mPrefix;
 

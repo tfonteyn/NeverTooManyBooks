@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -66,6 +67,7 @@ public class ZipArchiveReader
 
     @Override
     @Nullable
+    @WorkerThread
     public ArchiveReaderRecord seek(@NonNull final RecordType type)
             throws InvalidArchiveException, IOException {
         try {
@@ -88,6 +90,7 @@ public class ZipArchiveReader
 
     @Override
     @Nullable
+    @WorkerThread
     public ArchiveReaderRecord next()
             throws IOException {
 

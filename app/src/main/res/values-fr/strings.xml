@@ -117,11 +117,11 @@
     <string name="error_import_failed">Restauration échouée</string>
     <string name="error_import_file_not_recognized">Le fichier sélectionné n\'est pas reconnu.</string>
     <string name="error_import_file_not_supported">Le fichier sélectionné ne peut pas être importé.</string>
-    <string name="error_network_io">Impossible d\'établir une communication avec le serveur. Veuillez réessayer ultérieurement.</string>
+    <string name="httpErrorIO">Impossible d\'établir une communication avec le serveur. Veuillez réessayer ultérieurement.</string>
     <string name="error_network_please_connect">Connectez-vous à Internet.</string>
     <string name="error_network_site_access_failed">Un problème de réseau s\'est produit lors de l\'accès à %1$s. Veuillez vérifier si le site Web fonctionne et si le problème persiste, veuillez contacter le support.</string>
     <string name="error_network_site_has_problems">Le site Web a des problèmes.</string>
-    <string name="error_network_timeout">Délai de connexion au serveur dépassé.</string>
+    <string name="httpErrorTimeout">Délai de connexion au serveur dépassé.</string>
     <string name="error_no_image_editor">Aucun éditeur d\'image trouvé</string>
     <string name="error_search_failed_network">Ouvrez les paramètres et vérifiez les préférences de votre réseau et de votre site de recherche.\nVérifiez également les paramètres réseau de votre appareil</string>
     <string name="error_search_x_failed_y">Échec de la recherche sur %1$s : %2$s</string>
@@ -486,7 +486,7 @@
     <string name="pt_search_reformat_format">Normaliser les noms de «format livre»</string>
     <string name="pt_search_uses_publisher">La recherche utilise l\'éditeur</string>
     <string name="pt_show_author_name_given_first">Formatage du nom de l\'auteur</string>
-    <string name="pt_show_goodreads">Afficher les menus Goodreads</string>
+    <string name="X_pt_show_goodreads">Afficher les menus Goodreads</string>
     <string name="pt_show_title_reordered">Afficher les titres en tant que</string>
     <string name="pt_show_titles_reordered_off">Le titre</string>
     <string name="pt_show_titles_reordered_on">titre, Le</string>
@@ -603,11 +603,11 @@
     <string name="warning_image_copy_failed">L\'image n\'a pas pu être copiée.</string>
     <string name="warning_image_not_found">L\'image est introuvable.</string>
     <string name="warning_immediate_global_changes">Note : toutes les modifications sont prises en compte immédiatement et globalement.</string>
-    <string name="warning_import_be_cautious">Attention ! L\'import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n\'avez modifié qu\'un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
+    <string name="warning_import_csv">Attention ! L\'import de données peut provoquer la mise à jour de livres avec de nouvelles informations si les identifiants importés sont identiques à ceux existants. Cela est généralement correct si vous n\'avez modifié qu\'un champ dans un fichier exporté. Si vous avez intégralement créé un livre, assurez vous que le champ identifiant est vide.</string>
     <string name="warning_import_csv_failed_lines_lots">L\'analyse CSV a échoué pour les lignes \n%1$s\n et autres.</string>
     <string name="warning_import_csv_failed_lines_some">L\'analyse CSV a échoué pour les lignes \n%1$s\n</string>
     <string name="warning_import_old_archive">Cette option n\'est pas supportée par les anciennes sauvegardes.</string>
-    <string name="warning_import_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Caractère de guillemet non échappé à la ligne %1$d, position %2$d</string>
     <string name="warning_no_editions">Aucune information d\'édition supplémentaire disponible</string>
     <string name="warning_no_isbn_stored_for_book">Aucun ISBN enregistré pour ce livre</string>
     <string name="warning_no_matching_book_found">Aucun livre correspondant n\'a été trouvé</string>
@@ -694,4 +694,12 @@
     <string name="menu_barcode_scan_continuous">Scanner en continu</string>
     <string name="lbl_queue">File d\'attente</string>
     <string name="btn_clear_queue">Effacer la file d\'attente</string>
+    <string name="lbl_calibre_content_server">Serveur de contenu Calibre</string>
+    <string name="enabled">Activée</string>
+    <string name="menu_import_calibre">Importer (Calibre)</string>
+    <string name="httpError">Une erreur réseau s\'est produite.</string>
+    <string name="httpErrorAuth">Impossible de procéder à l\'authentification.</string>
+    <string name="httpErrorFailedSslHandshake">Impossible d\'établir une connexion sécurisée.</string>
+    <string name="httpErrorFile">Impossible d\'accéder au fichier.</string>
+    <string name="httpErrorFileNotFound">Impossible de trouver le fichier demandé.</string>
 </resources>

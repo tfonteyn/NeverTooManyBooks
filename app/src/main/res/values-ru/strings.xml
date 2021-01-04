@@ -98,8 +98,8 @@
     <string name="error_import_failed">Импорт не удался.</string>
     <string name="error_import_file_not_recognized">Выбранный файл не распознан.</string>
     <string name="error_network_please_connect">Подключитесь к Интернету.</string>
-    <string name="error_network_io">Не удалось подключиться к серверу. Повторите попытку позже.</string>
-    <string name="error_network_timeout">Время ожидания соединения с сервером истекло.</string>
+    <string name="httpErrorIO">Не удалось подключиться к серверу. Повторите попытку позже.</string>
+    <string name="httpErrorTimeout">Время ожидания соединения с сервером истекло.</string>
     <string name="error_no_image_editor">Редактор изображений не найден</string>
     <string name="X_error_not_available">%1$s недоступен</string>
     <string name="error_search_failed_network">Пожалуйста, откройте «Настройки» и проверьте настройки сети и поиска на сайте.\nТакже проверьте настройки сети вашего устройства</string>
@@ -452,7 +452,7 @@
     <string name="pt_search_reformat_format">Стандартизировать имена в формате книги</string>
     <string name="pt_search_uses_publisher">Поиск использует издатель</string>
     <string name="pt_show_author_name_given_first">Форматирование имени автора</string>
-    <string name="pt_show_goodreads">Показать Goodreads меню</string>
+    <string name="X_pt_show_goodreads">Показать Goodreads меню</string>
     <string name="pt_show_title_reordered">Показать названия как</string>
     <string name="pt_site_settings">Настройки сайта</string>
     <string name="pt_sort_author_name_given_first">Сортировка имени автора</string>
@@ -580,11 +580,11 @@
     <string name="warning_if_day_set_month_and_year_must_be">Если указан день, также необходимо указать месяц и год.</string>
     <string name="warning_if_month_set_year_must_be">Если указан месяц, также необходимо указать год.</string>
     <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно</string>
-    <string name="warning_import_be_cautious">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
+    <string name="warning_import_csv">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
     <string name="warning_import_csv_failed_lines_lots">Сбой разбора CSV для строк \n%1$s\n и других.</string>
     <string name="warning_import_csv_failed_lines_some">Сбой разбора CSV для строк \n%1$s\n</string>
     <string name="warning_import_old_archive">Эта опция не поддерживается для архивов более ранних версий.</string>
-    <string name="warning_import_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
     <string name="warning_no_isbn_stored_for_book">Нет ISBN хранящегося для книги</string>
     <string name="warning_no_matching_book_found">Нет совпавших книг</string>
@@ -685,4 +685,12 @@
     <string name="menu_barcode_scan_continuous">Сканирование непрерывно</string>
     <string name="lbl_queue">Очередь</string>
     <string name="btn_clear_queue">Очистить очередь</string>
+    <string name="lbl_calibre_content_server">Сервер содержимого Calibre</string>
+    <string name="enabled">Включено</string>
+    <string name="menu_import_calibre">Импортировать (Calibre)</string>
+    <string name="httpError">Ошибка сети.</string>
+    <string name="httpErrorAuth">Ошибка аутентификации.</string>
+    <string name="httpErrorFailedSslHandshake">Не удалось установить защищенное соединение.</string>
+    <string name="httpErrorFile">Не удалось получить доступ к файлу.</string>
+    <string name="httpErrorFileNotFound">Не удалось найти файл.</string>
 </resources>

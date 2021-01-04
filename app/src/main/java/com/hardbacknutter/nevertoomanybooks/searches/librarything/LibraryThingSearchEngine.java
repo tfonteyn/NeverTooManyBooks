@@ -54,6 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * FIXME: 2020-03-27. Started getting "APIs Temporarily disabled" for book and cover searches.
@@ -91,7 +92,9 @@ public class LibraryThingSearchEngine
     private static final String PREF_KEY = "librarything";
 
     /** Preference that contains the dev key for the user. Type: {@code String}. */
-    static final String PREFS_DEV_KEY = PREF_KEY + ".dev_key";
+    static final String PK_DEV_KEY = PREF_KEY + ".dev_key";
+
+    /** Log tag. */
     private static final String TAG = "LibraryThingSE";
 
     /**
@@ -160,7 +163,7 @@ public class LibraryThingSearchEngine
     @NonNull
     private static String getDevKey(@NonNull final Context context) {
         final String key = PreferenceManager.getDefaultSharedPreferences(context)
-                                            .getString(PREFS_DEV_KEY, null);
+                                            .getString(PK_DEV_KEY, null);
         if (key != null && !key.isEmpty()) {
             return DEV_KEY_PATTERN.matcher(key).replaceAll("");
         }
@@ -213,7 +216,7 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -248,7 +251,7 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -320,7 +323,7 @@ public class LibraryThingSearchEngine
     @NonNull
     @Override
     public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
@@ -330,7 +333,7 @@ public class LibraryThingSearchEngine
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
         return handler.getResult();
     }
@@ -345,7 +348,7 @@ public class LibraryThingSearchEngine
      */
     private void fetchBook(@NonNull final String url,
                            @NonNull final Bundle bookData)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingHandler handler = new LibraryThingHandler(bookData);
@@ -370,7 +373,7 @@ public class LibraryThingSearchEngine
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "fetchBook", e);
             }
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
 
         checkForSeriesNameInTitle(bookData);

@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 
-import static com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine.PREFS_SERIES_FROM_TOC;
+import static com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine.PK_SERIES_FROM_TOC;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,10 +58,10 @@ class IsfdbBookHandlerTest
                 .getSite(SearchSites.ISFDB).getSearchEngine(mContext, new MockCaller());
 
         // Override the default 'false'
-        mMockPreferences.edit().putBoolean(PREFS_SERIES_FROM_TOC, true).apply();
+        mMockPreferences.edit().putBoolean(PK_SERIES_FROM_TOC, true).apply();
 
         final boolean b = PreferenceManager.getDefaultSharedPreferences(mContext)
-                                           .getBoolean(PREFS_SERIES_FROM_TOC, false);
+                                           .getBoolean(PK_SERIES_FROM_TOC, false);
         assertTrue(b);
     }
 

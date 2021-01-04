@@ -20,8 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -29,7 +27,6 @@ import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -42,12 +39,8 @@ import androidx.preference.SwitchPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesAllListsContract;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.AttrUtils;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
@@ -214,29 +207,4 @@ public class SettingsFragment
         }
     }
 
-    public static class ResultContract
-            extends ActivityResultContract<Void, Bundle> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @Nullable final Void aVoid) {
-            return new Intent(context, SettingsHostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, SettingsFragment.TAG);
-        }
-
-        @Override
-        @Nullable
-        public Bundle parseResult(final int resultCode,
-                                  @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return null;
-            }
-            return intent.getExtras();
-        }
-    }
 }

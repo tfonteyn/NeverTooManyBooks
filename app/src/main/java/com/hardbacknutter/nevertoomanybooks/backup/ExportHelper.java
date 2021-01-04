@@ -109,24 +109,26 @@ public class ExportHelper {
                + mArchiveEncoding.getFileExt();
     }
 
-    public void setArchiveEncoding(@NonNull final ArchiveEncoding archiveEncoding) {
+    public void setEncoding(@NonNull final ArchiveEncoding archiveEncoding) {
         mArchiveEncoding = archiveEncoding;
-    }
-
-    /**
-     * Get the Uri for the user location to write to.
-     *
-     * @return Uri
-     */
-    @NonNull
-    public Uri getUri() {
-        return Objects.requireNonNull(mUri, "uri");
     }
 
     public void setUri(@NonNull final Uri uri) {
         mUri = uri;
     }
 
+    /**
+     * Get the {@link FileUtils.UriInfo} of the archive (based on the Uri/Encoding).
+     *
+     * @param context Current context
+     *
+     * @return info
+     */
+    @NonNull
+    FileUtils.UriInfo getUriInfo(@NonNull final Context context) {
+        Objects.requireNonNull(mUri, "uri");
+        return FileUtils.getUriInfo(context, mUri);
+    }
 
     /**
      * Create a BackupWriter for the specified Uri.
@@ -184,11 +186,13 @@ public class ExportHelper {
      */
     public void onSuccess(@NonNull final Context context)
             throws IOException {
+        Objects.requireNonNull(mUri, "uri");
+
         // The output file is now properly closed, export it to the user Uri
         final File tmpOutput = AppDir.Cache.getFile(context, TEMP_FILE_NAME);
 
         try (InputStream is = new FileInputStream(tmpOutput);
-             OutputStream os = context.getContentResolver().openOutputStream(getUri())) {
+             OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
             if (os != null) {
                 FileUtils.copy(is, os);
             }

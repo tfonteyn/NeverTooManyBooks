@@ -30,6 +30,7 @@ import java.io.IOException;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * book.show_by_isbn   —   Get the reviews for a book given an ISBN.
@@ -74,7 +75,7 @@ public class ShowBookByIsbnApiHandler
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail,
                                @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchBook(url, fetchThumbnail, bookData);
@@ -95,7 +96,7 @@ public class ShowBookByIsbnApiHandler
     @Nullable
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,
                                          @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchCoverImage(url, bookData);

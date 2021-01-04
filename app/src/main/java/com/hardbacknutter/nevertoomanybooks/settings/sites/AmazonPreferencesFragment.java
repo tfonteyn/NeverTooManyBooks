@@ -20,13 +20,16 @@
 package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.EditTextPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 
 @Keep
@@ -38,6 +41,11 @@ public class AmazonPreferencesFragment
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
+
+        final EditTextPreference preference = findPreference(AmazonSearchEngine.PK_HOST_URL);
+        if (preference != null) {
+            preference.setOnBindEditTextListener(TextView::setSingleLine);
+        }
     }
 
     @Override

@@ -49,7 +49,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.HostingActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -419,8 +419,8 @@ public class PreferredStylesFragment
         @Override
         public Intent createIntent(@NonNull final Context context,
                                    @NonNull final String styleUuid) {
-            return new Intent(context, HostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, PreferredStylesFragment.TAG)
+            return new Intent(context, FragmentHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, PreferredStylesFragment.TAG)
                     .putExtra(ListStyle.BKEY_STYLE_UUID, styleUuid);
         }
 

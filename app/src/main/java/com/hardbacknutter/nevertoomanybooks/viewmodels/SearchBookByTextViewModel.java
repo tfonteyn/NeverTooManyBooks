@@ -143,7 +143,7 @@ public class SearchBookByTextViewModel
      */
     private boolean usePublisher(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
-                                .getBoolean(IsfdbSearchEngine.PREFS_USE_PUBLISHER, false);
+                                .getBoolean(IsfdbSearchEngine.PK_USE_PUBLISHER, false);
     }
 
     /**

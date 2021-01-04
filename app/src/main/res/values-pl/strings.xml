@@ -98,8 +98,8 @@
     <string name="error_import_failed">Import nie powiódł się.</string>
     <string name="error_import_file_not_recognized">Wybrany plik nie został rozpoznany.</string>
     <string name="error_network_please_connect">Połącz się z internetem.</string>
-    <string name="error_network_io">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
-    <string name="error_network_timeout">Zbyt długi czas oczekiwania na połączenie z serwerem.</string>
+    <string name="httpErrorIO">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
+    <string name="httpErrorTimeout">Zbyt długi czas oczekiwania na połączenie z serwerem.</string>
     <string name="error_no_image_editor">Nie znaleziono edytora zdjęć</string>
     <string name="X_error_not_available">%1$s jest niedostępny</string>
     <string name="error_search_failed_network">Otwórz Ustawienia i sprawdź preferencje sieci i witryny wyszukiwania.\nSprawdź także ustawienia sieciowe urządzenia</string>
@@ -454,7 +454,7 @@
     <string name="pt_search_reformat_format">Standaryzuj nazwy „formatu książki”</string>
     <string name="pt_search_uses_publisher">Wyszukiwanie używa wydawcy</string>
     <string name="pt_show_author_name_given_first">Formatowanie nazwiska autora</string>
-    <string name="pt_show_goodreads">Pokaż menu Goodreads</string>
+    <string name="X_pt_show_goodreads">Pokaż menu Goodreads</string>
     <string name="pt_show_title_reordered">Pokaż tytuły jako</string>
     <string name="pt_site_settings">Ustawienia strony internetowej</string>
     <string name="pt_sort_author_name_given_first">Sortowanie nazwisk autorów</string>
@@ -581,11 +581,11 @@
     <string name="warning_if_day_set_month_and_year_must_be">Jeśli określono dzień, należy również określić miesiąc i rok.</string>
     <string name="warning_if_month_set_year_must_be">Jeśli określono miesiąc, należy również określić rok.</string>
     <string name="warning_immediate_global_changes">UWAGA: Wszystkie zapisane zmiany są globalne!</string>
-    <string name="warning_import_be_cautious">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
+    <string name="warning_import_csv">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
     <string name="warning_import_csv_failed_lines_lots">Analiza CSV nie powiodła się dla linii \n%1$s\n i innych.</string>
     <string name="warning_import_csv_failed_lines_some">Analiza CSV nie powiodła się dla linii \n%1$s\n</string>
     <string name="warning_import_old_archive">Ta opcja nie jest obsługiwana w starszych wersjach archiwum.</string>
-    <string name="warning_import_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
     <string name="warning_no_editions">Brak wydań</string>
     <string name="warning_no_isbn_stored_for_book">Nie zapisano numeru ISBN dla książki</string>
     <string name="warning_no_matching_book_found">Nie znaleziono pasującej książki</string>
@@ -686,4 +686,12 @@
     <string name="menu_barcode_scan_continuous">Skanuj w sposób ciągły</string>
     <string name="lbl_queue">Kolejka</string>
     <string name="btn_clear_queue">Wyczyść kolejkę</string>
+    <string name="lbl_calibre_content_server">Serwer zawartości Calibre</string>
+    <string name="enabled">Włączone</string>
+    <string name="menu_import_calibre">Importuj (Calibre)</string>
+    <string name="httpError">Wystąpił błąd sieci.</string>
+    <string name="httpErrorAuth">Nie można uwierzytelnić.</string>
+    <string name="httpErrorFailedSslHandshake">Nie można ustanowić bezpiecznego połączenia.</string>
+    <string name="httpErrorFile">Nie można znaleźć żądanego pliku.</string>
+    <string name="httpErrorFileNotFound">Nie można znaleźć żądanego pliku.</string>
 </resources>

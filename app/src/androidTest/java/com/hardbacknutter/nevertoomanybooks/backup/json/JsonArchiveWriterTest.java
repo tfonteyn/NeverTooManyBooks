@@ -26,6 +26,10 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.List;
 
 import org.junit.Before;
@@ -48,6 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -75,7 +80,9 @@ public class JsonArchiveWriterTest {
 
     @Test
     public void styles()
-            throws IOException, InvalidArchiveException, ImportException {
+            throws IOException, InvalidArchiveException, ImportException,
+                   CertificateException, NoSuchAlgorithmException,
+                   KeyStoreException, KeyManagementException, GeneralParsingException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + "-styles.json");
         //noinspection ResultOfMethodCallIgnored
@@ -85,7 +92,7 @@ public class JsonArchiveWriterTest {
 
         final ExportHelper exportHelper = new ExportHelper(RecordType.MetaData, RecordType.Styles);
 
-        exportHelper.setArchiveEncoding(ArchiveEncoding.Json);
+        exportHelper.setEncoding(ArchiveEncoding.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -100,7 +107,7 @@ public class JsonArchiveWriterTest {
         assertEquals(mNrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
-        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.withUri(context, Uri.fromFile(file));
         final ImportResults importResults;
 
         importHelper.setImportEntry(RecordType.Styles, true);
@@ -116,7 +123,9 @@ public class JsonArchiveWriterTest {
 
     @Test
     public void books()
-            throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException {
+            throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException,
+                   CertificateException, NoSuchAlgorithmException,
+                   KeyStoreException, KeyManagementException, GeneralParsingException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + "-books.json");
         //noinspection ResultOfMethodCallIgnored
@@ -134,7 +143,7 @@ public class JsonArchiveWriterTest {
 //                RecordType.Styles
         );
 
-        exportHelper.setArchiveEncoding(ArchiveEncoding.Json);
+        exportHelper.setEncoding(ArchiveEncoding.Json);
         exportHelper.setUri(Uri.fromFile(file));
 
         try (ArchiveWriter writer = exportHelper.createArchiveWriter(context)) {
@@ -164,7 +173,7 @@ public class JsonArchiveWriterTest {
             db.update(context, book, 0);
         }
 
-        final ImportHelper importHelper = new ImportHelper(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.withUri(context, Uri.fromFile(file));
         ImportResults importResults;
 
         importHelper.setImportEntry(RecordType.Books, true);

@@ -99,8 +99,8 @@
     <string name="error_import_failed">Importazione fallita.</string>
     <string name="error_import_file_not_recognized">Il file selezionato non è riconosciuto.</string>
     <string name="error_network_please_connect">Connettiti a Internet.</string>
-    <string name="error_network_io">Comunicazione con il server non riuscita. Riprova più tardi.</string>
-    <string name="error_network_timeout">Tempo esaurito per la connessione al server.</string>
+    <string name="httpErrorIO">Comunicazione con il server non riuscita. Riprova più tardi.</string>
+    <string name="httpErrorTimeout">Tempo esaurito per la connessione al server.</string>
     <string name="error_no_image_editor">Nessun editor di immagini trovato</string>
     <string name="X_error_not_available">%1$s non disponibile</string>
     <string name="error_search_failed_network">Si prega di aprire le impostazioni e controllare la rete e le preferenze del sito di ricerca.\nControlla anche le impostazioni di rete del tuo dispositivo</string>
@@ -454,7 +454,7 @@
     <string name="pt_search_reformat_format">Standardizzare i nomi di «formato libro»</string>
     <string name="pt_search_uses_publisher">La ricerca utilizza editore</string>
     <string name="pt_show_author_name_given_first">Formattazione del nome dell\'autore</string>
-    <string name="pt_show_goodreads">Mostra i menu di Goodreads</string>
+    <string name="X_pt_show_goodreads">Mostra i menu di Goodreads</string>
     <string name="pt_show_title_reordered">Mostra titoli come</string>
     <string name="pt_show_titles_reordered_off">Il titolo</string>
     <string name="pt_show_titles_reordered_on">titolo, Il</string>
@@ -585,11 +585,11 @@
     <string name="warning_if_day_set_month_and_year_must_be">Se si indica il giorno, occorre indicare anche mese ed anno.</string>
     <string name="warning_if_month_set_year_must_be">Se si indica il mese, occorre indicare anche l\'anno.</string>
     <string name="warning_immediate_global_changes">NOTA: Tutte le modifiche salvate si applicano istantaneamente e globalmente</string>
-    <string name="warning_import_be_cautious">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
+    <string name="warning_import_csv">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
     <string name="warning_import_csv_failed_lines_lots">Analisi CSV non riuscita per le righe \n%1$s\n e altre.</string>
     <string name="warning_import_csv_failed_lines_some">Analisi CSV non riuscita per le righe \n%1$s\n</string>
     <string name="warning_import_old_archive">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
-    <string name="warning_import_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
     <string name="warning_no_editions">Nessuna informazione aggiuntiva disponibile</string>
     <string name="warning_no_isbn_stored_for_book">Codice ISBN non memorizzato</string>
     <string name="warning_no_matching_book_found">Nessuna corrispondenza trovata</string>
@@ -689,4 +689,12 @@
     <string name="menu_barcode_scan_continuous">Scansiona continuamente</string>
     <string name="lbl_queue">Coda</string>
     <string name="btn_clear_queue">Cancella coda</string>
+    <string name="enabled">Abilitato</string>
+    <string name="lbl_calibre_content_server">Server di contenuti Calibre</string>
+    <string name="menu_import_calibre">Importa (Calibre)</string>
+    <string name="httpErrorFailedSslHandshake">Impossibile stabilire una connessione sicura.</string>
+    <string name="httpErrorAuth">Autenticazione non riuscita.</string>
+    <string name="httpError">Si è verificato un errore di rete.</string>
+    <string name="httpErrorFile">Accesso al file non riuscito.</string>
+    <string name="httpErrorFileNotFound">Impossibile trovare il file richiesto.</string>
 </resources>

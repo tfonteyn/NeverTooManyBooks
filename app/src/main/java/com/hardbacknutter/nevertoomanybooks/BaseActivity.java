@@ -49,8 +49,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
@@ -128,10 +130,11 @@ public abstract class BaseActivity
     @Nullable
     private NavigationView mNavigationView;
 
-    private final ActivityResultLauncher<Void> mSettingsLauncher = registerForActivityResult(
-            new SettingsFragment.ResultContract(), data -> {
+    private final ActivityResultLauncher<Bundle> mSettingsLauncher = registerForActivityResult(
+            new SettingsHostActivity.ResultContract(SettingsFragment.TAG), data -> {
 
                 setGoodreadsMenuVisibility();
+                setCalibreMenuVisibility();
 
                 if (data != null) {
                     // Handle the generic return flag requiring a recreate of the current Activity
@@ -340,7 +343,14 @@ public abstract class BaseActivity
 
     public void setGoodreadsMenuVisibility() {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(global));
+        setNavigationItemVisibility(R.id.nav_goodreads,
+                                    GoodreadsManager.isShowSyncMenus(global));
+    }
+
+    public void setCalibreMenuVisibility() {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+        setNavigationItemVisibility(R.id.nav_goodreads,
+                                    CalibreContentServer.isShowSyncMenus(global));
     }
 
     @CallSuper
@@ -360,8 +370,8 @@ public abstract class BaseActivity
             return true;
 
         } else if (itemId == R.id.nav_about) {
-            final Intent intent = new Intent(this, HostingActivity.class)
-                    .putExtra(HostingActivity.BKEY_FRAGMENT_TAG, AboutFragment.TAG);
+            final Intent intent = new Intent(this, FragmentHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, AboutFragment.TAG);
             startActivity(intent);
             return true;
         }

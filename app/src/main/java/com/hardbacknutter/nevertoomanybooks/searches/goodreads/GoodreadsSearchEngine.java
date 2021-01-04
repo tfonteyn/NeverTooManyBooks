@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
@@ -149,7 +150,7 @@ public class GoodreadsSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws CredentialsException, IOException {
+            throws CredentialsException, IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -170,7 +171,7 @@ public class GoodreadsSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws CredentialsException, IOException {
+            throws CredentialsException, IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -201,8 +202,7 @@ public class GoodreadsSearchEngine
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          @NonNull final boolean[] fetchThumbnail)
-            throws CredentialsException,
-                   IOException {
+            throws CredentialsException, IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -241,7 +241,8 @@ public class GoodreadsSearchEngine
             }
             return mByIsbnApi.searchCoverImageByIsbn(validIsbn, new Bundle());
 
-        } catch (@NonNull final IOException | CredentialsException | Http404Exception ignore) {
+        } catch (@NonNull final IOException | CredentialsException
+                | GeneralParsingException | Http404Exception ignore) {
             // ignore
         }
         return null;

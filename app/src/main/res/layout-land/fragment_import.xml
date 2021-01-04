@@ -27,7 +27,7 @@
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screenBorder"
     android:visibility="invisible"
-    tools:context=".HostingActivity"
+    tools:context=".FragmentHostActivity"
     tools:visibility="visible"
     >
 
@@ -36,15 +36,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:constraint_referenced_ids="rb_updated_books_skip,rb_updated_books_overwrite,rb_updated_books_sync"
-        tools:ignore="MissingConstraints"
-        />
-
-    <com.hardbacknutter.nevertoomanybooks.widgets.ExtGroup
-        android:id="@+id/cbx_group"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:constraint_referenced_ids="cbx_books,cbx_covers,cbx_prefs,cbx_styles"
-        app:groupApply="visibility"
         tools:ignore="MissingConstraints"
         />
 

@@ -99,8 +99,8 @@
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
     <string name="error_import_file_not_recognized">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
     <string name="error_network_please_connect">Συνδεθείτε στο διαδίκτυο.</string>
-    <string name="error_network_io">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
-    <string name="error_network_timeout">Το όριο χρόνου της σύνδεσης στον διακομιστή έληξε.</string>
+    <string name="httpErrorIO">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
+    <string name="httpErrorTimeout">Το όριο χρόνου της σύνδεσης στον διακομιστή έληξε.</string>
     <string name="error_no_image_editor">Δεν βρέθηκε επεξεργαστής εικόνων</string>
     <string name="X_error_not_available">Το %1$s δεν είναι διαθέσιμο</string>
     <string name="error_search_failed_network">Ανοίξτε τις Ρυθμίσεις και ελέγξτε το δίκτυο και τις προτιμήσεις Ρυθμίσεις ιστοτόπου. Ελέγξτε επίσης τις ρυθμίσεις δικτύου της συσκευής σας</string>
@@ -457,7 +457,7 @@
     <string name="pt_search_reformat_format">Τυποποιήστε τα ονόματα «μορφής βιβλίου»</string>
     <string name="pt_search_uses_publisher">Η αναζήτηση χρησιμοποιεί εκδότη</string>
     <string name="pt_show_author_name_given_first">Μορφοποίηση ονόματος συντάκτη</string>
-    <string name="pt_show_goodreads">Εμφάνιση μενού Goodreads</string>
+    <string name="X_pt_show_goodreads">Εμφάνιση μενού Goodreads</string>
     <string name="pt_show_title_reordered">Εμφάνιση τίτλων ως</string>
     <string name="pt_show_titles_reordered_off">Ο τίτλος</string>
     <string name="pt_show_titles_reordered_on">τίτλος, Ο</string>
@@ -587,11 +587,11 @@
     <string name="warning_if_day_set_month_and_year_must_be">Αν προσδιοριστεί ημέρα, τότε πρέπει να προσδιοριστεί επίσης μήνας και έτος.</string>
     <string name="warning_if_month_set_year_must_be">Αν προσδιοριστεί μήνας, τότε πρέπει να προσδιοριστεί και έτος.</string>
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
-    <string name="warning_import_be_cautious">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
+    <string name="warning_import_csv">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
     <string name="warning_import_csv_failed_lines_lots">Η ανάλυση του CSV απέτυχε για τις γραμμές \n%1$s\n και άλλες.</string>
     <string name="warning_import_csv_failed_lines_some">Η ανάλυση του CSV απέτυχε για τις γραμμές \n%1$s\n</string>
     <string name="warning_import_old_archive">Αυτή η επιλογή δεν υποστηρίζεται από Αρχεία παλαιότερης έκδοσης.</string>
-    <string name="warning_import_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
+    <string name="warning_import_csv_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
     <string name="warning_no_isbn_stored_for_book">Δεν υπάρχει αποθηκευμένο ISBN για το βιβλίο</string>
     <string name="warning_no_matching_book_found">Δεν βρέθηκε βιβλίο που να ταιριάζει</string>
@@ -691,4 +691,12 @@
     <string name="menu_barcode_scan_continuous">Σάρωση συνεχώς</string>
     <string name="lbl_queue">Ουρά</string>
     <string name="btn_clear_queue">Εκκαθάριση ουράς</string>
+    <string name="lbl_calibre_content_server">Διακομιστής περιεχομένου Calibre</string>
+    <string name="enabled">Ενεργοποιήθηκε</string>
+    <string name="menu_import_calibre">εισάγω (Calibre)</string>
+    <string name="httpError">Παρουσιάστηκε σφάλμα δικτύου.</string>
+    <string name="httpErrorAuth">Δεν ήταν δυνατός ο έλεγχος ταυτότητας.</string>
+    <string name="httpErrorFailedSslHandshake">Δεν ήταν δυνατή η δημιουργία ασφαλούς σύνδεσης.</string>
+    <string name="httpErrorFile">Δεν ήταν δυνατή η πρόσβαση στο αρχείο.</string>
+    <string name="httpErrorFileNotFound">Δεν ήταν δυνατή η εύρεση του αρχείου που ζητήθηκε.</string>
 </resources>

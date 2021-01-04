@@ -88,9 +88,9 @@ public class IsfdbSearchEngine
     /** Preferences prefix. */
     private static final String PREF_KEY = "isfdb";
     /** Type: {@code boolean}. */
-    public static final String PREFS_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
+    public static final String PK_USE_PUBLISHER = PREF_KEY + ".search.uses.publisher";
     /** Type: {@code boolean}. */
-    static final String PREFS_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
+    static final String PK_SERIES_FROM_TOC = PREF_KEY + ".search.toc.series";
     /**
      * The site claims to use ISO-8859-1.
      * <pre>
@@ -318,7 +318,7 @@ public class IsfdbSearchEngine
 
         // as per user settings.
         if (PreferenceManager.getDefaultSharedPreferences(mAppContext)
-                             .getBoolean(PREFS_USE_PUBLISHER, false)) {
+                             .getBoolean(PK_USE_PUBLISHER, false)) {
             if (publisher != null && !publisher.isEmpty()) {
                 index++;
                 args += "&USE_" + index + "=pub_publisher"
@@ -869,7 +869,7 @@ public class IsfdbSearchEngine
 
         final boolean addSeriesFromToc = PreferenceManager
                 .getDefaultSharedPreferences(mAppContext)
-                .getBoolean(PREFS_SERIES_FROM_TOC, false);
+                .getBoolean(PK_SERIES_FROM_TOC, false);
         final ArrayList<TocEntry> toc = new ArrayList<>();
 
         // <div class="ContentBox"> but there are two, so get last one

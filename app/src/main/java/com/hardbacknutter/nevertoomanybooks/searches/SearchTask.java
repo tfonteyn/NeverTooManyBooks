@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Searches a single {@link SearchEngine}.
@@ -232,7 +233,8 @@ public class SearchTask
 
             return bookData;
 
-        } catch (@NonNull final CredentialsException | IOException | RuntimeException e) {
+        } catch (@NonNull final CredentialsException | IOException | GeneralParsingException
+                | RuntimeException e) {
             Logger.error(context, TAG, e);
             mException = e;
             return new Bundle();

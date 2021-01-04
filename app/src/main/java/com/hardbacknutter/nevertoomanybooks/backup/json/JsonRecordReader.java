@@ -60,6 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Supports two levels of Archive records.
@@ -133,11 +134,11 @@ public class JsonRecordReader
     @Override
     @NonNull
     public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws IOException {
+            throws IOException, GeneralParsingException {
         try {
             return new ArchiveMetaData(new BundleCoder().decode(new JSONObject(record.asString())));
         } catch (@NonNull final JSONException e) {
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
     }
 

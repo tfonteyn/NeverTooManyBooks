@@ -31,6 +31,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -82,7 +83,7 @@ public class AuthUserApiHandler
             return mUserId;
 
         } catch (@NonNull final CredentialsException | Http404Exception | IOException
-                | RuntimeException ignore) {
+                | GeneralParsingException | RuntimeException ignore) {
             return 0;
         }
     }

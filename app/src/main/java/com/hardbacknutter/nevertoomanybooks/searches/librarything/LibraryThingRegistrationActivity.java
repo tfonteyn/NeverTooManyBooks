@@ -102,7 +102,7 @@ public class LibraryThingRegistrationActivity
         });
 
         final String key = PreferenceManager.getDefaultSharedPreferences(this)
-                                            .getString(LibraryThingSearchEngine.PREFS_DEV_KEY, "");
+                                            .getString(LibraryThingSearchEngine.PK_DEV_KEY, "");
         mVb.devKey.setText(key);
     }
 
@@ -135,7 +135,7 @@ public class LibraryThingRegistrationActivity
         final String devKey = mVb.devKey.getText().toString().trim();
         PreferenceManager.getDefaultSharedPreferences(this)
                          .edit()
-                         .putString(LibraryThingSearchEngine.PREFS_DEV_KEY, devKey)
+                         .putString(LibraryThingSearchEngine.PK_DEV_KEY, devKey)
                          .apply();
 
         if (!devKey.isEmpty()) {

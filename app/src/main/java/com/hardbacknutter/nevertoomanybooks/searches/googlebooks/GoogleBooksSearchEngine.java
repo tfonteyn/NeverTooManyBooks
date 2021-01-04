@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * FIXME: migrate to new googlebooks API or drop Google altogether?
@@ -96,7 +97,7 @@ public class GoogleBooksSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -114,7 +115,7 @@ public class GoogleBooksSearchEngine
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          @NonNull final boolean[] fetchThumbnail)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final Bundle bookData = new Bundle();
 
@@ -144,7 +145,7 @@ public class GoogleBooksSearchEngine
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchThumbnail,
                            @NonNull final Bundle bookData)
-            throws IOException {
+            throws IOException, GeneralParsingException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
@@ -181,7 +182,7 @@ public class GoogleBooksSearchEngine
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "fetchBook", e);
             }
-            throw new IOException(e);
+            throw new GeneralParsingException(e);
         }
     }
 

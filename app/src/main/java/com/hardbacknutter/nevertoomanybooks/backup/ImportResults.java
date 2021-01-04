@@ -57,7 +57,7 @@ public class ImportResults
     /**
      * {@link ImportResults} after an import.
      */
-    static final String BKEY_IMPORT_RESULTS = TAG + ":results";
+    public static final String BKEY_IMPORT_RESULTS = TAG + ":results";
     /**
      * Keeps track of failed import lines in a text file.
      * Not strictly needed as row number should be part of the messages.

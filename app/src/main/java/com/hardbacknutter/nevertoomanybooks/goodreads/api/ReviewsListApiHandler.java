@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SimpleXmlFilter.XmlListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
 
@@ -124,7 +125,7 @@ public class ReviewsListApiHandler
     @NonNull
     public Bundle get(final int page,
                       final int perPage)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, perPage,
                                          mGrAuth.getUserId());

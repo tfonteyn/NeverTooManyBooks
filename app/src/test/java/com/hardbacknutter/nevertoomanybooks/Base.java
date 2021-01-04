@@ -202,7 +202,7 @@ public class Base {
 
                         .apply();
 
-        when(mMockPreferences.getString(eq(AmazonSearchEngine.PREFS_HOST_URL),
+        when(mMockPreferences.getString(eq(AmazonSearchEngine.PK_HOST_URL),
                                         nullable(String.class)))
                 .thenAnswer((Answer<String>) invocation -> {
                     if (mLocale0 != null) {

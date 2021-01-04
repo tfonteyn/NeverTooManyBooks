@@ -66,7 +66,7 @@ public class ListStyleCoder
     }
 
     /**
-     * Constructor. The {@link #decode} method <strong>does</strong>> need a database.
+     * Constructor. The {@link #decode} method <strong>does</strong> need a database.
      *
      * @param context Current context
      * @param db      Database access

@@ -24,7 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/TopNestedScroller"
-    tools:context=".HostingActivity"
+    tools:context=".FragmentHostActivity"
     >
 
     <LinearLayout
@@ -38,7 +38,7 @@
             android:id="@+id/btn_sync"
             style="@style/MenuButton"
             android:text="@string/gr_title_sync_with_goodreads"
-            app:icon="@drawable/ic_autorenew"
+            app:icon="@drawable/ic_sync"
             />
 
         <Button

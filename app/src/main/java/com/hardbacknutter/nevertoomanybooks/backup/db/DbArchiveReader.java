@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * A generic wrapper to read sqlite db files.
@@ -70,7 +72,8 @@ public class DbArchiveReader
      * @param context Current context
      * @param helper  import configuration
      *
-     * @throws IOException on failure to copy the database file
+     * @throws FileNotFoundException if the uri cannot be accessed
+     * @throws IOException           on failure to copy the database file
      */
     public DbArchiveReader(@NonNull final Context context,
                            @NonNull final ImportHelper helper)
@@ -97,7 +100,7 @@ public class DbArchiveReader
 
     @Override
     public void validate(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
+            throws InvalidArchiveException, IOException, GeneralParsingException {
 
         // sanity check
         if (mSQLiteDatabase == null) {
@@ -133,8 +136,9 @@ public class DbArchiveReader
 
     @Nullable
     @Override
+    @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, IOException {
+            throws InvalidArchiveException, IOException, GeneralParsingException {
         if (mDelegateReader != null) {
             return mDelegateReader.readMetaData(context);
         } else {
@@ -144,9 +148,10 @@ public class DbArchiveReader
 
     @NonNull
     @Override
+    @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException, InvalidArchiveException {
+            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException {
 
         // sanity check, we should not even get here if the database is not supported
         if (mDelegateReader == null) {

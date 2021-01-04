@@ -32,6 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Input: {@link ExportHelper}.
@@ -52,7 +53,7 @@ public class ArchiveWriterTask
      *
      * @param exportHelper with uri/options
      */
-    public void startExport(@NonNull final ExportHelper exportHelper) {
+    public void start(@NonNull final ExportHelper exportHelper) {
         mHelper = exportHelper;
         execute(R.id.TASK_ID_EXPORT);
     }
@@ -61,7 +62,7 @@ public class ArchiveWriterTask
     @Override
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
-            throws IOException {
+            throws IOException, GeneralParsingException {
         Thread.currentThread().setName(TAG);
 
         ExportResults results = null;
