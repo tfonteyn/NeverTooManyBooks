@@ -700,4 +700,6 @@
     <string name="httpErrorFailedSslHandshake">Es konnte keine sichere Verbindung hergestellt werden.</string>
     <string name="httpErrorFile">Auf die Datei konnte nicht zugegriffen werden.</string>
     <string name="httpErrorFileNotFound">Die angeforderte Datei wurde nicht gefunden.</string>
+    <string name="lbl_calibre_content_server_ca_cert">CA-Zertifikat</string>
+    <string name="error_certificate_invalid">Das Zertifikat ist ungültig oder nicht aufrufbar.</string>
 </resources>

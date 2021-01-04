@@ -698,4 +698,6 @@
     <string name="httpErrorAuth">Kan niet verifiëren.</string>
     <string name="httpErrorFile">Kan het bestand niet openen.</string>
     <string name="httpErrorFileNotFound">Kan het opgevraagde bestand niet vinden.</string>
+    <string name="lbl_calibre_content_server_ca_cert">CA-certificaat</string>
+    <string name="error_certificate_invalid">Het certificaat is ongeldig of niet toegankelijk.</string>
 </resources>

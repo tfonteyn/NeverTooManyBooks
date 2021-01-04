@@ -695,4 +695,6 @@
     <string name="httpErrorFailedSslHandshake">Güvenli bağlantı oluşturulamadı.</string>
     <string name="httpErrorFile">Dosyaya erişilemedi.</string>
     <string name="httpErrorFileNotFound">İstenen dosya bulunamadı.</string>
+    <string name="lbl_calibre_content_server_ca_cert">CA sertifikası</string>
+    <string name="error_certificate_invalid">Sertifika geçersiz veya erişilemez.</string>
 </resources>

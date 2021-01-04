@@ -702,4 +702,6 @@
     <string name="httpErrorFailedSslHandshake">Impossible d\'établir une connexion sécurisée.</string>
     <string name="httpErrorFile">Impossible d\'accéder au fichier.</string>
     <string name="httpErrorFileNotFound">Impossible de trouver le fichier demandé.</string>
+    <string name="lbl_calibre_content_server_ca_cert">Certificat CA</string>
+    <string name="error_certificate_invalid">Le certificat est incorrect ou inaccessible.</string>
 </resources>

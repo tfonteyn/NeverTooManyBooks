@@ -694,4 +694,6 @@
     <string name="httpErrorFailedSslHandshake">Nie można ustanowić bezpiecznego połączenia.</string>
     <string name="httpErrorFile">Nie można znaleźć żądanego pliku.</string>
     <string name="httpErrorFileNotFound">Nie można znaleźć żądanego pliku.</string>
+    <string name="lbl_calibre_content_server_ca_cert">Certyfikat urzędu certyfikacji</string>
+    <string name="error_certificate_invalid">Certyfikat jest nieważny lub niedostępny.</string>
 </resources>

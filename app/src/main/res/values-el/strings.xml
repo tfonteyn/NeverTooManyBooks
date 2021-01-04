@@ -699,4 +699,6 @@
     <string name="httpErrorFailedSslHandshake">Δεν ήταν δυνατή η δημιουργία ασφαλούς σύνδεσης.</string>
     <string name="httpErrorFile">Δεν ήταν δυνατή η πρόσβαση στο αρχείο.</string>
     <string name="httpErrorFileNotFound">Δεν ήταν δυνατή η εύρεση του αρχείου που ζητήθηκε.</string>
+    <string name="lbl_calibre_content_server_ca_cert">Πιστοποιητικό CA</string>
+    <string name="error_certificate_invalid">Το πιστοποιητικό δεν είναι έγκυρο ή δεν είναι δυνατή η πρόσβαση σε αυτό.</string>
 </resources>

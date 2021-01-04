@@ -139,6 +139,8 @@
 
     <!-- [VERIFIED] -->
     <string name="error_network_please_connect">Please connect to the internet.</string>
+    <!-- [VERIFIED] -->
+    <string name="error_certificate_invalid">The certificate is invalid or inaccessible.</string>
 
     <string name="error_network_site_access_failed">There was a network problem while accessing %1$s. Please check if the website is up, and if the problem persists please contact support.</string>
     <!-- A website did respond to a request, but the response was not valid.
@@ -506,6 +508,15 @@
     <string name="tip_authors_works_multiple_books">Entry is present in multiple books.</string>
 
     <!-- ####################################################################################### -->
+    <!-- ========== Calibre specific ========== -->
+    <!-- ####################################################################################### -->
+
+    <!-- [VERIFIED] -->
+    <string name="lbl_calibre_content_server">Calibre Content Server</string>
+    <!-- [VERIFIED] -->
+    <string name="lbl_calibre_content_server_ca_cert">CA Certificate</string>
+
+    <!-- ####################################################################################### -->
     <!-- ========== Library Thing specific ========== -->
     <!-- ####################################################################################### -->
     <string name="lt_info">
@@ -640,8 +651,6 @@
     <string name="gr_tq_generic_task_info">Task ID %1$d, Queued at %2$s</string>
     <string name="gr_tq_events_recorded" tools:ignore="PluralsCandidate">(%1$d events recorded)</string>
 
-    <string name="lbl_calibre_content_server">Calibre Content Server</string>
-    <string name="lbl_calibre_content_server_ca_cert">CA Certificate</string>
 
     <!-- ####################################################################################### -->
     <!-- == Global preference settings - TODO: prune duplicate strings == -->
@@ -1649,5 +1658,4 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-    <string name="invalid">Invalid</string>
 </resources>

@@ -698,4 +698,6 @@
     <string name="httpErrorFailedSslHandshake">No se ha podido establecer una conexión segura.</string>
     <string name="httpErrorFile">No se ha podido acceder al archivo.</string>
     <string name="httpErrorFileNotFound">No se ha podido encontrar el archivo solicitado.</string>
+    <string name="lbl_calibre_content_server_ca_cert">Certificado de CA</string>
+    <string name="error_certificate_invalid">El certificado no es válido o no se puede acceder a él.</string>
 </resources>

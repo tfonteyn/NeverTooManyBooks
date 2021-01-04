@@ -695,4 +695,6 @@
     <string name="httpError">Došlo k chybě sítě.</string>
     <string name="httpErrorFile">Do souboru nelze získat přístup.</string>
     <string name="httpErrorFileNotFound">Požadovaný soubor nelze najít.</string>
+    <string name="lbl_calibre_content_server_ca_cert">Certifikát CA</string>
+    <string name="error_certificate_invalid">Certifikát je neplatný nebo nedostupný.</string>
 </resources>

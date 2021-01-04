@@ -693,4 +693,6 @@
     <string name="httpErrorFailedSslHandshake">Не удалось установить защищенное соединение.</string>
     <string name="httpErrorFile">Не удалось получить доступ к файлу.</string>
     <string name="httpErrorFileNotFound">Не удалось найти файл.</string>
+    <string name="lbl_calibre_content_server_ca_cert">Сертификат центра сертификации</string>
+    <string name="error_certificate_invalid">Сертификат недействителен или недоступен.</string>
 </resources>

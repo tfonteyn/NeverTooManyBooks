@@ -113,7 +113,7 @@ public class CalibrePreferencesFragment
                 }
             } catch (@NonNull final IOException | CertificateException e) {
                 //noinspection ConstantConditions
-                caPref.setSummary(R.string.invalid);
+                caPref.setSummary(R.string.error_certificate_invalid);
             }
         }
     }
@@ -134,7 +134,7 @@ public class CalibrePreferencesFragment
                 preference.setSummary(ca.getSubjectX500Principal().getName());
             }
         } catch (@NonNull final CertificateException e) {
-            preference.setSummary(R.string.invalid);
+            preference.setSummary(R.string.error_certificate_invalid);
 
         } catch (@NonNull final IOException e) {
             preference.setSummary(R.string.hint_empty_field);
