@@ -36,12 +36,12 @@ import android.widget.Button;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -63,6 +63,9 @@ import java.util.stream.Collectors;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
@@ -127,6 +130,8 @@ public class ImportFragment
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
+    private Toolbar mToolbar;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,8 +151,9 @@ public class ImportFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
+
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
@@ -164,12 +170,10 @@ public class ImportFragment
         mArchiveReaderTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
         mArchiveReaderTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.lbl_import);
+        mToolbar.setTitle(R.string.lbl_import);
         if (mVb.header == null) {
             // landscape layout only
-            actionBar.setSubtitle(R.string.lbl_import_options);
+            mToolbar.setSubtitle(R.string.lbl_import_options);
         }
 
         if (!mVm.hasUri()) {
@@ -188,6 +192,7 @@ public class ImportFragment
         inflater.inflate(R.menu.toolbar_import, menu);
 
         final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
+        menuItem.setEnabled(false);
         final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
         button.setText(menuItem.getTitle());
         button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
@@ -390,6 +395,9 @@ public class ImportFragment
         } else {
             mVb.archiveContent.setVisibility(View.INVISIBLE);
         }
+
+        final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+        menuItem.setEnabled(true);
     }
 
     private void onImportNotSupported(@StringRes final int stringResId) {
@@ -647,6 +655,37 @@ public class ImportFragment
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
             mProgressDialog = null;
+        }
+    }
+
+    public static class ResultsContract
+            extends ActivityResultContract<String, ImportResults> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @Nullable final String uri) {
+            final Intent intent = new Intent(context, FragmentHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, TAG);
+            if (uri != null) {
+                intent.putExtra(ImportViewModel.BKEY_URI, uri);
+            }
+            return intent;
+        }
+
+        @Override
+        @Nullable
+        public ImportResults parseResult(final int resultCode,
+                                         @Nullable final Intent intent) {
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
+                Logger.d(TAG, "parseResult",
+                         "|resultCode=" + resultCode + "|intent=" + intent);
+            }
+
+            if (intent == null || resultCode != Activity.RESULT_OK) {
+                return null;
+            }
+            return intent.getParcelableExtra(ImportResults.BKEY_IMPORT_RESULTS);
         }
     }
 }

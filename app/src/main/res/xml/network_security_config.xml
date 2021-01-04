@@ -26,7 +26,6 @@
         <!-- but these domains don't yet support https. 2020-01-04. -->
         <domain includeSubdomains="true">isfdb.org</domain>
         <domain includeSubdomains="true">kb.nl</domain>
-        <domain includeSubdomains="true">192.168.0.202</domain>
 
         <!-- Added 2020-07-08.
         http://ecx.images-amazon.com/images/I/41lQH44CfyL.jpg

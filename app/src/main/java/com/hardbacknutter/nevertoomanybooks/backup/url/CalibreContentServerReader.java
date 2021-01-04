@@ -112,6 +112,7 @@ public class CalibreContentServerReader
     public static final String ARCH_MD_DEFAULT_LIBRARY = TAG + ":defLibId";
     public static final String ARCH_MD_LIBRARY_LIST = TAG + ":libs";
 
+    /** The number of books we fetch per request. Tested with CCS running on a RaspberryPi 1b+. */
     private static final int NUM = 10;
 
     @NonNull
@@ -214,12 +215,16 @@ public class CalibreContentServerReader
             int num = 0;
             int offset = 0;
             boolean valid;
+
             do {
                 final JSONObject result = mServer.getBookIds(NUM, offset);
                 // assume valid result if at least the "total_num" param is there.
                 valid = result.has("total_num");
                 if (valid) {
-                    totalNum = result.getInt("total_num");
+                    if (totalNum == 0) {
+                        totalNum = result.getInt("total_num");
+                        progressListener.setMaxPos(totalNum);
+                    }
                     num = result.getInt("num");
 
                     final JSONArray bookIds = result.optJSONArray("book_ids");

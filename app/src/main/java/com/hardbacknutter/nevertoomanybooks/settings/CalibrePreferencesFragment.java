@@ -30,8 +30,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 
@@ -69,6 +67,7 @@ public class CalibrePreferencesFragment
 
         final Preference caPref = findPreference(PSK_CA_FROM_FILE);
         if (caPref != null) {
+            setCertificateSummary(caPref);
             caPref.setOnPreferenceClickListener(
                     preference -> {
                         mOpenUriLauncher.launch("*/*");
@@ -80,11 +79,8 @@ public class CalibrePreferencesFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.lbl_settings);
-        actionBar.setSubtitle(R.string.site_calibre);
+        mToolbar.setTitle(R.string.lbl_settings);
+        mToolbar.setSubtitle(R.string.site_calibre);
     }
 
     @Override
@@ -119,6 +115,29 @@ public class CalibrePreferencesFragment
                 //noinspection ConstantConditions
                 caPref.setSummary(R.string.invalid);
             }
+        }
+    }
+
+    /**
+     * Read the existing CA file from storage, and set the preference summary.
+     *
+     * @param preference to use
+     */
+    private void setCertificateSummary(@NonNull final Preference preference) {
+        //noinspection ConstantConditions
+        try (InputStream is = getContext().openFileInput(CalibreContentServer.CA_FILE)) {
+            final X509Certificate ca;
+            try (BufferedInputStream bis = new BufferedInputStream(is)) {
+                ca = (X509Certificate) CertificateFactory
+                        .getInstance("X.509").generateCertificate(bis);
+                ca.checkValidity();
+                preference.setSummary(ca.getSubjectX500Principal().getName());
+            }
+        } catch (@NonNull final CertificateException e) {
+            preference.setSummary(R.string.invalid);
+
+        } catch (@NonNull final IOException e) {
+            preference.setSummary(R.string.hint_empty_field);
         }
     }
 }

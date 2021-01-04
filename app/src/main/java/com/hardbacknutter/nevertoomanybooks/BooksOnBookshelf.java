@@ -69,10 +69,10 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportFromUriContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -207,7 +207,7 @@ public class BooksOnBookshelf
 
     /** Do an import. */
     private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
-            new ImportFromUriContract(), importResults -> {
+            new ImportFragment.ResultsContract(), importResults -> {
                 if (importResults != null) {
                     if (importResults.styles > 0) {
                         // Force a refresh of the cached styles

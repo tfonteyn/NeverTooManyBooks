@@ -508,16 +508,14 @@ public class CalibreContentServer {
             ca = CertificateFactory.getInstance("X.509").generateCertificate(caInput);
         }
 
-        // Create a KeyStore containing our trusted CAs
         final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(null, null);
         keyStore.setCertificateEntry("ca", ca);
-        // Create a TrustManager that trusts the CAs in our KeyStore
+
         final TrustManagerFactory tmf = TrustManagerFactory.getInstance(
                 TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keyStore);
 
-        // Create an SSLContext that uses our TrustManager
         final SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, tmf.getTrustManagers(), null);
 
