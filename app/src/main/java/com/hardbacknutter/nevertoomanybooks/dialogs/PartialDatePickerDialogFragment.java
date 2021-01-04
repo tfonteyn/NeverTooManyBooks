@@ -169,29 +169,27 @@ public class PartialDatePickerDialogFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final View root = getView();
         // Ensure components match current Locale order
-        //noinspection ConstantConditions
-        reorderPickers(root);
+        reorderPickers(view);
 
-        final Toolbar toolbar = root.findViewById(R.id.toolbar);
+        final Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setTitle(mDialogTitleId != 0 ? mDialogTitleId : R.string.action_edit);
 
-        final NumberPicker yearPicker = root.findViewById(R.id.year);
+        final NumberPicker yearPicker = view.findViewById(R.id.year);
         // 0: 'not set'
         yearPicker.setMinValue(0);
         // we're optimistic...
         yearPicker.setMaxValue(2100);
         yearPicker.setOnValueChangedListener(mOnValueChangeListener);
 
-        final NumberPicker monthPicker = root.findViewById(R.id.month);
+        final NumberPicker monthPicker = view.findViewById(R.id.month);
         // 0: 'not set' + 1..12 real months
         monthPicker.setMinValue(0);
         monthPicker.setMaxValue(12);
         monthPicker.setDisplayedValues(getMonthAbbr());
         monthPicker.setOnValueChangedListener(mOnValueChangeListener);
 
-        mDayPicker = root.findViewById(R.id.day);
+        mDayPicker = view.findViewById(R.id.day);
         // 0: 'not set'
         mDayPicker.setMinValue(0);
         // Make sure that the spinner can initially take any 'day' value. Otherwise,

@@ -31,8 +31,6 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.Preference;
 import androidx.preference.SwitchPreference;
@@ -147,11 +145,8 @@ public class SettingsFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.lbl_settings);
-        actionBar.setSubtitle("");
+        mToolbar.setTitle(R.string.lbl_settings);
+        mToolbar.setSubtitle("");
     }
 
     @Override

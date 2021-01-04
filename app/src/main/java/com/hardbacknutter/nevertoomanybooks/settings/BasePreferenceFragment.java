@@ -22,10 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -60,6 +62,8 @@ public abstract class BasePreferenceFragment
     @Nullable
     private String mAutoScrollToKey;
 
+    protected Toolbar mToolbar;
+
     @Override
     @CallSuper
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -68,6 +72,14 @@ public abstract class BasePreferenceFragment
         if (args != null) {
             mAutoScrollToKey = args.getString(BKEY_AUTO_SCROLL_TO_KEY);
         }
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
     }
 
     @Override

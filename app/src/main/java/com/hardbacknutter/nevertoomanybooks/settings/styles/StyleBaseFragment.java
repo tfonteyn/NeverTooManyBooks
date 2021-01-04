@@ -24,8 +24,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -67,18 +65,14 @@ public abstract class StyleBaseFragment
 
         final ListStyle style = mStyleViewModel.getStyle();
 
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (style.getId() == 0) {
-            //noinspection ConstantConditions
-            actionBar.setTitle(R.string.lbl_clone_style);
+            mToolbar.setTitle(R.string.lbl_clone_style);
         } else {
-            //noinspection ConstantConditions
-            actionBar.setTitle(R.string.lbl_edit_style);
+            mToolbar.setTitle(R.string.lbl_edit_style);
         }
 
         //noinspection ConstantConditions
-        actionBar.setSubtitle(style.getLabel(getContext()));
+        mToolbar.setSubtitle(style.getLabel(getContext()));
     }
 
     @Override

@@ -33,8 +33,7 @@ import android.view.ViewGroup;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -76,6 +75,7 @@ public class GoodreadsAdminFragment
 
     /** View Binding. */
     private FragmentGoodreadsAdminBinding mVb;
+    private Toolbar mToolbar;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -96,6 +96,8 @@ public class GoodreadsAdminFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
 
         mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
         mGrAuthTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
@@ -124,11 +126,8 @@ public class GoodreadsAdminFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.site_goodreads);
-        actionBar.setSubtitle(R.string.pt_maintenance);
+        mToolbar.setTitle(R.string.site_goodreads);
+        mToolbar.setSubtitle(R.string.pt_maintenance);
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {

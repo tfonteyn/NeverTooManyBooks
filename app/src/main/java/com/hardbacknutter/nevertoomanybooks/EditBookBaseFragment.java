@@ -36,8 +36,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -106,6 +105,7 @@ public abstract class EditBookBaseFragment
     /** Listener for all field changes. Must keep strong reference. */
     private final Fields.AfterChangeListener mAfterChangeListener =
             fieldId -> mVm.getBook().setStage(EntityStage.Stage.Dirty);
+    private Toolbar mToolbar;
 
     /**
      * Init all Fields, and add them the fields collection.
@@ -155,8 +155,9 @@ public abstract class EditBookBaseFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
+
         mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
 
         final Fields fields = getFields();
@@ -279,23 +280,19 @@ public abstract class EditBookBaseFragment
         ViewFocusOrder.fix(getView());
 
         // Set the activity title
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (book.isNew()) {
             // New book
-            //noinspection ConstantConditions
-            actionBar.setTitle(R.string.lbl_add_book);
-            actionBar.setSubtitle(null);
+            mToolbar.setTitle(R.string.lbl_add_book);
+            mToolbar.setSubtitle(null);
         } else {
             // Existing book
             String title = book.getString(DBDefinitions.KEY_TITLE);
             if (BuildConfig.DEBUG /* always */) {
                 title = "[" + book.getId() + "] " + title;
             }
+            mToolbar.setTitle(title);
             //noinspection ConstantConditions
-            actionBar.setTitle(title);
-            //noinspection ConstantConditions
-            actionBar.setSubtitle(Author.getCondensedNames(
+            mToolbar.setSubtitle(Author.getCondensedNames(
                     getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
         }
     }
@@ -376,7 +373,7 @@ public abstract class EditBookBaseFragment
      * <p>
      * If only one field is used, we just display a single date picker.
      *
-     * @param global      Global preferences
+     * @param global           Global preferences
      * @param dateSpanTitleId  title of the dialog box if both start and end-dates are used.
      * @param startDateTitleId title of the dialog box if the end-date is not in use
      * @param fieldStartDate   to setup for the start-date
@@ -424,7 +421,7 @@ public abstract class EditBookBaseFragment
     /**
      * Setup a date picker for selecting a single, full date.
      *
-     * @param global Global preferences
+     * @param global      Global preferences
      * @param field       to setup
      * @param titleId     title for the picker window
      * @param todayIfNone if true, and if the field was empty, we'll default to today's date.
@@ -444,7 +441,7 @@ public abstract class EditBookBaseFragment
     /**
      * Setup a date picker for selecting a partial date.
      *
-     * @param global Global preferences
+     * @param global      Global preferences
      * @param field       to setup
      * @param titleId     title for the picker window
      * @param todayIfNone if true, and if the field was empty, we'll default to today's date.

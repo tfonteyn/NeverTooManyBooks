@@ -39,8 +39,7 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -104,7 +103,8 @@ public class AuthorWorksFragment
                     getActivity().finish();
                 }
             };
-
+    /** The Adapter. */
+    private TocAdapter mAdapter;
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
             new MenuPickerDialogFragment.Launcher() {
                 @Override
@@ -114,9 +114,7 @@ public class AuthorWorksFragment
                 }
             };
 
-    /** The Adapter. */
-    private TocAdapter mAdapter;
-    private ActionBar mActionBar;
+    private Toolbar mToolbar;
     /** View Binding. */
     private FragmentAuthorWorksBinding mVb;
 
@@ -143,11 +141,12 @@ public class AuthorWorksFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
 
         final Context context = getContext();
 
         // Popup the search widget when the user starts to type.
-        //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
 
         getActivity().getOnBackPressedDispatcher()
@@ -157,11 +156,8 @@ public class AuthorWorksFragment
         //noinspection ConstantConditions
         mVm.init(context, requireArguments());
 
-        //noinspection ConstantConditions
-        mActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        mActionBar.setTitle(mVm.getScreenTitle(context));
-        mActionBar.setSubtitle(mVm.getScreenSubtitle());
+        mToolbar.setTitle(mVm.getScreenTitle(context));
+        mToolbar.setSubtitle(mVm.getScreenSubtitle());
 
         mVb.authorWorks.setHasFixedSize(true);
         mVb.authorWorks
@@ -226,8 +222,8 @@ public class AuthorWorksFragment
             mVm.reloadWorkList();
             mAdapter.notifyDataSetChanged();
             //noinspection ConstantConditions
-            mActionBar.setTitle(mVm.getScreenTitle(getContext()));
-            mActionBar.setSubtitle(mVm.getScreenSubtitle());
+            mToolbar.setTitle(mVm.getScreenTitle(getContext()));
+            mToolbar.setSubtitle(mVm.getScreenSubtitle());
             return true;
         }
 

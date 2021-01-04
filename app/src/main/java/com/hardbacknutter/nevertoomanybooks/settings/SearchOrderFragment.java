@@ -32,8 +32,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -88,6 +87,8 @@ public class SearchOrderFragment
      */
     private ArrayList<Site> mSiteList;
 
+    private Toolbar mToolbar;
+
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,8 +108,9 @@ public class SearchOrderFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
+
         mModel = new ViewModelProvider(getActivity()).get(SearchAdminViewModel.class);
         mType = Objects.requireNonNull(requireArguments().getParcelable(BKEY_TYPE), "BKEY_TYPE");
         mSiteList = mModel.getList(mType);
@@ -131,11 +133,8 @@ public class SearchOrderFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.lbl_settings);
-        actionBar.setSubtitle(R.string.lbl_websites);
+        mToolbar.setTitle(R.string.lbl_settings);
+        mToolbar.setSubtitle(R.string.lbl_websites);
     }
 
     @Override

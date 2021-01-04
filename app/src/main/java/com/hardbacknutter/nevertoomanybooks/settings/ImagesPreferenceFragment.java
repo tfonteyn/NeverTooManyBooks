@@ -23,8 +23,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -67,10 +65,7 @@ public class ImagesPreferenceFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.lbl_settings);
-        actionBar.setSubtitle(R.string.lbl_covers_long);
+        mToolbar.setTitle(R.string.lbl_settings);
+        mToolbar.setSubtitle(R.string.lbl_covers_long);
     }
 }

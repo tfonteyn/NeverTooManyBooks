@@ -30,8 +30,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
@@ -81,6 +80,7 @@ public class MaintenanceFragment
 
     /** View Binding. */
     private FragmentMaintenanceBinding mVb;
+    private Toolbar mToolbar;
 
     @Nullable
     @Override
@@ -96,6 +96,8 @@ public class MaintenanceFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
 
         // show the full version + build date
         //noinspection ConstantConditions
@@ -237,12 +239,8 @@ public class MaintenanceFragment
     @Override
     public void onResume() {
         super.onResume();
-
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.lbl_settings);
-        actionBar.setSubtitle(R.string.pt_maintenance);
+        mToolbar.setTitle(R.string.lbl_settings);
+        mToolbar.setSubtitle(R.string.pt_maintenance);
     }
 
     /**

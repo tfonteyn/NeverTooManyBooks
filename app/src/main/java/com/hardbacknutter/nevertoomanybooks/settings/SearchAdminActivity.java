@@ -65,8 +65,7 @@ public class SearchAdminActivity
 
         if (mVm.isSingleListMode()) {
             final Site.Type type = mVm.getType();
-            //noinspection ConstantConditions
-            getSupportActionBar().setSubtitle(type.getLabelId());
+            mVb.toolbar.setSubtitle(type.getLabelId());
             mVb.tabPanel.setVisibility(View.GONE);
 
             mTabAdapter = new TabAdapter(this, type);

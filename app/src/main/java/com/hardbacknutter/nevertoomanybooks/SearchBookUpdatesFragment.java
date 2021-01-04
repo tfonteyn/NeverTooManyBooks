@@ -30,13 +30,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -91,6 +90,7 @@ public class SearchBookUpdatesFragment
     private ProgressDialogFragment mProgressDialog;
     /** View Binding. */
     private FragmentUpdateFromInternetBinding mVb;
+    private Toolbar mToolbar;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -111,23 +111,21 @@ public class SearchBookUpdatesFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
 
         final Bundle args = getArguments();
 
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         // optional activity title
         if (args != null && args.containsKey(BKEY_SCREEN_TITLE)) {
-            //noinspection ConstantConditions
-            actionBar.setTitle(args.getString(BKEY_SCREEN_TITLE));
+            mToolbar.setTitle(args.getString(BKEY_SCREEN_TITLE));
         } else {
-            //noinspection ConstantConditions
-            actionBar.setTitle(R.string.lbl_select_fields);
+            mToolbar.setTitle(R.string.lbl_select_fields);
         }
 
         // optional activity subtitle
         if (args != null && args.containsKey(BKEY_SCREEN_SUBTITLE)) {
-            actionBar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
+            mToolbar.setSubtitle(args.getString(BKEY_SCREEN_SUBTITLE));
         }
 
         mVm = new ViewModelProvider(this).get(SearchBookUpdatesViewModel.class);

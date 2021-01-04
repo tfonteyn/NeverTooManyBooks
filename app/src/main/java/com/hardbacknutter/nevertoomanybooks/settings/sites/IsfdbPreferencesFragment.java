@@ -23,8 +23,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
@@ -43,10 +41,7 @@ public class IsfdbPreferencesFragment
     @Override
     public void onResume() {
         super.onResume();
-        //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(R.string.lbl_settings);
-        actionBar.setSubtitle(R.string.site_isfdb);
+        mToolbar.setTitle(R.string.lbl_settings);
+        mToolbar.setSubtitle(R.string.site_isfdb);
     }
 }

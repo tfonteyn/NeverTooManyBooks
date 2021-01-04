@@ -38,8 +38,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -143,15 +142,17 @@ public class ShowBookFragment
     private FragmentShowBookBinding mVb;
     /** ViewPager2 adapter. */
     private ShowBookPagerAdapter mPagerAdapter;
-
+    /** Goodreads send-book task. */
+    private GrSendOneBookTask mGrSendOneBookTask;
+    /** Goodreads authorization task. */
+    private GrAuthTask mGrAuthTask;
+    private Toolbar mToolbar;
     /** User edits a book. */
     private final ActivityResultLauncher<Long> mEditBookLauncher =
             registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
-
     /** User updates a book with internet data. */
     private final ActivityResultLauncher<Book> mUpdateBookLauncher =
             registerForActivityResult(new UpdateBookContract(), this::onBookEditingDone);
-
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
             new EditLenderDialogFragment.Launcher() {
@@ -162,11 +163,6 @@ public class ShowBookFragment
                     refreshCurrentBook();
                 }
             };
-
-    /** Goodreads send-book task. */
-    private GrSendOneBookTask mGrSendOneBookTask;
-    /** Goodreads authorization task. */
-    private GrAuthTask mGrAuthTask;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -190,9 +186,10 @@ public class ShowBookFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        //noinspection ConstantConditions
+        mToolbar = getActivity().findViewById(R.id.toolbar);
 
         // Popup the search widget when the user starts to type.
-        //noinspection ConstantConditions
         getActivity().setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
@@ -456,12 +453,10 @@ public class ShowBookFragment
         if (BuildConfig.DEBUG /* always */) {
             title = "[" + book.getId() + "] " + title;
         }
+
+        mToolbar.setTitle(title);
         //noinspection ConstantConditions
-        final ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        //noinspection ConstantConditions
-        actionBar.setTitle(title);
-        //noinspection ConstantConditions
-        actionBar.setSubtitle(Author.getCondensedNames(
+        mToolbar.setSubtitle(Author.getCondensedNames(
                 getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
     }
 

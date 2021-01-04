@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin;
 
 import android.os.Bundle;
-import android.widget.ListView;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -30,8 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.databinding.ActivityTaskQueueListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQCursorAdapter;
@@ -62,9 +61,12 @@ public abstract class BaseAdminActivity
     @NonNull
     protected abstract TQCursorAdapter getListAdapter(@NonNull DAO db);
 
+    protected ActivityTaskQueueListBinding mVb;
+
     @Override
     protected void onSetContentView() {
-        setContentView(R.layout.activity_task_queue_list);
+        mVb = ActivityTaskQueueListBinding.inflate(getLayoutInflater());
+        setContentView(mVb.getRoot());
     }
 
     @Override
@@ -74,9 +76,8 @@ public abstract class BaseAdminActivity
 
         mListAdapter = getListAdapter(mDb);
 
-        final ListView listView = findViewById(R.id.item_list);
-        listView.setAdapter(mListAdapter);
-        listView.setOnItemClickListener((parent, v, position, id) -> onItemClick(
+        mVb.itemList.setAdapter(mListAdapter);
+        mVb.itemList.setOnItemClickListener((parent, v, position, id) -> onItemClick(
                 mListAdapter.getTQItem(v.getContext(), position)));
     }
 
@@ -116,7 +117,6 @@ public abstract class BaseAdminActivity
     @CallSuper
     protected void onResume() {
         super.onResume();
-
         refreshData();
     }
 
