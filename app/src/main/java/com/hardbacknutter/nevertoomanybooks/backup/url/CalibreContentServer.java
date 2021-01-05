@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -503,19 +503,21 @@ public class CalibreContentServer {
     private SSLContext getSslContext(@NonNull final Context context)
             throws IOException, CertificateException, KeyStoreException,
                    NoSuchAlgorithmException, KeyManagementException {
+
         final Certificate ca;
-        try (InputStream caInput = context.openFileInput(CA_FILE)) {
-            ca = CertificateFactory.getInstance("X.509").generateCertificate(caInput);
+        try (InputStream is = context.openFileInput(CA_FILE)) {
+            ca = CertificateFactory.getInstance("X.509").generateCertificate(is);
         }
 
         final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
         keyStore.load(null, null);
-        keyStore.setCertificateEntry("ca", ca);
+        keyStore.setCertificateEntry("calibre", ca);
 
         final TrustManagerFactory tmf = TrustManagerFactory.getInstance(
                 TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(keyStore);
 
+        // Should use "TLSv1.3" ... but that's presuming Calibre supports it.
         final SSLContext sslContext = SSLContext.getInstance("TLS");
         sslContext.init(null, tmf.getTrustManagers(), null);
 
