@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -24,7 +24,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_margin="@dimen/screenBorder"
     tools:context=".FragmentHostActivity"
     >
@@ -175,4 +175,20 @@
         app:layout_constraintTop_toBottomOf="@id/contacts"
         />
 
+    <!-- actionBarSize is a bit of a hack... but positioning
+        the fragment in the FragmentContainerView constrained to
+        the visible screen is elusive. -->
+    <TextView
+        android:id="@+id/debug_version"
+        style="@style/Field.Generic.Small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin"
+        android:layout_marginBottom="?attr/actionBarSize"
+        android:text=""
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="a7 d13 b2020-11-01"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,7 +45,6 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -54,7 +53,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 @Keep
@@ -99,20 +97,11 @@ public class MaintenanceFragment
         //noinspection ConstantConditions
         mToolbar = getActivity().findViewById(R.id.toolbar);
 
-        // show the full version + build date
-        //noinspection ConstantConditions
-        final String code = "a" + PackageInfoWrapper.create(getContext()).getVersionCode()
-                            + " d" + DBHelper.DATABASE_VERSION
-                            + " b" + BuildConfig.TIMESTAMP;
-        mVb.debugVersion.setText(code);
-
-
         mVb.btnDebug.setOnClickListener(v -> {
             mDebugClicks++;
             if (mDebugClicks >= DEBUG_CLICKS) {
                 mVb.btnDebugDumpPrefs.setVisibility(View.VISIBLE);
                 mVb.btnDebugSqShell.setVisibility(View.VISIBLE);
-                mVb.debugVersion.setVisibility(View.VISIBLE);
             }
 
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {

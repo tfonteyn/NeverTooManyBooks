@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
@@ -61,7 +62,14 @@ public class AboutFragment
 
         //noinspection ConstantConditions
         final PackageInfoWrapper packageInfoWrapper = PackageInfoWrapper.create(getContext());
+        // show the version in the header
         mVb.version.setText(packageInfoWrapper.getVersionName());
+
+        // show the full version + build date in the bottom corner
+        final String code = "a" + packageInfoWrapper.getVersionCode()
+                            + " d" + DBHelper.DATABASE_VERSION
+                            + " b" + BuildConfig.TIMESTAMP;
+        mVb.debugVersion.setText(code);
 
         mVb.btnSourcecodeUrl.setOnClickListener(v -> startActivity(
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
