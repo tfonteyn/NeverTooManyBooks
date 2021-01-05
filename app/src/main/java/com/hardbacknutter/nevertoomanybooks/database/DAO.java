@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -526,7 +526,9 @@ public class DAO
 
             // next we add the links to series, authors,...
             insertBookLinks(context, book, flags);
-            insertCalibreData(book);
+            if (book.contains(KEY_CALIBRE_UUID)) {
+                insertCalibreData(book);
+            }
             // and populate the search suggestions table
             ftsInsert(context, newBookId);
 
@@ -610,7 +612,9 @@ public class DAO
                 book.putString(KEY_BOOK_UUID, uuid);
 
                 insertBookLinks(context, book, flags);
-                updateCalibreData(book);
+                if (book.contains(KEY_CALIBRE_UUID)) {
+                    updateCalibreData(book);
+                }
                 ftsUpdate(context, book.getId());
 
                 if (!book.storeCovers(context)) {
