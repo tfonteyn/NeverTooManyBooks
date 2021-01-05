@@ -118,7 +118,7 @@ public class ImportGrTask
     @Nullable
     private transient Map<String, String> mBookshelfLookup;
 
-    private volatile AuthorTypeMapper mAuthorTypeMapper;
+    private transient AuthorTypeMapper mAuthorTypeMapper;
 
     /**
      * Constructor.
@@ -145,7 +145,7 @@ public class ImportGrTask
         }
     }
 
-    public AuthorTypeMapper getAuthorTypeMapper() {
+    private AuthorTypeMapper getAuthorTypeMapper() {
         if (mAuthorTypeMapper == null) {
             mAuthorTypeMapper = new AuthorTypeMapper();
         }
