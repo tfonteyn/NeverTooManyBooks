@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,7 +121,8 @@ public class BookCoder {
 
             + COMMA + '"' + DBDefinitions.KEY_CALIBRE_ID + '"'
             + COMMA + '"' + DBDefinitions.KEY_CALIBRE_UUID + '"'
-            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_FILE_URL + '"';
+            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_FILE_URL + '"'
+            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE + '"';
 
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
@@ -200,6 +201,7 @@ public class BookCoder {
         line.add(encode(book.getInt(DBDefinitions.KEY_CALIBRE_ID)));
         line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_UUID)));
         line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_FILE_URL)));
+        line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE)));
 
         // external ID's
         for (final Domain domain : externalIdDomains) {

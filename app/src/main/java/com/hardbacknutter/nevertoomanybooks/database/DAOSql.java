@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,6 +57,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_FILE_URL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
@@ -825,7 +826,8 @@ public class DAOSql {
             // LEFT OUTER JOIN, columns default to NULL
             sqlBookTmp.append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_ID))
                       .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_UUID))
-                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_FILE_URL));
+                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_FILE_URL))
+                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_LAST_SYNC_DATE));
 
             // COALESCE nulls to "" for the LEFT OUTER JOIN'ed LOANEE name
             sqlBookTmp.append(",COALESCE(").append(TBL_BOOK_LOANEE.dot(KEY_LOANEE)).append(", '')")

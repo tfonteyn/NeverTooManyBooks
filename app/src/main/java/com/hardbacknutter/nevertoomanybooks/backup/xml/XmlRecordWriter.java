@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -453,6 +453,9 @@ public class XmlRecordWriter
                                            book.getString(DBDefinitions.KEY_CALIBRE_UUID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_FILE_URL,
                                            book.getString(DBDefinitions.KEY_CALIBRE_FILE_URL)));
+                writer.write(XmlUtils.attr(
+                        DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE,
+                        book.getString(DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE)));
                 // external ID's
                 for (final Domain domain : externalIdDomains) {
                     final String key = domain.getName();

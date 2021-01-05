@@ -101,6 +101,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_FILE_URL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
@@ -655,6 +656,7 @@ public class DAO
         cv.put(KEY_CALIBRE_ID, book.getInt(KEY_CALIBRE_ID));
         cv.put(KEY_CALIBRE_UUID, book.getString(KEY_CALIBRE_UUID));
         cv.put(KEY_CALIBRE_FILE_URL, book.getString(KEY_CALIBRE_FILE_URL));
+        cv.put(KEY_CALIBRE_LAST_SYNC_DATE, book.getString(KEY_CALIBRE_LAST_SYNC_DATE));
 
         final long rowId = mSyncedDb.insert(TBL_BOOKS_CALIBRE.getName(), null, cv);
         if (rowId <= 0) {
@@ -676,6 +678,7 @@ public class DAO
         cv.put(KEY_FK_BOOK, book.getId());
         cv.put(KEY_CALIBRE_ID, book.getInt(KEY_CALIBRE_ID));
         cv.put(KEY_CALIBRE_FILE_URL, book.getString(KEY_CALIBRE_FILE_URL));
+        cv.put(KEY_CALIBRE_LAST_SYNC_DATE, book.getString(KEY_CALIBRE_LAST_SYNC_DATE));
 
         final int rowsAffected = mSyncedDb.update(TBL_BOOKS_CALIBRE.getName(), cv,
                                                   KEY_CALIBRE_UUID + "=?",

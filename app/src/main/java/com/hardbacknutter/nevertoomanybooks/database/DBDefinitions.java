@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -279,7 +279,7 @@ public final class DBDefinitions {
     public static final Domain DOM_CALIBRE_ID;
     public static final Domain DOM_CALIBRE_UUID;
     public static final Domain DOM_CALIBRE_FILE_URL;
-
+    public static final Domain DOM_CALIBRE_LAST_SYNC_DATE;
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
     /**
@@ -428,6 +428,7 @@ public final class DBDefinitions {
     public static final String KEY_CALIBRE_ID = "clb_id";
     public static final String KEY_CALIBRE_UUID = "clb_uuid";
     public static final String KEY_CALIBRE_FILE_URL = "clb_file_url";
+    public static final String KEY_CALIBRE_LAST_SYNC_DATE = "clb_sync_date";
 
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf_name";
@@ -971,6 +972,8 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_CALIBRE_UUID, ColumnInfo.TYPE_TEXT).build();
         DOM_CALIBRE_FILE_URL =
                 new Domain.Builder(KEY_CALIBRE_FILE_URL, ColumnInfo.TYPE_TEXT).build();
+        DOM_CALIBRE_LAST_SYNC_DATE =
+                new Domain.Builder(KEY_CALIBRE_LAST_SYNC_DATE, ColumnInfo.TYPE_DATETIME).build();
 
         /* ======================================================================================
          *  Loanee domains
@@ -1286,7 +1289,8 @@ public final class DBDefinitions {
         TBL_BOOKS_CALIBRE.addDomains(DOM_FK_BOOK,
                                      DOM_CALIBRE_ID,
                                      DOM_CALIBRE_UUID,
-                                     DOM_CALIBRE_FILE_URL)
+                                     DOM_CALIBRE_FILE_URL,
+                                     DOM_CALIBRE_LAST_SYNC_DATE)
                          .setPrimaryKey(DOM_FK_BOOK)
                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
                          .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);

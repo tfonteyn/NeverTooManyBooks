@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -908,6 +908,7 @@ public final class DBHelper
         try {
             syncLock = db.beginTransaction(true);
 
+            db.delete(TBL_BOOKS_CALIBRE.getName(), null, null);
             db.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
             db.delete(TBL_FTS_BOOKS.getName(), null, null);
 
