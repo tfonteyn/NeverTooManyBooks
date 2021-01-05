@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -118,7 +118,7 @@ public class ImportGrTask
     @Nullable
     private transient Map<String, String> mBookshelfLookup;
 
-    private final AuthorTypeMapper mAuthorTypeMapper = new AuthorTypeMapper();
+    private volatile AuthorTypeMapper mAuthorTypeMapper;
 
     /**
      * Constructor.
@@ -143,6 +143,13 @@ public class ImportGrTask
         } else {
             mLastSyncDate = null;
         }
+    }
+
+    public AuthorTypeMapper getAuthorTypeMapper() {
+        if (mAuthorTypeMapper == null) {
+            mAuthorTypeMapper = new AuthorTypeMapper();
+        }
+        return mAuthorTypeMapper;
     }
 
     @Override
@@ -511,7 +518,7 @@ public class ImportGrTask
                     final Author author = Author.from(name);
                     final String role = grAuthor.getString(Review.AUTHOR_ROLE);
                     if (role != null && !role.trim().isEmpty()) {
-                        author.setType(mAuthorTypeMapper.map(bookLocale, role));
+                        author.setType(getAuthorTypeMapper().map(bookLocale, role));
                     }
                     authorList.add(author);
                 }
