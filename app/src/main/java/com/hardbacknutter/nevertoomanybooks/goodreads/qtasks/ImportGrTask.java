@@ -156,25 +156,19 @@ public class ImportGrTask
     public boolean run(@NonNull final Context context,
                        @NonNull final QueueManager queueManager) {
         try (DAO db = new DAO(TAG)) {
-            // Load the Goodreads reviews
+            // Import part of the sync
             final boolean ok = importReviews(context, db, queueManager);
 
-            // If it's a sync job, start the 'send' part and save the last syn date
+            // If it's a sync job, start the export part and save the last syn date
             if (mIsSync) {
                 final String desc = context.getString(R.string.gr_title_send_book);
                 final TQTask task = new SendBooksGrTask(desc, false, true);
                 QueueManager.getInstance().enqueueTask(QueueManager.Q_MAIN, task);
 
-                final String lastSyncDateStr;
-                if (mStartDate != null) {
-                    lastSyncDateStr = mStartDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-                } else {
-                    lastSyncDateStr = null;
-                }
-                GoodreadsManager.putLastSyncDate(context, lastSyncDateStr);
+                GoodreadsManager.setLastSyncDate(context, mStartDate);
             }
-
             return ok;
+
         } catch (@NonNull final CredentialsException e) {
             setLastException(e);
             return false;

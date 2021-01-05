@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,8 @@ import androidx.annotation.WorkerThread;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -151,11 +153,17 @@ public class GoodreadsManager {
                                 .getString(PK_LAST_SYNC_DATE, null);
     }
 
-    public static void putLastSyncDate(@NonNull final Context context,
-                                       @Nullable final String lastSyncDate) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit().putString(PK_LAST_SYNC_DATE, lastSyncDate)
-                         .apply();
+    public static void setLastSyncDate(@NonNull final Context context,
+                                       @Nullable final LocalDateTime dateTime) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        if (dateTime == null) {
+            global.edit().remove(PK_LAST_SYNC_DATE).apply();
+        } else {
+            global.edit()
+                  .putString(PK_LAST_SYNC_DATE,
+                             dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                  .apply();
+        }
     }
 
     public long getLastBookIdSend() {

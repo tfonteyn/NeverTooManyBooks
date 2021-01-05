@@ -43,6 +43,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -59,6 +61,7 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -75,6 +78,10 @@ public class CalibreContentServer {
     public static final String PK_HOST_URL = PREF_KEY + ".host.url";
     /** Whether to show any sync menus at all. */
     private static final String PK_SHOW_MENUS = PREF_KEY + ".showMenu";
+
+    /** last time we synced with Calibre. */
+    private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
+
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
     public static final String CA_FILE = TAG + ".ca";
@@ -123,6 +130,31 @@ public class CalibreContentServer {
     public static String getHostUrl(@NonNull final Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getString(PK_HOST_URL, "");
+    }
+
+    @Nullable
+    public static LocalDateTime getLastSyncDate(@NonNull final Context context) {
+        final String date = PreferenceManager.getDefaultSharedPreferences(context)
+                                             .getString(PK_LAST_SYNC_DATE, null);
+
+        if (date != null && !date.isEmpty()) {
+            return DateParser.getInstance(context).parseISO(date);
+        }
+
+        return null;
+    }
+
+    public static void setLastSyncDate(@NonNull final Context context,
+                                       @Nullable final LocalDateTime dateTime) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        if (dateTime == null) {
+            global.edit().remove(PK_LAST_SYNC_DATE).apply();
+        } else {
+            global.edit()
+                  .putString(PK_LAST_SYNC_DATE, dateTime
+                          .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                  .apply();
+        }
     }
 
     /**

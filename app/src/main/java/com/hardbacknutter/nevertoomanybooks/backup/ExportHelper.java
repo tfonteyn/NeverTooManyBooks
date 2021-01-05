@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,6 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,7 +35,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -49,8 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 public class ExportHelper {
 
@@ -58,8 +54,6 @@ public class ExportHelper {
     private static final String TAG = "ExportHelper";
     /** Write to this temp file first. */
     private static final String TEMP_FILE_NAME = TAG + ".tmp";
-    /** Last full backup date. */
-    private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
     /** What is going to be exported. */
     @NonNull
     private final Set<RecordType> mExportEntries;
@@ -113,6 +107,11 @@ public class ExportHelper {
         mArchiveEncoding = archiveEncoding;
     }
 
+    @NonNull
+    public ArchiveEncoding getEncoding() {
+        return mArchiveEncoding;
+    }
+
     public void setUri(@NonNull final Uri uri) {
         mUri = uri;
     }
@@ -148,13 +147,6 @@ public class ExportHelper {
             if (mExportEntries.isEmpty()) {
                 throw new IllegalStateException("mExportEntries.isEmpty()");
             }
-        }
-
-        // set the date before we pass control to the writer.
-        if (mIncremental) {
-            mFromUtcDateTime = getLastFullBackupDate(context);
-        } else {
-            mFromUtcDateTime = null;
         }
 
         return mArchiveEncoding.createWriter(context, this);
@@ -198,11 +190,6 @@ public class ExportHelper {
             }
         }
 
-        // if the backup was a full backup remember that.
-        if (!mIncremental) {
-            setLastFullBackupDate(context);
-        }
-
         // cleanup
         FileUtils.delete(tmpOutput);
     }
@@ -229,41 +216,8 @@ public class ExportHelper {
         return mFromUtcDateTime;
     }
 
-    /**
-     * Store the date of the last full backup ('now', UTC based)
-     * and reset the startup prompt-counter.
-     *
-     * @param context Current context
-     */
-    private void setLastFullBackupDate(@NonNull final Context context) {
-        PreferenceManager
-                .getDefaultSharedPreferences(context)
-                .edit()
-                .putString(PREF_LAST_FULL_BACKUP_DATE,
-                           LocalDateTime.now(ZoneOffset.UTC)
-                                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                .putInt(StartupViewModel.PK_STARTUP_BACKUP_COUNTDOWN,
-                        StartupViewModel.STARTUP_BACKUP_COUNTDOWN)
-                .apply();
-    }
-
-    /**
-     * Get the last time we made a full backup.
-     *
-     * @param context Current context
-     *
-     * @return Date in the UTC timezone.
-     */
-    @Nullable
-    private LocalDateTime getLastFullBackupDate(@NonNull final Context context) {
-        final String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
-                                                   .getString(PREF_LAST_FULL_BACKUP_DATE, null);
-
-        if (lastBackup != null && !lastBackup.isEmpty()) {
-            return DateParser.getInstance(context).parseISO(lastBackup);
-        }
-
-        return null;
+    public void setFromUtcDateTime(@Nullable final LocalDateTime fromUtcDateTime) {
+        mFromUtcDateTime = fromUtcDateTime;
     }
 
 
