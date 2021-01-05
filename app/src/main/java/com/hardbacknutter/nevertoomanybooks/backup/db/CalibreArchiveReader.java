@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -171,8 +171,8 @@ class CalibreArchiveReader
         mCalibreDb = calibreDb;
         mDb = new DAO(TAG);
 
-        mSyncBooks = helper.isUpdatesMustSync();
-        mOverwriteBooks = helper.isUpdatesMayOverwrite();
+        mSyncBooks = helper.isNewAndUpdatedBooks();
+        mOverwriteBooks = helper.isAllBooks();
 
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -51,7 +51,8 @@
     <string name="book_format_paperback_large">Ciltsiz / Iri</string>
     <string name="book_format_softcover">Yumuşak kapak</string>
     <string name="bookshelf_all_books">Tüm kitaplar</string>
-    <string name="lbl_export_option_all_books">Tüm kitaplar</string>
+    <string name="lbl_export_books_option_all">Tüm kitaplar</string>
+    <string name="lbl_import_books_option_all">Tüm kitaplar</string>
     <string name="bookshelf_my_books">Kitaplarım</string>
     <string name="action_add">Ekle</string>
     <string name="X_action_exit">Çıkış</string>
@@ -256,7 +257,7 @@
     <string name="lbl_edition_first_impression">1. basım</string>
     <string name="lbl_edition_limited">Sınırlı sayıda</string>
     <string name="lbl_edition_slipcase">Kitap kabı</string>
-    <string name="inf_export_option_books_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
+    <string name="inf_export_books_option_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
     <string name="lbl_family_name">Soyadı</string>
     <string name="lbl_field_usage_append">Ek veriyi iliştirir</string>
     <string name="lbl_field_usage_copy_if_blank">Boş ise eşlemle</string>
@@ -270,7 +271,7 @@
     <string name="lbl_genre">Tür</string>
     <string name="lbl_given_names">Adı</string>
     <string name="lbl_import">Ithal etmek</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Yeni ve güncellenmiş kitaplar</string>
+    <string name="lbl_export_books_option_since_last_full_backup">Yeni ve güncellenmiş kitaplar</string>
     <string name="lbl_is_complete">Tamamlandı</string>
     <string name="lbl_keywords">Anahtar kelimeler</string>
     <string name="lbl_language">Dil</string>
@@ -548,7 +549,7 @@
     <string name="X_lbl_edit_bookshelf">Kitaplığı düzenle</string>
     <string name="X_lbl_edit_series">Serileri düzenle</string>
     <string name="lbl_edit_style">Biçemi düzenle</string>
-    <string name="lbl_export_options">Arşive nelerin aktarılacağını seçin.</string>
+    <string name="lbl_export_options">Nelerin dışa aktarılacağını seçin.</string>
     <string name="lbl_import_book_data">Kitapları içe aktar</string>
     <string name="lbl_import_options">Neyin içe aktarılacağını seçin</string>
     <string name="lbl_importing">İçe aktarılıyor…</string>
@@ -671,12 +672,12 @@
     <string name="camera_other">Diğer</string>
     <string name="camera_front">Ön kamera</string>
     <string name="camera_back">Arka kamera</string>
-    <string name="lbl_import_option_updated_books_skip">Yalnızca yeni kitaplar</string>
-    <string name="lbl_import_option_updated_books_overwrite">Yeni ve güncellenmiş kitaplar</string>
-    <string name="lbl_import_option_updated_books_sync">Senkronize et</string>
-    <string name="inf_import_option_updated_books_skip">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
-    <string name="inf_import_option_updated_books_overwrite">Yeni kitapları içe aktarın ve mevcut kitapların üzerine yazın. Bunu bir yedeği geri yüklemek için kullanın.</string>
-    <string name="inf_import_option_updated_books_sync">Yeni kitapları içe aktarın ve mevcut kitapları son değişiklik tarihlerine göre senkronize edin.</string>
+    <string name="lbl_import_books_option_new_only">Yalnızca yeni kitaplar</string>
+    <string name="lbl_import_books_option_new_and_updated">Yeni ve güncellenmiş kitaplar</string>
+    <string name="action_synchronize">Senkronize et</string>
+    <string name="inf_import_books_option_new_only">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
+    <string name="inf_import_books_option_all">Yeni kitapları içe aktarın ve mevcut kitapların üzerine yazın. Bunu bir yedeği geri yüklemek için kullanın.</string>
+    <string name="inf_import_books_option_new_and_updated">Yeni kitapları içe aktarın ve mevcut kitapları son değişiklik tarihlerine göre senkronize edin.</string>
     <string name="pt_enable_fast_scroller_overlay">Kaydırma sırasında metin balonu</string>
     <string name="menu_import">Ithal etmek</string>
     <string name="action_import">Ithal etmek</string>
@@ -689,7 +690,7 @@
     <string name="btn_clear_queue">Sırayı temizle</string>
     <string name="lbl_calibre_content_server">Calibre İçerik Sunucusu</string>
     <string name="enabled">Etkin</string>
-    <string name="menu_import_calibre">Ithal etmek (Calibre)</string>
+    <string name="menu_calibre_import">Calibre (Ithal etmek)</string>
     <string name="httpError">Bir ağ hatası oluştu.</string>
     <string name="httpErrorAuth">Kimlik doğrulanamadı.</string>
     <string name="httpErrorFailedSslHandshake">Güvenli bağlantı oluşturulamadı.</string>

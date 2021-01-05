@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -51,7 +51,8 @@
     <string name="book_format_softcover">μαλακό κάλυμμα</string>
     <string name="book_format_paperback_large">χαρτόδετο βιβλίο</string>
     <string name="bookshelf_all_books">Όλα τα βιβλία.</string>
-    <string name="lbl_export_option_all_books">Όλα τα βιβλία.</string>
+    <string name="lbl_export_books_option_all">Όλα τα βιβλία.</string>
+    <string name="lbl_import_books_option_all">Όλα τα βιβλία.</string>
     <string name="bookshelf_my_books">Τα βιβλία μου</string>
     <string name="action_add">Προσθήκη</string>
     <string name="X_action_exit">Έξοδος</string>
@@ -256,7 +257,7 @@
     <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="lbl_edition_limited">Περιορισμένη έκδοση</string>
     <string name="lbl_edition_slipcase">παντζούρια</string>
-    <string name="inf_export_option_books_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
+    <string name="inf_export_books_option_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
     <string name="lbl_family_name">Επώνυμο</string>
     <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
     <string name="lbl_field_usage_copy_if_blank">Αντιγραφή εαν ειναι κενό</string>
@@ -270,7 +271,7 @@
     <string name="lbl_genre">Είδος</string>
     <string name="lbl_given_names">Ονόματα</string>
     <string name="lbl_import">εισάγω</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Καινούρια και ενημερωμένα βιβλία</string>
+    <string name="lbl_export_books_option_since_last_full_backup">Καινούρια και ενημερωμένα βιβλία</string>
     <string name="lbl_is_complete">Ολοκληρώθηκε</string>
     <string name="lbl_keywords">Λέξεις κλειδιά</string>
     <string name="lbl_language">Γλώσσα</string>
@@ -551,7 +552,7 @@
     <string name="X_lbl_edit_bookshelf">Επεξεργασία ραφιού</string>
     <string name="X_lbl_edit_series">Επεξεργασία Σειράς</string>
     <string name="lbl_edit_style">Επεξεργασία στυλ</string>
-    <string name="lbl_export_options">Επιλέξτε τι θα εξαχθεί στο Αρχείο.</string>
+    <string name="lbl_export_options">Επιλέξτε τι θα εξαχθεί.</string>
     <string name="lbl_import_book_data">Εισαγωγή Βιβλιων</string>
     <string name="lbl_import_options">Επιλέξτε τι θα εισαχθεί.</string>
     <string name="lbl_importing">Γίνεται εισαγωγή…</string>
@@ -675,12 +676,12 @@
     <string name="camera_other">Άλλο</string>
     <string name="camera_front">Μπροστινή Κάμερα</string>
     <string name="camera_back">Πίσω Κάμερα</string>
-    <string name="lbl_import_option_updated_books_skip">Μόνο νέα βιβλία</string>
-    <string name="lbl_import_option_updated_books_overwrite">Νέα και ενημερωμένα βιβλία</string>
-    <string name="lbl_import_option_updated_books_sync">Συγχρονίζω</string>
-    <string name="inf_import_option_updated_books_skip">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
-    <string name="inf_import_option_updated_books_overwrite">Εισαγάγετε νέα βιβλία και αντικαταστήστε τα υπάρχοντα βιβλία. Χρησιμοποιήστε αυτό για την επαναφορά ενός αντιγράφου ασφαλείας.</string>
-    <string name="inf_import_option_updated_books_sync">Εισαγάγετε νέα βιβλία και συγχρονίστε υπάρχοντα βιβλία με βάση την τελευταία ημερομηνία τροποποίησής τους.</string>
+    <string name="lbl_import_books_option_new_only">Μόνο νέα βιβλία</string>
+    <string name="lbl_import_books_option_new_and_updated">Νέα και ενημερωμένα βιβλία</string>
+    <string name="action_synchronize">Συγχρονίζω</string>
+    <string name="inf_import_books_option_new_only">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
+    <string name="inf_import_books_option_all">Εισαγάγετε νέα βιβλία και αντικαταστήστε τα υπάρχοντα βιβλία. Χρησιμοποιήστε αυτό για την επαναφορά ενός αντιγράφου ασφαλείας.</string>
+    <string name="inf_import_books_option_new_and_updated">Εισαγάγετε νέα βιβλία και συγχρονίστε υπάρχοντα βιβλία με βάση την τελευταία ημερομηνία τροποποίησής τους.</string>
     <string name="pt_enable_fast_scroller_overlay">Φούσκα κειμένου κατά την κύλιση</string>
     <string name="menu_import">εισάγω</string>
     <string name="action_import">εισάγω</string>
@@ -693,7 +694,7 @@
     <string name="btn_clear_queue">Εκκαθάριση ουράς</string>
     <string name="lbl_calibre_content_server">Διακομιστής περιεχομένου Calibre</string>
     <string name="enabled">Ενεργοποιήθηκε</string>
-    <string name="menu_import_calibre">εισάγω (Calibre)</string>
+    <string name="menu_calibre_import">Calibre (εισάγω)</string>
     <string name="httpError">Παρουσιάστηκε σφάλμα δικτύου.</string>
     <string name="httpErrorAuth">Δεν ήταν δυνατός ο έλεγχος ταυτότητας.</string>
     <string name="httpErrorFailedSslHandshake">Δεν ήταν δυνατή η δημιουργία ασφαλούς σύνδεσης.</string>

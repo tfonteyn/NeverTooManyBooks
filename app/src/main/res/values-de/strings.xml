@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -65,7 +65,8 @@
     <string name="book_format_paperback">Taschenbuch</string>
     <string name="book_format_softcover">Softcover</string>
     <string name="bookshelf_all_books">Alle Bücher</string>
-    <string name="lbl_export_option_all_books">Alle Bücher</string>
+    <string name="lbl_export_books_option_all">Alle Bücher</string>
+    <string name="lbl_import_books_option_all">Alle Bücher</string>
     <string name="bookshelf_my_books">Meine Bücher</string>
     <string name="btn_disable_message">Meldung deaktivieren</string>
     <string name="btn_email">E-Mail senden</string>
@@ -277,8 +278,8 @@
     <string name="lbl_edition_limited">Limitierte Auflage</string>
     <string name="lbl_edition_slipcase">Schuber</string>
     <string name="lbl_edition">Auflage</string>
-    <string name="inf_export_option_books_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
-    <string name="lbl_export_options">Wählen Sie, was in das Archiv exportiert wird.</string>
+    <string name="inf_export_books_option_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
+    <string name="lbl_export_options">Wählen Sie aus, was exportiert werden soll.</string>
     <string name="X_action_export">Export</string>
     <string name="lbl_family_name">Familienname</string>
     <string name="lbl_field_usage_append">hängt zusätzliche Daten an</string>
@@ -312,7 +313,7 @@
     <string name="lbl_month">Monat</string>
     <string name="lbl_name">Name</string>
     <string name="lbl_next_book_without_cover">Springe zum nächsten Buch ohne Buchumschläge</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Neue und aktualisierte Bücher</string>
+    <string name="lbl_export_books_option_since_last_full_backup">Neue und aktualisierte Bücher</string>
     <string name="lbl_pages">Seiten</string>
     <string name="lbl_personal_notes">Persönliche Notizen</string>
     <string name="lbl_price_listed">Listenpreis</string>
@@ -675,12 +676,12 @@
     <string name="camera_other">Andere</string>
     <string name="camera_front">Frontkamera</string>
     <string name="camera_back">Hauptkamera</string>
-    <string name="lbl_import_option_updated_books_sync">Synchronisieren</string>
-    <string name="lbl_import_option_updated_books_overwrite">Neue und aktualisierte Bücher</string>
-    <string name="lbl_import_option_updated_books_skip">Nur neue Bücher</string>
-    <string name="inf_import_option_updated_books_skip">Importieren Sie nur neue Bücher. Aktualisierungen vorhandener Bücher werden ignoriert.</string>
-    <string name="inf_import_option_updated_books_overwrite">Importieren Sie neue Bücher und überschreiben Sie vorhandene Bücher. Verwenden Sie diese Option, um eine Sicherung wiederherzustellen.</string>
-    <string name="inf_import_option_updated_books_sync">Importieren Sie neue Bücher und synchronisieren Sie vorhandene Bücher basierend auf ihrem letzten Änderungsdatum.</string>
+    <string name="action_synchronize">Synchronisieren</string>
+    <string name="lbl_import_books_option_new_and_updated">Neue und aktualisierte Bücher</string>
+    <string name="lbl_import_books_option_new_only">Nur neue Bücher</string>
+    <string name="inf_import_books_option_new_only">Importieren Sie nur neue Bücher. Aktualisierungen vorhandener Bücher werden ignoriert.</string>
+    <string name="inf_import_books_option_all">Importieren Sie neue Bücher und überschreiben Sie vorhandene Bücher. Verwenden Sie diese Option, um eine Sicherung wiederherzustellen.</string>
+    <string name="inf_import_books_option_new_and_updated">Importieren Sie neue Bücher und synchronisieren Sie vorhandene Bücher basierend auf ihrem letzten Änderungsdatum.</string>
     <string name="pt_enable_fast_scroller_overlay">Textblase beim Scrollen</string>
     <string name="menu_import">Importieren</string>
     <string name="action_import">Importieren</string>
@@ -694,7 +695,7 @@
     <string name="btn_clear_queue">Warteschlange löschen</string>
     <string name="enabled">Aktiviert</string>
     <string name="lbl_calibre_content_server">Calibre inhaltsserver</string>
-    <string name="menu_import_calibre">Importieren (Calibre)</string>
+    <string name="menu_calibre_import">Calibre (Importieren)</string>
     <string name="httpError">Ein Netzwerkfehler ist aufgetreten.</string>
     <string name="httpErrorAuth">Bei der Authentifizierung ist ein Fehler aufgetreten.</string>
     <string name="httpErrorFailedSslHandshake">Es konnte keine sichere Verbindung hergestellt werden.</string>

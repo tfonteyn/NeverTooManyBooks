@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -51,7 +51,8 @@
     <string name="book_format_paperback">Paperback</string>
     <string name="book_format_softcover">Copertina morbida</string>
     <string name="bookshelf_all_books">Tutti i libri</string>
-    <string name="lbl_export_option_all_books">Tutti i libri</string>
+    <string name="lbl_export_books_option_all">Tutti i libri</string>
+    <string name="lbl_import_books_option_all">Tutti i libri</string>
     <string name="bookshelf_my_books">I miei libri</string>
     <string name="action_add">Aggiungi</string>
     <string name="X_action_exit">Esci</string>
@@ -253,7 +254,7 @@
     <string name="lbl_edition_first_impression">Prima stampa</string>
     <string name="lbl_edition_limited">Edizione limitata</string>
     <string name="lbl_edition_slipcase">Custodia</string>
-    <string name="inf_export_option_books_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
+    <string name="inf_export_books_option_since_last_full_backup">Tutti i libri aggiunti o aggiornati dall\'ultimo backup completo</string>
     <string name="lbl_family_name">Cognome</string>
     <string name="lbl_field_usage_append">Aggiungi altri dati</string>
     <string name="lbl_field_usage_copy_if_blank">Copia se vuoto</string>
@@ -267,7 +268,7 @@
     <string name="lbl_genre">Genere</string>
     <string name="lbl_given_names">Nome</string>
     <string name="lbl_import">Importa</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Libri nuovi ed aggiornati</string>
+    <string name="lbl_export_books_option_since_last_full_backup">Libri nuovi ed aggiornati</string>
     <string name="lbl_is_complete">È completo</string>
     <string name="lbl_keywords">Parole</string>
     <string name="lbl_language">Lingua</string>
@@ -549,7 +550,7 @@
     <string name="X_lbl_edit_bookshelf">Modifica libreria</string>
     <string name="X_lbl_edit_series">Modifica serie</string>
     <string name="lbl_edit_style">Modifica stile</string>
-    <string name="lbl_export_options">Seleziona cosa esportare nell\'archivio.</string>
+    <string name="lbl_export_options">Seleziona cosa verrà esportato.</string>
     <string name="lbl_import_book_data">Importa libri</string>
     <string name="lbl_import_options">Seleziona cosa verrà importato.</string>
     <string name="lbl_importing">Importazione in corso…</string>
@@ -673,12 +674,12 @@
     <string name="camera_other">Altro</string>
     <string name="camera_front">Fotocamera frontale</string>
     <string name="camera_back">Fotocamera posteriore</string>
-    <string name="lbl_import_option_updated_books_skip">Solo nuovi libri</string>
-    <string name="lbl_import_option_updated_books_overwrite">Libri nuovi e aggiornati</string>
-    <string name="lbl_import_option_updated_books_sync">Sincronizzare</string>
-    <string name="inf_import_option_updated_books_skip">Importa solo nuovi libri. Eventuali aggiornamenti ai libri esistenti verranno ignorati.</string>
-    <string name="inf_import_option_updated_books_overwrite">Importa nuovi libri e sovrascrivi i libri esistenti. Usalo per ripristinare un backup.</string>
-    <string name="inf_import_option_updated_books_sync">Importa nuovi libri e sincronizza i libri esistenti in base alla data dell\'ultima modifica.</string>
+    <string name="lbl_import_books_option_new_only">Solo nuovi libri</string>
+    <string name="lbl_import_books_option_new_and_updated">Libri nuovi e aggiornati</string>
+    <string name="action_synchronize">Sincronizzare</string>
+    <string name="inf_import_books_option_new_only">Importa solo nuovi libri. Eventuali aggiornamenti ai libri esistenti verranno ignorati.</string>
+    <string name="inf_import_books_option_all">Importa nuovi libri e sovrascrivi i libri esistenti. Usalo per ripristinare un backup.</string>
+    <string name="inf_import_books_option_new_and_updated">Importa nuovi libri e sincronizza i libri esistenti in base alla data dell\'ultima modifica.</string>
     <string name="pt_enable_fast_scroller_overlay">Bolla di testo durante lo scorrimento</string>
     <string name="menu_import">Importa</string>
     <string name="action_import">Importa</string>
@@ -691,7 +692,7 @@
     <string name="btn_clear_queue">Cancella coda</string>
     <string name="enabled">Abilitato</string>
     <string name="lbl_calibre_content_server">Server di contenuti Calibre</string>
-    <string name="menu_import_calibre">Importa (Calibre)</string>
+    <string name="menu_calibre_import">Calibre (Importa)</string>
     <string name="httpErrorFailedSslHandshake">Impossibile stabilire una connessione sicura.</string>
     <string name="httpErrorAuth">Autenticazione non riuscita.</string>
     <string name="httpError">Si è verificato un errore di rete.</string>

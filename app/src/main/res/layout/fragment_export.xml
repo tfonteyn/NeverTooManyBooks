@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -55,6 +55,7 @@
         android:id="@+id/cbx_books"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin"
         android:checked="true"
         android:text="@string/lbl_books"
         app:layout_constraintStart_toStartOf="parent"
@@ -67,7 +68,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
         android:checked="true"
-        android:text="@string/lbl_export_option_all_books"
+        android:text="@string/lbl_export_books_option_all"
         app:layout_constraintStart_toStartOf="@id/cbx_books"
         app:layout_constraintTop_toBottomOf="@id/cbx_books"
         />
@@ -77,7 +78,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
-        android:text="@string/lbl_export_option_books_since_last_full_backup"
+        android:text="@string/lbl_export_books_option_since_last_full_backup"
         app:layout_constraintStart_toStartOf="@id/cbx_books"
         app:layout_constraintTop_toBottomOf="@id/rb_books_all"
         />
@@ -85,9 +86,7 @@
     <ImageButton
         android:id="@+id/rb_books_incremental_info"
         style="@style/InfoButton"
-        android:contentDescription="@string/inf_export_option_books_since_last_full_backup"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
+        android:contentDescription="@string/inf_export_books_option_since_last_full_backup"
         app:layout_constraintStart_toEndOf="@id/rb_books_incremental"
         app:layout_constraintTop_toTopOf="@id/rb_books_incremental"
         />
@@ -97,6 +96,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:checked="true"
+        android:layout_marginStart="@dimen/field_margin"
         android:text="@string/lbl_covers_long"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rb_books_incremental"
@@ -114,7 +114,7 @@
 
     <TextView
         android:id="@+id/lbl_archive_format"
-        style="@style/Field.Label"
+        style="@style/Text.Header"
         android:layout_marginTop="@dimen/border2"
         android:text="@string/lbl_archive_format"
         app:layout_constraintStart_toStartOf="parent"
@@ -125,7 +125,8 @@
         android:id="@+id/archive_format"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/indent2"
+        android:layout_marginStart="@dimen/field_margin"
+        android:padding="@dimen/border2"
         app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
         app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
         tools:entries="@array/tools_spinner_title"

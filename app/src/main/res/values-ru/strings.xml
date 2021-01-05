@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -50,7 +50,8 @@
     <string name="book_format_paperback">книга в мягкой обложке</string>
     <string name="book_format_softcover">Мягкое покрытие</string>
     <string name="bookshelf_all_books">Все книги</string>
-    <string name="lbl_export_option_all_books">Все книги</string>
+    <string name="lbl_export_books_option_all">Все книги</string>
+    <string name="lbl_import_books_option_all">Все книги</string>
     <string name="bookshelf_my_books">Мои книги</string>
     <string name="action_add">Добавить</string>
     <string name="X_action_exit">Выход</string>
@@ -251,7 +252,7 @@
     <string name="lbl_edition_first_impression">первый отпечаток</string>
     <string name="lbl_edition_limited">ограниченный выпуск</string>
     <string name="lbl_edition_slipcase">шкатулка</string>
-    <string name="inf_export_option_books_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
+    <string name="inf_export_books_option_since_last_full_backup">Все добавленные или обновленные книги с последнего бэкапа</string>
     <string name="lbl_family_name">Фамилия</string>
     <string name="lbl_field_usage_append">Добавляет дополнительные данные</string>
     <string name="lbl_field_usage_copy_if_blank">Копирует, если пусто</string>
@@ -265,7 +266,7 @@
     <string name="lbl_genre">Жанр</string>
     <string name="lbl_given_names">Имя</string>
     <string name="lbl_import">Импортировать</string>
-    <string name="lbl_export_option_books_since_last_full_backup">Новые и обновленные книги</string>
+    <string name="lbl_export_books_option_since_last_full_backup">Новые и обновленные книги</string>
     <string name="lbl_is_complete">Завершено</string>
     <string name="lbl_keywords">Ключевые слова</string>
     <string name="lbl_language">Язык</string>
@@ -544,7 +545,7 @@
     <string name="X_lbl_edit_bookshelf">редактирование книжной полки</string>
     <string name="X_lbl_edit_series">Редактирование серии</string>
     <string name="lbl_edit_style">Редактировать стиль</string>
-    <string name="lbl_export_options">Выберите, что будет экспортировано в архив.</string>
+    <string name="lbl_export_options">Выберите, что будет экспортировано.</string>
     <string name="lbl_import_book_data">Импортировать книги</string>
     <string name="lbl_import_options">Выберите, что будет импортировано.</string>
     <string name="lbl_importing">Импорт…</string>
@@ -669,12 +670,12 @@
     <string name="camera_other">Другое</string>
     <string name="camera_front">Фронтальная камера</string>
     <string name="camera_back">Задняя камера</string>
-    <string name="lbl_import_option_updated_books_skip">Только новые книги</string>
-    <string name="lbl_import_option_updated_books_overwrite">Новые и обновленные книги</string>
-    <string name="lbl_import_option_updated_books_sync">Синхронизировать</string>
-    <string name="inf_import_option_updated_books_skip">Импортируйте только новые книги. Любые обновления существующих книг будут проигнорированы.</string>
-    <string name="inf_import_option_updated_books_overwrite">Импортируйте новые книги и перезаписывайте существующие книги. Используйте это для восстановления резервной копии.</string>
-    <string name="inf_import_option_updated_books_sync">Импортируйте новые книги и синхронизируйте существующие книги по дате их последнего изменения.</string>
+    <string name="lbl_import_books_option_new_only">Только новые книги</string>
+    <string name="lbl_import_books_option_new_and_updated">Новые и обновленные книги</string>
+    <string name="action_synchronize">Синхронизировать</string>
+    <string name="inf_import_books_option_new_only">Импортируйте только новые книги. Любые обновления существующих книг будут проигнорированы.</string>
+    <string name="inf_import_books_option_all">Импортируйте новые книги и перезаписывайте существующие книги. Используйте это для восстановления резервной копии.</string>
+    <string name="inf_import_books_option_new_and_updated">Импортируйте новые книги и синхронизируйте существующие книги по дате их последнего изменения.</string>
     <string name="pt_enable_fast_scroller_overlay">Текстовая всплывающая подсказка при прокрутке</string>
     <string name="action_import">Импортировать</string>
     <string name="menu_import">Импортировать</string>
@@ -687,7 +688,7 @@
     <string name="btn_clear_queue">Очистить очередь</string>
     <string name="lbl_calibre_content_server">Сервер содержимого Calibre</string>
     <string name="enabled">Включено</string>
-    <string name="menu_import_calibre">Импортировать (Calibre)</string>
+    <string name="menu_calibre_import">Calibre (Импортировать)</string>
     <string name="httpError">Ошибка сети.</string>
     <string name="httpErrorAuth">Ошибка аутентификации.</string>
     <string name="httpErrorFailedSslHandshake">Не удалось установить защищенное соединение.</string>

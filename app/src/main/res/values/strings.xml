@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -511,6 +511,9 @@
     <!-- ========== Calibre specific ========== -->
     <!-- ####################################################################################### -->
 
+    <string name="menu_calibre_synchronize">Calibre (Synchronize)</string>
+    <string name="menu_calibre_import">Calibre (Import)</string>
+
     <!-- [VERIFIED] -->
     <string name="lbl_calibre_content_server">Calibre Content Server</string>
     <!-- [VERIFIED] -->
@@ -891,7 +894,6 @@
 
     <!-- Navigation panel menu option -->
     <string name="menu_import">Import</string>
-    <string name="menu_import_calibre">Import (Calibre)</string>
 
     <!-- Dialog title. -->
     <string name="lbl_import">Import</string>
@@ -901,13 +903,12 @@
     <string name="lbl_importing">Importing…</string>
     <!-- Dialog import all options. -->
     <string name="lbl_import_options">Select what will be imported.</string>
-    <string name="lbl_import_option_updated_books_skip">New books only</string>
-    <string name="inf_import_option_updated_books_skip">Import only new books. Any updates to existing books will be ignored.</string>
-    <string name="lbl_import_option_updated_books_overwrite">New and updated books</string>
-    <string name="inf_import_option_updated_books_overwrite">Import new books and overwrite existing books. Use this for restoring a backup.</string>
-    <string name="lbl_import_option_updated_books_sync">Synchronize</string>
-    <string name="inf_import_option_updated_books_sync">Import new books and synchronize existing books based on their last modification date.</string>
-
+    <string name="lbl_import_books_option_new_only">New books only</string>
+    <string name="inf_import_books_option_new_only">Import only new books. Any updates to existing books will be ignored.</string>
+    <string name="lbl_import_books_option_new_and_updated">New and updated books</string>
+    <string name="inf_import_books_option_new_and_updated">Import new books and synchronize existing books based on their last modification date.</string>
+    <string name="lbl_import_books_option_all">All books</string>
+    <string name="inf_import_books_option_all">Import new books and overwrite existing books. Use this for restoring a backup.</string>
 
     <!-- Navigation panel menu option -->
     <string name="menu_backup_and_export">Backup &amp; Export</string>
@@ -916,10 +917,10 @@
     <!-- Progress Dialog title. -->
     <string name="lbl_backing_up">Backing up…</string>
     <!-- Dialog export all options. -->
-    <string name="lbl_export_options">Select what will be exported to the archive.</string>
-    <string name="lbl_export_option_all_books">All books</string>
-    <string name="lbl_export_option_books_since_last_full_backup">New and updated books</string>
-    <string name="inf_export_option_books_since_last_full_backup">Books added or updated since last full backup.</string>
+    <string name="lbl_export_options">Select what will be exported.</string>
+    <string name="lbl_export_books_option_all">All books</string>
+    <string name="lbl_export_books_option_since_last_full_backup">New and updated books</string>
+    <string name="inf_export_books_option_since_last_full_backup">Books added or updated since last full backup.</string>
 
 
     <!-- ####################################################################################### -->
@@ -1064,6 +1065,8 @@
     <!-- [VERIFIED] -->
     <string name="btn_email">Email</string>
 
+
+    <string name="action_synchronize">Synchronize</string>
 
     <string name="action_validate">Validate</string>
 

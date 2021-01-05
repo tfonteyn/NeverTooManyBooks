@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -128,7 +128,7 @@ public final class ImportHelper {
             case Csv:
                 // Default: new books and sync updates
                 mImportEntries.add(RecordType.Books);
-                setUpdatesMustSync();
+                setNewAndUpdatedBooks();
                 break;
 
             case Zip:
@@ -138,26 +138,26 @@ public final class ImportHelper {
                 mImportEntries.add(RecordType.Preferences);
                 mImportEntries.add(RecordType.Books);
                 mImportEntries.add(RecordType.Cover);
-                setUpdatesMustSync();
+                setNewAndUpdatedBooks();
                 break;
 
             case SqLiteDb:
                 // Default: new books only
                 mImportEntries.add(RecordType.Books);
-                setSkipUpdates();
+                setNewBooksOnly();
                 break;
 
             case Json:
                 mImportEntries.add(RecordType.Styles);
                 mImportEntries.add(RecordType.Preferences);
                 mImportEntries.add(RecordType.Books);
-                setUpdatesMustSync();
+                setNewAndUpdatedBooks();
                 break;
 
             case CalibreCS:
                 mImportEntries.add(RecordType.Books);
                 mImportEntries.add(RecordType.Cover);
-                setUpdatesMustSync();
+                setNewAndUpdatedBooks();
                 break;
 
             case Xml:
@@ -234,32 +234,32 @@ public final class ImportHelper {
 
 
     @SuppressWarnings("WeakerAccess")
-    public boolean isSkipUpdates() {
+    public boolean isNewBooksOnly() {
         return (mOptions & (OPTION_UPDATES_MAY_OVERWRITE | OPTION_UPDATES_MUST_SYNC)) == 0;
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void setSkipUpdates() {
+    public void setNewBooksOnly() {
         mOptions &= ~OPTION_UPDATES_MAY_OVERWRITE;
         mOptions &= ~OPTION_UPDATES_MUST_SYNC;
     }
 
-    public boolean isUpdatesMayOverwrite() {
+    public boolean isAllBooks() {
         return (mOptions & OPTION_UPDATES_MAY_OVERWRITE) != 0
                && (mOptions & OPTION_UPDATES_MUST_SYNC) == 0;
     }
 
-    public void setUpdatesMayOverwrite() {
+    public void setAllBooks() {
         mOptions |= OPTION_UPDATES_MAY_OVERWRITE;
         mOptions &= ~OPTION_UPDATES_MUST_SYNC;
     }
 
-    public boolean isUpdatesMustSync() {
+    public boolean isNewAndUpdatedBooks() {
         return (mOptions & (OPTION_UPDATES_MAY_OVERWRITE | OPTION_UPDATES_MUST_SYNC)) != 0;
     }
 
     @SuppressWarnings("WeakerAccess")
-    public void setUpdatesMustSync() {
+    public void setNewAndUpdatedBooks() {
         mOptions |= OPTION_UPDATES_MAY_OVERWRITE;
         mOptions |= OPTION_UPDATES_MUST_SYNC;
     }

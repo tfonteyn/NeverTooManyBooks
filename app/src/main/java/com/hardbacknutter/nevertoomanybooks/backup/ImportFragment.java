@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -298,24 +298,24 @@ public class ImportFragment
                 .setImportEntry(RecordType.Preferences, isChecked));
 
 
-        mVb.rbUpdatedBooksSkip.setChecked(helper.isSkipUpdates());
-        mVb.rbUpdatedBooksSkipInfo.setOnClickListener(StandardDialogs::infoPopup);
+        mVb.rbImportBooksOptionNewOnly.setChecked(helper.isNewBooksOnly());
+        mVb.infImportBooksOptionNewOnly.setOnClickListener(StandardDialogs::infoPopup);
 
-        mVb.rbUpdatedBooksOverwrite.setChecked(helper.isUpdatesMayOverwrite());
-        mVb.rbUpdatedBooksOverwriteInfo.setOnClickListener(StandardDialogs::infoPopup);
+        mVb.rbImportBooksOptionNewAndUpdated.setChecked(helper.isNewAndUpdatedBooks());
+        mVb.infImportBooksOptionNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
 
-        mVb.rbUpdatedBooksSync.setChecked(helper.isUpdatesMustSync());
-        mVb.rbUpdatedBooksSyncInfo.setOnClickListener(StandardDialogs::infoPopup);
+        mVb.rbImportBooksOptionAll.setChecked(helper.isAllBooks());
+        mVb.infImportBooksOptionAll.setOnClickListener(StandardDialogs::infoPopup);
 
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == mVb.rbUpdatedBooksSkip.getId()) {
-                helper.setSkipUpdates();
+            if (checkedId == mVb.rbImportBooksOptionNewOnly.getId()) {
+                helper.setNewBooksOnly();
 
-            } else if (checkedId == mVb.rbUpdatedBooksOverwrite.getId()) {
-                helper.setUpdatesMayOverwrite();
+            } else if (checkedId == mVb.rbImportBooksOptionNewAndUpdated.getId()) {
+                helper.setNewAndUpdatedBooks();
 
-            } else if (checkedId == mVb.rbUpdatedBooksSync.getId()) {
-                helper.setUpdatesMustSync();
+            } else if (checkedId == mVb.rbImportBooksOptionAll.getId()) {
+                helper.setAllBooks();
             }
         });
 

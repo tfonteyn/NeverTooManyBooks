@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -157,8 +157,8 @@ public class CalibreContentServerReader
                    KeyStoreException, KeyManagementException {
         mDb = new DAO(TAG);
 
-        mSyncBooks = helper.isUpdatesMustSync();
-        mOverwriteBooks = helper.isUpdatesMayOverwrite();
+        mSyncBooks = helper.isNewAndUpdatedBooks();
+        mOverwriteBooks = helper.isAllBooks();
         mFetchCovers = helper.getImportEntries().contains(RecordType.Cover);
 
         // ENHANCE: allow passing in of the desired library to use.

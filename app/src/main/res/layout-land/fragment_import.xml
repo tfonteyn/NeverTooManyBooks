@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -35,13 +35,13 @@
         android:id="@+id/rb_books_group"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:constraint_referenced_ids="rb_updated_books_skip,rb_updated_books_overwrite,rb_updated_books_sync"
+        app:constraint_referenced_ids="rb_import_books_option_new_only,rb_import_books_option_all,rb_import_books_option_new_and_updated"
         tools:ignore="MissingConstraints"
         />
 
     <TextView
         android:id="@+id/archive_name"
-        style="@style/Text.Body.Small"
+        style="@style/Text.Body"
         android:layout_marginStart="@dimen/field_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.55"
+        app:layout_constraintGuide_percent="0.6"
         />
 
     <CheckBox
@@ -77,76 +77,70 @@
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="@string/lbl_books"
+        android:layout_marginStart="@dimen/field_margin"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/archive_content"
         />
 
     <RadioButton
-        android:id="@+id/rb_updated_books_skip"
+        android:id="@+id/rb_import_books_option_new_only"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
-        android:text="@string/lbl_import_option_updated_books_skip"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/lbl_import_books_option_new_only"
+        app:layout_constraintStart_toStartOf="@id/cbx_books"
         app:layout_constraintTop_toBottomOf="@id/cbx_books"
         />
 
     <ImageButton
-        android:id="@+id/rb_updated_books_skip_info"
+        android:id="@+id/inf_import_books_option_new_only"
         style="@style/InfoButton"
-        android:contentDescription="@string/inf_import_option_updated_books_skip"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/rb_updated_books_skip"
-        app:layout_constraintTop_toTopOf="@id/rb_updated_books_skip"
+        android:contentDescription="@string/inf_import_books_option_new_only"
+        app:layout_constraintStart_toEndOf="@id/rb_import_books_option_new_only"
+        app:layout_constraintTop_toTopOf="@id/rb_import_books_option_new_only"
         />
 
     <RadioButton
-        android:id="@+id/rb_updated_books_overwrite"
+        android:id="@+id/rb_import_books_option_new_and_updated"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
         android:checked="true"
-        android:text="@string/lbl_import_option_updated_books_overwrite"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rb_updated_books_skip"
+        android:text="@string/lbl_import_books_option_new_and_updated"
+        app:layout_constraintStart_toStartOf="@id/cbx_books"
+        app:layout_constraintTop_toBottomOf="@id/rb_import_books_option_new_only"
         />
 
     <ImageButton
-        android:id="@+id/rb_updated_books_overwrite_info"
+        android:id="@+id/inf_import_books_option_new_and_updated"
         style="@style/InfoButton"
-        android:contentDescription="@string/inf_import_option_updated_books_overwrite"
-        app:layout_constraintEnd_toStartOf="@id/middle"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/rb_updated_books_overwrite"
-        app:layout_constraintTop_toTopOf="@id/rb_updated_books_overwrite"
+        android:contentDescription="@string/inf_import_books_option_new_and_updated"
+        app:layout_constraintStart_toEndOf="@id/rb_import_books_option_new_and_updated"
+        app:layout_constraintTop_toTopOf="@id/rb_import_books_option_new_and_updated"
         />
 
     <RadioButton
-        android:id="@+id/rb_updated_books_sync"
+        android:id="@+id/rb_import_books_option_all"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
-        android:text="@string/lbl_import_option_updated_books_sync"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rb_updated_books_overwrite"
+        android:text="@string/lbl_import_books_option_all"
+        app:layout_constraintStart_toStartOf="@id/cbx_books"
+        app:layout_constraintTop_toBottomOf="@id/rb_import_books_option_new_and_updated"
         />
 
     <ImageButton
-        android:id="@+id/rb_updated_books_sync_info"
+        android:id="@+id/inf_import_books_option_all"
         style="@style/InfoButton"
-        android:contentDescription="@string/inf_import_option_updated_books_sync"
-        app:layout_constraintEnd_toStartOf="@id/middle"
-        app:layout_constraintHorizontal_bias="0"
-        app:layout_constraintStart_toEndOf="@id/rb_updated_books_sync"
-        app:layout_constraintTop_toTopOf="@id/rb_updated_books_sync"
+        android:contentDescription="@string/inf_import_books_option_all"
+        app:layout_constraintStart_toEndOf="@id/rb_import_books_option_all"
+        app:layout_constraintTop_toTopOf="@id/rb_import_books_option_all"
         />
 
     <CheckBox
         android:id="@+id/cbx_covers"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
         android:checked="true"
         android:text="@string/lbl_covers_long"
         app:layout_constraintStart_toEndOf="@id/middle"
@@ -157,7 +151,6 @@
         android:id="@+id/cbx_prefs"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
         android:checked="true"
         android:text="@string/lbl_settings"
         app:layout_constraintStart_toEndOf="@id/middle"
@@ -168,7 +161,6 @@
         android:id="@+id/cbx_styles"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
         android:checked="true"
         android:text="@string/lbl_styles"
         app:layout_constraintStart_toEndOf="@id/middle"
