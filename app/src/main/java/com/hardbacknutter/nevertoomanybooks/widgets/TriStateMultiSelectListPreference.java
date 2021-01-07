@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -130,7 +130,7 @@ public class TriStateMultiSelectListPreference
      * @return string, can be {@code null}
      */
     @Nullable
-    public String getDisregardSummaryText() {
+    private String getDisregardSummaryText() {
         if (mDisregardSummaryText != null) {
             return mDisregardSummaryText;
         } else if (mDisregardButtonText != null) {
@@ -344,6 +344,49 @@ public class TriStateMultiSelectListPreference
             }
 
             mPreferenceChanged = false;
+        }
+    }
+
+
+    /**
+     * A simple {@link androidx.preference.Preference.SummaryProvider} implementation for a
+     * {@link TriStateMultiSelectListPreference}.
+     */
+    public static final class SimpleSummaryProvider
+            implements SummaryProvider<TriStateMultiSelectListPreference> {
+
+        private static TriStateMultiSelectListPreference.SimpleSummaryProvider
+                sSimpleSummaryProvider;
+
+        private SimpleSummaryProvider() {
+        }
+
+        /**
+         * Retrieve a singleton instance of this simple
+         * {@link androidx.preference.Preference.SummaryProvider} implementation.
+         *
+         * @return a singleton instance of this simple
+         * {@link androidx.preference.Preference.SummaryProvider} implementation
+         */
+        public static TriStateMultiSelectListPreference.SimpleSummaryProvider getInstance() {
+            if (sSimpleSummaryProvider == null) {
+                sSimpleSummaryProvider =
+                        new TriStateMultiSelectListPreference.SimpleSummaryProvider();
+            }
+            return sSimpleSummaryProvider;
+        }
+
+        @Override
+        @Nullable
+        public CharSequence provideSummary(@NonNull final TriStateMultiSelectListPreference
+                                                   preference) {
+            if (!preference.isActive()) {
+                return preference.getDisregardSummaryText();
+            } else {
+                // if it is active, drop through to MultiSelectListPreference
+                return MultiSelectListPreferenceSummaryProvider
+                        .getInstance().provideSummary(preference);
+            }
         }
     }
 }
