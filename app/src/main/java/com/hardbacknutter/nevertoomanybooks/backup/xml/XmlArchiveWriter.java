@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,6 +42,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 
 /**
  * Hardcoded to only write {@link RecordType#Books} into an XML file.
+ * <p>
+ * We limit xml export to a full export only (ignoring {@link ExportHelper#isIncremental()}).
+ * Hence we're not using or updating the "last full backup date".
+ * Reasoning is that we don't support importing from xml.
  */
 public class XmlArchiveWriter
         implements ArchiveWriter {
@@ -84,7 +88,7 @@ public class XmlArchiveWriter
         try (OutputStream os = mHelper.createOutputStream(context);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = new XmlRecordWriter(mHelper.getUtcDateTimeSince())) {
+             RecordWriter recordWriter = new XmlRecordWriter(null)) {
 
             bw.write(XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
                      + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(VERSION) + ">\n");
