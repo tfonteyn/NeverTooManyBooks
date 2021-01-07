@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,7 @@
 package com.hardbacknutter.nevertoomanybooks.settings.sites;
 
 import android.os.Bundle;
-import android.widget.TextView;
+import android.text.InputType;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
@@ -40,10 +40,14 @@ public class AmazonPreferencesFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_amazon, rootKey);
 
-        final EditTextPreference preference = findPreference(AmazonSearchEngine.PK_HOST_URL);
-        if (preference != null) {
-            preference.setOnBindEditTextListener(TextView::setSingleLine);
-        }
+        final EditTextPreference etp = findPreference(AmazonSearchEngine.PK_HOST_URL);
+        //noinspection ConstantConditions
+        etp.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                  | InputType.TYPE_TEXT_VARIATION_URI);
+            editText.selectAll();
+        });
+        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
     }
 
     @Override
