@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -159,10 +159,15 @@ public class UserStyle
         mPersistenceLayer.setString(PK_STYLE_NAME, name);
     }
 
+    @NonNull
+    public String getName() {
+        //noinspection ConstantConditions
+        return mPersistenceLayer.getNonGlobalString(PK_STYLE_NAME);
+    }
+
     @Override
     @NonNull
     public String getLabel(@NonNull final Context context) {
-        //noinspection ConstantConditions
-        return mPersistenceLayer.getNonGlobalString(PK_STYLE_NAME);
+        return getName();
     }
 }
