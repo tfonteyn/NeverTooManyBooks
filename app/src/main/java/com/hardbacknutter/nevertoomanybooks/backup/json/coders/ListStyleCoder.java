@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,6 +49,9 @@ public class ListStyleCoder
     /** The sub-tag for the array with the style settings. */
     private static final String STYLE_SETTINGS = "settings";
 
+    private static final String STYLE_NAME = "name";
+
+
     @NonNull
     private final Context mContext;
     /** Database Access. */
@@ -88,6 +91,8 @@ public class ListStyleCoder
         out.put(DBDefinitions.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
 
         if (style instanceof UserStyle) {
+            out.put(STYLE_NAME, ((UserStyle) style).getName());
+
             final JSONObject dest = new JSONObject();
             for (final PPref<?> source : style.getRawPreferences().values()) {
                 if (source instanceof PInt
@@ -112,12 +117,17 @@ public class ListStyleCoder
 
         final String uuid = data.getString(DBDefinitions.KEY_UUID);
 
-        final ListStyle style;
         if (StyleDAO.BuiltinStyles.isBuiltin(uuid)) {
-            style = Objects.requireNonNull(StyleDAO.getStyle(mContext, mDb, uuid));
+            final ListStyle style = Objects.requireNonNull(StyleDAO.getStyle(mContext, mDb, uuid));
+            style.setPreferred(data.getBoolean(DBDefinitions.KEY_STYLE_IS_PREFERRED));
+            style.setMenuPosition(data.getInt(DBDefinitions.KEY_STYLE_MENU_POSITION));
+            return style;
 
         } else {
-            style = UserStyle.createFromImport(mContext, uuid);
+            final UserStyle style = UserStyle.createFromImport(mContext, uuid);
+            style.setName(data.getString(STYLE_NAME));
+            style.setPreferred(data.getBoolean(DBDefinitions.KEY_STYLE_IS_PREFERRED));
+            style.setMenuPosition(data.getInt(DBDefinitions.KEY_STYLE_MENU_POSITION));
 
             // any element in the source which we don't know, will simply be ignored.
             final JSONObject source = data.getJSONObject(STYLE_SETTINGS);
@@ -139,12 +149,8 @@ public class ListStyleCoder
                     }
                 }
             }
+            return style;
         }
-
-        style.setPreferred(data.getBoolean(DBDefinitions.KEY_STYLE_IS_PREFERRED));
-        style.setMenuPosition(data.getInt(DBDefinitions.KEY_STYLE_MENU_POSITION));
-
-        return style;
     }
 
     private void transfer(@NonNull final JSONObject source,
