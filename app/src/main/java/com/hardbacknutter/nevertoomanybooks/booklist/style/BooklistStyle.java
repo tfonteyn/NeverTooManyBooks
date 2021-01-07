@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ public abstract class BooklistStyle
     /** The default expansion level for the groups. */
     public static final String PK_LEVELS_EXPANSION = "style.booklist.levels.default";
     /** What fields the user wants to see in the list header. */
-    private static final String PK_HEADER = "style.booklist.header";
+    public static final String PK_LIST_HEADER = "style.booklist.header";
     /**
      * The spacing used for the group/level rows.
      * A value of {@code 0} means {@link android.view.ViewGroup.LayoutParams#WRAP_CONTENT}.
@@ -223,7 +223,7 @@ public abstract class BooklistStyle
         mExpansionLevel = new PInteger(isPersistent, mPersistenceLayer,
                                        PK_LEVELS_EXPANSION, 1);
         mShowHeaderInfo = new PBitmask(isPersistent, mPersistenceLayer,
-                                       PK_HEADER, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
+                                       PK_LIST_HEADER, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
         mGroupRowPreferredHeight = new PBoolean(isPersistent, mPersistenceLayer,
                                                 PK_SCALE_GROUP_ROW, true);
 
