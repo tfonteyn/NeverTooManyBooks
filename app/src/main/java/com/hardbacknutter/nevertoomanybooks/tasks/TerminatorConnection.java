@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,15 +75,14 @@ public final class TerminatorConnection
     private static final int NR_OF_TRIES = 2;
     /** milliseconds to wait between retries. This is in ADDITION to the Throttler. */
     private static final int RETRY_AFTER_MS = 1_000;
-    @Nullable
-    private final Throttler mThrottler;
-    private final int mConnectTimeout;
+    private final int mConnectTimeoutInMs;
     private final int mReadTimeout;
     private final int mKillDelayInMillis;
-    @NonNull
-    private final String mUrlStr;
     @Nullable
-    private final SSLContext mSslContext;
+    private Throttler mThrottler;
+    @SuppressWarnings("FieldCanBeLocal")
+    @Nullable
+    private SSLContext mSslContext;
     @Nullable
     private HttpURLConnection mCon;
     @Nullable
@@ -95,55 +94,65 @@ public final class TerminatorConnection
     /** see {@link #setRetryCount(int)}. */
     private int mNrOfTries = NR_OF_TRIES;
 
+    @WorkerThread
+    public TerminatorConnection(@NonNull final String urlStr)
+            throws IOException {
+        this(urlStr, 0, 0);
+    }
+
     /**
      * Constructor.
      *
-     * @param urlStr     URL to retrieve
-     * @param sslContext (optional) SSL context to use instead of the system one.
+     * @param urlStr             URL to retrieve
+     * @param connectTimeoutInMs in millis, use {@code 0} for system default
+     * @param readTimeoutInMs    in millis, use {@code 0} for system default
      *
      * @throws IOException on failure
      */
     @WorkerThread
     public TerminatorConnection(@NonNull final String urlStr,
-                                @Nullable final SSLContext sslContext,
-                                @IntRange(from = 0) final int connectTimeout,
-                                @IntRange(from = 0) final int readTimeout,
-                                @Nullable final Throttler throttler)
+                                @IntRange(from = 0) final int connectTimeoutInMs,
+                                @IntRange(from = 0) final int readTimeoutInMs)
             throws IOException {
 
-        mUrlStr = urlStr;
-        mSslContext = sslContext;
-        mConnectTimeout = connectTimeout;
-        mReadTimeout = readTimeout;
-        mThrottler = throttler;
+        mConnectTimeoutInMs = connectTimeoutInMs;
+        mReadTimeout = readTimeoutInMs;
 
         mKillDelayInMillis = KILL_TIMEOUT_MS;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-            Log.d(TAG, "Constructor|url=\"" + mUrlStr + '\"');
+            Log.d(TAG, "Constructor|url=\"" + urlStr + '\"');
         }
-        createConnection();
-    }
 
-    @WorkerThread
-    public void createConnection()
-            throws IOException {
         try {
-            mCon = (HttpURLConnection) new URL(mUrlStr).openConnection();
-
-            if (mSslContext != null) {
-                ((HttpsURLConnection) mCon).setSSLSocketFactory(mSslContext.getSocketFactory());
-            }
+            // Creates the connection, but does not connect to the remote server.
+            // We'll do that in getInputStream() / open()
+            mCon = (HttpURLConnection) new URL(urlStr).openConnection();
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                Logger.error(App.getTaskContext(), TAG, e, "url=" + mUrlStr);
+                Logger.error(App.getTaskContext(), TAG, e, "url=" + urlStr);
             }
             throw e;
         }
+    }
 
-        // Don't trust the caches; they have proven to be cumbersome.
-        mCon.setUseCaches(false);
+    /**
+     * Set a throttler to obey site usage rules.
+     *
+     * @param throttler (optional) to use
+     */
+    public void setThrottler(@Nullable final Throttler throttler) {
+        mThrottler = throttler;
+    }
+
+    /**
+     * For secure connections.
+     *
+     * @param sslContext (optional) SSL context to use instead of the system one.
+     */
+    public void setSSLContext(@Nullable final SSLContext sslContext) {
+        mSslContext = sslContext;
     }
 
     /**
@@ -175,8 +184,12 @@ public final class TerminatorConnection
             throws IOException {
         Objects.requireNonNull(mCon, "mCon");
 
-        if (mConnectTimeout > 0) {
-            mCon.setConnectTimeout(mConnectTimeout);
+        if (mSslContext != null) {
+            ((HttpsURLConnection) mCon).setSSLSocketFactory(mSslContext.getSocketFactory());
+        }
+
+        if (mConnectTimeoutInMs > 0) {
+            mCon.setConnectTimeout(mConnectTimeoutInMs);
         } else {
             mCon.setConnectTimeout(CONNECT_TIMEOUT_MS);
         }
@@ -186,6 +199,9 @@ public final class TerminatorConnection
         } else {
             mCon.setReadTimeout(READ_TIMEOUT_MS);
         }
+
+        // Don't trust the caches; they have proven to be cumbersome.
+        mCon.setUseCaches(false);
 
         // If the site drops connection, we retry.
         int retry;
