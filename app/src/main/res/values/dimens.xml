@@ -1,5 +1,5 @@
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -150,11 +150,15 @@
     <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
     <dimen name="indent_radio_button">16dp</dimen>
 
+    <!-- Make a header text align with list elements which are preceded by an icon.
+    Intention is to mimic a PreferenceCategory title indent. -->
+    <dimen name="indent_header">52dp</dimen>
+
     <!-- the width for a Button displaying an icon (24dp) and no text. -->
     <dimen name="icon_button_width">48dp</dimen>
 
     <!-- indent for the check on a ROW_CHECKABLE_BTN. -->
-    <dimen name="row_checkable_btn_margin_start">12dp</dimen>
+    <dimen name="indent_row_checkable_btn">12dp</dimen>
 
     <!-- generic drawable padding. -->
     <dimen name="drawable_padding1">4dp</dimen>
@@ -162,7 +166,7 @@
     <!-- Margin applied around all TextInputLayout fields. -->
     <dimen name="envelope_edit_text_margin">2dp</dimen>
     <!-- Start margin (and optional end) applied to a field.
-    Used for individual fields, or with a Guideline for a group of fields. -->
+         Used for individual fields, or with a Guideline for a group of fields. -->
     <dimen name="field_margin">8dp</dimen>
     <dimen name="field_margin_large">16dp</dimen>
     <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->

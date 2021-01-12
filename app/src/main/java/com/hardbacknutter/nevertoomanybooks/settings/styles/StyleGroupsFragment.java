@@ -30,7 +30,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -94,7 +93,6 @@ public class StyleGroupsFragment
 
     /** View Binding. */
     private FragmentEditStyleGroupsBinding mVb;
-    private Toolbar mToolbar;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -118,9 +116,8 @@ public class StyleGroupsFragment
     public void onViewCreated(@NonNull final View view,
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
 
+        //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
@@ -148,15 +145,6 @@ public class StyleGroupsFragment
             TipManager.getInstance().display(getContext(), R.string.tip_booklist_style_groups,
                                              null);
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        //noinspection ConstantConditions
-        mToolbar.setSubtitle(getString(R.string.name_colon_value,
-                                       getString(R.string.pg_style_groups),
-                                       mStyleViewModel.getStyle().getLabel(getContext())));
     }
 
     /**
