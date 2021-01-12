@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -95,6 +95,8 @@
                 android:layout_height="0dp"
                 android:layout_marginTop="@dimen/border2"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

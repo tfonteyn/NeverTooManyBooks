@@ -33,11 +33,10 @@
         android:orientation="vertical"
         >
 
-        <!-- 52dp to make the text align with the button texts -->
         <TextView
             style="@style/Text.Header"
             android:layout_marginTop="@dimen/border2"
-            android:layout_marginStart="52dp"
+            android:layout_marginStart="@dimen/indent_header"
             android:text="@string/pt_maintenance"
             />
 
@@ -79,7 +78,7 @@
         <TextView
             android:id="@+id/btn_debug"
             style="@style/Text.Header"
-            android:layout_marginStart="52dp"
+            android:layout_marginStart="@dimen/indent_header"
             android:text="@string/debug"
             />
 

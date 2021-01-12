@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -54,18 +54,14 @@
             style="@style/Dialog.Body"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-
             android:fadeScrollbars="false"
             android:scrollbarAlwaysDrawVerticalTrack="true"
             android:scrollbars="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-
             app:layout_constraintBottom_toTopOf="@id/buttonPanel"
             app:layout_constraintTop_toTopOf="parent"
-
             app:layout_constraintVertical_bias="0.0"
-
             tools:itemCount="14"
             tools:listitem="@layout/row_choice_single"
             />

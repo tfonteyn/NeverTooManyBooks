@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -328,7 +328,7 @@
 
     <!-- CheckBox - editable checkbox with custom icon -->
     <style name="RowButton.Checkable">
-        <item name="android:layout_marginStart">@dimen/row_checkable_btn_margin_start</item>
+        <item name="android:layout_marginStart">@dimen/indent_row_checkable_btn</item>
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:button">?android:attr/textCheckMark</item>
