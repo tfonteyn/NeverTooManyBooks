@@ -91,13 +91,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException
  */
 public class CalibreContentServer {
 
+    /** Log tag. */
+    private static final String TAG = "CalibreContentServer";
+
+    /** Preferences prefix. */
+    private static final String PREF_KEY = "calibre";
+
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
     /** Whether to show any sync menus at all. */
     public static final String PK_ENABLED = PREF_KEY + ".enabled";
 
-    /** Preferences prefix. */
-    private static final String PREF_KEY = "calibre";
 
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
     public static final String PK_HOST_URL = PREF_KEY + ".host.url";
@@ -116,8 +120,7 @@ public class CalibreContentServer {
 
     /** last time we synced with Calibre. */
     private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
-    /** Log tag. */
-    private static final String TAG = "CalibreContentServer";
+
     /**
      * We're using a large read buffer for {@link #getBookIds(String, int, int)};
      * The size is based on a rough minimum of
