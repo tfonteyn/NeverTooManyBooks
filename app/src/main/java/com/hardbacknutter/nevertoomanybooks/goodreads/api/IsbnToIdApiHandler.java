@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ public class IsbnToIdApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public IsbnToIdApiHandler(@NonNull final Context appContext,
                               @NonNull final GoodreadsAuth grAuth)
@@ -64,12 +64,10 @@ public class IsbnToIdApiHandler
      *
      * @return Goodreads book ID
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     public long isbnToId(@NonNull final String isbn)
-            throws CredentialsException, Http404Exception, IOException {
+            throws IOException {
 
         final String url = String.format(URL, isbn, mGrAuth.getDevKey());
         final String id = executeRawGet(url, true);

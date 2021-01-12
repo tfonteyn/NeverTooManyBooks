@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,18 +20,24 @@
 package com.hardbacknutter.nevertoomanybooks.settings;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.TextView;
+import android.text.InputType;
+import android.view.View;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
+import androidx.preference.SwitchPreference;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -41,8 +47,13 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
+import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreConnectionTestTask;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 @Keep
 public class CalibrePreferencesFragment
@@ -54,26 +65,127 @@ public class CalibrePreferencesFragment
     private final ActivityResultLauncher<String> mOpenUriLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
 
+    private CalibreConnectionTestTask mConnectionTestTask;
+
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    final SwitchPreference sp = findPreference(CalibreContentServer.PK_ENABLED);
+                    //noinspection ConstantConditions
+                    if (sp.isChecked()) {
+                        //noinspection ConstantConditions
+                        new MaterialAlertDialogBuilder(getContext())
+                                .setIcon(R.drawable.ic_info_outline)
+                                .setTitle(R.string.lbl_test_connection)
+                                .setMessage(R.string.confirm_test_connection)
+                                .setNegativeButton(R.string.action_not_now, (d, w) ->
+                                        popBackStackOrFinish())
+                                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                                    d.dismiss();
+                                    mConnectionTestTask.start();
+                                })
+                                .create()
+                                .show();
+                    } else {
+                        popBackStackOrFinish();
+                    }
+                }
+            };
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_calibre, rootKey);
 
-        final EditTextPreference hostUrlPref = findPreference(CalibreContentServer.PK_HOST_URL);
-        if (hostUrlPref != null) {
-            hostUrlPref.setOnBindEditTextListener(TextView::setSingleLine);
-        }
+        EditTextPreference etp;
+
+        etp = findPreference(CalibreContentServer.PK_HOST_URL);
+        //noinspection ConstantConditions
+        etp.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                  | InputType.TYPE_TEXT_VARIATION_URI);
+            editText.selectAll();
+        });
+        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+
+
+        etp = findPreference(CalibreContentServer.PK_HOST_USER);
+        //noinspection ConstantConditions
+        etp.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT);
+            editText.selectAll();
+        });
+        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
+
+
+        etp = findPreference(CalibreContentServer.PK_HOST_PASS);
+        //noinspection ConstantConditions
+        etp.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                  | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            editText.selectAll();
+        });
+        etp.setSummaryProvider(preference -> {
+            final String value = ((EditTextPreference) preference).getText();
+            if (value == null || value.isEmpty()) {
+                return getString(R.string.info_not_set);
+            } else {
+                return "********";
+            }
+        });
+
 
         final Preference caPref = findPreference(PSK_CA_FROM_FILE);
-        if (caPref != null) {
-            setCertificateSummary(caPref);
-            caPref.setOnPreferenceClickListener(
-                    preference -> {
-                        mOpenUriLauncher.launch("*/*");
-                        return true;
-                    });
+        //noinspection ConstantConditions
+        setCertificateSummary(caPref);
+        caPref.setOnPreferenceClickListener(preference -> {
+            mOpenUriLauncher.launch("*/*");
+            return true;
+        });
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view,
+                              @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        //noinspection ConstantConditions
+        getActivity().getOnBackPressedDispatcher()
+                     .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        mConnectionTestTask = new ViewModelProvider(this).get(CalibreConnectionTestTask.class);
+        mConnectionTestTask.onFailure().observe(getViewLifecycleOwner(), this::onFailure);
+        mConnectionTestTask.onFinished().observe(getViewLifecycleOwner(), this::onSuccess);
+    }
+
+    private void onSuccess(@NonNull final FinishedMessage<Boolean> message) {
+        if (message.isNewEvent() && message.result != null) {
+            if (message.result) {
+                //noinspection ConstantConditions
+                Snackbar.make(getView(), R.string.info_authorized, Snackbar.LENGTH_SHORT).show();
+                getView().postDelayed(this::popBackStackOrFinish, BaseActivity.ERROR_DELAY_MS);
+            } else {
+                //For now we don't get here, instead we would be in onFailure.
+                // But keeping this here to guard against future changes in the task logic
+                //noinspection ConstantConditions
+                Snackbar.make(getView(), R.string.httpErrorAuth, Snackbar.LENGTH_LONG).show();
+            }
         }
+    }
+
+    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
+        //noinspection ConstantConditions
+        String msg = ExMsg.map(getContext(), TAG, message.result);
+        if (msg == null) {
+            msg = "";
+        } else {
+            msg += "\n";
+        }
+
+        StandardDialogs.showError(
+                getContext(), msg + getString(R.string.error_network_failed_try_again));
     }
 
     @Override
@@ -83,15 +195,9 @@ public class CalibrePreferencesFragment
         mToolbar.setSubtitle(R.string.site_calibre);
     }
 
-    @Override
-    public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
-                                          @NonNull final String key) {
-        super.onSharedPreferenceChanged(preferences, key);
-    }
-
     private void onOpenUri(@Nullable final Uri uri) {
         if (uri != null) {
-            final Preference caPref = findPreference(PSK_CA_FROM_FILE);
+            final Preference preference = findPreference(PSK_CA_FROM_FILE);
 
             //noinspection ConstantConditions
             try (InputStream is = getContext().getContentResolver().openInputStream(uri)) {
@@ -109,11 +215,12 @@ public class CalibrePreferencesFragment
                     }
 
                     //noinspection ConstantConditions
-                    caPref.setSummary(ca.getSubjectX500Principal().getName());
+                    preference.setSummary("S: " + ca.getSubjectX500Principal().getName()
+                                          + "\nI: " + ca.getIssuerX500Principal().getName());
                 }
             } catch (@NonNull final IOException | CertificateException e) {
                 //noinspection ConstantConditions
-                caPref.setSummary(R.string.error_certificate_invalid);
+                preference.setSummary(R.string.error_certificate_invalid);
             }
         }
     }
@@ -131,13 +238,14 @@ public class CalibrePreferencesFragment
                 ca = (X509Certificate) CertificateFactory
                         .getInstance("X.509").generateCertificate(bis);
                 ca.checkValidity();
-                preference.setSummary(ca.getSubjectX500Principal().getName());
+                preference.setSummary("S: " + ca.getSubjectX500Principal().getName()
+                                      + "\nI: " + ca.getIssuerX500Principal().getName());
             }
         } catch (@NonNull final CertificateException e) {
             preference.setSummary(R.string.error_certificate_invalid);
 
         } catch (@NonNull final IOException e) {
-            preference.setSummary(R.string.hint_empty_field);
+            preference.setSummary(R.string.info_not_set);
         }
     }
 }

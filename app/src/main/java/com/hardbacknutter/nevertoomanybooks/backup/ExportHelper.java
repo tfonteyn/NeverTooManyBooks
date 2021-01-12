@@ -33,9 +33,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.security.KeyManagementException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Objects;
@@ -47,6 +46,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public class ExportHelper {
 
@@ -64,16 +65,13 @@ public class ExportHelper {
     @NonNull
     private ArchiveEncoding mArchiveEncoding = ArchiveEncoding.Zip;
     /**
-     * Do an incremental backup.
+     * Do an incremental export. Definition of incremental depends on the writer.
      * <ul>
      *     <li>{@code false}: all books</li>
-     *     <li>{@code true}: books added/updated since last backup</li>
+     *     <li>{@code true}: books added/updated</li>
      * </ul>
      */
     private boolean mIncremental;
-    /** Incremental backup; the date of the last full backup. */
-    @Nullable
-    private LocalDateTime mFromUtcDateTime;
 
     /**
      * Constructor.
@@ -92,24 +90,28 @@ public class ExportHelper {
         mExportEntries = EnumSet.copyOf(Arrays.asList(exportEntries));
     }
 
-    /**
-     * Create the proposed name for the archive. The user can change it.
-     *
-     * @return archive name
-     */
     @NonNull
-    String getDefaultUriName() {
-        return "ntmb-" + LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
-               + mArchiveEncoding.getFileExt();
+    public ArchiveEncoding getEncoding() {
+        return mArchiveEncoding;
     }
 
     public void setEncoding(@NonNull final ArchiveEncoding archiveEncoding) {
         mArchiveEncoding = archiveEncoding;
     }
 
+    /**
+     * Is this a backup or an export.
+     *
+     * @return {@code true} when this is considered a backup,
+     * {@code false} when it's considered an export.
+     */
+    public boolean isBackup() {
+        return mArchiveEncoding == ArchiveEncoding.Zip;
+    }
+
     @NonNull
-    public ArchiveEncoding getEncoding() {
-        return mArchiveEncoding;
+    public Uri getUri() {
+        return Objects.requireNonNull(mUri, "uri");
     }
 
     public void setUri(@NonNull final Uri uri) {
@@ -130,17 +132,20 @@ public class ExportHelper {
     }
 
     /**
-     * Create a BackupWriter for the specified Uri.
+     * Create an {@link ArchiveWriter} based on the type.
      *
      * @param context Current context
      *
      * @return a new writer
      *
-     * @throws FileNotFoundException on ...
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
     @NonNull
     public ArchiveWriter createArchiveWriter(@NonNull final Context context)
-            throws FileNotFoundException {
+            throws GeneralParsingException,
+                   IOException,
+                   CertificateException, KeyManagementException {
 
         if (BuildConfig.DEBUG /* always */) {
             Objects.requireNonNull(mUri, "uri");
@@ -165,7 +170,7 @@ public class ExportHelper {
      */
     @NonNull
     public OutputStream createOutputStream(@NonNull final Context context)
-            throws FileNotFoundException {
+            throws FileNotFoundException, ExternalStorageException {
         return new FileOutputStream(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
     }
 
@@ -180,18 +185,20 @@ public class ExportHelper {
             throws IOException {
         Objects.requireNonNull(mUri, "uri");
 
-        // The output file is now properly closed, export it to the user Uri
-        final File tmpOutput = AppDir.Cache.getFile(context, TEMP_FILE_NAME);
+        if (getEncoding().isFile()) {
+            // The output file is now properly closed, export it to the user Uri
+            final File tmpOutput = AppDir.Cache.getFile(context, TEMP_FILE_NAME);
 
-        try (InputStream is = new FileInputStream(tmpOutput);
-             OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
-            if (os != null) {
-                FileUtils.copy(is, os);
+            try (InputStream is = new FileInputStream(tmpOutput);
+                 OutputStream os = context.getContentResolver().openOutputStream(mUri)) {
+                if (os != null) {
+                    FileUtils.copy(is, os);
+                }
             }
-        }
 
-        // cleanup
-        FileUtils.delete(tmpOutput);
+            // cleanup
+            FileUtils.delete(tmpOutput);
+        }
     }
 
     /**
@@ -201,25 +208,12 @@ public class ExportHelper {
      */
     public void onError(@NonNull final Context context) {
         // cleanup
-        FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
+        try {
+            FileUtils.delete(AppDir.Cache.getFile(context, TEMP_FILE_NAME));
+        } catch (@NonNull final ExternalStorageException ignore) {
+            // ignore
+        }
     }
-
-
-    /**
-     * For an incremental backup: get the date of the last full backup.
-     * Returns {@code null} if a full backup is requested.
-     *
-     * @return date (UTC based), or {@code null} if not in use
-     */
-    @Nullable
-    public LocalDateTime getUtcDateTimeSince() {
-        return mFromUtcDateTime;
-    }
-
-    public void setFromUtcDateTime(@Nullable final LocalDateTime fromUtcDateTime) {
-        mFromUtcDateTime = fromUtcDateTime;
-    }
-
 
     void setExportEntry(@NonNull final RecordType entry,
                         final boolean isSet) {
@@ -241,7 +235,7 @@ public class ExportHelper {
     }
 
 
-    boolean isIncremental() {
+    public boolean isIncremental() {
         return mIncremental;
     }
 
@@ -257,7 +251,6 @@ public class ExportHelper {
                + ", mUri=" + mUri
                + ", mArchiveEncoding=" + mArchiveEncoding
                + ", mIncremental=" + mIncremental
-               + ", mFromUtcDateTime=" + mFromUtcDateTime
                + '}';
     }
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,7 +30,7 @@
     <item
         android:id="@+id/nav_manage_bookshelves"
         android:icon="@drawable/ic_library_books"
-        android:title="@string/lbl_bookshelves_long" />
+        android:title="@string/lbl_bookshelves" />
 
     <item
         android:id="@+id/nav_manage_list_styles"
@@ -49,9 +49,16 @@
 
     <!-- visibility set from code. -->
     <item
-        android:id="@+id/nav_calibre"
+        android:id="@+id/nav_calibre_export"
         android:icon="@drawable/ic_sync"
-        android:title="@string/menu_import_calibre"
+        android:title="@string/menu_calibre_synchronize"
+        android:visible="false"
+        tools:visible="true" />
+    <!-- visibility set from code. -->
+    <item
+        android:id="@+id/nav_calibre_import"
+        android:icon="@drawable/ic_sync"
+        android:title="@string/menu_calibre_import"
         android:visible="false"
         tools:visible="true" />
 

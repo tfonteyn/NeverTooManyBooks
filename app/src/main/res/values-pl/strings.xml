@@ -74,7 +74,7 @@
     <string name="confirm_delete_series">Czy na pewno usunąć serię „%1$s”?\n\nKsiążki nie będą usuwane.\n\nRozważ zmianę nazwy serii by zachować te dane</string>
     <string name="confirm_delete_toc_entry">Naprawdę usuń wpis „%1$s” (przez %2$s)? Zostanie usunięty ze wszystkich książek, w których jest wymieniony. Same książki nie zostaną usunięte.</string>
     <string name="confirm_duplicate_book_message">Książka, którą próbujesz dodać już istnieje w katalogu, czy na pewno chcesz dodać jeszcze jeden egzemplarz?</string>
-    <string name="confirm_email_export">Czy chcesz wysłać ten eksport jako e-mail?</string>
+    <string name="confirm_email_file">Czy chcesz wysłać do kogoś ten plik e-mailem?</string>
     <string name="confirm_merge_bookshelves">Półka o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
     <string name="confirm_merge_authors">Autor o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
     <string name="confirm_merge_series">Seria o zmienionej nazwie już istnieje. Czy chcesz je połączyć?</string>
@@ -109,8 +109,8 @@
     <string name="error_site_authentication_failed">Uwierzytelnienie %1$s nie powiodło się</string>
     <string name="error_site_authorization_failed">Autoryzacja %1$s spowodowała błąd.</string>
     <string name="error_storage_no_space_left">Niewystarczająca pamięć dostępna</string>
-    <string name="error_storage_not_accessible">Pamięć niedostępna: %1$s</string>
-    <string name="error_storage_not_readable">Sprawdź, czy pamięć jest dostępna.</string>
+    <string name="error_storage_not_accessible_s">Pamięć niedostępna: %1$s</string>
+    <string name="error_storage_not_accessible">Sprawdź, czy pamięć jest dostępna.</string>
     <string name="error_storage_not_writable">Sprawdź, czy pamięć jest zapisywalna i czy ma wystarczającą ilość miejsca.</string>
     <string name="error_unknown_long">Wystąpił nieoczekiwany błąd, wyślij szczegóły do pomocy poprzez stronę „Administracja” z menu głównego.</string>
     <string name="error_unknown">Wystąpił nieznany błąd</string>
@@ -133,7 +133,7 @@
     <string name="gr_menu_import_all_from_goodreads">Importuj wszystkie z Goodreads</string>
     <string name="gr_menu_send_all">Wyślij wszystko</string>
     <string name="gr_send_to_goodreads">Wyślij do Goodreads</string>
-    <string name="gr_menu_send_updated">Wyślij zaktualizowane</string>
+    <string name="menu_send_updated">Wyślij zaktualizowane</string>
     <string name="gr_pt_collect_genre">Używaj popularnych nazw półek jako gatunków książek</string>
     <string name="gr_send_book_to_goodreads">Wyślij książkę %1$d do Goodreads</string>
     <string name="gr_title_send_book">Wysyłaj książki do Goodreads</string>
@@ -167,7 +167,7 @@
     <string name="hint_empty_rating">(Nie oceniony)</string>
     <string name="hint_empty_read_status">(Status odczytu nieznany)</string>
     <string name="hint_empty_series">(Bez serii)</string>
-    <string name="hint_not_set">(Nie ustawiono)</string>
+    <string name="info_not_set">Nie ustawiono</string>
     <string name="hint_search_text">Tekst i / lub ISBN</string>
     <string name="info_site_authorization_successful">Autoryzacja %1$s powiodła się</string>
     <string name="txt_cleanup_files">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij „%2$s” najpierw.</string>
@@ -222,7 +222,7 @@
     <string name="lbl_book">Książka</string>
     <string name="lbl_books">Książki</string>
     <string name="lbl_bookshelf">Półka</string>
-    <string name="lbl_bookshelves_long">Wybierz półki</string>
+    <string name="lbl_bookshelves">Wybierz półki</string>
     <string name="X_lbl_by_author_s">Według %1$s</string>
     <string name="lbl_color">Kolor</string>
     <string name="lbl_condition">Stan</string>
@@ -412,7 +412,7 @@
     <string name="pg_ui">Interfejs użytkownika</string>
     <string name="pg_ui_field_visibility">Dostosuj widoczność pól</string>
     <string name="progress_end_backup_success">Kopia zapasowa wykonana</string>
-    <string name="warning_task_cancelled">Anulowane</string>
+    <string name="cancelled">Anulowane</string>
     <string name="progress_end_import_complete">Import zakończony</string>
     <string name="progress_end_import_partially_complete">Wykonano częściowy import</string>
     <string name="progress_msg_connecting">Łączę…</string>
@@ -583,8 +583,8 @@
     <string name="warning_if_month_set_year_must_be">Jeśli określono miesiąc, należy również określić rok.</string>
     <string name="warning_immediate_global_changes">UWAGA: Wszystkie zapisane zmiany są globalne!</string>
     <string name="warning_import_csv">Uwaga! Zaimportowane dane mogą nadpisać istniejące, jeśli pokryje się identyfikator (pole _id). Jest to zwykle oczekiwane zachowanie, gdy edytowałeś wyeksportowany wcześniej plik. Jeśli dodajesz nową książkę, pozostaw pole _id puste.</string>
-    <string name="warning_import_csv_failed_lines_lots">Analiza CSV nie powiodła się dla linii \n%1$s\n i innych.</string>
-    <string name="warning_import_csv_failed_lines_some">Analiza CSV nie powiodła się dla linii \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_lots">Analiza nie powiodła się dla linii \n%1$s\n i innych.</string>
+    <string name="warning_import_failed__for_lines_some">Analiza nie powiodła się dla linii \n%1$s\n</string>
     <string name="warning_import_old_archive">Ta opcja nie jest obsługiwana w starszych wersjach archiwum.</string>
     <string name="warning_import_csv_unescaped_quote">Nieokreślony znak cytatu w wierszu %1$d, pozycja %2$d</string>
     <string name="warning_no_editions">Brak wydań</string>
@@ -661,7 +661,7 @@
     <string name="confirm_clear_all_data">TO USUŃ WSZYSTKIE DANE!\n Z wyjątkiem przywracania z poprzedniej kopii zapasowej, TO NIE MOŻE BYĆ Cofnąć!\n\n Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="confirm_continue">Jesteś pewien, że chcesz kontynuować ?</string>
     <string name="menu_backup_and_export">Kopia zapasowa i eksport</string>
-    <string name="X_action_export">Eksport</string>
+    <string name="action_export">Eksport</string>
     <string name="lbl_database">Baza danych</string>
     <string name="lbl_archive_format_db_info">Baza danych SQLite.</string>
     <string name="lbl_archive_type_db">Plik bazy danych (%1$s)</string>
@@ -697,4 +697,9 @@
     <string name="httpErrorFileNotFound">Nie można znaleźć żądanego pliku.</string>
     <string name="lbl_calibre_content_server_ca_cert">Certyfikat urzędu certyfikacji</string>
     <string name="error_certificate_invalid">Certyfikat jest nieważny lub niedostępny.</string>
+    <string name="username">nazwa użytkownika</string>
+    <string name="password">hasło</string>
+    <string name="error_network_failed_try_again">Sprawdź połączenie i spróbuj ponownie</string>
+    <string name="lbl_test_connection">Przetestuj połączenie</string>
+    <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
 </resources>

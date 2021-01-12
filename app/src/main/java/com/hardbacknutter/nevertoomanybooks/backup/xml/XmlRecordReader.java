@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -150,7 +150,7 @@ public class XmlRecordReader
     @Override
     @NonNull
     public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
         final ArchiveMetaData metaData = new ArchiveMetaData();
         fromXml(record, new InfoReader(metaData));
         return metaData;
@@ -162,7 +162,7 @@ public class XmlRecordReader
                               @NonNull final ArchiveReaderRecord record,
                               @ImportHelper.Options final int unused,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final ImportResults results = new ImportResults();
 
@@ -197,7 +197,7 @@ public class XmlRecordReader
      */
     private void fromXml(@NonNull final ArchiveReaderRecord record,
                          @NonNull final EntityReader<String> accessor)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         // we need an uber-root to hang our tree on.
         final XmlFilter rootFilter = new XmlFilter("");

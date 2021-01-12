@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ class OwnedBookCreateApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public OwnedBookCreateApiHandler(@NonNull final Context appContext,
                                      @NonNull final GoodreadsAuth grAuth)
@@ -71,13 +71,11 @@ class OwnedBookCreateApiHandler
      *
      * @return the Goodreads book ID
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     public long create(@NonNull final ISBN isbn,
                        @Nullable final String dateAcquired)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final IsbnToIdApiHandler isbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGrAuth);
         final long grBookId = isbnToIdApiHandler.isbnToId(isbn.asText());
@@ -101,13 +99,11 @@ class OwnedBookCreateApiHandler
      * @param grBookId     Goodreads book id
      * @param dateAcquired (optional)
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     public void create(final long grBookId,
                        @Nullable final String dateAcquired)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Map<String, String> parameters = new HashMap<>();
         parameters.put("owned_book[book_id]", String.valueOf(grBookId));

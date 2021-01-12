@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -97,7 +97,7 @@ public class GoogleBooksSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -115,7 +115,7 @@ public class GoogleBooksSearchEngine
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          @NonNull final boolean[] fetchThumbnail)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -145,7 +145,7 @@ public class GoogleBooksSearchEngine
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchThumbnail,
                            @NonNull final Bundle bookData)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
 
@@ -154,7 +154,7 @@ public class GoogleBooksSearchEngine
 
             // get the booklist, can return multiple books ('entry' elements)
             final GoogleBooksListHandler listHandler = new GoogleBooksListHandler();
-            try (TerminatorConnection con = createConnection(url, true)) {
+            try (TerminatorConnection con = createConnection(url)) {
                 parser.parse(con.getInputStream(), listHandler);
             }
 
@@ -171,7 +171,7 @@ public class GoogleBooksSearchEngine
                 // only using the first one found, maybe future enhancement?
                 final String oneBookUrl = urlList.get(0);
 
-                try (TerminatorConnection con = createConnection(oneBookUrl, true)) {
+                try (TerminatorConnection con = createConnection(oneBookUrl)) {
                     parser.parse(con.getInputStream(), handler);
                 }
 

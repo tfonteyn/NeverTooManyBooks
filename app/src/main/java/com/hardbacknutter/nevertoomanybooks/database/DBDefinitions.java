@@ -112,7 +112,7 @@ public final class DBDefinitions {
     public static final TableDefinition TBL_BOOKLIST_STYLES;
 
     /** A bridge to a Calibre database. Partially imported date. */
-    public static final TableDefinition TBL_BOOKS_CALIBRE;
+    public static final TableDefinition TBL_CALIBRE_BOOKS;
 
     /** Keeps track of nodes in the list across application restarts. */
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
@@ -275,11 +275,12 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_ESID_LAST_DODO_NL;
 
-    /** {@link #TBL_BOOKS_CALIBRE}. */
-    public static final Domain DOM_CALIBRE_ID;
-    public static final Domain DOM_CALIBRE_UUID;
-    public static final Domain DOM_CALIBRE_FILE_URL;
-    public static final Domain DOM_CALIBRE_LAST_SYNC_DATE;
+    /** {@link #TBL_CALIBRE_BOOKS}. */
+    public static final Domain DOM_CALIBRE_BOOK_ID;
+    public static final Domain DOM_CALIBRE_BOOK_UUID;
+    public static final Domain DOM_CALIBRE_BOOK_LIBRARY_ID;
+    public static final Domain DOM_CALIBRE_BOOK_FILE_URL;
+
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
     /**
@@ -422,13 +423,13 @@ public final class DBDefinitions {
 
     /**
      * External to this app, but NOT an "external Site id"
-     * as it comes from a user importing their Calibre database.
-     * {@link #TBL_BOOKS_CALIBRE}.
+     * as it comes from a user importing their Calibre libraries.
+     * {@link #TBL_CALIBRE_BOOKS}.
      */
-    public static final String KEY_CALIBRE_ID = "clb_id";
-    public static final String KEY_CALIBRE_UUID = "clb_uuid";
-    public static final String KEY_CALIBRE_FILE_URL = "clb_file_url";
-    public static final String KEY_CALIBRE_LAST_SYNC_DATE = "clb_sync_date";
+    public static final String KEY_CALIBRE_BOOK_ID = "clb_id";
+    public static final String KEY_CALIBRE_BOOK_UUID = "clb_uuid";
+    public static final String KEY_CALIBRE_BOOK_LIBRARY_ID = "clb_library";
+    public static final String KEY_CALIBRE_BOOK_FILE_URL = "clb_file_url";
 
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf_name";
@@ -596,7 +597,7 @@ public final class DBDefinitions {
         TBL_BOOK_LOANEE = new TableDefinition("loan").setAlias("l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology").setAlias("bat");
 
-        TBL_BOOKS_CALIBRE = new TableDefinition("book_calibre_bridge").setAlias("bcb");
+        TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books").setAlias("clb_b");
 
         TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles").setAlias("bls");
 
@@ -966,14 +967,15 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Calibre bridge table domains
          * ====================================================================================== */
-        DOM_CALIBRE_ID =
-                new Domain.Builder(KEY_CALIBRE_ID, ColumnInfo.TYPE_INTEGER).build();
-        DOM_CALIBRE_UUID =
-                new Domain.Builder(KEY_CALIBRE_UUID, ColumnInfo.TYPE_TEXT).build();
-        DOM_CALIBRE_FILE_URL =
-                new Domain.Builder(KEY_CALIBRE_FILE_URL, ColumnInfo.TYPE_TEXT).build();
-        DOM_CALIBRE_LAST_SYNC_DATE =
-                new Domain.Builder(KEY_CALIBRE_LAST_SYNC_DATE, ColumnInfo.TYPE_DATETIME).build();
+        DOM_CALIBRE_BOOK_ID =
+                new Domain.Builder(KEY_CALIBRE_BOOK_ID, ColumnInfo.TYPE_INTEGER).build();
+        DOM_CALIBRE_BOOK_UUID =
+                new Domain.Builder(KEY_CALIBRE_BOOK_UUID, ColumnInfo.TYPE_TEXT).build();
+        DOM_CALIBRE_BOOK_LIBRARY_ID =
+                new Domain.Builder(KEY_CALIBRE_BOOK_LIBRARY_ID, ColumnInfo.TYPE_TEXT).build();
+        DOM_CALIBRE_BOOK_FILE_URL =
+                new Domain.Builder(KEY_CALIBRE_BOOK_FILE_URL, ColumnInfo.TYPE_TEXT).build();
+
 
         /* ======================================================================================
          *  Loanee domains
@@ -1286,15 +1288,15 @@ public final class DBDefinitions {
                             .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_TOC_ENTRIES.getName(), TBL_BOOK_TOC_ENTRIES);
 
-        TBL_BOOKS_CALIBRE.addDomains(DOM_FK_BOOK,
-                                     DOM_CALIBRE_ID,
-                                     DOM_CALIBRE_UUID,
-                                     DOM_CALIBRE_FILE_URL,
-                                     DOM_CALIBRE_LAST_SYNC_DATE)
+        TBL_CALIBRE_BOOKS.addDomains(DOM_FK_BOOK,
+                                     DOM_CALIBRE_BOOK_ID,
+                                     DOM_CALIBRE_BOOK_UUID,
+                                     DOM_CALIBRE_BOOK_LIBRARY_ID,
+                                     DOM_CALIBRE_BOOK_FILE_URL)
                          .setPrimaryKey(DOM_FK_BOOK)
                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
                          .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);
-        ALL_TABLES.put(TBL_BOOKS_CALIBRE.getName(), TBL_BOOKS_CALIBRE);
+        ALL_TABLES.put(TBL_CALIBRE_BOOKS.getName(), TBL_CALIBRE_BOOKS);
 
         TBL_BOOKLIST_STYLES.addDomains(DOM_PK_ID,
                                        DOM_STYLE_IS_BUILTIN,

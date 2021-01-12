@@ -75,7 +75,7 @@
     <string name="confirm_delete_series">Cancellare la serie «%1$s»?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
     <string name="confirm_delete_toc_entry">Cancellare davvero il titolo «%1$s» (di %2$s)?\nSarà cancellato da tutti i libri in cui è elencato.\n libri stessi non saranno cancellati.</string>
     <string name="confirm_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un\'altra copia?</string>
-    <string name="confirm_email_export">Inviare il file di esportazione per email?</string>
+    <string name="confirm_email_file">Vuoi inviare questo file a qualcuno per e-mail?</string>
     <string name="confirm_merge_bookshelves">La libreria che stai rinominando esiste già. Ti piacerebbe unirli?</string>
     <string name="confirm_merge_authors">L\'autore che stai rinominando esiste già. Ti piacerebbe unirli?</string>
     <string name="confirm_merge_series">La serie che stai rinominando esiste già. Ti piacerebbe unirli?</string>
@@ -110,8 +110,8 @@
     <string name="error_site_authentication_failed">Autenticazione %1$s non riuscita</string>
     <string name="error_site_authorization_failed">Errore durante l\'autorizzazione di %1$s.</string>
     <string name="error_storage_no_space_left">Spazio disponibile insufficiente</string>
-    <string name="error_storage_not_accessible">Archiviazione non accessibile: %1$s</string>
-    <string name="error_storage_not_readable">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
+    <string name="error_storage_not_accessible_s">Archiviazione non accessibile: %1$s</string>
+    <string name="error_storage_not_accessible">Si prega di verificare che lo spazio di archiviazione sia accessibile.</string>
     <string name="error_storage_not_writable">Verifica che lo spazio di archiviazione sia scrivibile e che disponga di spazio sufficiente.</string>
     <string name="error_unknown_long">Si è verificato un errore inatteso, per favore invia i dettagli all\'Assistenza usando l\'opzione «Amministratore» nel menu principale</string>
     <string name="error_unknown">Si è verificato un errore non identificato</string>
@@ -121,7 +121,9 @@
     <string name="fab_add_book_by_external_id">ID libro del sito web</string>
     <string name="fab_add_book_manually">Aggiungi Manualmente</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="gr_auth_blurb_part1">Goodreads è un sito Internet la cui missione è «aiutare le persone a trovare e condividere i libri che amano». Possiedono un vasto archivio di libri e recensioni, e, se sei un utente registrato di Goodreads, &APP_NAME; può esportare i tuoi libri, librerie e recensioni in Goodreads e importare i tuoi libri, librerie e recensioni da Goodreads. &APP_NAME; è un\'applicazione indipendente e non richiede Goodreads, ma, se sei interessato, puoi registrarti presso:</string>
+    <string name="gr_auth_blurb_part1">Goodreads è un sito Internet la cui missione è «aiutare le persone a trovare e condividere i libri che amano». Possiedono un vasto archivio di libri e recensioni, e, se sei un utente registrato di Goodreads, &APP_NAME;
+        può esportare i tuoi libri, librerie e recensioni in Goodreads e importare i tuoi libri, librerie e recensioni da Goodreads. &APP_NAME;
+        è un\'applicazione indipendente e non richiede Goodreads, ma, se sei interessato, puoi registrarti presso:</string>
     <string name="gr_auth_blurb_part2">Una volta registrato, o se sei già utente di Goodreads, puoi autorizzare &APP_NAME; ad accedere ai tuoi dati di Goodreads premendo il bottone qui sotto. Verrà aperta una nuova pagina web in cui dovrai eseguire il login a Goodreads ed autorizzare questa applicazione. Non saremo a conoscenza della relativa password, e potrai revocare l\'accesso dal sito di Goodreads. A causa della volatilità di Internet, il link potrebbe non essere più corretto. Clicca sul bottone Indietro per tornare in questo punto!</string>
     <string name="gr_auth_blurb_part3">Ma ricorda… ciò non è affatto obbligatorio: &APP_NAME; funziona perfettamente anche senza!</string>
     <string name="gr_auth_blurb_part4">Questa applicazione sembra essere già stata autorizzata. Se desideri cancellare le credenziali da questo apparecchio, premi il pulsante qui sotto. Ricordati altresì che occorre anche rimuovere l\'autorizzazione all\'applicazione nel sito di Goodreads.</string>
@@ -135,7 +137,7 @@
     <string name="gr_menu_import_all_from_goodreads">Importa tutti da Goodreads</string>
     <string name="gr_menu_send_all">Invia tutti</string>
     <string name="gr_send_to_goodreads">Invia a Goodreads</string>
-    <string name="gr_menu_send_updated">Invia modificati</string>
+    <string name="menu_send_updated">Invia modificati</string>
     <string name="gr_pt_collect_genre">Usa nomi di scaffali popolari come generi di libri</string>
     <string name="gr_send_book_to_goodreads">Invia il libro %1$d a Goodreads</string>
     <string name="gr_title_send_book">Invia libri a Goodreads</string>
@@ -169,7 +171,7 @@
     <string name="hint_empty_rating">(Non valutato)</string>
     <string name="hint_empty_read_status">(Leggi lo stato sconosciuto)</string>
     <string name="hint_empty_series">(Nessuna serie)</string>
-    <string name="hint_not_set">(Non impostato)</string>
+    <string name="info_not_set">Non impostato</string>
     <string name="hint_search_text">Testo e/o ISBN</string>
     <string name="info_site_authorization_successful">Autorizzazione %1$s concessa</string>
     <string name="txt_cleanup_files">File eliminabili attualmente occupano %1$s sulla scheda SD. Si tratta di file di log e altri dati salvati sulla scheda SD ad ogni aggiornamento, ad ogni backup del database o quando l\'applicazione va in crash. Clicca sul pulsante qui sotto per eliminare questi file dalla SD. Se sono avvenuti crash o altri errori, valuta se cliccare il pulsante «%2$s» prima di eliminarli.</string>
@@ -224,7 +226,7 @@
     <string name="lbl_book">Libro</string>
     <string name="lbl_books">Libri</string>
     <string name="lbl_bookshelf">Biblioteca</string>
-    <string name="lbl_bookshelves_long">Biblioteche</string>
+    <string name="lbl_bookshelves">Biblioteche</string>
     <string name="X_lbl_by_author_s">da %1$s</string>
     <string name="lbl_color">Colore</string>
     <string name="lbl_condition">Condizione</string>
@@ -412,7 +414,7 @@
     <string name="pg_ui">Interfaccia Utente</string>
     <string name="pg_ui_field_visibility">Gestisci visibilità campi</string>
     <string name="progress_end_backup_success">Backup completato</string>
-    <string name="warning_task_cancelled">Annullato</string>
+    <string name="cancelled">Annullato</string>
     <string name="progress_end_import_complete">Importazione Completata</string>
     <string name="progress_end_import_partially_complete">Importazione parziale eseguita</string>
     <string name="progress_msg_connecting">Connessione…</string>
@@ -587,8 +589,8 @@
     <string name="warning_if_month_set_year_must_be">Se si indica il mese, occorre indicare anche l\'anno.</string>
     <string name="warning_immediate_global_changes">NOTA: Tutte le modifiche salvate si applicano istantaneamente e globalmente</string>
     <string name="warning_import_csv">Attenzione. L\'importazione dei dati potrebbe aggiornare i record esistenti con nuove informazioni se manca la colonna uuid e l\'id nel file di importazione è identico a un id esistente. Ciò è corretto se hai modificato un campo nel file di esportazione. Se hai registrato un nuovo libro, o stai importando libri di qualcun altro, assicurati che vi sia il campo uuid o il campo id sia vuoto.</string>
-    <string name="warning_import_csv_failed_lines_lots">Analisi CSV non riuscita per le righe \n%1$s\n e altre.</string>
-    <string name="warning_import_csv_failed_lines_some">Analisi CSV non riuscita per le righe \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_lots">Analisi non riuscita per le righe \n%1$s\n e altre.</string>
+    <string name="warning_import_failed__for_lines_some">Analisi non riuscita per le righe \n%1$s\n</string>
     <string name="warning_import_old_archive">Questa opzione non è supportata per le versioni più vecchie dell\'archivio.</string>
     <string name="warning_import_csv_unescaped_quote">Carattere virgolette senza caratteri di escape nella riga %1$d, posizione %2$d</string>
     <string name="warning_no_editions">Nessuna informazione aggiuntiva disponibile</string>
@@ -664,7 +666,7 @@
     <string name="confirm_clear_all_data">QUESTO RIMUOVERÀ TUTTI I DATI!\n Fatta eccezione per il ripristino da un backup precedente, QUESTO NON PU ESSERE ANNULLATO!\n\n Sei sicuro di voler continuare ?</string>
     <string name="confirm_continue">Sei sicuro di voler continuare ?</string>
     <string name="menu_backup_and_export">Backup ed esportazione</string>
-    <string name="X_action_export">Esportare</string>
+    <string name="action_export">Esportare</string>
     <string name="lbl_database">Banca dati</string>
     <string name="lbl_archive_format_db_info">Il database SQLite.</string>
     <string name="lbl_archive_type_db">File di database (%1$s)</string>
@@ -700,4 +702,9 @@
     <string name="httpErrorFileNotFound">Impossibile trovare il file richiesto.</string>
     <string name="lbl_calibre_content_server_ca_cert">Certificato CA</string>
     <string name="error_certificate_invalid">Certificato non valido o non accessibile.</string>
+    <string name="username">nome utente</string>
+    <string name="password">password</string>
+    <string name="error_network_failed_try_again">Controlla la connessione e riprova</string>
+    <string name="lbl_test_connection">Verifica la connessione</string>
+    <string name="confirm_test_connection">Si consiglia di testare questa connessione per evitare problemi in seguito.</string>
 </resources>

@@ -32,15 +32,12 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
@@ -102,8 +99,8 @@ public final class ImportHelper {
      * @throws InvalidArchiveException on failure to recognise a supported archive
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static ImportHelper withUri(@NonNull final Context context,
-                                       @NonNull final Uri uri)
+    public static ImportHelper withFile(@NonNull final Context context,
+                                        @NonNull final Uri uri)
             throws FileNotFoundException, InvalidArchiveException {
         final ArchiveEncoding encoding = ArchiveEncoding.getEncoding(context, uri).orElseThrow(
                 () -> new InvalidArchiveException(uri.toString()));
@@ -114,10 +111,16 @@ public final class ImportHelper {
     /**
      * Constructor for a Calibre content server.
      *
-     * @param hostUrl for a Calibre content server.
+     * @param hostUrl  for a Calibre content server.
+     * @param encoding the remote server to use
      */
-    static ImportHelper withCalibreUrl(@NonNull final String hostUrl) {
-        return new ImportHelper(Uri.parse(hostUrl), ArchiveEncoding.CalibreCS);
+    static ImportHelper withRemoteServer(@NonNull final String hostUrl,
+                                         @SuppressWarnings("SameParameterValue")
+                                         @NonNull final ArchiveEncoding encoding) {
+        if (!encoding.isRemoteServer()) {
+            throw new IllegalStateException("Not a remote server");
+        }
+        return new ImportHelper(Uri.parse(hostUrl), encoding);
     }
 
     private void initWithDefault() {
@@ -185,8 +188,9 @@ public final class ImportHelper {
      */
     @NonNull
     public FileUtils.UriInfo getUriInfo(@NonNull final Context context) {
-        if (mEncoding == ArchiveEncoding.CalibreCS) {
-            final String displayName = context.getString(R.string.lbl_calibre_content_server);
+        if (mEncoding.isRemoteServer()) {
+            final String displayName =
+                    context.getString(mEncoding.getRemoteServerDescriptionResId());
             return new FileUtils.UriInfo(mUri, displayName, 0);
         } else {
             return FileUtils.getUriInfo(context, mUri);
@@ -204,12 +208,23 @@ public final class ImportHelper {
     }
 
 
+    /**
+     * Create an {@link ArchiveReader} based on the type.
+     *
+     * @param context Current context
+     *
+     * @return a new reader
+     *
+     * @throws InvalidArchiveException on failure to produce a supported reader
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on other failures
+     */
     @NonNull
     @WorkerThread
     public ArchiveReader createArchiveReader(@NonNull final Context context)
-            throws IOException, InvalidArchiveException, GeneralParsingException,
-                   CertificateException, NoSuchAlgorithmException,
-                   KeyStoreException, KeyManagementException {
+            throws InvalidArchiveException, GeneralParsingException,
+                   IOException,
+                   CertificateException, KeyManagementException {
         if (BuildConfig.DEBUG /* always */) {
             if (mImportEntries.isEmpty()) {
                 throw new IllegalStateException("mImportEntries is empty");

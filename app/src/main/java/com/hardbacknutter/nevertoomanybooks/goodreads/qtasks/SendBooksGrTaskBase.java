@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,12 +35,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin.SendBookEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 
 public abstract class SendBooksGrTaskBase
         extends BaseTQTask {
@@ -148,7 +148,7 @@ public abstract class SendBooksGrTaskBase
         } catch (@NonNull final CredentialsException e) {
             setLastExtStatus(GrStatus.FAILED_CREDENTIALS, e);
 
-        } catch (@NonNull final Http404Exception | GeneralParsingException e) {
+        } catch (@NonNull final HttpNotFoundException | GeneralParsingException e) {
             setLastExtStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS, e);
             storeEvent(new GrNoMatchEvent(grManager.getAppContext(), bookId));
             mNotFound++;

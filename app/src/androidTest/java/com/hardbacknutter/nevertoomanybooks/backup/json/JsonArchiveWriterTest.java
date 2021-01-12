@@ -27,8 +27,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
@@ -80,9 +78,11 @@ public class JsonArchiveWriterTest {
 
     @Test
     public void styles()
-            throws IOException, InvalidArchiveException, ImportException,
-                   CertificateException, NoSuchAlgorithmException,
-                   KeyStoreException, KeyManagementException, GeneralParsingException {
+            throws ImportException,
+                   InvalidArchiveException, GeneralParsingException,
+                   IOException,
+                   CertificateException, KeyManagementException {
+
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + "-styles.json");
         //noinspection ResultOfMethodCallIgnored
@@ -107,7 +107,7 @@ public class JsonArchiveWriterTest {
         assertEquals(mNrOfStyles, exportResults.styles);
         assertFalse(exportResults.database);
 
-        final ImportHelper importHelper = ImportHelper.withUri(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
         final ImportResults importResults;
 
         importHelper.setImportEntry(RecordType.Styles, true);
@@ -123,9 +123,11 @@ public class JsonArchiveWriterTest {
 
     @Test
     public void books()
-            throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException,
-                   CertificateException, NoSuchAlgorithmException,
-                   KeyStoreException, KeyManagementException, GeneralParsingException {
+            throws ImportException, DAO.DaoWriteException,
+                   InvalidArchiveException, GeneralParsingException,
+                   IOException,
+                   CertificateException, KeyManagementException {
+
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + "-books.json");
         //noinspection ResultOfMethodCallIgnored
@@ -173,7 +175,7 @@ public class JsonArchiveWriterTest {
             db.update(context, book, 0);
         }
 
-        final ImportHelper importHelper = ImportHelper.withUri(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
         ImportResults importResults;
 
         importHelper.setImportEntry(RecordType.Books, true);

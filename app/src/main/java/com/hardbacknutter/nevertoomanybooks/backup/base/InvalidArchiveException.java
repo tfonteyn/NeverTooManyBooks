@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,10 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.base;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
+
 public class InvalidArchiveException
-        extends Exception {
+        extends Exception
+        implements LocalizedException {
 
     private static final long serialVersionUID = -3484895935028782830L;
 
@@ -34,8 +40,10 @@ public class InvalidArchiveException
         super(message);
     }
 
-    public InvalidArchiveException(@NonNull final String message,
-                                   @NonNull final Throwable cause) {
-        super(message, cause);
+    @NonNull
+    @Override
+    public String getLocalizedMessage(@NonNull final Context context) {
+        //TODO: look at cause and give more details
+        return context.getString(R.string.error_import_file_not_supported);
     }
 }

@@ -147,19 +147,25 @@
          We report to the user that the site is not working as expected. -->
     <string name="error_network_site_has_problems">The website is not working as expected.</string>
 
+    <!-- [VERIFIED] -->
+    <string name="error_network_failed_try_again">Check connection and try again</string>
 
-    <!-- Displayed when any read operation from Shared Storage fails -->
-    <string name="error_storage_not_readable">Please check that storage is accessible.</string>
+    <!-- Shared Storage file system access fails for some reason. No specifics. -->
+    <string name="error_storage_not_accessible">Please check that storage is accessible.</string>
+    <!-- Shared Storage file system access fails for some reason. With name of the type of storage. -->
+    <string name="error_storage_not_accessible_s">Storage not accessible: %1$s</string>
+
     <!-- Displayed when any write operation to the database, or to Shared Storage fails -->
     <string name="error_storage_not_writable">Please check that storage is writable, and has sufficient space.</string>
-    <!-- Shared Storage file system access fails for some reason -->
-    <string name="error_storage_not_accessible">Storage not accessible: %1$s</string>
+
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->
     <string name="error_storage_no_space_left">Insufficient storage available.</string>
 
 
     <!-- generic backup failure -->
     <string name="error_backup_failed">Backup Failed.</string>
+    <!-- generic export failure -->
+    <string name="error_export_failed">Export failed.</string>
     <!-- generic import failure -->
     <string name="error_import_failed">Import failed.</string>
 
@@ -206,21 +212,26 @@
         or are importing someone else\'s books, ensure the uuid field is present or the id field is blank.
     </string>
 
-    <!-- Importing a CSV book list partially failed with less than 10 lines failing -->
-    <string name="warning_import_csv_failed_lines_some">CSV parsing failed for lines \n%1$s\n</string>
-    <!-- Importing a CSV book list partially failed with more than 10 lines failing.
-         Only 10 line numbers will be listed -->
-    <string name="warning_import_csv_failed_lines_lots">CSV parsing failed for lines \n%1$s\n and others.</string>
     <!-- Importing a CSV book list; individual lines can fail. Report the exact position.
-         This is a warning only; import will continue. -->
+     This is a warning only; import will continue. -->
     <string name="warning_import_csv_unescaped_quote">Unescaped quote at row %1$d, position %2$d</string>
+
+
+    <!-- Importing a book list partially failed with less than 10 lines failing -->
+    <string name="warning_import_failed__for_lines_some">Parsing failed for lines \n%1$s\n</string>
+    <!-- Importing a book list partially failed with more than 10 lines failing.
+         Only 10 line numbers will be listed -->
+    <string name="warning_import_failed_for_lines_lots">Parsing failed for lines \n%1$s\n and others.</string>
 
 
     <!-- Explanatory note associated with import options not available with older archives. -->
     <string name="warning_import_old_archive">This option is not supported for older archive versions.</string>
 
 
+    <!-- a lookup for a specific book failed (this was not a search). -->
     <string name="warning_book_not_found">Unable to find the specified book.</string>
+    <!-- a search for a book which more or less matches what we were searching for failed. -->
+    <string name="warning_search_failed">Searching for the book failed.</string>
 
     <string name="warning_no_search_data_for_active_sites">No valid search data for active sites.</string>
 
@@ -342,7 +353,9 @@
     <string name="confirm_scope_for_change">You have changed:\n “%1$s”\n to\n “%2$s”\n\nHow do you wish to apply this change?\nNote: The choice “%3$s” will be applied instantly.</string>
 
     <!-- offer to send the exported file as an email attachment -->
-    <string name="confirm_email_export">Would you like to send this export as an email?</string>
+    <string name="confirm_email_file">Would you like to send this file as an email?</string>
+
+    <string name="confirm_test_connection">It is advisable to test this connection to avoid issues later on.</string>
 
     <!-- Displayed when the user changes their sorting preference.
          When doing this, the sorting information in the database needs to be rebuild.
@@ -511,7 +524,7 @@
     <!-- ========== Calibre specific ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="menu_calibre_synchronize">Calibre (Synchronize)</string>
+    <string name="menu_calibre_synchronize">Calibre (Export)</string>
     <string name="menu_calibre_import">Calibre (Import)</string>
 
     <!-- [VERIFIED] -->
@@ -560,7 +573,7 @@
     <!-- admin menu selection -->
     <string name="gr_menu_import_all_from_goodreads">Import all from Goodreads</string>
     <!-- admin menu selection -->
-    <string name="gr_menu_send_updated">Send updated books</string>
+    <string name="menu_send_updated">Send updated books</string>
     <!-- admin menu selection -->
     <string name="gr_menu_send_all">Send all</string>
 
@@ -859,6 +872,8 @@
     <!-- == Dialog, Activity and other "window" titles == -->
     <!-- ####################################################################################### -->
 
+    <string name="lbl_test_connection">Test connection</string>
+
     <!-- Screen title. -->
     <string name="lbl_search_isbn">ISBN Search</string>
     <!-- Screen title. -->
@@ -885,8 +900,9 @@
     <string name="lbl_import_book_data">Import Books</string>
     <!-- Dialog title. -->
     <string name="lbl_details_have_changed">Details have changed</string>
-    <!-- Dialog title. -->
-    <string name="warning_search_failed">Searching for the book failed.</string>
+
+    <!-- A section header on a screen. -->
+    <string name="lbl_queue">Queue</string>
 
     <!-- ####################################################################################### -->
     <!-- == Import and Export. == -->
@@ -897,8 +913,7 @@
 
     <!-- Dialog title. -->
     <string name="lbl_import">Import</string>
-    <!-- Button text. Must be short. -->
-    <string name="action_import">Import</string>
+
     <!-- Progress Dialog title. -->
     <string name="lbl_importing">Importing…</string>
     <!-- Dialog import all options. -->
@@ -1067,6 +1082,8 @@
 
 
     <string name="action_synchronize">Synchronize</string>
+    <string name="action_export">Export</string>
+    <string name="action_import">Import</string>
 
     <string name="action_validate">Validate</string>
 
@@ -1082,7 +1099,6 @@
     <string name="menu_barcode_scan">Scan barcode</string>
     <!-- Menu / button content description text. Icon: res/drawable/ic_barcode_batch -->
     <string name="menu_barcode_scan_continuous">Scan continuously</string>
-    <string name="lbl_queue">Queue</string>
     <string name="btn_clear_queue">Clear queue</string>
 
     <string name="btn_show_list">Show list</string>
@@ -1105,13 +1121,13 @@
     <!-- Goodreads search specific -->
     <string name="hint_search_text">Text and/or ISBN</string>
 
-    <!-- generic place holder text for fields which are NOT SET.
+    <!-- generic place holder text for preference fields which are NOT SET.
          The actual text is different from hint_empty_field in Translations.
-         [VERIFIED] Copy from androidx.preferences# not_set -->
-    <string name="hint_not_set">(Not Set)</string>
+         [VERIFIED] Copy from androidx.preferences# not_set; WITHOUT brackets-->
+    <string name="info_not_set">Not Set</string>
 
     <!-- generic place holder text for EMPTY fields.
-         The actual text is different from hint_not_set in Translations.
+         The actual text is different from info_not_set in Translations.
          [VERIFIED] Copy from android-29#keyguard_accessibility_widget_empty_slot -->
     <string name="hint_empty_field">(Not Set)</string>
 
@@ -1303,15 +1319,21 @@
     <!-- [VERIFIED] -->
     <string name="no">No</string>
 
-    <!-- [VERIFIED] -->
-    <string name="warning_task_cancelled">Cancelled</string>
 
     <!-- [VERIFIED] Generic string. e.g. "the reason is unknown"; "condition is unknown"; "status is unknown" -->
     <string name="unknown">Unknown</string>
 
+    <string name="unused">unused</string>
+
     <!-- [VERIFIED] Generic string. -->
     <string name="done">Done</string>
-    <string name="unused">unused</string>
+    <!-- [VERIFIED] -->
+    <string name="cancelled">Cancelled</string>
+
+    <!-- [VERIFIED] -->
+    <string name="username">Username</string>
+    <!-- [VERIFIED] -->
+    <string name="password">Password</string>
 
     <!-- Generic string. -->
     <string name="enabled">Enabled</string>
@@ -1370,7 +1392,7 @@
     <!-- A single Bookshelf. -->
     <string name="lbl_bookshelf">Bookshelf</string>
     <!-- Multiple Bookshelves. -->
-    <string name="lbl_bookshelves_long">Bookshelves</string>
+    <string name="lbl_bookshelves">Bookshelves</string>
     <!-- All Bookshelves - menu/button text. -->
     <string name="lbl_all_bookshelves">All bookshelves</string>
     <!-- menu item. -->
@@ -1585,7 +1607,6 @@
     <!-- in theory, this should never be shown unless we have a bug in the validators. -->
     <string name="X_vldt_failed_for_x">Validation failed for “%1$s”</string>
 
-    <string name="X_action_export">Export</string>
     <string name="X_action_exit">Exit</string>
     <string name="X_action_update">Update</string>
     <string name="X_action_swap">Swap</string>
@@ -1661,4 +1682,5 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+
 </resources>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -57,7 +56,7 @@ public class SearchEditionsTask
      * @param validIsbn to search for, <strong>must</strong> be valid.
      */
     @UiThread
-    public void startTask(@NonNull final String validIsbn) {
+    public void search(@NonNull final String validIsbn) {
         // sanity check
         if (BuildConfig.DEBUG /* always */) {
             ISBN.requireValidIsbn(validIsbn);
@@ -88,8 +87,7 @@ public class SearchEditionsTask
                 isbnList.addAll(((SearchEngine.AlternativeEditions) searchEngine)
                                         .searchAlternativeEditions(mIsbn));
 
-            } catch (@NonNull final CredentialsException | IOException
-                    | GeneralParsingException | RuntimeException e) {
+            } catch (@NonNull final IOException | GeneralParsingException | RuntimeException e) {
                 // Silently ignore individual failures, we'll return what we get from
                 // the sites that worked.
                 Logger.error(context, TAG, e);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Implementation of ZIP-specific writer functions.
@@ -63,7 +64,7 @@ public class ZipArchiveWriter
      */
     public ZipArchiveWriter(@NonNull final Context context,
                             @NonNull final ExportHelper helper)
-            throws FileNotFoundException {
+            throws FileNotFoundException, ExternalStorageException {
         super(helper);
 
         mOutputStream = new ZipOutputStream(new BufferedOutputStream(

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ public class ReviewEditApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public ReviewEditApiHandler(@NonNull final Context appContext,
                                 @NonNull final GoodreadsAuth grAuth)
@@ -84,12 +84,10 @@ public class ReviewEditApiHandler
      * @param readStart       (optional) Date when we started reading this book, YYYY-MM-DD format
      * @param readEnd         (optional) Date when we finished reading this book, YYYY-MM-DD format
      * @param rating          Rating 0-5 with 0 == No rating
-     * //@param privateNotes    (optional) Text for the Goodreads PRIVATE notes
+     *                        //@param privateNotes    (optional) Text for the Goodreads PRIVATE notes
      * @param review          (optional) Text for the review, PUBLIC
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     public void update(final long reviewId,
                        final boolean finishedReading,
@@ -98,7 +96,7 @@ public class ReviewEditApiHandler
                        @IntRange(from = 0, to = 5) final int rating,
                        //@Nullable final String privateNotes,
                        @Nullable final String review)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final String url = String.format(URL, reviewId);
         final Map<String, String> parameters = new HashMap<>();

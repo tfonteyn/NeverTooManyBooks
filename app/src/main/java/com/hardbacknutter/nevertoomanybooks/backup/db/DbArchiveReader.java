@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -100,7 +100,7 @@ public class DbArchiveReader
 
     @Override
     public void validate(@NonNull final Context context)
-            throws InvalidArchiveException, IOException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException, IOException {
 
         // sanity check
         if (mSQLiteDatabase == null) {
@@ -138,7 +138,8 @@ public class DbArchiveReader
     @Override
     @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, IOException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException,
+                   IOException {
         if (mDelegateReader != null) {
             return mDelegateReader.readMetaData(context);
         } else {
@@ -151,7 +152,8 @@ public class DbArchiveReader
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException, ImportException,
+                   IOException {
 
         // sanity check, we should not even get here if the database is not supported
         if (mDelegateReader == null) {

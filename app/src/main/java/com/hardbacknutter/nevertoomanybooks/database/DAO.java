@@ -99,10 +99,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_FILE_URL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
@@ -136,11 +136,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS_CALIBRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -527,7 +527,7 @@ public class DAO
 
             // next we add the links to series, authors,...
             insertBookLinks(context, book, flags);
-            if (book.contains(KEY_CALIBRE_UUID)) {
+            if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
                 insertCalibreData(book);
             }
             // and populate the search suggestions table
@@ -613,7 +613,7 @@ public class DAO
                 book.putString(KEY_BOOK_UUID, uuid);
 
                 insertBookLinks(context, book, flags);
-                if (book.contains(KEY_CALIBRE_UUID)) {
+                if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
                     updateCalibreData(book);
                 }
                 ftsUpdate(context, book.getId());
@@ -653,12 +653,12 @@ public class DAO
         // all calibre values.
         final ContentValues cv = new ContentValues();
         cv.put(KEY_FK_BOOK, book.getId());
-        cv.put(KEY_CALIBRE_ID, book.getInt(KEY_CALIBRE_ID));
-        cv.put(KEY_CALIBRE_UUID, book.getString(KEY_CALIBRE_UUID));
-        cv.put(KEY_CALIBRE_FILE_URL, book.getString(KEY_CALIBRE_FILE_URL));
-        cv.put(KEY_CALIBRE_LAST_SYNC_DATE, book.getString(KEY_CALIBRE_LAST_SYNC_DATE));
+        cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
+        cv.put(KEY_CALIBRE_BOOK_LIBRARY_ID, book.getString(KEY_CALIBRE_BOOK_LIBRARY_ID));
+        cv.put(KEY_CALIBRE_BOOK_FILE_URL, book.getString(KEY_CALIBRE_BOOK_FILE_URL));
+        cv.put(KEY_CALIBRE_BOOK_UUID, book.getString(KEY_CALIBRE_BOOK_UUID));
 
-        final long rowId = mSyncedDb.insert(TBL_BOOKS_CALIBRE.getName(), null, cv);
+        final long rowId = mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
         if (rowId <= 0) {
             throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
         }
@@ -676,13 +676,14 @@ public class DAO
 
         final ContentValues cv = new ContentValues();
         cv.put(KEY_FK_BOOK, book.getId());
-        cv.put(KEY_CALIBRE_ID, book.getInt(KEY_CALIBRE_ID));
-        cv.put(KEY_CALIBRE_FILE_URL, book.getString(KEY_CALIBRE_FILE_URL));
-        cv.put(KEY_CALIBRE_LAST_SYNC_DATE, book.getString(KEY_CALIBRE_LAST_SYNC_DATE));
+        cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
+        cv.put(KEY_CALIBRE_BOOK_LIBRARY_ID, book.getString(KEY_CALIBRE_BOOK_LIBRARY_ID));
+        cv.put(KEY_CALIBRE_BOOK_FILE_URL, book.getString(KEY_CALIBRE_BOOK_FILE_URL));
 
-        final int rowsAffected = mSyncedDb.update(TBL_BOOKS_CALIBRE.getName(), cv,
-                                                  KEY_CALIBRE_UUID + "=?",
-                                                  new String[]{book.getString(KEY_CALIBRE_UUID)});
+        final int rowsAffected = mSyncedDb.update(TBL_CALIBRE_BOOKS.getName(), cv,
+                                                  KEY_CALIBRE_BOOK_UUID + "=?",
+                                                  new String[]{book.getString(
+                                                          KEY_CALIBRE_BOOK_UUID)});
         if (rowsAffected != 1) {
             throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
         }
@@ -2471,6 +2472,23 @@ public class DAO
                              TBL_BOOKS.dot(KEY_PK_ID));
     }
 
+    public int countBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
+        if (lastUpdateInUtc == null) {
+            try (SynchronizedStatement stmt = mSyncedDb
+                    .compileStatement(DAOSql.SqlCount.BOOKS)) {
+                return (int) stmt.simpleQueryForLongOrZero();
+            }
+        } else {
+            final String since = lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    DAOSql.SqlCount.BOOKS + " WHERE " + KEY_UTC_LAST_UPDATED + ">=?")) {
+                stmt.bindString(1, since);
+                return (int) stmt.simpleQueryForLongOrZero();
+            }
+        }
+    }
+
     /**
      * Return an Cursor with all Books, or with all updated Books since the given date/time.
      *
@@ -2493,22 +2511,24 @@ public class DAO
         }
     }
 
-    public int countBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
+    @NonNull
+    public TypedCursor fetchBooksForExportToCalibre(@NonNull final String libraryId,
+                                                    @Nullable final LocalDateTime lastUpdateInUtc) {
         if (lastUpdateInUtc == null) {
-            try (SynchronizedStatement stmt = mSyncedDb
-                    .compileStatement(DAOSql.SqlCount.BOOKS)) {
-                return (int) stmt.simpleQueryForLongOrZero();
-            }
+            return getBookCursor(TBL_CALIBRE_BOOKS.dot(KEY_CALIBRE_BOOK_LIBRARY_ID) + "=?",
+                                 new String[]{libraryId},
+                                 TBL_BOOKS.dot(KEY_PK_ID));
+
         } else {
             final String since = lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
 
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    DAOSql.SqlCount.BOOKS + " WHERE " + KEY_UTC_LAST_UPDATED + ">=?")) {
-                stmt.bindString(1, since);
-                return (int) stmt.simpleQueryForLongOrZero();
-            }
+            return getBookCursor(TBL_CALIBRE_BOOKS.dot(KEY_CALIBRE_BOOK_LIBRARY_ID) + "=?"
+                                 + " AND " + TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED) + ">=?",
+                                 new String[]{libraryId, since},
+                                 TBL_BOOKS.dot(KEY_PK_ID));
         }
     }
+
 
     /**
      * Return an Cursor with all Books for the given list of ISBN numbers.
@@ -3310,8 +3330,8 @@ public class DAO
      */
     @IntRange(from = 0)
     public long getBookIdFromCalibreUuid(@NonNull final String uuid) {
-        final String sql = "SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOKS_CALIBRE.getName()
-                           + " WHERE " + KEY_CALIBRE_UUID + "=?";
+        final String sql = "SELECT " + KEY_FK_BOOK + " FROM " + TBL_CALIBRE_BOOKS.getName()
+                           + " WHERE " + KEY_CALIBRE_BOOK_UUID + "=?";
 
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindString(1, uuid);
@@ -3328,8 +3348,8 @@ public class DAO
      */
     @IntRange(from = 0)
     public long getBookIdFromCalibreId(final int calibreId) {
-        final String sql = "SELECT " + KEY_FK_BOOK + " FROM " + TBL_BOOKS_CALIBRE.getName()
-                           + " WHERE " + KEY_CALIBRE_ID + "=?";
+        final String sql = "SELECT " + KEY_FK_BOOK + " FROM " + TBL_CALIBRE_BOOKS.getName()
+                           + " WHERE " + KEY_CALIBRE_BOOK_ID + "=?";
 
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
             stmt.bindLong(1, calibreId);
@@ -4115,7 +4135,7 @@ public class DAO
     }
 
     /**
-     * Query to get the relevant columns for sending a {@link Book} to Goodreads.
+     * Query to get the relevant columns for sending a single {@link Book} to Goodreads.
      *
      * @param bookId to retrieve
      *
@@ -4138,8 +4158,8 @@ public class DAO
      * @return Cursor containing all records, if any
      */
     @NonNull
-    public Cursor fetchBooksForGoodreadsExport(final long startId,
-                                               final boolean updatesOnly) {
+    public Cursor fetchBooksForExportToGoodreads(final long startId,
+                                                 final boolean updatesOnly) {
         if (updatesOnly) {
             return mSyncedDb.rawQuery(DAOSql.SqlGoodreadsSendBook.UPDATED_BOOKS,
                                       new String[]{String.valueOf(startId)});

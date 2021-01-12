@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -133,7 +133,7 @@ public class EditBookshelvesFragment
         super.onViewCreated(view, savedInstanceState);
 
         //noinspection ConstantConditions
-        getActivity().setTitle(R.string.lbl_bookshelves_long);
+        getActivity().setTitle(R.string.lbl_bookshelves);
 
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);

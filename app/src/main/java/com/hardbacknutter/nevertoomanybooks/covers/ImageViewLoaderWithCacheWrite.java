@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,11 +57,11 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 
 /**
  * Load a Bitmap from a file, and populate the view.
- * This behaves exactly the same as {@link ImageLoader} but when done,
+ * This behaves exactly the same as {@link ImageViewLoader} but when done,
  * it starts a new task to send the image to the image database cache.
  */
-public class ImageLoaderWithCacheWrite
-        extends ImageLoader {
+public class ImageViewLoaderWithCacheWrite
+        extends ImageViewLoader {
 
     /** UUID of the book. */
     private final String mUuid;
@@ -79,13 +79,13 @@ public class ImageLoaderWithCacheWrite
      * @param uuid      UUID of the book
      * @param cIdx      0..n image index
      */
-    public ImageLoaderWithCacheWrite(@NonNull final ImageView imageView,
-                                     final int maxWidth,
-                                     final int maxHeight,
-                                     @NonNull final File file,
-                                     @Nullable final Runnable onSuccess,
-                                     @NonNull final String uuid,
-                                     @IntRange(from = 0, to = 1) final int cIdx) {
+    public ImageViewLoaderWithCacheWrite(@NonNull final ImageView imageView,
+                                         final int maxWidth,
+                                         final int maxHeight,
+                                         @NonNull final File file,
+                                         @Nullable final Runnable onSuccess,
+                                         @NonNull final String uuid,
+                                         @IntRange(from = 0, to = 1) final int cIdx) {
         super(imageView, maxWidth, maxHeight, file, onSuccess);
 
         mUuid = uuid;

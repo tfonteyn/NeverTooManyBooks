@@ -75,7 +75,7 @@
     <string name="confirm_delete_series">Θέλετε να διαγραφεί η σειρά «%1$s»;\n\nΤα βιβλία της δε θα διαγραφούν.\n\nΣκεφτείτε να επεξεργαστείτε την σειρά και να αλλάξετε το όνομα της σε κάποιο άλλης σειράς για να διατηρήσετε τα δεδομένα.</string>
     <string name="confirm_delete_toc_entry">Πραγματικά διαγράψτε τον τίτλο «%1$s» (από το %2$s); Θα διαγραφεί από όλα τα βιβλία στα οποία αναφέρεται. Τα ίδια τα βιβλία δεν θα διαγραφούν.</string>
     <string name="confirm_duplicate_book_message">Το βιβλίο που προσπαθείτε να προσθέσετε υπάρχει ήδη στη βάση δεδομένων, είστε σίγουροι ότι θέλετε να προσθέσετε και άλλο αντίγραφο;</string>
-    <string name="confirm_email_export">Θα θέλατε να αποστείλετε σαν e-mail αυτην την εξαγωγή;</string>
+    <string name="confirm_email_file">Θα θέλατε να στείλετε αυτό το αρχείο μέσω ηλεκτρονικού ταχυδρομείου σε κάποιον;</string>
     <string name="confirm_merge_bookshelves">Η βιβλιοθήκη που θέλετε να μετονομάσετε υπάρχει ήδη. Θέλετε να τα συγχωνεύσετε;</string>
     <string name="confirm_merge_authors">Ο συντάκτης που θέλετε να μετονομάσετε υπάρχει ήδη. Θέλετε να τα συγχωνεύσετε;</string>
     <string name="confirm_merge_series">Η σειρά που θέλετε να μετονομάσετε υπάρχει ήδη. Θέλετε να τα συγχωνεύσετε;</string>
@@ -110,8 +110,8 @@
     <string name="error_site_authentication_failed">Ο έλεγχος ταυτότητας %1$s απέτυχε</string>
     <string name="error_site_authorization_failed">Η αδειοδότηση του %1$s οδήγησε σε λάθος.</string>
     <string name="error_storage_no_space_left">Ανεπαρκής χώρος αποθήκευσης</string>
-    <string name="error_storage_not_accessible">Δεν είναι δυνατή η αποθήκευση: %1$s</string>
-    <string name="error_storage_not_readable">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
+    <string name="error_storage_not_accessible_s">Δεν είναι δυνατή η αποθήκευση: %1$s</string>
+    <string name="error_storage_not_accessible">Βεβαιωθείτε ότι έχετε πρόσβαση στο χώρο αποθήκευσης.</string>
     <string name="error_storage_not_writable">Ελέγξτε ότι η αποθήκευση είναι εγγράψιμη και έχει αρκετό χώρο.</string>
     <string name="error_unknown_long">Ένα απροσδόκητο σφάλμα συνέβη, παρακαλούμε στείλτε τις λεπτομέρειες στην υποστήριξη με χρήση της επιλογής «Διαχειριστής» από το κεντρικό μενού.</string>
     <string name="error_unknown">Ένα άγνωστο σφάλμα συνέβη.</string>
@@ -121,7 +121,9 @@
     <string name="fab_add_book_by_external_id">Αναγνωριστικό βιβλίου ιστοτόπου</string>
     <string name="fab_add_book_manually">Χειροκίνητη Προσθήκη</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="gr_auth_blurb_part1">Το Goodreads είναι μια ιστοσελίδα με αποστολή «να βοηθήσει τους ανθρώπους να βρουν και να μοιραστούν τα βιβλία που αγαπούν». Έχουν μια εκτενή βάση δεδομένων με βιβλία και κριτικές και αν είστε εγγεγραμμένος χρήστης στο  Goodreads, τότε το &APP_NAME; μπορεί να εξάγει τα βιβλία σας, τα ράφια και τις κριτικές σας στο Goodreads, καθώς και να εισάγει βιβλία, ράφια και κριτικές από το Goodreads. Το &APP_NAME; είναι αυτόνομη εφαρμογή και δεν απαιτεί Goodreads, αλλά αν σας ενδιαφέρει, μπορείτε να εγγραφείτε στο:</string>
+    <string name="gr_auth_blurb_part1">Το Goodreads είναι μια ιστοσελίδα με αποστολή «να βοηθήσει τους ανθρώπους να βρουν και να μοιραστούν τα βιβλία που αγαπούν». Έχουν μια εκτενή βάση δεδομένων με βιβλία και κριτικές και αν είστε εγγεγραμμένος χρήστης στο  Goodreads, τότε το &APP_NAME;
+        μπορεί να εξάγει τα βιβλία σας, τα ράφια και τις κριτικές σας στο Goodreads, καθώς και να εισάγει βιβλία, ράφια και κριτικές από το Goodreads. Το &APP_NAME;
+        είναι αυτόνομη εφαρμογή και δεν απαιτεί Goodreads, αλλά αν σας ενδιαφέρει, μπορείτε να εγγραφείτε στο:</string>
     <string name="gr_auth_blurb_part2">Όταν εγγραφείτε, ή αν είστε ήδη χρήστης του Goodreads, μπορείτε να δώσετε άδεια στο &APP_NAME; να έχει πρόσβαση στα δεδομένα του Goodreads σας πατώντας στο παρακάτω κουμπί. Θα σας μεταφέρει σε μια ιστοσελίδα όπου θα πρέπει να συνδεθείτε στο Goodreads και να δώσετε άδεια στην εφαρμογή. Εμείς ποτέ δεν βλέπουμε τον κωδικό πρόσβασής σας. Μπορείτε να απενεργοποιήσετε την πρόσβαση μέσω της ιστοσελίδας Goodreads. Εαν καταλήξετε σε μια κενή ιστοσελίδα, κάντε κλικ στο κουμπί επιστροφής για να επιστρέψετε εδώ!</string>
     <string name="gr_auth_blurb_part3">Ωστόσο, να θυμάστε… ότι δεν είναι απαραίτητο να γίνει κάτι από τα παραπάνω: Το &APP_NAME; δουλεύει μια χαρά και χώρις αυτό!</string>
     <string name="gr_auth_blurb_part4">Έχετε ήδη δώσει άδεια σε αυτή την εφαρμογή. Αν θέλετε να διαγράψετε τα διαπιστευτήρια από αυτό το συσκευή, μπορείτε να το κάνετε πατώντας το παρακάτω κουμπί. Αλλά είναι επίσης σημαντικό να διαγράψετε την εγγραφή της εφαρμογής και στην ιστοσελίδα Goodreads.</string>
@@ -135,7 +137,7 @@
     <string name="gr_menu_import_all_from_goodreads">Εισαγωγή όλων, από Goodreads</string>
     <string name="gr_menu_send_all">Αποστολή όλων</string>
     <string name="gr_send_to_goodreads">Αποστολή στο Goodreads</string>
-    <string name="gr_menu_send_updated">Αποστολή ενημερωμένων</string>
+    <string name="menu_send_updated">Αποστολή ενημερωμένων</string>
     <string name="gr_pt_collect_genre">Χρησιμοποιήστε δημοφιλή ονόματα βιβλιοθηκών ως είδη βιβλίων</string>
     <string name="gr_send_book_to_goodreads">Αποστολή βιβλίου %1$d στο Goodreads</string>
     <string name="gr_title_send_book">Αποστολή βιβλίων στο Goodreads</string>
@@ -169,7 +171,7 @@
     <string name="hint_empty_rating">(δεν έχει αξιολογηθεί)</string>
     <string name="hint_empty_read_status">(Ανάγνωση άγνωστης κατάστασης)</string>
     <string name="hint_empty_series">(Χωρίς σειρά)</string>
-    <string name="hint_not_set">(Δεν έχει οριστεί)</string>
+    <string name="info_not_set">Δεν έχει οριστεί</string>
     <string name="hint_search_text">Κείμενο και/ή ISBN</string>
     <string name="info_site_authorization_successful">Επιτυχής η αδειοδότηση %1$s</string>
     <string name="txt_cleanup_files">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί «%2$s».</string>
@@ -224,7 +226,7 @@
     <string name="lbl_book">Βιβλίο</string>
     <string name="lbl_books">Βιβλία</string>
     <string name="lbl_bookshelf">Βιβλιοθήκης</string>
-    <string name="lbl_bookshelves_long">Ράφια Βιβλιοθήκης</string>
+    <string name="lbl_bookshelves">Ράφια Βιβλιοθήκης</string>
     <string name="X_lbl_by_author_s">κατα %1$s</string>
     <string name="lbl_color">Χρώμα</string>
     <string name="lbl_condition">Κατάσταση</string>
@@ -415,7 +417,7 @@
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
     <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
-    <string name="warning_task_cancelled">Ακυρώθηκε</string>
+    <string name="cancelled">Ακυρώθηκε</string>
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="progress_end_import_partially_complete">Έγινε μερική εισαγωγή</string>
     <string name="progress_msg_connecting">Σύνδεση…</string>
@@ -589,8 +591,8 @@
     <string name="warning_if_month_set_year_must_be">Αν προσδιοριστεί μήνας, τότε πρέπει να προσδιοριστεί και έτος.</string>
     <string name="warning_immediate_global_changes">ΣΗΜΕΙΩΣΗ: Όλες οι αποθηκευμένες αλλαγές εφαρμόζονται στιγμιαία και παντού</string>
     <string name="warning_import_csv">Προσοχή. Η εισαγωγή δεδομένων μπορεί να ενημερώσει υπάρχοντα βιβλία με νέες πληροφορίες εαν η στήλη uuid δεν είναι παρούσα και το id στο αρχείο εισαγωγής είναι το ίδιο με κάποιο υπάρχον id. Αυτό είναι εντάξει εαν έχει αλλαχτεί κάποιο πεδίο σε ένα εξαγμένο αρχείο. Εαν δημιουργήσατε μια νεα βιβλιογραφική εγγραφή ή εαν εισάγετε τα βιβλία κάποιου άλλου, σιγουρευτείτε ότι το πεδίο uuid είναι παρόν ή το πεδίο id είναι κενό.</string>
-    <string name="warning_import_csv_failed_lines_lots">Η ανάλυση του CSV απέτυχε για τις γραμμές \n%1$s\n και άλλες.</string>
-    <string name="warning_import_csv_failed_lines_some">Η ανάλυση του CSV απέτυχε για τις γραμμές \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_lots">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n και άλλες.</string>
+    <string name="warning_import_failed__for_lines_some">Η ανάλυση του απέτυχε για τις γραμμές \n%1$s\n</string>
     <string name="warning_import_old_archive">Αυτή η επιλογή δεν υποστηρίζεται από Αρχεία παλαιότερης έκδοσης.</string>
     <string name="warning_import_csv_unescaped_quote">Χαρακτηριστικό απόσβεσης μη έτοιμο στη σειρά %1$d, θέση %2$d</string>
     <string name="warning_no_editions">Δεν υπάρχουν διαθέσιμες εκδόσεις</string>
@@ -666,7 +668,7 @@
     <string name="confirm_clear_all_data">ΑΥΤΑ ΑΦΑΙΡΕΣΕΙ ΟΛΑ ΤΑ ΔΕΔΟΜΕΝΑ!\n Εκτός από την επαναφορά από ένα προηγούμενο αντίγραφο ασφαλείας, ΑΥΤΟ ΔΕΝ ΜΠΟΡΕΙ ΝΑ ΚΑΝΕΤΕ ΚΑΤΩ!\n\n Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="confirm_continue">Εισαι σιγουρος οτι θελεις να συνεχισεις ?</string>
     <string name="menu_backup_and_export">Δημιουργία αντιγράφων ασφαλείας και εξαγωγή</string>
-    <string name="X_action_export">Εξαγωγή</string>
+    <string name="action_export">Εξαγωγή</string>
     <string name="lbl_database">Βάση δεδομένων</string>
     <string name="lbl_archive_format_db_info">Η βάση δεδομένων SQLite.</string>
     <string name="lbl_archive_type_db">Αρχείο βάσης δεδομένων (%1$s)</string>
@@ -702,4 +704,9 @@
     <string name="httpErrorFileNotFound">Δεν ήταν δυνατή η εύρεση του αρχείου που ζητήθηκε.</string>
     <string name="lbl_calibre_content_server_ca_cert">Πιστοποιητικό CA</string>
     <string name="error_certificate_invalid">Το πιστοποιητικό δεν είναι έγκυρο ή δεν είναι δυνατή η πρόσβαση σε αυτό.</string>
+    <string name="username">όνομα χρήστη</string>
+    <string name="password">κωδικός πρόσβασης</string>
+    <string name="error_network_failed_try_again">Ελέγξτε τη σύνδεση και δοκιμάστε ξανά</string>
+    <string name="lbl_test_connection">Δοκιμάστε τη σύνδεση</string>
+    <string name="confirm_test_connection">Συνιστάται να δοκιμάσετε αυτήν τη σύνδεση για να αποφύγετε προβλήματα αργότερα.</string>
 </resources>

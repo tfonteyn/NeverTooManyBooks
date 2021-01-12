@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ public interface RecordReader
      */
     @Nullable
     default ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
         return null;
     }
 
@@ -75,16 +75,13 @@ public interface RecordReader
                        @NonNull ArchiveReaderRecord record,
                        @ImportHelper.Options int options,
                        @NonNull ProgressListener progressListener)
-            throws IOException, ImportException, GeneralParsingException;
+            throws GeneralParsingException, ImportException, IOException;
 
     /**
      * Override if the implementation needs to close something.
-     *
-     * @throws IOException on failure
      */
     @Override
-    default void close()
-            throws IOException {
+    default void close() {
         // do nothing
     }
 }

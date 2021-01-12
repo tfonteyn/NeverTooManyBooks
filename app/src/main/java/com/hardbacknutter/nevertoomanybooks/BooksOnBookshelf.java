@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -73,7 +73,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookCo
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
@@ -172,16 +173,16 @@ public class BooksOnBookshelf
 
     /** Bring up the Goodreads synchronization options. */
     private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
-            new GoodreadsAdminFragment.ResultContract(), data -> setGoodreadsMenuVisibility());
+            new GoodreadsAdminFragment.ResultContract(), data -> updateNavigationMenuVisibility());
 
     private final ActivityResultLauncher<Bundle> mCalibreSettingsLauncher =
             registerForActivityResult(
                     new SettingsHostActivity.ResultContract(CalibrePreferencesFragment.TAG),
-                    data -> setCalibreMenuVisibility());
+                    data -> updateNavigationMenuVisibility());
 
     /** Make a backup. */
-    private final ActivityResultLauncher<Void> mExportLauncher = registerForActivityResult(
-            new ExportFragment.ResultContract(), success -> {});
+    private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
+            registerForActivityResult(new ExportFragment.ResultContract(), success -> {});
 
 
     /** Goodreads authorization task. */
@@ -522,8 +523,7 @@ public class BooksOnBookshelf
         mGrSendOneBookTask.onFinished().observe(this, this::onGrFinished);
 
         // show/hide the sync menus
-        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(global));
-        setNavigationItemVisibility(R.id.nav_calibre, CalibreContentServer.isShowSyncMenus(global));
+        updateNavigationMenuVisibility();
 
         // The booklist.
         //noinspection ConstantConditions
@@ -664,8 +664,12 @@ public class BooksOnBookshelf
             mGoodreadsLauncher.launch(null);
             return true;
 
-        } else if (itemId == R.id.nav_calibre) {
-            final String url = CalibreContentServer.getHostUrl(this);
+        } else if (itemId == R.id.nav_calibre_export) {
+            mExportLauncher.launch(ArchiveEncoding.CalibreCS);
+            return true;
+
+        } else if (itemId == R.id.nav_calibre_import) {
+            final String url = CalibreContentServer.getHostUri(this).toString();
             if (!url.isEmpty()) {
                 mImportLauncher.launch(url);
             } else {
@@ -982,7 +986,7 @@ public class BooksOnBookshelf
             Snackbar.make(mVb.list, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
             final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-            mGrSendOneBookTask.startTask(bookId);
+            mGrSendOneBookTask.start(bookId);
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -1636,7 +1640,7 @@ public class BooksOnBookshelf
     private void onCancelled(@NonNull final LiveDataEvent message) {
         closeProgressDialog();
         if (message.isNewEvent()) {
-            Snackbar.make(mVb.list, R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mVb.list, R.string.cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 

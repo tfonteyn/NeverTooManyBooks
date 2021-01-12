@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -241,7 +241,7 @@ public abstract class ShowBookApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     ShowBookApiHandler(@NonNull final Context appContext,
                        @NonNull final GoodreadsAuth grAuth)
@@ -276,14 +276,12 @@ public abstract class ShowBookApiHandler
      *
      * @return fileSpec, or {@code null} if no image found.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @Nullable
     String searchCoverImage(@NonNull final String url,
                             @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         mBookData = bookData;
 
@@ -306,15 +304,13 @@ public abstract class ShowBookApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @NonNull
     Bundle searchBook(@NonNull final String url,
                       @NonNull final boolean[] fetchThumbnail,
                       @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         mBookData = bookData;
 

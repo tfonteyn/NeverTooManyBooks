@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlFilter;
 import com.hardbacknutter.nevertoomanybooks.utils.xml.XmlResponseParser;
@@ -46,14 +45,12 @@ public class AuthUserApiHandler
     private static final String URL = GoodreadsManager.BASE_URL + "/api/auth_user";
 
     private static final String XML_USER = "user";
-
-    private long mUserId;
-    @Nullable
-    private String mUsername;
-
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
     private final XmlFilter mRootFilter = new XmlFilter("");
+    private long mUserId;
+    @Nullable
+    private String mUsername;
 
     /**
      * Constructor.
@@ -82,8 +79,7 @@ public class AuthUserApiHandler
             // Return user found.
             return mUserId;
 
-        } catch (@NonNull final CredentialsException | Http404Exception | IOException
-                | GeneralParsingException | RuntimeException ignore) {
+        } catch (@NonNull final IOException | GeneralParsingException | RuntimeException ignore) {
             return 0;
         }
     }

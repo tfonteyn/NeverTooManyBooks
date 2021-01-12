@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,12 +28,13 @@ import androidx.annotation.Nullable;
 import java.io.File;
 import java.util.Locale;
 
+import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 public final class ApiUtils {
 
@@ -108,21 +109,28 @@ public final class ApiUtils {
             return null;
         }
 
-        final String tmpName = ImageUtils.createFilename(
-                GoodreadsManager.FILENAME_SUFFIX,
-                String.valueOf(goodreadsData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK)),
-                0, size);
+        final ImageDownloader imageDownloader = new ImageDownloader();
 
-        final File file = ImageUtils.saveImage(context, url, tmpName,
-                                               GoodreadsManager.CONNECTION_TIMEOUT_MS,
-                                               GoodreadsManager.READ_TIMEOUT_MS,
-                                               GoodreadsSearchEngine.THROTTLER);
+        imageDownloader.setTimeouts(GoodreadsManager.CONNECTION_TIMEOUT_MS,
+                                    GoodreadsManager.READ_TIMEOUT_MS);
+        imageDownloader.setThrottler(GoodreadsSearchEngine.THROTTLER);
 
-        if (file != null) {
-            return file.getAbsolutePath();
-        } else {
-            return null;
+        try {
+            final File tmpFile = imageDownloader.createTmpFile(
+                    context, GoodreadsManager.FILENAME_SUFFIX,
+                    String.valueOf(goodreadsData.getLong(
+                            DBDefinitions.KEY_ESID_GOODREADS_BOOK)),
+                    0, size);
+
+            final File file = imageDownloader.fetch(context, url, tmpFile);
+            if (file != null) {
+                return file.getAbsolutePath();
+            }
+        } catch (@NonNull final ExternalStorageException ignore) {
+            // ignore
         }
+
+        return null;
     }
 
     /**

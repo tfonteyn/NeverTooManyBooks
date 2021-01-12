@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,17 +34,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 /**
  * Load a Bitmap from a file, and populate the view.
  */
-public class ImageLoader
+public class ImageViewLoader
         extends AsyncTask<Void, Void, Bitmap> {
 
     /** Log tag. */
-    private static final String TAG = "ImageLoader";
-
-    @NonNull
-    private final WeakReference<ImageView> mImageView;
+    private static final String TAG = "ImageViewLoader";
     final int mMaxWidth;
     final int mMaxHeight;
-
+    @NonNull
+    private final WeakReference<ImageView> mImageView;
     @NonNull
     private final File mFile;
     @Nullable
@@ -59,11 +57,11 @@ public class ImageLoader
      * @param file      to load, must be valid
      * @param onSuccess (optional) Runnable to execute after successfully displaying the image
      */
-    public ImageLoader(@NonNull final ImageView imageView,
-                       final int maxWidth,
-                       final int maxHeight,
-                       @NonNull final File file,
-                       @Nullable final Runnable onSuccess) {
+    public ImageViewLoader(@NonNull final ImageView imageView,
+                           final int maxWidth,
+                           final int maxHeight,
+                           @NonNull final File file,
+                           @Nullable final Runnable onSuccess) {
         // see onPostExecute
         imageView.setTag(R.id.TAG_THUMBNAIL_TASK, this);
         mImageView = new WeakReference<>(imageView);
@@ -98,8 +96,7 @@ public class ImageLoader
                 // We only get here if we THOUGHT we had an image, but we failed to
                 // load/decode it. So use 'broken-image' icon and preserve the space
                 ImageUtils.setPlaceholder(imageView, mMaxWidth, mMaxHeight,
-                                          R.drawable.ic_broken_image, 0
-                                         );
+                                          R.drawable.ic_broken_image, 0);
             }
         }
     }

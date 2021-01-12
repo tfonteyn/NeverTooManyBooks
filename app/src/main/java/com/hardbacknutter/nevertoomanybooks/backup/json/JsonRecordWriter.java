@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,7 +94,7 @@ public class JsonRecordWriter
     @Override
     public void writeMetaData(@NonNull final Writer writer,
                               @NonNull final ArchiveMetaData metaData)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
         try {
             writer.write(new BundleCoder().encode(metaData.getBundle()).toString());
         } catch (@NonNull final JSONException e) {
@@ -108,7 +108,7 @@ public class JsonRecordWriter
                                @NonNull final Writer writer,
                                @NonNull final Set<RecordType> entries,
                                @NonNull final ProgressListener progressListener)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final ExportResults results = new ExportResults();
         final JSONObject jsonData = new JSONObject();
@@ -125,7 +125,8 @@ public class JsonRecordWriter
                     final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
                     jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
                 }
-                results.styles = styles.size();
+                // deduct the number of built-in styles (remember: MAX_ID is negative)
+                results.styles = styles.size() + StyleDAO.BuiltinStyles.MAX_ID;
             }
 
             if (entries.contains(RecordType.Preferences)

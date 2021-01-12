@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,6 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Class to wrap common storage related functions.
@@ -146,15 +145,15 @@ public final class FileUtils {
      * @param destFile File to write to
      *
      * @return File written to (the one passed in), or {@code null} if writing failed.
+     * FIXME: bad API... don't return null... just throw
      *
-     * @throws IOException              on failure
-     * @throws ExternalStorageException if the Shared Storage media is not available
+     * @throws IOException on failure
      */
     @Nullable
     public static File copyInputStream(@NonNull final Context context,
                                        @Nullable final InputStream is,
                                        @NonNull final File destFile)
-            throws ExternalStorageException, IOException {
+            throws IOException {
         if (is == null) {
             return null;
         }

@@ -65,13 +65,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_CALIBRE_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_CALIBRE_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ESID_LAST_DODO_NL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_PREFERRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
@@ -92,7 +92,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS_CALIBRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
@@ -100,6 +99,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -610,6 +610,8 @@ public final class DBHelper
                                  TBL_BOOK_SERIES,
                                  TBL_BOOK_PUBLISHER,
                                  TBL_BOOK_LOANEE,
+
+                                 TBL_CALIBRE_BOOKS,
                                  // permanent booklist management tables
                                  TBL_BOOK_LIST_NODE_STATE);
 
@@ -759,7 +761,7 @@ public final class DBHelper
             TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_ESID_LAST_DODO_NL);
         }
         if (oldVersion < 9) {
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_CALIBRE_UUID);
+            TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_CALIBRE_BOOK_UUID);
         }
         if (oldVersion < 10) {
             // moved to FTS4
@@ -808,14 +810,14 @@ public final class DBHelper
             global.edit().remove("bookList.style.preferred.order").apply();
         }
         if (oldVersion < 14) {
-            TBL_BOOKS_CALIBRE.create(syncedDb, true);
-            syncedDb.execSQL("INSERT INTO " + TBL_BOOKS_CALIBRE.getName()
-                             + '(' + KEY_FK_BOOK + ',' + KEY_CALIBRE_UUID + ')'
-                             + " SELECT " + KEY_PK_ID + ',' + KEY_CALIBRE_UUID
+            TBL_CALIBRE_BOOKS.create(syncedDb, true);
+            syncedDb.execSQL("INSERT INTO " + TBL_CALIBRE_BOOKS.getName()
+                             + '(' + KEY_FK_BOOK + ',' + KEY_CALIBRE_BOOK_UUID + ')'
+                             + " SELECT " + KEY_PK_ID + ',' + KEY_CALIBRE_BOOK_UUID
                              + " FROM " + TBL_BOOKS.getName()
-                             + " WHERE " + KEY_CALIBRE_UUID + " IS NOT NULL");
+                             + " WHERE " + KEY_CALIBRE_BOOK_UUID + " IS NOT NULL");
             syncedDb.execSQL("UPDATE " + TBL_BOOKS.getName()
-                             + " SET " + KEY_CALIBRE_UUID + "=NULL");
+                             + " SET " + KEY_CALIBRE_BOOK_UUID + "=NULL");
         }
 
         //URGENT: the use of recreateAndReload is dangerous right now and can break updates.
@@ -908,7 +910,7 @@ public final class DBHelper
         try {
             syncLock = db.beginTransaction(true);
 
-            db.delete(TBL_BOOKS_CALIBRE.getName(), null, null);
+            db.delete(TBL_CALIBRE_BOOKS.getName(), null, null);
             db.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
             db.delete(TBL_FTS_BOOKS.getName(), null, null);
 

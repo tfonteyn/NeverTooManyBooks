@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.lang.ref.WeakReference;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -59,8 +60,8 @@ public class StartupActivity
     /** The Activity ViewModel. */
     private StartupViewModel mVm;
     /** Make a backup; when done, move to the next startup stage. */
-    private final ActivityResultLauncher<Void> mExportLauncher = registerForActivityResult(
-            new ExportFragment.ResultContract(), success -> nextStage());
+    private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
+            registerForActivityResult(new ExportFragment.ResultContract(), success -> nextStage());
 
     /** View Binding. */
     private ActivityStartupBinding mVb;

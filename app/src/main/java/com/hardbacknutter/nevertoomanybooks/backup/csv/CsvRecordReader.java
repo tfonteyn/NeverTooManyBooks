@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * Implementation of {@link RecordReader} that reads a CSV file.
@@ -332,16 +331,17 @@ public class CsvRecordReader
         final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
-        final long databaseBookId = mDb.getBookIdFromUuid(uuid);
-        if (databaseBookId > 0) {
+        final long bookId = mDb.getBookIdFromUuid(uuid);
+        if (bookId > 0) {
             // The book exists in our database (matching UUID).
 
             // Explicitly set the EXISTING id on the book
             // (the importBookId was removed earlier, and is IGNORED)
-            book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
+            book.putLong(DBDefinitions.KEY_PK_ID, bookId);
 
             // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((updatesMustSync && isImportNewer(context, mDb, book, databaseBookId))
+            if ((updatesMustSync
+                 && isImportNewer(context, bookId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
 
                 mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
@@ -349,7 +349,7 @@ public class CsvRecordReader
                 mResults.booksUpdated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + uuid
-                               + "|databaseBookId=" + databaseBookId
+                               + "|databaseBookId=" + bookId
                                + "|update|" + book.getTitle());
                 }
 
@@ -357,7 +357,7 @@ public class CsvRecordReader
                 mResults.booksSkipped++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + uuid
-                               + "|databaseBookId=" + databaseBookId
+                               + "|databaseBookId=" + bookId
                                + "|skipped|" + book.getTitle());
                 }
             }
@@ -424,7 +424,8 @@ public class CsvRecordReader
             // Ideally, we should ask the user presenting a choice "keep/overwrite"
 
             // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((updatesMustSync && isImportNewer(context, mDb, book, importNumericId))
+            if ((updatesMustSync
+                 && isImportNewer(context, importNumericId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
                 mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
                                           | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
@@ -458,29 +459,24 @@ public class CsvRecordReader
         }
     }
 
-
     /**
      * Check if the incoming book is newer than the stored book data.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book we're updating
-     * @param bookId  the book id to lookup in our database
+     * @param context              Current context
+     * @param bookId               the local book id to lookup in our database
+     * @param importLastUpdateDate to check
+     *
+     * @return {@code true} if the imported data is newer then the local data.
      */
     private boolean isImportNewer(@NonNull final Context context,
-                                  @NonNull final DAO db,
-                                  @NonNull final Book book,
-                                  @IntRange(from = 1) final long bookId) {
-        final LocalDateTime utcImportDate =
-                DateParser.getInstance(context)
-                          .parseISO(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
-        if (utcImportDate == null) {
+                                  @IntRange(from = 1) final long bookId,
+                                  @Nullable final LocalDateTime importLastUpdateDate) {
+        if (importLastUpdateDate == null) {
             return false;
         }
 
-        final LocalDateTime utcLastUpdated = db.getBookLastUpdateUtcDate(context, bookId);
-
-        return utcLastUpdated == null || utcImportDate.isAfter(utcLastUpdated);
+        final LocalDateTime utcLastUpdated = mDb.getBookLastUpdateUtcDate(context, bookId);
+        return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
     }
 
     /**

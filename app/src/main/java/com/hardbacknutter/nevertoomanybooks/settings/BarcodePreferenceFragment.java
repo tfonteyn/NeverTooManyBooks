@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,47 +48,47 @@ public class BarcodePreferenceFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_barcodes, rootKey);
 
-        final ListPreference preference = findPreference(Prefs.pk_camera_id_scan_barcode);
-        if (preference != null) {
-            //noinspection ConstantConditions
-            final Map<String, Integer> cameras = CameraDetection.getCameras(getContext());
-            final int max = cameras.size() + 1;
+        //noinspection ConstantConditions
+        final Map<String, Integer> cameras = CameraDetection.getCameras(getContext());
+        final int max = cameras.size() + 1;
 
-            // the camera lens-facing values in text
-            final CharSequence[] entries = new CharSequence[max];
+        // the camera lens-facing values in text
+        final CharSequence[] entries = new CharSequence[max];
+        // the camera id
+        final CharSequence[] entryValues = new CharSequence[max];
+
+        int i = 0;
+        entries[0] = getString(R.string.system_default);
+        entryValues[0] = "-1";
+        for (final Map.Entry<String, Integer> camera : cameras.entrySet()) {
+            i++;
             // the camera id
-            final CharSequence[] entryValues = new CharSequence[max];
+            entryValues[i] = camera.getKey();
+            // We're assuming there will only be one front and/or one back camera.
+            switch (camera.getValue()) {
+                case CameraMetadata.LENS_FACING_FRONT:
+                    entries[i] = getString(R.string.camera_front);
+                    break;
 
-            int i = 0;
-            entries[0] = getString(R.string.system_default);
-            entryValues[0] = "-1";
-            for (final Map.Entry<String, Integer> camera : cameras.entrySet()) {
-                i++;
-                // the camera id
-                entryValues[i] = camera.getKey();
-                // We're assuming there will only be one front and/or one back camera.
-                switch (camera.getValue()) {
-                    case CameraMetadata.LENS_FACING_FRONT:
-                        entries[i] = getString(R.string.camera_front);
-                        break;
+                case CameraMetadata.LENS_FACING_BACK:
+                    entries[i] = getString(R.string.camera_back);
+                    break;
 
-                    case CameraMetadata.LENS_FACING_BACK:
-                        entries[i] = getString(R.string.camera_back);
-                        break;
-
-                    case CameraMetadata.LENS_FACING_EXTERNAL:
-                    default:
-                        // append the id for all other cameras.
-                        entries[i] = getString(R.string.a_bracket_b_bracket,
-                                               getString(R.string.camera_other),
-                                               String.valueOf(i));
-                        break;
-                }
+                case CameraMetadata.LENS_FACING_EXTERNAL:
+                default:
+                    // append the id for all other cameras.
+                    entries[i] = getString(R.string.a_bracket_b_bracket,
+                                           getString(R.string.camera_other),
+                                           String.valueOf(i));
+                    break;
             }
-
-            preference.setEntries(entries);
-            preference.setEntryValues(entryValues);
         }
+
+        final ListPreference preference = findPreference(Prefs.pk_camera_id_scan_barcode);
+        //noinspection ConstantConditions
+        preference.setEntries(entries);
+        preference.setEntryValues(entryValues);
+        preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -361,7 +361,7 @@ public class ShowBookFragment
         } else if (itemId == R.id.MENU_BOOK_SEND_TO_GOODREADS) {
             //noinspection ConstantConditions
             Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-            mGrSendOneBookTask.startTask(book.getId());
+            mGrSendOneBookTask.start(book.getId());
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -470,7 +470,7 @@ public class ShowBookFragment
     private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
             //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,8 +27,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -66,10 +64,9 @@ public class ArchiveReaderTask
     @Override
     @WorkerThread
     protected ImportResults doWork(@NonNull final Context context)
-            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException,
-            // the next 4 are all GeneralSecurityException
-                   CertificateException, NoSuchAlgorithmException,
-                   KeyStoreException, KeyManagementException {
+            throws InvalidArchiveException, GeneralParsingException, ImportException,
+                   IOException,
+                   CertificateException, KeyManagementException {
         Thread.currentThread().setName(TAG);
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {

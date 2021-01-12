@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,38 +23,44 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
-import com.hardbacknutter.nevertoomanybooks.App;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 /**
- * Thrown when for some reason a website rejects our requests.
- * This could be due to Authentication and/or Authorization (Goodreads OAuth).
+ * Dedicated 403 HTTP_FORBIDDEN providing a user readable/localized message.
+ * <p>
+ * This could be due to Authentication and/or Authorization (e.g. Goodreads OAuth, Calibre write).
  * Maybe this should be split in two classes.
  */
 public class CredentialsException
-        extends Exception {
+        extends HttpStatusException {
 
-    private static final long serialVersionUID = 4436573044442202621L;
-    /** The site that caused the issue. */
-    @NonNull
-    private final String mSite;
+    private static final long serialVersionUID = -7925143754981772300L;
 
     /**
      * Constructor.
      *
-     * @param site name
+     * @param siteResId the site string res; which will be embedded in a default user message
+     * @param url       (optional) The full url, for debugging
      */
-    public CredentialsException(@NonNull final String site) {
-        super(site);
-        mSite = site;
+    public CredentialsException(@StringRes final int siteResId,
+                                @NonNull final String statusMessage,
+                                @Nullable final URL url) {
+        super(siteResId, HttpURLConnection.HTTP_FORBIDDEN, statusMessage, url);
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public String getLocalizedMessage() {
-        final Context context = AppLocale.getInstance().apply(App.getAppContext());
-        return context.getString(R.string.error_site_authentication_failed, mSite);
+    public String getLocalizedMessage(@NonNull final Context context) {
+        if (getSiteResId() != 0) {
+            return context.getString(R.string.error_site_authentication_failed,
+                                     context.getString(getSiteResId()));
+        } else {
+            return context.getString(R.string.httpErrorAuth);
+        }
     }
 }

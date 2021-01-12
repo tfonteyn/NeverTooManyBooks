@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ public interface ArchiveReader
      */
     @WorkerThread
     default void validate(@NonNull final Context context)
-            throws InvalidArchiveException, IOException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException, IOException {
         // do nothing
     }
 
@@ -69,7 +69,7 @@ public interface ArchiveReader
     @Nullable
     @WorkerThread
     default ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws InvalidArchiveException, IOException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException, IOException {
         return null;
     }
 
@@ -91,7 +91,8 @@ public interface ArchiveReader
     @WorkerThread
     ImportResults read(@NonNull Context context,
                        @NonNull ProgressListener progressListener)
-            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException;
+            throws InvalidArchiveException, GeneralParsingException, IOException,
+                   ImportException;
 
     /**
      * Override if the implementation needs to close something.

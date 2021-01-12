@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,8 +29,11 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.EnumSet;
 
+import com.hardbacknutter.nevertoomanybooks.backup.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
@@ -38,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -64,7 +68,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 public class JsonArchiveWriter
         implements ArchiveWriter {
 
-    protected static final int VERSION = 1;
+    private static final String TAG = "JsonArchiveWriter";
+
+    private static final int VERSION = 1;
 
     /** Export configuration. */
     @NonNull
@@ -88,29 +94,52 @@ public class JsonArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
-        final ExportResults results;
-
-        try (OutputStream os = mHelper.createOutputStream(context);
-             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = new JsonRecordWriter(mHelper.getUtcDateTimeSince())) {
-
-            // manually concat
-            // 1. archive envelope
-            bw.write("{\"" + JsonCoder.TAG_APPLICATION_ROOT + "\":{");
-            // 2. container object
-            bw.write("\"" + RecordType.AutoDetect.getName() + "\":");
-            // 3. the actual data inside the container
-            results = recordWriter.write(context, bw, EnumSet.of(RecordType.Books),
-                                         progressListener);
-            // 4. the metadata
-            bw.write(",\"" + RecordType.MetaData.getName() + "\":");
-            recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
-            // close the envelope
-            bw.write("}}");
+        final LocalDateTime dateSince;
+        if (mHelper.isIncremental()) {
+            dateSince = Backup.getLastFullBackupDate(context);
+        } else {
+            dateSince = null;
         }
-        return results;
+
+        final int booksToExport;
+        try (DAO db = new DAO(TAG)) {
+            booksToExport = db.countBooksForExport(dateSince);
+        }
+
+        if (booksToExport > 0) {
+            progressListener.setMaxPos(booksToExport);
+
+            final ExportResults results;
+
+            try (OutputStream os = mHelper.createOutputStream(context);
+                 Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                 Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
+                 RecordWriter recordWriter = new JsonRecordWriter(dateSince)) {
+
+                // manually concat
+                // 1. archive envelope
+                bw.write("{\"" + JsonCoder.TAG_APPLICATION_ROOT + "\":{");
+                // 2. container object
+                bw.write("\"" + RecordType.AutoDetect.getName() + "\":");
+                // 3. the actual data inside the container
+                results = recordWriter
+                        .write(context, bw, EnumSet.of(RecordType.Books), progressListener);
+                // 4. the metadata
+                bw.write(",\"" + RecordType.MetaData.getName() + "\":");
+                recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
+                // 5. close the envelope
+                bw.write("}}");
+            }
+
+            // If the backup was a full backup remember that.
+            if (!mHelper.isIncremental()) {
+                Backup.setLastFullBackupDate(context, LocalDateTime.now(ZoneOffset.UTC));
+            }
+            return results;
+        } else {
+            return new ExportResults();
+        }
     }
 }

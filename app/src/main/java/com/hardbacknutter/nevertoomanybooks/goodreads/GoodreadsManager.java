@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.AddBookToShelfApiHandler;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.IsbnToIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewEditApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShelvesListApiHandler;
@@ -55,8 +54,8 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIdApiHandler
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIsbnApiHandler;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 
 /**
  * This is a layer between the API handler classes and the Goodreads sync tasks.
@@ -201,15 +200,13 @@ public class GoodreadsManager {
      *
      * @return Disposition of book
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @WorkerThread
     @GrStatus.Status
     public int sendOneBook(@NonNull final DAO db,
                            @NonNull final DataHolder bookData)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
 
@@ -232,7 +229,7 @@ public class GoodreadsManager {
                 final boolean[] fetchThumbnails = {false, false};
                 grBookData = getBookById(grBookId, fetchThumbnails, new Bundle());
             }
-        } catch (@NonNull final Http404Exception ignore) {
+        } catch (@NonNull final HttpNotFoundException ignore) {
             grBookId = 0;
         }
 
@@ -321,7 +318,7 @@ public class GoodreadsManager {
                     if (!(grShelfList.isExclusive(grShelf))) {
                         removeBookFromShelf(grBookId, grShelf);
                     }
-                } catch (@NonNull final Http404Exception ignore) {
+                } catch (@NonNull final HttpNotFoundException ignore) {
                     // Ignore here; probably means the book was not on this shelf anyway
                 }
             }
@@ -380,15 +377,13 @@ public class GoodreadsManager {
      *
      * @return Bundle of Goodreads book data
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @NonNull
     private Bundle getBookById(@IntRange(from = 1) final long grBookId,
                                @NonNull final boolean[] fetchThumbnail,
                                @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requirePositiveValue(grBookId, "grBookId");
@@ -409,15 +404,13 @@ public class GoodreadsManager {
      *
      * @return Bundle with Goodreads book data
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @NonNull
     private Bundle getBookByIsbn(@NonNull final String validIsbn,
                                  @NonNull final boolean[] fetchThumbnail,
                                  @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         if (mShowBookByIsbnApiHandler == null) {
             mShowBookByIsbnApiHandler = new ShowBookByIsbnApiHandler(mAppContext, mGoodreadsAuth);
@@ -432,13 +425,11 @@ public class GoodreadsManager {
      *
      * @return the Goodreads shelves
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @NonNull
     private GoodreadsShelves getShelves()
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         if (mShelvesList == null) {
             final ShelvesListApiHandler handler =
@@ -456,14 +447,12 @@ public class GoodreadsManager {
      *
      * @return reviewId
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     private long addBookToShelf(final long grBookId,
                                 @SuppressWarnings("SameParameterValue")
                                 @NonNull final String shelfName)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
@@ -479,13 +468,11 @@ public class GoodreadsManager {
      *
      * @return reviewId
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     private long addBookToShelf(final long grBookId,
                                 @NonNull final Collection<String> shelfNames)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
@@ -499,13 +486,11 @@ public class GoodreadsManager {
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     private void removeBookFromShelf(final long grBookId,
                                      @NonNull final String shelfName)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         if (mAddBookToShelfApiHandler == null) {
             mAddBookToShelfApiHandler = new AddBookToShelfApiHandler(mAppContext, mGoodreadsAuth);
@@ -521,13 +506,11 @@ public class GoodreadsManager {
      *
      * @return Goodreads book ID
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @SuppressWarnings("unused")
     private long isbnToId(@NonNull final String isbn)
-            throws CredentialsException, Http404Exception, IOException {
+            throws IOException {
 
         if (mIsbnToIdApiHandler == null) {
             mIsbnToIdApiHandler = new IsbnToIdApiHandler(mAppContext, mGoodreadsAuth);

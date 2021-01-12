@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -50,7 +50,7 @@ public class ShowBookByIsbnApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public ShowBookByIsbnApiHandler(@NonNull final Context appContext,
                                     @NonNull final GoodreadsAuth grAuth)
@@ -67,15 +67,13 @@ public class ShowBookByIsbnApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on other failures
      */
     @NonNull
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail,
                                @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchBook(url, fetchThumbnail, bookData);
@@ -89,14 +87,12 @@ public class ShowBookByIsbnApiHandler
      *
      * @return fileSpec, or {@code null} if no image found.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on other failures
      */
     @Nullable
     public String searchCoverImageByIsbn(@NonNull final String validIsbn,
                                          @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final String url = String.format(BY_ISBN, validIsbn, mGrAuth.getDevKey());
         return searchCoverImage(url, bookData);

@@ -1,0 +1,860 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.backup.calibre;
+
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.util.Base64;
+
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.annotation.WorkerThread;
+import androidx.core.util.Pair;
+import androidx.preference.PreferenceManager;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.UncheckedIOException;
+import java.io.Writer;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManagerFactory;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
+import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.utils.HttpConstants;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException;
+
+/**
+ * <a href="https://manual.calibre-ebook.com/server.html">User manual</a>
+ * <p>
+ * <a href="https://github.com/kovidgoyal/calibre/blob/master/src/calibre/srv/ajax.py">
+ * AJAX API</a>
+ */
+public class CalibreContentServer {
+
+    public static final String PK_HOST_USER = PREF_KEY + ".host.user";
+    public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
+    /** Whether to show any sync menus at all. */
+    public static final String PK_ENABLED = PREF_KEY + ".enabled";
+
+    /** Preferences prefix. */
+    private static final String PREF_KEY = "calibre";
+
+    /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
+    public static final String PK_HOST_URL = PREF_KEY + ".host.url";
+    /** DER encoded CA certificate. */
+    public static final String CA_FILE = TAG + ".ca";
+    /**
+     * The buffer used for all small reads.
+     * <p>
+     * 8k is the same as the default in BufferedReader.
+     */
+    private static final int BUFFER_SMALL = 8_192;
+    /**
+     * The buffer used for a single book; it's usually just above 8k.
+     */
+    private static final int BUFFER_BOOK = 16_384;
+
+    /** last time we synced with Calibre. */
+    private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
+    /** Log tag. */
+    private static final String TAG = "CalibreContentServer";
+    /**
+     * We're using a large read buffer for {@link #getBookIds(String, int, int)};
+     * The size is based on a rough minimum of
+     * 8K of data for a single book and we fetch 10 books at a time... hence 128k.
+     */
+    private static final int BUFFER_BOOK_LIST = 131_072;
+
+    @NonNull
+    private final String mHostUrl;
+    private final Map<String, CalibreLibrary> mLibraryMap = new HashMap<>();
+    /** The header string: "Basic user:password". (in base64) */
+    @Nullable
+    private final String mAuthorization;
+
+    /**
+     * The custom fields <strong>present</strong> on the server.
+     * This will be a subset of the supported fields from {@link CalibreCustomFields}.
+     */
+    private final Set<CalibreCustomFields.Field> mCustomFields = new HashSet<>();
+
+    private final Map<String, Integer> mTotalBooks = new HashMap<>();
+    @NonNull
+    private final ImageDownloader mImageDownloader;
+    @Nullable
+    private SSLContext mSslContext;
+
+    @AnyThread
+    CalibreContentServer(@NonNull final Context context)
+            throws IOException,
+                   CertificateException, KeyManagementException {
+        this(context, getHostUri(context));
+    }
+
+    @AnyThread
+    CalibreContentServer(@NonNull final Context context,
+                         @NonNull final Uri uri)
+            throws IOException,
+                   CertificateException, KeyManagementException {
+
+        mHostUrl = uri.toString();
+
+        // accommodate the (usually) self-signed CA certificate
+        if ("https".equals(uri.getScheme())) {
+            mSslContext = getSslContext(context);
+        }
+
+        // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
+        final Pair<String, String> userAndPassword = getUserAndPassword(context);
+        if (!userAndPassword.first.isEmpty()) {
+            mAuthorization = "Basic " + Base64.encodeToString(
+                    (userAndPassword.first + ":" + userAndPassword.second)
+                            .getBytes(StandardCharsets.UTF_8), 0);
+        } else {
+            mAuthorization = null;
+        }
+
+        mImageDownloader = new ImageDownloader(mSslContext, mAuthorization);
+    }
+
+    @AnyThread
+    public static boolean isShowSyncMenus(@NonNull final SharedPreferences global) {
+        return global.getBoolean(PK_ENABLED, true);
+    }
+
+    /**
+     * Get the default/stored host url.
+     *
+     * @param context current context
+     *
+     * @return url
+     */
+    @NonNull
+    public static Uri getHostUri(@NonNull final Context context) {
+        return Uri.parse(PreferenceManager.getDefaultSharedPreferences(context)
+                                          .getString(PK_HOST_URL, ""));
+    }
+
+    @NonNull
+    public static Pair<String, String> getUserAndPassword(@NonNull final Context context) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        return new Pair<>(global.getString(PK_HOST_USER, ""),
+                          global.getString(PK_HOST_PASS, ""));
+    }
+
+    @Nullable
+    static LocalDateTime getLastSyncDate(@NonNull final Context context) {
+        final String date = PreferenceManager.getDefaultSharedPreferences(context)
+                                             .getString(PK_LAST_SYNC_DATE, null);
+
+        if (date != null && !date.isEmpty()) {
+            return DateParser.getInstance(context).parseISO(date);
+        }
+
+        return null;
+    }
+
+    static void setLastSyncDate(@NonNull final Context context,
+                                @Nullable final LocalDateTime dateTime) {
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        if (dateTime == null) {
+            global.edit().remove(PK_LAST_SYNC_DATE).apply();
+        } else {
+            global.edit()
+                  .putString(PK_LAST_SYNC_DATE, dateTime
+                          .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                  .apply();
+        }
+    }
+
+    /**
+     * endpoint('/ajax/library-info', postprocess=json)
+     * <p>
+     * Return info about available libraries.
+     *
+     * <pre>
+     * {"library_map":
+     *      {"Calibre_Library": "Calibre Library"},
+     *      "default_library": "Calibre_Library"
+     * }
+     * </pre>
+     *
+     * @throws IOException on failures
+     */
+    @WorkerThread
+    String loadLibraries()
+            throws GeneralParsingException, IOException {
+        try {
+            final String url = mHostUrl + "/ajax/library-info";
+            final JSONObject source = new JSONObject(fetch(url, BUFFER_SMALL));
+
+            final String defaultLibraryId = source.getString("default_library");
+
+            final JSONObject libs = source.getJSONObject("library_map");
+            final Iterator<String> it = libs.keys();
+            while (it.hasNext()) {
+                final String id = it.next();
+                mLibraryMap.put(id, new CalibreLibrary(id, libs.getString(id),
+                                                       id.equals(defaultLibraryId)));
+            }
+            return defaultLibraryId;
+
+        } catch (@NonNull final JSONException e) {
+            throw new GeneralParsingException(e);
+        }
+    }
+
+    @NonNull
+    @AnyThread
+    public Map<String, CalibreLibrary> getLibraries() {
+        return mLibraryMap;
+    }
+
+    @NonNull
+    public CalibreLibrary getLibrary(@NonNull final String libraryId) {
+        //noinspection ConstantConditions
+        return mLibraryMap.get(libraryId);
+    }
+
+    /**
+     * Get the number of books in the given library.
+     * <p>
+     * <strong>Only available after calling {@link #readMetaData(String)}</strong>
+     *
+     * @return number
+     */
+    int getTotalBooks(@NonNull final String libraryId) {
+        return Objects.requireNonNull(mTotalBooks.get(libraryId), "Must call readMetaData first");
+    }
+
+    /**
+     * Read some if the meta data from the server.
+     * <ul>
+     *     <li>number of books in the given library</li>
+     *     <li>user custom fields</li>
+     * </ul>
+     *
+     * @param libraryId to read from
+     *
+     * @throws IOException on other failures
+     */
+    void readMetaData(@NonNull final String libraryId)
+            throws IOException, JSONException {
+
+        // Remove any previous
+        mCustomFields.clear();
+
+        // read the first book available to get the customs fields (if any)
+        final JSONObject result = getBookIds(libraryId, 1, 0);
+        mTotalBooks.put(libraryId, result.optInt("total_num"));
+
+        final JSONArray calibreIds = result.optJSONArray("book_ids");
+        if (calibreIds != null && calibreIds.length() > 0) {
+            final JSONObject source = getBook(libraryId, calibreIds.getInt(0));
+            if (source != null && !source.isNull(CalibreCustomFields.USER_METADATA)) {
+                final JSONObject userMetaData = source.optJSONObject(
+                        CalibreCustomFields.USER_METADATA);
+                if (userMetaData != null) {
+
+                    // check the supported fields
+                    for (final CalibreCustomFields.Field cf : CalibreCustomFields.getFields()) {
+                        final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
+                        // do we have a match? (this check is needed, it's NOT a sanity check)
+                        if (data != null && cf.type.equals(data.getString(
+                                CalibreCustomFields.METADATA_DATATYPE))) {
+                            mCustomFields.add(cf);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @NonNull
+    Set<CalibreCustomFields.Field> getCustomFields() {
+        return mCustomFields;
+    }
+
+    /**
+     * endpoint('/ajax/category/{encoded_name}/{library_id=None}', postprocess=json)
+     * <p>
+     * Return a dictionary describing the category specified by name.
+     * <p>
+     * Optional: ?num=100&offset=0&sort=name&sort_order=asc
+     * <p>
+     * We're always using the "616c6c626f6f6b73" == "All books" category
+     * <p>
+     * JSON response:
+     * <pre>
+     *     {
+     *     "total_num": 255,
+     *     "sort_order": "desc",
+     *     "offset": 200,
+     *     "num": 10,
+     *     "sort": "timestamp",
+     *     "base_url": "/ajax/books_in/616c6c626f6f6b73/30/Calibre_Library",
+     *     "book_ids": [73, 72, 71, 70, 69, 68, 67, 66, 65, 64]
+     *     }
+     * </pre>
+     *
+     * @param libraryId to read from
+     * @param num       number of books to fetch
+     * @param offset    to start fetching from
+     *
+     * @return see above
+     *
+     * @throws IOException on failures
+     */
+    @WorkerThread
+    @NonNull
+    JSONObject getBookIds(@NonNull final String libraryId,
+                          @SuppressWarnings("SameParameterValue") final int num,
+                          final int offset)
+            throws IOException, JSONException {
+
+        final String url = mHostUrl + "/ajax/category/616c6c626f6f6b73/" + libraryId
+                           + "?num=" + num + "&offset=" + offset;
+        return new JSONObject(fetch(url, BUFFER_SMALL));
+    }
+
+    /**
+     * endpoint('/ajax/books/{library_id=None}', postprocess=json)
+     * <p>
+     * Return the metadata for the books as a JSON dictionary.
+     * <p>
+     * Query parameters: ?ids=all&category_urls=true&id_is_uuid=false&device_for_template=None
+     * <p>
+     * If category_urls is true the returned dictionary also contains a
+     * mapping of category (field) names to URLs that return the list of books in the
+     * given category.
+     * <p>
+     * If id_is_uuid is true then the book_id is assumed to be a book uuid instead.
+     *
+     * <pre>
+     *     {
+     *     "6": {
+     *         "series": null,
+     *         "tags": [
+     *             "Fiction",
+     *             "Science Fiction"
+     *         ],
+     *         "thumbnail": "/get/thumb/6/Calibre_Library",
+     *         "author_sort": "Stross, Charles",
+     *         "rating": 5,
+     *         "pubdate": "2005-06-25T23:00:00+00:00",
+     *         "application_id": 6,
+     *         "cover": "/get/cover/6/Calibre_Library",
+     *         "series_index": null,
+     *         "author_link_map": {
+     *             "Charles Stross": ""
+     *         },
+     *         "author_sort_map": {
+     *             "Charles Stross": "Stross, Charles"
+     *         },
+     *         "publisher": "Ace",
+     *         "user_categories": {},
+     *         "comments": "<p>The Singularity. blah blah...</p>",
+     *         "title_sort": "Accelerando",
+     *         "identifiers": {
+     *             "amazon": "0441014151",
+     *             "isbn": "9780441014156",
+     *             "google": "F3i9DAEACAAJ"
+     *         },
+     *         "uuid": "4ec36562-d8e8-4499-9c6c-d1e7ae2af42f",
+     *         "title": "Accelerando",
+     *         "authors": [
+     *             "Charles Stross"
+     *         ],
+     *         "last_modified": "2020-11-20T11:17:51+00:00",
+     *         "languages": [
+     *             "eng"
+     *         ],
+     *         "timestamp": "2019-04-11T12:02:03+00:00",
+     *         "user_metadata": {
+     *             "#notes": {
+     *                 "table": "custom_column_4",
+     *                 "column": "value",
+     *                 "datatype": "comments",
+     *                 "is_multiple": null,
+     *                 "kind": "field",
+     *                 "name": "Notes",
+     *                 "search_terms": [
+     *                     "#notes"
+     *                 ],
+     *                 "label": "notes",
+     *                 "colnum": 4,
+     *                 "display": {
+     *                     "description": "Personal notes",
+     *                     "heading_position": "above",
+     *                     "interpret_as": "html"
+     *                 },
+     *                 "is_custom": true,
+     *                 "is_category": false,
+     *                 "link_column": "value",
+     *                 "category_sort": "value",
+     *                 "is_csp": false,
+     *                 "is_editable": true,
+     *                 "rec_index": 22,
+     *                 "#value#": null,
+     *                 "#extra#": null,
+     *                 "is_multiple2": {}
+     *             },
+     *             "#read": {
+     *                 "table": "custom_column_2",
+     *                 "column": "value",
+     *                 "datatype": "bool",
+     *                 "is_multiple": null,
+     *                 "kind": "field",
+     *                 "name": "Read",
+     *                 "search_terms": [
+     *                     "#read"
+     *                 ],
+     *                 "label": "read",
+     *                 "colnum": 2,
+     *                 "display": {
+     *                     "description": ""
+     *                 },
+     *                 "is_custom": true,
+     *                 "is_category": false,
+     *                 "link_column": "value",
+     *                 "category_sort": "value",
+     *                 "is_csp": false,
+     *                 "is_editable": true,
+     *                 "rec_index": 23,
+     *                 "#value#": null,
+     *                 "#extra#": null,
+     *                 "is_multiple2": {}
+     *             },
+     *             "#read_end": {
+     *                 "table": "custom_column_3",
+     *                 "column": "value",
+     *                 "datatype": "datetime",
+     *                 "is_multiple": null,
+     *                 "kind": "field",
+     *                 "name": "Finished reading",
+     *                 "search_terms": [
+     *                     "#read_end"
+     *                 ],
+     *                 "label": "read_end",
+     *                 "colnum": 3,
+     *                 "display": {
+     *                     "date_format": null,
+     *                     "description": ""
+     *                 },
+     *                 "is_custom": true,
+     *                 "is_category": false,
+     *                 "link_column": "value",
+     *                 "category_sort": "value",
+     *                 "is_csp": false,
+     *                 "is_editable": true,
+     *                 "rec_index": 24,
+     *                 "#value#": "None",
+     *                 "#extra#": null,
+     *                 "is_multiple2": {}
+     *             },
+     *             "#read_start": {
+     *                 "table": "custom_column_7",
+     *                 "column": "value",
+     *                 "datatype": "datetime",
+     *                 "is_multiple": null,
+     *                 "kind": "field",
+     *                 "name": "Started reading",
+     *                 "search_terms": [
+     *                     "#read_start"
+     *                 ],
+     *                 "label": "read_start",
+     *                 "colnum": 7,
+     *                 "display": {
+     *                     "date_format": null,
+     *                     "description": ""
+     *                 },
+     *                 "is_custom": true,
+     *                 "is_category": false,
+     *                 "link_column": "value",
+     *                 "category_sort": "value",
+     *                 "is_csp": false,
+     *                 "is_editable": true,
+     *                 "rec_index": 25,
+     *                 "#value#": "None",
+     *                 "#extra#": null,
+     *                 "is_multiple2": {}
+     *             },
+     *             "#status": {
+     *                 "table": "custom_column_5",
+     *                 "column": "value",
+     *                 "datatype": "enumeration",
+     *                 "is_multiple": null,
+     *                 "kind": "field",
+     *                 "name": "Status",
+     *                 "search_terms": [
+     *                     "#status"
+     *                 ],
+     *                 "label": "status",
+     *                 "colnum": 5,
+     *                 "display": {
+     *                     "enum_values": [
+     *                         "OK",
+     *                         "spelling",
+     *                         "OCR issues",
+     *                         "bad"
+     *                     ],
+     *                     "use_decorations": 0,
+     *                     "description": "",
+     *                     "enum_colors": [
+     *                         "green",
+     *                         "blue",
+     *                         "orange",
+     *                         "red"
+     *                     ]
+     *                 },
+     *                 "is_custom": true,
+     *                 "is_category": true,
+     *                 "link_column": "value",
+     *                 "category_sort": "value",
+     *                 "is_csp": false,
+     *                 "is_editable": true,
+     *                 "rec_index": 26,
+     *                 "#value#": null,
+     *                 "#extra#": null,
+     *                 "is_multiple2": {}
+     *             }
+     *         },
+     *         "format_metadata": {
+     *             "epub": {
+     *                 "path": "full absolute path to the epub file",
+     *                 "size": 408763,
+     *                 "mtime": "2020-09-18T15:26:14.871190+00:00"
+     *             }
+     *         },
+     *         "formats": [
+     *             "epub"
+     *         ],
+     *         "main_format": {
+     *             "epub": "/get/epub/6/Calibre_Library"
+     *         },
+     *         "other_formats": {},
+     *         "category_urls": {
+     *             "series": {},
+     *             "tags": {
+     *                 "Fiction": "/ajax/books_in/74616773/3139/Calibre_Library",
+     *                 "Science Fiction": "/ajax/books_in/74616773/34/Calibre_Library"
+     *             },
+     *             "publisher": {
+     *                 "Ace": "/ajax/books_in/7075626c6973686572/3735/Calibre_Library"
+     *             },
+     *             "authors": {
+     *                 "Charles Stross": "/ajax/books_in/617574686f7273/32/Calibre_Library"
+     *             },
+     *             "languages": {},
+     *             "#status": {}
+     *         }
+     *     },
+     * </pre>
+     * <p>
+     *
+     * @param libraryId to read from
+     *
+     * @return JSONObject with a list of Calibre book objects; NOT an array.
+     *
+     * @throws IOException on failures
+     */
+    @WorkerThread
+    @NonNull
+    JSONObject getBooks(@NonNull final String libraryId,
+                        @NonNull final JSONArray calibreIds)
+            throws IOException, JSONException {
+
+        final StringJoiner ids = new StringJoiner(",");
+        for (int i = 0; i < calibreIds.length(); i++) {
+            ids.add(String.valueOf(calibreIds.getInt(i)));
+        }
+
+        final String url = mHostUrl + "/ajax/books/" + libraryId
+                           + "?category_urls=false&ids=" + ids;
+        return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
+    }
+
+    /**
+     * endpoint('/ajax/book/{book_id}/{library_id=None}', postprocess=json)
+     * <p>
+     * Return the metadata of the book as a JSON dictionary.
+     * <p>
+     * Query parameters: ?category_urls=true&id_is_uuid=false&device_for_template=None
+     * <p>
+     * If category_urls is true the returned dictionary also contains a
+     * mapping of category (field) names to URLs that return the list of books in the
+     * given category.
+     * <p>
+     * If id_is_uuid is true then the book_id is assumed to be a book uuid instead.
+     *
+     * @param libraryId   to read from
+     * @param calibreUuid of the book to get
+     *
+     * @return Calibre book object
+     *
+     * @throws IOException on failures
+     */
+    @WorkerThread
+    @Nullable
+    public JSONObject getBook(@NonNull final String libraryId,
+                              @NonNull final String calibreUuid)
+            throws IOException, JSONException {
+        final String url = mHostUrl + "/ajax/book/" + calibreUuid + '/' + libraryId
+                           + "?id_is_uuid=true";
+
+        return new JSONObject(fetch(url, BUFFER_BOOK));
+    }
+
+    /**
+     * See{@link #getBook(String, String)}.
+     *
+     * @param libraryId to read from
+     * @param calibreId of the book to get
+     *
+     * @return Calibre book object
+     *
+     * @throws IOException on failures
+     */
+    @WorkerThread
+    @Nullable
+    public JSONObject getBook(@NonNull final String libraryId,
+                              final int calibreId)
+            throws IOException, JSONException {
+        final String url = mHostUrl + "/ajax/book/" + calibreId + '/' + libraryId;
+
+        return new JSONObject(fetch(url, BUFFER_BOOK));
+    }
+
+
+    /**
+     * Send updates to the server.
+     *
+     * @param libraryId to write to
+     * @param calibreId book to update
+     * @param changes   to send
+     *
+     * @throws IOException on other failures
+     */
+    void pushChanges(@NonNull final String libraryId,
+                     final int calibreId,
+                     @NonNull final JSONObject changes)
+            throws IOException, JSONException {
+
+        final JSONObject data = new JSONObject();
+        data.put("changes", changes);
+
+        final JSONArray loadedBookIds = new JSONArray();
+        loadedBookIds.put(calibreId);
+        data.put("loaded_book_ids", loadedBookIds);
+        final String postBody = data.toString();
+
+        final String url = mHostUrl + "/cdb/set-fields/" + calibreId + '/' + libraryId;
+
+        final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
+        request.setRequestMethod(HttpConstants.POST);
+        request.setRequestProperty(HttpConstants.CONTENT_TYPE, HttpConstants.CONTENT_TYPE_JSON);
+        request.setDoOutput(true);
+        if (mSslContext != null) {
+            ((HttpsURLConnection) request).setSSLSocketFactory(mSslContext.getSocketFactory());
+        }
+        if (mAuthorization != null) {
+            request.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthorization);
+        }
+
+        // explicit connect for clarity
+        request.connect();
+
+        try (OutputStream os = request.getOutputStream();
+             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+             Writer writer = new BufferedWriter(osw)) {
+            writer.write(postBody);
+            writer.flush();
+        }
+
+        try {
+            checkResponseCode(request, R.string.site_calibre);
+        } finally {
+            request.disconnect();
+        }
+    }
+
+    /**
+     * Fetch the given URL content as a single string.
+     *
+     * @param url    to read
+     * @param buffer size for the read
+     *
+     * @return content
+     *
+     * @throws IOException on failures
+     */
+    @NonNull
+    private String fetch(@NonNull final String url,
+                         final int buffer)
+            throws IOException {
+
+        try (TerminatorConnection con = new TerminatorConnection(url)) {
+            con.setSSLContext(mSslContext);
+            if (mAuthorization != null) {
+                con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthorization);
+            }
+            checkResponseCode(con.getRequest(), R.string.site_calibre);
+
+            try (InputStream is = con.getInputStream();
+                 InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                 BufferedReader reader = new BufferedReader(isr, buffer)) {
+
+                return reader.lines().collect(Collectors.joining());
+            }
+        } catch (@NonNull final UncheckedIOException e) {
+            //noinspection ConstantConditions
+            throw e.getCause();
+        }
+    }
+
+    @WorkerThread
+    @Nullable
+    File fetchCover(@NonNull final Context context,
+                    final int calibreId,
+                    @NonNull final String coverUrl) {
+        try {
+            final File tmpFile = mImageDownloader
+                    .createTmpFile(context, TAG, String.valueOf(calibreId), 0, null);
+            return mImageDownloader.fetch(context, mHostUrl + coverUrl, tmpFile);
+
+        } catch (@NonNull final ExternalStorageException ignore) {
+            // a fail here is never critical, we're ignoring any
+        }
+        return null;
+    }
+
+    @NonNull
+    private SSLContext getSslContext(@NonNull final Context context)
+            throws IOException, CertificateException, KeyManagementException {
+
+        try {
+            final Certificate ca;
+            try (InputStream is = context.openFileInput(CA_FILE)) {
+                ca = CertificateFactory.getInstance("X.509").generateCertificate(is);
+            }
+
+            final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(null, null);
+            keyStore.setCertificateEntry("calibre", ca);
+
+            final TrustManagerFactory tmf = TrustManagerFactory
+                    .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(keyStore);
+
+            final SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, tmf.getTrustManagers(), null);
+
+            return sslContext;
+
+        } catch (@NonNull final KeyStoreException | NoSuchAlgorithmException e) {
+            // As we're using defaults for the keystore type and trust algorithm,
+            // we should never get here... flw
+            throw new SSLException(e);
+        }
+    }
+
+    /**
+     * Check the response code.
+     *
+     * @param request   to check
+     * @param siteResId site identifier
+     *
+     * @throws CredentialsException  on login failure
+     * @throws HttpNotFoundException the URL was not found
+     * @throws HttpStatusException   on other HTTP failures
+     * @throws IOException           on other failures
+     */
+    private void checkResponseCode(@NonNull final HttpURLConnection request,
+                                   @SuppressWarnings("SameParameterValue")
+                                   @StringRes final int siteResId)
+            throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException {
+        // Make sure the server was happy.
+        final int responseCode = request.getResponseCode();
+        switch (responseCode) {
+            case HttpURLConnection.HTTP_OK:
+            case HttpURLConnection.HTTP_CREATED:
+                break;
+
+            case HttpURLConnection.HTTP_UNAUTHORIZED:
+                throw new CredentialsException(siteResId,
+                                               request.getResponseMessage(),
+                                               request.getURL());
+
+            case HttpURLConnection.HTTP_NOT_FOUND:
+                throw new HttpNotFoundException(siteResId,
+                                                request.getResponseMessage(),
+                                                request.getURL());
+
+            default:
+                throw new HttpStatusException(siteResId,
+                                              request.getResponseCode(),
+                                              request.getResponseMessage(),
+                                              request.getURL());
+        }
+    }
+}

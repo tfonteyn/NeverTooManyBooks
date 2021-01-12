@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,7 +56,7 @@ public class ImportTask
      *
      * @param isSync Flag to indicate sync data or import all.
      */
-    public void startImportTask(final boolean isSync) {
+    public void start(final boolean isSync) {
         mIsSync = isSync;
         execute(R.id.TASK_ID_GR_IMPORT);
     }

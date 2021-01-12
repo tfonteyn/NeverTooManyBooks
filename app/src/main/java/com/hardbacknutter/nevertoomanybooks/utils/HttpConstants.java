@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,31 +17,21 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.url;
+package com.hardbacknutter.nevertoomanybooks.utils;
 
-import androidx.annotation.NonNull;
+public final class HttpConstants {
 
-public class CalibreLibrary {
+    /** HTTP Request method. */
+    public static final String POST = "POST";
 
-    @SuppressWarnings("FieldCanBeLocal")
-    private final boolean mIsDefault;
+    /** HTTP authentication header. */
+    public static final String AUTHORIZATION = "Authorization";
+    /** HTTP Request Header. */
+    public static final String CONNECTION = "Connection";
+    /** HTTP Request Header. */
+    public static final String USER_AGENT = "User-Agent";
+    /** HTTP Request Header. */
+    public static final String CONTENT_TYPE = "Content-Type";
+    public static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
 
-    @SuppressWarnings("FieldCanBeLocal")
-    @NonNull
-    private final String mId;
-    @NonNull
-    private final String mName;
-
-    CalibreLibrary(@NonNull final String id,
-                   @NonNull final String name,
-                   final boolean isDefault) {
-        this.mId = id;
-        mName = name;
-        this.mIsDefault = isDefault;
-    }
-
-    @NonNull
-    public String getName() {
-        return mName;
-    }
 }

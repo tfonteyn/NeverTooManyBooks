@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
@@ -341,7 +342,7 @@ public class BookTest {
 
     @Test
     public void showBookVM()
-            throws DAO.DaoWriteException {
+            throws DAO.DaoWriteException, ExternalStorageException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (DAO db = new DAO(context, "ShowBookViewModel-prep")) {
             mBook[0] = prepareAndInsertBook(context, db);
@@ -367,7 +368,7 @@ public class BookTest {
      */
     private Book prepareAndInsertBook(@NonNull final Context context,
                                       @NonNull final DAO db)
-            throws DAO.DaoWriteException {
+            throws DAO.DaoWriteException, ExternalStorageException {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -48,7 +48,7 @@ public class ShowBookByIdApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public ShowBookByIdApiHandler(@NonNull final Context appContext,
                                   @NonNull final GoodreadsAuth grAuth)
@@ -65,15 +65,13 @@ public class ShowBookByIdApiHandler
      *
      * @return the Bundle of book data.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on other failures
      */
     @NonNull
     public Bundle searchByExternalId(final long grBookId,
                                      @NonNull final boolean[] fetchThumbnail,
                                      @NonNull final Bundle bookData)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final String url = String.format(BY_ID, grBookId, mGrAuth.getDevKey());
         return searchBook(url, fetchThumbnail, bookData);

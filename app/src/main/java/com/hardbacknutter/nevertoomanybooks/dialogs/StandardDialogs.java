@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,6 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.LocalizedException;
 
 public final class StandardDialogs {
 
@@ -271,6 +272,26 @@ public final class StandardDialogs {
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_error)
                 .setMessage(msgId)
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
+    }
+
+    public static void showError(@NonNull final Context context,
+                                 @NonNull final CharSequence message) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_error)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
+                .create()
+                .show();
+    }
+
+    public static void showError(@NonNull final Context context,
+                                 @NonNull final LocalizedException e) {
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_error)
+                .setMessage(e.getLocalizedMessage(context))
                 .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
                 .create()
                 .show();

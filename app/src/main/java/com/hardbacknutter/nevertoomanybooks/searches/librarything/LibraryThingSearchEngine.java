@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -216,7 +216,7 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -251,7 +251,7 @@ public class LibraryThingSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -323,13 +323,13 @@ public class LibraryThingSearchEngine
     @NonNull
     @Override
     public List<String> searchAlternativeEditions(@NonNull final String validIsbn)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingEditionHandler handler = new LibraryThingEditionHandler();
 
         final String url = getSiteUrl() + String.format("/api/thingISBN/%1$s", validIsbn);
-        try (TerminatorConnection con = createConnection(url, true)) {
+        try (TerminatorConnection con = createConnection(url)) {
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
@@ -348,14 +348,15 @@ public class LibraryThingSearchEngine
      */
     private void fetchBook(@NonNull final String url,
                            @NonNull final Bundle bookData)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final LibraryThingHandler handler = new LibraryThingHandler(bookData);
 //        final XmlDumpParser handler = new XmlDumpParser();
 
         // Get it
-        try (TerminatorConnection con = createConnection(url, true)) {
+        try (TerminatorConnection con = createConnection(url)) {
+
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
 
@@ -366,7 +367,7 @@ public class LibraryThingSearchEngine
             // but other than that it does not seem possible to get full details.
             if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
                 // 2020-03-27. Started getting "APIs Temporarily disabled"
-                throw new IOException(
+                throw new GeneralParsingException(
                         mAppContext.getString(R.string.error_network_site_has_problems));
             }
 

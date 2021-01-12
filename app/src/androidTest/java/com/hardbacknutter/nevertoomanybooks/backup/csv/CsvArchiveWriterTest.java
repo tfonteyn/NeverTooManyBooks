@@ -33,8 +33,6 @@ import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
@@ -81,9 +79,11 @@ public class CsvArchiveWriterTest {
 
     @Test
     public void write()
-            throws IOException, InvalidArchiveException, ImportException, DAO.DaoWriteException,
-                   CertificateException, NoSuchAlgorithmException,
-                   KeyStoreException, KeyManagementException, GeneralParsingException {
+            throws ImportException, DAO.DaoWriteException,
+                   InvalidArchiveException, GeneralParsingException,
+                   IOException,
+                   CertificateException, KeyManagementException {
+
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + ".csv");
         //noinspection ResultOfMethodCallIgnored
@@ -136,7 +136,7 @@ public class CsvArchiveWriterTest {
             db.update(context, book, 0);
         }
 
-        final ImportHelper importHelper = ImportHelper.withUri(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
         ImportResults importResults;
 
 

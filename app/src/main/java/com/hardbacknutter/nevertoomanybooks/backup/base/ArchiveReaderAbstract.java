@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,7 +121,8 @@ public abstract class ArchiveReaderAbstract
 
     @Override
     public void validate(@NonNull final Context context)
-            throws IOException, InvalidArchiveException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException,
+                   IOException {
         if (mArchiveMetaData == null) {
             mArchiveMetaData = readMetaData(context);
         }
@@ -149,7 +150,8 @@ public abstract class ArchiveReaderAbstract
     @Override
     @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws IOException, InvalidArchiveException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException,
+                   IOException {
         if (mArchiveMetaData == null) {
             final ArchiveReaderRecord record = seek(RecordType.MetaData);
             if (record == null) {
@@ -197,7 +199,8 @@ public abstract class ArchiveReaderAbstract
     @WorkerThread
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException, ImportException,
+                   IOException {
 
         // Sanity check: the archive info should have been read during the validate phase
         Objects.requireNonNull(mArchiveMetaData, "info");
@@ -228,7 +231,8 @@ public abstract class ArchiveReaderAbstract
 
     private void readV4(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, IOException, ImportException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException, ImportException,
+                   IOException {
 
         ArchiveReaderRecord record = seek(RecordType.AutoDetect);
         while (record != null && !progressListener.isCancelled()) {
@@ -241,7 +245,8 @@ public abstract class ArchiveReaderAbstract
 
     private void readV2(@NonNull final Context context,
                         @NonNull final ProgressListener progressListener)
-            throws InvalidArchiveException, IOException, ImportException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException, ImportException,
+                   IOException {
 
         final Set<RecordType> importEntries = mHelper.getImportEntries();
         try {
@@ -310,7 +315,8 @@ public abstract class ArchiveReaderAbstract
     private void readRecord(@NonNull final Context context,
                             @NonNull final ArchiveReaderRecord record,
                             @NonNull final ProgressListener progressListener)
-            throws IOException, ImportException, InvalidArchiveException, GeneralParsingException {
+            throws InvalidArchiveException, GeneralParsingException, ImportException,
+                   IOException {
 
         final Optional<RecordEncoding> encoding = record.getEncoding();
         if (encoding.isPresent()) {
@@ -369,7 +375,7 @@ public abstract class ArchiveReaderAbstract
     @Nullable
     @WorkerThread
     protected abstract ArchiveReaderRecord next()
-            throws InvalidArchiveException, IOException;
+            throws IOException;
 
     /**
      * Scan the input for the desired record type.

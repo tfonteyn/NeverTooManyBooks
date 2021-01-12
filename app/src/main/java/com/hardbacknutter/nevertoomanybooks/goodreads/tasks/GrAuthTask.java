@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,13 +61,13 @@ public class GrAuthTask
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setNeutralButton(R.string.btn_learn_more, (d, w) -> context.startActivity(
                         new Intent(context, GoodreadsRegistrationActivity.class)))
-                .setPositiveButton(android.R.string.ok, (d, w) -> startTask())
+                .setPositiveButton(android.R.string.ok, (d, w) -> start())
                 .create()
                 .show();
     }
 
     @UiThread
-    public void startTask() {
+    public void start() {
         execute(R.id.TASK_ID_GR_REQUEST_AUTH);
     }
 

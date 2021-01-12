@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,6 +72,7 @@ public class StyleGroupsFragment
                 public void handleOnBackPressed() {
                     if (mStyleViewModel.hasGroupsSelected()) {
                         mStyleViewModel.updateStyleGroups();
+                        // just pop, we're always called from a fragment
                         getParentFragmentManager().popBackStack();
 
                     } else {
@@ -81,6 +82,7 @@ public class StyleGroupsFragment
                                 .setTitle(R.string.pg_style_groups)
                                 .setMessage(R.string.warning_select_at_least_1_group)
                                 .setNegativeButton(R.string.action_discard, (d, w) ->
+                                        // just pop, we're always called from a fragment
                                         getParentFragmentManager().popBackStack())
                                 .setPositiveButton(R.string.action_edit, (d, w) ->
                                         d.dismiss())

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,23 +21,28 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerReader;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveReader;
@@ -45,7 +50,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.db.DbArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.tar.TarArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServerReader;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
@@ -59,7 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * This is the top level, i.e. the actual file we read/write.
  * Handled by {@link ArchiveReader} and {@link ArchiveWriter}.
  */
-public enum ArchiveEncoding {
+public enum ArchiveEncoding
+        implements Parcelable {
     /** The default full backup/restore support. Text files are compressed, images are not. */
     Zip(".zip"),
     /** Books as a CSV file; full support for export/import. */
@@ -73,20 +78,39 @@ public enum ArchiveEncoding {
     /** The legacy full backup/restore support. NOT compressed. */
     Tar(".tar"),
     /** A Calibre Content Server. */
-    CalibreCS("");
+    CalibreCS(null);
 
+    /** {@link Parcelable}. */
+    public static final Creator<ArchiveEncoding> CREATOR = new Creator<ArchiveEncoding>() {
+        @Override
+        @NonNull
+        public ArchiveEncoding createFromParcel(@NonNull final Parcel in) {
+            return ArchiveEncoding.values()[in.readInt()];
+        }
+
+        @Override
+        @NonNull
+        public ArchiveEncoding[] newArray(final int size) {
+            return new ArchiveEncoding[size];
+        }
+    };
+    /* Log tag. */
     private static final String TAG = "ArchiveEncoding";
-
-    @NonNull
-    private final String mExtension;
+    /**
+     * The proposed archive filename extension to write to.
+     * Will be {@code null} for archives which are not files; e.g. a remote server.
+     */
+    @Nullable
+    private final String mFileExt;
 
     /**
      * Constructor.
      *
-     * @param extension to use as the proposed archive filename extension
+     * @param fileExt to use as the proposed archive filename extension
+     *                or {@code null} for remote server "archives"
      */
-    ArchiveEncoding(@NonNull final String extension) {
-        mExtension = extension;
+    ArchiveEncoding(@Nullable final String fileExt) {
+        mFileExt = fileExt;
     }
 
     /**
@@ -102,6 +126,13 @@ public enum ArchiveEncoding {
                                                         @NonNull final Uri uri)
             throws FileNotFoundException {
 
+        final String scheme = uri.getScheme();
+        if (scheme != null && scheme.startsWith("http")) {
+            // not supported for now... intention is to add detection for remote servers.
+            throw new IllegalStateException();
+        }
+
+        // The below is all for file based imports
         try (InputStream is = context.getContentResolver().openInputStream(uri)) {
             if (is != null) {
                 // read the "magic bytes": https://en.wikipedia.org/wiki/List_of_file_signatures
@@ -176,8 +207,10 @@ public enum ArchiveEncoding {
         // It MIGHT be correct, but equally it MIGHT be unusable.
         // This MIGHT depend on Android version/device.
         final FileUtils.UriInfo uriInfo = FileUtils.getUriInfo(context, uri);
-        Pattern pattern = Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
-                                          Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        Pattern pattern;
+
+        pattern = Pattern.compile("^.*\\.csv( \\(\\d+\\))?$",
+                                  Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
         if (pattern.matcher(uriInfo.getDisplayName()).find()) {
             return Optional.of(Csv);
         }
@@ -188,8 +221,19 @@ public enum ArchiveEncoding {
             return Optional.of(Json);
         }
 
+        pattern = Pattern.compile("^.*\\.xml( \\(\\d+\\))?$",
+                                  Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        if (pattern.matcher(uriInfo.getDisplayName()).find()) {
+            return Optional.of(Xml);
+        }
+
         // give up.
         return Optional.empty();
+    }
+
+
+    public boolean isFile() {
+        return mFileExt != null;
     }
 
     /**
@@ -199,7 +243,23 @@ public enum ArchiveEncoding {
      */
     @NonNull
     public String getFileExt() {
-        return mExtension;
+        if (!isFile()) {
+            throw new IllegalStateException("Not a file");
+        }
+        return mFileExt;
+    }
+
+    public boolean isRemoteServer() {
+        return mFileExt == null;
+    }
+
+    @StringRes
+    public int getRemoteServerDescriptionResId() {
+        if (!isRemoteServer()) {
+            throw new IllegalStateException("Not a remote server");
+        }
+        // WARNING: hardcoded for now as we only have one of these.
+        return R.string.lbl_calibre_content_server;
     }
 
     /**
@@ -210,12 +270,14 @@ public enum ArchiveEncoding {
      *
      * @return a new writer
      *
-     * @throws FileNotFoundException on ...
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on failures
      */
     @NonNull
     public ArchiveWriter createWriter(@NonNull final Context context,
                                       @NonNull final ExportHelper helper)
-            throws FileNotFoundException {
+            throws GeneralParsingException, IOException,
+                   CertificateException, KeyManagementException {
 
         switch (this) {
             case Zip:
@@ -234,10 +296,12 @@ public enum ArchiveEncoding {
                 return new JsonArchiveWriter(helper);
 
             case CalibreCS:
-                // not supported yet
+                return new CalibreContentServerWriter(context, helper);
+
             case Tar:
                 // writing to tar is no longer supported
             default:
+                // reminder:do NOT use a InvalidArchiveException which is for readers only.
                 throw new IllegalStateException(ArchiveWriter.ERROR_NO_WRITER_AVAILABLE);
         }
     }
@@ -251,15 +315,15 @@ public enum ArchiveEncoding {
      * @return a new reader
      *
      * @throws InvalidArchiveException on failure to produce a supported reader
+     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException             on other failures
      */
     @NonNull
     @WorkerThread
     public ArchiveReader createReader(@NonNull final Context context,
                                       @NonNull final ImportHelper helper)
-            throws InvalidArchiveException, IOException, GeneralParsingException,
-                   CertificateException, NoSuchAlgorithmException,
-                   KeyStoreException, KeyManagementException {
+            throws InvalidArchiveException, GeneralParsingException,
+                   IOException, CertificateException, KeyManagementException {
 
         final ArchiveReader reader;
         switch (this) {
@@ -297,4 +361,14 @@ public enum ArchiveEncoding {
         return reader;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeInt(this.ordinal());
+    }
 }

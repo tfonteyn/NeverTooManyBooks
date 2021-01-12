@@ -60,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsShelf;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ApiUtils;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ReviewsListApiHandler.Review;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -183,7 +182,7 @@ public class ImportGrTask
      *
      * @return {@code true} if all went well
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     private boolean importReviews(@NonNull final Context context,
                                   @NonNull final DAO db,
@@ -226,8 +225,7 @@ public class ImportGrTask
                 if (mStartDate == null) {
                     mStartDate = startDate;
                 }
-            } catch (@NonNull final CredentialsException | Http404Exception
-                    | GeneralParsingException | IOException e) {
+            } catch (@NonNull final IOException | GeneralParsingException e) {
                 setLastException(e);
                 return false;
             }

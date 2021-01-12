@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -94,7 +94,7 @@ public class SendBooksGrTask
         }
 
         try (DAO db = new DAO(TAG);
-             Cursor cursor = db.fetchBooksForGoodreadsExport(lastBookSend, mUpdatesOnly)) {
+             Cursor cursor = db.fetchBooksForExportToGoodreads(lastBookSend, mUpdatesOnly)) {
             final DataHolder bookData = new CursorRow(cursor);
             mTotalBooks = cursor.getCount() + mCount;
 

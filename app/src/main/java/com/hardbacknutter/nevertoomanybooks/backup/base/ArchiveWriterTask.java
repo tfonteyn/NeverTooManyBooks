@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.cert.CertificateException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -58,11 +60,24 @@ public class ArchiveWriterTask
         execute(R.id.TASK_ID_EXPORT);
     }
 
+    /**
+     * Write
+     *
+     * @param context a localised application context
+     *
+     * @return ExportResults
+     *
+     * @throws IllegalStateException   on failure to produce a supported writer
+     * @throws GeneralParsingException on a decoding/parsing of data issue
+     * @throws IOException             on other failures
+     */
     @NonNull
     @Override
     @WorkerThread
     protected ExportResults doWork(@NonNull final Context context)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException,
+                   IOException,
+                   CertificateException, KeyManagementException {
         Thread.currentThread().setName(TAG);
 
         ExportResults results = null;

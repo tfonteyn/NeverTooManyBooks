@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,18 +27,29 @@
     tools:context=".FragmentHostActivity"
     >
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/screenBorder"
         android:orientation="vertical"
         >
 
+        <TextView
+            android:id="@+id/header"
+            style="@style/Text.Header"
+            android:layout_marginStart="@dimen/field_margin"
+            android:text="@string/site_goodreads"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
+
         <Button
             android:id="@+id/btn_sync"
             style="@style/MenuButton"
-            android:text="@string/gr_title_sync_with_goodreads"
+            android:text="@string/action_synchronize"
             app:icon="@drawable/ic_sync"
+            app:layout_constraintStart_toStartOf="@id/header"
+            app:layout_constraintTop_toBottomOf="@id/header"
             />
 
         <Button
@@ -46,13 +57,17 @@
             style="@style/MenuButton"
             android:text="@string/gr_menu_import_all_from_goodreads"
             app:icon="@drawable/ic_file_download"
+            app:layout_constraintStart_toStartOf="@id/header"
+            app:layout_constraintTop_toBottomOf="@id/btn_sync"
             />
 
         <Button
             android:id="@+id/btn_send_updated_books"
             style="@style/MenuButton"
-            android:text="@string/gr_menu_send_updated"
+            android:text="@string/menu_send_updated"
             app:icon="@drawable/ic_send"
+            app:layout_constraintStart_toStartOf="@id/header"
+            app:layout_constraintTop_toBottomOf="@id/btn_import"
             />
 
         <Button
@@ -60,7 +75,9 @@
             style="@style/MenuButton"
             android:text="@string/gr_menu_send_all"
             app:icon="@drawable/ic_file_upload"
+            app:layout_constraintStart_toStartOf="@id/header"
+            app:layout_constraintTop_toBottomOf="@id/btn_send_updated_books"
             />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -115,9 +115,8 @@ public class CropImageActivity
 
         // Check if shared storage is mounted and accessible.
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            final String msg = getString(R.string.error_storage_not_accessible,
-                                         getString(R.string.unknown));
-            Snackbar.make(mVb.coverImage0, msg, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(mVb.coverImage0, R.string.error_storage_not_accessible,
+                          Snackbar.LENGTH_LONG).show();
         } else {
             final long freeSpace = AppDir.Root.getFreeSpace(this);
             // make an educated guess how many pics we can store.

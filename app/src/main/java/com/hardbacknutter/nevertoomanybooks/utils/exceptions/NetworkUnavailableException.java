@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,22 +17,28 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
+
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
+import com.hardbacknutter.nevertoomanybooks.R;
+
 /**
  * Should be thrown if the device has no network connectivity at all for whatever reason.
  */
 public class NetworkUnavailableException
-        extends IOException {
+        extends IOException
+        implements LocalizedException {
 
-    private static final long serialVersionUID = 4360785674069682919L;
+    private static final long serialVersionUID = 2682363186617939835L;
 
-    public NetworkUnavailableException(@NonNull final String message) {
-        super(message);
+    @NonNull
+    @Override
+    public String getLocalizedMessage(@NonNull final Context context) {
+        return context.getString(R.string.error_network_please_connect);
     }
 }

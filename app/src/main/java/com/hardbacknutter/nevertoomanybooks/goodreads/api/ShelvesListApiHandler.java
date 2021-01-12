@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,12 +49,10 @@ public class ShelvesListApiHandler
 
     private static final String URL = GoodreadsManager.BASE_URL + "/shelf/list.xml?"
                                       + "key=%1$s&page=%2$s&user_id=%3$s";
-
-    private SimpleXmlFilter mFilters;
-
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
     private final XmlFilter mRootFilter = new XmlFilter("");
+    private SimpleXmlFilter mFilters;
 
     /**
      * Constructor.
@@ -62,7 +60,7 @@ public class ShelvesListApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public ShelvesListApiHandler(@NonNull final Context appContext,
                                  @NonNull final GoodreadsAuth grAuth)
@@ -75,7 +73,7 @@ public class ShelvesListApiHandler
 
     @NonNull
     public Map<String, GoodreadsShelf> getAll()
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Map<String, GoodreadsShelf> map = new HashMap<>();
         int page = 1;
@@ -107,13 +105,11 @@ public class ShelvesListApiHandler
      *
      * @return the shelves listed on this page.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception    the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @NonNull
     private Bundle get(final int page)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, mGrAuth.getUserId());
 
@@ -202,13 +198,13 @@ public class ShelvesListApiHandler
      */
     public static final class ShelvesField {
 
-        static final String SHELVES = "shelves";
-        static final String START = "start";
         public static final String END = "end";
-        static final String TOTAL = "total";
         public static final String EXCLUSIVE = "exclusive";
         public static final String ID = "id";
         public static final String NAME = "name";
+        static final String SHELVES = "shelves";
+        static final String START = "start";
+        static final String TOTAL = "total";
 
         private ShelvesField() {
         }

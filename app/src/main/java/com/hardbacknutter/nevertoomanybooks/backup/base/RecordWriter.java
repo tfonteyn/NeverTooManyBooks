@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public interface RecordWriter
     @WorkerThread
     default void writeMetaData(@NonNull final Writer writer,
                                @NonNull final ArchiveMetaData metaData)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
         // do nothing
     }
 
@@ -82,17 +82,14 @@ public interface RecordWriter
                         @NonNull Writer writer,
                         @NonNull Set<RecordType> entries,
                         @NonNull ProgressListener progressListener)
-            throws IOException, GeneralParsingException;
+            throws GeneralParsingException, IOException;
 
 
     /**
      * Override if the implementation needs to close something.
-     *
-     * @throws IOException on failure
      */
     @Override
-    default void close()
-            throws IOException {
+    default void close() {
         // do nothing
     }
 }

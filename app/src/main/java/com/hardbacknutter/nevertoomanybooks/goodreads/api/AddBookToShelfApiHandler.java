@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@ public class AddBookToShelfApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public AddBookToShelfApiHandler(@NonNull final Context appContext,
                                     @NonNull final GoodreadsAuth grAuth)
@@ -109,13 +109,11 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     public long add(final long grBookId,
                     @NonNull final Collection<String> shelfNames)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         mReviewId = 0;
         final Map<String, String> parameters = new HashMap<>();
@@ -136,13 +134,11 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     public long add(final long grBookId,
                     @NonNull final String shelfName)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         return send(grBookId, shelfName, false);
     }
@@ -160,13 +156,11 @@ public class AddBookToShelfApiHandler
      * @param grBookId  GoodReads book id
      * @param shelfName GoodReads shelf name
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     public void remove(final long grBookId,
                        @NonNull final String shelfName)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         send(grBookId, shelfName, true);
     }
@@ -180,14 +174,12 @@ public class AddBookToShelfApiHandler
      *
      * @return reviewId
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     private long send(final long grBookId,
                       @NonNull final String shelfName,
                       final boolean isRemove)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         mReviewId = 0;
         final Map<String, String> parameters = new HashMap<>();

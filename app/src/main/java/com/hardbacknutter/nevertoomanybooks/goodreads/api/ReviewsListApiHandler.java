@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,12 +81,10 @@ public class ReviewsListApiHandler
     /** Handle date_updated. */
     private final XmlListener mUpdatedListener = (bc, c) ->
             Review.validateDate(bc.getData(), Review.UPDATED);
-
-    private SimpleXmlFilter mFilters;
-
     /** XmlFilter root object. Used in extracting data file XML results. */
     @NonNull
     private final XmlFilter mRootFilter = new XmlFilter("");
+    private SimpleXmlFilter mFilters;
 
     /**
      * Constructor.
@@ -94,7 +92,7 @@ public class ReviewsListApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public ReviewsListApiHandler(@NonNull final Context appContext,
                                  @NonNull final GoodreadsAuth grAuth)
@@ -118,14 +116,12 @@ public class ReviewsListApiHandler
      *
      * @return A bundle containing an ArrayList of Bundles, one for each review.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the requested item was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     @NonNull
     public Bundle get(final int page,
                       final int perPage)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final String url = String.format(URL, mGrAuth.getDevKey(), page, perPage,
                                          mGrAuth.getUserId());

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -202,7 +202,7 @@ public class EditBookTocFragment
         mIsfdbGetEditionsTask = new ViewModelProvider(this).get(IsfdbGetEditionsTask.class);
         mIsfdbGetEditionsTask.onCancelled().observe(getViewLifecycleOwner(), message -> {
             if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                         .show();
             }
         });
@@ -217,7 +217,7 @@ public class EditBookTocFragment
         mIsfdbGetBookTask = new ViewModelProvider(this).get(IsfdbGetBookTask.class);
         mIsfdbGetBookTask.onCancelled().observe(getViewLifecycleOwner(), message -> {
             if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                         .show();
             }
         });

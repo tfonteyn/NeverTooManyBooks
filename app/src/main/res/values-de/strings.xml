@@ -86,7 +86,7 @@
     <string name="confirm_delete_series">Serie „%1$s“ wirklich löschen?\n\nDie Bücher werden nicht gelöscht.\n\n Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>
     <string name="confirm_delete_toc_entry">Den Eintrag „%1$s“ (von %2$s) wirklich löschen? Es wird aus allen Büchern gelöscht, in denen es aufgeführt ist. Die Bücher selbst werden nicht gelöscht.</string>
     <string name="confirm_duplicate_book_message">Das hinzuzufügende Buch besteht bereits in der Datenbank. Sind Sie sicher, dass Sie noch eine Kopie hinzufügen möchten?</string>
-    <string name="confirm_email_export">Möchten Sie diesen Export als E-Mail versenden?</string>
+    <string name="confirm_email_file">Möchten Sie diese Datei per E-Mail an jemanden senden?</string>
     <string name="confirm_merge_authors">Der Autor, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_merge_bookshelves">Das Bücherregal, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
     <string name="confirm_merge_publishers">Der Verlag, das Sie umbenennen, ist bereits vorhanden. Möchten Sie sie zusammenführen?</string>
@@ -128,8 +128,8 @@
     <string name="error_site_authentication_failed">Authentifizierung bei %1$s fehlgeschlagen</string>
     <string name="error_site_authorization_failed">Die Autorisierung bei %1$s endete fehlerhaft</string>
     <string name="error_storage_no_space_left">Nicht genügend Speicher verfügbar</string>
-    <string name="error_storage_not_accessible">Speicher nicht zugänglich: %1$s</string>
-    <string name="error_storage_not_readable">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
+    <string name="error_storage_not_accessible_s">Speicher nicht zugänglich: %1$s</string>
+    <string name="error_storage_not_accessible">Bitte überprüfen Sie, ob der Speicher verfügbar ist.</string>
     <string name="error_storage_not_writable">Bitte überprüfen Sie, ob der Speicher beschreibbar ist und über ausreichend Speicherplatz verfügt.</string>
     <string name="error_unknown_long">Ein unerwarteter Fehler ist aufgetreten. Bitte senden Sie die Details an den Support über den  Eintrag „Verwaltung“ in Hauptmenü</string>
     <string name="error_unknown">Es ist ein unbekannter Fehler aufgetreten</string>
@@ -154,7 +154,7 @@
     <string name="gr_info_send_books">Damit wird Ihre Bibliothek an Goodreads gesendet.\n\nSie können auswählen, ob Sie alle Bücher oder nur die seit der letzten Übertragung geänderten (inklusive aller bisher nicht gesendeten Bücher) senden möchten, oder das Update abbrechen.\n\nWenn Sie noch nie Bücher gesendet haben, ist kein Unterschied zwischen den ersten beiden Optionen.</string>
     <string name="gr_menu_import_all_from_goodreads">Alles von Goodreads importieren</string>
     <string name="gr_menu_send_all">Alles senden</string>
-    <string name="gr_menu_send_updated">Geänderte Bücher senden</string>
+    <string name="menu_send_updated">Geänderte Bücher senden</string>
     <string name="gr_pt_collect_genre">Verwenden Sie beliebte Bücherregalnamen als Buchgenres</string>
     <string name="gr_send_book_to_goodreads">Buch %1$d an Goodreads senden</string>
     <string name="gr_send_to_goodreads">Zu Goodreads senden</string>
@@ -190,7 +190,7 @@
     <string name="hint_empty_read_status">(Lesestatus unbekannt)</string>
     <string name="hint_empty_series">(Keine Serie)</string>
     <string name="hint_empty_year">(Jahr nicht festgelegt)</string>
-    <string name="hint_not_set">(Nicht festgelegt)</string>
+    <string name="info_not_set">Nicht festgelegt</string>
     <string name="hint_search_text">Text und/oder ISBN</string>
     <string name="info_authorized_needed">Zugriff autorisieren</string>
     <string name="info_authorized">Autorisiert</string>
@@ -242,7 +242,7 @@
     <string name="lbl_book">Buch</string>
     <string name="lbl_books">Bücher</string>
     <string name="lbl_bookshelf">Bücherregal</string>
-    <string name="lbl_bookshelves_long">Bücherregale</string>
+    <string name="lbl_bookshelves">Bücherregale</string>
     <string name="lbl_clone_style">Stil klonen</string>
     <string name="lbl_color">Farbe</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Vermisst/akzeptabel</string>
@@ -280,7 +280,7 @@
     <string name="lbl_edition">Auflage</string>
     <string name="inf_export_books_option_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
     <string name="lbl_export_options">Wählen Sie aus, was exportiert werden soll.</string>
-    <string name="X_action_export">Export</string>
+    <string name="action_export">Export</string>
     <string name="lbl_family_name">Familienname</string>
     <string name="lbl_field_usage_append">hängt zusätzliche Daten an</string>
     <string name="lbl_field_usage_copy_if_blank">Kopieren wenn leer</string>
@@ -603,8 +603,8 @@
     <string name="warning_image_not_found">Bild konnte nicht gefunden werden.</string>
     <string name="warning_immediate_global_changes">HINWEIS: Alle gespeicherten Änderungen werden sofort übernommen</string>
     <string name="warning_import_csv">Warnung. Der Import von Daten kann Informationen von bestehenden Büchern überschreiben, wenn die ID der Importdatei mit der bestehenden ID übereinstimmt. Normalerweise ist es kein Problem wenn ein Feld in der exportierten Datei geändert wurde. Bitte stellen Sie bei einem neuen Buch sicher, dass das ID-Feld leer ist.</string>
-    <string name="warning_import_csv_failed_lines_lots">Die CSV-Analyse für die Zeilen \n%1$s\n und andere ist fehlgeschlagen.</string>
-    <string name="warning_import_csv_failed_lines_some">CSV-Analyse für die Zeilen \n%1$s\n fehlgeschlagen.</string>
+    <string name="warning_import_failed_for_lines_lots">Die Analyse für die Zeilen \n%1$s\n und andere ist fehlgeschlagen.</string>
+    <string name="warning_import_failed__for_lines_some">Analyse für die Zeilen \n%1$s\n fehlgeschlagen.</string>
     <string name="warning_import_old_archive">Diese Option wird für ältere Archivversionen nicht unterstützt.</string>
     <string name="warning_import_csv_unescaped_quote">Unescaped-Anführungszeichen in Zeile %1$d, Position %2$d</string>
     <string name="warning_no_editions">Keine zusätzlichen Ausgabeninformationen verfügbar</string>
@@ -617,7 +617,7 @@
     <string name="warning_search_failed">Die Suche nach dem Buch ist fehlgeschlagen.</string>
     <string name="warning_select_at_least_1_field">Wählen Sie mindestens ein Feld zum Aktualisieren aus</string>
     <string name="warning_select_at_least_1_group">Wählen Sie mindestens eine Gruppe aus.</string>
-    <string name="warning_task_cancelled">Abgebrochen</string>
+    <string name="cancelled">Abgebrochen</string>
     <string name="warning_toc_confirm">Bitte bestätigen Sie dass diese Anthologie-Titel korrekt sind.</string>
     <string name="warning_x_already_exists">%1$s existiert bereits.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s“ ist keine gültige Code</string>
@@ -703,4 +703,9 @@
     <string name="httpErrorFileNotFound">Die angeforderte Datei wurde nicht gefunden.</string>
     <string name="lbl_calibre_content_server_ca_cert">CA-Zertifikat</string>
     <string name="error_certificate_invalid">Das Zertifikat ist ungültig oder nicht aufrufbar.</string>
+    <string name="username">Nutzername</string>
+    <string name="password">Passwort</string>
+    <string name="error_network_failed_try_again">Prüfe die Verbindung und versuche es noch einmal</string>
+    <string name="lbl_test_connection">Testen Sie die Verbindung</string>
+    <string name="confirm_test_connection">Es ist ratsam, diese Verbindung zu testen, um später Probleme zu vermeiden.</string>
 </resources>

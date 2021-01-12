@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -138,7 +138,7 @@ public class GoodreadsAdminFragment
 
     private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+            Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                     .show();
         }
     }
@@ -204,12 +204,12 @@ public class GoodreadsAdminFragment
 
     private void importBooks(final boolean sync) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mImportTask.startImportTask(sync);
+        mImportTask.start(sync);
     }
 
     private void sendBooks(final boolean updatesOnly) {
         Snackbar.make(mVb.getRoot(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-        mSendBooksTask.startTask(false, updatesOnly);
+        mSendBooksTask.start(false, updatesOnly);
     }
 
     public static class ResultContract

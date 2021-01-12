@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
-import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.contract.ActivityResultContract;
@@ -33,7 +33,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.EditTextPreference;
-import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
@@ -45,16 +44,19 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
+import com.hardbacknutter.nevertoomanybooks.widgets.MultiSelectListPreferenceSummaryProvider;
 
 /**
  * Main fragment to edit a Style.
@@ -99,23 +101,37 @@ public class StyleFragment
             mNameSet = savedInstanceState.getBoolean(SIS_NAME_SET);
         }
 
-        final EditTextPreference preference = findPreference(UserStyle.PK_STYLE_NAME);
-        if (preference != null) {
-            preference.setOnBindEditTextListener(TextView::setSingleLine);
-        }
+        final EditTextPreference etp = findPreference(UserStyle.PK_STYLE_NAME);
+        //noinspection ConstantConditions
+        etp.setOnBindEditTextListener(editText -> {
+            editText.setInputType(InputType.TYPE_CLASS_TEXT
+                                  | InputType.TYPE_TEXT_VARIATION_URI);
+            editText.selectAll();
+        });
+        etp.setSummaryProvider(EditTextPreference.SimpleSummaryProvider.getInstance());
 
-        // Cover on LIST screen
-        final Preference thumbScale = findPreference(ListScreenBookFields.PK_COVER_SCALE);
-        if (thumbScale != null) {
-            thumbScale.setDependency(ListScreenBookFields.PK_COVERS);
-        }
+        //noinspection ConstantConditions
+        findPreference(BooklistStyle.PK_LIST_HEADER)
+                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
 
-        // Covers on DETAIL screen
-        // Setting cover 0 to false -> disable cover 1; also see onSharedPreferenceChanged
-        final Preference cover = findPreference(DetailScreenBookFields.PK_COVER[1]);
-        if (cover != null) {
-            cover.setDependency(DetailScreenBookFields.PK_COVER[0]);
-        }
+        //noinspection ConstantConditions
+        findPreference(ListScreenBookFields.PK_COVER_SCALE)
+                .setSummaryProvider(p -> mStyleViewModel
+                        .getStyle().getListScreenBookFields()
+                        .getCoverScaleSummaryText(getContext()));
+
+        //noinspection ConstantConditions
+        findPreference(TextScale.PK_TEXT_SCALE)
+                .setSummaryProvider(p -> mStyleViewModel
+                        .getStyle().getTextScale().getFontScaleSummaryText(getContext()));
+
+        //noinspection ConstantConditions
+        findPreference(AuthorBooklistGroup.PK_PRIMARY_TYPE)
+                // URGENT: AuthorBooklistGroup.PK_PRIMARY_TYPE
+                //  Why is this MultiSelectListPreference?
+                //  should this be a TriStateMultiSelectListPreference
+                .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
+
 
         if (savedInstanceState == null) {
             //noinspection ConstantConditions
@@ -136,26 +152,26 @@ public class StyleFragment
 
     @Override
     public void onResume() {
-        final PreferenceScreen screen = getPreferenceScreen();
+        super.onResume();
+
         // loop over all groups, add the preferences for groups we have
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
-        //noinspection ConstantConditions
-        final UserStyle globalStyle = UserStyle.createGlobal(getContext());
-        final Groups styleGroups = mStyleViewModel.getStyle().getGroups();
 
-        for (final BooklistGroup group : BooklistGroup.getAllGroups(globalStyle)) {
+        final UserStyle style = mStyleViewModel.getStyle();
+        final Groups styleGroups = style.getGroups();
+
+        final PreferenceScreen screen = getPreferenceScreen();
+        //noinspection ConstantConditions
+        for (final BooklistGroup group :
+                BooklistGroup.getAllGroups(UserStyle.createGlobal(getContext()))) {
             group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
         }
 
-        super.onResume();
-
-        // These keys are never physically present in the SharedPreferences; so handle explicitly.
-        updateSummary(PSK_STYLE_SHOW_DETAILS);
-        updateSummary(PSK_STYLE_FILTERS);
+        updateSummaries();
 
         // for new (i.e. cloned) styles, auto-popup the name field for the user to change it.
-        if (mStyleViewModel.getStyle().getId() == 0) {
+        if (style.getId() == 0) {
             //noinspection ConstantConditions
             findPreference(UserStyle.PK_STYLE_NAME).setViewId(R.id.STYLE_NAME_VIEW);
             // We need this convoluted approach as the view we want to click
@@ -178,6 +194,34 @@ public class StyleFragment
         }
     }
 
+    /**
+     * The summary for these Preference's reflect what is selected on ANOTHER screen
+     * or changes to ANOTHER KEY.
+     */
+    private void updateSummaries() {
+        final UserStyle style = mStyleViewModel.getStyle();
+
+        // the 'book details' fields in use.
+        //noinspection ConstantConditions
+        findPreference(PSK_STYLE_SHOW_DETAILS)
+                .setSummary(style.getListScreenBookFields().getSummaryText(getContext()));
+
+        // the 'filters' in use (i.e. the actives ones)
+        //noinspection ConstantConditions
+        findPreference(PSK_STYLE_FILTERS)
+                .setSummary(style.getFilters().getSummaryText(getContext(), false));
+
+        // the 'groups' in use.
+        //noinspection ConstantConditions
+        findPreference(Groups.PK_STYLE_GROUPS)
+                .setSummary(style.getGroups().getSummaryText(getContext()));
+
+        // the 'level expansion' depends on the number of groups in use
+        final SeekBarPreference levelExpPref = findPreference(UserStyle.PK_LEVELS_EXPANSION);
+        //noinspection ConstantConditions
+        levelExpPref.setMax(style.getGroups().size());
+        levelExpPref.setSummary(String.valueOf(style.getTopLevel()));
+    }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
@@ -189,91 +233,18 @@ public class StyleFragment
     @CallSuper
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences stylePrefs,
                                           @NonNull final String key) {
+        updateSummaries();
 
-        // Covers on DETAIL screen
-        // Setting cover 0 to false -> set cover 1 to false as well
         if (DetailScreenBookFields.PK_COVER[0].equals(key)
             && !stylePrefs.getBoolean(key, false)) {
+            // Covers on DETAIL screen:
+            // Setting cover 0 to false -> set cover 1 to false as well
             final SwitchPreference cover = findPreference(DetailScreenBookFields.PK_COVER[1]);
-            // Sanity check
-            if (cover != null) {
-                cover.setChecked(false);
-            }
+            //noinspection ConstantConditions
+            cover.setChecked(false);
         }
 
         super.onSharedPreferenceChanged(stylePrefs, key);
-    }
-
-    @Override
-    protected void updateSummary(@NonNull final String key) {
-
-        final UserStyle style = mStyleViewModel.getStyle();
-
-        switch (key) {
-            case TextScale.PK_TEXT_SCALE: {
-                final Preference preference = findPreference(key);
-                if (preference != null) {
-                    //noinspection ConstantConditions
-                    preference.setSummary(style.getTextScale()
-                                               .getFontScaleSummaryText(getContext()));
-                }
-                break;
-            }
-
-            case ListScreenBookFields.PK_COVER_SCALE: {
-                final Preference preference = findPreference(key);
-                if (preference != null) {
-                    //noinspection ConstantConditions
-                    preference.setSummary(style.getListScreenBookFields()
-                                               .getCoverScaleSummaryText(getContext()));
-                }
-                break;
-            }
-
-            case UserStyle.PK_LEVELS_EXPANSION: {
-                final SeekBarPreference preference = findPreference(key);
-                if (preference != null) {
-                    preference.setMax(style.getGroups().size());
-                    preference.setSummary(String.valueOf(style.getTopLevel()));
-                }
-                break;
-            }
-
-            case Groups.PK_STYLE_GROUPS: {
-                // the 'groups' in use.
-                final Preference preference = findPreference(key);
-                if (preference != null) {
-                    //noinspection ConstantConditions
-                    preference.setSummary(style.getGroups().getSummaryText(getContext()));
-                }
-                break;
-            }
-
-            case ListScreenBookFields.PK_COVERS:
-            case PSK_STYLE_SHOW_DETAILS: {
-                // the 'extra' fields in use.
-                final Preference preference = findPreference(PSK_STYLE_SHOW_DETAILS);
-                if (preference != null) {
-                    //noinspection ConstantConditions
-                    preference.setSummary(style.getListScreenBookFields()
-                                               .getSummaryText(getContext()));
-                }
-                break;
-            }
-            case PSK_STYLE_FILTERS: {
-                // the 'filters' in use (i.e. the actives ones)
-                final Preference preference = findPreference(key);
-                if (preference != null) {
-                    //noinspection ConstantConditions
-                    preference.setSummary(style.getFilters().getSummaryText(getContext(), false));
-                }
-                break;
-            }
-
-            default:
-                super.updateSummary(key);
-                break;
-        }
     }
 
     public static class ResultContract

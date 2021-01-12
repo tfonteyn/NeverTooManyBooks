@@ -54,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 /**
  * Copies the standard fields (book, author, publisher, series).
@@ -269,9 +268,9 @@ class CalibreArchiveReader
                 book.clearData();
 
                 final int calibreId = source.getInt(colId);
-                book.putInt(DBDefinitions.KEY_CALIBRE_ID, calibreId);
+                book.putInt(DBDefinitions.KEY_CALIBRE_BOOK_ID, calibreId);
                 final String calibreUuid = source.getString(colUuid);
-                book.putString(DBDefinitions.KEY_CALIBRE_UUID, calibreUuid);
+                book.putString(DBDefinitions.KEY_CALIBRE_BOOK_UUID, calibreUuid);
 
                 book.putString(DBDefinitions.KEY_TITLE, source.getString(colTitle));
                 book.putString(DBDefinitions.KEY_LANGUAGE, source.getString(colLang));
@@ -303,19 +302,20 @@ class CalibreArchiveReader
                 // process the book
                 try {
                     // check if the book exists in our database, and fetch it's id.
-                    final long databaseBookId = mDb.getBookIdFromCalibreUuid(calibreUuid);
+                    final long bookId = mDb.getBookIdFromCalibreUuid(calibreUuid);
 
                     //Note: do NOT try and find it by ISBN. Keep Calibre strictly separate.
                     // We don't want to overwrite physical copies!
 
-                    if (databaseBookId > 0) {
+                    if (bookId > 0) {
                         // The book exists in our database
 
                         // Explicitly set the EXISTING id on the book
-                        book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
+                        book.putLong(DBDefinitions.KEY_PK_ID, bookId);
 
                         // UPDATE the existing book (if allowed). Check the sync option FIRST!
-                        if ((mSyncBooks && isImportNewer(context, mDb, book, databaseBookId))
+                        if ((mSyncBooks
+                             && isImportNewer(context, bookId, book.getLastUpdateUtcDate(context)))
                             || mOverwriteBooks) {
 
                             mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
@@ -323,14 +323,14 @@ class CalibreArchiveReader
                             results.booksUpdated++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                                 Log.d(TAG, "calibreUuid=" + calibreUuid
-                                           + "|databaseBookId=" + databaseBookId
+                                           + "|databaseBookId=" + bookId
                                            + "|update|" + book.getTitle());
                             }
                         } else {
                             results.booksSkipped++;
                             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                                 Log.d(TAG, "calibreUuid=" + calibreUuid
-                                           + "|databaseBookId=" + databaseBookId
+                                           + "|databaseBookId=" + bookId
                                            + "|skipped|" + book.getTitle());
                             }
                         }
@@ -550,27 +550,21 @@ class CalibreArchiveReader
     /**
      * Check if the incoming book is newer than the stored book data.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book we're updating
-     * @param bookId  the book id to lookup in our database
+     * @param context              Current context
+     * @param bookId               the local book id to lookup in our database
+     * @param importLastUpdateDate to check
      *
      * @return {@code true} if the imported data is newer then the local data.
      */
     private boolean isImportNewer(@NonNull final Context context,
-                                  @NonNull final DAO db,
-                                  @NonNull final Book book,
-                                  @IntRange(from = 1) final long bookId) {
-        final LocalDateTime utcImportDate =
-                DateParser.getInstance(context)
-                          .parseISO(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
-        if (utcImportDate == null) {
+                                  @IntRange(from = 1) final long bookId,
+                                  @Nullable final LocalDateTime importLastUpdateDate) {
+        if (importLastUpdateDate == null) {
             return false;
         }
 
-        final LocalDateTime utcLastUpdated = db.getBookLastUpdateUtcDate(context, bookId);
-
-        return utcLastUpdated == null || utcImportDate.isAfter(utcLastUpdated);
+        final LocalDateTime utcLastUpdated = mDb.getBookLastUpdateUtcDate(context, bookId);
+        return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
     }
 
     @Override

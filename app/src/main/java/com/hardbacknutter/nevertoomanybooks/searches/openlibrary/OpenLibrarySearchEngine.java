@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -185,7 +185,7 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -203,7 +203,7 @@ public class OpenLibrarySearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -255,10 +255,10 @@ public class OpenLibrarySearchEngine
     private void fetchBook(@NonNull final String url,
                            @NonNull final boolean[] fetchThumbnail,
                            @NonNull final Bundle bookData)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
         // get and store the result into a string.
         final String response;
-        try (TerminatorConnection con = createConnection(url, true);
+        try (TerminatorConnection con = createConnection(url);
              InputStream is = con.getInputStream()) {
             response = readResponseStream(is);
         }

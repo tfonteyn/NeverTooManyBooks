@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,6 @@ import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.Preference;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -58,12 +57,6 @@ public class FieldVisibilityPreferenceFragment
 
         //noinspection ConstantConditions
         mSettingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
-
-        // Setting cover 0 to false -> disable cover 1; also see onSharedPreferenceChanged
-        final Preference cover = findPreference(PREFS_COVER_VISIBILITY_KEY[1]);
-        if (cover != null) {
-            cover.setDependency(PREFS_COVER_VISIBILITY_KEY[0]);
-        }
     }
 
     @Override
@@ -78,11 +71,10 @@ public class FieldVisibilityPreferenceFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
 
-        // Setting cover 0 to false -> set cover 1 to false as well
         if (PREFS_COVER_VISIBILITY_KEY[0].equals(key)
             && !preferences.getBoolean(key, false)) {
-            final SwitchPreference cover =
-                    findPreference(PREFS_COVER_VISIBILITY_KEY[1]);
+            // Setting cover 0 to false -> set cover 1 to false as well
+            final SwitchPreference cover = findPreference(PREFS_COVER_VISIBILITY_KEY[1]);
             //noinspection ConstantConditions
             cover.setChecked(false);
         }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.SwitchPreference;
 
@@ -52,10 +53,15 @@ public class SettingsFragment
     public static final String TAG = "SettingsFragment";
     /** savedInstanceState key. */
     private static final String SIS_CURRENT_SORT_TITLE_REORDERED = TAG + ":cSTR";
+    private static final String PSK_SEARCH_SITE_ORDER = "psk_search_site_order";
+
     private final ActivityResultLauncher<Void> mEditSitesLauncher =
             registerForActivityResult(new SearchSitesAllListsContract(),
                                       success -> { /* ignore */ });
-    /** Used to be able to reset this pref to what it was when this fragment started. */
+    /**
+     * Used to be able to reset this pref to what it was when this fragment started.
+     * Persisted with savedInstanceState.
+     */
     private boolean mCurrentSortTitleReordered;
     /** The Activity results. */
     private SettingsViewModel mVm;
@@ -79,57 +85,75 @@ public class SettingsFragment
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
 
-        final SharedPreferences prefs = getPreferenceManager().getSharedPreferences();
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_ui_locale)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
 
-        final boolean storedSortTitleReordered = prefs
-                .getBoolean(Prefs.pk_sort_title_reordered, true);
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_ui_theme)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_edit_book_isbn_checks)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_booklist_rebuild_state)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_booklist_fastscroller_overlay)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        //noinspection ConstantConditions
+        findPreference(PSK_SEARCH_SITE_ORDER)
+                .setOnPreferenceClickListener(p -> {
+                    mEditSitesLauncher.launch(null);
+                    return true;
+                });
+
+        onCreateSortTitleReorderedPreference(savedInstanceState);
+    }
+
+    private void onCreateSortTitleReorderedPreference(
+            @Nullable final Bundle savedInstanceState) {
+        final Preference preference = findPreference(Prefs.pk_sort_title_reordered);
+        //noinspection ConstantConditions
+        final boolean currentValue = preference
+                .getSharedPreferences().getBoolean(Prefs.pk_sort_title_reordered, true);
 
         if (savedInstanceState == null) {
-            mCurrentSortTitleReordered = storedSortTitleReordered;
+            mCurrentSortTitleReordered = currentValue;
         } else {
             mCurrentSortTitleReordered = savedInstanceState
-                    .getBoolean(SIS_CURRENT_SORT_TITLE_REORDERED, storedSortTitleReordered);
+                    .getBoolean(SIS_CURRENT_SORT_TITLE_REORDERED, currentValue);
         }
 
-        setVisualIndicator(findPreference(Prefs.pk_sort_title_reordered),
-                           StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
+        setVisualIndicator(preference, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
 
-        Preference preference;
-
-        preference = findPreference("psk_search_site_order");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                mEditSitesLauncher.launch(null);
-                return true;
-            });
-        }
-
-        preference = findPreference(Prefs.pk_sort_title_reordered);
-        if (preference != null) {
-            preference.setOnPreferenceChangeListener((pref, newValue) -> {
-                final SwitchPreference p = (SwitchPreference) pref;
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setMessage(R.string.confirm_rebuild_orderby_columns)
-                        // this dialog is important. Make sure the user pays some attention
-                        .setCancelable(false)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> {
-                            p.setChecked(mCurrentSortTitleReordered);
-                            StartupViewModel.scheduleOrderByRebuild(getContext(), false);
-                            setVisualIndicator(p, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
-                        })
-                        .setPositiveButton(android.R.string.ok, (d, w) -> {
-                            p.setChecked(!p.isChecked());
-                            StartupViewModel.scheduleOrderByRebuild(getContext(), true);
-                            setVisualIndicator(p, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
-                        })
-                        .create()
-                        .show();
-                // Do not let the system update the preference value.
-                return false;
-            });
-        }
+        preference.setOnPreferenceChangeListener((pref, newValue) -> {
+            final SwitchPreference p = (SwitchPreference) pref;
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_warning)
+                    .setMessage(R.string.confirm_rebuild_orderby_columns)
+                    // this dialog is important. Make sure the user pays some attention
+                    .setCancelable(false)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> {
+                        p.setChecked(mCurrentSortTitleReordered);
+                        StartupViewModel.scheduleOrderByRebuild(getContext(), false);
+                        setVisualIndicator(p, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
+                    })
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        p.setChecked(!p.isChecked());
+                        StartupViewModel.scheduleOrderByRebuild(getContext(), true);
+                        setVisualIndicator(p, StartupViewModel.PK_REBUILD_ORDERBY_COLUMNS);
+                    })
+                    .create()
+                    .show();
+            // Do not let the system update the preference value.
+            return false;
+        });
     }
 
     @Override
@@ -183,23 +207,20 @@ public class SettingsFragment
      * @param preference   to modify
      * @param schedulerKey to reflect
      */
-    private void setVisualIndicator(@Nullable final Preference preference,
+    private void setVisualIndicator(@NonNull final Preference preference,
                                     @SuppressWarnings("SameParameterValue")
                                     @NonNull final String schedulerKey) {
-        if (preference != null) {
-            @AttrRes
-            final int attr;
-            if (getPreferenceManager().getSharedPreferences().getBoolean(schedulerKey, false)) {
-                attr = R.attr.appPreferenceAlertColor;
-            } else {
-                attr = R.attr.colorControlNormal;
-            }
-
-            final Drawable icon = preference.getIcon().mutate();
-            //noinspection ConstantConditions
-            icon.setTint(AttrUtils.getColorInt(getContext(), attr));
-            preference.setIcon(icon);
+        @AttrRes
+        final int attr;
+        if (getPreferenceManager().getSharedPreferences().getBoolean(schedulerKey, false)) {
+            attr = R.attr.appPreferenceAlertColor;
+        } else {
+            attr = R.attr.colorControlNormal;
         }
-    }
 
+        final Drawable icon = preference.getIcon().mutate();
+        //noinspection ConstantConditions
+        icon.setTint(AttrUtils.getColorInt(getContext(), attr));
+        preference.setIcon(icon);
+    }
 }

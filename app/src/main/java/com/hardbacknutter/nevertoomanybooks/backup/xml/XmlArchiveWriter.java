@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -57,7 +58,7 @@ public class XmlArchiveWriter
      * v3 used to write metadata,styles,preferences,books (in that order).
      */
     protected static final int VERSION = 4;
-
+    private static final String TAG = "XmlArchiveWriter";
     /** The xml root tag. */
     private static final String TAG_APPLICATION_ROOT = "NeverTooManyBooks";
 
@@ -83,24 +84,41 @@ public class XmlArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
-        try (OutputStream os = mHelper.createOutputStream(context);
-             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = new XmlRecordWriter(null)) {
+        final int booksToExport;
+        try (DAO db = new DAO(TAG)) {
+            booksToExport = db.countBooksForExport(null);
+        }
 
-            bw.write(XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
-                     + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(VERSION) + ">\n");
+        if (booksToExport > 0) {
+            progressListener.setMaxPos(booksToExport);
 
-            final ExportResults results =
-                    recordWriter.write(context, bw, EnumSet.of(RecordType.Books), progressListener);
+            final ExportResults results;
 
-            recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
+            try (OutputStream os = mHelper.createOutputStream(context);
+                 Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                 Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
+                 RecordWriter recordWriter = new XmlRecordWriter(null)) {
 
-            bw.write("</" + TAG_APPLICATION_ROOT + ">\n");
+                // manually concat
+                // 1. archive envelope
+                bw.write(XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
+                         + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(VERSION) + ">\n");
+                // 2. the actual data inside the container
+                results = recordWriter
+                        .write(context, bw, EnumSet.of(RecordType.Books), progressListener);
 
+                // 3. the metadata
+                recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
+                // 4. close the envelope
+                bw.write("</" + TAG_APPLICATION_ROOT + ">\n");
+            }
+
+            // do NOT set the LastFullBackupDate
             return results;
+        } else {
+            return new ExportResults();
         }
     }
 }

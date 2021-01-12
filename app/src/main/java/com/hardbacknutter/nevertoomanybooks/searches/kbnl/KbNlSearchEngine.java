@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -114,7 +114,7 @@ public class KbNlSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -123,10 +123,13 @@ public class KbNlSearchEngine
         final SAXParserFactory factory = SAXParserFactory.newInstance();
         final KbNlBookHandler handler = new KbNlBookHandler(bookData);
 
-        // Don't follow redirects, so we get the XML instead of the rendered page
-        try (TerminatorConnection con = createConnection(url, false)) {
+        try (TerminatorConnection con = createConnection(url)) {
+            // Don't follow redirects, so we get the XML instead of the rendered page
+            con.setInstanceFollowRedirects(false);
+
             final SAXParser parser = factory.newSAXParser();
             parser.parse(con.getInputStream(), handler);
+
         } catch (@NonNull final ParserConfigurationException | SAXException e) {
             if (BuildConfig.DEBUG /* always */) {
                 Log.d(TAG, "searchByIsbn", e);

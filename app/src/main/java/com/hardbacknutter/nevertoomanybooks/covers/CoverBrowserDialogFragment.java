@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -185,7 +185,7 @@ public class CoverBrowserDialogFragment
                 // start the task
                 mVb.statusMessage.setText(R.string.progress_msg_searching_editions);
                 mVb.progressBar.setVisibility(View.VISIBLE);
-                mSearchEditionsTask.startTask(mModel.getBaseIsbn());
+                mSearchEditionsTask.search(mModel.getBaseIsbn());
             }
         }
 
@@ -311,7 +311,7 @@ public class CoverBrowserDialogFragment
         if (imageFileInfo != null) {
             final File file = imageFileInfo.getFile();
             if (file != null && file.exists()) {
-                new ImageLoader(mVb.preview, mPreviewMaxWidth, mPreviewMaxHeight, file, () -> {
+                new ImageViewLoader(mVb.preview, mPreviewMaxWidth, mPreviewMaxHeight, file, () -> {
                     // Set AFTER it was successfully loaded and displayed for maximum reliability
                     mModel.setSelectedFile(file);
                     mVb.preview.setVisibility(View.VISIBLE);
@@ -460,7 +460,7 @@ public class CoverBrowserDialogFragment
                 final File file = imageFileInfo.getFile();
                 if (file != null && file.exists()) {
                     // YES, load it into the view.
-                    new ImageLoader(holder.imageView, mMaxWidth, mMaxHeight, file, null)
+                    new ImageViewLoader(holder.imageView, mMaxWidth, mMaxHeight, file, null)
                             .executeOnExecutor(mModel.getGalleryDisplayExecutor());
 
                     // keep this statement here, or we would need to call file.exists() twice

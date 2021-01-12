@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,7 +49,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
@@ -133,8 +133,7 @@ public abstract class BaseActivity
     private final ActivityResultLauncher<Bundle> mSettingsLauncher = registerForActivityResult(
             new SettingsHostActivity.ResultContract(SettingsFragment.TAG), data -> {
 
-                setGoodreadsMenuVisibility();
-                setCalibreMenuVisibility();
+                updateNavigationMenuVisibility();
 
                 if (data != null) {
                     // Handle the generic return flag requiring a recreate of the current Activity
@@ -330,9 +329,8 @@ public abstract class BaseActivity
      * @param itemId  menu item resource id
      * @param visible flag
      */
-    void setNavigationItemVisibility(@SuppressWarnings("SameParameterValue")
-                                     @IdRes final int itemId,
-                                     final boolean visible) {
+    private void setNavigationItemVisibility(@IdRes final int itemId,
+                                             final boolean visible) {
         if (mNavigationView != null) {
             final MenuItem item = mNavigationView.getMenu().findItem(itemId);
             if (item != null) {
@@ -341,16 +339,14 @@ public abstract class BaseActivity
         }
     }
 
-    public void setGoodreadsMenuVisibility() {
+    public void updateNavigationMenuVisibility() {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-        setNavigationItemVisibility(R.id.nav_goodreads,
-                                    GoodreadsManager.isShowSyncMenus(global));
-    }
 
-    public void setCalibreMenuVisibility() {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
-        setNavigationItemVisibility(R.id.nav_goodreads,
-                                    CalibreContentServer.isShowSyncMenus(global));
+        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(global));
+
+        final boolean calibre = CalibreContentServer.isShowSyncMenus(global);
+        setNavigationItemVisibility(R.id.nav_calibre_import, calibre);
+        setNavigationItemVisibility(R.id.nav_calibre_export, calibre);
     }
 
     @CallSuper
@@ -376,10 +372,6 @@ public abstract class BaseActivity
             return true;
         }
         return false;
-    }
-
-    boolean isNavigationDrawerVisible() {
-        return mDrawerLayout != null && mDrawerLayout.isDrawerVisible(GravityCompat.START);
     }
 
     void closeNavigationDrawer() {

@@ -74,7 +74,7 @@
     <string name="confirm_delete_series">Opravdu chcete smazat série „%1$s“?\n\nSamotná kniha nebude smazána.\n\nZvažte prosím úpravu série a změnu názvu série s ohledem na korektnost dat.</string>
     <string name="confirm_delete_toc_entry">Odstraňte název „%1$s“ (z %2$s)? Bude odstraněn ze všech knih, ve kterých je uveden. Samotné knihy nebudou smazány.</string>
     <string name="confirm_duplicate_book_message">Kniha, kterou se pokoušíte přidat, se již v databázi nachází - určitě si přejete přidat její další kopii?</string>
-    <string name="confirm_email_export">Přejete si odeslat tento export prostřednictvím mailu?</string>
+    <string name="confirm_email_file">Chcete tento soubor někomu poslat e-mailem?</string>
     <string name="confirm_merge_bookshelves">Knihovna, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_authors">Autor, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
     <string name="confirm_merge_series">Série, kterou přejmenujete, již existuje. Chcete je sloučit?</string>
@@ -109,8 +109,8 @@
     <string name="error_site_authentication_failed">Ověření %1$s se nezdařilo</string>
     <string name="error_site_authorization_failed">%1$s autorizace skončila chybou.</string>
     <string name="error_storage_no_space_left">Nedostatečné úložiště</string>
-    <string name="error_storage_not_accessible">Úložiště není přístupné: %1$s</string>
-    <string name="error_storage_not_readable">Zkontrolujte, zda je úložiště přístupné.</string>
+    <string name="error_storage_not_accessible_s">Úložiště není přístupné: %1$s</string>
+    <string name="error_storage_not_accessible">Zkontrolujte, zda je úložiště přístupné.</string>
     <string name="error_storage_not_writable">Zkontrolujte, zda je úložiště zapisovatelné a má dostatek místa.</string>
     <string name="error_unknown_long">Došlo k neočekávané chybě, prosím zašlete nám detaily o této chybě prostřednictvím „Admin“ v hlavním menu.</string>
     <string name="error_unknown">Neznámá chyba</string>
@@ -120,7 +120,9 @@
     <string name="fab_add_book_by_external_id">ID webové stránky</string>
     <string name="fab_add_book_manually">Přidat ručně</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="gr_auth_blurb_part1">Goodreads je internetová síť, jejímž hlavním cílem je „pomoci lidem najít a sdílet knihy, které milují“. Mají velmi rozsáhlou databázi knih a recenzí, a pokud jste jejich registovaný uživatel, může &APP_NAME; exportovat Vaše knihy, knihovny a recenze do Goodreads a naopak importovat Vaše knihy, knihovny a recenze z Goodreads. &APP_NAME; je samostatná aplikace a ke své činnosti Goodreads nepotřebuje, ale přesto, pokud máte zájem, můžete se registrovat na:</string>
+    <string name="gr_auth_blurb_part1">Goodreads je internetová síť, jejímž hlavním cílem je „pomoci lidem najít a sdílet knihy, které milují“. Mají velmi rozsáhlou databázi knih a recenzí, a pokud jste jejich registovaný uživatel, může &APP_NAME;
+        exportovat Vaše knihy, knihovny a recenze do Goodreads a naopak importovat Vaše knihy, knihovny a recenze z Goodreads. &APP_NAME;
+        je samostatná aplikace a ke své činnosti Goodreads nepotřebuje, ale přesto, pokud máte zájem, můžete se registrovat na:</string>
     <string name="gr_auth_blurb_part2">Pokud jste se na Goodreads registroval, nebo pokud již jste registrovaným uživatelem, můžete autorizovat &APP_NAME; k přístupu k Vašim datům na Goodreads prostřednictvím tlačítka níže. Následně budete přesunut na webovou stránku, na které se přihlásíte do Goodreads a autorizujete tuto aplikaci. Tato aplikace nikdy nebude znát Vaše heslo a udělenou autorizaci můžete kdykoli zrušit přes webové stránky Goodreads. Při problémech s připojením k internetu můžete skončit na prázdné stránce - v tom případě prostě použijte tlačítko zpět pro návrat na tuto obrazovku!</string>
     <string name="gr_auth_blurb_part3">Pamatujte…žádná z těchto možností není povinná: &APP_NAME; je samostatná aplikace a pracuje zcela správně i bez nich!</string>
     <string name="gr_auth_blurb_part4">Vypadá to, že jste tuto aplikaci již autorizovali. Pokud chcete smazat pověření z tohoto přístroj, můžete tak učinit stisknutím tlačítka níže. Je však také důležité odstranit registraci aplikace na webových stránkách Goodreads.</string>
@@ -134,7 +136,7 @@
     <string name="gr_menu_import_all_from_goodreads">Importovat vše z Goodreads</string>
     <string name="gr_menu_send_all">Odeslat vše</string>
     <string name="gr_send_to_goodreads">Poslat do Goodreads</string>
-    <string name="gr_menu_send_updated">Odeslat aktualizované</string>
+    <string name="menu_send_updated">Odeslat aktualizované</string>
     <string name="gr_pt_collect_genre">Jako žánry knih použijte populární názvy knihoven</string>
     <string name="gr_send_book_to_goodreads">Poslat knihu %1$d do Goodreads</string>
     <string name="gr_title_send_book">Poslat knihu do Goodreads</string>
@@ -168,7 +170,7 @@
     <string name="hint_empty_rating">(Nehodnoceno)</string>
     <string name="hint_empty_read_status">(Stav čtení neznámý)</string>
     <string name="hint_empty_series">(Bez série)</string>
-    <string name="hint_not_set">(Nenastaveno)</string>
+    <string name="info_not_set">Nenastaveno</string>
     <string name="hint_search_text">Vložit a/nebo ISBN</string>
     <string name="info_site_authorization_successful">%1$s autorizace v pořádku</string>
     <string name="txt_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
@@ -223,7 +225,7 @@
     <string name="lbl_book">Kniha</string>
     <string name="lbl_books">Knihy</string>
     <string name="lbl_bookshelf">Knihovna</string>
-    <string name="lbl_bookshelves_long">Zvolte knihovnu</string>
+    <string name="lbl_bookshelves">Zvolte knihovnu</string>
     <string name="X_lbl_by_author_s">(kým) %1$s</string>
     <string name="lbl_color">Barva</string>
     <string name="lbl_condition">Stav</string>
@@ -412,7 +414,7 @@
     <string name="pg_ui">Uživatelské rozhraní</string>
     <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
     <string name="progress_end_backup_success">Zálohování úspěšně dokončeno</string>
-    <string name="warning_task_cancelled">Zrušeno</string>
+    <string name="cancelled">Zrušeno</string>
     <string name="progress_end_import_complete">Import byl dokončen</string>
     <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>
     <string name="progress_msg_connecting">Připojování…</string>
@@ -583,8 +585,8 @@
     <string name="warning_if_month_set_year_must_be">Pokud je zadán měsíc, musí být také uveden rok.</string>
     <string name="warning_immediate_global_changes">UPOZORNĚNÍ: Všechny uložené změny se aplikují u všech záznamů</string>
     <string name="warning_import_csv">Pozor: Importovaná data mohou upravit existující záznamy knih - k takové situaci dojde v případě, že není vyplněno uuid, a id v importovaném souboru je totožné s již existujícím id. Doporučujeme proto zkontrolovat - a případně upravit - toto pole v exportovaném souboru. Pokud byl vytvořen nový záznam, nebo jsou importovány další knihy, tak se ujistěte, že je vyplněno uuid, nebo že pole id je prázdné.</string>
-    <string name="warning_import_csv_failed_lines_lots">Analýza linek CSV se nezdařila pro linky \n%1$s\n a další.</string>
-    <string name="warning_import_csv_failed_lines_some">Analýza linek CSV se nezdařila pro řádky \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_lots">Analýza linek se nezdařila pro linky \n%1$s\n a další.</string>
+    <string name="warning_import_failed__for_lines_some">Analýza linek se nezdařila pro řádky \n%1$s\n</string>
     <string name="warning_import_old_archive">Tato volba není podporována u starších verzí archivu.</string>
     <string name="warning_import_csv_unescaped_quote">Znak bez uvozovek v řádku %1$d, pozice %2$d</string>
     <string name="warning_no_editions">K dispozici nejsou žádné další informace o vydání</string>
@@ -661,7 +663,7 @@
     <string name="confirm_clear_all_data">TOTO ODSTRANÍ VŠECHNY ÚDAJE!\n S výjimkou obnovy z předchozí zálohy TO NELZE ZRUŠIT!\n\n Jste si jistý, že chcete pokračovat ?</string>
     <string name="confirm_continue">Jste si jistý, že chcete pokračovat ?</string>
     <string name="menu_backup_and_export">Zálohování a export</string>
-    <string name="X_action_export">Vývozní</string>
+    <string name="action_export">Vývozní</string>
     <string name="lbl_database">Databáze</string>
     <string name="lbl_archive_format_db_info">Databáze SQLite.</string>
     <string name="lbl_archive_type_db">Soubor databáze (%1$s)</string>
@@ -698,4 +700,9 @@
     <string name="httpErrorFileNotFound">Požadovaný soubor nelze najít.</string>
     <string name="lbl_calibre_content_server_ca_cert">Certifikát CA</string>
     <string name="error_certificate_invalid">Certifikát je neplatný nebo nedostupný.</string>
+    <string name="username">uživatelské jméno</string>
+    <string name="password">heslo</string>
+    <string name="error_network_failed_try_again">Zkontrolujte připojení a zkuste to znovu</string>
+    <string name="lbl_test_connection">Vyzkoušejte připojení</string>
+    <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
 </resources>

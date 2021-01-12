@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -52,7 +52,7 @@ public class IntListFilterTest {
     public void cc() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final IntListFilter p1 = new IntListFilter(
-                false, mLayerMock, R.string.lbl_bookshelves_long,
+                false, mLayerMock, R.string.lbl_bookshelves,
                 Filters.PK_FILTER_BOOKSHELVES,
                 new VirtualDomain(DOM_BOOKSHELF_NAME, TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF)));
 

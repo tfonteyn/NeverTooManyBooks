@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,17 +19,50 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+
+import java.io.IOException;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * Thrown when external storage media is not available.
+ * <p>
+ * URGENT / TEST: changed ExternalStorageException to extends IOException
+ * -> check all catch etc...
  */
 public class ExternalStorageException
-        extends RuntimeException {
+        extends IOException
+        implements LocalizedException {
 
-    private static final long serialVersionUID = 6097469722012011738L;
+    private static final long serialVersionUID = -3542125839470576149L;
+    @NonNull
+    private final AppDir mAppDir;
 
-    public ExternalStorageException(@NonNull final String message) {
-        super(message);
+    public ExternalStorageException(@NonNull final AppDir appDir) {
+        mAppDir = appDir;
+    }
+
+    @NonNull
+    @Override
+    public String getLocalizedMessage(@NonNull final Context context) {
+        return context.getString(R.string.error_storage_not_accessible_s, mAppDir.toString());
+    }
+
+    @NonNull
+    public AppDir getAppDir() {
+        return mAppDir;
+    }
+
+    @Override
+    @NonNull
+    public String toString() {
+        return "ExternalStorageException{"
+               + super.toString()
+               + ", mAppDir=" + mAppDir
+               + '}';
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,27 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.goodreads.api;
+package com.hardbacknutter.nevertoomanybooks.utils.exceptions;
+
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 
-import java.net.URL;
-
-public class Http404Exception
-        extends Exception {
-
-    private static final long serialVersionUID = 3287736232776571504L;
-    @NonNull
-    private final URL mUrl;
-
-    public Http404Exception(@NonNull final String message,
-                            @NonNull final URL url) {
-        super(message);
-        mUrl = url;
-    }
+/**
+ * Produces a guaranteed localized message for displaying to the user.
+ */
+public interface LocalizedException {
 
     @NonNull
-    public URL getUrl() {
-        return mUrl;
-    }
+    String getLocalizedMessage(@NonNull final Context context);
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,8 +27,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 
 import org.junit.Before;
@@ -61,6 +59,7 @@ public class ZipArchiveWriterTest {
 
     private long mBookInDb;
     private int mNrOfStyles;
+
     @Before
     public void count() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
@@ -76,9 +75,10 @@ public class ZipArchiveWriterTest {
 
     @Test
     public void write()
-            throws IOException, InvalidArchiveException, ImportException,
-                   CertificateException, NoSuchAlgorithmException,
-                   KeyStoreException, KeyManagementException, GeneralParsingException {
+            throws ImportException,
+                   InvalidArchiveException, GeneralParsingException,
+                   IOException,
+                   CertificateException, KeyManagementException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored
@@ -109,7 +109,7 @@ public class ZipArchiveWriterTest {
 
         final long exportCount = exportResults.getBookCount();
 
-        final ImportHelper importHelper = ImportHelper.withUri(context, Uri.fromFile(file));
+        final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
         final ImportResults importResults;
 
         // only NEW books, hence 0/0 created/updated as outcome of the test

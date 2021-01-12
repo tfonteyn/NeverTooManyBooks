@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,12 +37,12 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 
 /**
  * Start a background task that exports a single books to Goodreads.
@@ -64,7 +64,7 @@ public class GrSendOneBookTask
      *
      * @param bookId the book to send
      */
-    public void startTask(@IntRange(from = 1) final long bookId) {
+    public void start(@IntRange(from = 1) final long bookId) {
         mBookId = bookId;
         execute(R.id.TASK_ID_GR_SEND_ONE_BOOK);
     }
@@ -120,7 +120,7 @@ public class GrSendOneBookTask
         } catch (@NonNull final CredentialsException e) {
             return new GrStatus(GrStatus.FAILED_CREDENTIALS);
 
-        } catch (@NonNull final Http404Exception | GeneralParsingException e) {
+        } catch (@NonNull final HttpNotFoundException | GeneralParsingException e) {
             return new GrStatus(GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS);
 
         } catch (@NonNull final IOException e) {

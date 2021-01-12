@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.preference.Preference;
+import androidx.preference.ListPreference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -37,6 +37,8 @@ import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 public class ImagesPreferenceFragment
         extends BasePreferenceFragment {
 
+    private static final String PSK_PURGE_IMAGE_CACHE = "psk_purge_image_cache";
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
@@ -44,22 +46,29 @@ public class ImagesPreferenceFragment
         setPreferencesFromResource(R.xml.preferences_images, rootKey);
 
         // Purge image cache database table.
-        final Preference preference = findPreference("psk_purge_image_cache");
-        if (preference != null) {
-            preference.setOnPreferenceClickListener(p -> {
-                //noinspection ConstantConditions
-                new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.lbl_purge_image_cache)
-                        .setMessage(R.string.lbl_purge_image_cache)
-                        .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                        .setPositiveButton(android.R.string.ok, (d, w) ->
-                                CoversDAO.deleteAll(getContext()))
-                        .create()
-                        .show();
-                return true;
-            });
-        }
+        //noinspection ConstantConditions
+        findPreference(PSK_PURGE_IMAGE_CACHE)
+                .setOnPreferenceClickListener(p -> {
+                    //noinspection ConstantConditions
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setIcon(R.drawable.ic_warning)
+                            .setTitle(R.string.lbl_purge_image_cache)
+                            .setMessage(R.string.lbl_purge_image_cache)
+                            .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                            .setPositiveButton(android.R.string.ok, (d, w) ->
+                                    CoversDAO.deleteAll(getContext()))
+                            .create()
+                            .show();
+                    return true;
+                });
+
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_camera_image_autorotate)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        //noinspection ConstantConditions
+        findPreference(Prefs.pk_camera_image_action)
+                .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
     }
 
     @Override

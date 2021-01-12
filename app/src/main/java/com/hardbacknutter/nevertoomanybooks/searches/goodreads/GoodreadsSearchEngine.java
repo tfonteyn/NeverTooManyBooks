@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
-import com.hardbacknutter.nevertoomanybooks.goodreads.api.Http404Exception;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.SearchBookApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIdApiHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.api.ShowBookByIsbnApiHandler;
@@ -48,8 +47,8 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 
 /**
  * <a href="https://www.goodreads.com">https://www.goodreads.com</a>
@@ -150,7 +149,7 @@ public class GoodreadsSearchEngine
     @Override
     public Bundle searchByExternalId(@NonNull final String externalId,
                                      @NonNull final boolean[] fetchThumbnail)
-            throws CredentialsException, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -161,7 +160,7 @@ public class GoodreadsSearchEngine
             final long grBookId = Long.parseLong(externalId);
             return mByIdApi.searchByExternalId(grBookId, fetchThumbnail, bookData);
 
-        } catch (@NonNull final Http404Exception | NumberFormatException e) {
+        } catch (@NonNull final HttpNotFoundException | NumberFormatException e) {
             // ignore
         }
         return bookData;
@@ -171,7 +170,7 @@ public class GoodreadsSearchEngine
     @Override
     public Bundle searchByIsbn(@NonNull final String validIsbn,
                                @NonNull final boolean[] fetchThumbnail)
-            throws CredentialsException, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -181,7 +180,7 @@ public class GoodreadsSearchEngine
             }
             return mByIsbnApi.searchByIsbn(validIsbn, fetchThumbnail, bookData);
 
-        } catch (@NonNull final Http404Exception ignore) {
+        } catch (@NonNull final HttpNotFoundException ignore) {
             // ignore
         }
         return bookData;
@@ -202,7 +201,7 @@ public class GoodreadsSearchEngine
                          @Nullable final String title,
                          @Nullable final /* not supported */ String publisher,
                          @NonNull final boolean[] fetchThumbnail)
-            throws CredentialsException, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final Bundle bookData = new Bundle();
 
@@ -219,7 +218,7 @@ public class GoodreadsSearchEngine
                     }
                     return mByIdApi.searchByExternalId(grIdList.get(0), fetchThumbnail, bookData);
                 }
-            } catch (@NonNull final Http404Exception ignore) {
+            } catch (@NonNull final HttpNotFoundException ignore) {
                 // ignore
             }
         }
@@ -241,8 +240,7 @@ public class GoodreadsSearchEngine
             }
             return mByIsbnApi.searchCoverImageByIsbn(validIsbn, new Bundle());
 
-        } catch (@NonNull final IOException | CredentialsException
-                | GeneralParsingException | Http404Exception ignore) {
+        } catch (@NonNull final IOException | GeneralParsingException ignore) {
             // ignore
         }
         return null;

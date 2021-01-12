@@ -76,7 +76,7 @@
     <string name="confirm_delete_series">“%1$s” serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="confirm_delete_toc_entry">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>
     <string name="confirm_duplicate_book_message">Eklemeye çalıştığınız kitap veritabanında zaten var, tekrar eklemek istediğinizden emin misiniz?</string>
-    <string name="confirm_email_export">Dışarı aktarılan veriyi e-posta ile göndermemizi ister misiniz?</string>
+    <string name="confirm_email_file">Bu dosyayı birisine e-posta ile göndermek ister misiniz?</string>
     <string name="confirm_merge_bookshelves">Yeniden adlandırılan kitap rafı zaten var. Onları birleştirmek ister misiniz?</string>
     <string name="confirm_merge_authors">Yeniden adlandırılan yazar zaten var. Onları birleştirmek ister misiniz?</string>
     <string name="confirm_merge_series">Yeniden adlandırılan seri zaten var. Onları birleştirmek ister misiniz?</string>
@@ -111,8 +111,8 @@
     <string name="error_site_authentication_failed">%1$s kimlik doğrulaması başarısız oldu</string>
     <string name="error_site_authorization_failed">%1$s yetkilendirmesi bir hataya neden oldu</string>
     <string name="error_storage_no_space_left">Mevcut depolama yetersiz</string>
-    <string name="error_storage_not_accessible">Depolama erişilebilir değil: %1$s</string>
-    <string name="error_storage_not_readable">Lütfen depolamanın erişilebilir olduğunu kontrol edin.</string>
+    <string name="error_storage_not_accessible_s">Depolama erişilebilir değil: %1$s</string>
+    <string name="error_storage_not_accessible">Lütfen depolamanın erişilebilir olduğunu kontrol edin.</string>
     <string name="error_storage_not_writable">Lütfen deponun yazılabilir olduğunu ve yeterli alana sahip olduğunu kontrol edin.</string>
     <string name="error_unknown_long">Beklenmeyen bir hata oluştu, lütfen olayla ilgili ayrıntıları ana seçkedeki “Ayarlar” seçeneğinden bize gönderin</string>
     <string name="error_unknown">Bilinmeyen bir hata oluştu</string>
@@ -122,7 +122,8 @@
     <string name="fab_add_book_by_external_id">Web sitesi kitap kimliği</string>
     <string name="fab_add_book_manually">El ile ekle</string>
     <string name="fallback_currency_format">%2$.2f %1$s</string>
-    <string name="gr_auth_blurb_part1">Goodreads, ağ sayfasında belirtildiği üzere ereği “kişilerin sevdiği kitapları bulmasına ve paylaşmasına yardımcı olmak” olan bir servistir. Çok geniş bir kitap ve yorum veritabanına iye olan Goodreads\'te kayıtlı bir kullanıcı iseniz Goodreads\'ten kitaplarınızı, raflarınızı ve yorumlarınızı alabilir veya Goodreads\'e gönderebilir. &APP_NAME; kendi başına bir uygulama olup Goodreads\'i gerektirmemektedir, ancak ilgilendiyseniz buradan kayıt olabilirsiniz:</string>
+    <string name="gr_auth_blurb_part1">Goodreads, ağ sayfasında belirtildiği üzere ereği “kişilerin sevdiği kitapları bulmasına ve paylaşmasına yardımcı olmak” olan bir servistir. Çok geniş bir kitap ve yorum veritabanına iye olan Goodreads\'te kayıtlı bir kullanıcı iseniz Goodreads\'ten kitaplarınızı, raflarınızı ve yorumlarınızı alabilir veya Goodreads\'e gönderebilir. &APP_NAME;
+        kendi başına bir uygulama olup Goodreads\'i gerektirmemektedir, ancak ilgilendiyseniz buradan kayıt olabilirsiniz:</string>
     <string name="gr_auth_blurb_part2">Kayıt olduktan sonra veya kayıtlı bir kullanıcı iseniz Goodreads verilerinize ulaşmak için aşağıdaki düğmeye basın. Sizi Goodreads\'e giriş yapabileceğiniz bir ağ sayfasına yönlendirecektir. Açarsözünüzü (şifrenizi) biz kesinlikle görmeyeceğiz ve dilediğiniz zaman erişimi Goodreads ağ sayfasından iptal edebilirsiniz. Bazen boş bir bete düşerseniz geri düğmesine basıp buraya dönebilirsiniz!</string>
     <string name="gr_auth_blurb_part3">Ancak unutmayın… bunu yapmanız zorunlu değil, &APP_NAME; tek başına da gayet de çalışır!</string>
     <string name="gr_auth_blurb_part4">Bu uygulamayı zaten yetkilendirmiş görünüyorsunuz. Kimlik bilgilerini bu cihaz silmek istiyorsanız, aşağıdaki düğmeye basarak bunu yapabilirsiniz. Ancak, başvurunun Goodreads web sitesindeki kaydını silmek önemlidir.</string>
@@ -135,7 +136,7 @@
     <string name="gr_menu_import_all_from_goodreads">Tümünü Goodreads\'den içe aktar</string>
     <string name="gr_menu_send_all">Tümünü gönder</string>
     <string name="gr_send_to_goodreads">Goodreads\'e gönder</string>
-    <string name="gr_menu_send_updated">Güncellenenleri gönder</string>
+    <string name="menu_send_updated">Güncellenenleri gönder</string>
     <string name="gr_pt_collect_genre">Popüler kitap rafı adlarını kitap türü olarak kullanma</string>
     <string name="gr_send_book_to_goodreads">Bu kitabı Goodreads\'e gönder: %1$d</string>
     <string name="gr_title_send_book">Kitapları Goodreads\'e gönder</string>
@@ -169,7 +170,7 @@
     <string name="hint_empty_rating">(Oylanmamış)</string>
     <string name="hint_empty_read_status">(Okuma durumu bilinmiyor)</string>
     <string name="hint_empty_series">(Seri yok)</string>
-    <string name="hint_not_set">(Ayarlanmadı)</string>
+    <string name="info_not_set">Ayarlanmadı</string>
     <string name="hint_search_text">Metin ve/veya ISBN</string>
     <string name="info_site_authorization_successful">%1$s yetkilendirmesi başarılı</string>
     <string name="txt_cleanup_files">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “%2$s” düğmesini kullanmayı deneyin.</string>
@@ -224,7 +225,7 @@
     <string name="lbl_book">Kitap</string>
     <string name="lbl_books">Kitaplar</string>
     <string name="lbl_bookshelf">Kitaplık</string>
-    <string name="lbl_bookshelves_long">Kitap rafları</string>
+    <string name="lbl_bookshelves">Kitap rafları</string>
     <string name="X_lbl_by_author_s">%1$s ile</string>
     <string name="lbl_color">Renk</string>
     <string name="lbl_condition">Şart</string>
@@ -415,7 +416,7 @@
     <string name="pg_ui">Kullanıcı arayüzü</string>
     <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>
     <string name="progress_end_backup_success">Yedekleme başarılı!</string>
-    <string name="warning_task_cancelled">İptal edildi</string>
+    <string name="cancelled">İptal edildi</string>
     <string name="progress_end_import_complete">İçe aktarma başarılı</string>
     <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
     <string name="progress_msg_connecting">Bağlanılıyor…</string>
@@ -586,8 +587,8 @@
     <string name="warning_if_month_set_year_must_be">Eğer bir ay belirtmiş iseniz yıl da belirtmelisiniz.</string>
     <string name="warning_immediate_global_changes">Not: Tüm kaydedilmiş değişiklikler anında ve genel olarak uygulanır</string>
     <string name="warning_import_csv">Uyarı: Bilgileri içe aktarırken eğer içe aktardığınız dosyaların ID numarası var olan bir kitabın ID\'si ile aynı ise, varolan kitap verilerinin üstüne yazılmasına neden olabilir. Eğer dışa aktarılmış bir dosyada bir giriyi değiştirdiyseniz bu sorun değildir; ancak yeni bir kitap girişi oluşturuyorsanız ID bölümünün boş olduğundan emin olun.</string>
-    <string name="warning_import_csv_failed_lines_lots">CSV ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
-    <string name="warning_import_csv_failed_lines_some">CSV ayrıştırma \n%1$s\n satırları için başarısız oldu.</string>
+    <string name="warning_import_failed_for_lines_lots">Ayrıştırma işlemi \n%1$s\n satırları ve diğerleri için başarısız oldu.</string>
+    <string name="warning_import_failed__for_lines_some">Ayrıştırma \n%1$s\n satırları için başarısız oldu.</string>
     <string name="warning_import_old_archive">Bu seçenek eski arşiv sürümleri için geçerli değildir.</string>
     <string name="warning_import_csv_unescaped_quote">%1$d. Satırda çıkış karakteri olmayan alıntı karakter, %2$d. konum</string>
     <string name="warning_no_editions">Ek yayın bilgisi yok</string>
@@ -662,7 +663,7 @@
     <string name="confirm_clear_all_data">BU TÜM VERİLERİ KALDIRACAK!\n Önceki bir yedeklemeden geri yükleme dışında, BU GERİ ALINAMAZ!\n\n Devam etmek istediğine emin misin ?</string>
     <string name="confirm_continue">Devam etmek istediğine emin misin ?</string>
     <string name="menu_backup_and_export">Yedekleme ve Dışa Aktarma</string>
-    <string name="X_action_export">İhracat</string>
+    <string name="action_export">İhracat</string>
     <string name="lbl_database">Veri tabanı</string>
     <string name="lbl_archive_format_db_info">SQLite veritabanı.</string>
     <string name="lbl_archive_type_db">Veritabanı dosyası (%1$s)</string>
@@ -698,4 +699,9 @@
     <string name="httpErrorFileNotFound">İstenen dosya bulunamadı.</string>
     <string name="lbl_calibre_content_server_ca_cert">CA sertifikası</string>
     <string name="error_certificate_invalid">Sertifika geçersiz veya erişilemez.</string>
+    <string name="username">kullanıcı adı</string>
+    <string name="password">şifre</string>
+    <string name="error_network_failed_try_again">Bağlantıyı kontrol edip tekrar deneyin</string>
+    <string name="lbl_test_connection">Bağlantıyı test edin</string>
+    <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
 </resources>

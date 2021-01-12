@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.os.Parcelable;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -101,19 +102,29 @@ public class ExportResults
         return mBooksExported.size();
     }
 
+    @VisibleForTesting
     @NonNull
     public List<Long> getBooksExported() {
         return mBooksExported;
     }
 
-    public void addCover(@NonNull final String cover) {
-        mCoversExported.add(cover);
+    public void addCover(@NonNull final String path) {
+        mCoversExported.add(path);
     }
 
     public int getCoverCount() {
         return mCoversExported.size();
     }
 
+    /**
+     * Return the full list of cover filenames as collected with {@link #addCover(String)}.
+     * <p>
+     * This is used/needed for the two-step backup process, where step one exports books,
+     * and collects cover filenames, and than (calling this method) in a second step exports
+     * the covers.
+     *
+     * @return list
+     */
     @NonNull
     public List<String> getCoverFileNames() {
         return mCoversExported;

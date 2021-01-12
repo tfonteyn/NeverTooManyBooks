@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -261,7 +261,7 @@ public class GoodreadsAuth {
     public void hasValidCredentialsOrThrow(@NonNull final Context context)
             throws CredentialsException {
         if (!hasValidCredentials(context)) {
-            throw new CredentialsException(context.getString(R.string.site_goodreads));
+            throw new CredentialsException(R.string.site_goodreads, "", null);
         }
     }
 

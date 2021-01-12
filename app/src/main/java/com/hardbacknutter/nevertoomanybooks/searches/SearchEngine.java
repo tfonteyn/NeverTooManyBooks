@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,16 +43,15 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -278,9 +277,7 @@ public interface SearchEngine {
     /**
      * Convenience method to create a connection using the engines specific network configuration.
      *
-     * @param url             to connect to
-     * @param followRedirects a {@code boolean} indicating
-     *                        whether or not to follow HTTP redirects.
+     * @param url to connect to
      *
      * @return the connection
      *
@@ -288,18 +285,14 @@ public interface SearchEngine {
      */
     @WorkerThread
     @NonNull
-    default TerminatorConnection createConnection(@NonNull final String url,
-                                                  final boolean followRedirects)
+    default TerminatorConnection createConnection(@NonNull final String url)
             throws IOException {
-        // can we reach the site at all ?
-        NetworkUtils.ping(getAppContext(), url);
 
         final SearchEngineRegistry.Config config = getConfig();
-        final TerminatorConnection con = new TerminatorConnection(url, null,
-                                                                  config.getConnectTimeoutMs(),
-                                                                  config.getReadTimeoutMs(),
-                                                                  getThrottler());
-        con.setInstanceFollowRedirects(followRedirects);
+
+        final TerminatorConnection con = new TerminatorConnection(url);
+        con.setTimeouts(config.getConnectTimeoutInMs(), config.getReadTimeoutInMs());
+        con.setThrottler(getThrottler());
         return con;
     }
 
@@ -319,20 +312,28 @@ public interface SearchEngine {
                              @Nullable final String bookId,
                              @IntRange(from = 0, to = 1) final int cIdx,
                              @Nullable final ImageFileInfo.Size size) {
-        final SearchEngineRegistry.Config config = getConfig();
-        final String filename = ImageUtils
-                .createFilename(config.getFilenameSuffix(), bookId, cIdx, size);
 
-        final File file = ImageUtils.saveImage(getAppContext(), url,
-                                               filename,
-                                               config.getConnectTimeoutMs(),
-                                               config.getReadTimeoutMs(),
-                                               getThrottler());
-        if (file != null) {
-            return file.getAbsolutePath();
-        } else {
-            return null;
+        final Context context = getAppContext();
+
+        final SearchEngineRegistry.Config config = getConfig();
+
+        final ImageDownloader imageDownloader = new ImageDownloader();
+        imageDownloader.setTimeouts(config.getConnectTimeoutInMs(), config.getReadTimeoutInMs());
+        imageDownloader.setThrottler(getThrottler());
+
+        try {
+            final File tmpFile = imageDownloader
+                    .createTmpFile(context, config.getFilenameSuffix(), bookId, cIdx, size);
+
+            final File file = imageDownloader.fetch(context, url, tmpFile);
+            if (file != null) {
+                return file.getAbsolutePath();
+            }
+        } catch (@NonNull final ExternalStorageException ignore) {
+            // ignore
         }
+
+        return null;
     }
 
     enum RegistrationAction {
@@ -370,14 +371,13 @@ public interface SearchEngine {
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws CredentialsException for sites which require credentials
-         * @throws IOException          on other failures
+         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByExternalId(@NonNull String externalId,
                                   @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException, GeneralParsingException;
+                throws GeneralParsingException, IOException;
     }
 
     /** Optional. Every engine should really implement this. */
@@ -393,14 +393,13 @@ public interface SearchEngine {
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws CredentialsException for sites which require credentials
-         * @throws IOException          on other failures
+         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByIsbn(@NonNull String validIsbn,
                             @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException, GeneralParsingException;
+                throws GeneralParsingException, IOException;
 
         /**
          * Indicates if ISBN code should be forced down to ISBN10 (if possible) before a search.
@@ -437,14 +436,13 @@ public interface SearchEngine {
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws CredentialsException for sites which require credentials
-         * @throws IOException          on other failures
+         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
         Bundle searchByBarcode(@NonNull String barcode,
                                @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException, GeneralParsingException;
+                throws IOException;
     }
 
     /**
@@ -472,8 +470,7 @@ public interface SearchEngine {
          *
          * @return bundle with book data. Can be empty, but never {@code null}.
          *
-         * @throws CredentialsException for sites which require credentials
-         * @throws IOException          on other failures
+         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
@@ -482,7 +479,7 @@ public interface SearchEngine {
                       @Nullable String title,
                       @Nullable String publisher,
                       @NonNull boolean[] fetchThumbnail)
-                throws CredentialsException, IOException, GeneralParsingException;
+                throws GeneralParsingException, IOException;
     }
 
     /** Optional. */
@@ -561,8 +558,7 @@ public interface SearchEngine {
          * See the Goodreads SearchEngine for an example.
          * <p>
          * A search for the book is done, with the 'fetchThumbnail' flag set to true.
-         * Any {@link IOException} or {@link CredentialsException}
-         * thrown are ignored and {@code null} returned instead.
+         * Any {@link IOException} thrown are ignored and {@code null} returned instead.
          * <p>
          * Do NOT use if the site does not support returning images during searches.
          *
@@ -613,8 +609,7 @@ public interface SearchEngine {
                     return new File(imageList.get(0)).getAbsolutePath();
                 }
 
-            } catch (@NonNull
-            final CredentialsException | IOException | GeneralParsingException e) {
+            } catch (@NonNull final IOException | GeneralParsingException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "getCoverImageFallback", e);
                 }
@@ -634,12 +629,11 @@ public interface SearchEngine {
          *
          * @return a list of isbn's of alternative editions of our original isbn, can be empty.
          *
-         * @throws CredentialsException for sites which require credentials
-         * @throws IOException          on other failures
+         * @throws IOException on other failures
          */
         @WorkerThread
         @NonNull
         List<String> searchAlternativeEditions(@NonNull String validIsbn)
-                throws CredentialsException, IOException, GeneralParsingException;
+                throws GeneralParsingException, IOException;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -621,9 +621,10 @@ public class SearchBookUpdatesViewModel
             final String fileSpec = bookData.getString(Book.BKEY_TMP_FILE_SPEC[cIdx]);
             if (fileSpec != null) {
                 final File downloadedFile = new File(fileSpec);
-                final File destination = mCurrentBook.getUuidCoverFileOrNew(context, cIdx);
                 try {
+                    final File destination = mCurrentBook.getUuidCoverFileOrNew(context, cIdx);
                     FileUtils.rename(downloadedFile, destination);
+
                 } catch (@NonNull final IOException e) {
                     final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
                     Logger.error(context, TAG, e,

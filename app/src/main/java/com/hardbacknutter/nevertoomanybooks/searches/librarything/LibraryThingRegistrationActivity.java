@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,7 +71,7 @@ public class LibraryThingRegistrationActivity
         });
         mValidateKeyTask.onCancelled().observe(this, message -> {
             if (message.isNewEvent()) {
-                Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+                Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                         .show();
             }
         });
@@ -141,7 +141,7 @@ public class LibraryThingRegistrationActivity
         if (!devKey.isEmpty()) {
             Snackbar.make(mVb.devKey, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            mValidateKeyTask.startTask();
+            mValidateKeyTask.start();
         } else {
             showError(mVb.lblDevKey, getString(R.string.vldt_non_blank_required));
         }

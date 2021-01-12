@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,10 +53,10 @@ public abstract class VMTask<Result>
 
     /** Log tag. */
     private static final String TAG = "VMTask";
-    protected final MutableLiveData<FinishedMessage<Result>> mFinished = new MutableLiveData<>();
-    protected final MutableLiveData<FinishedMessage<Result>> mCancelled = new MutableLiveData<>();
-    protected final MutableLiveData<FinishedMessage<Exception>> mFailure = new MutableLiveData<>();
-    protected final MutableLiveData<ProgressMessage> mProgress = new MutableLiveData<>();
+    private final MutableLiveData<FinishedMessage<Result>> mFinished = new MutableLiveData<>();
+    private final MutableLiveData<FinishedMessage<Result>> mCancelled = new MutableLiveData<>();
+    private final MutableLiveData<FinishedMessage<Exception>> mFailure = new MutableLiveData<>();
+    private final MutableLiveData<ProgressMessage> mProgress = new MutableLiveData<>();
     private final AtomicBoolean mIsCancelled = new AtomicBoolean();
     /** id set at construction time, passed back in all messages. */
     @IdRes
@@ -179,6 +179,8 @@ public abstract class VMTask<Result>
     }
 
     /**
+     * The actual 'work' method.
+     *
      * @param context a localized application context
      *
      * @return task result
@@ -187,10 +189,8 @@ public abstract class VMTask<Result>
      */
     @Nullable
     @WorkerThread
-    protected Result doWork(@NonNull final Context context)
-            throws Exception {
-        return null;
-    }
+    protected abstract Result doWork(@NonNull final Context context)
+            throws Exception;
 
     public boolean isRunning() {
         return mTaskId != 0;

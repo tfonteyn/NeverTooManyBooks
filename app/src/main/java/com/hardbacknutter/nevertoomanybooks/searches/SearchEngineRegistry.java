@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -342,7 +342,7 @@ public final class SearchEngineRegistry {
          *
          * @return defaults to 5 second. Override as needed.
          */
-        public int getConnectTimeoutMs() {
+        public int getConnectTimeoutInMs() {
             return mConnectTimeoutMs;
         }
 
@@ -351,7 +351,7 @@ public final class SearchEngineRegistry {
          *
          * @return defaults to 10 second. Override as needed.
          */
-        public int getReadTimeoutMs() {
+        public int getReadTimeoutInMs() {
             return mReadTimeoutMs;
         }
 

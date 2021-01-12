@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,27 +26,43 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:key="calibre.showMenu"
+            android:key="calibre.enabled"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
             android:title="@string/enabled" />
 
         <EditTextPreference
             android:defaultValue=""
-            android:dependency="calibre.showMenu"
+            android:dependency="calibre.enabled"
             android:icon="@drawable/ic_link"
-            android:inputType="textUri|text"
             android:key="calibre.host.url"
-            android:selectAllOnFocus="true"
             android:summary="@string/hint_empty_field"
             android:title="@string/lbl_calibre_content_server" />
 
         <Preference
-            android:dependency="calibre.showMenu"
+            android:dependency="calibre.enabled"
             android:icon="@drawable/ic_security"
             android:key="psk_ca_from_file"
             android:summary="@string/hint_empty_field"
             android:title="@string/lbl_calibre_content_server_ca_cert"
+            />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="calibre.enabled"
+            android:icon="@drawable/ic_person"
+            android:key="calibre.host.user"
+            android:summary="@string/hint_empty_field"
+            android:title="@string/username"
+            />
+
+        <EditTextPreference
+            android:defaultValue=""
+            android:dependency="calibre.enabled"
+            android:icon="@drawable/ic_login"
+            android:key="calibre.host.password"
+            android:summary="@string/hint_empty_field"
+            android:title="@string/password"
             />
     </PreferenceCategory>
 

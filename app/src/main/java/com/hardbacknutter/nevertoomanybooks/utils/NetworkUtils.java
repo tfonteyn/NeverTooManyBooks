@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,7 +39,6 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.NetworkUnavailableException;
@@ -135,8 +134,7 @@ public final class NetworkUtils {
             throws NetworkUnavailableException, UnknownHostException, IOException {
 
         if (!isNetworkAvailable(context)) {
-            throw new NetworkUnavailableException(
-                    context.getString(R.string.error_network_please_connect));
+            throw new NetworkUnavailableException();
         }
 
         final String url = urlStr.toLowerCase(Locale.ROOT);

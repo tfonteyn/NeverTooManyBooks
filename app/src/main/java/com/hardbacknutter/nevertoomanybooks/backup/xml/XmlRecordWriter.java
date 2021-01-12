@@ -138,7 +138,7 @@ public class XmlRecordWriter
 
             // parsing will be faster if these go in the order done here.
             progressListener.publishProgressStep(
-                    1, context.getString(R.string.lbl_bookshelves_long));
+                    1, context.getString(R.string.lbl_bookshelves));
             writeBookshelves(writer, progressListener);
 
             progressListener.publishProgressStep(
@@ -447,15 +447,17 @@ public class XmlRecordWriter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
                                            book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
 
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_ID,
-                                           book.getInt(DBDefinitions.KEY_CALIBRE_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_UUID,
-                                           book.getString(DBDefinitions.KEY_CALIBRE_UUID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_FILE_URL,
-                                           book.getString(DBDefinitions.KEY_CALIBRE_FILE_URL)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_BOOK_ID,
+                                           book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_BOOK_UUID,
+                                           book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
                 writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE,
-                        book.getString(DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE)));
+                        DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID,
+                        book.getString(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID)));
+                writer.write(XmlUtils.attr(
+                        DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL,
+                        book.getString(DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL)));
+
                 // external ID's
                 for (final Domain domain : externalIdDomains) {
                     final String key = domain.getName();

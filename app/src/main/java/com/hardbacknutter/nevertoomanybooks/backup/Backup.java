@@ -26,13 +26,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
-final class Backup {
+public final class Backup {
+
+    private static final String TAG = "Backup";
 
     /** Last full backup date. */
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
@@ -45,8 +52,8 @@ final class Backup {
      *
      * @param context Current context
      */
-    static void setLastFullBackupDate(@NonNull final Context context,
-                                      @Nullable final LocalDateTime dateTime) {
+    public static void setLastFullBackupDate(@NonNull final Context context,
+                                             @Nullable final LocalDateTime dateTime) {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         if (dateTime == null) {
             global.edit()
@@ -71,7 +78,7 @@ final class Backup {
      * @return Date in the UTC timezone.
      */
     @Nullable
-    static LocalDateTime getLastFullBackupDate(@NonNull final Context context) {
+    public static LocalDateTime getLastFullBackupDate(@NonNull final Context context) {
         final String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
                                                    .getString(PREF_LAST_FULL_BACKUP_DATE, null);
 
@@ -81,4 +88,50 @@ final class Backup {
 
         return null;
     }
+
+    /**
+     * Transform a failure into a user friendly report.
+     * <p>
+     * This method check exceptions for <strong>both reader and writers</strong>.
+     *
+     * @param e error exception
+     *
+     * @return report string
+     */
+    @NonNull
+    static String createErrorReport(@NonNull final Context context,
+                                    @Nullable final Exception e) {
+        String msg = ExMsg.map(context, TAG, e);
+
+        if (msg == null) {
+            // generic storage related IOException message
+            if (e instanceof IOException) {
+                if (BuildConfig.DEBUG /* always */) {
+                    // in debug mode show the raw exception
+                    msg = context.getString(R.string.error_unknown)
+                          + "\n\n" + e.getLocalizedMessage();
+                } else {
+                    msg = StandardDialogs
+                            .createBadError(context, R.string.error_storage_not_writable);
+                }
+            }
+
+            // generic unknown message
+            if (msg == null || msg.isEmpty()) {
+                if (BuildConfig.DEBUG /* always */) {
+                    // in debug mode show the raw exception
+                    msg = context.getString(R.string.error_unknown);
+                    if (e != null) {
+                        msg += "\n\n" + e.getLocalizedMessage();
+                    }
+                } else {
+                    // when not in debug, ask for feedback
+                    msg = StandardDialogs.createBadError(context, R.string.error_unknown);
+                }
+            }
+        }
+
+        return msg;
+    }
+
 }

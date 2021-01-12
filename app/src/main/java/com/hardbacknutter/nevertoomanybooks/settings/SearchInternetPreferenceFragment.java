@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ import android.os.Bundle;
 
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
-import androidx.preference.Preference;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -35,16 +34,17 @@ import com.hardbacknutter.nevertoomanybooks.R;
 public class SearchInternetPreferenceFragment
         extends BasePreferenceFragment {
 
+    private static final String PSK_SEARCH_SITE_LIBRARY_THING = "psk_search_site_library_thing";
+
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
                                     @Nullable final String rootKey) {
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_site_searches, rootKey);
 
-        final Preference site = findPreference("psk_search_site_library_thing");
-        if (site != null) {
-            site.setVisible(BuildConfig.ENABLE_LIBRARY_THING);
-        }
+        //noinspection ConstantConditions
+        findPreference(PSK_SEARCH_SITE_LIBRARY_THING)
+                .setVisible(BuildConfig.ENABLE_LIBRARY_THING);
     }
 
     @Override

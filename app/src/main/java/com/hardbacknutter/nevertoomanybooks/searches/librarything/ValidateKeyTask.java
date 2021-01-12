@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,8 +44,8 @@ public class ValidateKeyTask
     /** Log tag. */
     private static final String TAG = "ValidateKeyTask";
 
-    public void startTask() {
-        execute(R.id.TASK_ID_LT_VALIDATE_KEY);
+    void start() {
+        execute(R.id.TASK_ID_VALIDATE_CONNECTION);
     }
 
     @NonNull

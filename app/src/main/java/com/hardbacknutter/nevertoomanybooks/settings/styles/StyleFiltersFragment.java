@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.os.Bundle;
 import androidx.annotation.CallSuper;
 import androidx.annotation.Keep;
 import androidx.annotation.Nullable;
+import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
@@ -37,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
 /**
  * Used/defined in xml/preferences_styles.xml
@@ -61,49 +63,60 @@ public class StyleFiltersFragment
         Preference preference;
 
         preference = findPreference(Filters.PK_FILTER_READ);
-        if (preference != null) {
-            preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_READ));
-        }
+        //noinspection ConstantConditions
+        preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_READ));
+        preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
         preference = findPreference(Filters.PK_FILTER_SIGNED);
-        if (preference != null) {
-            preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_SIGNED));
-        }
+        //noinspection ConstantConditions
+        preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_SIGNED));
+        preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
         preference = findPreference(Filters.PK_FILTER_TOC_BITMASK);
-        if (preference != null) {
-            preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_TOC_BITMASK));
-        }
+        //noinspection ConstantConditions
+        preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_TOC_BITMASK));
+        preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
         preference = findPreference(Filters.PK_FILTER_LOANEE);
-        if (preference != null) {
-            preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE));
-        }
-        preference = findPreference(Filters.PK_FILTER_EDITION_BITMASK);
-        if (preference != null) {
-            preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_EDITION_BITMASK));
-        }
+        //noinspection ConstantConditions
+        preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE));
+        preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
         preference = findPreference(Filters.PK_FILTER_ISBN);
-        if (preference != null) {
-            preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_ISBN));
-        }
+        //noinspection ConstantConditions
+        preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_ISBN));
+        preference.setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        preference = findPreference(Filters.PK_FILTER_EDITION_BITMASK);
+        //noinspection ConstantConditions
+        preference.setVisible(DBDefinitions.isUsed(global, DBDefinitions.KEY_EDITION_BITMASK));
+        preference.setSummaryProvider(TriStateMultiSelectListPreference
+                                              .SimpleSummaryProvider.getInstance());
+
 
         final MultiSelectListPreference bookshelves = findPreference(Filters.PK_FILTER_BOOKSHELVES);
-        if (bookshelves != null) {
-            if (BuildConfig.ENABLE_STYLE_BOOKSHELF_FILTER) {
-                bookshelves.setVisible(true);
-                try (DAO db = new DAO(TAG)) {
-                    final ArrayList<Bookshelf> list = db.getBookshelves();
-                    bookshelves.setEntryValues(
-                            list.stream()
-                                .map(bookshelf -> String.valueOf(bookshelf.getId()))
-                                .toArray(String[]::new));
 
-                    bookshelves.setEntries(
-                            list.stream().map(Bookshelf::getName)
-                                .toArray(String[]::new));
-                }
+        if (BuildConfig.ENABLE_STYLE_BOOKSHELF_FILTER) {
+            //noinspection ConstantConditions
+            bookshelves.setVisible(true);
 
-            } else {
-                bookshelves.setVisible(false);
+            try (DAO db = new DAO(TAG)) {
+                final ArrayList<Bookshelf> list = db.getBookshelves();
+                bookshelves.setEntryValues(
+                        list.stream()
+                            .map(bookshelf -> String.valueOf(bookshelf.getId()))
+                            .toArray(String[]::new));
+
+                bookshelves.setEntries(
+                        list.stream().map(Bookshelf::getName)
+                            .toArray(String[]::new));
             }
+            bookshelves.setSummaryProvider(TriStateMultiSelectListPreference
+                                                   .SimpleSummaryProvider.getInstance());
+
+        } else {
+            //noinspection ConstantConditions
+            bookshelves.setVisible(false);
         }
     }
 }

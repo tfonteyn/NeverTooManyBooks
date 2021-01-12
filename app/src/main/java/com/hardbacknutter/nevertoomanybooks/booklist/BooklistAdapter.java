@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,9 +64,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageLoader;
-import com.hardbacknutter.nevertoomanybooks.covers.ImageLoaderWithCacheWrite;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoaderWithCacheWrite;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -1246,13 +1246,13 @@ public class BooklistAdapter
                 // 1. Gets the image from the file system and display it.
                 // 2. Start a subsequent task to send it to the cache.
                 // This 2nd task uses the serial executor.
-                new ImageLoaderWithCacheWrite(mCoverView, mCoverLongestSide, mCoverLongestSide,
-                                              file, null, uuid, 0)
+                new ImageViewLoaderWithCacheWrite(mCoverView, mCoverLongestSide, mCoverLongestSide,
+                                                  file, null, uuid, 0)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             } else {
                 // Cache not used: Get the image from the file system and display it.
-                new ImageLoader(mCoverView, mCoverLongestSide, mCoverLongestSide, file, null)
+                new ImageViewLoader(mCoverView, mCoverLongestSide, mCoverLongestSide, file, null)
                         .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
         }

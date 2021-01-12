@@ -74,7 +74,7 @@
     <string name="confirm_delete_series">Действительно удалить серию «%1$s»?\n\nКниги этой серии не будут удалены.\n\nВместо удаления вы можете переименовать серию, чтобы сохранить существующую связь с книгами</string>
     <string name="confirm_delete_toc_entry">Действительно удалить запись «%1$s» (от %2$s)? Он будет удален из всех книг, в которых он указан. Сами книги не будут удалены.</string>
     <string name="confirm_duplicate_book_message">Книга, которую Вы пытаетесь добавить уже есть в базе. Вы уверены, что хотите добавить ещё одну копию этой книги?</string>
-    <string name="confirm_email_export">Желаете ли Вы отправить этот экспорт по почте?</string>
+    <string name="confirm_email_file">Хотите отправить кому-нибудь этот файл по электронной почте?</string>
     <string name="confirm_merge_bookshelves">Книжная полка, которую вы переименовываете, уже существует. Вы хотите объединить их?</string>
     <string name="confirm_merge_authors">Автор, которого вы переименовали, уже существует. Вы хотите объединить их?</string>
     <string name="confirm_merge_series">Сериал, который вы переименовываете, уже существует. Вы хотите объединить их?</string>
@@ -109,8 +109,8 @@
     <string name="error_site_authentication_failed">%1$s аутентификация не удалась</string>
     <string name="error_site_authorization_failed">Авторизация %1$s завершилась с ошибкой.</string>
     <string name="error_storage_no_space_left">Недостаточно места</string>
-    <string name="error_storage_not_accessible">Хранение недоступно: %1$s</string>
-    <string name="error_storage_not_readable">Пожалуйста, проверьте, что хранилище доступно.</string>
+    <string name="error_storage_not_accessible_s">Хранение недоступно: %1$s</string>
+    <string name="error_storage_not_accessible">Пожалуйста, проверьте, что хранилище доступно.</string>
     <string name="error_storage_not_writable">Пожалуйста, проверьте, что хранилище доступно для записи и имеет достаточно места.</string>
     <string name="error_unknown_long">Случилась неожиданная ошибка, пожалуйста, отошлите детали в поддержку, используя меню «Настройки» из Главного меню</string>
     <string name="error_unknown">Произошла неизвестная ошибка</string>
@@ -133,7 +133,7 @@
     <string name="gr_menu_import_all_from_goodreads">Импортировать все из Goodreads</string>
     <string name="gr_menu_send_all">Отправить все</string>
     <string name="gr_send_to_goodreads">Послать на Goodreads</string>
-    <string name="gr_menu_send_updated">Отправить обновленные</string>
+    <string name="menu_send_updated">Отправить обновленные</string>
     <string name="gr_pt_collect_genre">Используйте популярные названия книжных полок в качестве книжных жанров</string>
     <string name="gr_send_book_to_goodreads">Отправить книгу %1$d на Goodreads</string>
     <string name="gr_title_send_book">Отправить книги на Goodreads</string>
@@ -167,7 +167,7 @@
     <string name="hint_empty_rating">(без рейтинга)</string>
     <string name="hint_empty_read_status">(Статус чтения неизвестен)</string>
     <string name="hint_empty_series">(Нет серии)</string>
-    <string name="hint_not_set">(Не указано)</string>
+    <string name="info_not_set">Не указано</string>
     <string name="hint_search_text">Текст и/или ISBN</string>
     <string name="info_site_authorization_successful">Авторизация %1$s прошла успешно</string>
     <string name="txt_cleanup_files">Файлы, подлежащие очистке сейчас занимают %1$s на SD-карте. Лог-файлы и другие данные сохраняются на SD-карте при каждом обновлении, когда происходит резервное копирование базы, или в случае аварийного завершения программы. Нажмите кнопку внизу экрана, чтобы очистить эти файлы с SD-карты. Если у вас аварийно завершается программа или происходят иные ошибки, пожалуйста, сначала воспользуйтесь кнопкой «%2$s».</string>
@@ -222,7 +222,7 @@
     <string name="lbl_book">Книга</string>
     <string name="lbl_books">книги</string>
     <string name="lbl_bookshelf">Книжная полка</string>
-    <string name="lbl_bookshelves_long">Книжные полки</string>
+    <string name="lbl_bookshelves">Книжные полки</string>
     <string name="X_lbl_by_author_s">к %1$s</string>
     <string name="lbl_color">Цвет</string>
     <string name="lbl_condition">Условие</string>
@@ -410,7 +410,7 @@
     <string name="pg_ui">Пользовательский интерфейс</string>
     <string name="pg_ui_field_visibility">Видимость полей</string>
     <string name="progress_end_backup_success">Резервное копирование успешно</string>
-    <string name="warning_task_cancelled">Печать отменена</string>
+    <string name="cancelled">Печать отменена</string>
     <string name="progress_end_import_complete">Импорт завершен</string>
     <string name="progress_end_import_partially_complete">Частичный импорт выполнен</string>
     <string name="progress_msg_connecting">Подключение…</string>
@@ -582,8 +582,8 @@
     <string name="warning_if_month_set_year_must_be">Если указан месяц, также необходимо указать год.</string>
     <string name="warning_immediate_global_changes">ЗАМЕЧАНИЕ: Все сохраняемые изменения применяются немедленно</string>
     <string name="warning_import_csv">Предупреждение. Импорт данных может заменить существующие записи книг обновлённой информацией, в случае, если номер в файле совпадает с существующим номером. Обычно это то, что требуется, если вы обновляете поле в файле экспорта. Если вы добавляете запись новой книге, убедитесь, что поле id не заполнено.</string>
-    <string name="warning_import_csv_failed_lines_lots">Сбой разбора CSV для строк \n%1$s\n и других.</string>
-    <string name="warning_import_csv_failed_lines_some">Сбой разбора CSV для строк \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_lots">Сбой разбора для строк \n%1$s\n и других.</string>
+    <string name="warning_import_failed__for_lines_some">Сбой разбора для строк \n%1$s\n</string>
     <string name="warning_import_old_archive">Эта опция не поддерживается для архивов более ранних версий.</string>
     <string name="warning_import_csv_unescaped_quote">Неэкранированный кавычка в строке %1$d, позиция %2$d</string>
     <string name="warning_no_editions">Нет дополнительной информации о выпуске</string>
@@ -660,7 +660,7 @@
     <string name="confirm_clear_all_data">ЭТО УДАЛЯЕТ ВСЕ ДАННЫЕ!\n ЭТО НЕ МОЖЕТ БЫТЬ ОТМЕНЕНО, кроме восстановления из предыдущей резервной копии!\n\n Вы уверены что хотите продолжить ?</string>
     <string name="confirm_continue">Вы уверены что хотите продолжить ?</string>
     <string name="menu_backup_and_export">Резервное копирование и экспорт</string>
-    <string name="X_action_export">Экспорт</string>
+    <string name="action_export">Экспорт</string>
     <string name="lbl_database">База данных</string>
     <string name="lbl_archive_format_db_info">База данных SQLite.</string>
     <string name="lbl_archive_type_db">Файл базы данных (%1$s)</string>
@@ -696,4 +696,9 @@
     <string name="httpErrorFileNotFound">Не удалось найти файл.</string>
     <string name="lbl_calibre_content_server_ca_cert">Сертификат центра сертификации</string>
     <string name="error_certificate_invalid">Сертификат недействителен или недоступен.</string>
+    <string name="username">имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="error_network_failed_try_again">Проверьте подключение и повторите попытку.</string>
+    <string name="lbl_test_connection">Проверить соединение</string>
+    <string name="confirm_test_connection">Желательно проверить это соединение, чтобы избежать проблем в дальнейшем.</string>
 </resources>

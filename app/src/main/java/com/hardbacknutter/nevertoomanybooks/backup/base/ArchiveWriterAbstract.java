@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,6 +24,7 @@ import android.content.Context;
 import androidx.annotation.AnyThread;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import java.io.BufferedWriter;
@@ -35,10 +36,13 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.EnumSet;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -116,7 +120,7 @@ public abstract class ArchiveWriterAbstract
     @WorkerThread
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         // do a cleanup before we start writing
         mDb.purge();
@@ -126,8 +130,20 @@ public abstract class ArchiveWriterAbstract
         final boolean writeCovers = this instanceof SupportsCovers
                                     && exportEntities.contains(RecordType.Cover);
 
+        final LocalDateTime dateSince;
+        if (mHelper.isIncremental()) {
+            dateSince = Backup.getLastFullBackupDate(context);
+        } else {
+            dateSince = null;
+        }
+
         try {
-            int steps = mDb.countBooksForExport(mHelper.getUtcDateTimeSince());
+            int steps = mDb.countBooksForExport(dateSince);
+            if (steps == 0) {
+                // nothing to backup.
+                return mResults;
+            }
+
             if (writeCovers) {
                 // assume 1 book == 1 cover
                 steps = 2 * steps;
@@ -139,7 +155,7 @@ public abstract class ArchiveWriterAbstract
             final File tmpBooksFile;
             if (!progressListener.isCancelled()
                 && exportEntities.contains(RecordType.Books)) {
-                tmpBooksFile = prepareBooks(context, progressListener);
+                tmpBooksFile = prepareBooks(context, dateSince, progressListener);
             } else {
                 tmpBooksFile = null;
             }
@@ -193,6 +209,11 @@ public abstract class ArchiveWriterAbstract
             progressListener.setIndeterminate(null);
         }
 
+        // If the backup was a full backup remember that.
+        if (!mHelper.isIncremental()) {
+            Backup.setLastFullBackupDate(context, LocalDateTime.now(ZoneOffset.UTC));
+        }
+
         return mResults;
     }
 
@@ -210,8 +231,9 @@ public abstract class ArchiveWriterAbstract
      * @throws IOException on failure
      */
     private File prepareBooks(@NonNull final Context context,
+                              @Nullable final LocalDateTime dateSince,
                               @NonNull final ProgressListener progressListener)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final RecordEncoding encoding = getEncoding(RecordType.Books);
 
@@ -230,8 +252,7 @@ public abstract class ArchiveWriterAbstract
         try (OutputStream os = new FileOutputStream(file);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = encoding.createWriter(
-                     mHelper.getUtcDateTimeSince())) {
+             RecordWriter recordWriter = encoding.createWriter(dateSince)) {
             mResults.add(recordWriter.write(context, bw, recordTypes, progressListener));
         }
 
@@ -248,7 +269,7 @@ public abstract class ArchiveWriterAbstract
      */
     private void writeMetaData(@NonNull final Context context,
                                @NonNull final ExportResults data)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final ArchiveMetaData metaData = ArchiveMetaData.create(context, getVersion(), data);
 
@@ -283,7 +304,7 @@ public abstract class ArchiveWriterAbstract
                              @NonNull final RecordType recordType,
                              @NonNull final RecordEncoding encoding,
                              @NonNull final ProgressListener progressListener)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);

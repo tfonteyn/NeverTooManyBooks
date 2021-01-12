@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -186,7 +186,7 @@ public class EditBookFieldsFragment
                 final ArrayList<Entity> selectedItems = new ArrayList<>(
                         mVm.getBook().getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST));
 
-                mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves_long),
+                mEditBookshelvesLauncher.launch(getString(R.string.lbl_bookshelves),
                                                 R.id.bookshelves, allItems, selectedItems);
             });
         }

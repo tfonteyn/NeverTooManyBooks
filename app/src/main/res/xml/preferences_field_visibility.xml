@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -46,6 +46,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
+            android:dependency="fields.visibility.thumbnail.0"
             android:key="fields.visibility.thumbnail.1"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

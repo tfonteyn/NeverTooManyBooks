@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * FIXME: currently we import covers without checking if we actually have the book.
@@ -54,7 +55,8 @@ public class CoverRecordReader
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ArchiveReaderRecord record,
                               @ImportHelper.Options final int options,
-                              @NonNull final ProgressListener progressListener) {
+                              @NonNull final ProgressListener progressListener)
+            throws ExternalStorageException {
 
         final ImportResults results = new ImportResults();
 
@@ -111,6 +113,9 @@ public class CoverRecordReader
                             results.coversCreated++;
                         }
                     }
+                } catch (@NonNull final ExternalStorageException e) {
+                    throw e;
+
                 } catch (@NonNull final IOException ignore) {
                     // we don't want to quit importing just because one cover fails.
                     results.coversSkipped++;

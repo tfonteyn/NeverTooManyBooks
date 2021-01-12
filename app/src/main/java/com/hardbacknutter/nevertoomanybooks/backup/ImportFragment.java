@@ -24,8 +24,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.system.ErrnoException;
-import android.system.Os;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -50,17 +48,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.security.GeneralSecurityException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
-
-import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -72,7 +65,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.url.CalibreContentServerReader;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerReader;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -80,7 +74,6 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public class ImportFragment
         extends Fragment {
@@ -370,10 +363,10 @@ public class ImportFragment
             final StringJoiner info = new StringJoiner("\n");
 
             // If this is a Calibre import, show the library name
-            final String calibreLibrary = archiveMetaData.getBundle().getString(
+            final CalibreLibrary calibreLibrary = archiveMetaData.getBundle().getParcelable(
                     CalibreContentServerReader.ARCH_MD_DEFAULT_LIBRARY);
-            if (calibreLibrary != null && !calibreLibrary.isEmpty()) {
-                info.add(calibreLibrary);
+            if (calibreLibrary != null) {
+                info.add(calibreLibrary.getName());
             }
 
             final int bookCount = archiveMetaData.getBookCount();
@@ -419,7 +412,7 @@ public class ImportFragment
             new MaterialAlertDialogBuilder(getContext())
                     .setIcon(R.drawable.ic_error)
                     .setTitle(R.string.error_import_failed)
-                    .setMessage(createErrorReport(message.result))
+                    .setMessage(Backup.createErrorReport(getContext(), message.result))
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()
                     .show();
@@ -434,7 +427,7 @@ public class ImportFragment
                 onImportFinished(R.string.progress_end_import_partially_complete, message.result);
             } else {
                 //noinspection ConstantConditions
-                Snackbar.make(getView(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+                Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG)
                         .show();
                 //noinspection ConstantConditions
                 getView().postDelayed(() -> getActivity().finish(), BaseActivity.ERROR_DELAY_MS);
@@ -467,7 +460,6 @@ public class ImportFragment
                                   @NonNull final ImportResults result) {
 
         if (result.styles > 0) {
-            //noinspection ConstantConditions
             StyleDAO.updateMenuOrder(getContext());
         }
 
@@ -538,9 +530,9 @@ public class ImportFragment
         if (failed > 10) {
             // keep it sensible, list maximum 10 lines.
             failed = 10;
-            fs = R.string.warning_import_csv_failed_lines_lots;
+            fs = R.string.warning_import_failed_for_lines_lots;
         } else {
-            fs = R.string.warning_import_csv_failed_lines_some;
+            fs = R.string.warning_import_failed__for_lines_some;
         }
 
         for (int i = 0; i < failed; i++) {
@@ -556,73 +548,6 @@ public class ImportFragment
                            .collect(Collectors.joining("\n")));
     }
 
-    /**
-     * Transform the failure into a user friendly report.
-     *
-     * @param e error exception
-     *
-     * @return report string
-     */
-    @NonNull
-    private String createErrorReport(@Nullable final Exception e) {
-        String msg = null;
-
-        if (e instanceof InvalidArchiveException) {
-            msg = getString(R.string.error_import_file_not_supported);
-
-        } else if (e instanceof GeneralSecurityException) {
-            // There was something wrong with certificates/key on OUR end
-            // CertificateException, NoSuchAlgorithmException,
-            // KeyStoreException, KeyManagementException
-            //TODO: give user detailed message
-            msg = getString(R.string.httpErrorFailedSslHandshake);
-
-        } else if (e instanceof SSLException) {
-            // There was something wrong with certificates/key on the REMOTE end
-            //TODO: give user detailed message
-            msg = getString(R.string.httpErrorFailedSslHandshake);
-
-        } else if (e instanceof ImportException) {
-            msg = e.getLocalizedMessage();
-
-        } else if (e instanceof GeneralParsingException) {
-            // Either the remote end gave us garbage, or the data format changed
-            // and we failed to decode it
-            msg = getString(R.string.error_network_site_has_problems);
-            //noinspection ConstantConditions
-            Logger.error(getContext(), TAG, e, msg);
-
-        } else if (e instanceof FileNotFoundException) {
-            msg = getString(R.string.httpErrorFile);
-
-        } else if (e instanceof IOException) {
-            // catch all, potentially look at cause.
-            final Throwable cause = e.getCause();
-            if (cause != null) {
-                if (cause instanceof ErrnoException) {
-                    //TODO: give user detailed message
-                    final int errno = ((ErrnoException) cause).errno;
-                    msg = Os.strerror(errno);
-                } else if (cause instanceof SQLException) {
-                    //TODO: give user detailed message
-                    msg = getString(R.string.error_unknown_long);
-                }
-            }
-
-            if (msg == null) {
-                //noinspection ConstantConditions
-                msg = StandardDialogs
-                        .createBadError(getContext(), R.string.error_storage_not_readable);
-            }
-        }
-
-        // generic unknown message
-        if (msg == null || msg.isEmpty()) {
-            msg = getString(R.string.error_unknown_long);
-        }
-
-        return msg;
-    }
 
     protected void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {

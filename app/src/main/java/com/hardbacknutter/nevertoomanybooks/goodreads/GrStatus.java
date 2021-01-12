@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@ public class GrStatus {
                                     @Nullable final Exception exception) {
         if (exception == null) {
             // the task was cancelled before it started.
-            return context.getString(R.string.warning_task_cancelled);
+            return context.getString(R.string.cancelled);
         } else {
             return context.getString(R.string.error_unknown_long)
                    + ' ' + exception.getLocalizedMessage();
@@ -104,7 +104,7 @@ public class GrStatus {
             case SUCCESS:
                 return context.getString(R.string.gr_tq_completed);
             case CANCELLED:
-                return context.getString(R.string.warning_task_cancelled);
+                return context.getString(R.string.cancelled);
 
             case SUCCESS_AUTHORIZATION_ALREADY_GRANTED:
                 return context.getString(R.string.gr_authorization_already_granted);

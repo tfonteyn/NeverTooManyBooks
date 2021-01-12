@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.utils.HttpConstants;
 
 /**
  * Provide a more or less robust base to load a url and parse the html with Jsoup.
@@ -59,10 +60,6 @@ public class JsoupLoader {
     /** Log tag. */
     private static final String TAG = "JsoupLoader";
 
-    /** HTTP Request Header. */
-    private static final String HEADER_CONNECTION = "Connection";
-    /** HTTP Request Header. */
-    private static final String HEADER_USER_AGENT = "User-Agent";
     /** HTTP Response Header. */
     private static final String HEADER_LOCATION = "location";
 
@@ -148,17 +145,17 @@ public class JsoupLoader {
                 Logger.d(TAG, "loadDocument", "REQUESTED|url=\"" + url + '\"');
             }
 
-            try (TerminatorConnection con = searchEngine.createConnection(url, true)) {
+            try (TerminatorConnection con = searchEngine.createConnection(url)) {
                 // Don't retry if the initial connection fails...
                 // We use our own retry mechanism here.
                 con.setRetryCount(0);
 
                 // added due to https://github.com/square/okhttp/issues/1517
                 // it's a server issue, this is a workaround.
-                con.setRequestProperty(HEADER_CONNECTION, "close");
+                con.setRequestProperty(HttpConstants.CONNECTION, "close");
 
                 if (mUserAgent != null) {
-                    con.setRequestProperty(HEADER_USER_AGENT, mUserAgent);
+                    con.setRequestProperty(HttpConstants.USER_AGENT, mUserAgent);
                 }
 
                 // GO!

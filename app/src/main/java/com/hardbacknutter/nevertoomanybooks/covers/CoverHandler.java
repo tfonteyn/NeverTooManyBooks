@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -80,6 +80,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.GenericFileProvider;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
  * Handler for a displayed Cover.
@@ -234,7 +235,7 @@ public class CoverHandler {
         // dev warning: in NO circumstances keep a reference to either the view or book!
         final File file = book.getCoverFile(view.getContext(), mCIdx);
         if (file != null) {
-            new ImageLoader(view, mMaxWidth, mMaxHeight, file, null)
+            new ImageViewLoader(view, mMaxWidth, mMaxHeight, file, null)
                     .execute();
             view.setBackground(null);
         } else {
@@ -353,13 +354,15 @@ public class CoverHandler {
             try {
                 //noinspection ConstantConditions
                 mCropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
+                        // source
                         book.createTempCoverFile(context, mCIdx),
+                        // destination
                         getTempFile(context)));
 
+            } catch (@NonNull final ExternalStorageException e) {
+                StandardDialogs.showError(context, e);
             } catch (@NonNull final IOException e) {
-                //noinspection ConstantConditions
-                Snackbar.make(mFragment.getView(), R.string.error_storage_not_writable,
-                              Snackbar.LENGTH_LONG).show();
+                StandardDialogs.showError(context, R.string.error_storage_not_accessible);
             }
             return true;
 
@@ -368,10 +371,10 @@ public class CoverHandler {
                 //noinspection ConstantConditions
                 editPicture(context, book.createTempCoverFile(context, mCIdx));
 
+            } catch (@NonNull final ExternalStorageException e) {
+                StandardDialogs.showError(context, e);
             } catch (@NonNull final IOException e) {
-                //noinspection ConstantConditions
-                Snackbar.make(mFragment.getView(), R.string.error_storage_not_writable,
-                              Snackbar.LENGTH_LONG).show();
+                StandardDialogs.showError(context, R.string.error_storage_not_accessible);
             }
             return true;
 
@@ -460,7 +463,8 @@ public class CoverHandler {
      * @param srcFile to edit
      */
     private void editPicture(@NonNull final Context context,
-                             @NonNull final File srcFile) {
+                             @NonNull final File srcFile)
+            throws ExternalStorageException {
 
         final File dstFile = getTempFile(context);
         FileUtils.delete(dstFile);
@@ -500,14 +504,18 @@ public class CoverHandler {
     private void onEditPictureResult(@NonNull final ActivityResult activityResult) {
         final Context context = mFragment.getContext();
         if (activityResult.getResultCode() == Activity.RESULT_OK) {
-            //noinspection ConstantConditions
-            final File file = getTempFile(context);
-            if (file.exists()) {
-                showProgress(true);
-                mTransFormTaskViewModel.startTask(
-                        new TransFormTaskViewModel.Transformation(file)
-                                .setScale(true));
-                return;
+            try {
+                //noinspection ConstantConditions
+                final File file = getTempFile(context);
+                if (file.exists()) {
+                    showProgress(true);
+                    mTransFormTaskViewModel.startTask(
+                            new TransFormTaskViewModel.Transformation(file)
+                                    .setScale(true));
+                    return;
+                }
+            } catch (@NonNull final ExternalStorageException e) {
+                StandardDialogs.showError(context, e);
             }
         }
 
@@ -524,11 +532,15 @@ public class CoverHandler {
     private void onGetContentResult(@Nullable final Uri uri) {
         final Context context = mFragment.getContext();
         if (uri != null) {
+            File file = null;
             //noinspection ConstantConditions
-            File file = getTempFile(context);
             try (InputStream is = context.getContentResolver().openInputStream(uri)) {
                 // copy the data, and retrieve the (potentially) resolved file
-                file = FileUtils.copyInputStream(context, is, file);
+                file = FileUtils.copyInputStream(context, is, getTempFile(context));
+
+            } catch (@NonNull final ExternalStorageException e) {
+                StandardDialogs.showError(context, e);
+
             } catch (@NonNull final IOException e) {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "Unable to copy content to file", e);
@@ -559,11 +571,16 @@ public class CoverHandler {
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
             == PackageManager.PERMISSION_GRANTED) {
 
-            //noinspection ConstantConditions
-            final File dstFile = getTempFile(context);
-            FileUtils.delete(dstFile);
-            final Uri uri = GenericFileProvider.createUri(context, dstFile);
-            mTakePictureLauncher.launch(uri);
+            try {
+                //noinspection ConstantConditions
+                final File dstFile = getTempFile(context);
+                FileUtils.delete(dstFile);
+                final Uri uri = GenericFileProvider.createUri(context, dstFile);
+                mTakePictureLauncher.launch(uri);
+
+            } catch (@NonNull final ExternalStorageException e) {
+                StandardDialogs.showError(context, e);
+            }
 
         } else {
             mCameraPermissionLauncher.launch(Manifest.permission.CAMERA);
@@ -573,9 +590,15 @@ public class CoverHandler {
     private void onTakePictureResult(final boolean result) {
         if (result) {
             final Context context = mFragment.getContext();
-            //noinspection ConstantConditions
-            final File file = getTempFile(context);
-            if (file.exists()) {
+            File file = null;
+            try {
+                //noinspection ConstantConditions
+                file = getTempFile(context);
+            } catch (@NonNull final ExternalStorageException e) {
+                StandardDialogs.showError(context, e);
+            }
+
+            if (file != null && file.exists()) {
                 final SharedPreferences global = PreferenceManager
                         .getDefaultSharedPreferences(context);
 
@@ -610,21 +633,20 @@ public class CoverHandler {
      * @param angle to rotate.
      */
     private void startRotation(final int angle) {
-        final File srcFile;
+        final Context context = mFragment.getContext();
         try {
             //noinspection ConstantConditions
-            srcFile = mBookSupplier.get().createTempCoverFile(mFragment.getContext(), mCIdx);
-        } catch (@NonNull final IOException e) {
-            //noinspection ConstantConditions
-            Snackbar.make(mFragment.getView(), R.string.error_storage_not_writable,
-                          Snackbar.LENGTH_LONG).show();
-            return;
-        }
+            final File srcFile = mBookSupplier.get().createTempCoverFile(context, mCIdx);
+            showProgress(true);
+            mTransFormTaskViewModel.startTask(
+                    new TransFormTaskViewModel.Transformation(srcFile)
+                            .setRotation(angle));
 
-        showProgress(true);
-        mTransFormTaskViewModel.startTask(
-                new TransFormTaskViewModel.Transformation(srcFile)
-                        .setRotation(angle));
+        } catch (@NonNull final ExternalStorageException e) {
+            StandardDialogs.showError(context, e);
+        } catch (@NonNull final IOException e) {
+            StandardDialogs.showError(context, R.string.error_storage_not_writable);
+        }
     }
 
     private void onAfterTransform(@NonNull final TransFormTaskViewModel.TransformedData result) {
@@ -641,35 +663,37 @@ public class CoverHandler {
         if (null != result.getBitmap()) {
             // sanity check: if the bitmap was good, the file will be good.
             Objects.requireNonNull(result.getFile(), "file");
+            try {
+                switch (result.getReturnCode()) {
+                    case ACTION_CROP:
+                        //noinspection ConstantConditions
+                        mCropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
+                                result.getFile(), getTempFile(context)));
+                        return;
 
-            switch (result.getReturnCode()) {
-                case ACTION_CROP:
-                    //noinspection ConstantConditions
-                    mCropPictureLauncher.launch(new CropImageActivity.ResultContract.Input(
-                            result.getFile(), getTempFile(context)));
-                    break;
+                    case ACTION_EDIT:
+                        //noinspection ConstantConditions
+                        editPicture(context, result.getFile());
+                        return;
 
-                case ACTION_EDIT:
-                    //noinspection ConstantConditions
-                    editPicture(context, result.getFile());
-                    break;
-
-                case ACTION_DONE:
-                default:
-                    //noinspection ConstantConditions
-                    mBookSupplier.get().setCover(context, mDb, mCIdx, result.getFile());
-                    // must use a post to force the View to update.
-                    mCoverViewHost.postRefresh(mCIdx);
-                    break;
+                    case ACTION_DONE:
+                    default:
+                        //noinspection ConstantConditions
+                        mBookSupplier.get().setCover(context, mDb, mCIdx, result.getFile());
+                        // must use a post to force the View to update.
+                        mCoverViewHost.postRefresh(mCIdx);
+                        return;
+                }
+            } catch (@NonNull final ExternalStorageException e) {
+                StandardDialogs.showError(context, e);
             }
-
-        } else {
-            // transformation failed
-            //noinspection ConstantConditions
-            mBookSupplier.get().setCover(context, mDb, mCIdx, null);
-            // must use a post to force the View to update.
-            mCoverViewHost.postRefresh(mCIdx);
         }
+
+        // transformation failed
+        //noinspection ConstantConditions
+        mBookSupplier.get().setCover(context, mDb, mCIdx, null);
+        // must use a post to force the View to update.
+        mCoverViewHost.postRefresh(mCIdx);
     }
 
     /**
@@ -680,7 +704,8 @@ public class CoverHandler {
      * @return file
      */
     @NonNull
-    private File getTempFile(@NonNull final Context context) {
+    private File getTempFile(@NonNull final Context context)
+            throws ExternalStorageException {
         return AppDir.Cache.getFile(context, TAG + "_" + mCIdx + ".jpg");
     }
 
@@ -690,7 +715,11 @@ public class CoverHandler {
      * @param context Current context
      */
     private void removeTempFile(@NonNull final Context context) {
-        FileUtils.delete(getTempFile(context));
+        try {
+            FileUtils.delete(getTempFile(context));
+        } catch (@NonNull final ExternalStorageException ignore) {
+            // ignore
+        }
     }
 
     private void showProgress(final boolean show) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,13 +29,17 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.EnumSet;
 
+import com.hardbacknutter.nevertoomanybooks.backup.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -44,6 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  */
 public class CsvArchiveWriter
         implements ArchiveWriter {
+
+    private static final String TAG = "CsvArchiveWriter";
 
     protected static final int VERSION = 1;
 
@@ -69,14 +75,41 @@ public class CsvArchiveWriter
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
-        try (OutputStream os = mHelper.createOutputStream(context);
-             Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
-             Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = new CsvRecordWriter(mHelper.getUtcDateTimeSince())) {
+        final LocalDateTime dateSince;
+        if (mHelper.isIncremental()) {
+            dateSince = Backup.getLastFullBackupDate(context);
+        } else {
+            dateSince = null;
+        }
 
-            return recordWriter.write(context, bw, EnumSet.of(RecordType.Books), progressListener);
+        final int booksToExport;
+        try (DAO db = new DAO(TAG)) {
+            booksToExport = db.countBooksForExport(dateSince);
+        }
+
+        if (booksToExport > 0) {
+            progressListener.setMaxPos(booksToExport);
+
+            final ExportResults results;
+
+            try (OutputStream os = mHelper.createOutputStream(context);
+                 Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
+                 Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
+                 RecordWriter recordWriter = new CsvRecordWriter(dateSince)) {
+
+                results = recordWriter
+                        .write(context, bw, EnumSet.of(RecordType.Books), progressListener);
+            }
+
+            // If the backup was a full backup remember that.
+            if (!mHelper.isIncremental()) {
+                Backup.setLastFullBackupDate(context, LocalDateTime.now(ZoneOffset.UTC));
+            }
+            return results;
+        } else {
+            return new ExportResults();
         }
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -175,7 +175,7 @@ public class ListScreenBookFields
             labels.add(context.getString(R.string.lbl_rating));
         }
         if (isInUse(PK_BOOKSHELVES)) {
-            labels.add(context.getString(R.string.lbl_bookshelves_long));
+            labels.add(context.getString(R.string.lbl_bookshelves));
         }
 
         Collections.sort(labels);

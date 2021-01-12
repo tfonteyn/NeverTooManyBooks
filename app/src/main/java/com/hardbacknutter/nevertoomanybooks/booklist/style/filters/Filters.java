@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -130,7 +130,7 @@ public class Filters {
         // - this new filtering on multiple bookshelves
         if (BuildConfig.ENABLE_STYLE_BOOKSHELF_FILTER) {
             mFilters.put(PK_FILTER_BOOKSHELVES, new IntListFilter(
-                    isPersistent, persistenceLayer, R.string.lbl_bookshelves_long,
+                    isPersistent, persistenceLayer, R.string.lbl_bookshelves,
                     PK_FILTER_BOOKSHELVES,
                     new VirtualDomain(DOM_BOOKSHELF_NAME,
                                       TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF))));

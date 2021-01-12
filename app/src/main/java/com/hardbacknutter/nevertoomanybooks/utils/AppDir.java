@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -102,7 +102,7 @@ public enum AppDir {
                 return false;
             });
 
-        } catch (@NonNull final SecurityException | ExternalStorageException e) {
+        } catch (@NonNull final SecurityException e) {
             // not critical, just log it.
             Logger.error(context, TAG, e);
             return 0;
@@ -124,8 +124,7 @@ public enum AppDir {
     public static String init(@NonNull final Context context) {
 
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
-            return context.getString(R.string.error_storage_not_accessible,
-                                     context.getString(R.string.unknown));
+            return context.getString(R.string.error_storage_not_accessible);
         }
 
         try {
@@ -149,7 +148,7 @@ public enum AppDir {
 
         } catch (@NonNull final ExternalStorageException e) {
             // Don't log, we don't have a log!
-            return context.getString(R.string.error_storage_not_writable);
+            return e.getLocalizedMessage(context);
 
         } catch (@NonNull final IOException | SecurityException e) {
             Logger.error(context, TAG, e, "init failed");
@@ -162,7 +161,8 @@ public enum AppDir {
      *
      * @param context Current context
      */
-    public static void deleteAllContent(@NonNull final Context context) {
+    public static void deleteAllContent(@NonNull final Context context)
+            throws ExternalStorageException {
 
         File[] files;
 
@@ -243,9 +243,7 @@ public enum AppDir {
         }
 
         if (mDir == null) {
-            final String msg = context.getString(R.string.error_storage_not_accessible,
-                                                 this.toString());
-            throw new ExternalStorageException(msg);
+            throw new ExternalStorageException(this);
         }
         return mDir;
     }
@@ -295,25 +293,26 @@ public enum AppDir {
      * @param filter       (optional) to apply; {@code null} for all files.
      *
      * @return number of bytes (potentially) deleted
-     *
-     * @throws ExternalStorageException if the Shared Storage media is not available
      */
     public long purge(@NonNull final Context context,
                       final boolean reallyDelete,
-                      @Nullable final FileFilter filter)
-            throws ExternalStorageException {
+                      @Nullable final FileFilter filter) {
 
-        final List<File> files = collectFiles(get(context), filter);
         long totalSize = 0;
-        for (final File file : files) {
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.d(TAG, "purge", this + "|" + file.getName());
+        try {
+            for (final File file : collectFiles(get(context), filter)) {
+                if (BuildConfig.DEBUG /* always */) {
+                    Logger.d(TAG, "purge", this + "|" + file.getName());
+                }
+                totalSize += file.length();
+                if (reallyDelete) {
+                    FileUtils.delete(file);
+                }
             }
-            totalSize += file.length();
-            if (reallyDelete) {
-                FileUtils.delete(file);
-            }
+        } catch (@NonNull final ExternalStorageException ignore) {
+            // ignore
         }
+
         return totalSize;
     }
 
@@ -328,10 +327,12 @@ public enum AppDir {
      */
     @NonNull
     public List<File> collectFiles(@NonNull final Context context,
-                                   @Nullable final FileFilter filter) {
+                                   @Nullable final FileFilter filter)
+            throws ExternalStorageException {
         try {
             return collectFiles(get(context), filter);
-        } catch (@NonNull final SecurityException | ExternalStorageException e) {
+
+        } catch (@NonNull final SecurityException e) {
             // not critical, just log it.
             Logger.error(context, TAG, e);
             // just return an empty list

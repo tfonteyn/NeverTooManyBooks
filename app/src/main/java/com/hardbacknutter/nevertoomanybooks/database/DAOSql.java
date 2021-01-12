@@ -55,10 +55,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_FILE_URL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LAST_SYNC_DATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
@@ -112,7 +112,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS_CALIBRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
@@ -120,6 +119,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -824,10 +824,10 @@ public class DAOSql {
 
 
             // LEFT OUTER JOIN, columns default to NULL
-            sqlBookTmp.append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_ID))
-                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_UUID))
-                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_FILE_URL))
-                      .append(',').append(TBL_BOOKS_CALIBRE.dotAs(KEY_CALIBRE_LAST_SYNC_DATE));
+            sqlBookTmp.append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_ID))
+                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_UUID))
+                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_LIBRARY_ID))
+                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_FILE_URL));
 
             // COALESCE nulls to "" for the LEFT OUTER JOIN'ed LOANEE name
             sqlBookTmp.append(",COALESCE(").append(TBL_BOOK_LOANEE.dot(KEY_LOANEE)).append(", '')")
@@ -835,7 +835,7 @@ public class DAOSql {
 
             sqlBookTmp.append(_FROM_).append(TBL_BOOKS.ref())
                       .append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE))
-                      .append(TBL_BOOKS.leftOuterJoin(TBL_BOOKS_CALIBRE));
+                      .append(TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS));
 
             SQL_BOOK = sqlBookTmp.toString();
         }

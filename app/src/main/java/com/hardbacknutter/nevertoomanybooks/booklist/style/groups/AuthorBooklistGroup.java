@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,7 +57,7 @@ public class AuthorBooklistGroup
     /** Style - PreferenceScreen/PreferenceCategory Key. */
     private static final String PSK_STYLE_AUTHOR = "psk_style_author";
 
-    private static final String PK_PRIMARY_TYPE =
+    public static final String PK_PRIMARY_TYPE =
             "style.booklist.group.authors.primary.type";
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.authors.show.all";

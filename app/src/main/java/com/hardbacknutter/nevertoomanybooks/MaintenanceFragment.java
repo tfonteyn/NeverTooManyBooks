@@ -49,10 +49,12 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBindi
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
 @Keep
@@ -270,6 +272,8 @@ public class MaintenanceFragment
                 //noinspection ConstantConditions
                 getActivity().setResult(Activity.RESULT_OK, resultIntent);
             }
+        } catch (@NonNull final ExternalStorageException e) {
+            StandardDialogs.showError(getContext(), e);
         }
 
         //noinspection ConstantConditions

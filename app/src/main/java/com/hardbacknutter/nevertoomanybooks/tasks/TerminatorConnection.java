@@ -49,13 +49,22 @@ import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 /**
  * Wrapping a HttpURLConnection and BufferedInputStream with timeout close() support.
  * <p>
- * There is a problem with failed timeouts:
- * http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html
+ * <p>
+ * To be clear: <strong>this class is for GET requests only</strong>.
+ * It supports http/https connections and by setting the standard "Authorization" header
+ * basic/digest authentication.
+ * It does <strong>NOT</strong> support signed requests.
+ * <p>
+ * <p>
+ * The use of this class is due to a potential problem with failed timeouts as nicely explained
+ * <a href="http://thushw.blogspot.hu/2010/10/java-urlconnection-provides-no-fail.html">
+ * here</a>
  * <p>
  * So...we will use a background thread to kill the connection after a set timeout.
  * <p>
  * Note that the Goodreads classes and image download use the standard HttpURLConnection directly.
- * TODO: either make all places use this class, or perhaps remove this class?
+ * <p>
+ * TODO: add support for POST and signing
  */
 @WorkerThread
 public final class TerminatorConnection
@@ -63,28 +72,21 @@ public final class TerminatorConnection
 
     /** Log tag. */
     private static final String TAG = "TerminatorConnection";
-
     /** timeout for opening a connection to a website. */
     private static final int CONNECT_TIMEOUT_MS = 10_000;
     /** timeout for requests to website. */
     private static final int READ_TIMEOUT_MS = 10_000;
     /** kill connections after this delay. */
     private static final int KILL_TIMEOUT_MS = 60_000;
-
     /** The default number of times we try to connect; i.e. one RETRY. */
     private static final int NR_OF_TRIES = 2;
     /** milliseconds to wait between retries. This is in ADDITION to the Throttler. */
     private static final int RETRY_AFTER_MS = 1_000;
-    private final int mConnectTimeoutInMs;
-    private final int mReadTimeout;
-    private final int mKillDelayInMillis;
+
     @Nullable
     private Throttler mThrottler;
-    @SuppressWarnings("FieldCanBeLocal")
     @Nullable
-    private SSLContext mSslContext;
-    @Nullable
-    private HttpURLConnection mCon;
+    private HttpURLConnection mRequest;
     @Nullable
     private BufferedInputStream mInputStream;
     @Nullable
@@ -94,31 +96,16 @@ public final class TerminatorConnection
     /** see {@link #setRetryCount(int)}. */
     private int mNrOfTries = NR_OF_TRIES;
 
-    @WorkerThread
-    public TerminatorConnection(@NonNull final String urlStr)
-            throws IOException {
-        this(urlStr, 0, 0);
-    }
-
     /**
      * Constructor.
      *
-     * @param urlStr             URL to retrieve
-     * @param connectTimeoutInMs in millis, use {@code 0} for system default
-     * @param readTimeoutInMs    in millis, use {@code 0} for system default
+     * @param urlStr URL to retrieve
      *
      * @throws IOException on failure
      */
     @WorkerThread
-    public TerminatorConnection(@NonNull final String urlStr,
-                                @IntRange(from = 0) final int connectTimeoutInMs,
-                                @IntRange(from = 0) final int readTimeoutInMs)
+    public TerminatorConnection(@NonNull final String urlStr)
             throws IOException {
-
-        mConnectTimeoutInMs = connectTimeoutInMs;
-        mReadTimeout = readTimeoutInMs;
-
-        mKillDelayInMillis = KILL_TIMEOUT_MS;
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "Constructor|url=\"" + urlStr + '\"');
@@ -127,13 +114,39 @@ public final class TerminatorConnection
         try {
             // Creates the connection, but does not connect to the remote server.
             // We'll do that in getInputStream() / open()
-            mCon = (HttpURLConnection) new URL(urlStr).openConnection();
+            mRequest = (HttpURLConnection) new URL(urlStr).openConnection();
 
         } catch (@NonNull final IOException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
                 Logger.error(App.getTaskContext(), TAG, e, "url=" + urlStr);
             }
             throw e;
+        }
+
+        // Don't trust the caches; they have proven to be cumbersome.
+        mRequest.setUseCaches(false);
+    }
+
+    /**
+     * Set the optional timeouts.
+     *
+     * @param connectTimeoutInMs in millis, use {@code 0} for system default
+     * @param readTimeoutInMs    in millis, use {@code 0} for system default
+     */
+    public void setTimeouts(@IntRange(from = 0) final int connectTimeoutInMs,
+                            @IntRange(from = 0) final int readTimeoutInMs) {
+        Objects.requireNonNull(mRequest, "mRequest");
+
+        if (connectTimeoutInMs > 0) {
+            mRequest.setConnectTimeout(connectTimeoutInMs);
+        } else {
+            mRequest.setConnectTimeout(CONNECT_TIMEOUT_MS);
+        }
+
+        if (readTimeoutInMs > 0) {
+            mRequest.setReadTimeout(readTimeoutInMs);
+        } else {
+            mRequest.setReadTimeout(READ_TIMEOUT_MS);
         }
     }
 
@@ -152,7 +165,16 @@ public final class TerminatorConnection
      * @param sslContext (optional) SSL context to use instead of the system one.
      */
     public void setSSLContext(@Nullable final SSLContext sslContext) {
-        mSslContext = sslContext;
+        Objects.requireNonNull(mRequest, "mRequest");
+        if (sslContext != null) {
+            ((HttpsURLConnection) mRequest).setSSLSocketFactory(sslContext.getSocketFactory());
+        }
+    }
+
+    /** Get the underlying connection/request object. <strong>use with care</strong>. */
+    @NonNull
+    public HttpURLConnection getRequest() {
+        return Objects.requireNonNull(mRequest, "mRequest");
     }
 
     /**
@@ -166,13 +188,13 @@ public final class TerminatorConnection
     public BufferedInputStream getInputStream()
             throws IOException {
         if (mInputStream == null) {
-            mInputStream = open();
+            mInputStream = openInputStream();
         }
         return mInputStream;
     }
 
     /**
-     * Perform the actual opening of the connection, initiate the InputStream
+     * Perform the actual opening of the connection: initiate the InputStream
      * and setup the killer-thread.
      * <p>
      * Called from {@link #getInputStream()}.
@@ -180,28 +202,9 @@ public final class TerminatorConnection
      * @throws IOException on failure
      */
     @NonNull
-    private BufferedInputStream open()
+    private BufferedInputStream openInputStream()
             throws IOException {
-        Objects.requireNonNull(mCon, "mCon");
-
-        if (mSslContext != null) {
-            ((HttpsURLConnection) mCon).setSSLSocketFactory(mSslContext.getSocketFactory());
-        }
-
-        if (mConnectTimeoutInMs > 0) {
-            mCon.setConnectTimeout(mConnectTimeoutInMs);
-        } else {
-            mCon.setConnectTimeout(CONNECT_TIMEOUT_MS);
-        }
-
-        if (mReadTimeout > 0) {
-            mCon.setReadTimeout(mReadTimeout);
-        } else {
-            mCon.setReadTimeout(READ_TIMEOUT_MS);
-        }
-
-        // Don't trust the caches; they have proven to be cumbersome.
-        mCon.setUseCaches(false);
+        Objects.requireNonNull(mRequest, "mRequest");
 
         // If the site drops connection, we retry.
         int retry;
@@ -219,19 +222,19 @@ public final class TerminatorConnection
                 }
 
                 // make the actual connection
-                final BufferedInputStream is = new BufferedInputStream(mCon.getInputStream());
-                if (mCon.getResponseCode() < 400) {
+                final BufferedInputStream is = new BufferedInputStream(mRequest.getInputStream());
+                if (mRequest.getResponseCode() < 400) {
                     // we'll close the connection on a background task after a 'kill' timeout,
                     // so that we can cancel any runaway timeouts.
-                    mClosingThread = new Thread(new TerminatorThread(this, mKillDelayInMillis));
+                    mClosingThread = new Thread(new TerminatorThread(this, KILL_TIMEOUT_MS));
                     mClosingThread.start();
                     return is;
 
                 } else {
                     // throw any real error code without retrying.
                     close();
-                    throw new IOException("response: " + mCon.getResponseCode()
-                                          + ' ' + mCon.getResponseMessage());
+                    throw new IOException("response: " + mRequest.getResponseCode()
+                                          + ' ' + mRequest.getResponseMessage());
                 }
 
                 // these exceptions CAN be retried
@@ -244,7 +247,7 @@ public final class TerminatorConnection
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "open"
                                + "|retry=" + retry
-                               + "|url=`" + mCon.getURL() + '`'
+                               + "|url=`" + mRequest.getURL() + '`'
                                + "|e=" + e);
                 }
 
@@ -262,7 +265,7 @@ public final class TerminatorConnection
         }
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, "open|giving up|url=`" + mCon.getURL() + '`');
+            Log.d(TAG, "open|giving up|url=`" + mRequest.getURL() + '`');
         }
         throw new IOException("Giving up");
     }
@@ -278,25 +281,25 @@ public final class TerminatorConnection
 
     /** wrapper to {@link HttpURLConnection}. */
     public void setInstanceFollowRedirects(final boolean followRedirects) {
-        Objects.requireNonNull(mCon, "mCon").setInstanceFollowRedirects(followRedirects);
+        Objects.requireNonNull(mRequest, "mRequest").setInstanceFollowRedirects(followRedirects);
     }
 
     /** wrapper to {@link HttpURLConnection}. */
     public void setRequestProperty(@NonNull final String key,
                                    @NonNull final String value) {
-        Objects.requireNonNull(mCon, "mCon").setRequestProperty(key, value);
+        Objects.requireNonNull(mRequest, "mRequest").setRequestProperty(key, value);
     }
 
     /** wrapper to {@link HttpURLConnection}. */
     @Nullable
     public String getHeaderField(@NonNull final String name) {
-        return Objects.requireNonNull(mCon, "mCon").getHeaderField(name);
+        return Objects.requireNonNull(mRequest, "mRequest").getHeaderField(name);
     }
 
     /** wrapper to {@link HttpURLConnection}. */
     @Nullable
     public URL getURL() {
-        return Objects.requireNonNull(mCon, "mCon").getURL();
+        return Objects.requireNonNull(mRequest, "mRequest").getURL();
     }
 
     /**
@@ -304,6 +307,7 @@ public final class TerminatorConnection
      * <p>
      * Will send an interrupt to the 'terminator' thread.
      */
+    @Override
     public void close() {
         mCloseWasCalled = true;
         if (mInputStream != null) {
@@ -314,9 +318,9 @@ public final class TerminatorConnection
             }
             mInputStream = null;
         }
-        if (mCon != null) {
-            mCon.disconnect();
-            mCon = null;
+        if (mRequest != null) {
+            mRequest.disconnect();
+            mRequest = null;
         }
         if (mClosingThread != null) {
             // dismiss the unneeded closing thread.
@@ -332,9 +336,9 @@ public final class TerminatorConnection
     @CallSuper
     protected void finalize()
             throws Throwable {
-        if (mCon != null && !mCloseWasCalled) {
+        if (mRequest != null && !mCloseWasCalled) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|" + mCon.getURL().toString());
+                Logger.w(TAG, "finalize|" + mRequest.getURL().toString());
             }
             close();
         }
@@ -371,9 +375,9 @@ public final class TerminatorConnection
                 Thread.sleep(mKillDelayInMillis);
                 if (!mConnection.mCloseWasCalled) {
                     if (BuildConfig.DEBUG /* always */) {
-                        if (mConnection.mCon != null) {
+                        if (mConnection.mRequest != null) {
                             Log.d(TAG, "run|Closing TerminatorConnection: "
-                                       + mConnection.mCon.getURL());
+                                       + mConnection.mRequest.getURL());
                         }
                     }
                     mConnection.close();

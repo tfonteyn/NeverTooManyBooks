@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -77,7 +77,7 @@ public class GoodreadsRegistrationActivity
         mVb.btnAuthorize.setOnClickListener(v -> {
             Snackbar.make(mVb.btnAuthorize, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            mGrAuthTask.startTask();
+            mGrAuthTask.start();
         });
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(this);
@@ -99,7 +99,7 @@ public class GoodreadsRegistrationActivity
 
     private void onCancelled(@NonNull final LiveDataEvent message) {
         if (message.isNewEvent()) {
-            Snackbar.make(mVb.getRoot(), R.string.warning_task_cancelled, Snackbar.LENGTH_LONG)
+            Snackbar.make(mVb.getRoot(), R.string.cancelled, Snackbar.LENGTH_LONG)
                     .show();
         }
     }

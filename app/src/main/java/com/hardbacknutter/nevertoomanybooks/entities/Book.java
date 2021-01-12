@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
@@ -34,6 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -60,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -230,23 +233,28 @@ public class Book
 
     /**
      * return the cover for the given uuid. We'll attempt to find a jpg or a png.
-     * <strong>If no file found, a jpg place holder is returned.</strong>
      *
      * @param context Current context
      * @param uuid    UUID of the book
      * @param cIdx    0..n image index
      *
-     * @return The File object for existing files, or a new jpg placeholder.
+     * @return The File object for existing files, or {@code null}
      *
-     * @throws ExternalStorageException if the Shared Storage media is not available
      * @see #getUuidCoverFileOrNew(Context, int)
      */
     @Nullable
     public static File getUuidCoverFile(@NonNull final Context context,
                                         @NonNull final String uuid,
-                                        @IntRange(from = 0, to = 1) final int cIdx)
-            throws ExternalStorageException {
-        final File coverDir = AppDir.Covers.get(context);
+                                        @IntRange(from = 0, to = 1) final int cIdx) {
+        final File coverDir;
+        try {
+            coverDir = AppDir.Covers.get(context);
+        } catch (@NonNull final ExternalStorageException e) {
+            if (BuildConfig.DEBUG /* always */) {
+                Log.d(TAG, "getUuidCoverFile", e);
+            }
+            return null;
+        }
 
         final String name;
         if (cIdx > 0) {
@@ -479,8 +487,7 @@ public class Book
 
     @Nullable
     public File getUuidCoverFile(@NonNull final Context context,
-                                 @IntRange(from = 0, to = 1) final int cIdx)
-            throws ExternalStorageException {
+                                 @IntRange(from = 0, to = 1) final int cIdx) {
 
         final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
         return getUuidCoverFile(context, uuid, cIdx);
@@ -495,6 +502,22 @@ public class Book
     @Override
     public PartialDate getFirstPublicationDate() {
         return new PartialDate(getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
+    }
+
+    /**
+     * Get the parsed last update date.
+     * <p>
+     * Note this method can return {@code null} while in theory, the date will
+     * <strong>always</strong> be valid but as usual we code with paranoia in mind.
+     *
+     * @param context Current context
+     *
+     * @return the date
+     */
+    @Nullable
+    public LocalDateTime getLastUpdateUtcDate(@NonNull final Context context) {
+        return DateParser.getInstance(context)
+                         .parseISO(getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
     }
 
     /**
@@ -1063,7 +1086,7 @@ public class Book
 
 
     /**
-     * Get the current cover file for this book.
+     * Get the <strong>current</strong> cover file for this book.
      *
      * @param context Current context
      * @param cIdx    0..n image index
@@ -1096,14 +1119,20 @@ public class Book
                     name = uuid + "";
                 }
 
-                final File coverDir = AppDir.Covers.get(context);
-                // should be / try jpg first
-                coverFile = new File(coverDir, name + ".jpg");
-                if (!coverFile.exists()) {
-                    // no cover, try for a png
-                    coverFile = new File(coverDir, name + ".png");
+                try {
+                    final File coverDir = AppDir.Covers.get(context);
+                    // should be / try jpg first
+                    coverFile = new File(coverDir, name + ".jpg");
                     if (!coverFile.exists()) {
-                        coverFile = null;
+                        // no cover, try for a png
+                        coverFile = new File(coverDir, name + ".png");
+                        if (!coverFile.exists()) {
+                            coverFile = null;
+                        }
+                    }
+                } catch (@NonNull final ExternalStorageException e) {
+                    if (BuildConfig.DEBUG /* always */) {
+                        Log.d(TAG, "getUuidCoverFile", e);
                     }
                 }
             }
@@ -1236,15 +1265,15 @@ public class Book
                                  + file.getAbsolutePath());
                     }
 
-                    // Rename the temp file to the uuid permanent file name
-                    destination = getUuidCoverFileOrNew(context, cIdx);
+
                     try {
+                        // Rename the temp file to the uuid permanent file name
+                        destination = getUuidCoverFileOrNew(context, cIdx);
                         FileUtils.rename(file, destination);
+
                     } catch (@NonNull final IOException e) {
                         Logger.error(context, TAG, e,
-                                     "setCover"
-                                     + "|bookId=" + getId()
-                                     + "|cIdx=" + cIdx);
+                                     "setCover|bookId=" + getId() + "|cIdx=" + cIdx);
                         return null;
                     }
                 }
@@ -1309,8 +1338,8 @@ public class Book
                 } else {
                     // Rename the temp file to the uuid permanent file name
                     final File file = new File(fileSpec);
-                    final File destination = getUuidCoverFileOrNew(context, cIdx);
                     try {
+                        final File destination = getUuidCoverFileOrNew(context, cIdx);
                         FileUtils.rename(file, destination);
                     } catch (@NonNull final IOException e) {
                         Logger.error(context, TAG, e,

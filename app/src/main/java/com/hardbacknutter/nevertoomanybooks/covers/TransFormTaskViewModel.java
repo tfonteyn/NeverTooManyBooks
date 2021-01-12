@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,7 @@ public class TransFormTaskViewModel
 
     private Transformation mTransformation;
 
-    public void startTask(@NonNull final Transformation transformation) {
+    void startTask(@NonNull final Transformation transformation) {
         mTransformation = transformation;
         execute(R.id.TASK_ID_IMAGE_TRANSFORMATION);
     }

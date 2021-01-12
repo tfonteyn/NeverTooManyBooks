@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -190,12 +190,14 @@ public final class Logger {
         final String fullMsg = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                                + '|' + tag + '|' + type + '|' + message + exMsg;
 
-        final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
-        //noinspection ImplicitDefaultCharsetUsage
-        try (FileWriter fw = new FileWriter(logFile, true);
-             Writer out = new BufferedWriter(fw)) {
-            out.write(fullMsg);
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
+        try {
+            final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
+            //noinspection ImplicitDefaultCharsetUsage
+            try (FileWriter fw = new FileWriter(logFile, true);
+                 Writer out = new BufferedWriter(fw)) {
+                out.write(fullMsg);
+            }
+        } catch (@NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
         }
     }
@@ -302,7 +304,7 @@ public final class Logger {
                 final File backup = new File(logFile.getPath() + ".bak");
                 FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
             }
-        } catch (@SuppressWarnings("OverlyBroadCatchBlock") @NonNull final Exception ignore) {
+        } catch (@NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
         }
     }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,7 @@ public interface ArchiveWriter
     @NonNull
     ExportResults write(@NonNull Context context,
                         @NonNull ProgressListener progressListener)
-            throws IOException, GeneralParsingException;
+            throws GeneralParsingException, IOException;
 
     /**
      * Override if the implementation needs to close something.

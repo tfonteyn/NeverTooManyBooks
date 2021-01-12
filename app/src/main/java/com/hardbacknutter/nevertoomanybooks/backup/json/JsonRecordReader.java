@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ import android.util.Log;
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -59,7 +60,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -134,7 +134,7 @@ public class JsonRecordReader
     @Override
     @NonNull
     public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
-            throws IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
         try {
             return new ArchiveMetaData(new BundleCoder().decode(new JSONObject(record.asString())));
         } catch (@NonNull final JSONException e) {
@@ -329,7 +329,8 @@ public class JsonRecordReader
             book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
 
             // UPDATE the existing book (if allowed). Check the sync option FIRST!
-            if ((updatesMustSync && isImportNewer(context, mDb, book, databaseBookId))
+            if ((updatesMustSync
+                 && isImportNewer(context, databaseBookId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
 
                 mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
@@ -377,26 +378,20 @@ public class JsonRecordReader
     /**
      * Check if the incoming book is newer than the stored book data.
      *
-     * @param context Current context
-     * @param db      Database Access
-     * @param book    the book we're updating
-     * @param bookId  the book id to lookup in our database
+     * @param context              Current context
+     * @param bookId               the local book id to lookup in our database
+     * @param importLastUpdateDate to check
      *
-     * @return {@code true} if the import data is newer then what we have locally
+     * @return {@code true} if the imported data is newer then the local data.
      */
     private boolean isImportNewer(@NonNull final Context context,
-                                  @NonNull final DAO db,
-                                  @NonNull final Book book,
-                                  @IntRange(from = 1) final long bookId) {
-        final LocalDateTime utcImportDate =
-                DateParser.getInstance(context)
-                          .parseISO(book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
-        if (utcImportDate == null) {
+                                  @IntRange(from = 1) final long bookId,
+                                  @Nullable final LocalDateTime importLastUpdateDate) {
+        if (importLastUpdateDate == null) {
             return false;
         }
 
-        final LocalDateTime utcLastUpdated = db.getBookLastUpdateUtcDate(context, bookId);
-
-        return utcLastUpdated == null || utcImportDate.isAfter(utcLastUpdated);
+        final LocalDateTime utcLastUpdated = mDb.getBookLastUpdateUtcDate(context, bookId);
+        return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
     }
 }

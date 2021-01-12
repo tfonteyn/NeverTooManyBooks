@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,7 @@ import androidx.lifecycle.ViewModel;
 import java.io.FileNotFoundException;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
@@ -58,7 +59,7 @@ public class ImportViewModel
             if (args != null) {
                 final String uri = args.getString(BKEY_URI);
                 if (uri != null) {
-                    mImportHelper = ImportHelper.withCalibreUrl(uri);
+                    mImportHelper = ImportHelper.withRemoteServer(uri, ArchiveEncoding.CalibreCS);
                 }
             }
         }
@@ -69,7 +70,7 @@ public class ImportViewModel
                                     @NonNull final Uri uri)
             throws InvalidArchiveException, FileNotFoundException {
 
-        mImportHelper = ImportHelper.withUri(context, uri);
+        mImportHelper = ImportHelper.withFile(context, uri);
         return mImportHelper;
     }
 

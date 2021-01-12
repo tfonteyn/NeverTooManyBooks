@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,9 +41,6 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -74,8 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 
 /**
  * Co-ordinate multiple {@link SearchTask}.
@@ -181,6 +177,7 @@ public class SearchCoordinator
     private SparseLongArray mSearchTasksStartTime;
     /** DEBUG timer. */
     private SparseLongArray mSearchTasksEndTime;
+    private SearchEngineRegistry mSearchEngineRegistry;
     /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
 
@@ -247,8 +244,6 @@ public class SearchCoordinator
     protected void onCleared() {
         cancel(false);
     }
-
-    private SearchEngineRegistry mSearchEngineRegistry;
 
     public boolean isSearchActive() {
         return mIsSearchActive;
@@ -1149,7 +1144,7 @@ public class SearchCoordinator
                 final String error;
                 if (exception == null) {
                     error = context.getString(R.string.error_search_x_failed_y, engineName,
-                                              context.getString(R.string.warning_task_cancelled));
+                                              context.getString(R.string.cancelled));
                 } else {
                     error = createSiteError(context, engineName, exception);
                 }
@@ -1166,51 +1161,33 @@ public class SearchCoordinator
 
     /**
      * Prepare an error message to show after the task finishes.
+     * <p>
+     * Dev Note: the return value should preferable fit on a single line
      *
      * @param context    Localized context
      * @param engineName the site where the error happened
-     * @param exception  to process
+     * @param e          Exception to process
      *
      * @return user-friendly error message for the given site
      */
+    @NonNull
     private String createSiteError(@NonNull final Context context,
                                    @NonNull final String engineName,
-                                   @NonNull final Exception exception) {
-        final String text;
-        if (exception instanceof CredentialsException) {
-            text = context.getString(R.string.error_site_authentication_failed, engineName);
+                                   @NonNull final Exception e) {
+        String msg = ExMsg.map(context, TAG, e);
 
-        } else if (exception instanceof SocketTimeoutException) {
-            text = context.getString(R.string.httpErrorTimeout);
+        if (msg == null) {
+            // generic network related IOException message
+            if (e instanceof IOException) {
+                msg = context.getString(R.string.error_search_failed_network);
+            }
 
-        } else if (exception instanceof MalformedURLException) {
-            text = context.getString(R.string.error_search_failed_network);
-
-        } else if (exception instanceof UnknownHostException) {
-            text = context.getString(R.string.error_search_failed_network);
-
-        } else if (exception instanceof ExternalStorageException) {
-            text = exception.getLocalizedMessage();
-
-        } else if (exception instanceof IOException) {
-            //ENHANCE: if (exception.getCause() instanceof ErrnoException) {
-            //           int errno = ((ErrnoException) exception.getCause()).errno;
-            text = context.getString(R.string.error_search_failed_network);
-
-        } else {
-            if (BuildConfig.DEBUG /* always */) {
-                // in debug mode we add the raw exception
-                text = context.getString(R.string.error_unknown)
-                       + "\n\n" + exception.getLocalizedMessage();
-            } else {
-                // when not in debug, ask for feedback
-                text = context.getString(R.string.error_unknown)
-                       + "\n\n" + context.getString(R.string.error_if_the_problem_persists,
-                                                    context.getString(R.string.lbl_send_debug));
+            // generic unknown message
+            if (msg == null || msg.isEmpty()) {
+                msg = context.getString(R.string.error_unknown);
             }
         }
-
-        return context.getString(R.string.error_search_x_failed_y, engineName, text);
+        return context.getString(R.string.error_search_x_failed_y, engineName, msg);
     }
 
     /**

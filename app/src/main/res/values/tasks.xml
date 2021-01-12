@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,6 +23,8 @@
 <resources>
     <!-- Building the booklist for the main(BoB) screen. -->
     <item name="TASK_ID_BOOKLIST_BUILDER" type="id" />
+
+    <item name="TASK_ID_VALIDATE_CONNECTION" type="id" />
 
     <!-- Restore/Import task. -->
     <item name="TASK_ID_IMPORT" type="id" />
@@ -59,8 +61,6 @@
     <item name="TASK_ID_DB_REBUILD_FTS" type="id" />
     <item name="TASK_ID_DB_REBUILD_REORDER_TITLES" type="id" />
 
-    <!-- LibraryThing key test. -->
-    <item name="TASK_ID_LT_VALIDATE_KEY" type="id" />
 
     <!-- Goodreads. -->
     <item name="TASK_ID_GR_REQUEST_AUTH" type="id" />

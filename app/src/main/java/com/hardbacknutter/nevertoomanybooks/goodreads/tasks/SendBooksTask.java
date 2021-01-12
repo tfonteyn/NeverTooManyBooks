@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,8 +61,8 @@ public class SendBooksTask
      * @param updatesOnly    {@code true} to send updated books only,
      *                       {@code false} for all books.
      */
-    public void startTask(final boolean fromLastBookId,
-                          final boolean updatesOnly) {
+    public void start(final boolean fromLastBookId,
+                      final boolean updatesOnly) {
         mFromLastBookId = fromLastBookId;
         mUpdatesOnly = updatesOnly;
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,6 +23,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 import androidx.preference.PreferenceManager;
 
 import java.util.Collection;
@@ -39,17 +41,16 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.BuildLanguageMappingsTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
-import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 
 /**
  * <strong>Note:</strong> yes, this is overkill for the startup. Call it an experiment.
  * It's also an unhealthy mix of VMTask and LTask components.
- * We're using VMTask MutableLiveData to report back, but our tasks are LTasks.
+ * We're using MutableLiveData to report back, but our tasks are LTasks.
  */
 public class StartupViewModel
-        extends VMTask<Void> {
+        extends ViewModel {
 
     /** Triggers prompting for a backup when the countdown reaches 0; then gets reset. */
     public static final String PK_STARTUP_BACKUP_COUNTDOWN = "startup.backupCountdown";
@@ -77,6 +78,10 @@ public class StartupViewModel
 
     /** Number of times the app has been started. */
     private static final String PK_STARTUP_COUNT = "startup.startCount";
+
+    private final MutableLiveData<FinishedMessage<Void>> mFinished = new MutableLiveData<>();
+    private final MutableLiveData<FinishedMessage<Exception>> mFailure = new MutableLiveData<>();
+    private final MutableLiveData<ProgressMessage> mProgress = new MutableLiveData<>();
 
     /** TaskId holder. Added when started. Removed when stopped. */
     @NonNull
@@ -191,9 +196,8 @@ public class StartupViewModel
         }
     }
 
-    @Override
     public boolean isRunning() {
-        return !mAllTasks.isEmpty() || super.isRunning();
+        return !mAllTasks.isEmpty();
     }
 
     /**
@@ -223,7 +227,7 @@ public class StartupViewModel
 
                   // The number of times the app was opened.
                   .putInt(PK_STARTUP_COUNT, global.getInt(PK_STARTUP_COUNT, 0) + 1)
-                 .apply();
+                  .apply();
 
             mDoMaintenance = maintenanceCountdown == 0;
             mProposeBackup = backupCountdown == 0;
@@ -316,4 +320,35 @@ public class StartupViewModel
             task.execute();
         }
     }
+
+    /**
+     * Called when the task successfully finishes.
+     *
+     * @return the Result which can be considered to be complete and correct.
+     */
+    @NonNull
+    public MutableLiveData<FinishedMessage<Void>> onFinished() {
+        return mFinished;
+    }
+
+    /**
+     * Called when the task fails with an Exception.
+     *
+     * @return the result is the Exception
+     */
+    @NonNull
+    public MutableLiveData<FinishedMessage<Exception>> onFailure() {
+        return mFailure;
+    }
+
+    /**
+     * Forwards progress messages for the client to display.
+     *
+     * @return a {@link ProgressMessage} with the progress counter, a text message, ...
+     */
+    @NonNull
+    public MutableLiveData<ProgressMessage> onProgressUpdate() {
+        return mProgress;
+    }
+
 }

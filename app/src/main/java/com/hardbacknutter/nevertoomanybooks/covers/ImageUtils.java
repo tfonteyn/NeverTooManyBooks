@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,14 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.covers;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Base64;
 import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
@@ -40,16 +38,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
-import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.utils.Throttler;
 
 
 public final class ImageUtils {
@@ -64,8 +56,6 @@ public final class ImageUtils {
     private static final int MIN_VALID_IMAGE_SIDE = 10;
     /** The minimum size an image file on disk must be to be considered valid; in bytes. */
     private static final int MIN_VALID_IMAGE_FILE_SIZE = 2048;
-    /** The prefix an embedded image url will have. */
-    private static final String DATA_IMAGE_JPEG_BASE_64 = "data:image/jpeg;base64,";
 
     private ImageUtils() {
     }
@@ -255,99 +245,6 @@ public final class ImageUtils {
             }
             return false;
         }
-    }
-
-    /**
-     * Create a temporary filename.
-     *
-     * @param source of the image (normally a SearchEngine specific code)
-     * @param bookId (optional) either the native id, or the isbn
-     * @param cIdx   0..n image index
-     * @param size   (optional) size of the image
-     *               Omitted if not set
-     *
-     * @return filename
-     */
-    @NonNull
-    public static String createFilename(@NonNull final String source,
-                                        @Nullable final String bookId,
-                                        @IntRange(from = 0, to = 1) final int cIdx,
-                                        @Nullable final ImageFileInfo.Size size) {
-
-        // keep all "_" even for empty parts. Easier to parse the name if needed.
-        return System.currentTimeMillis()
-               + "_" + source
-               + "_" + (bookId != null && !bookId.isEmpty() ? bookId : "")
-               + "_" + cIdx
-               + "_" + (size != null ? size : "")
-               + ".jpg";
-    }
-
-    /**
-     * Given a URL, get an image and save to a file in the {@link AppDir#Cache} directory.
-     * Called/run in a background task.
-     *
-     * @param context        Application context
-     * @param url            Image file URL
-     * @param filename       to use (simple name, NO path)
-     * @param connectTimeout in milliseconds
-     * @param readTimeout    in milliseconds
-     * @param throttler      (optional) {@link Throttler} to use
-     *
-     * @return Downloaded File, or {@code null} on failure
-     */
-    @Nullable
-    @WorkerThread
-    public static File saveImage(@NonNull final Context context,
-                                 @NonNull final String url,
-                                 @NonNull final String filename,
-                                 @IntRange(from = 0) final int connectTimeout,
-                                 @IntRange(from = 0) final int readTimeout,
-                                 @Nullable final Throttler throttler) {
-
-        File file = AppDir.Cache.getFile(context, filename);
-        try {
-            if (url.startsWith(DATA_IMAGE_JPEG_BASE_64)) {
-                try (OutputStream os = new FileOutputStream(file)) {
-                    final byte[] image = Base64
-                            .decode(url.substring(DATA_IMAGE_JPEG_BASE_64.length())
-                                       .getBytes(StandardCharsets.UTF_8), 0);
-                    os.write(image);
-                }
-            } else {
-                try (TerminatorConnection con = new TerminatorConnection(url, null,
-                                                                         connectTimeout,
-                                                                         readTimeout,
-                                                                         throttler)) {
-                    file = FileUtils.copyInputStream(context, con.getInputStream(), file);
-                }
-            }
-        } catch (@NonNull final IOException e) {
-            FileUtils.delete(file);
-
-            if ((BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) || Logger.isJUnitTest) {
-                Logger.d(TAG, "saveImage", "|e=" + e.getLocalizedMessage());
-
-                // When running as a JUnit test, the file.renameTo done during the
-                // FileUtils.copyInputStream operation will fail.
-                // As that is independent from the JUnit test/purpose, we fake success here.
-                if (Logger.isJUnitTest) {
-                    return file;
-                }
-            }
-            return null;
-        }
-
-        // disabled... we assume a picture from a website is already a good size.
-        // final Bitmap bitmap = scaleAndRotate(file, MAX_IMAGE_WIDTH_PX, MAX_IMAGE_HEIGHT_PX, 0);
-        // if (bitmap == null || !saveBitmap(bitmap, file)) {
-        //     return null;
-        // }
-
-        if (isAcceptableSize(file)) {
-            return file;
-        }
-        return null;
     }
 
     /**

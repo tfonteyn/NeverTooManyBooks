@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -86,7 +86,7 @@
             android:dialogMessage="@string/info_filter_edition"
             android:icon="@drawable/ic_filter_list"
             android:key="style.booklist.filter.bookshelves"
-            android:title="@string/lbl_bookshelves_long"
+            android:title="@string/lbl_bookshelves"
             app:disregardButtonText="@string/bookshelf_all_books" />
         />
     </PreferenceCategory>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,8 +51,11 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.utils.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException;
 
 /**
  * Base class for all Goodreads handler classes.
@@ -66,8 +69,7 @@ public abstract class ApiHandler {
     private static final String TAG = "ApiHandler";
 
     /** log error string. */
-    private static final String ERROR_UNEXPECTED_STATUS_CODE_FROM_API =
-            "Unexpected status code from API: ";
+    private static final String ERROR_UNEXPECTED_RESPONSE_CODE = "Unexpected response code: ";
     @NonNull
     protected final GoodreadsAuth mGrAuth;
     @NonNull
@@ -97,15 +99,13 @@ public abstract class ApiHandler {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the URL was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     protected void executeGet(@NonNull final String url,
                               @Nullable final Map<String, String> parameterMap,
                               final boolean requiresSignature,
                               @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeGet|url=\"" + url + '\"');
@@ -125,12 +125,19 @@ public abstract class ApiHandler {
         }
 
         final HttpURLConnection request = (HttpURLConnection) new URL(fullUrl).openConnection();
+        request.setConnectTimeout(mConfig.getConnectTimeoutInMs());
+        request.setReadTimeout(mConfig.getReadTimeoutInMs());
 
         if (requiresSignature) {
             mGrAuth.signGetRequest(request);
         }
 
-        execute(request, requestHandler);
+        // Make sure we follow Goodreads ToS (no more than 1 request/second).
+        GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
+        // explicit connect for clarity
+        request.connect();
+
+        parseResponse(request, requestHandler);
     }
 
     /**
@@ -141,58 +148,40 @@ public abstract class ApiHandler {
      * @param requiresSignature Flag to optionally sign the request
      * @param requestHandler    (optional) handler for the parser
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the URL was not found
-     * @throws IOException          on other failures
+     * @throws IOException on failures
      */
     void executePost(@NonNull final String url,
                      @Nullable final Map<String, String> parameterMap,
                      @SuppressWarnings("SameParameterValue") final boolean requiresSignature,
                      @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executePost|url=\"" + url + '\"');
         }
 
         final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
-        request.setRequestMethod("POST");
+        request.setRequestMethod(HttpConstants.POST);
         request.setDoOutput(true);
+        request.setConnectTimeout(mConfig.getConnectTimeoutInMs());
+        request.setReadTimeout(mConfig.getReadTimeoutInMs());
 
         if (requiresSignature) {
             mGrAuth.signPostRequest(request, parameterMap);
         }
 
-        // Now the actual POST payload
+        // Make sure we follow Goodreads ToS (no more than 1 request/second).
+        GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
+        // explicit connect for clarity
+        request.connect();
+
+        // Now the actual POST payload consisting of the parameters (FORM data)
         if (parameterMap != null) {
-            // encode using JDK
             final Uri.Builder builder = new Uri.Builder();
             for (final Map.Entry<String, String> entry : parameterMap.entrySet()) {
                 builder.appendQueryParameter(entry.getKey(), entry.getValue());
             }
             final String query = builder.build().getEncodedQuery();
-
-//            // encode using signpost. Leaving this code as a reference for now.
-//            StringBuilder sb = new StringBuilder();
-//            boolean first = true;
-//            for (Map.Entry<String, String> entry : parameterMap.entrySet()) {
-//                if (first) {
-//                    first = false;
-//                } else {
-//                    sb.append("&");
-//                }
-//
-//                // note we need to encode both key and value.
-//                sb.append(OAuth.percentEncode(entry.getKey()));
-//                sb.append("=");
-//                sb.append(OAuth.percentEncode(entry.getValue()));
-//            }
-//            String oauth_query = sb.toString();
-//
-//            Log.d(TAG,"SIGN|native_query=" + query);
-//            Log.d(TAG,"SIGN|query_oath=" + oauth_query);
-//            Log.d(TAG,"SIGN|oauth_query.equals(native_query)= " + oauth_query.equals(query));
-
             if (query != null) {
                 try (OutputStream os = request.getOutputStream();
                      Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
@@ -203,85 +192,70 @@ public abstract class ApiHandler {
             }
         }
 
-        execute(request, requestHandler);
+        parseResponse(request, requestHandler);
     }
 
     /**
-     * Submit a request; then pass it off to a parser.
+     * Check the response code; then pass a successful response off to a parser.
      *
      * @param request        to execute
      * @param requestHandler (optional) handler for the parser
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the URL was not found
-     * @throws IOException          on other failures
-     */
-    private void execute(@NonNull final HttpURLConnection request,
-                         @Nullable final DefaultHandler requestHandler)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
-
-        // Make sure we follow Goodreads ToS (no more than 1 request/second).
-        GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
-
-        request.setConnectTimeout(mConfig.getConnectTimeoutMs());
-        request.setReadTimeout(mConfig.getReadTimeoutMs());
-        request.connect();
-
-        final int code = request.getResponseCode();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
-            Log.d(TAG, "execute"
-                       + "\nrequest: " + request.getURL()
-                       + "\nresponse: " + code + ' ' + request.getResponseMessage());
-        }
-
-        switch (code) {
-            case HttpURLConnection.HTTP_OK:
-            case HttpURLConnection.HTTP_CREATED:
-                parseResponse(request, requestHandler);
-                request.disconnect();
-                break;
-
-            case HttpURLConnection.HTTP_UNAUTHORIZED:
-                request.disconnect();
-                GoodreadsAuth.invalidateCredentials();
-                throw new CredentialsException(mAppContext.getString(R.string.site_goodreads));
-
-            case HttpURLConnection.HTTP_NOT_FOUND:
-                request.disconnect();
-                throw new Http404Exception(
-                        mAppContext.getString(R.string.error_network_site_access_failed),
-                        request.getURL());
-
-            default:
-                request.disconnect();
-                throw new IOException(ERROR_UNEXPECTED_STATUS_CODE_FROM_API
-                                      + request.getResponseCode()
-                                      + '/' + request.getResponseMessage());
-        }
-    }
-
-    /**
-     * Pass a response off to a parser.
-     *
-     * @param request        the executed request from which to read
-     * @param requestHandler (optional) handler for the parser
-     *
-     * @throws IOException on failures (any parser exceptions are wrapped)
+     * @throws CredentialsException  on login failure
+     * @throws HttpNotFoundException the URL was not found
+     * @throws HttpStatusException   on other HTTP failures
+     * @throws IOException           on other failures
      */
     private void parseResponse(@NonNull final HttpURLConnection request,
                                @Nullable final DefaultHandler requestHandler)
-            throws IOException, GeneralParsingException {
+            throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException,
+                   GeneralParsingException {
 
-        try (InputStream is = request.getInputStream()) {
-            final SAXParserFactory factory = SAXParserFactory.newInstance();
-            final SAXParser parser = factory.newSAXParser();
-            parser.parse(is, requestHandler);
+        try {
+            final int responseCode = request.getResponseCode();
 
-        } catch (@NonNull final ParserConfigurationException | SAXException e) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "parseResponse", e);
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
+                Log.d(TAG, "execute"
+                           + "|" + request.getURL()
+                           + "|" + ERROR_UNEXPECTED_RESPONSE_CODE
+                           + responseCode + '/' + request.getResponseMessage());
             }
-            throw new GeneralParsingException(e);
+
+            switch (responseCode) {
+                case HttpURLConnection.HTTP_OK:
+                case HttpURLConnection.HTTP_CREATED:
+                    try (InputStream is = request.getInputStream()) {
+                        final SAXParserFactory factory = SAXParserFactory.newInstance();
+                        final SAXParser parser = factory.newSAXParser();
+                        parser.parse(is, requestHandler);
+
+                    } catch (@NonNull final ParserConfigurationException | SAXException e) {
+                        if (BuildConfig.DEBUG /* always */) {
+                            Log.d(TAG, "parseResponse", e);
+                        }
+                        throw new GeneralParsingException(e);
+                    }
+                    break;
+
+                case HttpURLConnection.HTTP_UNAUTHORIZED:
+                    GoodreadsAuth.invalidateCredentials();
+                    throw new CredentialsException(R.string.site_goodreads,
+                                                   request.getResponseMessage(),
+                                                   request.getURL());
+
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    throw new HttpNotFoundException(R.string.site_goodreads,
+                                                    request.getResponseMessage(),
+                                                    request.getURL());
+
+                default:
+                    throw new HttpStatusException(R.string.site_goodreads,
+                                                  request.getResponseCode(),
+                                                  request.getResponseMessage(),
+                                                  request.getURL());
+            }
+        } finally {
+            request.disconnect();
         }
     }
 
@@ -293,20 +267,23 @@ public abstract class ApiHandler {
      *
      * @return the raw text output.
      *
-     * @throws CredentialsException with GoodReads
-     * @throws Http404Exception     the URL was not found
-     * @throws IOException          on other failures
+     * @throws CredentialsException  on login failure
+     * @throws HttpNotFoundException the URL was not found
+     * @throws HttpStatusException   on other HTTP failures
+     * @throws IOException           on other failures
      */
     @NonNull
     String executeRawGet(@NonNull final String url,
                          @SuppressWarnings("SameParameterValue") final boolean requiresSignature)
-            throws CredentialsException, Http404Exception, IOException {
+            throws CredentialsException, HttpNotFoundException, HttpStatusException, IOException {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
             Log.d(TAG, "executeRawGet|url=\"" + url + '\"');
         }
 
         final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
+        request.setConnectTimeout(mConfig.getConnectTimeoutInMs());
+        request.setReadTimeout(mConfig.getReadTimeoutInMs());
 
         if (requiresSignature) {
             mGrAuth.signGetRequest(request);
@@ -315,65 +292,52 @@ public abstract class ApiHandler {
         // Make sure we follow Goodreads ToS (no more than 1 request/second).
         GoodreadsSearchEngine.THROTTLER.waitUntilRequestAllowed();
 
-        request.setConnectTimeout(mConfig.getConnectTimeoutMs());
-        request.setReadTimeout(mConfig.getReadTimeoutMs());
         request.connect();
 
-        final int code = request.getResponseCode();
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
-            Log.d(TAG, "execute"
-                       + "\nrequest: " + request.getURL()
-                       + "\nresponse: " + code + ' ' + request.getResponseMessage());
-        }
-        switch (code) {
-            case HttpURLConnection.HTTP_OK:
-            case HttpURLConnection.HTTP_CREATED:
-                final String content = getContent(request);
-                request.disconnect();
-                return content;
-
-            case HttpURLConnection.HTTP_UNAUTHORIZED:
-                request.disconnect();
-                GoodreadsAuth.invalidateCredentials();
-                throw new CredentialsException(mAppContext.getString(R.string.site_goodreads));
-
-            case HttpURLConnection.HTTP_NOT_FOUND:
-                request.disconnect();
-                throw new Http404Exception(
-                        mAppContext.getString(R.string.error_network_site_access_failed),
-                        request.getURL());
-
-            default:
-                request.disconnect();
-                throw new IOException(ERROR_UNEXPECTED_STATUS_CODE_FROM_API
-                                      + request.getResponseCode()
-                                      + '/' + request.getResponseMessage());
-        }
-    }
-
-    /**
-     * Read the request into a single String.
-     *
-     * @param request the executed request from which to read
-     *
-     * @return the content as a single string
-     *
-     * @throws IOException on failures
-     */
-    @NonNull
-    private String getContent(@NonNull final HttpURLConnection request)
-            throws IOException {
-        final StringBuilder html = new StringBuilder();
-        final InputStream is = request.getInputStream();
-        if (is != null) {
-            while (true) {
-                final int i = is.read();
-                if (i == -1) {
-                    break;
-                }
-                html.append((char) i);
+        try {
+            final int responseCode = request.getResponseCode();
+            if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_HTTP_XML) {
+                Log.d(TAG, "execute"
+                           + "|" + request.getURL()
+                           + "|" + ERROR_UNEXPECTED_RESPONSE_CODE
+                           + responseCode + '/' + request.getResponseMessage());
             }
+            switch (responseCode) {
+                case HttpURLConnection.HTTP_OK:
+                case HttpURLConnection.HTTP_CREATED:
+                    // Read the request into a single String.
+                    final StringBuilder content = new StringBuilder();
+                    final InputStream is = request.getInputStream();
+                    if (is != null) {
+                        while (true) {
+                            final int i = is.read();
+                            if (i == -1) {
+                                break;
+                            }
+                            content.append((char) i);
+                        }
+                    }
+                    return content.toString();
+
+                case HttpURLConnection.HTTP_UNAUTHORIZED:
+                    GoodreadsAuth.invalidateCredentials();
+                    throw new CredentialsException(R.string.site_goodreads,
+                                                   request.getResponseMessage(),
+                                                   request.getURL());
+
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    throw new HttpNotFoundException(R.string.site_goodreads,
+                                                    request.getResponseMessage(),
+                                                    request.getURL());
+
+                default:
+                    throw new HttpStatusException(R.string.site_goodreads,
+                                                  request.getResponseCode(),
+                                                  request.getResponseMessage(),
+                                                  request.getURL());
+            }
+        } finally {
+            request.disconnect();
         }
-        return html.toString();
     }
 }

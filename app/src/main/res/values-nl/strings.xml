@@ -84,7 +84,7 @@
     <string name="confirm_delete_series">Wilt je werkelijk de reeks „%1$s” verwijderen?\n\nDe boeken zelf worden niet verwijderd.\n\nOverweeg de reeks te bewerken en de reeksnaam te veranderen om deze gegevens te behouden</string>
     <string name="confirm_delete_toc_entry">De titel „%1$s” (door %2$s) echt verwijderen? Het wordt verwijderd uit alle boeken waarin het wordt vermeld. De boeken zelf worden niet verwijderd.</string>
     <string name="confirm_duplicate_book_message">Het boek dat je wil toevoegen is al aanwezig in de database, weet je zeker dat je nog een exemplaar wilt toevoegen?</string>
-    <string name="confirm_email_export">Wil je dit exportbestand als e-mail ergens heen sturen?</string>
+    <string name="confirm_email_file">Wilt je dit bestand naar iemand e-mailen?</string>
     <string name="confirm_merge_authors">De auteur die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_merge_bookshelves">De boekenplank die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
     <string name="confirm_merge_publishers">De uitgever die je hernoemt bestaat al. Wil je ze samenvoegen?</string>
@@ -126,8 +126,8 @@
     <string name="error_site_authentication_failed">%1$s authenticatie mislukt</string>
     <string name="error_site_authorization_failed">%1$s autorisatie leidde tot een fout.</string>
     <string name="error_storage_no_space_left">Onvoldoende opslag beschikbaar</string>
-    <string name="error_storage_not_accessible">Opslag niet toegankelijk: %1$s</string>
-    <string name="error_storage_not_readable">Controleer aub of opslag toegankelijk is.</string>
+    <string name="error_storage_not_accessible_s">Opslag niet toegankelijk: %1$s</string>
+    <string name="error_storage_not_accessible">Controleer aub of opslag toegankelijk is.</string>
     <string name="error_storage_not_writable">Controleer aub of opslag beschrijfbaar is en voldoende vrije ruimte heeft.</string>
     <string name="error_unknown_long">Er is een onverwachte fout opgetreden. Zend ons aub de details via de „Admin” optie in het hoofdmenu.</string>
     <string name="error_unknown">Er is een onbekende fout opgetreden</string>
@@ -152,7 +152,7 @@
     <string name="gr_info_send_books">Dit zendt uw bibliotheek naar Goodreads.\n\nJe kan er voor kiezen alle boeken te sturen of alleen de boeken die je hebt bijgewerkt sinds deze werden gekopieerd van of naar Goodreads (inclusief alle boeken die nog niet werden verzonden) of je kan de update annuleren.\n\n Als ja nog nooit boeken hebt verzonden is er geen verschil tussen de eerste twee opties.</string>
     <string name="gr_menu_import_all_from_goodreads">Importeer alles uit Goodreads</string>
     <string name="gr_menu_send_all">Zend alles</string>
-    <string name="gr_menu_send_updated">Zend bijgewerkte boeken</string>
+    <string name="menu_send_updated">Zend bijgewerkte boeken</string>
     <string name="gr_pt_collect_genre">Gebruik populaire boekenplanknamen als boekgenres</string>
     <string name="gr_send_book_to_goodreads">Zend boek %1$d naar Goodreads</string>
     <string name="gr_send_to_goodreads">Zend naar Goodreads</string>
@@ -188,7 +188,7 @@
     <string name="hint_empty_read_status">(Leesstatus onbekend)</string>
     <string name="hint_empty_series">(Geen reeks)</string>
     <string name="hint_empty_year">(Jaar niet ingevuld)</string>
-    <string name="hint_not_set">(Niet ingesteld)</string>
+    <string name="info_not_set">Niet ingesteld</string>
     <string name="hint_search_text">Tekst en/of ISBN</string>
     <string name="info_authorized_needed">Toegang autoriseren</string>
     <string name="info_authorized">Geautoriseerd</string>
@@ -240,7 +240,7 @@
     <string name="lbl_book">Boek</string>
     <string name="lbl_books">Boeken</string>
     <string name="lbl_bookshelf">Boekenplank</string>
-    <string name="lbl_bookshelves_long">Boekenplanken</string>
+    <string name="lbl_bookshelves">Boekenplanken</string>
     <string name="lbl_clone_style">Stijl klonen</string>
     <string name="lbl_color">Kleur</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Missend/pover</string>
@@ -278,7 +278,7 @@
     <string name="lbl_edition">Editie</string>
     <string name="inf_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
     <string name="lbl_export_options">Selecteer wat je wil exporteren.</string>
-    <string name="X_action_export">Exporteren</string>
+    <string name="action_export">Exporteren</string>
     <string name="lbl_family_name">Achternaam</string>
     <string name="lbl_field_usage_append">Voegt extra gegevens toe</string>
     <string name="lbl_field_usage_copy_if_blank">kopieer indien leeg</string>
@@ -601,8 +601,8 @@
     <string name="warning_image_not_found">Afbeelding kan niet worden gevonden.</string>
     <string name="warning_immediate_global_changes">Let op: Veranderingen worden direct en globaal toegepast!</string>
     <string name="warning_import_csv">Waarschuwing. Het importeren van gegevens kan bestaande boekgegevens onbedoeld bijwerken met nieuwe informatie als de UUID-kolom niet aanwezig is en de id in het import-bestand dezelfde is als het bestaande id. Dit is meestal geen bezwaar als je een veld in een exportbestand hebt veranderd. Als je een nieuw boek item hebt gemaakt, of iemand anders zijn boeken importeert, zorg dan dat het UUID veld aanwezig is of dat het id veld leeg is.</string>
-    <string name="warning_import_csv_failed_lines_lots">Het parseren van CSV is mislukt voor regels \n%1$s\n en andere.</string>
-    <string name="warning_import_csv_failed_lines_some">CSV-parsering is mislukt voor regels \n%1$s\n</string>
+    <string name="warning_import_failed_for_lines_lots">Het parseren is mislukt voor regels \n%1$s\n en andere.</string>
+    <string name="warning_import_failed__for_lines_some">Parsering is mislukt voor regels \n%1$s\n</string>
     <string name="warning_import_old_archive">Deze optie wordt niet ondersteund voor oudere archief versies.</string>
     <string name="warning_import_csv_unescaped_quote">Niet ge-escaped aanhalingsteken op rij %1$d, positie %2$d</string>
     <string name="warning_no_editions">Geen andere uitgave informatie beschikbaar</string>
@@ -615,7 +615,7 @@
     <string name="warning_search_failed">Het zoeken naar het boek is mislukt.</string>
     <string name="warning_select_at_least_1_field">Selecteer tenminste één veld om te updaten.</string>
     <string name="warning_select_at_least_1_group">Selecteer ten minste één groep.</string>
-    <string name="warning_task_cancelled">Geannuleerd</string>
+    <string name="cancelled">Geannuleerd</string>
     <string name="warning_toc_confirm">Bevestig dat deze titels (merendeels) correct zijn</string>
     <string name="warning_x_already_exists">%1$s bestaat al.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s” is geen geldige code</string>
@@ -701,4 +701,9 @@
     <string name="httpErrorFileNotFound">Kan het opgevraagde bestand niet vinden.</string>
     <string name="lbl_calibre_content_server_ca_cert">CA-certificaat</string>
     <string name="error_certificate_invalid">Het certificaat is ongeldig of niet toegankelijk.</string>
+    <string name="username">gebruikersnaam</string>
+    <string name="password">Wachtwoord</string>
+    <string name="error_network_failed_try_again">Controleer de verbinding en probeer het opnieuw</string>
+    <string name="lbl_test_connection">Test de verbinding</string>
+    <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
 </resources>

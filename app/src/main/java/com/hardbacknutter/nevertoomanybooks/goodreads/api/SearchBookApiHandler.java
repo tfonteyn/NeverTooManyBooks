@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -71,7 +71,7 @@ public class SearchBookApiHandler
      * @param appContext Application context
      * @param grAuth     Authentication handler
      *
-     * @throws CredentialsException with GoodReads
+     * @throws CredentialsException if there are no valid credentials available
      */
     public SearchBookApiHandler(@NonNull final Context appContext,
                                 @NonNull final GoodreadsAuth grAuth)
@@ -85,7 +85,7 @@ public class SearchBookApiHandler
     @NonNull
     @WorkerThread
     public List<Long> searchBookIds(@NonNull final String query)
-            throws CredentialsException, Http404Exception, IOException, GeneralParsingException {
+            throws GeneralParsingException, IOException {
 
         // clear for a new search
         mGrIdList.clear();

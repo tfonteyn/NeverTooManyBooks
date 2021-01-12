@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -64,7 +64,6 @@ public abstract class StyleBaseFragment
         super.onResume();
 
         final ListStyle style = mStyleViewModel.getStyle();
-
         if (style.getId() == 0) {
             mToolbar.setTitle(R.string.lbl_clone_style);
         } else {
