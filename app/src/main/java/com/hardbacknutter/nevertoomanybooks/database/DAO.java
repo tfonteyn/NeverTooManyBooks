@@ -527,7 +527,7 @@ public class DAO
 
             // next we add the links to series, authors,...
             insertBookLinks(context, book, flags);
-            if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
+            if (!book.getString(KEY_CALIBRE_BOOK_UUID).isEmpty()) {
                 insertCalibreData(book);
             }
             // and populate the search suggestions table
@@ -613,7 +613,7 @@ public class DAO
                 book.putString(KEY_BOOK_UUID, uuid);
 
                 insertBookLinks(context, book, flags);
-                if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
+                if (!book.getString(KEY_CALIBRE_BOOK_UUID).isEmpty()) {
                     updateCalibreData(book);
                 }
                 ftsUpdate(context, book.getId());
@@ -654,9 +654,9 @@ public class DAO
         final ContentValues cv = new ContentValues();
         cv.put(KEY_FK_BOOK, book.getId());
         cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
+        cv.put(KEY_CALIBRE_BOOK_UUID, book.getString(KEY_CALIBRE_BOOK_UUID));
         cv.put(KEY_CALIBRE_BOOK_LIBRARY_ID, book.getString(KEY_CALIBRE_BOOK_LIBRARY_ID));
         cv.put(KEY_CALIBRE_BOOK_FILE_URL, book.getString(KEY_CALIBRE_BOOK_FILE_URL));
-        cv.put(KEY_CALIBRE_BOOK_UUID, book.getString(KEY_CALIBRE_BOOK_UUID));
 
         final long rowId = mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
         if (rowId <= 0) {
@@ -674,16 +674,17 @@ public class DAO
     private void updateCalibreData(@NonNull final Book book)
             throws DaoWriteException {
 
+        // Update the KEY_CALIBRE_BOOK_ID as we accept that this can change if books
+        // are moved between libraries. But the UUID is fixed.
         final ContentValues cv = new ContentValues();
-        cv.put(KEY_FK_BOOK, book.getId());
         cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
         cv.put(KEY_CALIBRE_BOOK_LIBRARY_ID, book.getString(KEY_CALIBRE_BOOK_LIBRARY_ID));
         cv.put(KEY_CALIBRE_BOOK_FILE_URL, book.getString(KEY_CALIBRE_BOOK_FILE_URL));
 
-        final int rowsAffected = mSyncedDb.update(TBL_CALIBRE_BOOKS.getName(), cv,
-                                                  KEY_CALIBRE_BOOK_UUID + "=?",
-                                                  new String[]{book.getString(
-                                                          KEY_CALIBRE_BOOK_UUID)});
+        final int rowsAffected = mSyncedDb.update(
+                TBL_CALIBRE_BOOKS.getName(), cv, KEY_CALIBRE_BOOK_UUID + "=?",
+                new String[]{book.getString(KEY_CALIBRE_BOOK_UUID)});
+
         if (rowsAffected != 1) {
             throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
         }
