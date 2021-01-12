@@ -27,7 +27,7 @@
     <string name="X_action_update">Ενημέρωση</string>
     <string name="X_btn_do_not_show_again">Μην εμφανιστείς ξανά</string>
     <string name="X_error_file_must_contain_column">Το αρχείο πρέπει να περιέχει στήλη με όνομα %1$s</string>
-    <string name="progress_end_export_success">;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο «%1$s».\n\nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
+    <string name="progress_end_export_report">;Ένα αρχείο %3$s με το όνομα %2$s δημιουργήθηκε στον κατάλογο «%1$s».\n\nΜπορείτε το αντιγράψετε κάπου αλλού για να προστατέψετε τα δεδομένα σε περίπτωση που η συσκευή σας πάθει ζημιά, χαθεί, ή κλαπεί.</string>
     <string name="lbl_available">Διαθέσιμη</string>
     <string name="X_lbl_data_import_export">Δημιουργία αντιγράφων ασφαλείας &amp; εισαγωγή</string>
     <string name="X_lbl_select_fields_to_update">Επιλεγξτε πεδία για ενημέρωση</string>

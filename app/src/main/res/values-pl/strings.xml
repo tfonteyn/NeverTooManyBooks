@@ -27,7 +27,7 @@
     <string name="X_action_update">Zaktualizuj</string>
     <string name="X_btn_do_not_show_again">Nie pokazuj ponownie</string>
     <string name="X_error_file_must_contain_column">Plik musi zawierać pole %1$s</string>
-    <string name="progress_end_export_success">Plik %3$s o nazwie „%2$s” został utworzony w katalogu „%1$s” i powinieneś ręcznie skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.</string>
+    <string name="progress_end_export_report">Plik %3$s o nazwie „%2$s” został utworzony w katalogu „%1$s” i powinieneś ręcznie skopiować go gdzie indziej, aby chronić dane w przypadku uszkodzenia, utraty lub kradzieży.</string>
     <string name="lbl_available">Dostępne</string>
     <string name="X_lbl_data_import_export">Kopia zapasowa i import</string>
     <string name="X_lbl_select_fields_to_update">Wybierz pola do aktualizacji</string>

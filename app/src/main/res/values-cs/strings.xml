@@ -27,7 +27,7 @@
     <string name="X_action_update">Aktualizovat</string>
     <string name="X_btn_do_not_show_again">Příště již nezobrazovat</string>
     <string name="X_error_file_must_contain_column">Soubor musí obsahovat sloupec jménem %1$s</string>
-    <string name="progress_end_export_success">Soubor %3$s nazvaný „%2$s“ byl vytvořen v adresáři „%1$s“ a měli byste jej ručně zkopírovat jinam, aby byla data chráněna v případě poškození, ztráty nebo odcizení zařízení.</string>
+    <string name="progress_end_export_report">Soubor %3$s nazvaný „%2$s“ byl vytvořen v adresáři „%1$s“ a měli byste jej ručně zkopírovat jinam, aby byla data chráněna v případě poškození, ztráty nebo odcizení zařízení.</string>
     <string name="lbl_available">Dostupná</string>
     <string name="X_lbl_data_import_export">Zálohování a import</string>
     <string name="X_lbl_select_fields_to_update">Zvolit pole k aktualizaci</string>

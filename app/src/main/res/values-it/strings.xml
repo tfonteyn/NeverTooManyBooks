@@ -27,7 +27,7 @@
     <string name="X_action_update">Aggiorna</string>
     <string name="X_btn_do_not_show_again">Non mostrare più</string>
     <string name="X_error_file_must_contain_column">Il file deve contenere una colonna con nome %1$s</string>
-    <string name="progress_end_export_success">Un %3$s file chiamato %2$s è stato creato nella cartella «%1$s».\n\nTi raccomandiamo di tenerne copia da qualche altra parte a protezione dei dati in caso il tuo apparecchio venga danneggiato, perso o rubato.</string>
+    <string name="progress_end_export_report">Un %3$s file chiamato %2$s è stato creato nella cartella «%1$s».\n\nTi raccomandiamo di tenerne copia da qualche altra parte a protezione dei dati in caso il tuo apparecchio venga danneggiato, perso o rubato.</string>
     <string name="lbl_available">Disponibile</string>
     <string name="X_lbl_data_import_export">Backup e importazione</string>
     <string name="X_lbl_select_fields_to_update">Seleziona i campi da aggiornare</string>

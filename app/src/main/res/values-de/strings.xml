@@ -442,7 +442,7 @@
     <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
     <string name="pg_ui">Benutzeroberfläche</string>
     <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
-    <string name="progress_end_export_success">Eine %3$s-Datei namens %2$s wurde im Verzeichnis „%1$s“ erzeugt.\n\nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor Beschädigung, Verlust oder Diebstahl zu schützen.</string>
+    <string name="progress_end_export_report">Eine %3$s-Datei namens %2$s wurde im Verzeichnis „%1$s“ erzeugt.\n\nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor Beschädigung, Verlust oder Diebstahl zu schützen.</string>
     <string name="progress_end_import_complete">Import vollständig</string>
     <string name="progress_end_import_partially_complete">Teilweise importiert</string>
     <string name="progress_msg_connecting">Verbindung wird hergestellt…</string>

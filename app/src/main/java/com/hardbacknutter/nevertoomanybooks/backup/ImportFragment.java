@@ -516,8 +516,8 @@ public class ImportFragment
         }
 
         final String report = items.stream()
-                                   .map(s -> "<li>" + s + "</li>")
-                                   .collect(Collectors.joining("", "<ul>", "</ul>"));
+                                   .map(s -> getString(R.string.list_element, s))
+                                   .collect(Collectors.joining("\n"));
 
         int failed = result.failedLinesNr.size();
         if (failed == 0) {

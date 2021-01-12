@@ -628,9 +628,9 @@ public class ExportFragment
             // FIXME: We need to change the descriptive string not to include the folder.
             //noinspection ConstantConditions
             return items.stream()
-                        .map(s -> "<li>" + s + "</li>")
-                        .collect(Collectors.joining("", "<ul>", "</ul>"))
-                   + "\n\n" + getString(R.string.progress_end_export_success, "",
+                        .map(s -> getString(R.string.list_element, s))
+                        .collect(Collectors.joining("\n"))
+                   + "\n\n" + getString(R.string.progress_end_export_report, "",
                                         uriInfo.getDisplayName(),
                                         FileUtils.formatFileSize(getContext(), uriInfo.getSize()));
         }

@@ -440,7 +440,7 @@
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="pg_ui">Gebruikersinterface</string>
     <string name="progress_end_backup_success">Back-up gelukt</string>
-    <string name="progress_end_export_success">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
+    <string name="progress_end_export_report">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
     <string name="progress_end_import_complete">Import Compleet</string>
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
     <string name="progress_msg_connecting">Verbinden…</string>

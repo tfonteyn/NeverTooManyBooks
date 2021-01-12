@@ -27,7 +27,7 @@
     <string name="X_action_update">Обновить</string>
     <string name="X_btn_do_not_show_again">Больше не показывать</string>
     <string name="X_error_file_must_contain_column">В файле должен быть столбец с названием %1$s</string>
-    <string name="progress_end_export_success">Файл %3$s с именем %2$s был создан в папке «%1$s».\n\nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
+    <string name="progress_end_export_report">Файл %3$s с именем %2$s был создан в папке «%1$s».\n\nВам следует вручную скопировать его, чтобы защитить данные в случае утери или повреждения телефона.</string>
     <string name="lbl_available">Доступен</string>
     <string name="X_lbl_data_import_export">Резервное копирование и импорт</string>
     <string name="X_lbl_select_fields_to_update">Выберите поля для обновления</string>

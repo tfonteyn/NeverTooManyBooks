@@ -161,14 +161,6 @@
     <!-- you're out of Shared Storage space... buy a bigger SD Card -->
     <string name="error_storage_no_space_left">Insufficient storage available.</string>
 
-
-    <!-- generic backup failure -->
-    <string name="error_backup_failed">Backup Failed.</string>
-    <!-- generic export failure -->
-    <string name="error_export_failed">Export failed.</string>
-    <!-- generic import failure -->
-    <string name="error_import_failed">Import failed.</string>
-
     <!-- The user selected a file to import that was not recognised as a valid archive.
         or, we got a FileNotFoundException when opening the selected file.
 
@@ -437,10 +429,9 @@
     <string name="progress_end_import_complete">Import complete</string>
     <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
     <string name="progress_end_import_partially_complete">Partial import done</string>
-    <!-- progress final message - all data was exported. -->
-    <string name="progress_end_backup_success">Backup success</string>
+
     <!-- progress final message - displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
-    <string name="progress_end_export_success">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
+    <string name="progress_end_export_report">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
@@ -936,6 +927,17 @@
     <string name="lbl_export_books_option_all">All books</string>
     <string name="lbl_export_books_option_since_last_full_backup">New and updated books</string>
     <string name="inf_export_books_option_since_last_full_backup">Books added or updated since last full backup.</string>
+
+    <!-- progress final message - all data was exported. -->
+    <string name="progress_end_backup_success">Backup success</string>
+    <string name="progress_end_export_success">Export success</string>
+
+    <!-- generic backup failure -->
+    <string name="error_backup_failed">Backup Failed.</string>
+    <!-- generic export failure -->
+    <string name="error_export_failed">Export failed.</string>
+    <!-- generic import failure -->
+    <string name="error_import_failed">Import failed.</string>
 
 
     <!-- ####################################################################################### -->
