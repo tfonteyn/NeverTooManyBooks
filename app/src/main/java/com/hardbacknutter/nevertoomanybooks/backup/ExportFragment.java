@@ -595,35 +595,29 @@ public class ExportFragment
     private String createReport(@NonNull final FileUtils.UriInfo uriInfo,
                                 @NonNull final ExportResults result) {
 
-        final Context context = getContext();
         final List<String> items = new LinkedList<>();
 
         if (result.getBookCount() > 0) {
-            //noinspection ConstantConditions
-            items.add(context.getString(R.string.name_colon_value,
-                                        context.getString(R.string.lbl_books),
-                                        String.valueOf(result.getBookCount())));
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_books),
+                                String.valueOf(result.getBookCount())));
         }
         if (result.getCoverCount() > 0) {
-            //noinspection ConstantConditions
-            items.add(context.getString(R.string.name_colon_value,
-                                        context.getString(R.string.lbl_covers),
-                                        String.valueOf(result.getCoverCount())));
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_covers),
+                                String.valueOf(result.getCoverCount())));
         }
 
         if (result.styles > 0) {
-            //noinspection ConstantConditions
-            items.add(context.getString(R.string.name_colon_value,
-                                        context.getString(R.string.lbl_styles),
-                                        String.valueOf(result.styles)));
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_styles),
+                                String.valueOf(result.styles)));
         }
         if (result.preferences > 0) {
-            //noinspection ConstantConditions
-            items.add(context.getString(R.string.lbl_settings));
+            items.add(getString(R.string.lbl_settings));
         }
         if (result.database) {
-            //noinspection ConstantConditions
-            items.add(context.getString(R.string.lbl_database));
+            items.add(getString(R.string.lbl_database));
         }
 
         if (items.isEmpty()) {
@@ -636,9 +630,9 @@ public class ExportFragment
             return items.stream()
                         .map(s -> "<li>" + s + "</li>")
                         .collect(Collectors.joining("", "<ul>", "</ul>"))
-                   + "\n\n" + context.getString(
-                    R.string.progress_end_export_success, "",
-                    uriInfo.getDisplayName(), FileUtils.formatFileSize(context, uriInfo.getSize()));
+                   + "\n\n" + getString(R.string.progress_end_export_success, "",
+                                        uriInfo.getDisplayName(),
+                                        FileUtils.formatFileSize(getContext(), uriInfo.getSize()));
         }
     }
 
