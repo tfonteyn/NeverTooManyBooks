@@ -50,6 +50,8 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -487,41 +489,39 @@ public class ImportFragment
     @NonNull
     private String createReport(@NonNull final ImportResults result) {
 
-        final Context context = getContext();
-        final StringJoiner report = new StringJoiner("\n");
-        report.setEmptyValue("");
+        final List<String> items = new LinkedList<>();
 
         //TODO: RTL
         if (result.booksCreated > 0 || result.booksUpdated > 0 || result.booksSkipped > 0) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                         context.getString(R.string.lbl_books),
-                                         result.booksCreated,
-                                         result.booksUpdated,
-                                         result.booksSkipped));
+            items.add(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                getString(R.string.lbl_books),
+                                result.booksCreated,
+                                result.booksUpdated,
+                                result.booksSkipped));
         }
         if (result.coversCreated > 0 || result.coversUpdated > 0 || result.coversSkipped > 0) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.progress_msg_x_created_y_updated_z_skipped,
-                                         context.getString(R.string.lbl_covers),
-                                         result.coversCreated,
-                                         result.coversUpdated,
-                                         result.coversSkipped));
+            items.add(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
+                                getString(R.string.lbl_covers),
+                                result.coversCreated,
+                                result.coversUpdated,
+                                result.coversSkipped));
         }
         if (result.styles > 0) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.name_colon_value,
-                                         context.getString(R.string.lbl_styles),
-                                         String.valueOf(result.styles)));
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_styles),
+                                String.valueOf(result.styles)));
         }
         if (result.preferences > 0) {
-            //noinspection ConstantConditions
-            report.add(context.getString(R.string.lbl_settings));
+            items.add(getString(R.string.lbl_settings));
         }
+
+        final String report = items.stream()
+                                   .map(s -> "<li>" + s + "</li>")
+                                   .collect(Collectors.joining("", "<ul>", "</ul>"));
 
         int failed = result.failedLinesNr.size();
         if (failed == 0) {
-            return report.toString();
+            return report;
         }
 
         final int fs;
@@ -536,15 +536,14 @@ public class ImportFragment
         }
 
         for (int i = 0; i < failed; i++) {
-            //noinspection ConstantConditions
-            msgList.add(context.getString(R.string.a_bracket_b_bracket,
-                                          String.valueOf(result.failedLinesNr.get(i)),
-                                          result.failedLinesMessage.get(i)));
+            msgList.add(getString(R.string.a_bracket_b_bracket,
+                                  String.valueOf(result.failedLinesNr.get(i)),
+                                  result.failedLinesMessage.get(i)));
         }
 
-        return report.toString() + "\n" + context.getString(
+        return report + "\n" + getString(
                 fs, msgList.stream()
-                           .map(s -> context.getString(R.string.list_element, s))
+                           .map(s -> getString(R.string.list_element, s))
                            .collect(Collectors.joining("\n")));
     }
 
