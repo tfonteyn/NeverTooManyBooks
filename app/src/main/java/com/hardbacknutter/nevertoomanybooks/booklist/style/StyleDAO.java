@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -177,7 +177,7 @@ public final class StyleDAO {
      *
      * @param context Current context
      */
-    public static void updateMenuOrder(final Context context) {
+    public static void updateMenuOrder(@NonNull final Context context) {
         try (DAO db = new DAO(TAG)) {
             updateMenuOrder(db, getStyles(context, db, true));
         }
