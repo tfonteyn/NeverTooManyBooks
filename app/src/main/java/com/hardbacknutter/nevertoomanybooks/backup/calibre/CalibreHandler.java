@@ -55,18 +55,19 @@ public class CalibreHandler {
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
 
     /** Task to download the Calibre eBook. */
-    private CalibreSingleFileDownload mCalibreSingleFileDownload;
+    private CalibreSingleFileDownload mFileDownload;
 
     /** ONLY USED AND VALID WHILE RUNNING THE {@link #mPickFolderLauncher}. */
     @Nullable
     private Book mTempBookWhileRunningPickFolder;
 
+    /** The host view; used for context, resources, Snackbar. */
     private View mView;
 
     public void onViewCreated(@NonNull final View view,
-                              @NonNull final ActivityResultCaller caller,
+                              @NonNull final LifecycleOwner lifecycleOwner,
                               @NonNull final ViewModelStoreOwner viewModelStoreOwner,
-                              @NonNull final LifecycleOwner lifecycleOwner) {
+                              @NonNull final ActivityResultCaller caller) {
         mView = view;
 
         mPickFolderLauncher = caller.registerForActivityResult(
@@ -81,12 +82,12 @@ public class CalibreHandler {
                     }
                 });
 
-        mCalibreSingleFileDownload = new ViewModelProvider(viewModelStoreOwner)
+        mFileDownload = new ViewModelProvider(viewModelStoreOwner)
                 .get(CalibreSingleFileDownload.class);
-        mCalibreSingleFileDownload.onProgressUpdate().observe(lifecycleOwner, this::onProgress);
-        mCalibreSingleFileDownload.onCancelled().observe(lifecycleOwner, this::onCancelled);
-        mCalibreSingleFileDownload.onFailure().observe(lifecycleOwner, this::onCalibreFailure);
-        mCalibreSingleFileDownload.onFinished().observe(lifecycleOwner, this::onCalibreFinished);
+        mFileDownload.onProgressUpdate().observe(lifecycleOwner, this::onProgress);
+        mFileDownload.onCancelled().observe(lifecycleOwner, this::onCancelled);
+        mFileDownload.onFailure().observe(lifecycleOwner, this::onFailure);
+        mFileDownload.onFinished().observe(lifecycleOwner, this::onFinished);
     }
 
     public boolean isCalibreEnabled(@NonNull final DataHolder book) {
@@ -118,9 +119,13 @@ public class CalibreHandler {
 
     private void download(@NonNull final Book book,
                           @NonNull final Uri folder) {
-        Snackbar.make(mView, R.string.progress_msg_connecting,
-                      Snackbar.LENGTH_LONG).show();
-        mCalibreSingleFileDownload.start(book, folder);
+        if (mFileDownload.start(book, folder)) {
+            Snackbar.make(mView, R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
+        } else {
+            //URGENT: need correct message
+            Snackbar.make(mView, R.string.error_import_file_not_supported,
+                          Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
@@ -135,7 +140,7 @@ public class CalibreHandler {
         }
     }
 
-    private void onCalibreFailure(@NonNull final FinishedMessage<Exception> message) {
+    private void onFailure(@NonNull final FinishedMessage<Exception> message) {
         if (message.isNewEvent()) {
             final String msg;
             if (message.result != null) {
@@ -147,10 +152,10 @@ public class CalibreHandler {
         }
     }
 
-    private void onCalibreFinished(@NonNull final FinishedMessage<Uri> message) {
+    private void onFinished(@NonNull final FinishedMessage<Uri> message) {
         if (message.isNewEvent()) {
             if (message.result != null) {
-                Snackbar.make(mView, R.string.done, Snackbar.LENGTH_LONG)
+                Snackbar.make(mView, R.string.done, Snackbar.LENGTH_INDEFINITE)
                         .setAction(R.string.lbl_read, v -> mView.getContext().startActivity(
                                 new Intent(Intent.ACTION_VIEW).setData(message.result)))
                         .show();

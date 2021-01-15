@@ -64,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
@@ -108,17 +107,13 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
-import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
@@ -180,10 +175,7 @@ public class BooksOnBookshelf
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportFragment.ResultContract(), success -> {});
-    /** Goodreads authorization task. */
-    private GrAuthTask mGrAuthTask;
-    /** Goodreads send-book task. */
-    private GrSendOneBookTask mGrSendOneBookTask;
+
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
@@ -278,13 +270,7 @@ public class BooksOnBookshelf
                     }
                 }
             });
-    /**
-     * Full progress dialog to show while running a task.
-     * Note that the {@link #mVm} does not use this dialog (i.e. never sends progress messages)
-     * but just the light weight ProgressBar.
-     */
-    @Nullable
-    private ProgressDialogFragment mProgressDialog;
+
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
     /** The adapter used to fill the mBookshelfSpinner. */
@@ -367,7 +353,10 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-    private CalibreHandler mCalibreHandler;
+
+    private final CalibreHandler mCalibreHandler = new CalibreHandler();
+    private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
+
     /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
             new MenuPickerDialogFragment.Launcher() {
@@ -468,15 +457,15 @@ public class BooksOnBookshelf
         // remove the default title to make space for the bookshelf spinner.
         setTitle("");
 
-        getSupportFragmentManager()
-                .setFragmentResultListener(RowChangeListener.REQUEST_KEY, this, mRowChangeListener);
+        final FragmentManager fm = getSupportFragmentManager();
 
-        mEditBookshelfLauncher.register(this, RK_EDIT_BOOKSHELF);
-        mEditLenderLauncher.register(this, RK_EDIT_LENDER);
-        mOnStylePickerLauncher.register(this, RK_STYLE_PICKER);
+        fm.setFragmentResultListener(RowChangeListener.REQUEST_KEY, this, mRowChangeListener);
 
+        mEditBookshelfLauncher.register(fm, this, RK_EDIT_BOOKSHELF);
+        mEditLenderLauncher.register(fm, this, RK_EDIT_LENDER);
+        mOnStylePickerLauncher.register(fm, this, RK_STYLE_PICKER);
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(this, RK_MENU_PICKER);
+            mMenuLauncher.register(fm, this, RK_MENU_PICKER);
         }
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.
@@ -486,20 +475,8 @@ public class BooksOnBookshelf
         mVm.onFailure().observe(this, this::onBuildFailed);
         mVm.onFinished().observe(this, this::onBuildFinished);
 
-        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
-        mGrAuthTask.onProgressUpdate().observe(this, this::onProgress);
-        mGrAuthTask.onCancelled().observe(this, this::onCancelled);
-        mGrAuthTask.onFailure().observe(this, this::onGrFailure);
-        mGrAuthTask.onFinished().observe(this, this::onGrFinished);
-
-        mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
-        mGrSendOneBookTask.onProgressUpdate().observe(this, this::onProgress);
-        mGrSendOneBookTask.onCancelled().observe(this, this::onCancelled);
-        mGrSendOneBookTask.onFailure().observe(this, this::onGrFailure);
-        mGrSendOneBookTask.onFinished().observe(this, this::onGrFinished);
-
-        mCalibreHandler = new CalibreHandler();
         mCalibreHandler.onViewCreated(mVb.getRoot(), this, this, this);
+        mGoodreadsHandler.onViewCreated(mVb.getRoot(), this, this, fm);
 
         // show/hide the sync menus
         updateNavigationMenuVisibility();
@@ -906,7 +883,7 @@ public class BooksOnBookshelf
             Snackbar.make(mVb.list, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
             final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-            mGrSendOneBookTask.start(bookId);
+            mGoodreadsHandler.sendBook(bookId);
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -1463,7 +1440,6 @@ public class BooksOnBookshelf
         }
     }
 
-
     /**
      * Display the list based on the given cursor, and update the list headers.
      * Optionally re-position to the desired target node(s).
@@ -1614,88 +1590,6 @@ public class BooksOnBookshelf
             });
         }
     }
-
-
-    private void onCancelled(@NonNull final LiveDataEvent message) {
-        closeProgressDialog();
-        if (message.isNewEvent()) {
-            Snackbar.make(mVb.list, R.string.cancelled, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
-        closeProgressDialog();
-        if (message.isNewEvent()) {
-            Snackbar.make(mVb.list, GrStatus.getMessage(this, message.result),
-                          Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
-        closeProgressDialog();
-        if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-                mGrAuthTask.prompt(this);
-            } else {
-                Snackbar.make(mVb.list, message.result.getMessage(this),
-                              Snackbar.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    private void onProgress(@NonNull final ProgressMessage message) {
-        if (mProgressDialog == null) {
-            mProgressDialog = getOrCreateProgressDialog(message.taskId);
-        }
-        mProgressDialog.onProgress(message);
-    }
-
-    @NonNull
-    private ProgressDialogFragment getOrCreateProgressDialog(@IdRes final int taskId) {
-        final FragmentManager fm = getSupportFragmentManager();
-
-        // get dialog after a fragment restart
-        ProgressDialogFragment dialog = (ProgressDialogFragment)
-                fm.findFragmentByTag(ProgressDialogFragment.TAG);
-
-        // not found? create it
-        if (dialog == null) {
-            if (taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
-                dialog = ProgressDialogFragment.newInstance(
-                        getString(R.string.lbl_registration, getString(R.string.site_goodreads)),
-                        false, true);
-
-            } else if (taskId == R.id.TASK_ID_GR_SEND_ONE_BOOK) {
-                dialog = ProgressDialogFragment.newInstance(
-                        getString(R.string.gr_title_send_book), false, true);
-
-            } else {
-                throw new IllegalArgumentException("id=" + taskId);
-            }
-            dialog.show(fm, ProgressDialogFragment.TAG);
-        }
-
-        // hook the task up.
-        if (taskId == R.id.TASK_ID_GR_REQUEST_AUTH) {
-            dialog.setCanceller(mGrAuthTask);
-
-        } else if (taskId == R.id.TASK_ID_GR_SEND_ONE_BOOK) {
-            dialog.setCanceller(mGrSendOneBookTask);
-
-        } else {
-            throw new IllegalArgumentException("taskId=" + taskId);
-        }
-        return dialog;
-    }
-
-    private void closeProgressDialog() {
-        if (mProgressDialog != null) {
-            mProgressDialog.dismiss();
-            mProgressDialog = null;
-        }
-    }
-
 
     /**
      * Allows to be notified of changes made.

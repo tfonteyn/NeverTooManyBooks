@@ -37,9 +37,12 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +119,7 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mEditBookshelvesLauncher.register(this, RK_EDIT_BOOKSHELVES);
+        mEditBookshelvesLauncher.register(getChildFragmentManager(), this, RK_EDIT_BOOKSHELVES);
     }
 
     @Override
@@ -204,7 +207,7 @@ public class EditBookFieldsFragment
                                     final int cIdx,
                                     @NonNull final ProgressBar progressBar) {
         mCoverHandler[cIdx] = new CoverHandler(mVm.getDb(), cIdx, maxWidth, maxHeight);
-        mCoverHandler[cIdx].onFragmentViewCreated(this);
+        mCoverHandler[cIdx].onViewCreated(this);
         mCoverHandler[cIdx].setProgressBar(progressBar);
         mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
 
@@ -286,17 +289,23 @@ public class EditBookFieldsFragment
 
         if (mCoverHandler[0] != null) {
             mCoverHandler[0].onBindView(mVb.coverImage0, book);
-            mCoverHandler[0].attachOnClickListeners(mVb.coverImage0);
+            mCoverHandler[0].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage0);
         }
 
         if (mCoverHandler[1] != null) {
             mCoverHandler[1].onBindView(mVb.coverImage1, book);
-            mCoverHandler[1].attachOnClickListeners(mVb.coverImage1);
+            mCoverHandler[1].attachOnClickListeners(getChildFragmentManager(), mVb.coverImage1);
         }
 
         // hide unwanted and empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
+    }
+
+    @Override
+    public void showMsg(@StringRes final int stringRes) {
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), getString(stringRes), Snackbar.LENGTH_LONG).show();
     }
 
     @Override

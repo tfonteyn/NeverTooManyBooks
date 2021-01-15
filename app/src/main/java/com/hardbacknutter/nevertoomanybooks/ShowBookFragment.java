@@ -38,8 +38,10 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -51,7 +53,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
@@ -88,18 +89,13 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.MoneyFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.PagesFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.SeriesListFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResFormatter;
+import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
-import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
-import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
 /**
@@ -124,10 +120,10 @@ public class ShowBookFragment
      * Populating is done in the adapter along with the Book itself.
      */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-
+    private final CalibreHandler mCalibreHandler = new CalibreHandler();
+    private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
     /** View model. */
     private ShowBookViewModel mVm;
-
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -138,15 +134,10 @@ public class ShowBookFragment
                     getActivity().finish();
                 }
             };
-
     /** View Binding with the ViewPager2. */
     private FragmentShowBookBinding mVb;
     /** ViewPager2 adapter. */
     private ShowBookPagerAdapter mPagerAdapter;
-    /** Goodreads send-book task. */
-    private GrSendOneBookTask mGrSendOneBookTask;
-    /** Goodreads authorization task. */
-    private GrAuthTask mGrAuthTask;
     private Toolbar mToolbar;
     /** User edits a book. */
     private final ActivityResultLauncher<Long> mEditBookLauncher =
@@ -164,8 +155,6 @@ public class ShowBookFragment
                     refreshCurrentBook();
                 }
             };
-
-    private CalibreHandler mCalibreHandler;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -197,26 +186,15 @@ public class ShowBookFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mEditLenderLauncher.register(this, RK_EDIT_LENDER);
+        mEditLenderLauncher.register(getChildFragmentManager(), this, RK_EDIT_LENDER);
 
         mVm = new ViewModelProvider(this).get(ShowBookViewModel.class);
         //noinspection ConstantConditions
         mVm.init(getContext(), requireArguments());
 
-        mGrAuthTask = new ViewModelProvider(this).get(GrAuthTask.class);
-        mGrAuthTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mGrAuthTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
-        mGrAuthTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
-        mGrAuthTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
-
-        mGrSendOneBookTask = new ViewModelProvider(this).get(GrSendOneBookTask.class);
-        mGrSendOneBookTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
-        mGrSendOneBookTask.onCancelled().observe(getViewLifecycleOwner(), this::onCancelled);
-        mGrSendOneBookTask.onFailure().observe(getViewLifecycleOwner(), this::onGrFailure);
-        mGrSendOneBookTask.onFinished().observe(getViewLifecycleOwner(), this::onGrFinished);
-
-        mCalibreHandler = new CalibreHandler();
-        mCalibreHandler.onViewCreated(view, this, this, this.getViewLifecycleOwner());
+        mCalibreHandler.onViewCreated(view, getViewLifecycleOwner(), this, this);
+        mGoodreadsHandler.onViewCreated(view, getViewLifecycleOwner(), this,
+                                        getChildFragmentManager());
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
@@ -234,7 +212,7 @@ public class ShowBookFragment
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
 
             mCoverHandler[0] = new CoverHandler(mVm.getDb(), 0, maxWidth, maxHeight);
-            mCoverHandler[0].onFragmentViewCreated(this);
+            mCoverHandler[0].onViewCreated(this);
             mCoverHandler[0].setProgressBar(mVb.coverOperationProgressBar);
             mCoverHandler[0].setBookSupplier(
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
@@ -245,13 +223,14 @@ public class ShowBookFragment
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
 
             mCoverHandler[1] = new CoverHandler(mVm.getDb(), 1, maxWidth, maxHeight);
-            mCoverHandler[1].onFragmentViewCreated(this);
+            mCoverHandler[1].onViewCreated(this);
             mCoverHandler[1].setProgressBar(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }
 
-        mPagerAdapter = new ShowBookPagerAdapter(getContext(), mVm, mCoverHandler);
+        mPagerAdapter = new ShowBookPagerAdapter(getContext(), getChildFragmentManager(),
+                                                 mVm, mCoverHandler);
         mVb.pager.setAdapter(mPagerAdapter);
         mVb.pager.setCurrentItem(mVm.getInitialPagerPosition(), false);
         mVb.pager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
@@ -367,9 +346,7 @@ public class ShowBookFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_SEND_TO_GOODREADS) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.progress_msg_connecting, Snackbar.LENGTH_LONG).show();
-            mGrSendOneBookTask.start(book.getId());
+            mGoodreadsHandler.sendBook(book.getId());
             return true;
 
         } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
@@ -442,6 +419,12 @@ public class ShowBookFragment
     }
 
     @Override
+    public void showMsg(@StringRes final int stringRes) {
+        //noinspection ConstantConditions
+        Snackbar.make(getView(), getString(stringRes), Snackbar.LENGTH_LONG).show();
+    }
+
+    @Override
     public void refresh(@IntRange(from = 0, to = 1) final int cIdx) {
         refreshCurrentBook();
     }
@@ -473,42 +456,6 @@ public class ShowBookFragment
                 getContext(), book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST)));
     }
 
-    private void onProgress(@NonNull final ProgressMessage message) {
-        if (message.text != null) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), message.text, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onCancelled(@NonNull final LiveDataEvent message) {
-        if (message.isNewEvent()) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), R.string.cancelled, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onGrFailure(@NonNull final FinishedMessage<Exception> message) {
-        if (message.isNewEvent()) {
-            //noinspection ConstantConditions
-            Snackbar.make(getView(), GrStatus.getMessage(getContext(), message.result),
-                          Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    private void onGrFinished(@NonNull final FinishedMessage<GrStatus> message) {
-        if (message.isNewEvent()) {
-            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
-            if (message.result.getStatus() == GrStatus.FAILED_CREDENTIALS) {
-                //noinspection ConstantConditions
-                mGrAuthTask.prompt(getContext());
-            } else {
-                //noinspection ConstantConditions
-                Snackbar.make(getView(), message.result.getMessage(getContext()),
-                              Snackbar.LENGTH_LONG).show();
-            }
-        }
-    }
-
     public static class ShowBookPagerAdapter
             extends RecyclerView.Adapter<ShowBookPagerAdapter.Holder> {
 
@@ -524,17 +471,23 @@ public class ShowBookFragment
         @NonNull
         private final Fields mFieldsMap;
 
+        @NonNull
+        private final FragmentManager mFragmentManager;
+
         /**
          * Constructor.
          *
          * @param context       Current context
+         * @param fm            FragmentManager
          * @param bookViewModel the view model from the fragment
          * @param coverHandler  the array of handlers
          */
         ShowBookPagerAdapter(@NonNull final Context context,
+                             @NonNull final FragmentManager fm,
                              @NonNull final ShowBookViewModel bookViewModel,
                              @NonNull final CoverHandler[] coverHandler) {
             mInflater = LayoutInflater.from(context);
+            mFragmentManager = fm;
             mVm = bookViewModel;
             mCoverHandler = coverHandler;
 
@@ -549,13 +502,13 @@ public class ShowBookFragment
             final Holder holder = new Holder(view);
 
             if (mCoverHandler[0] != null) {
-                mCoverHandler[0].attachOnClickListeners(holder.mVb.coverImage0);
+                mCoverHandler[0].attachOnClickListeners(mFragmentManager, holder.mVb.coverImage0);
             } else {
                 holder.mVb.coverImage0.setVisibility(View.GONE);
             }
 
             if (mCoverHandler[1] != null) {
-                mCoverHandler[1].attachOnClickListeners(holder.mVb.coverImage1);
+                mCoverHandler[1].attachOnClickListeners(mFragmentManager, holder.mVb.coverImage1);
             } else {
                 holder.mVb.coverImage1.setVisibility(View.GONE);
             }
