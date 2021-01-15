@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -176,11 +177,13 @@ public class EditBookTocFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mEditTocEntryLauncher.register(this, RK_EDIT_TOC);
-        mConfirmTocResultsLauncher.register(this, RK_CONFIRM_TOC);
+        final FragmentManager fm = getChildFragmentManager();
+
+        mEditTocEntryLauncher.register(fm, this, RK_EDIT_TOC);
+        mConfirmTocResultsLauncher.register(fm, this, RK_CONFIRM_TOC);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(this, RK_MENU_PICKER);
+            mMenuLauncher.register(fm, this, RK_MENU_PICKER);
         }
     }
 

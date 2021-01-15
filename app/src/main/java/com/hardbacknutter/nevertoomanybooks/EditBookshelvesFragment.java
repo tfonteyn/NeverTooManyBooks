@@ -38,6 +38,7 @@ import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -111,10 +112,11 @@ public class EditBookshelvesFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mOnEditBookshelfLauncher.register(this, RK_EDIT_BOOKSHELF);
+        final FragmentManager fm = getChildFragmentManager();
+        mOnEditBookshelfLauncher.register(fm, this, RK_EDIT_BOOKSHELF);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(this, RK_MENU_PICKER);
+            mMenuLauncher.register(fm, this, RK_MENU_PICKER);
         }
     }
 

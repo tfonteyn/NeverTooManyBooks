@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -117,7 +117,7 @@ public class EditBookSeriesListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mOnEditSeriesLauncher.register(this, RK_EDIT_SERIES);
+        mOnEditSeriesLauncher.register(getChildFragmentManager(), this, RK_EDIT_SERIES);
     }
 
     @Override

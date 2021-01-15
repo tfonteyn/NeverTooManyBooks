@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -125,7 +125,7 @@ public class EditBookAuthorListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mOnEditAuthorLauncher.register(this, RK_EDIT_AUTHOR);
+        mOnEditAuthorLauncher.register(getChildFragmentManager(), this, RK_EDIT_AUTHOR);
     }
 
     @Override

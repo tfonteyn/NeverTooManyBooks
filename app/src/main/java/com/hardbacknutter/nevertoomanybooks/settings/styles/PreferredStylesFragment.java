@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -222,7 +222,7 @@ public class PreferredStylesFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(this, RK_MENU_PICKER);
+            mMenuLauncher.register(getChildFragmentManager(), this, RK_MENU_PICKER);
         }
 
         //noinspection ConstantConditions

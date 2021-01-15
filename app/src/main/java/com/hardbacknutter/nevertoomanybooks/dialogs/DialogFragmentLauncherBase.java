@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,10 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.dialogs;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
+import androidx.lifecycle.LifecycleOwner;
 
 public abstract class DialogFragmentLauncherBase
         implements FragmentResultListener {
@@ -31,19 +30,12 @@ public abstract class DialogFragmentLauncherBase
     protected FragmentManager mFragmentManager;
     protected String mRequestKey;
 
-    public void register(@NonNull final Fragment fragment,
+    public void register(@NonNull final FragmentManager fragmentManager,
+                         @NonNull final LifecycleOwner lifecycleOwner,
                          @NonNull final String requestKey) {
-        mFragmentManager = fragment.getChildFragmentManager();
+        mFragmentManager = fragmentManager;
         mRequestKey = requestKey;
 
-        mFragmentManager.setFragmentResultListener(requestKey, fragment, this);
-    }
-
-    public void register(@NonNull final FragmentActivity activity,
-                         @NonNull final String requestKey) {
-        mFragmentManager = activity.getSupportFragmentManager();
-        mRequestKey = requestKey;
-
-        mFragmentManager.setFragmentResultListener(requestKey, activity, this);
+        mFragmentManager.setFragmentResultListener(requestKey, lifecycleOwner, this);
     }
 }

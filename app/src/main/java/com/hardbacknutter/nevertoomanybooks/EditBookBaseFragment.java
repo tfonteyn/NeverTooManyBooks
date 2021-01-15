@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,6 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.time.Instant;
@@ -145,9 +146,11 @@ public abstract class EditBookBaseFragment
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        mPartialDatePickerLauncher.register(this, RK_DATE_PICKER_PARTIAL);
-        mDatePickerLauncher.register(this, RK_DATE_PICKER_SINGLE);
-        mDatePickerLauncher.register(this, RK_DATE_PICKER_RANGE);
+        final FragmentManager fm = getChildFragmentManager();
+
+        mPartialDatePickerLauncher.register(fm, this, RK_DATE_PICKER_PARTIAL);
+        mDatePickerLauncher.register(fm, this, RK_DATE_PICKER_SINGLE);
+        mDatePickerLauncher.register(fm, this, RK_DATE_PICKER_RANGE);
     }
 
     @Override
