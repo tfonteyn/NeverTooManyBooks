@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -78,7 +78,7 @@ public class BooksOnBookshelfViewModel
     public static final String BKEY_BOOKSHELF = TAG + ":bs";
 
     /** The fixed list of domains we always need for building the book list. */
-    private final Collection<VirtualDomain> mFixedDomainList = new ArrayList<>();
+    private final Collection<DomainExpression> mFixedDomainList = new ArrayList<>();
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
     /** Cache for all bookshelves. */
@@ -107,51 +107,51 @@ public class BooksOnBookshelfViewModel
     private void initFixedDomainList() {
         mFixedDomainList.add(
                 // Title for displaying; do NOT sort on it
-                new VirtualDomain(
+                new DomainExpression(
                         DBDefinitions.DOM_TITLE,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE)));
         mFixedDomainList.add(
                 // Title for sorting
-                new VirtualDomain(
+                new DomainExpression(
                         DBDefinitions.DOM_TITLE_OB,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB),
-                        VirtualDomain.SORT_ASC));
+                        DomainExpression.SORT_ASC));
 
         mFixedDomainList.add(
                 // the book language is needed for reordering titles
-                new VirtualDomain(
+                new DomainExpression(
                         DBDefinitions.DOM_BOOK_LANGUAGE,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LANGUAGE)));
 
         mFixedDomainList.add(
                 // Always get the read flag
-                new VirtualDomain(
+                new DomainExpression(
                         DBDefinitions.DOM_BOOK_READ,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)));
 
         mFixedDomainList.add(
                 // Always get the Author ID
                 // (the need for the name will depend on the style).
-                new VirtualDomain(
+                new DomainExpression(
                         DBDefinitions.DOM_FK_AUTHOR,
                         DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)));
 
         mFixedDomainList.add(
                 // We want the UUID for the book so we can get thumbnails
-                new VirtualDomain(
+                new DomainExpression(
                         DBDefinitions.DOM_BOOK_UUID,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_UUID)));
 
         mFixedDomainList.add(
                 // Always get the ISBN
-                new VirtualDomain(
+                new DomainExpression(
                         DBDefinitions.DOM_BOOK_ISBN,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
 
         // external site ID's
         for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
             mFixedDomainList.add(
-                    new VirtualDomain(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
+                    new DomainExpression(domain, DBDefinitions.TBL_BOOKS.dot(domain.getName())));
         }
     }
 
@@ -621,23 +621,23 @@ public class BooksOnBookshelfViewModel
             builder = new Booklist(mDb.getSyncDb(), style, mBookshelf, mRebuildState);
 
             // Add the fixed list of domains we always need.
-            for (final VirtualDomain domainDetails : mFixedDomainList) {
+            for (final DomainExpression domainDetails : mFixedDomainList) {
                 builder.addDomain(domainDetails);
             }
 
             // Add Calibre bridging data ?
             if (CalibreContentServer.isShowSyncMenus(global)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_ID,
                         DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_UUID,
                         DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_LIBRARY_ID,
                         DBDefinitions.TBL_CALIBRE_BOOKS
                                 .dot(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID)));
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
                         DBDefinitions.TBL_CALIBRE_BOOKS
                                 .dot(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
@@ -647,25 +647,25 @@ public class BooksOnBookshelfViewModel
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_EDITION_BITMASK)) {
                 // The edition bitmask
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)));
             }
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_SIGNED)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_SIGNED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED)));
             }
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_BOOK_CONDITION)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_CONDITION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_CONDITION)));
             }
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
                         DAOSql.SqlColumns.EXP_LOANEE_AS_BOOLEAN));
             }
@@ -675,14 +675,14 @@ public class BooksOnBookshelfViewModel
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_BOOKSHELVES)) {
                 // This collects a CSV list of the bookshelves the book is on.
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
                         DAOSql.SqlColumns.EXP_BOOKSHELF_NAME_CSV));
             }
 
             // we fetch ONLY the primary author
             if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_AUTHOR_FORMATTED, DAOSql.SqlColumns
                         .getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
                                           style.isShowAuthorByGivenName())));
@@ -690,7 +690,7 @@ public class BooksOnBookshelfViewModel
 
             // for now, don't get the author type.
 //              if (bookFields.isShowField(context, ListScreenBookFields.PK_AUTHOR_TYPE)) {
-//                  builder.addDomain(new VirtualDomain(
+//                  builder.addDomain(new DomainExpression(
 //                          DBDefinitions.DOM_BOOK_AUTHOR_TYPE_BITMASK,
 //                          DBDefinitions.TBL_BOOK_AUTHOR
 //                          .dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)));
@@ -698,31 +698,31 @@ public class BooksOnBookshelfViewModel
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_PUBLISHER)) {
                 // Collect a CSV list of the publishers of the book
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_PUBLISHER_NAME_CSV,
                         DAOSql.SqlColumns.EXP_PUBLISHER_NAME_CSV));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_DATE_PUBLISHED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_FORMAT,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_LOCATION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
-                builder.addDomain(new VirtualDomain(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_RATING,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_RATING)));
             }

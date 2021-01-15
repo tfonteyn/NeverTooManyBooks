@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 /**
  * A persistent filter used by a {@link ListStyle}.
@@ -51,7 +51,7 @@ public interface StyleFilter<T>
     String getLabel(@NonNull final Context context);
 
     @NonNull
-    VirtualDomain getVirtualDomain();
+    DomainExpression getDomainExpression();
 
     @NonNull
     StyleFilter<T> clone(boolean isPersistent,

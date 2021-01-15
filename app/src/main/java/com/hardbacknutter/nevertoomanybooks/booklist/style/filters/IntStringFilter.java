@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 /**
  * An Integer stored as a String
@@ -51,7 +51,7 @@ abstract class IntStringFilter
     private static final Integer P_NOT_USED = -1;
 
     @NonNull
-    final VirtualDomain mVirtualDomain;
+    final DomainExpression mDomainExpression;
     /** key for the Preference. */
     @NonNull
     private final String mKey;
@@ -79,13 +79,13 @@ abstract class IntStringFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param virtualDomain    to use by the expression
+     * @param domainExpression to use by the expression
      */
     IntStringFilter(final boolean isPersistent,
                     @Nullable final StylePersistenceLayer persistenceLayer,
                     @StringRes final int labelId,
                     @NonNull final String key,
-                    @NonNull final VirtualDomain virtualDomain) {
+                    @NonNull final DomainExpression domainExpression) {
         if (BuildConfig.DEBUG /* always */) {
             if (isPersistent && persistenceLayer == null) {
                 throw new IllegalStateException();
@@ -98,7 +98,7 @@ abstract class IntStringFilter
         mNonPersistedValue = P_NOT_USED;
 
         mLabelId = labelId;
-        mVirtualDomain = virtualDomain;
+        mDomainExpression = domainExpression;
     }
 
     /**
@@ -122,7 +122,7 @@ abstract class IntStringFilter
         mDefaultValue = that.mDefaultValue;
 
         mLabelId = that.mLabelId;
-        mVirtualDomain = new VirtualDomain(that.mVirtualDomain);
+        mDomainExpression = new DomainExpression(that.mDomainExpression);
 
         mNonPersistedValue = that.mNonPersistedValue;
 
@@ -147,13 +147,13 @@ abstract class IntStringFilter
     public boolean isActive(@NonNull final Context context) {
         return !P_NOT_USED.equals(getValue())
                && DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                                       mVirtualDomain.getName());
+                                       mDomainExpression.getName());
     }
 
     @NonNull
     @Override
-    public VirtualDomain getVirtualDomain() {
-        return mVirtualDomain;
+    public DomainExpression getDomainExpression() {
+        return mDomainExpression;
     }
 
     @Override
@@ -197,13 +197,13 @@ abstract class IntStringFilter
                && mPersisted == that.mPersisted
 
                && mLabelId == that.mLabelId
-               && mVirtualDomain.equals(that.mVirtualDomain);
+               && mDomainExpression.equals(that.mDomainExpression);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
-                            mLabelId, mVirtualDomain);
+                            mLabelId, mDomainExpression);
     }
 
     @Override
@@ -216,7 +216,7 @@ abstract class IntStringFilter
                + ", mPersisted=" + mPersisted
 
                + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
-               + ", mVirtualDomain=" + mVirtualDomain
+               + ", mDomainExpression=" + mDomainExpression
                + '}';
     }
 }

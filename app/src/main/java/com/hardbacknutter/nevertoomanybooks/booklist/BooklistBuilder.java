@@ -48,8 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
@@ -121,10 +121,10 @@ final class BooklistBuilder {
      * During the build, the {@link Domain} is added to the {@link #mListTable}
      * where they will be used to create the table.
      * <p>
-     * The full {@link VirtualDomain} is kept this collection to build the SQL column string
+     * The full {@link DomainExpression} is kept this collection to build the SQL column string
      * for both the INSERT and the SELECT statement.
      */
-    private final Collection<VirtualDomain> mVirtualDomains = new ArrayList<>();
+    private final Collection<DomainExpression> mDomainExpressions = new ArrayList<>();
 
     /** Domains belonging the current group including its outer groups. */
     private final List<Domain> mAccumulatedDomains = new ArrayList<>();
@@ -134,7 +134,7 @@ final class BooklistBuilder {
      * These are typically a reduced set of the group domains since the group domains
      * may contain more than just the key
      */
-    private final List<VirtualDomain> mOrderByDomains = new ArrayList<>();
+    private final List<DomainExpression> mOrderByDomains = new ArrayList<>();
 
     /** Guards from adding duplicates. */
     private final Map<Domain, String> mExpressionsDupCheck = new HashMap<>();
@@ -215,23 +215,23 @@ final class BooklistBuilder {
      * @param filters     to use for the WHERE clause
      **/
     void preBuild(@NonNull final Context context,
-                  @NonNull final Collection<VirtualDomain> bookDomains,
+                  @NonNull final Collection<DomainExpression> bookDomains,
                   @NonNull final Collection<Filter> filters) {
 
         // Always sort by level first; no expression, as this does not represent a value.
-        addDomain(new VirtualDomain(
-                DOM_BL_NODE_LEVEL, null, VirtualDomain.SORT_ASC), false);
+        addDomain(new DomainExpression(
+                DOM_BL_NODE_LEVEL, null, DomainExpression.SORT_ASC), false);
 
         // The level expression; for a book this is always 1 below the #groups obviously
-        addDomain(new VirtualDomain(
+        addDomain(new DomainExpression(
                 DOM_BL_NODE_LEVEL, String.valueOf(mStyle.getGroups().size() + 1)), false);
 
         // The group is the book group (duh)
-        addDomain(new VirtualDomain(
+        addDomain(new DomainExpression(
                 DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)), false);
 
         // The book id itself
-        addDomain(new VirtualDomain(DOM_FK_BOOK, TBL_BOOKS.dot(DBDefinitions.KEY_PK_ID)), false);
+        addDomain(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBDefinitions.KEY_PK_ID)), false);
 
         // Add style-specified groups
         for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
@@ -239,7 +239,7 @@ final class BooklistBuilder {
         }
 
         // Add caller-specified domains
-        for (final VirtualDomain bookDomain : bookDomains) {
+        for (final DomainExpression bookDomain : bookDomains) {
             addDomain(bookDomain, false);
         }
 
@@ -249,7 +249,7 @@ final class BooklistBuilder {
         // Not actually needed right now (2020-12-10)
         // but adding the filter-domains makes them future proof
         for (final StyleFilter<?> styleFilter : activeFilters) {
-            addDomain(styleFilter.getVirtualDomain(), false);
+            addDomain(styleFilter.getDomainExpression(), false);
         }
 
         // Add the active filters from the style
@@ -265,7 +265,7 @@ final class BooklistBuilder {
         // The 'AS' is for SQL readability/debug only
 
         boolean first = true;
-        for (final VirtualDomain virtualDomain : mVirtualDomains) {
+        for (final DomainExpression domainExpression : mDomainExpressions) {
             if (first) {
                 first = false;
             } else {
@@ -273,10 +273,10 @@ final class BooklistBuilder {
                 sourceColumns.append(',');
             }
 
-            destColumns.append(virtualDomain.getName());
-            sourceColumns.append(virtualDomain.getExpression())
+            destColumns.append(domainExpression.getName());
+            sourceColumns.append(domainExpression.getExpression())
                          .append(_AS_)
-                         .append(virtualDomain.getName());
+                         .append(domainExpression.getName());
         }
 
         // add the node key column
@@ -543,24 +543,24 @@ final class BooklistBuilder {
     }
 
     /**
-     * Add a VirtualDomain.
+     * Add a DomainExpression.
      * This encapsulates the actual Domain, the expression, and the (optional) sort flag.
      *
-     * @param virtualDomain VirtualDomain to add
-     * @param isGroup       flag: the added VirtualDomain is a group level domain.
+     * @param domainExpression DomainExpression to add
+     * @param isGroup          flag: the added DomainExpression is a group level domain.
      */
-    private void addDomain(@NonNull final VirtualDomain virtualDomain,
+    private void addDomain(@NonNull final DomainExpression domainExpression,
                            final boolean isGroup) {
 
         // Add to the table, if not already there
-        final boolean added = mListTable.addDomain(virtualDomain.getDomain());
-        final String expression = virtualDomain.getExpression();
+        final boolean added = mListTable.addDomain(domainExpression.getDomain());
+        final String expression = domainExpression.getExpression();
 
         // If the domain was already present, and it has an expression,
         // check the expression being different (or not) from the stored expression
         if (!added
             && expression != null
-            && expression.equals(mExpressionsDupCheck.get(virtualDomain.getDomain()))) {
+            && expression.equals(mExpressionsDupCheck.get(domainExpression.getDomain()))) {
             // same expression, we do NOT want to add it.
             // This is NOT a bug, although one could argue it's an efficiency issue.
             return;
@@ -569,19 +569,19 @@ final class BooklistBuilder {
         // If the expression is {@code null},
         // then the domain is just meant for the lowest level; i.e. the book.
         if (expression != null) {
-            mVirtualDomains.add(virtualDomain);
-            mExpressionsDupCheck.put(virtualDomain.getDomain(), expression);
+            mDomainExpressions.add(domainExpression);
+            mExpressionsDupCheck.put(domainExpression.getDomain(), expression);
         }
 
         // If needed, add to the order-by domains, if not already there
-        if (virtualDomain.isSorted() && !mOrderByDupCheck.contains(virtualDomain.getName())) {
-            mOrderByDomains.add(virtualDomain);
-            mOrderByDupCheck.add(virtualDomain.getName());
+        if (domainExpression.isSorted() && !mOrderByDupCheck.contains(domainExpression.getName())) {
+            mOrderByDomains.add(domainExpression);
+            mOrderByDupCheck.add(domainExpression.getName());
         }
 
         // Accumulate the group domains.
         if (isGroup) {
-            mAccumulatedDomains.add(virtualDomain.getDomain());
+            mAccumulatedDomains.add(domainExpression.getDomain());
         }
     }
 
@@ -603,11 +603,11 @@ final class BooklistBuilder {
         // display domain first
         addDomain(group.getDisplayDomain(), true);
         // then how we group
-        for (final VirtualDomain domain : group.getGroupDomains()) {
+        for (final DomainExpression domain : group.getGroupDomains()) {
             addDomain(domain, true);
         }
         // the base domains we always need/have
-        for (final VirtualDomain domain : group.getBaseDomains()) {
+        for (final DomainExpression domain : group.getBaseDomains()) {
             addDomain(domain, false);
         }
 
@@ -751,10 +751,10 @@ final class BooklistBuilder {
 
 
         // Join with Calibre bridging table if required.
-        if (mVirtualDomains.stream()
-                           .map(VirtualDomain::getDomain)
-                           .map(Domain::getName)
-                           .anyMatch(n -> n.startsWith(DBDefinitions.PREFIX_KEY_CALIBRE))) {
+        if (mDomainExpressions.stream()
+                              .map(DomainExpression::getDomain)
+                              .map(Domain::getName)
+                              .anyMatch(n -> n.startsWith(DBDefinitions.PREFIX_KEY_CALIBRE))) {
             sql.append(TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS));
         }
 
@@ -798,7 +798,7 @@ final class BooklistBuilder {
     private String buildOrderBy() {
         // List of column names appropriate for 'ORDER BY' clause
         final StringBuilder orderBy = new StringBuilder();
-        for (final VirtualDomain sd : mOrderByDomains) {
+        for (final DomainExpression sd : mOrderByDomains) {
             if (sd.getDomain().isText()) {
                 // The order of this if/elseif/else is important, don't merge branch 1 and 3!
                 if (sd.getDomain().isPrePreparedOrderBy()) {
@@ -836,7 +836,7 @@ final class BooklistBuilder {
     private String getSortedDomainsIndexColumns() {
         final StringBuilder indexCols = new StringBuilder();
 
-        for (final VirtualDomain sd : mOrderByDomains) {
+        for (final DomainExpression sd : mOrderByDomains) {
             indexCols.append(sd.getName());
             if (sd.getDomain().isText()) {
                 indexCols.append(DAOSql._COLLATION);

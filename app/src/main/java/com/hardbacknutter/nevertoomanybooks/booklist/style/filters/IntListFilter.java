@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 /**
  * an SQL WHERE clause (column IN (a,b,c,...)
@@ -58,7 +58,7 @@ public class IntListFilter
     @NonNull
     private final ArrayList<Integer> mDefaultValue;
     @NonNull
-    private final VirtualDomain mVirtualDomain;
+    private final DomainExpression mDomainExpression;
     @StringRes
     private final int mLabelId;
     /** in memory value used for non-persistence situations. */
@@ -73,13 +73,13 @@ public class IntListFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param virtualDomain    to use by the expression
+     * @param domainExpression to use by the expression
      */
     IntListFilter(final boolean isPersistent,
                   @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
-                  @NonNull final VirtualDomain virtualDomain) {
+                  @NonNull final DomainExpression domainExpression) {
         if (BuildConfig.DEBUG /* always */) {
             if (isPersistent && persistenceLayer == null) {
                 throw new IllegalStateException();
@@ -91,7 +91,7 @@ public class IntListFilter
         mDefaultValue = new ArrayList<>();
 
         mLabelId = labelId;
-        mVirtualDomain = virtualDomain;
+        mDomainExpression = domainExpression;
     }
 
     /**
@@ -115,7 +115,7 @@ public class IntListFilter
         mDefaultValue = new ArrayList<>(that.mDefaultValue);
 
         mLabelId = that.mLabelId;
-        mVirtualDomain = new VirtualDomain(that.mVirtualDomain);
+        mDomainExpression = new DomainExpression(that.mDomainExpression);
 
         if (that.mNonPersistedValue != null) {
             mNonPersistedValue = new ArrayList<>(that.mNonPersistedValue);
@@ -151,14 +151,14 @@ public class IntListFilter
 
     @NonNull
     @Override
-    public VirtualDomain getVirtualDomain() {
-        return mVirtualDomain;
+    public DomainExpression getDomainExpression() {
+        return mDomainExpression;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                                  mVirtualDomain.getName())) {
+                                  mDomainExpression.getName())) {
             return false;
         }
 
@@ -176,7 +176,7 @@ public class IntListFilter
         if (isActive(context)) {
             final List<Integer> value = getValue();
             if (!value.isEmpty()) {
-                return '(' + mVirtualDomain.getExpression() + " IN ("
+                return '(' + mDomainExpression.getExpression() + " IN ("
                        + value.stream()
                               .map(String::valueOf)
                               .collect(Collectors.joining(","))
@@ -233,7 +233,7 @@ public class IntListFilter
                && mPersisted == that.mPersisted
 
                && mLabelId == that.mLabelId
-               && mVirtualDomain.equals(that.mVirtualDomain)
+               && mDomainExpression.equals(that.mDomainExpression)
 
                && mNonPersistedValueIsActive == that.mNonPersistedValueIsActive;
     }
@@ -241,7 +241,7 @@ public class IntListFilter
     @Override
     public int hashCode() {
         return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
-                            mLabelId, mVirtualDomain,
+                            mLabelId, mDomainExpression,
                             mNonPersistedValueIsActive);
     }
 
@@ -256,7 +256,7 @@ public class IntListFilter
                + ", mPersisted=" + mPersisted
 
                + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
-               + ", mVirtualDomain=" + mVirtualDomain
+               + ", mDomainExpression=" + mDomainExpression
                + '}';
     }
 }

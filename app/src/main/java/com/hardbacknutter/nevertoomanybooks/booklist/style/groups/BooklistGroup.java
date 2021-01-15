@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
@@ -364,7 +364,7 @@ public class BooklistGroup {
      * @return domain to display
      */
     @NonNull
-    public VirtualDomain getDisplayDomain() {
+    public DomainExpression getDisplayDomain() {
         return mGroupKey.getKeyDomain();
     }
 
@@ -377,7 +377,7 @@ public class BooklistGroup {
      * @return list
      */
     @NonNull
-    public ArrayList<VirtualDomain> getGroupDomains() {
+    public ArrayList<DomainExpression> getGroupDomains() {
         return mGroupKey.getGroupDomains();
     }
 
@@ -389,7 +389,7 @@ public class BooklistGroup {
      *
      * @return list
      */
-    public ArrayList<VirtualDomain> getBaseDomains() {
+    public ArrayList<DomainExpression> getBaseDomains() {
         return mGroupKey.getBaseDomains();
     }
 
@@ -524,20 +524,20 @@ public class BooklistGroup {
 
         // Date based groups have to sort on the full date for cases
         // where we don't have all separate year,month,day fields.
-        private static final VirtualDomain DATE_PUBLISHED =
-                new VirtualDomain(DOM_DATE_PUBLISHED, null, VirtualDomain.SORT_DESC);
-        private static final VirtualDomain DATE_FIRST_PUBLICATION =
-                new VirtualDomain(DOM_DATE_FIRST_PUBLICATION, null, VirtualDomain.SORT_DESC);
-        private static final VirtualDomain BOOK_IS_READ =
-                new VirtualDomain(DOM_BOOK_READ, null, VirtualDomain.SORT_DESC);
-        private static final VirtualDomain DATE_READ_END =
-                new VirtualDomain(DOM_BOOK_DATE_READ_END, null, VirtualDomain.SORT_DESC);
-        private static final VirtualDomain DATE_ADDED =
-                new VirtualDomain(DOM_UTC_ADDED, null, VirtualDomain.SORT_DESC);
-        private static final VirtualDomain DATE_LAST_UPDATED =
-                new VirtualDomain(DOM_UTC_LAST_UPDATED, null, VirtualDomain.SORT_DESC);
-        private static final VirtualDomain DATE_ACQUIRED =
-                new VirtualDomain(DOM_BOOK_DATE_ACQUIRED, null, VirtualDomain.SORT_DESC);
+        private static final DomainExpression DATE_PUBLISHED =
+                new DomainExpression(DOM_DATE_PUBLISHED, null, DomainExpression.SORT_DESC);
+        private static final DomainExpression DATE_FIRST_PUBLICATION =
+                new DomainExpression(DOM_DATE_FIRST_PUBLICATION, null, DomainExpression.SORT_DESC);
+        private static final DomainExpression BOOK_IS_READ =
+                new DomainExpression(DOM_BOOK_READ, null, DomainExpression.SORT_DESC);
+        private static final DomainExpression DATE_READ_END =
+                new DomainExpression(DOM_BOOK_DATE_READ_END, null, DomainExpression.SORT_DESC);
+        private static final DomainExpression DATE_ADDED =
+                new DomainExpression(DOM_UTC_ADDED, null, DomainExpression.SORT_DESC);
+        private static final DomainExpression DATE_LAST_UPDATED =
+                new DomainExpression(DOM_UTC_LAST_UPDATED, null, DomainExpression.SORT_DESC);
+        private static final DomainExpression DATE_ACQUIRED =
+                new DomainExpression(DOM_BOOK_DATE_ACQUIRED, null, DomainExpression.SORT_DESC);
 
         /** Cache for the static GroupKey instances. */
         private static final Map<Integer, GroupKey> ALL = new UniqueMap<>();
@@ -551,20 +551,20 @@ public class BooklistGroup {
 
         /** They key domain, which is by default also the display-domain. */
         @NonNull
-        private final VirtualDomain mKeyDomain;
+        private final DomainExpression mKeyDomain;
 
         /**
          * Aside of the main display domain, a group can have extra domains that should
          * be fetched/sorted.
          */
         @NonNull
-        private final ArrayList<VirtualDomain> mGroupDomains = new ArrayList<>();
+        private final ArrayList<DomainExpression> mGroupDomains = new ArrayList<>();
 
         /**
          * A group can add domains to the lowest level (the book).
          */
         @NonNull
-        private final ArrayList<VirtualDomain> mBaseDomains = new ArrayList<>();
+        private final ArrayList<DomainExpression> mBaseDomains = new ArrayList<>();
 
         /**
          * Constructor.
@@ -579,10 +579,10 @@ public class BooklistGroup {
                          @NonNull final String keyPrefix,
                          @NonNull final Domain domain,
                          @NonNull final String expression,
-                         @VirtualDomain.Sorting final int sorted) {
+                         @DomainExpression.Sorting final int sorted) {
             mLabelId = labelId;
             mKeyPrefix = keyPrefix;
-            mKeyDomain = new VirtualDomain(domain, expression, sorted);
+            mKeyDomain = new DomainExpression(domain, expression, sorted);
         }
 
         /**
@@ -599,7 +599,7 @@ public class BooklistGroup {
                 case BOOK: {
                     return new GroupKey(R.string.lbl_book, "b",
                                         DOM_TITLE, TBL_BOOKS.dot(KEY_TITLE),
-                                        VirtualDomain.SORT_UNSORTED);
+                                        DomainExpression.SORT_UNSORTED);
                 }
 
                 // Data with a linked table use the foreign key ID as the key domain.
@@ -609,17 +609,17 @@ public class BooklistGroup {
                     // We do not sort on the key domain but add the OB column in the BooklistGroup.
                     return new GroupKey(R.string.lbl_author, "a",
                                         DOM_FK_AUTHOR, TBL_AUTHORS.dot(KEY_PK_ID),
-                                        VirtualDomain.SORT_UNSORTED)
+                                        DomainExpression.SORT_UNSORTED)
 
                             .addGroupDomain(
                                     // Group by id (we want the id available and there is
                                     // a chance two Authors will have the same name)
-                                    new VirtualDomain(DOM_FK_AUTHOR,
-                                                      TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR)))
+                                    new DomainExpression(DOM_FK_AUTHOR,
+                                                         TBL_BOOK_AUTHOR.dot(KEY_FK_AUTHOR)))
                             .addGroupDomain(
                                     // Group by complete-flag
-                                    new VirtualDomain(DOM_AUTHOR_IS_COMPLETE,
-                                                      TBL_AUTHORS.dot(KEY_AUTHOR_IS_COMPLETE)));
+                                    new DomainExpression(DOM_AUTHOR_IS_COMPLETE,
+                                                         TBL_AUTHORS.dot(KEY_AUTHOR_IS_COMPLETE)));
                 }
                 case SERIES: {
                     // We use the foreign ID to create the key.
@@ -627,39 +627,40 @@ public class BooklistGroup {
                     // We do not sort on the key domain but add the OB column instead
                     return new GroupKey(R.string.lbl_series, "s",
                                         DOM_FK_SERIES, TBL_SERIES.dot(KEY_PK_ID),
-                                        VirtualDomain.SORT_UNSORTED)
+                                        DomainExpression.SORT_UNSORTED)
 
                             .addGroupDomain(
                                     // Group and sort by the OB column
-                                    new VirtualDomain(DOM_BL_SERIES_SORT,
-                                                      TBL_SERIES.dot(KEY_SERIES_TITLE_OB),
-                                                      VirtualDomain.SORT_ASC))
+                                    new DomainExpression(DOM_BL_SERIES_SORT,
+                                                         TBL_SERIES.dot(KEY_SERIES_TITLE_OB),
+                                                         DomainExpression.SORT_ASC))
                             .addGroupDomain(
                                     // Group by id (we want the id available and there is
                                     // a chance two Series will have the same name)
-                                    new VirtualDomain(DOM_FK_SERIES,
-                                                      TBL_BOOK_SERIES.dot(KEY_FK_SERIES)))
+                                    new DomainExpression(DOM_FK_SERIES,
+                                                         TBL_BOOK_SERIES.dot(KEY_FK_SERIES)))
                             .addGroupDomain(
                                     // Group by complete-flag
-                                    new VirtualDomain(DOM_SERIES_IS_COMPLETE,
-                                                      TBL_SERIES.dot(KEY_SERIES_IS_COMPLETE)))
+                                    new DomainExpression(DOM_SERIES_IS_COMPLETE,
+                                                         TBL_SERIES.dot(KEY_SERIES_IS_COMPLETE)))
                             .addBaseDomain(
                                     // The series number in the base data in sorted order.
                                     // This field is NOT displayed.
                                     // Casting it as a float allows for the possibility of 3.1,
                                     // or even 3.1|Omnibus 3-10" as a series number.
-                                    new VirtualDomain(DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT,
-                                                      "CAST(" + TBL_BOOK_SERIES
-                                                              .dot(KEY_BOOK_NUM_IN_SERIES)
-                                                      + " AS REAL)",
-                                                      VirtualDomain.SORT_ASC))
+                                    new DomainExpression(DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT,
+                                                         "CAST(" + TBL_BOOK_SERIES
+                                                                 .dot(KEY_BOOK_NUM_IN_SERIES)
+                                                         + " AS REAL)",
+                                                         DomainExpression.SORT_ASC))
                             .addBaseDomain(
                                     // The series number in the base data in sorted order.
                                     // This field is displayed.
                                     // Covers non-numeric data (where the above float would fail)
-                                    new VirtualDomain(DOM_BOOK_NUM_IN_SERIES,
-                                                      TBL_BOOK_SERIES.dot(KEY_BOOK_NUM_IN_SERIES),
-                                                      VirtualDomain.SORT_ASC));
+                                    new DomainExpression(DOM_BOOK_NUM_IN_SERIES,
+                                                         TBL_BOOK_SERIES
+                                                                 .dot(KEY_BOOK_NUM_IN_SERIES),
+                                                         DomainExpression.SORT_ASC));
 
                 }
                 case PUBLISHER: {
@@ -668,70 +669,70 @@ public class BooklistGroup {
                     // We do not sort on the key domain but add the OB column instead
                     return new GroupKey(R.string.lbl_publisher, "p",
                                         DOM_FK_PUBLISHER, TBL_PUBLISHERS.dot(KEY_PK_ID),
-                                        VirtualDomain.SORT_UNSORTED)
+                                        DomainExpression.SORT_UNSORTED)
 
                             .addGroupDomain(
                                     // Group and sort by the OB column
-                                    new VirtualDomain(DOM_BL_PUBLISHER_SORT,
-                                                      TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME_OB),
-                                                      VirtualDomain.SORT_ASC)
+                                    new DomainExpression(DOM_BL_PUBLISHER_SORT,
+                                                         TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME_OB),
+                                                         DomainExpression.SORT_ASC)
                                            )
                             .addGroupDomain(
                                     // Group by id (we want the id available and there is
                                     // a chance two Publishers will have the same name)
-                                    new VirtualDomain(DOM_FK_PUBLISHER,
-                                                      TBL_BOOK_PUBLISHER.dot(KEY_FK_PUBLISHER)));
+                                    new DomainExpression(DOM_FK_PUBLISHER,
+                                                         TBL_BOOK_PUBLISHER.dot(KEY_FK_PUBLISHER)));
                 }
                 case BOOKSHELF: {
                     // We use the foreign ID to create the key.
                     // We override the display domain in the BooklistGroup.
                     return new GroupKey(R.string.lbl_bookshelf, "shelf",
                                         DOM_FK_BOOKSHELF, TBL_BOOKSHELF.dot(KEY_PK_ID),
-                                        VirtualDomain.SORT_UNSORTED)
+                                        DomainExpression.SORT_UNSORTED)
 
                             .addGroupDomain(
                                     // Group and sort by the NAME column
-                                    new VirtualDomain(DOM_BL_BOOKSHELF_SORT,
-                                                      TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
-                                                      VirtualDomain.SORT_ASC)
+                                    new DomainExpression(DOM_BL_BOOKSHELF_SORT,
+                                                         TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME),
+                                                         DomainExpression.SORT_ASC)
                                            )
                             .addGroupDomain(
                                     // Group by id (we want the id available)
-                                    new VirtualDomain(DOM_FK_BOOKSHELF,
-                                                      TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF)));
+                                    new DomainExpression(DOM_FK_BOOKSHELF,
+                                                         TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF)));
                 }
 
                 // Data without a linked table use the display name as the key domain.
                 case COLOR: {
                     return new GroupKey(R.string.lbl_color, "col",
                                         DOM_BOOK_COLOR, TBL_BOOKS.dot(KEY_COLOR),
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
                 case FORMAT: {
                     return new GroupKey(R.string.lbl_format, "fmt",
                                         DOM_BOOK_FORMAT, TBL_BOOKS.dot(KEY_FORMAT),
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
                 case GENRE: {
                     return new GroupKey(R.string.lbl_genre, "g",
                                         DOM_BOOK_GENRE, TBL_BOOKS.dot(KEY_GENRE),
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
                 case LANGUAGE: {
                     // Formatting is done after fetching.
                     return new GroupKey(R.string.lbl_language, "lng",
                                         DOM_BOOK_LANGUAGE, TBL_BOOKS.dot(KEY_LANGUAGE),
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
                 case LOCATION: {
                     return new GroupKey(R.string.lbl_location, "loc",
                                         DOM_BOOK_LOCATION, TBL_BOOKS.dot(KEY_LOCATION),
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
                 case CONDITION: {
                     return new GroupKey(R.string.lbl_condition, "bk_cnd",
                                         DOM_BOOK_CONDITION, TBL_BOOKS.dot(KEY_BOOK_CONDITION),
-                                        VirtualDomain.SORT_DESC);
+                                        DomainExpression.SORT_DESC);
                 }
                 case RATING: {
                     // Formatting is done after fetching
@@ -740,14 +741,14 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_rating, "rt",
                                         DOM_BOOK_RATING,
                                         "CAST(" + TBL_BOOKS.dot(KEY_RATING) + " AS INTEGER)",
-                                        VirtualDomain.SORT_DESC);
+                                        DomainExpression.SORT_DESC);
                 }
 
                 // the others here below are custom key domains
                 case LENDING: {
                     return new GroupKey(R.string.lbl_lend_out, "l",
                                         DOM_LOANEE, DAOSql.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
                 case READ_STATUS: {
                     // Formatting is done after fetching.
@@ -756,7 +757,7 @@ public class BooklistGroup {
                                                 .notNull()
                                                 .build(),
                                         TBL_BOOKS.dot(KEY_READ),
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
                 case BOOK_TITLE_LETTER: {
                     // Uses the OrderBy column so we get the re-ordered version if applicable.
@@ -766,7 +767,7 @@ public class BooklistGroup {
                                                 .notNull()
                                                 .build(),
                                         "upper(SUBSTR(" + TBL_BOOKS.dot(KEY_TITLE_OB) + ",1,1))",
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
                 case SERIES_TITLE_LETTER: {
                     // Uses the OrderBy column so we get the re-ordered version if applicable.
@@ -777,7 +778,7 @@ public class BooklistGroup {
                                                 .build(),
                                         "upper(SUBSTR(" + TBL_SERIES.dot(KEY_SERIES_TITLE_OB)
                                         + ",1,1))",
-                                        VirtualDomain.SORT_ASC);
+                                        DomainExpression.SORT_ASC);
                 }
 
                 case DATE_PUBLISHED_YEAR: {
@@ -787,7 +788,7 @@ public class BooklistGroup {
                                                 .build(),
                                         DAOSql.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
                 }
                 case DATE_PUBLISHED_MONTH: {
@@ -797,7 +798,7 @@ public class BooklistGroup {
                                                 .build(),
                                         DAOSql.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
                 }
 
@@ -809,7 +810,7 @@ public class BooklistGroup {
                                         DAOSql.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
                                                       false),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_FIRST_PUBLICATION);
                 }
                 case DATE_FIRST_PUBLICATION_MONTH: {
@@ -820,7 +821,7 @@ public class BooklistGroup {
                                         DAOSql.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
                                                        false),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_FIRST_PUBLICATION);
                 }
 
@@ -831,7 +832,7 @@ public class BooklistGroup {
                                                 .build(),
                                         DAOSql.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
                 case DATE_ACQUIRED_MONTH: {
@@ -841,7 +842,7 @@ public class BooklistGroup {
                                                 .build(),
                                         DAOSql.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
                 case DATE_ACQUIRED_DAY: {
@@ -851,7 +852,7 @@ public class BooklistGroup {
                                                 .build(),
                                         DAOSql.SqlColumns
                                                 .day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
 
@@ -862,7 +863,7 @@ public class BooklistGroup {
                                         new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAOSql.SqlColumns.year(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
                 case DATE_ADDED_MONTH: {
@@ -871,7 +872,7 @@ public class BooklistGroup {
                                         new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAOSql.SqlColumns.month(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
                 case DATE_ADDED_DAY: {
@@ -880,7 +881,7 @@ public class BooklistGroup {
                                         new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAOSql.SqlColumns.day(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
 
@@ -891,7 +892,7 @@ public class BooklistGroup {
                                                 .build(),
                                         DAOSql.SqlColumns
                                                 .year(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
                 case DATE_LAST_UPDATE_MONTH: {
@@ -901,7 +902,7 @@ public class BooklistGroup {
                                                 .build(),
                                         DAOSql.SqlColumns
                                                 .month(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
                 case DATE_LAST_UPDATE_DAY: {
@@ -911,7 +912,7 @@ public class BooklistGroup {
                                                 .build(),
                                         DAOSql.SqlColumns
                                                 .day(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
 
@@ -921,7 +922,7 @@ public class BooklistGroup {
                                         new Domain.Builder("blg_rd_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAOSql.SqlColumns.year(TBL_BOOKS.dot(KEY_READ_END), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
                 }
@@ -931,7 +932,7 @@ public class BooklistGroup {
                                         new Domain.Builder("blg_rd_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAOSql.SqlColumns.month(TBL_BOOKS.dot(KEY_READ_END), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
                 }
@@ -941,7 +942,7 @@ public class BooklistGroup {
                                         new Domain.Builder("blg_rd_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
                                         DAOSql.SqlColumns.day(TBL_BOOKS.dot(KEY_READ_END), true),
-                                        VirtualDomain.SORT_DESC)
+                                        DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
                 }
@@ -975,16 +976,16 @@ public class BooklistGroup {
         }
 
         @NonNull
-        private GroupKey addGroupDomain(@NonNull final VirtualDomain vDomain) {
+        private GroupKey addGroupDomain(@NonNull final DomainExpression domainExpression) {
             // this is a static setup. We don't check on developer mistakenly adding duplicates!
-            mGroupDomains.add(vDomain);
+            mGroupDomains.add(domainExpression);
             return this;
         }
 
         @NonNull
-        private GroupKey addBaseDomain(@NonNull final VirtualDomain vDomain) {
+        private GroupKey addBaseDomain(@NonNull final DomainExpression domainExpression) {
             // this is a static setup. We don't check on developer mistakenly adding duplicates!
-            mBaseDomains.add(vDomain);
+            mBaseDomains.add(domainExpression);
             return this;
         }
 
@@ -1016,7 +1017,7 @@ public class BooklistGroup {
          * @return the key domain
          */
         @NonNull
-        VirtualDomain getKeyDomain() {
+        DomainExpression getKeyDomain() {
             return mKeyDomain;
         }
 
@@ -1028,7 +1029,7 @@ public class BooklistGroup {
          * @return the list, can be empty.
          */
         @NonNull
-        ArrayList<VirtualDomain> getGroupDomains() {
+        ArrayList<DomainExpression> getGroupDomains() {
             return mGroupDomains;
         }
 
@@ -1040,7 +1041,7 @@ public class BooklistGroup {
          * @return the list, can be empty.
          */
         @NonNull
-        ArrayList<VirtualDomain> getBaseDomains() {
+        ArrayList<DomainExpression> getBaseDomains() {
             return mBaseDomains;
         }
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 public class BooleanFilter
         extends IntStringFilter {
@@ -38,15 +38,15 @@ public class BooleanFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param virtualDomain    to use by the expression
+     * @param domainExpression to use by the expression
      */
     BooleanFilter(final boolean isPersistent,
                   @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
                   @SuppressWarnings("SameParameterValue")
-                  @NonNull final VirtualDomain virtualDomain) {
-        super(isPersistent, persistenceLayer, labelId, key, virtualDomain);
+                  @NonNull final DomainExpression domainExpression) {
+        super(isPersistent, persistenceLayer, labelId, key, domainExpression);
     }
 
     /**
@@ -74,7 +74,7 @@ public class BooleanFilter
     public String getExpression(@NonNull final Context context) {
         final Integer value = getValue();
         if (isActive(context)) {
-            return mVirtualDomain.getExpression() + '=' + value;
+            return mDomainExpression.getExpression() + '=' + value;
         }
         return null;
     }

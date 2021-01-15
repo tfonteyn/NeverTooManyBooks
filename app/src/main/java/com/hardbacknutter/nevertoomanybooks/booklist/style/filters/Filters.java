@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
@@ -97,27 +97,27 @@ public class Filters {
 
         mFilters.put(PK_FILTER_READ, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_read, PK_FILTER_READ,
-                new VirtualDomain(DOM_BOOK_READ, TBL_BOOKS.dot(KEY_READ))));
+                new DomainExpression(DOM_BOOK_READ, TBL_BOOKS.dot(KEY_READ))));
 
         mFilters.put(PK_FILTER_SIGNED, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_signed, PK_FILTER_SIGNED,
-                new VirtualDomain(DOM_BOOK_SIGNED, TBL_BOOKS.dot(KEY_SIGNED))));
+                new DomainExpression(DOM_BOOK_SIGNED, TBL_BOOKS.dot(KEY_SIGNED))));
 
         mFilters.put(PK_FILTER_TOC_BITMASK, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_anthology, PK_FILTER_TOC_BITMASK,
-                new VirtualDomain(DOM_BOOK_TOC_BITMASK, TBL_BOOKS.dot(KEY_TOC_BITMASK))));
+                new DomainExpression(DOM_BOOK_TOC_BITMASK, TBL_BOOKS.dot(KEY_TOC_BITMASK))));
 
         mFilters.put(PK_FILTER_LOANEE, new BooleanFilter(
                 isPersistent, persistenceLayer, R.string.lbl_lend_out, PK_FILTER_LOANEE,
-                new VirtualDomain(DOM_LOANEE, TBL_BOOK_LOANEE.dot(KEY_LOANEE))));
+                new DomainExpression(DOM_LOANEE, TBL_BOOK_LOANEE.dot(KEY_LOANEE))));
 
         mFilters.put(PK_FILTER_ISBN, new NotEmptyFilter(
                 isPersistent, persistenceLayer, R.string.lbl_isbn, PK_FILTER_ISBN,
-                new VirtualDomain(DOM_BOOK_ISBN, TBL_BOOKS.dot(KEY_ISBN))));
+                new DomainExpression(DOM_BOOK_ISBN, TBL_BOOKS.dot(KEY_ISBN))));
 
         mFilters.put(PK_FILTER_EDITION_BITMASK, new BitmaskFilter(
                 isPersistent, persistenceLayer, R.string.lbl_edition, PK_FILTER_EDITION_BITMASK,
-                new VirtualDomain(DOM_BOOK_EDITION_BITMASK, TBL_BOOKS.dot(KEY_EDITION_BITMASK)),
+                new DomainExpression(DOM_BOOK_EDITION_BITMASK, TBL_BOOKS.dot(KEY_EDITION_BITMASK)),
                 Book.Edition.BITMASK_ALL));
 
         //URGENT: filtering on bookshelves:
@@ -132,8 +132,8 @@ public class Filters {
             mFilters.put(PK_FILTER_BOOKSHELVES, new IntListFilter(
                     isPersistent, persistenceLayer, R.string.lbl_bookshelves,
                     PK_FILTER_BOOKSHELVES,
-                    new VirtualDomain(DOM_BOOKSHELF_NAME,
-                                      TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF))));
+                    new DomainExpression(DOM_BOOKSHELF_NAME,
+                                         TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF))));
         }
     }
 

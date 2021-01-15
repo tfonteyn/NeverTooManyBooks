@@ -31,7 +31,7 @@ import org.junit.Test;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
@@ -54,7 +54,7 @@ public class IntListFilterTest {
         final IntListFilter p1 = new IntListFilter(
                 false, mLayerMock, R.string.lbl_bookshelves,
                 Filters.PK_FILTER_BOOKSHELVES,
-                new VirtualDomain(DOM_BOOKSHELF_NAME, TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF)));
+                new DomainExpression(DOM_BOOKSHELF_NAME, TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOKSHELF)));
 
         final ArrayList<Integer> value = new ArrayList<>();
         value.add(1);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,19 +33,19 @@ import java.util.Objects;
 /**
  * A data class representing a domain + the sql column expression and optional sorting flag.
  */
-public class VirtualDomain
+public class DomainExpression
         implements Parcelable {
 
     /** {@link Parcelable}. */
-    public static final Creator<VirtualDomain> CREATOR = new Creator<VirtualDomain>() {
+    public static final Creator<DomainExpression> CREATOR = new Creator<DomainExpression>() {
         @Override
-        public VirtualDomain createFromParcel(@NonNull final Parcel in) {
-            return new VirtualDomain(in);
+        public DomainExpression createFromParcel(@NonNull final Parcel in) {
+            return new DomainExpression(in);
         }
 
         @Override
-        public VirtualDomain[] newArray(final int size) {
-            return new VirtualDomain[size];
+        public DomainExpression[] newArray(final int size) {
+            return new DomainExpression[size];
         }
     };
 
@@ -69,8 +69,8 @@ public class VirtualDomain
      * @param domain     underlying domain
      * @param expression to use for fetching the data
      */
-    public VirtualDomain(@NonNull final Domain domain,
-                         @NonNull final String expression) {
+    public DomainExpression(@NonNull final Domain domain,
+                            @NonNull final String expression) {
         mDomain = domain;
         mExpression = expression;
         mSorted = SORT_UNSORTED;
@@ -83,9 +83,9 @@ public class VirtualDomain
      * @param expression to use for fetching the data
      * @param sorted     flag
      */
-    public VirtualDomain(@NonNull final Domain domain,
-                         @Nullable final String expression,
-                         @Sorting final int sorted) {
+    public DomainExpression(@NonNull final Domain domain,
+                            @Nullable final String expression,
+                            @Sorting final int sorted) {
         mDomain = domain;
         mExpression = expression;
         mSorted = sorted;
@@ -96,7 +96,7 @@ public class VirtualDomain
      *
      * @param that to copy from
      */
-    public VirtualDomain(@NonNull final VirtualDomain that) {
+    public DomainExpression(@NonNull final DomainExpression that) {
         mDomain = that.mDomain;
         mExpression = that.mExpression;
         mSorted = that.mSorted;
@@ -107,7 +107,7 @@ public class VirtualDomain
      *
      * @param in Parcel to construct the object from
      */
-    private VirtualDomain(@NonNull final Parcel in) {
+    private DomainExpression(@NonNull final Parcel in) {
         //noinspection ConstantConditions
         mDomain = in.readParcelable(Domain.class.getClassLoader());
         mExpression = in.readString();
@@ -178,7 +178,7 @@ public class VirtualDomain
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        final VirtualDomain that = (VirtualDomain) o;
+        final DomainExpression that = (DomainExpression) o;
         return mSorted == that.mSorted
                && mDomain.equals(that.mDomain)
                && Objects.equals(mExpression, that.mExpression);
@@ -192,7 +192,7 @@ public class VirtualDomain
     @Override
     @NonNull
     public String toString() {
-        return "VirtualDomain{"
+        return "DomainExpression{"
                + "mDomain=" + mDomain
                + ", mExpression='" + mExpression + '\''
                + ", mSorted=" + mSorted

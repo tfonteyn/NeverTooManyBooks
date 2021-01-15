@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,8 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -142,7 +142,7 @@ public class Booklist
     /** Collection of 'extra' book level domains requested by caller. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final Map<String, VirtualDomain> mBookDomains = new HashMap<>();
+    private final Map<String, DomainExpression> mBookDomains = new HashMap<>();
     /** the list of Filters. */
     private final Collection<Filter> mFilters = new ArrayList<>();
     /** Style to use while building the list. */
@@ -255,15 +255,15 @@ public class Booklist
     /**
      * Add a domain to the resulting flattened list based on the details provided.
      *
-     * @param vDomain Domain to add
+     * @param domainExpression Domain to add
      */
-    public void addDomain(@NonNull final VirtualDomain vDomain) {
-        if (!mBookDomains.containsKey(vDomain.getName())) {
-            mBookDomains.put(vDomain.getName(), vDomain);
+    public void addDomain(@NonNull final DomainExpression domainExpression) {
+        if (!mBookDomains.containsKey(domainExpression.getName())) {
+            mBookDomains.put(domainExpression.getName(), domainExpression);
 
         } else {
             // adding a duplicate here is a bug.
-            throw new IllegalArgumentException("Duplicate domain=" + vDomain.getName());
+            throw new IllegalArgumentException("Duplicate domain=" + domainExpression.getName());
         }
     }
 

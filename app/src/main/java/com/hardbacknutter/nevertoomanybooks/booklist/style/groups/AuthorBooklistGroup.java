@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
@@ -64,10 +64,10 @@ public class AuthorBooklistGroup
 
     /** Customized domain with display data. */
     @NonNull
-    private final VirtualDomain mDisplayDomain;
+    private final DomainExpression mDisplayDomain;
     /** Customized domain with sorted data. */
     @NonNull
-    private final VirtualDomain mSortedDomain;
+    private final DomainExpression mSortedDomain;
 
     /** Show a book under each {@link Author} it is linked to. */
     private PBoolean mUnderEach;
@@ -137,30 +137,30 @@ public class AuthorBooklistGroup
     }
 
     @NonNull
-    private VirtualDomain createDisplayDomain() {
+    private DomainExpression createDisplayDomain() {
         // Not sorted; sort as defined in #createSortDomain
-        return new VirtualDomain(DOM_AUTHOR_FORMATTED, DAOSql.SqlColumns
+        return new DomainExpression(DOM_AUTHOR_FORMATTED, DAOSql.SqlColumns
                 .getDisplayAuthor(TBL_AUTHORS.getAlias(), mStyle.isShowAuthorByGivenName()));
     }
 
     @NonNull
-    private VirtualDomain createSortDomain() {
+    private DomainExpression createSortDomain() {
         // Sorting depends on user preference
-        return new VirtualDomain(DOM_BL_AUTHOR_SORT, DAOSql.SqlColumns
-                .getSortAuthor(mStyle.isSortAuthorByGivenName()), VirtualDomain.SORT_ASC);
+        return new DomainExpression(DOM_BL_AUTHOR_SORT, DAOSql.SqlColumns
+                .getSortAuthor(mStyle.isSortAuthorByGivenName()), DomainExpression.SORT_ASC);
     }
 
     @NonNull
     @Override
-    public VirtualDomain getDisplayDomain() {
+    public DomainExpression getDisplayDomain() {
         return mDisplayDomain;
     }
 
     @NonNull
     @Override
-    public ArrayList<VirtualDomain> getGroupDomains() {
+    public ArrayList<DomainExpression> getGroupDomains() {
         // We need to inject the mSortedDomain as first in the list.
-        final ArrayList<VirtualDomain> list = new ArrayList<>();
+        final ArrayList<DomainExpression> list = new ArrayList<>();
         list.add(0, mSortedDomain);
         list.addAll(super.getGroupDomains());
         return list;

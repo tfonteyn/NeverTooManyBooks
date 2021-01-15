@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PUBLISHER_NAME;
@@ -59,7 +59,7 @@ public class PublisherBooklistGroup
 
     /** Customized domain with display data. */
     @NonNull
-    private final VirtualDomain mDisplayDomain;
+    private final DomainExpression mDisplayDomain;
     /** Show a book under each {@link Publisher} it is linked to. */
     private PBoolean mUnderEach;
 
@@ -111,14 +111,14 @@ public class PublisherBooklistGroup
     }
 
     @NonNull
-    private VirtualDomain createDisplayDomain() {
+    private DomainExpression createDisplayDomain() {
         // Not sorted; we sort on the OB domain as defined in the GroupKey.
-        return new VirtualDomain(DOM_PUBLISHER_NAME, TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME));
+        return new DomainExpression(DOM_PUBLISHER_NAME, TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME));
     }
 
     @NonNull
     @Override
-    public VirtualDomain getDisplayDomain() {
+    public DomainExpression getDisplayDomain() {
         return mDisplayDomain;
     }
 

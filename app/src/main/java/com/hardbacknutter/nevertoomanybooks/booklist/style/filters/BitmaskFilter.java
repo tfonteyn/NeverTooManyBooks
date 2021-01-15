@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
 public class BitmaskFilter
@@ -56,7 +56,7 @@ public class BitmaskFilter
     @NonNull
     private final Integer mDefaultValue;
     @NonNull
-    private final VirtualDomain mVirtualDomain;
+    private final DomainExpression mDomainExpression;
     @StringRes
     private final int mLabelId;
 
@@ -75,14 +75,14 @@ public class BitmaskFilter
      * @param persistenceLayer Style reference.
      * @param labelId          string resource id to use as a display label
      * @param key              preference key
-     * @param virtualDomain    to use by the expression
+     * @param domainExpression to use by the expression
      * @param mask             valid values bitmask
      */
     BitmaskFilter(final boolean isPersistent,
                   @Nullable final StylePersistenceLayer persistenceLayer,
                   @StringRes final int labelId,
                   @NonNull final String key,
-                  @NonNull final VirtualDomain virtualDomain,
+                  @NonNull final DomainExpression domainExpression,
                   @NonNull final Integer mask) {
         if (BuildConfig.DEBUG /* always */) {
             if (isPersistent && persistenceLayer == null) {
@@ -95,7 +95,7 @@ public class BitmaskFilter
         mDefaultValue = 0;
 
         mLabelId = labelId;
-        mVirtualDomain = virtualDomain;
+        mDomainExpression = domainExpression;
 
         mMask = mask;
     }
@@ -121,7 +121,7 @@ public class BitmaskFilter
         mDefaultValue = that.mDefaultValue;
 
         mLabelId = that.mLabelId;
-        mVirtualDomain = new VirtualDomain(that.mVirtualDomain);
+        mDomainExpression = new DomainExpression(that.mDomainExpression);
 
         mMask = that.mMask;
 
@@ -154,14 +154,14 @@ public class BitmaskFilter
 
     @NonNull
     @Override
-    public VirtualDomain getVirtualDomain() {
-        return mVirtualDomain;
+    public DomainExpression getDomainExpression() {
+        return mDomainExpression;
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
         if (!DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                                  mVirtualDomain.getName())) {
+                                  mDomainExpression.getName())) {
             return false;
         }
 
@@ -187,9 +187,9 @@ public class BitmaskFilter
         if (isActive(context)) {
             final int value = getValue();
             if (value > 0) {
-                return "((" + mVirtualDomain.getExpression() + " & " + value + ") <> 0)";
+                return "((" + mDomainExpression.getExpression() + " & " + value + ") <> 0)";
             } else {
-                return "(" + mVirtualDomain.getExpression() + "=0)";
+                return "(" + mDomainExpression.getExpression() + "=0)";
             }
         }
         return null;
@@ -248,7 +248,7 @@ public class BitmaskFilter
                && mPersisted == that.mPersisted
 
                && mLabelId == that.mLabelId
-               && mVirtualDomain.equals(that.mVirtualDomain)
+               && mDomainExpression.equals(that.mDomainExpression)
 
                && mNonPersistedValueIsActive == that.mNonPersistedValueIsActive
                && mMask == that.mMask;
@@ -257,7 +257,7 @@ public class BitmaskFilter
     @Override
     public int hashCode() {
         return Objects.hash(mKey, mNonPersistedValue, mDefaultValue, mPersisted,
-                            mLabelId, mVirtualDomain,
+                            mLabelId, mDomainExpression,
                             mNonPersistedValueIsActive,
                             mMask);
     }
@@ -275,7 +275,7 @@ public class BitmaskFilter
                + ", mPersisted=" + mPersisted
 
                + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
-               + ", mVirtualDomain=" + mVirtualDomain
+               + ", mDomainExpression=" + mDomainExpression
 
                + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)
                + '}';

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.definitions.VirtualDomain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -51,8 +51,8 @@ public class NotEmptyFilterTest {
         final NotEmptyFilter p1 = new NotEmptyFilter(
                 false, mLayerMock, R.string.lbl_isbn,
                 Filters.PK_FILTER_ISBN,
-                new VirtualDomain(DBDefinitions.DOM_BOOK_ISBN,
-                                  DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
+                new DomainExpression(DBDefinitions.DOM_BOOK_ISBN,
+                                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
         p1.set(1);
 
         final NotEmptyFilter p2 = p1.clone(false, mLayerMock);
