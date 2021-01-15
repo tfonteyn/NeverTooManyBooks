@@ -99,9 +99,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
@@ -656,7 +656,7 @@ public class DAO
         cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
         cv.put(KEY_CALIBRE_BOOK_UUID, book.getString(KEY_CALIBRE_BOOK_UUID));
         cv.put(KEY_CALIBRE_BOOK_LIBRARY_ID, book.getString(KEY_CALIBRE_BOOK_LIBRARY_ID));
-        cv.put(KEY_CALIBRE_BOOK_FILE_URL, book.getString(KEY_CALIBRE_BOOK_FILE_URL));
+        cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, book.getString(KEY_CALIBRE_BOOK_MAIN_FORMAT));
 
         final long rowId = mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
         if (rowId <= 0) {
@@ -679,7 +679,7 @@ public class DAO
         final ContentValues cv = new ContentValues();
         cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
         cv.put(KEY_CALIBRE_BOOK_LIBRARY_ID, book.getString(KEY_CALIBRE_BOOK_LIBRARY_ID));
-        cv.put(KEY_CALIBRE_BOOK_FILE_URL, book.getString(KEY_CALIBRE_BOOK_FILE_URL));
+        cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, book.getString(KEY_CALIBRE_BOOK_MAIN_FORMAT));
 
         final int rowsAffected = mSyncedDb.update(
                 TBL_CALIBRE_BOOKS.getName(), cv, KEY_CALIBRE_BOOK_UUID + "=?",

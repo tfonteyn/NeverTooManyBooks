@@ -23,6 +23,7 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -33,11 +34,19 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
+/**
+ * A simple connection test which tries connecting + loading the libraries.
+ */
 public class CalibreConnectionTestTask
         extends VMTask<Boolean> {
 
+    /** Log tag. */
     private static final String TAG = "CalibreConnectionTest";
 
+    /**
+     * Start the task.
+     */
+    @UiThread
     public void start() {
         execute(R.id.TASK_ID_VALIDATE_CONNECTION);
     }

@@ -74,7 +74,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookli
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreAdminFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
@@ -112,8 +113,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GrStatus;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrAuthTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.tasks.GrSendOneBookTask;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
@@ -170,21 +169,17 @@ public class BooksOnBookshelf
     /** {@link FragmentResultListener} request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
 
-
     /** Bring up the Goodreads synchronization options. */
     private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
             new GoodreadsAdminFragment.ResultContract(), data -> updateNavigationMenuVisibility());
 
-    private final ActivityResultLauncher<Bundle> mCalibreSettingsLauncher =
-            registerForActivityResult(
-                    new SettingsHostActivity.ResultContract(CalibrePreferencesFragment.TAG),
-                    data -> updateNavigationMenuVisibility());
+    /** Bring up the Calibre synchronization options. */
+    private final ActivityResultLauncher<Void> mCalibreLauncher = registerForActivityResult(
+            new CalibreAdminFragment.ResultContract(), data -> updateNavigationMenuVisibility());
 
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportFragment.ResultContract(), success -> {});
-
-
     /** Goodreads authorization task. */
     private GrAuthTask mGrAuthTask;
     /** Goodreads send-book task. */
@@ -193,8 +188,6 @@ public class BooksOnBookshelf
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
-
-
     /** Display a Book. */
     private final ActivityResultLauncher<ShowBookActivity.ResultContract.Input>
             mDisplayBookLauncher = registerForActivityResult(
@@ -205,7 +198,6 @@ public class BooksOnBookshelf
     /** Duplicate and edit a Book. */
     private final ActivityResultLauncher<Bundle> mDuplicateLauncher = registerForActivityResult(
             new EditBookFromBundleContract(), this::onBookEditingDone);
-
     /** Do an import. */
     private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
             new ImportFragment.ResultsContract(), importResults -> {
@@ -223,13 +215,9 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
-
-
     /** Add a Book by doing a search on the internet. */
     private final ActivityResultLauncher<AddBookBySearchContract.By> mAddBookBySearchLauncher =
             registerForActivityResult(new AddBookBySearchContract(), this::onBookEditingDone);
-
-
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
             registerForActivityResult(new SearchFtsFragment.ResultContract(), data -> {
@@ -238,21 +226,16 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
-
-
     /** Update an individual Book with information from the internet. */
     private final ActivityResultLauncher<Book> mUpdateBookLauncher =
             registerForActivityResult(new UpdateBookContract(), this::onBookEditingDone);
     /** Update a list of Books with information from the internet. */
     private final ActivityResultLauncher<UpdateBooklistContract.Input> mUpdateBookListLauncher =
             registerForActivityResult(new UpdateBooklistContract(), this::onBookEditingDone);
-
-
     /** View all works of an Author. */
     private final ActivityResultLauncher<AuthorWorksFragment.ResultContract.Input>
             mAuthorWorksLauncher = registerForActivityResult(
             new AuthorWorksFragment.ResultContract(), this::onBookEditingDone);
-
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> mManageBookshelvesLauncher =
             registerForActivityResult(new EditBookshelvesFragment.ResultContract(), id -> {
@@ -261,8 +244,6 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
-
-
     /** Manage the list of (preferred) styles. */
     private final ActivityResultLauncher<String> mEditStylesLauncher = registerForActivityResult(
             new PreferredStylesFragment.ResultContract(), data -> {
@@ -297,7 +278,6 @@ public class BooksOnBookshelf
                     }
                 }
             });
-
     /**
      * Full progress dialog to show while running a task.
      * Note that the {@link #mVm} does not use this dialog (i.e. never sends progress messages)
@@ -313,7 +293,6 @@ public class BooksOnBookshelf
     private BooksonbookshelfBinding mVb;
     /** List layout manager. */
     private LinearLayoutManager mLayoutManager;
-
     /** Listener for the Bookshelf Spinner. */
     private final SpinnerInteractionListener mOnBookshelfSelectionChanged =
             new SpinnerInteractionListener() {
@@ -349,10 +328,8 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
     /** React to row changes made. */
     private final RowChangeListener mRowChangeListener = this::onRowChange;
-
     /**
      * React to the user selecting a style to apply.
      * <p>
@@ -371,7 +348,6 @@ public class BooksOnBookshelf
                     buildBookList();
                 }
             };
-
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.Launcher mEditBookshelfLauncher =
             new EditBookshelfDialogFragment.Launcher() {
@@ -382,7 +358,6 @@ public class BooksOnBookshelf
                     }
                 }
             };
-
     /** Accept the result from the dialog. */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
             new EditLenderDialogFragment.Launcher() {
@@ -390,6 +365,16 @@ public class BooksOnBookshelf
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
+                }
+            };
+    private CalibreHandler mCalibreHandler;
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
                 }
             };
     /** Listener for clicks on the list. */
@@ -460,15 +445,6 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
-                }
-            };
 
     @Override
     protected void onSetContentView() {
@@ -522,6 +498,9 @@ public class BooksOnBookshelf
         mGrSendOneBookTask.onFailure().observe(this, this::onGrFailure);
         mGrSendOneBookTask.onFinished().observe(this, this::onGrFinished);
 
+        mCalibreHandler = new CalibreHandler();
+        mCalibreHandler.onViewCreated(mVb.getRoot(), this, this, this);
+
         // show/hide the sync menus
         updateNavigationMenuVisibility();
 
@@ -552,7 +531,7 @@ public class BooksOnBookshelf
 
 
         mFabMenu.attach(mVb.list);
-        mFabMenu.setOnClickListener(this::onFabMenuItemSelected);
+        mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         // mVb.fab4SearchExternalId
         mFabMenu.getItem(4)
                 .setEnabled(EditBookExternalIdFragment.showEditBookTabExternalId(global));
@@ -634,78 +613,6 @@ public class BooksOnBookshelf
     }
 
     @Override
-    protected boolean onNavigationItemSelected(@NonNull final MenuItem item) {
-        closeNavigationDrawer();
-
-        final int itemId = item.getItemId();
-
-        if (itemId == R.id.nav_advanced_search) {
-            mFtsSearchLauncher.launch(mVm.getSearchCriteria());
-            return true;
-
-        } else if (itemId == R.id.nav_manage_bookshelves) {
-            // overridden, so we can pass the current bookshelf id.
-            mManageBookshelvesLauncher.launch(mVm.getCurrentBookshelf().getId());
-            return true;
-
-        } else if (itemId == R.id.nav_manage_list_styles) {
-            mEditStylesLauncher.launch(mVm.getCurrentStyle(this).getUuid());
-            return true;
-
-        } else if (itemId == R.id.nav_import) {
-            mImportLauncher.launch(null);
-            return true;
-
-        } else if (itemId == R.id.nav_export) {
-            mExportLauncher.launch(null);
-            return true;
-
-        } else if (itemId == R.id.nav_goodreads) {
-            mGoodreadsLauncher.launch(null);
-            return true;
-
-        } else if (itemId == R.id.nav_calibre_export) {
-            mExportLauncher.launch(ArchiveEncoding.CalibreCS);
-            return true;
-
-        } else if (itemId == R.id.nav_calibre_import) {
-            final String url = CalibreContentServer.getHostUri(this).toString();
-            if (!url.isEmpty()) {
-                mImportLauncher.launch(url);
-            } else {
-                // redirect to settings and ask user to setup.
-                mCalibreSettingsLauncher.launch(null);
-            }
-            return true;
-        }
-
-        return super.onNavigationItemSelected(item);
-    }
-
-    private void onFabMenuItemSelected(@NonNull final View view) {
-        final int viewId = view.getId();
-
-        if (viewId == R.id.fab0_scan_barcode) {
-            mAddBookBySearchLauncher.launch(AddBookBySearchContract.By.Scan);
-
-        } else if (viewId == R.id.fab1_search_isbn) {
-            mAddBookBySearchLauncher.launch(AddBookBySearchContract.By.Isbn);
-
-        } else if (viewId == R.id.fab2_search_text) {
-            mAddBookBySearchLauncher.launch(AddBookBySearchContract.By.Text);
-
-        } else if (viewId == R.id.fab3_add_manually) {
-            mEditByIdLauncher.launch(0L);
-
-        } else if (viewId == R.id.fab4_search_external_id) {
-            mAddBookBySearchLauncher.launch(AddBookBySearchContract.By.ExternalId);
-
-        } else {
-            throw new IllegalArgumentException(String.valueOf(view));
-        }
-    }
-
-    @Override
     @CallSuper
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         getMenuInflater().inflate(R.menu.bob, menu);
@@ -781,8 +688,8 @@ public class BooksOnBookshelf
                         .getDefaultSharedPreferences(this);
 
                 final boolean isRead = rowData.getBoolean(DBDefinitions.KEY_READ);
-                menu.findItem(R.id.MENU_BOOK_READ).setVisible(!isRead);
-                menu.findItem(R.id.MENU_BOOK_UNREAD).setVisible(isRead);
+                menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
+                menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
                 final boolean useLending = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
@@ -792,6 +699,9 @@ public class BooksOnBookshelf
 
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
                     .setVisible(GoodreadsManager.isShowSyncMenus(global));
+
+                menu.findItem(R.id.SUBMENU_CALIBRE)
+                    .setVisible(mCalibreHandler.isCalibreEnabled(global, rowData));
 
                 MenuHelper.prepareViewBookOnWebsiteMenu(menu, rowData);
                 MenuHelper.prepareOptionalMenus(menu, rowData);
@@ -950,13 +860,23 @@ public class BooksOnBookshelf
             }
             return true;
 
-        } else if (itemId == R.id.MENU_BOOK_READ
-                   || itemId == R.id.MENU_BOOK_UNREAD) {
+        } else if (itemId == R.id.MENU_BOOK_SET_READ
+                   || itemId == R.id.MENU_BOOK_SET_UNREAD) {
             // toggle the read status
             final boolean status = !rowData.getBoolean(DBDefinitions.KEY_READ);
             final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
             if (mVm.setBookRead(bookId, status)) {
                 onBookChange(RowChangeListener.BOOK_READ, bookId);
+            }
+            return true;
+
+            /* ********************************************************************************** */
+
+        } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
+            final Book book = mVm.getBook(rowData);
+            // Sanity check
+            if (book != null) {
+                mCalibreHandler.download(book);
             }
             return true;
 
@@ -1159,6 +1079,65 @@ public class BooksOnBookshelf
         }
 
         return MenuHelper.handleViewBookOnWebsiteMenu(this, itemId, rowData);
+    }
+
+    private void onFabMenuItemSelected(@IdRes final int itemId) {
+
+        if (itemId == R.id.fab0_scan_barcode) {
+            mAddBookBySearchLauncher.launch(AddBookBySearchContract.By.Scan);
+
+        } else if (itemId == R.id.fab1_search_isbn) {
+            mAddBookBySearchLauncher.launch(AddBookBySearchContract.By.Isbn);
+
+        } else if (itemId == R.id.fab2_search_text) {
+            mAddBookBySearchLauncher.launch(AddBookBySearchContract.By.Text);
+
+        } else if (itemId == R.id.fab3_add_manually) {
+            mEditByIdLauncher.launch(0L);
+
+        } else if (itemId == R.id.fab4_search_external_id) {
+            mAddBookBySearchLauncher.launch(AddBookBySearchContract.By.ExternalId);
+
+        } else {
+            throw new IllegalArgumentException(String.valueOf(itemId));
+        }
+    }
+
+    @Override
+    protected boolean onNavigationItemSelected(@IdRes final int itemId) {
+        closeNavigationDrawer();
+
+        if (itemId == R.id.nav_advanced_search) {
+            mFtsSearchLauncher.launch(mVm.getSearchCriteria());
+            return true;
+
+        } else if (itemId == R.id.nav_manage_bookshelves) {
+            // overridden, so we can pass the current bookshelf id.
+            mManageBookshelvesLauncher.launch(mVm.getCurrentBookshelf().getId());
+            return true;
+
+        } else if (itemId == R.id.nav_manage_list_styles) {
+            mEditStylesLauncher.launch(mVm.getCurrentStyle(this).getUuid());
+            return true;
+
+        } else if (itemId == R.id.nav_import) {
+            mImportLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.nav_export) {
+            mExportLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.nav_goodreads) {
+            mGoodreadsLauncher.launch(null);
+            return true;
+
+        } else if (itemId == R.id.nav_calibre) {
+            mCalibreLauncher.launch(null);
+            return true;
+        }
+
+        return super.onNavigationItemSelected(itemId);
     }
 
     /**

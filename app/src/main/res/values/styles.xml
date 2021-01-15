@@ -688,7 +688,6 @@
     <style name="MenuButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:layout_width">@dimen/large_menu_button</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/border2</item>
         <item name="android:singleLine">true</item>
         <item name="android:textColor">?attr/colorOnBackground</item>
         <item name="android:textAppearance">?attr/textAppearanceListItem</item>

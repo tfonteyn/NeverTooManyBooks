@@ -127,7 +127,7 @@ public class GoodreadsAdminFragment
     public void onResume() {
         super.onResume();
         mToolbar.setTitle(R.string.site_goodreads);
-        mToolbar.setSubtitle(R.string.pt_maintenance);
+        mToolbar.setSubtitle("");
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
@@ -173,7 +173,7 @@ public class GoodreadsAdminFragment
             .setIcon(R.drawable.ic_format_list_bulleted)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
-        menu.add(Menu.NONE, R.id.MENU_GOODREADS_SETTINGS, 0, R.string.lbl_settings)
+        menu.add(Menu.NONE, R.id.MENU_SETTINGS, 0, R.string.lbl_settings)
             .setIcon(R.drawable.ic_settings)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
@@ -189,7 +189,7 @@ public class GoodreadsAdminFragment
             startActivity(new Intent(getContext(), TasksAdminActivity.class));
             return true;
 
-        } else if (itemId == R.id.MENU_GOODREADS_SETTINGS) {
+        } else if (itemId == R.id.MENU_SETTINGS) {
             final Fragment fragment = new GoodreadsPreferencesFragment();
             final FragmentManager fm = getParentFragmentManager();
             fm.beginTransaction()

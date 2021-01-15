@@ -83,7 +83,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
 /**
- * Handler for a displayed Cover.
+ * A delegate class for handling a displayed Cover.
  * Offers context menus and all operations applicable on a Cover image.
  */
 public class CoverHandler {

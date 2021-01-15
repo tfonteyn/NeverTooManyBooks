@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,6 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -622,6 +623,24 @@ public class BooksOnBookshelfViewModel
             // Add the fixed list of domains we always need.
             for (final VirtualDomain domainDetails : mFixedDomainList) {
                 builder.addDomain(domainDetails);
+            }
+
+            // Add Calibre bridging data ?
+            if (CalibreContentServer.isShowSyncMenus(global)) {
+                builder.addDomain(new VirtualDomain(
+                        DBDefinitions.DOM_CALIBRE_BOOK_ID,
+                        DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
+                builder.addDomain(new VirtualDomain(
+                        DBDefinitions.DOM_CALIBRE_BOOK_UUID,
+                        DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
+                builder.addDomain(new VirtualDomain(
+                        DBDefinitions.DOM_CALIBRE_BOOK_LIBRARY_ID,
+                        DBDefinitions.TBL_CALIBRE_BOOKS
+                                .dot(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID)));
+                builder.addDomain(new VirtualDomain(
+                        DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
+                        DBDefinitions.TBL_CALIBRE_BOOKS
+                                .dot(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
             }
 
             // Add the conditional domains; global level.

@@ -37,6 +37,7 @@
         android:icon="@drawable/ic_details"
         android:title="@string/lbl_styles_long" />
 
+
     <item
         android:id="@+id/nav_export"
         android:icon="@drawable/ic_sd_storage"
@@ -49,16 +50,8 @@
 
     <!-- visibility set from code. -->
     <item
-        android:id="@+id/nav_calibre_export"
-        android:icon="@drawable/ic_sync"
-        android:title="@string/menu_calibre_synchronize"
-        android:visible="false"
-        tools:visible="true" />
-    <!-- visibility set from code. -->
-    <item
-        android:id="@+id/nav_calibre_import"
-        android:icon="@drawable/ic_sync"
-        android:title="@string/menu_calibre_import"
+        android:id="@+id/nav_calibre"
+        android:title="@string/site_calibre"
         android:visible="false"
         tools:visible="true" />
 

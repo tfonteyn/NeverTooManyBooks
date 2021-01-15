@@ -41,7 +41,7 @@ public class ImportViewModel
         implements ResultIntent {
 
     private static final String TAG = "ImportViewModel";
-    public static final String BKEY_URI = TAG + ":uri";
+    public static final String BKEY_URL = TAG + ":url";
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
@@ -57,9 +57,10 @@ public class ImportViewModel
         if (!mInitWasCalled) {
             mInitWasCalled = true;
             if (args != null) {
-                final String uri = args.getString(BKEY_URI);
-                if (uri != null) {
-                    mImportHelper = ImportHelper.withRemoteServer(uri, ArchiveEncoding.CalibreCS);
+                final String url = args.getString(BKEY_URL);
+                if (url != null) {
+                    mImportHelper = ImportHelper.withRemoteServer(Uri.parse(url),
+                                                                  ArchiveEncoding.CalibreCS);
                 }
             }
         }

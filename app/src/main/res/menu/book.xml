@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,13 +25,13 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@id/MENU_BOOK_READ"
+        android:id="@id/MENU_BOOK_SET_READ"
         android:icon="@drawable/ic_check_box"
         android:orderInCategory="@integer/MENU_ORDER_READ"
         android:title="@string/menu_set_read" />
 
     <item
-        android:id="@id/MENU_BOOK_UNREAD"
+        android:id="@id/MENU_BOOK_SET_UNREAD"
         android:icon="@drawable/ic_check_box_outline_blank"
         android:orderInCategory="@integer/MENU_ORDER_UNREAD"
         android:title="@string/menu_set_unread" />
@@ -82,5 +82,19 @@
         android:id="@id/MENU_BOOK_SEND_TO_GOODREADS"
         android:icon="@drawable/ic_goodreads"
         android:orderInCategory="@integer/MENU_ORDER_SEND_TO_GOODREADS"
-        android:title="@string/gr_send_to_goodreads" />
+        android:title="@string/gr_send_to_goodreads"
+        android:visible="false" />
+
+    <item
+        android:id="@id/SUBMENU_CALIBRE"
+        android:orderInCategory="@integer/MENU_ORDER_CALIBRE"
+        android:title="@string/site_calibre"
+        android:visible="false">
+        <menu>
+            <item
+                android:id="@id/MENU_CALIBRE_DOWNLOAD"
+                android:icon="@drawable/ic_file_download"
+                android:title="@string/menu_download_file" />
+        </menu>
+    </item>
 </menu>

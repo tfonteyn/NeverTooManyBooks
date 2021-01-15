@@ -455,8 +455,8 @@ public class XmlRecordWriter
                         DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID,
                         book.getString(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID)));
                 writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL,
-                        book.getString(DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL)));
+                        DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT,
+                        book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
 
                 // external ID's
                 for (final Domain domain : externalIdDomains) {

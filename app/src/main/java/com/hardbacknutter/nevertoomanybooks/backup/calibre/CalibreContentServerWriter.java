@@ -146,7 +146,8 @@ public class CalibreContentServerWriter
 
                 try {
                     // ENHANCE: full sync in one go.
-                    final JSONObject calibreBook = mServer.getBook(mLibraryId, calibreUuid);
+                    final JSONObject calibreBook =
+                            mServer.getBook(mLibraryId, calibreUuid);
 
                     // sanity check, the remote should always have this date field.
                     if (calibreBook != null && !calibreBook.isNull("last_modified")) {

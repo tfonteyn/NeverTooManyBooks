@@ -74,7 +74,7 @@
     <ImageButton
         android:id="@+id/inf_export_books_option_new_and_updated"
         style="@style/InfoButton"
-        android:contentDescription="@string/inf_export_books_option_since_last_full_backup"
+        android:contentDescription="@string/txt_export_books_option_since_last_full_backup"
         app:layout_constraintStart_toEndOf="@id/rb_export_books_option_new_and_updated"
         app:layout_constraintTop_toTopOf="@id/rb_export_books_option_new_and_updated"
         />

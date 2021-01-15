@@ -32,6 +32,8 @@
     <!-- Backup/Export task. -->
     <item name="TASK_ID_EXPORT" type="id" />
 
+    <item name="TASK_ID_DOWNLOAD_SINGLE_FILE" type="id" />
+
     <!-- Cover browser single/large preview image. -->
     <item name="TASK_ID_PREVIEW_IMAGE" type="id" />
 

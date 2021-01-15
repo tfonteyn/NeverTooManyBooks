@@ -169,22 +169,10 @@
         This is either a bug in the Android systems we tested on, or some weird caching is going on.
         Either way: not something we can fix.
         -->
-    <string name="error_import_file_not_recognized">The selected file is not recognized.</string>
-
-    <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
-    <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
-
-    <!-- Displayed when a CSV import fails -->
-    <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
-    <string name="error_import_csv_line">Unknown error in row %1$d</string>
-    <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
-    <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
-    <string name="error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
-
+    <string name="error_file_not_recognized">The selected file is not recognized.</string>
 
     <!-- A search on a specific website failed, with the specified reason.
-         param 1: site name; param 2: message
-      -->
+         param 1: site name; param 2: message      -->
     <string name="error_search_x_failed_y">Searching on %1$s failed: %2$s.</string>
 
     <string name="error_search_failed_network">Please open the Settings and check your network and Search Site preferences.\nAlso check your device network settings.</string>
@@ -288,13 +276,6 @@
 
     <!-- Info message for the "editions" filter selection (part of the style settings). -->
     <string name="info_filter_edition">Select 0 or more options and tap “OK” to apply them, or tap “All books” to disregard all of them.</string>
-
-    <!-- Explanatory note of the 'import from archive' "all books" option -->
-    <string name="txt_import_option_all_books">New books will be added. Existing books will be updated.</string>
-    <!-- Explanatory note of the 'import new & changed' option -->
-    <string name="txt_import_option_new_and_changed_books">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
-    <!-- Explanatory note for 'export to archive' initial 'simple' dialog -->
-    <string name="txt_export_backup_all">All books, covers, preferences and custom styles will be exported to the archive.</string>
 
     <string name="txt_rebuild_scheduled">Rebuild scheduled</string>
 
@@ -425,13 +406,6 @@
         -->
     <string name="progress_msg_x_created_y_updated_z_skipped">%1$s: %2$d created, %3$d updated, %4$d skipped</string>
 
-    <!-- progress final message - all data was imported. -->
-    <string name="progress_end_import_complete">Import complete</string>
-    <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
-    <string name="progress_end_import_partially_complete">Partial import done</string>
-
-    <!-- progress final message - displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
-    <string name="progress_end_export_report">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Tips which are shown in some places on how to use a screen ========== -->
@@ -515,7 +489,6 @@
     <!-- ========== Calibre specific ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="menu_calibre_synchronize">Calibre (Export)</string>
     <string name="menu_calibre_import">Calibre (Import)</string>
 
     <!-- [VERIFIED] -->
@@ -563,10 +536,6 @@
     <string name="gr_title_sync_with_goodreads">Synchronize with Goodreads</string>
     <!-- admin menu selection -->
     <string name="gr_menu_import_all_from_goodreads">Import all from Goodreads</string>
-    <!-- admin menu selection -->
-    <string name="menu_send_updated">Send updated books</string>
-    <!-- admin menu selection -->
-    <string name="gr_menu_send_all">Send all</string>
 
     <!-- book and book list menu options -->
     <string name="gr_send_to_goodreads">Send to Goodreads</string>
@@ -863,7 +832,7 @@
     <!-- == Dialog, Activity and other "window" titles == -->
     <!-- ####################################################################################### -->
 
-    <string name="lbl_test_connection">Test connection</string>
+
 
     <!-- Screen title. -->
     <string name="lbl_search_isbn">ISBN Search</string>
@@ -887,10 +856,11 @@
     <string name="lbl_select_style">Select Style</string>
     <!-- Dialog title. -->
     <string name="lbl_duplicate_book">Copy this book</string>
-    <!-- Dialog title. -->
-    <string name="lbl_import_book_data">Import Books</string>
+
     <!-- Dialog title. -->
     <string name="lbl_details_have_changed">Details have changed</string>
+    <!-- Dialog title. -->
+    <string name="lbl_test_connection">Test connection</string>
 
     <!-- A section header on a screen. -->
     <string name="lbl_queue">Queue</string>
@@ -900,24 +870,55 @@
     <!-- ####################################################################################### -->
 
     <!-- Navigation panel menu option -->
+    <string name="menu_backup_and_export">Backup &amp; Export</string>
+    <string name="menu_export_import">Import &amp; Export</string>
+    <string name="X_lbl_data_import_export">Backup &amp; Import</string>
+
+    <!-- Button text; must be short. -->
+    <string name="action_import">Import</string>
+
+    <!-- Dialog title. -->
+    <string name="lbl_import_books">Import Books</string>
+
+    <!-- menu options. -->
     <string name="menu_import">Import</string>
+    <string name="menu_import_all">Import all books</string>
 
     <!-- Dialog title. -->
     <string name="lbl_import">Import</string>
-
     <!-- Progress Dialog title. -->
     <string name="lbl_importing">Importing…</string>
-    <!-- Dialog import all options. -->
+    <!-- Dialog import all options. (to many txt's, needs pruning) -->
     <string name="lbl_import_options">Select what will be imported.</string>
     <string name="lbl_import_books_option_new_only">New books only</string>
-    <string name="inf_import_books_option_new_only">Import only new books. Any updates to existing books will be ignored.</string>
+    <string name="txt_import_books_option_new_only">Import only new books. Any updates to existing books will be ignored.</string>
     <string name="lbl_import_books_option_new_and_updated">New and updated books</string>
-    <string name="inf_import_books_option_new_and_updated">Import new books and synchronize existing books based on their last modification date.</string>
+    <string name="txt_import_books_option_new_and_updated">Import new books and synchronize existing books based on their last modification date.</string>
     <string name="lbl_import_books_option_all">All books</string>
-    <string name="inf_import_books_option_all">Import new books and overwrite existing books. Use this for restoring a backup.</string>
+    <string name="txt_import_books_option_all">Import new books and overwrite existing books. Use this for restoring a backup.</string>
+    <string name="txt_import_books_option_all_books">New books will be added. Existing books will be updated.</string>
+    <string name="txt_import_books_option_new_and_changed">Only import books that are new, or which have been updated more recently in the archive. This is useful when synchronizing two devices.</string>
 
-    <!-- Navigation panel menu option -->
-    <string name="menu_backup_and_export">Backup &amp; Export</string>
+    <!-- progress final message - all data was imported. -->
+    <string name="progress_end_import_complete">Import complete</string>
+    <!-- progress final message - some data was imported. The user probably canceled before we finished. -->
+    <string name="progress_end_import_partially_complete">Partial import done</string>
+
+    <!-- generic import failure -->
+    <string name="error_import_failed">Import failed.</string>
+    <!-- Displayed when a CSV import fails -->
+    <string name="error_import_csv_missing_columns_x">File must contain a column with one of the following names: %1$s</string>
+    <string name="error_import_csv_line">Unknown error in row %1$d</string>
+    <string name="error_import_csv_line_to_long">Line too long (row=%1$d, length=%2$d)</string>
+    <string name="error_import_csv_column_count_mismatch">Column count mismatch in row %1$d</string>
+    <string name="error_import_csv_column_is_blank">Column “%1$s” is blank at row %2$d.</string>
+    <!-- The user selected a file to import which *is* recognized, but cannot be imported. -->
+    <string name="error_import_file_not_supported">The selected file cannot be imported.</string>
+
+
+    <!-- Button text; must be short. -->
+    <string name="action_export">Export</string>
+
     <!-- Dialog title. -->
     <string name="lbl_backup">Backup</string>
     <!-- Progress Dialog title. -->
@@ -926,19 +927,27 @@
     <string name="lbl_export_options">Select what will be exported.</string>
     <string name="lbl_export_books_option_all">All books</string>
     <string name="lbl_export_books_option_since_last_full_backup">New and updated books</string>
-    <string name="inf_export_books_option_since_last_full_backup">Books added or updated since last full backup.</string>
+    <string name="txt_export_books_option_since_last_full_backup">Books added or updated since last full backup.</string>
+    <!-- Explanatory note for 'export to archive' initial 'simple' dialog -->
+    <string name="txt_export_backup_all">All books, covers, preferences and custom styles will be exported to the archive.</string>
 
     <!-- progress final message - all data was exported. -->
-    <string name="progress_end_backup_success">Backup success</string>
-    <string name="progress_end_export_success">Export success</string>
-
+    <string name="progress_end_backup_success">Backup successful</string>
+    <string name="progress_end_export_success">Export successful</string>
     <!-- generic backup failure -->
     <string name="error_backup_failed">Backup Failed.</string>
     <!-- generic export failure -->
     <string name="error_export_failed">Export failed.</string>
-    <!-- generic import failure -->
-    <string name="error_import_failed">Import failed.</string>
 
+    <!-- progress final message - displayed when a Backup is done: 1: folder; 2: filename; 3: file size -->
+    <string name="progress_end_export_report">A %3$s file called “%2$s” was created in the “%1$s” folder and you should manually copy it elsewhere to protect the data in case your device is damaged, lost, or stolen.</string>
+
+
+    <string name="action_synchronize">Synchronize</string>
+    <!-- Sync with a remote server. -->
+    <string name="menu_send_all">Send all</string>
+    <!-- Sync with a remote server. -->
+    <string name="menu_send_updated">Send updated books</string>
 
     <!-- ####################################################################################### -->
     <!-- == Booklist FAB menu options. == -->
@@ -1082,11 +1091,6 @@
     <!-- [VERIFIED] -->
     <string name="btn_email">Email</string>
 
-
-    <string name="action_synchronize">Synchronize</string>
-    <string name="action_export">Export</string>
-    <string name="action_import">Import</string>
-
     <string name="action_validate">Validate</string>
 
     <!-- merging two bookshelves -->
@@ -1094,7 +1098,7 @@
     <!-- Duplication or Clone. Not the same as 'copy'. -->
     <string name="action_duplicate">Duplicate</string>
 
-    <!-- button text for import/export dialogs -->
+    <!-- button text. -->
     <string name="btn_options">Options</string>
 
     <!-- Menu / button content description text. Icon: res/drawable/ic_barcode -->
@@ -1635,7 +1639,7 @@
 
     <string name="X_lbl_preferred_styles">Preferred styles</string>
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
-    <string name="X_lbl_data_import_export">Backup &amp; Import</string>
+
     <!-- alternative used in some places for lbl_keywords -->
     <string name="X_lbl_search_criteria">Search Criteria</string>
 
@@ -1674,7 +1678,6 @@
     <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
     <string name="X_pe_use_recommended_option">Use the recommended option</string>
 
-
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still  ========== -->
     <!-- ####################################################################################### -->
@@ -1684,5 +1687,7 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+
+    <string name="menu_download_file">Download file</string>
 
 </resources>

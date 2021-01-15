@@ -55,9 +55,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
@@ -827,7 +827,7 @@ public class DAOSql {
             sqlBookTmp.append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_ID))
                       .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_UUID))
                       .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_LIBRARY_ID))
-                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_FILE_URL));
+                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_MAIN_FORMAT));
 
             // COALESCE nulls to "" for the LEFT OUTER JOIN'ed LOANEE name
             sqlBookTmp.append(",COALESCE(").append(TBL_BOOK_LOANEE.dot(KEY_LOANEE)).append(", '')")

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,18 +61,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BL_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BL_ROW_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -81,6 +69,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
@@ -135,7 +124,7 @@ final class BooklistBuilder {
      * The full {@link VirtualDomain} is kept this collection to build the SQL column string
      * for both the INSERT and the SELECT statement.
      */
-    private final Collection<VirtualDomain> mDomains = new ArrayList<>();
+    private final Collection<VirtualDomain> mVirtualDomains = new ArrayList<>();
 
     /** Domains belonging the current group including its outer groups. */
     private final List<Domain> mAccumulatedDomains = new ArrayList<>();
@@ -242,7 +231,7 @@ final class BooklistBuilder {
                 DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)), false);
 
         // The book id itself
-        addDomain(new VirtualDomain(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID)), false);
+        addDomain(new VirtualDomain(DOM_FK_BOOK, TBL_BOOKS.dot(DBDefinitions.KEY_PK_ID)), false);
 
         // Add style-specified groups
         for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
@@ -276,7 +265,7 @@ final class BooklistBuilder {
         // The 'AS' is for SQL readability/debug only
 
         boolean first = true;
-        for (final VirtualDomain domain : mDomains) {
+        for (final VirtualDomain virtualDomain : mVirtualDomains) {
             if (first) {
                 first = false;
             } else {
@@ -284,15 +273,15 @@ final class BooklistBuilder {
                 sourceColumns.append(',');
             }
 
-            destColumns.append(domain.getName());
-            sourceColumns.append(domain.getExpression())
+            destColumns.append(virtualDomain.getName());
+            sourceColumns.append(virtualDomain.getExpression())
                          .append(_AS_)
-                         .append(domain.getName());
+                         .append(virtualDomain.getName());
         }
 
         // add the node key column
         destColumns.append(',')
-                   .append(KEY_BL_NODE_KEY);
+                   .append(DBDefinitions.KEY_BL_NODE_KEY);
         sourceColumns.append(',')
                      .append(buildNodeKey())
                      .append(_AS_)
@@ -390,10 +379,14 @@ final class BooklistBuilder {
         // Don't apply constraints (no need)
         mNavTable.recreate(syncedDb, false);
         syncedDb.execSQL(INSERT_INTO_ + mNavTable.getName()
-                         + " (" + KEY_FK_BOOK + ',' + KEY_FK_BL_ROW_ID + ") "
-                         + SELECT_ + KEY_FK_BOOK + ',' + KEY_PK_ID
+                         + " (" + DBDefinitions.KEY_FK_BOOK
+                         + ',' + DBDefinitions.KEY_FK_BL_ROW_ID + ") "
+
+                         + SELECT_ + DBDefinitions.KEY_FK_BOOK
+                         + ',' + DBDefinitions.KEY_PK_ID
+
                          + _FROM_ + mListTable.getName()
-                         + _WHERE_ + KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                         + _WHERE_ + DBDefinitions.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
                          + _ORDER_BY_ + DBDefinitions.KEY_PK_ID
                         );
 
@@ -455,11 +448,11 @@ final class BooklistBuilder {
 
             // Create the INSERT columns clause for the next level up
             final StringBuilder listColumns = new StringBuilder()
-                    .append(KEY_BL_NODE_LEVEL)
-                    .append(',').append(KEY_BL_NODE_GROUP)
-                    .append(',').append(KEY_BL_NODE_KEY)
-                    .append(',').append(KEY_BL_NODE_EXPANDED)
-                    .append(',').append(KEY_BL_NODE_VISIBLE);
+                    .append(DBDefinitions.KEY_BL_NODE_LEVEL)
+                    .append(',').append(DBDefinitions.KEY_BL_NODE_GROUP)
+                    .append(',').append(DBDefinitions.KEY_BL_NODE_KEY)
+                    .append(',').append(DBDefinitions.KEY_BL_NODE_EXPANDED)
+                    .append(',').append(DBDefinitions.KEY_BL_NODE_VISIBLE);
 
             // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
             // All others must be set to 0/0. The actual state will be set afterwards.
@@ -469,7 +462,7 @@ final class BooklistBuilder {
             final StringBuilder listValues = new StringBuilder()
                     .append(level)
                     .append(',').append(group.getId())
-                    .append(",NEW.").append(KEY_BL_NODE_KEY)
+                    .append(",NEW.").append(DBDefinitions.KEY_BL_NODE_KEY)
                     .append(",").append(expVis)
                     // level 1 is always visible. THIS IS CRITICAL!
                     .append(",").append(level == 1 ? 1 : expVis);
@@ -503,7 +496,7 @@ final class BooklistBuilder {
             final String levelTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
                     + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                    + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + (level + 1)
+                    + "\n WHEN NEW." + DBDefinitions.KEY_BL_NODE_LEVEL + '=' + (level + 1)
                     + " AND NOT EXISTS("
                     + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + _WHERE_ + whereClause
                     + /* */ ')'
@@ -522,7 +515,7 @@ final class BooklistBuilder {
         final String currentValueTgSql =
                 "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
                 + " AFTER INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + groupCount
+                + "\n WHEN NEW." + DBDefinitions.KEY_BL_NODE_LEVEL + '=' + groupCount
                 + "\n BEGIN"
                 + "\n  DELETE FROM " + mTriggerHelperTable.getName() + ';'
                 + "\n  INSERT INTO " + mTriggerHelperTable.getName()
@@ -553,21 +546,21 @@ final class BooklistBuilder {
      * Add a VirtualDomain.
      * This encapsulates the actual Domain, the expression, and the (optional) sort flag.
      *
-     * @param vDomain VirtualDomain to add
-     * @param isGroup flag: the added VirtualDomain is a group level domain.
+     * @param virtualDomain VirtualDomain to add
+     * @param isGroup       flag: the added VirtualDomain is a group level domain.
      */
-    private void addDomain(@NonNull final VirtualDomain vDomain,
+    private void addDomain(@NonNull final VirtualDomain virtualDomain,
                            final boolean isGroup) {
 
         // Add to the table, if not already there
-        final boolean added = mListTable.addDomain(vDomain.getDomain());
-        final String expression = vDomain.getExpression();
+        final boolean added = mListTable.addDomain(virtualDomain.getDomain());
+        final String expression = virtualDomain.getExpression();
 
         // If the domain was already present, and it has an expression,
         // check the expression being different (or not) from the stored expression
         if (!added
             && expression != null
-            && expression.equals(mExpressionsDupCheck.get(vDomain.getDomain()))) {
+            && expression.equals(mExpressionsDupCheck.get(virtualDomain.getDomain()))) {
             // same expression, we do NOT want to add it.
             // This is NOT a bug, although one could argue it's an efficiency issue.
             return;
@@ -576,19 +569,19 @@ final class BooklistBuilder {
         // If the expression is {@code null},
         // then the domain is just meant for the lowest level; i.e. the book.
         if (expression != null) {
-            mDomains.add(vDomain);
-            mExpressionsDupCheck.put(vDomain.getDomain(), expression);
+            mVirtualDomains.add(virtualDomain);
+            mExpressionsDupCheck.put(virtualDomain.getDomain(), expression);
         }
 
         // If needed, add to the order-by domains, if not already there
-        if (vDomain.isSorted() && !mOrderByDupCheck.contains(vDomain.getDomain().getName())) {
-            mOrderByDomains.add(vDomain);
-            mOrderByDupCheck.add(vDomain.getDomain().getName());
+        if (virtualDomain.isSorted() && !mOrderByDupCheck.contains(virtualDomain.getName())) {
+            mOrderByDomains.add(virtualDomain);
+            mOrderByDupCheck.add(virtualDomain.getName());
         }
 
         // Accumulate the group domains.
         if (isGroup) {
-            mAccumulatedDomains.add(vDomain.getDomain());
+            mAccumulatedDomains.add(virtualDomain.getDomain());
         }
     }
 
@@ -665,6 +658,7 @@ final class BooklistBuilder {
      *      <li>{@link DBDefinitions#TBL_BOOK_BOOKSHELF}
      *      + {@link DBDefinitions#TBL_BOOKSHELF}</li>
      *      <li>{@link DBDefinitions#TBL_BOOK_LOANEE}</li>
+     *      <li>{@link DBDefinitions#TBL_CALIBRE_BOOKS}</li>
      * </ul>
      *
      * @param context Current context
@@ -706,18 +700,20 @@ final class BooklistBuilder {
             if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                 // don't care about Author type, so just grab the primary (i.e. pos==1)
                 sql.append(_AND_)
-                   .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)).append("=1");
+                   .append(TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_POSITION))
+                   .append("=1");
             } else {
                 // grab the desired type, or if no such type, grab the 1st
                 //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
                 sql.append(" AND (((")
-                   .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                   .append(TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK))
                    .append(" & ").append(primaryAuthorType).append(")<>0)")
                    .append(" OR (((")
-                   .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                   .append(TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK))
                    .append(" &~ ").append(primaryAuthorType).append(")=0)")
                    .append(_AND_)
-                   .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION)).append("=1))");
+                   .append(TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_POSITION))
+                   .append("=1))");
             }
         }
         // Join with Authors to make the names available
@@ -731,7 +727,8 @@ final class BooklistBuilder {
             // the user wants the book to show under all its Series
             if (!mStyle.isShowBooksUnderEachSeries(context)) {
                 sql.append(_AND_)
-                   .append(TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION)).append("=1");
+                   .append(TBL_BOOK_SERIES.dot(DBDefinitions.KEY_BOOK_SERIES_POSITION))
+                   .append("=1");
             }
             // Join with Series to make the titles available
             sql.append(TBL_BOOK_SERIES.leftOuterJoin(TBL_SERIES));
@@ -745,11 +742,22 @@ final class BooklistBuilder {
             // the user wants the book to show under all its Publishers
             if (!mStyle.isShowBooksUnderEachPublisher(context)) {
                 sql.append(_AND_)
-                   .append(TBL_BOOK_PUBLISHER.dot(KEY_BOOK_PUBLISHER_POSITION)).append("=1");
+                   .append(TBL_BOOK_PUBLISHER.dot(DBDefinitions.KEY_BOOK_PUBLISHER_POSITION))
+                   .append("=1");
             }
             // Join with Publishers to make the names available
             sql.append(TBL_BOOK_PUBLISHER.leftOuterJoin(TBL_PUBLISHERS));
         }
+
+
+        // Join with Calibre bridging table if required.
+        if (mVirtualDomains.stream()
+                           .map(VirtualDomain::getDomain)
+                           .map(Domain::getName)
+                           .anyMatch(n -> n.startsWith(DBDefinitions.PREFIX_KEY_CALIBRE))) {
+            sql.append(TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS));
+        }
+
         return sql.toString();
     }
 

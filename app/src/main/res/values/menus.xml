@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -55,6 +55,8 @@
     <integer name="MENU_ORDER_SHARE">720</integer>
     <integer name="MENU_ORDER_SEND_TO_GOODREADS">730</integer>
 
+    <integer name="MENU_ORDER_CALIBRE">750</integer>
+
     <integer name="MENU_ORDER_VIEW_BOOK_AT_SITE">800</integer>
     <!-- NEWTHINGS: adding a new search engine: optional: add a menu order value -->
     <!-- General interest first -->
@@ -85,6 +87,7 @@
     <item name="MENU_DUPLICATE" type="id" />
     <item name="MENU_SHOW_ALL" type="id" />
     <item name="MENU_SEARCH" type="id" />
+    <item name="MENU_SETTINGS" type="id" />
 
     <item name="MENU_UPDATE_FROM_INTERNET" type="id" />
     <item name="MENU_UPDATE_FROM_INTERNET_THIS_SHELF_ONLY" type="id" />
@@ -98,8 +101,8 @@
     <item name="MENU_BOOK_LOAN_ADD" type="id" />
     <item name="MENU_BOOK_LOAN_DELETE" type="id" />
 
-    <item name="MENU_BOOK_READ" type="id" />
-    <item name="MENU_BOOK_UNREAD" type="id" />
+    <item name="MENU_BOOK_SET_READ" type="id" />
+    <item name="MENU_BOOK_SET_UNREAD" type="id" />
 
     <item name="MENU_AUTHOR_EDIT" type="id" />
     <item name="MENU_AUTHOR_SET_COMPLETE" type="id" />
@@ -132,7 +135,6 @@
 
     <item name="MENU_BOOK_SEND_TO_GOODREADS" type="id" />
     <item name="MENU_GOODREADS_TASKS" type="id" />
-    <item name="MENU_GOODREADS_SETTINGS" type="id" />
 
     <item name="MENU_POPULATE_TOC_FROM_ISFDB" type="id" />
 
@@ -163,6 +165,11 @@
     <item name="MENU_AMAZON_BOOKS_IN_SERIES" type="id" />
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR" type="id" />
     <item name="MENU_AMAZON_BOOKS_BY_AUTHOR_IN_SERIES" type="id" />
+
+    <!-- Calibre submenu -->
+    <item name="SUBMENU_CALIBRE" type="id" />
+    <item name="MENU_CALIBRE_DOWNLOAD" type="id" />
+
 
     <!-- Thumbnail context menu -->
     <item name="SUBMENU_THUMB_REPLACE" type="id" />

@@ -224,7 +224,7 @@ public class ImportFragment
                 onImportNotSupported(R.string.error_import_file_not_supported);
                 return;
             } catch (@NonNull final FileNotFoundException e) {
-                onImportNotSupported(R.string.error_import_file_not_recognized);
+                onImportNotSupported(R.string.error_file_not_recognized);
                 return;
             }
 
@@ -234,7 +234,7 @@ public class ImportFragment
                     //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.ic_warning)
-                            .setTitle(R.string.lbl_import_book_data)
+                            .setTitle(R.string.lbl_import_books)
                             .setMessage(R.string.warning_import_csv)
                             .setNegativeButton(android.R.string.cancel,
                                                (d, w) -> getActivity().finish())
@@ -462,6 +462,7 @@ public class ImportFragment
                                   @NonNull final ImportResults result) {
 
         if (result.styles > 0) {
+            //noinspection ConstantConditions
             StyleDAO.updateMenuOrder(getContext());
         }
 
@@ -491,7 +492,6 @@ public class ImportFragment
 
         final List<String> items = new LinkedList<>();
 
-        //TODO: RTL
         if (result.booksCreated > 0 || result.booksUpdated > 0 || result.booksSkipped > 0) {
             items.add(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
                                 getString(R.string.lbl_books),
@@ -547,7 +547,6 @@ public class ImportFragment
                            .collect(Collectors.joining("\n")));
     }
 
-
     protected void onProgress(@NonNull final ProgressMessage message) {
         if (mProgressDialog == null) {
             mProgressDialog = getOrCreateProgressDialog();
@@ -588,11 +587,11 @@ public class ImportFragment
         @NonNull
         @Override
         public Intent createIntent(@NonNull final Context context,
-                                   @Nullable final String uri) {
+                                   @Nullable final String url) {
             final Intent intent = new Intent(context, FragmentHostActivity.class)
                     .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, TAG);
-            if (uri != null) {
-                intent.putExtra(ImportViewModel.BKEY_URI, uri);
+            if (url != null) {
+                intent.putExtra(ImportViewModel.BKEY_URL, url);
             }
             return intent;
         }

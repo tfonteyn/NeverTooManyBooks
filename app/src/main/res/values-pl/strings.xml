@@ -97,7 +97,7 @@
     <string name="error_if_the_problem_persists">Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną za pomocą opcji „%1$s” u dołu strony ustawień.</string>
     <string name="error_import_csv_missing_columns_x">Plik musi zawierać jedno z pól: %1$s</string>
     <string name="error_import_failed">Import nie powiódł się.</string>
-    <string name="error_import_file_not_recognized">Wybrany plik nie został rozpoznany.</string>
+    <string name="error_file_not_recognized">Wybrany plik nie został rozpoznany.</string>
     <string name="error_network_please_connect">Połącz się z internetem.</string>
     <string name="httpErrorIO">Nie można nawiązać połączenia z serwerem. Spróbuj ponownie później.</string>
     <string name="httpErrorTimeout">Zbyt długi czas oczekiwania na połączenie z serwerem.</string>
@@ -131,7 +131,7 @@
     <string name="gr_info_send_all_books_results">Przetworzono %1$d książek: %2$d wysłano pomyślnie, %3$d bez ISBN, a %4$d z ISBN, ale nie znaleziono w Goodreads</string>
     <string name="gr_info_send_books">Spowoduje to wysłanie biblioteki do Goodreads. Możesz wysłać wszystkie swoje książki lub tylko książki zaktualizowane od czasu ich ostatniego skopiowania do lub z Goodreads (w tym wszystkie książki, które nie zostały jeszcze wysłane) lub możesz anulować aktualizację. Jeśli nigdy nie wysłałeś żadnych książek, nie ma różnicy między pierwszymi dwiema opcjami.</string>
     <string name="gr_menu_import_all_from_goodreads">Importuj wszystkie z Goodreads</string>
-    <string name="gr_menu_send_all">Wyślij wszystko</string>
+    <string name="menu_send_all">Wyślij wszystko</string>
     <string name="gr_send_to_goodreads">Wyślij do Goodreads</string>
     <string name="menu_send_updated">Wyślij zaktualizowane</string>
     <string name="gr_pt_collect_genre">Używaj popularnych nazw półek jako gatunków książek</string>
@@ -173,8 +173,8 @@
     <string name="txt_cleanup_files">Pliki pomocnicze możliwe do usunięcia zajmują %1$s na karcie SD. Logi i inne dane są zapisywane przy każdej aktualizacji, kopii danych i gdy program odmówi posłuszeństwa. Kliknij w przycisk poniżej by usunąć te pliki z karty SD. Jeśli pojawiają się problemy i program działa nieprawidłowo, rozważ wysłanie informacji do programistów - kliknij „%2$s” najpierw.</string>
     <string name="txt_displaying_n_books_in_m_entries">Wyświetlanie %1$d książek, w %2$d wpisów</string>
     <string name="txt_export_backup_all">Wszystkie książki, okładki, preferencje i niestandardowe style zostaną wyeksportowane do archiwum.</string>
-    <string name="txt_import_option_all_books">Nowe książki zostaną dodane. Istniejące książki zostaną zaktualizowane.</string>
-    <string name="txt_import_option_new_and_changed_books">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
+    <string name="txt_import_books_option_all_books">Nowe książki zostaną dodane. Istniejące książki zostaną zaktualizowane.</string>
+    <string name="txt_import_books_option_new_and_changed">Importuj tylko książki, które są nowe lub zostały zaktualizowane w archiwum ostatnio. Jest to przydatne podczas synchronizacji dwóch urządzeń.</string>
     <string name="txt_manage_fields">Wybrane pola są widoczne na ekranach dodawania i edycji książki. Pozostałe są ukryte.</string>
     <string name="confirm_registration_benefits">Ta funkcja korzysta z rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji lub wyłączyć tę wiadomość?\n Informacje te można znaleźć później w sekcji „%2$s” w ustawieniach.</string>
     <string name="confirm_registration_required">Ta funkcja wymaga rejestracji w %1$s. Czy chcesz zobaczyć więcej informacji?</string>
@@ -254,7 +254,7 @@
     <string name="lbl_edition_first_impression">Pierwszy wydruk</string>
     <string name="lbl_edition_limited">Edycja limitowana</string>
     <string name="lbl_edition_slipcase">Futerał</string>
-    <string name="inf_export_books_option_since_last_full_backup">Wszystkie książki dodane lub zaktualizowane od ostatniej pełnej kopii zapasowej.</string>
+    <string name="txt_export_books_option_since_last_full_backup">Wszystkie książki dodane lub zaktualizowane od ostatniej pełnej kopii zapasowej.</string>
     <string name="lbl_family_name">Nazwisko</string>
     <string name="lbl_field_usage_append">Dopisz do istniejącego</string>
     <string name="lbl_field_usage_copy_if_blank">Kopiuj, gdy puste</string>
@@ -411,7 +411,7 @@
     <string name="X_lbl_thumbnails">Miniatury</string>
     <string name="pg_ui">Interfejs użytkownika</string>
     <string name="pg_ui_field_visibility">Dostosuj widoczność pól</string>
-    <string name="progress_end_backup_success">Kopia zapasowa wykonana</string>
+    <string name="progress_end_backup_success">Резервное копирование выполнено успешно</string>
     <string name="cancelled">Anulowane</string>
     <string name="progress_end_import_complete">Import zakończony</string>
     <string name="progress_end_import_partially_complete">Wykonano częściowy import</string>
@@ -547,7 +547,7 @@
     <string name="X_lbl_edit_series">Edytuj serię</string>
     <string name="lbl_edit_style">Edytuj styl</string>
     <string name="lbl_export_options">Wybierz, co zostanie wyeksportowane.</string>
-    <string name="lbl_import_book_data">Importuj książki</string>
+    <string name="lbl_import_books">Importuj książki</string>
     <string name="lbl_import_options">Wybierz, co zostanie zaimportowane.</string>
     <string name="lbl_importing">Importowanie…</string>
     <string name="info_not_authorized">Nieautoryzowany</string>
@@ -674,9 +674,9 @@
     <string name="lbl_import_books_option_new_only">Tylko nowe książki</string>
     <string name="lbl_import_books_option_new_and_updated">Nowe i zaktualizowane książki</string>
     <string name="action_synchronize">Synchronizować</string>
-    <string name="inf_import_books_option_new_only">Importuj tylko nowe książki. Wszelkie aktualizacje istniejących książek będą ignorowane.</string>
-    <string name="inf_import_books_option_all">Importuj nowe książki i nadpisz istniejące książki. Użyj tego do przywrócenia kopii zapasowej.</string>
-    <string name="inf_import_books_option_new_and_updated">Importuj nowe książki i synchronizuj istniejące książki na podstawie daty ich ostatniej modyfikacji.</string>
+    <string name="txt_import_books_option_new_only">Importuj tylko nowe książki. Wszelkie aktualizacje istniejących książek będą ignorowane.</string>
+    <string name="txt_import_books_option_all">Importuj nowe książki i nadpisz istniejące książki. Użyj tego do przywrócenia kopii zapasowej.</string>
+    <string name="txt_import_books_option_new_and_updated">Importuj nowe książki i synchronizuj istniejące książki na podstawie daty ich ostatniej modyfikacji.</string>
     <string name="pt_enable_fast_scroller_overlay">Dymek tekstowy podczas przewijania</string>
     <string name="menu_import">Importuj</string>
     <string name="action_import">Importuj</string>
@@ -702,4 +702,7 @@
     <string name="error_network_failed_try_again">Sprawdź połączenie i spróbuj ponownie</string>
     <string name="lbl_test_connection">Przetestuj połączenie</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
+    <string name="menu_import_all">Importuj wszystkie książki</string>
+    <string name="progress_end_export_success">Eksport powiódł się</string>
+    <string name="error_export_failed">Eksport nie powiódł się</string>
 </resources>

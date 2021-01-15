@@ -476,7 +476,7 @@ public class CalibreContentServerReader
         if (!calibreBook.isNull("cover")) {
             final String coverUrl = calibreBook.optString("cover");
             if (!coverUrl.isEmpty() && mFetchCovers) {
-                final File file = mServer.fetchCover(context, calibreBookId, coverUrl);
+                final File file = mServer.getCover(context, calibreBookId, coverUrl);
                 book.setCover(context, mDb, 0, file);
             }
         }
@@ -522,8 +522,7 @@ public class CalibreContentServerReader
                 if (it.hasNext()) {
                     final String format = it.next();
                     if (format != null && !format.isEmpty()) {
-                        book.putString(DBDefinitions.KEY_CALIBRE_BOOK_FILE_URL,
-                                       mainFormat.getString(format));
+                        book.putString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
                     }
                 }
             }

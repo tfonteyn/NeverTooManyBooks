@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -96,6 +97,10 @@ public class FragmentHostActivity
 
             case PreferredStylesFragment.TAG:
                 addFirstFragment(R.id.main_fragment, PreferredStylesFragment.class, tag);
+                return;
+
+            case CalibreAdminFragment.TAG:
+                addFirstFragment(R.id.main_fragment, CalibreAdminFragment.class, tag);
                 return;
 
             case GoodreadsAdminFragment.TAG:

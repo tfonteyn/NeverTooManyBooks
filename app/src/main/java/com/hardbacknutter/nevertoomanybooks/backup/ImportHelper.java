@@ -109,18 +109,18 @@ public final class ImportHelper {
     }
 
     /**
-     * Constructor for a Calibre content server.
+     * Constructor for a Remote server.
      *
-     * @param hostUrl  for a Calibre content server.
-     * @param encoding the remote server to use
+     * @param uri      for the server.
+     * @param encoding i.e. the remote server to use
      */
-    static ImportHelper withRemoteServer(@NonNull final String hostUrl,
+    static ImportHelper withRemoteServer(@NonNull final Uri uri,
                                          @SuppressWarnings("SameParameterValue")
                                          @NonNull final ArchiveEncoding encoding) {
         if (!encoding.isRemoteServer()) {
             throw new IllegalStateException("Not a remote server");
         }
-        return new ImportHelper(Uri.parse(hostUrl), encoding);
+        return new ImportHelper(uri, encoding);
     }
 
     private void initWithDefault() {

@@ -99,7 +99,7 @@
     <string name="error_if_the_problem_persists">Sorun devam ederse, ayarlar sayfasının altındaki “%1$s” seçeneğiyle desteğe başvurun.</string>
     <string name="error_import_csv_missing_columns_x">Dosya, %1$s adlarından birini kullanan bir sütun içermeli</string>
     <string name="error_import_failed">İçe aktarma başarısız.</string>
-    <string name="error_import_file_not_recognized">Seçilen dosya tanınmıyor.</string>
+    <string name="error_file_not_recognized">Seçilen dosya tanınmıyor.</string>
     <string name="error_network_please_connect">Lütfen İnternet\'e bağlanın.</string>
     <string name="httpErrorIO">Sunucuyla iletişim kurulamadı. Daha sonra tekrar deneyin.</string>
     <string name="httpErrorTimeout">Sunucuya bağlanma işlemi zaman aşımına uğradı.</string>
@@ -134,7 +134,7 @@
     <string name="gr_info_send_all_books_results">%1$d kitap işlendi: %2$d tanesi başarıyla gönderildi, %3$d tanesinin ISBN\'si yok ve %4$d tanesinin ISBN\'si Goodreads\'te bulunamadı</string>
     <string name="gr_info_send_books">Bu işlem kitaplığınızı Goodreads\'e gönderecektir.\n\nİster tüm kitaplarınızı gönderebilir veya son göndermenizden bu yana güncellenen, alınan veya gönderilen kitapları seçebilir (henüz gönderilmeyen kitaplar da dahil olmak üzere) veya güncellemeyi iptal edebilirsiniz.\n\nEğer daha önce hiç kitap göndermediyseniz ilk iki seçenek arasında hiçbir ayrım bulunmamaktadır.</string>
     <string name="gr_menu_import_all_from_goodreads">Tümünü Goodreads\'den içe aktar</string>
-    <string name="gr_menu_send_all">Tümünü gönder</string>
+    <string name="menu_send_all">Tümünü gönder</string>
     <string name="gr_send_to_goodreads">Goodreads\'e gönder</string>
     <string name="menu_send_updated">Güncellenenleri gönder</string>
     <string name="gr_pt_collect_genre">Popüler kitap rafı adlarını kitap türü olarak kullanma</string>
@@ -176,8 +176,8 @@
     <string name="txt_cleanup_files">Temizlenebilir dosyalar şu anda SD kartta %1$s kullanmaktadır. Her güncellemenizde, her veritabanı yedeklemenizde veya her uygulamanın çökmesinde günlük dosyaları ve diğer veriler SD kartta saklanır. Bu bilgileri temizlemek için aşağıdaki düğmeye dokunun. Eğer çökmeler veya başka sorunlar yaşıyorsanız öncelikle “%2$s” düğmesini kullanmayı deneyin.</string>
     <string name="txt_displaying_n_books_in_m_entries">%2$d giride %1$d kitap görüntüleniyor</string>
     <string name="txt_export_backup_all">Tüm kitaplar, kapaklar, ayarlar ve kişiselleştirilmiş biçemler arşive aktarılacaktır.</string>
-    <string name="txt_import_option_all_books">Yeni kitaplar eklenecek. Mevcut kitaplar güncellenecek.</string>
-    <string name="txt_import_option_new_and_changed_books">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
+    <string name="txt_import_books_option_all_books">Yeni kitaplar eklenecek. Mevcut kitaplar güncellenecek.</string>
+    <string name="txt_import_books_option_new_and_changed">Yalnızca yeni olan veya son zamanlarda arşivde güncellenmiş kitapları içe aktar. Bu seçenek özellikle örneğin iki aygıtı eşlerken yararlıdır.</string>
     <string name="txt_manage_fields">Seçili alanlar kitap ekle/düzenle ekranlarında görünecektir. Seçilmeyen alanlar gizli kalacaktır.</string>
     <string name="confirm_registration_benefits">Bu özellik %1$s kayıt işleminden faydalanır. Daha fazla bilgi görmek veya bu mesajı devre dışı bırakmak ister misiniz?\n Bu bilgiyi daha sonra ayarlarda “%2$s” bölümünün altında bulabilirsiniz.</string>
     <string name="confirm_registration_required">Bu özellik %1$s ile kayıt gerektiriyor. Daha fazla bilgi görmek ister misiniz?</string>
@@ -258,7 +258,7 @@
     <string name="lbl_edition_first_impression">1. basım</string>
     <string name="lbl_edition_limited">Sınırlı sayıda</string>
     <string name="lbl_edition_slipcase">Kitap kabı</string>
-    <string name="inf_export_books_option_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
+    <string name="txt_export_books_option_since_last_full_backup">Son tüm yedeklemeden bu yana eklenen veya güncellenen kitaplar</string>
     <string name="lbl_family_name">Soyadı</string>
     <string name="lbl_field_usage_append">Ek veriyi iliştirir</string>
     <string name="lbl_field_usage_copy_if_blank">Boş ise eşlemle</string>
@@ -551,7 +551,7 @@
     <string name="X_lbl_edit_series">Serileri düzenle</string>
     <string name="lbl_edit_style">Biçemi düzenle</string>
     <string name="lbl_export_options">Nelerin dışa aktarılacağını seçin.</string>
-    <string name="lbl_import_book_data">Kitapları içe aktar</string>
+    <string name="lbl_import_books">Kitapları içe aktar</string>
     <string name="lbl_import_options">Neyin içe aktarılacağını seçin</string>
     <string name="lbl_importing">İçe aktarılıyor…</string>
     <string name="info_not_authorized">Yetkilendirilmemiş</string>
@@ -676,9 +676,9 @@
     <string name="lbl_import_books_option_new_only">Yalnızca yeni kitaplar</string>
     <string name="lbl_import_books_option_new_and_updated">Yeni ve güncellenmiş kitaplar</string>
     <string name="action_synchronize">Senkronize et</string>
-    <string name="inf_import_books_option_new_only">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
-    <string name="inf_import_books_option_all">Yeni kitapları içe aktarın ve mevcut kitapların üzerine yazın. Bunu bir yedeği geri yüklemek için kullanın.</string>
-    <string name="inf_import_books_option_new_and_updated">Yeni kitapları içe aktarın ve mevcut kitapları son değişiklik tarihlerine göre senkronize edin.</string>
+    <string name="txt_import_books_option_new_only">Yalnızca yeni kitapları içe aktarın. Mevcut kitaplara yapılan herhangi bir güncelleme göz ardı edilecektir.</string>
+    <string name="txt_import_books_option_all">Yeni kitapları içe aktarın ve mevcut kitapların üzerine yazın. Bunu bir yedeği geri yüklemek için kullanın.</string>
+    <string name="txt_import_books_option_new_and_updated">Yeni kitapları içe aktarın ve mevcut kitapları son değişiklik tarihlerine göre senkronize edin.</string>
     <string name="pt_enable_fast_scroller_overlay">Kaydırma sırasında metin balonu</string>
     <string name="menu_import">Ithal etmek</string>
     <string name="action_import">Ithal etmek</string>
@@ -704,4 +704,7 @@
     <string name="error_network_failed_try_again">Bağlantıyı kontrol edip tekrar deneyin</string>
     <string name="lbl_test_connection">Bağlantıyı test edin</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
+    <string name="menu_import_all">Tüm kitapları içe aktar</string>
+    <string name="progress_end_export_success">İhracat başarılı</string>
+    <string name="error_export_failed">Dışa aktarılamadı</string>
 </resources>

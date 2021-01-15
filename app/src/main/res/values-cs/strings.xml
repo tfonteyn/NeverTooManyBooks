@@ -97,7 +97,7 @@
     <string name="error_if_the_problem_persists">Pokud problém přetrvává, obraťte se na podporu prostřednictvím možnosti „%1$s“ v dolní části stránky nastavení.</string>
     <string name="error_import_csv_missing_columns_x">Soubor musí obsahovat sloupec s jedním z následujících jmen: %1$s</string>
     <string name="error_import_failed">Import se nezdařil.</string>
-    <string name="error_import_file_not_recognized">Vybraný soubor není rozpoznán.</string>
+    <string name="error_file_not_recognized">Vybraný soubor není rozpoznán.</string>
     <string name="error_network_please_connect">Připojte se prosím k internetu.</string>
     <string name="httpErrorIO">Se serverem nelze komunikovat. Zkuste to později.</string>
     <string name="httpErrorTimeout">Spojení se serverem vypršelo.</string>
@@ -134,7 +134,7 @@
     <string name="gr_info_send_all_books_results">%1$d knih zpracováno: %2$d úspěšně odesláno, %3$d bez ISBN a %4$d s ISBN, které nebyly v Goodreads nalezeny.</string>
     <string name="gr_info_send_books">Zde můžete odeslat Vaši knihovnu na Goodreads.\nMůžete odeslat buď všechny knihy, nebo pouze ty knihy, které byly aktualizovány od chvíle, kdy jste naposledy kopíroval z nebo do Goodreads (spolu se všemi knihami, které doposud nebyly odeslány) nebo můžete aktualizaci zrušit.\n\nPokud jste doposud žádnou knihu neodeslal, pak mezi první a druhou volbou není žádký rozdíl.</string>
     <string name="gr_menu_import_all_from_goodreads">Importovat vše z Goodreads</string>
-    <string name="gr_menu_send_all">Odeslat vše</string>
+    <string name="menu_send_all">Odeslat vše</string>
     <string name="gr_send_to_goodreads">Poslat do Goodreads</string>
     <string name="menu_send_updated">Odeslat aktualizované</string>
     <string name="gr_pt_collect_genre">Jako žánry knih použijte populární názvy knihoven</string>
@@ -176,8 +176,8 @@
     <string name="txt_cleanup_files">Dočasné soubory momentálně zabírají %1$s na SD kartě. Logovací soubory a další data jsou ukládána na SD kartu při každé aktualizaci, při zálohování databáze, nebo při pádu aplikace. Stiskněte tlačítko níže pro odstranění těchto dat. Pokud jste se však v minulosti setkal s pádem aplikace, nebo dalšími problémy při jejím používání, uvažujte prosím nejprve o zaslání těchto informací prostřednictvím tlačítka „%2$s“.</string>
     <string name="txt_displaying_n_books_in_m_entries">Zobrazení %1$d knih v položkách %2$d</string>
     <string name="txt_export_backup_all">Všechny knihy, obaly, předvolby a vlastní styly budou exportovány do archivu.</string>
-    <string name="txt_import_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>
-    <string name="txt_import_option_new_and_changed_books">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
+    <string name="txt_import_books_option_all_books">Budou přidány nové knihy. Stávající knihy budou aktualizovány.</string>
+    <string name="txt_import_books_option_new_and_changed">Importujte pouze knihy, které jsou nové nebo které byly aktualizovány v archivu. To je užitečné při synchronizaci dvou zařízení.</string>
     <string name="txt_manage_fields">Vybraná pole jsou viditelná na obrazovce pro přidání/úpravu knihy. Nevybraná pole jsou skryta.</string>
     <string name="confirm_registration_benefits">Tato funkce těží z registrace u %1$s. Chcete zobrazit další informace nebo tuto zprávu deaktivovat?\nTyto informace najdete později v části „%2$s“ v nastavení.</string>
     <string name="confirm_registration_required">Tato funkce vyžaduje registraci s %1$s. Chtěli byste vidět více informací?</string>
@@ -256,7 +256,7 @@
     <string name="lbl_edition_first_impression">První tisk</string>
     <string name="lbl_edition_limited">Limitovaná edice</string>
     <string name="lbl_edition_slipcase">Slipcase</string>
-    <string name="inf_export_books_option_since_last_full_backup">Všechny knihy byly přidány nebo aktualizovány od poslední úplné zálohy.</string>
+    <string name="txt_export_books_option_since_last_full_backup">Všechny knihy byly přidány nebo aktualizovány od poslední úplné zálohy.</string>
     <string name="lbl_family_name">Příjmení</string>
     <string name="lbl_field_usage_append">Přidat extra data</string>
     <string name="lbl_field_usage_copy_if_blank">Kopírovat pokud je prázdné</string>
@@ -413,7 +413,7 @@
     <string name="X_lbl_thumbnails">Náhledy</string>
     <string name="pg_ui">Uživatelské rozhraní</string>
     <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
-    <string name="progress_end_backup_success">Zálohování úspěšně dokončeno</string>
+    <string name="progress_end_backup_success">Zálohování proběhlo úspěšně</string>
     <string name="cancelled">Zrušeno</string>
     <string name="progress_end_import_complete">Import byl dokončen</string>
     <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>
@@ -549,7 +549,7 @@
     <string name="X_lbl_edit_series">Upravit série</string>
     <string name="lbl_edit_style">Upravit styl</string>
     <string name="lbl_export_options">Vyberte, co bude exportováno.</string>
-    <string name="lbl_import_book_data">Importovat knihy</string>
+    <string name="lbl_import_books">Importovat knihy</string>
     <string name="lbl_import_options">Vyberte, co bude importováno.</string>
     <string name="lbl_importing">Import…</string>
     <string name="info_not_authorized">Neautorizováno</string>
@@ -677,9 +677,9 @@
     <string name="action_synchronize">Synchronizovat</string>
     <string name="lbl_import_books_option_new_and_updated">Nové a aktualizované knihy</string>
     <string name="lbl_import_books_option_new_only">Pouze nové knihy</string>
-    <string name="inf_import_books_option_new_only">Importujte pouze nové knihy. Všechny aktualizace existujících knih budou ignorovány.</string>
-    <string name="inf_import_books_option_all">Importujte nové knihy a přepište existující knihy. Použijte k obnovení zálohy.</string>
-    <string name="inf_import_books_option_new_and_updated">Importujte nové knihy a synchronizujte existující knihy na základě data jejich poslední úpravy.</string>
+    <string name="txt_import_books_option_new_only">Importujte pouze nové knihy. Všechny aktualizace existujících knih budou ignorovány.</string>
+    <string name="txt_import_books_option_all">Importujte nové knihy a přepište existující knihy. Použijte k obnovení zálohy.</string>
+    <string name="txt_import_books_option_new_and_updated">Importujte nové knihy a synchronizujte existující knihy na základě data jejich poslední úpravy.</string>
     <string name="pt_enable_fast_scroller_overlay">Textová bublina při posouvání</string>
     <string name="menu_import">Importovat</string>
     <string name="action_import">Importovat</string>
@@ -705,4 +705,7 @@
     <string name="error_network_failed_try_again">Zkontrolujte připojení a zkuste to znovu</string>
     <string name="lbl_test_connection">Vyzkoušejte připojení</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
+    <string name="menu_import_all">Importujte všechny knihy</string>
+    <string name="progress_end_export_success">Export byl úspěšný</string>
+    <string name="error_export_failed">Export se nezdařil</string>
 </resources>

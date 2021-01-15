@@ -81,7 +81,7 @@ public class ExportFragment
     public static final String TAG = "ExportFragment";
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
-    private static final String BKEY_ENCODING = TAG + ":encoding";
+    public static final String BKEY_ENCODING = TAG + ":encoding";
 
 
     /**
@@ -457,7 +457,7 @@ public class ExportFragment
         helper.setExportEntry(RecordType.Preferences, false);
 
         //noinspection ConstantConditions
-        helper.setUri(CalibreContentServer.getHostUri(getContext()));
+        helper.setUri(Uri.parse(CalibreContentServer.getHostUrl(getContext())));
         mArchiveWriterTask.start(helper);
     }
 

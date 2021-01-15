@@ -196,7 +196,8 @@ public abstract class BaseActivity
         mDrawerLayout = findViewById(R.id.drawer_layout);
         if (mDrawerLayout != null) {
             mNavigationView = mDrawerLayout.findViewById(R.id.nav_view);
-            mNavigationView.setNavigationItemSelectedListener(this::onNavigationItemSelected);
+            mNavigationView.setNavigationItemSelectedListener(
+                    item -> onNavigationItemSelected(item.getItemId()));
         }
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -323,37 +324,30 @@ public abstract class BaseActivity
         view.postDelayed(() -> view.setError(null), ERROR_DELAY_MS);
     }
 
-    /**
-     * Set the visibility of a NavigationView menu item.
-     *
-     * @param itemId  menu item resource id
-     * @param visible flag
-     */
-    private void setNavigationItemVisibility(@IdRes final int itemId,
-                                             final boolean visible) {
+    public void updateNavigationMenuVisibility() {
         if (mNavigationView != null) {
-            final MenuItem item = mNavigationView.getMenu().findItem(itemId);
-            if (item != null) {
-                item.setVisible(visible);
-            }
+            updateMenuItemVisibility(mNavigationView.getMenu());
         }
     }
 
-    public void updateNavigationMenuVisibility() {
+    public void updateMenuItemVisibility(@NonNull final Menu menu) {
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(this);
+        MenuItem item;
 
-        setNavigationItemVisibility(R.id.nav_goodreads, GoodreadsManager.isShowSyncMenus(global));
+        item = menu.findItem(R.id.nav_goodreads);
+        if (item != null) {
+            item.setVisible(GoodreadsManager.isShowSyncMenus(global));
+        }
 
-        final boolean calibre = CalibreContentServer.isShowSyncMenus(global);
-        setNavigationItemVisibility(R.id.nav_calibre_import, calibre);
-        setNavigationItemVisibility(R.id.nav_calibre_export, calibre);
+        item = menu.findItem(R.id.nav_calibre);
+        if (item != null) {
+            item.setVisible(CalibreContentServer.isShowSyncMenus(global));
+        }
     }
 
     @CallSuper
-    boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+    boolean onNavigationItemSelected(final int itemId) {
         closeNavigationDrawer();
-
-        final int itemId = item.getItemId();
 
         if (itemId == R.id.nav_manage_bookshelves) {
             // child classes which have a 'current bookshelf' should

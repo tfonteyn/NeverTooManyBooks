@@ -279,7 +279,7 @@ public final class DBDefinitions {
     public static final Domain DOM_CALIBRE_BOOK_ID;
     public static final Domain DOM_CALIBRE_BOOK_UUID;
     public static final Domain DOM_CALIBRE_BOOK_LIBRARY_ID;
-    public static final Domain DOM_CALIBRE_BOOK_FILE_URL;
+    public static final Domain DOM_CALIBRE_BOOK_MAIN_FORMAT;
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
@@ -426,10 +426,11 @@ public final class DBDefinitions {
      * as it comes from a user importing their Calibre libraries.
      * {@link #TBL_CALIBRE_BOOKS}.
      */
-    public static final String KEY_CALIBRE_BOOK_ID = "clb_id";
-    public static final String KEY_CALIBRE_BOOK_UUID = "clb_uuid";
-    public static final String KEY_CALIBRE_BOOK_LIBRARY_ID = "clb_library";
-    public static final String KEY_CALIBRE_BOOK_FILE_URL = "clb_file_url";
+    public static final String PREFIX_KEY_CALIBRE = "clb_";
+    public static final String KEY_CALIBRE_BOOK_ID = PREFIX_KEY_CALIBRE + "id";
+    public static final String KEY_CALIBRE_BOOK_UUID = PREFIX_KEY_CALIBRE + "uuid";
+    public static final String KEY_CALIBRE_BOOK_LIBRARY_ID = PREFIX_KEY_CALIBRE + "library";
+    public static final String KEY_CALIBRE_BOOK_MAIN_FORMAT = PREFIX_KEY_CALIBRE + "main_frm";
 
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf_name";
@@ -973,8 +974,8 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_CALIBRE_BOOK_UUID, ColumnInfo.TYPE_TEXT).build();
         DOM_CALIBRE_BOOK_LIBRARY_ID =
                 new Domain.Builder(KEY_CALIBRE_BOOK_LIBRARY_ID, ColumnInfo.TYPE_TEXT).build();
-        DOM_CALIBRE_BOOK_FILE_URL =
-                new Domain.Builder(KEY_CALIBRE_BOOK_FILE_URL, ColumnInfo.TYPE_TEXT).build();
+        DOM_CALIBRE_BOOK_MAIN_FORMAT =
+                new Domain.Builder(KEY_CALIBRE_BOOK_MAIN_FORMAT, ColumnInfo.TYPE_TEXT).build();
 
 
         /* ======================================================================================
@@ -1292,7 +1293,7 @@ public final class DBDefinitions {
                                      DOM_CALIBRE_BOOK_ID,
                                      DOM_CALIBRE_BOOK_UUID,
                                      DOM_CALIBRE_BOOK_LIBRARY_ID,
-                                     DOM_CALIBRE_BOOK_FILE_URL)
+                                     DOM_CALIBRE_BOOK_MAIN_FORMAT)
                          .setPrimaryKey(DOM_FK_BOOK)
                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
                          .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);

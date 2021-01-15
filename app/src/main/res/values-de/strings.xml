@@ -115,7 +115,7 @@
     <string name="error_import_csv_line_to_long">Zeile ist zu lang (Zeile=%1$d, Länge=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Die Datei muss eine Spalte mit den folgenden Namen enthalten: %1$s</string>
     <string name="error_import_failed">Import gescheitert.</string>
-    <string name="error_import_file_not_recognized">Die ausgewählte Datei wird nicht erkannt.</string>
+    <string name="error_file_not_recognized">Die ausgewählte Datei wird nicht erkannt.</string>
     <string name="error_import_file_not_supported">Die ausgewählte Datei kann nicht importiert werden.</string>
     <string name="httpErrorIO">Kommunikation mit dem Server konnte nicht hergestellt werden. Bitte versuche es später noch einmal.</string>
     <string name="error_network_please_connect">Bitte stelle eine Verbindung zum Internet her.</string>
@@ -153,7 +153,7 @@
     <string name="gr_info_send_all_books_results">%1$d Bücher verarbeitet: %2$d erfolgreich übertragen, %3$d ohne ISBN und %4$d mit einer in Goodreads nicht auffindbaren ISBN</string>
     <string name="gr_info_send_books">Damit wird Ihre Bibliothek an Goodreads gesendet.\n\nSie können auswählen, ob Sie alle Bücher oder nur die seit der letzten Übertragung geänderten (inklusive aller bisher nicht gesendeten Bücher) senden möchten, oder das Update abbrechen.\n\nWenn Sie noch nie Bücher gesendet haben, ist kein Unterschied zwischen den ersten beiden Optionen.</string>
     <string name="gr_menu_import_all_from_goodreads">Alles von Goodreads importieren</string>
-    <string name="gr_menu_send_all">Alles senden</string>
+    <string name="menu_send_all">Alles senden</string>
     <string name="menu_send_updated">Geänderte Bücher senden</string>
     <string name="gr_pt_collect_genre">Verwenden Sie beliebte Bücherregalnamen als Buchgenres</string>
     <string name="gr_send_book_to_goodreads">Buch %1$d an Goodreads senden</string>
@@ -278,7 +278,7 @@
     <string name="lbl_edition_limited">Limitierte Auflage</string>
     <string name="lbl_edition_slipcase">Schuber</string>
     <string name="lbl_edition">Auflage</string>
-    <string name="inf_export_books_option_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
+    <string name="txt_export_books_option_since_last_full_backup">Alle neuen und aktualisierten Bücher seit der letzten vollständigen Sicherung</string>
     <string name="lbl_export_options">Wählen Sie aus, was exportiert werden soll.</string>
     <string name="action_export">Export</string>
     <string name="lbl_family_name">Familienname</string>
@@ -293,7 +293,7 @@
     <string name="lbl_genre">Genre</string>
     <string name="lbl_given_names">Vornamen</string>
     <string name="lbl_image">Bild</string>
-    <string name="lbl_import_book_data">Bücher importieren</string>
+    <string name="lbl_import_books">Bücher importieren</string>
     <string name="lbl_import_options">Wählen Sie aus, was importiert werden soll.</string>
     <string name="lbl_import">Importieren</string>
     <string name="lbl_importing">Importiere…</string>
@@ -570,8 +570,8 @@
     <string name="txt_cleanup_files">Die Dateien belegen %1$s Speicherplatz auf der SD-Karte. Log-Dateien und andere Daten werden bei jeder App-Aktualisierung, Sicherungskopie oder wenn die App abstürzt auf der SD-Karte gespeichert. Klicken Sie den Knopf unten, um diese Dateien von der SD-Karte zu entfernen. Wenn Sie Abstürze oder andere Fehler erhalten, ziehen Sie bitte in Betracht, den „%2$s“ Knopf zuerst zu benutzen.</string>
     <string name="txt_displaying_n_books_in_m_entries">%1$d Bücher in %2$d Einträgen werden angezeigt</string>
     <string name="txt_export_backup_all">Alle Bücher, Buchumschläge, Einstellungen und benutzerdefinierten Stile werden in das Archiv exportiert.</string>
-    <string name="txt_import_option_all_books">Neue Bücher werden hinzugefügt. Vorhandene Bücher werden aktualisiert.</string>
-    <string name="txt_import_option_new_and_changed_books">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
+    <string name="txt_import_books_option_all_books">Neue Bücher werden hinzugefügt. Vorhandene Bücher werden aktualisiert.</string>
+    <string name="txt_import_books_option_new_and_changed">Nur neue oder aktuellere Bücher im Archiv. Das ist nützlich, um zwei Geräte zu synchronisieren.</string>
     <string name="txt_manage_fields">Die ausgewählten Felder werden im Bildschirm Buch hinzufügen/bearbeiten angezeigt. Nicht ausgewählte Felder werden nicht angezeigt.</string>
     <string name="txt_rebuild_scheduled">Wiederaufbau geplant</string>
     <string name="txt_select_fields_to_update">Die ausgewählten Felder werden aus dem Internet aktualisiert. Nicht ausgewählte Felder werden nicht geändert.</string>
@@ -679,9 +679,9 @@
     <string name="action_synchronize">Synchronisieren</string>
     <string name="lbl_import_books_option_new_and_updated">Neue und aktualisierte Bücher</string>
     <string name="lbl_import_books_option_new_only">Nur neue Bücher</string>
-    <string name="inf_import_books_option_new_only">Importieren Sie nur neue Bücher. Aktualisierungen vorhandener Bücher werden ignoriert.</string>
-    <string name="inf_import_books_option_all">Importieren Sie neue Bücher und überschreiben Sie vorhandene Bücher. Verwenden Sie diese Option, um eine Sicherung wiederherzustellen.</string>
-    <string name="inf_import_books_option_new_and_updated">Importieren Sie neue Bücher und synchronisieren Sie vorhandene Bücher basierend auf ihrem letzten Änderungsdatum.</string>
+    <string name="txt_import_books_option_new_only">Importieren Sie nur neue Bücher. Aktualisierungen vorhandener Bücher werden ignoriert.</string>
+    <string name="txt_import_books_option_all">Importieren Sie neue Bücher und überschreiben Sie vorhandene Bücher. Verwenden Sie diese Option, um eine Sicherung wiederherzustellen.</string>
+    <string name="txt_import_books_option_new_and_updated">Importieren Sie neue Bücher und synchronisieren Sie vorhandene Bücher basierend auf ihrem letzten Änderungsdatum.</string>
     <string name="pt_enable_fast_scroller_overlay">Textblase beim Scrollen</string>
     <string name="menu_import">Importieren</string>
     <string name="action_import">Importieren</string>
@@ -708,4 +708,7 @@
     <string name="error_network_failed_try_again">Prüfe die Verbindung und versuche es noch einmal</string>
     <string name="lbl_test_connection">Testen Sie die Verbindung</string>
     <string name="confirm_test_connection">Es ist ratsam, diese Verbindung zu testen, um später Probleme zu vermeiden.</string>
+    <string name="menu_import_all">Importieren Sie alle Bücher</string>
+    <string name="progress_end_export_success">Export erfolgreich</string>
+    <string name="error_export_failed">Export fehlgeschlagen</string>
 </resources>

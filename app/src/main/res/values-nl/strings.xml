@@ -113,7 +113,7 @@
     <string name="error_import_csv_line_to_long">Lijn is te lang (lijn=%1$d, lengte=%2$d)</string>
     <string name="error_import_csv_missing_columns_x">Import bestand moet een kolom met de volgende namen bevatten: %1$s</string>
     <string name="error_import_failed">Import mislukt.</string>
-    <string name="error_import_file_not_recognized">Het geselecteerde bestand is niet herkend.</string>
+    <string name="error_file_not_recognized">Het geselecteerde bestand is niet herkend.</string>
     <string name="error_import_file_not_supported">Het geselecteerde bestand kan niet worden geïmporteerd.</string>
     <string name="httpErrorIO">Kan niet communiceren met de server. Probeer het later opnieuw.</string>
     <string name="error_network_please_connect">Maak verbinding met internet.</string>
@@ -151,7 +151,7 @@
     <string name="gr_info_send_all_books_results">%1$d boeken verwerkt: %2$d met succes verzonden, %3$d zonder ISBN en %4$d met ISBN maar niet gevonden in Goodreads</string>
     <string name="gr_info_send_books">Dit zendt uw bibliotheek naar Goodreads.\n\nJe kan er voor kiezen alle boeken te sturen of alleen de boeken die je hebt bijgewerkt sinds deze werden gekopieerd van of naar Goodreads (inclusief alle boeken die nog niet werden verzonden) of je kan de update annuleren.\n\n Als ja nog nooit boeken hebt verzonden is er geen verschil tussen de eerste twee opties.</string>
     <string name="gr_menu_import_all_from_goodreads">Importeer alles uit Goodreads</string>
-    <string name="gr_menu_send_all">Zend alles</string>
+    <string name="menu_send_all">Zend alles</string>
     <string name="menu_send_updated">Zend bijgewerkte boeken</string>
     <string name="gr_pt_collect_genre">Gebruik populaire boekenplanknamen als boekgenres</string>
     <string name="gr_send_book_to_goodreads">Zend boek %1$d naar Goodreads</string>
@@ -276,7 +276,7 @@
     <string name="lbl_edition_limited">Gelimiteerd</string>
     <string name="lbl_edition_slipcase">Cassette</string>
     <string name="lbl_edition">Editie</string>
-    <string name="inf_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
+    <string name="txt_export_books_option_since_last_full_backup">Alle boeken die zijn toegevoegd of bijgewerkt sinds de laatste volledige back-up</string>
     <string name="lbl_export_options">Selecteer wat je wil exporteren.</string>
     <string name="action_export">Exporteren</string>
     <string name="lbl_family_name">Achternaam</string>
@@ -291,7 +291,7 @@
     <string name="lbl_genre">Genre</string>
     <string name="lbl_given_names">Voornamen</string>
     <string name="lbl_image">Afbeelding</string>
-    <string name="lbl_import_book_data">Boeken Importeren</string>
+    <string name="lbl_import_books">Boeken Importeren</string>
     <string name="lbl_import_options">Selecteer wat je wil importeren.</string>
     <string name="lbl_import">Importeren</string>
     <string name="lbl_importing">Importeren…</string>
@@ -439,7 +439,7 @@
     <string name="pg_style_groups">Groeperingen</string>
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="pg_ui">Gebruikersinterface</string>
-    <string name="progress_end_backup_success">Back-up gelukt</string>
+    <string name="progress_end_backup_success">Back-up succesvol</string>
     <string name="progress_end_export_report">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
     <string name="progress_end_import_complete">Import Compleet</string>
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
@@ -568,8 +568,8 @@
     <string name="txt_cleanup_files">Permanent te verwijderen bestanden nemen %1$s van uw SD-kaart in beslag. Log-bestanden en andere gegevens worden opgeslagen op uw SD-kaart bij iedere upgrade, na elke back-up van de database of wanneer de toepassing crasht. Tik op de knop hieronder om deze bestanden permanent te verwijderen van uw SD-kaart. Als je crashes ondervind of andere fouten, overweeg dan eerst de „%2$s” optie te gebruiken.</string>
     <string name="txt_displaying_n_books_in_m_entries">%1$d boeken, in %2$d slots</string>
     <string name="txt_export_backup_all">Alle boeken, afbeeldingen, instellingen en aangepaste stijlen zullen worden geëxporteerd naar het archief.</string>
-    <string name="txt_import_option_all_books">Nieuwe boeken worden toegevoegd. Bestaande boeken worden bijgewerkt.</string>
-    <string name="txt_import_option_new_and_changed_books">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
+    <string name="txt_import_books_option_all_books">Nieuwe boeken worden toegevoegd. Bestaande boeken worden bijgewerkt.</string>
+    <string name="txt_import_books_option_new_and_changed">Alleen nieuwe boeken importeren of boeken die onlangs zijn bijgewerkt in het archief. Dit is handig bij het synchroniseren van twee apparaten.</string>
     <string name="txt_manage_fields">Geselecteerde velden zijn zichtbaar in de toevoegen/bewerken boekschermen. Ongeselecteerde velden zijn verborgen.</string>
     <string name="txt_rebuild_scheduled">Herbouw gepland</string>
     <string name="txt_select_fields_to_update">De geselecteerde velden zullen worden bijgewerkt vanaf het internet. Niet geselecteerde velden blijven onveranderd.</string>
@@ -677,9 +677,9 @@
     <string name="lbl_import_books_option_new_only">Alleen nieuwe boeken</string>
     <string name="lbl_import_books_option_new_and_updated">Nieuwe en bijgewerkte boeken</string>
     <string name="action_synchronize">Synchroniseren</string>
-    <string name="inf_import_books_option_new_only">Importeer alleen nieuwe boeken. Updates van bestaande boeken worden genegeerd.</string>
-    <string name="inf_import_books_option_all">Importeer nieuwe boeken en overschrijf bestaande boeken. Gebruik dit om een back-up te herstellen.</string>
-    <string name="inf_import_books_option_new_and_updated">Importeer nieuwe boeken en synchroniseer bestaande boeken op basis van hun laatste wijzigingsdatum.</string>
+    <string name="txt_import_books_option_new_only">Importeer alleen nieuwe boeken. Updates van bestaande boeken worden genegeerd.</string>
+    <string name="txt_import_books_option_all">Importeer nieuwe boeken en overschrijf bestaande boeken. Gebruik dit om een back-up te herstellen.</string>
+    <string name="txt_import_books_option_new_and_updated">Importeer nieuwe boeken en synchroniseer bestaande boeken op basis van hun laatste wijzigingsdatum.</string>
     <string name="pt_enable_fast_scroller_overlay">Tekstballon tijdens het scrollen</string>
     <string name="menu_import">Importeren</string>
     <string name="action_import">Importeren</string>
@@ -706,4 +706,7 @@
     <string name="error_network_failed_try_again">Controleer de verbinding en probeer het opnieuw</string>
     <string name="lbl_test_connection">Test de verbinding</string>
     <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
+    <string name="menu_import_all">Importeer alle boeken</string>
+    <string name="progress_end_export_success">Export succesvol</string>
+    <string name="error_export_failed">Export mislukt</string>
 </resources>

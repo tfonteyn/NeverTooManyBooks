@@ -98,7 +98,7 @@
     <string name="error_if_the_problem_persists">Εάν το πρόβλημα παραμένει, επικοινωνήστε με την υποστήριξη μέσω της επιλογής «%1$s» στο κάτω μέρος της σελίδας ρυθμίσεων.</string>
     <string name="error_import_csv_missing_columns_x">Το αρχείο πρέπει να περιέχει στήλη με ένα από τα ακόλουθα όνοματα: %1$s</string>
     <string name="error_import_failed">Αποτυχία Εισαγωγής.</string>
-    <string name="error_import_file_not_recognized">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
+    <string name="error_file_not_recognized">Το επιλεγμένο αρχείο δεν αναγνωρίζεται.</string>
     <string name="error_network_please_connect">Συνδεθείτε στο διαδίκτυο.</string>
     <string name="httpErrorIO">Δεν ήταν δυνατή η επικοινωνία με τον διακομιστή. Προσπαθήστε ξανά αργότερα.</string>
     <string name="httpErrorTimeout">Το όριο χρόνου της σύνδεσης στον διακομιστή έληξε.</string>
@@ -135,7 +135,7 @@
     <string name="gr_info_send_all_books_results">%1$d βιβλία επεξεργάστηκαν: %2$d αποστάλθηκαν επιτυχώς, %3$d χωρίς ISBN και %4$d με ISBN αλλά δεν βρέθηκαν στο Goodreads</string>
     <string name="gr_info_send_books">H βιβλιοθήκη σας θα σταλθεί στο Goodreads.\n\nΜπορείτε να στείλετε όλα τα βιβλία σας, ή τα βιβλία που έχουν ενημερωθεί από την τελευταία φορα που αντιγράφηκαν από ή στο Goodreads (μαζί με όλα τα βιβλία που δεν έχουν σταλεί ακόμα) ή μπορείτε να ακυρώσετε την ενημέρωση.\n\nΑν δεν έχετε στείλει ποτέ βιβλία δεν υπάρχει διαφορά ανάμεσα στις δύο πρώτες επιλογές.</string>
     <string name="gr_menu_import_all_from_goodreads">Εισαγωγή όλων, από Goodreads</string>
-    <string name="gr_menu_send_all">Αποστολή όλων</string>
+    <string name="menu_send_all">Αποστολή όλων</string>
     <string name="gr_send_to_goodreads">Αποστολή στο Goodreads</string>
     <string name="menu_send_updated">Αποστολή ενημερωμένων</string>
     <string name="gr_pt_collect_genre">Χρησιμοποιήστε δημοφιλή ονόματα βιβλιοθηκών ως είδη βιβλίων</string>
@@ -177,8 +177,8 @@
     <string name="txt_cleanup_files">Τα προσωρινά αρχεία χρησιμοποιούν %1$s στην κάρτα SD. Αρχεία καταγραφής και άλλων δεδομένων αποθηκεύονται στην κάρτα SD σε κάθε ενημέρωση, όταν γινονται αντίγραφα ασφαλείας της βάσης δεδομένων και όταν η εφαρμογή σταματάει να λειτουργεί. Πατήστε το παρακάτω κουμπί για να καθαρίσετε αυτά τα αρχεία από την κάρτα SD. Εαν αντιμετωπίζετε διακοπές λειτουργίας ή άλλα σφάλματα, παρακαλούμε σκεφτείτε να πατήσετε πρώτα το κουμπί «%2$s».</string>
     <string name="txt_displaying_n_books_in_m_entries">εμφανίζονται %1$d βιβλία, σε %2$d καταχωρήσεις</string>
     <string name="txt_export_backup_all">Όλα τα βιβλία, εξώφυλλα, ρυθμίσεις και προσαρμοσμένα στυλ θα εξαχθούν στο Αρχείο.</string>
-    <string name="txt_import_option_all_books">Θα προστεθούν νέα βιβλία. τα υπάρχοντα βιβλία θα ενημερωθούν.</string>
-    <string name="txt_import_option_new_and_changed_books">Εισαγωγή μόνο βιβλίων που είναι καινούρια, ή που έχουν ενημερωθεί πιο πρόσφατα στο Αρχείο. Χρήσιμο όταν συγχρονίζετε δύο συσκευές.</string>
+    <string name="txt_import_books_option_all_books">Θα προστεθούν νέα βιβλία. τα υπάρχοντα βιβλία θα ενημερωθούν.</string>
+    <string name="txt_import_books_option_new_and_changed">Εισαγωγή μόνο βιβλίων που είναι καινούρια, ή που έχουν ενημερωθεί πιο πρόσφατα στο Αρχείο. Χρήσιμο όταν συγχρονίζετε δύο συσκευές.</string>
     <string name="txt_manage_fields">Τα επιλεγμένα πεδία είναι ορατά στις οθόνες προσθήκης/επεξεργασίας βιβλίου. Τα μη επιλεγμένα πεδία είναι κρυφά.</string>
     <string name="confirm_registration_benefits">Αυτή η δυνατότητα επωφελείται από την εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες ή να απενεργοποιήσετε αυτό το μήνυμα;\n Μπορείτε να βρείτε αυτές τις πληροφορίες σε μεταγενέστερη ημερομηνία κάτω από την ενότητα «%2$s» στις ρυθμίσεις.</string>
     <string name="confirm_registration_required">Αυτή η λειτουργία απαιτεί εγγραφή με %1$s. Θα θέλατε να δείτε περισσότερες πληροφορίες;</string>
@@ -259,7 +259,7 @@
     <string name="lbl_edition_first_impression">Πρώτη εκτύπωση</string>
     <string name="lbl_edition_limited">Περιορισμένη έκδοση</string>
     <string name="lbl_edition_slipcase">παντζούρια</string>
-    <string name="inf_export_books_option_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
+    <string name="txt_export_books_option_since_last_full_backup">Όλα τα βιβλία που προστέθηκαν ή ενημερώθηκαν από το τελευταίο πλήρες αντίγραφο ασφαλείας</string>
     <string name="lbl_family_name">Επώνυμο</string>
     <string name="lbl_field_usage_append">Προσθέτει επιπλέον δεδομένα</string>
     <string name="lbl_field_usage_copy_if_blank">Αντιγραφή εαν ειναι κενό</string>
@@ -416,7 +416,7 @@
     <string name="X_lbl_thumbnails">Μικρογραφίες</string>
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
-    <string name="progress_end_backup_success">Αντίγραφο δημιουργήθηκε επιτυχώς</string>
+    <string name="progress_end_backup_success">Η δημιουργία αντιγράφων ασφαλείας ήταν επιτυχής</string>
     <string name="cancelled">Ακυρώθηκε</string>
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="progress_end_import_partially_complete">Έγινε μερική εισαγωγή</string>
@@ -555,7 +555,7 @@
     <string name="X_lbl_edit_series">Επεξεργασία Σειράς</string>
     <string name="lbl_edit_style">Επεξεργασία στυλ</string>
     <string name="lbl_export_options">Επιλέξτε τι θα εξαχθεί.</string>
-    <string name="lbl_import_book_data">Εισαγωγή Βιβλιων</string>
+    <string name="lbl_import_books">Εισαγωγή Βιβλιων</string>
     <string name="lbl_import_options">Επιλέξτε τι θα εισαχθεί.</string>
     <string name="lbl_importing">Γίνεται εισαγωγή…</string>
     <string name="info_not_authorized">Χωρίς άδεια</string>
@@ -681,9 +681,9 @@
     <string name="lbl_import_books_option_new_only">Μόνο νέα βιβλία</string>
     <string name="lbl_import_books_option_new_and_updated">Νέα και ενημερωμένα βιβλία</string>
     <string name="action_synchronize">Συγχρονίζω</string>
-    <string name="inf_import_books_option_new_only">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
-    <string name="inf_import_books_option_all">Εισαγάγετε νέα βιβλία και αντικαταστήστε τα υπάρχοντα βιβλία. Χρησιμοποιήστε αυτό για την επαναφορά ενός αντιγράφου ασφαλείας.</string>
-    <string name="inf_import_books_option_new_and_updated">Εισαγάγετε νέα βιβλία και συγχρονίστε υπάρχοντα βιβλία με βάση την τελευταία ημερομηνία τροποποίησής τους.</string>
+    <string name="txt_import_books_option_new_only">Εισαγωγή μόνο νέων βιβλίων. Τυχόν ενημερώσεις σε υπάρχοντα βιβλία θα αγνοηθούν.</string>
+    <string name="txt_import_books_option_all">Εισαγάγετε νέα βιβλία και αντικαταστήστε τα υπάρχοντα βιβλία. Χρησιμοποιήστε αυτό για την επαναφορά ενός αντιγράφου ασφαλείας.</string>
+    <string name="txt_import_books_option_new_and_updated">Εισαγάγετε νέα βιβλία και συγχρονίστε υπάρχοντα βιβλία με βάση την τελευταία ημερομηνία τροποποίησής τους.</string>
     <string name="pt_enable_fast_scroller_overlay">Φούσκα κειμένου κατά την κύλιση</string>
     <string name="menu_import">εισάγω</string>
     <string name="action_import">εισάγω</string>
@@ -709,4 +709,7 @@
     <string name="error_network_failed_try_again">Ελέγξτε τη σύνδεση και δοκιμάστε ξανά</string>
     <string name="lbl_test_connection">Δοκιμάστε τη σύνδεση</string>
     <string name="confirm_test_connection">Συνιστάται να δοκιμάσετε αυτήν τη σύνδεση για να αποφύγετε προβλήματα αργότερα.</string>
+    <string name="menu_import_all">Εισαγωγή όλων των βιβλίων</string>
+    <string name="progress_end_export_success">Η εξαγωγή ήταν επιτυχής</string>
+    <string name="error_export_failed">Η εξαγωγή απέτυχε</string>
 </resources>

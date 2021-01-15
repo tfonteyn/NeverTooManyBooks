@@ -22,6 +22,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screenBorder"
@@ -42,15 +43,17 @@
         style="@style/MenuButton"
         android:layout_marginStart="@dimen/field_margin"
         android:text="@string/action_synchronize"
+        android:visibility="gone"
         app:icon="@drawable/ic_sync"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
+        tools:visibility="visible"
         />
 
     <Button
         android:id="@+id/btn_import"
         style="@style/MenuButton"
-        android:text="@string/menu_import_all"
+        android:text="@string/menu_import"
         app:icon="@drawable/ic_file_download"
         app:layout_constraintStart_toStartOf="@id/btn_sync"
         app:layout_constraintTop_toBottomOf="@id/btn_sync"
@@ -59,19 +62,10 @@
     <Button
         android:id="@+id/btn_send_updated_books"
         style="@style/MenuButton"
-        android:text="@string/menu_send_updated"
+        android:text="@string/action_export"
         app:icon="@drawable/ic_send"
         app:layout_constraintStart_toStartOf="@id/btn_sync"
         app:layout_constraintTop_toBottomOf="@id/btn_import"
-        />
-
-    <Button
-        android:id="@+id/btn_send_all_books"
-        style="@style/MenuButton"
-        android:text="@string/menu_send_all"
-        app:icon="@drawable/ic_file_upload"
-        app:layout_constraintStart_toStartOf="@id/btn_sync"
-        app:layout_constraintTop_toBottomOf="@id/btn_send_updated_books"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

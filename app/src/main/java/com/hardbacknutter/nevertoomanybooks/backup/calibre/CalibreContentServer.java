@@ -20,7 +20,9 @@
 package com.hardbacknutter.nevertoomanybooks.backup.calibre;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.UriPermission;
 import android.net.Uri;
 import android.util.Base64;
 
@@ -29,12 +31,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.WorkerThread;
-import androidx.core.util.Pair;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.preference.PreferenceManager;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,6 +64,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
@@ -74,7 +80,12 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.HttpConstants;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
@@ -93,20 +104,21 @@ public class CalibreContentServer {
 
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
-
+    /** DER encoded CA certificate. */
+    public static final String CA_FILE = TAG + ".ca";
     /** Preferences prefix. */
     private static final String PREF_KEY = "calibre";
 
+    /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
+    public static final String PK_HOST_URL = PREF_KEY + ".host.url";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
     public static final String PK_HOST_PASS = PREF_KEY + ".host.password";
+
     /** Whether to show any sync menus at all. */
     public static final String PK_ENABLED = PREF_KEY + ".enabled";
 
+    public static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
 
-    /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
-    public static final String PK_HOST_URL = PREF_KEY + ".host.url";
-    /** DER encoded CA certificate. */
-    public static final String CA_FILE = TAG + ".ca";
     /**
      * The buffer used for all small reads.
      * <p>
@@ -128,19 +140,43 @@ public class CalibreContentServer {
      */
     private static final int BUFFER_BOOK_LIST = 131_072;
 
+
+    private static final int BUFFER_FILE = 1_048_576;
+
+    /**
+     * Surely there is a better way ?
+     * <p>
+     * Other formats listed in the Calibre docs:
+     * <p>
+     * AZW3, AZW4, CBZ, CBR, CBC, CHM, DJVU, FB2, FBZ, HTMLZ, LIT, LRF, MOBI, ODT,
+     * PRC, PDB, PML, RB, SNB, TCR, TXTZ
+     * OEB, PMLZ, ZIP
+     */
+    private static final Map<String, String> MIME_TYPE_MAP = new HashMap<>();
+
+    static {
+        MIME_TYPE_MAP.put("azw", "application/vnd.amazon.ebook");
+        MIME_TYPE_MAP.put("doc", "application/msword");
+        MIME_TYPE_MAP.put("docx", "application/vnd.openxmlformats-officedocument"
+                                  + ".wordprocessingml.document");
+        MIME_TYPE_MAP.put("epub", "application/epub+zip");
+        MIME_TYPE_MAP.put("html", "text/html");
+        MIME_TYPE_MAP.put("pdf", "application/pdf");
+        MIME_TYPE_MAP.put("rtf", "application/rtf");
+        MIME_TYPE_MAP.put("txt", "text/plain");
+    }
+
     @NonNull
     private final String mHostUrl;
     private final Map<String, CalibreLibrary> mLibraryMap = new HashMap<>();
     /** The header string: "Basic user:password". (in base64) */
     @Nullable
-    private final String mAuthorization;
-
+    private final String mAuthHeader;
     /**
      * The custom fields <strong>present</strong> on the server.
      * This will be a subset of the supported fields from {@link CalibreCustomFields}.
      */
     private final Set<CalibreCustomFields.Field> mCustomFields = new HashSet<>();
-
     private final Map<String, Integer> mTotalBooks = new HashMap<>();
     @NonNull
     private final ImageDownloader mImageDownloader;
@@ -151,7 +187,7 @@ public class CalibreContentServer {
     CalibreContentServer(@NonNull final Context context)
             throws IOException,
                    CertificateException, KeyManagementException {
-        this(context, getHostUri(context));
+        this(context, Uri.parse(getHostUrl(context)));
     }
 
     @AnyThread
@@ -168,16 +204,17 @@ public class CalibreContentServer {
         }
 
         // We're assuming Calibre will be setup with basic-auth as per their SSL recommendations
-        final Pair<String, String> userAndPassword = getUserAndPassword(context);
-        if (!userAndPassword.first.isEmpty()) {
-            mAuthorization = "Basic " + Base64.encodeToString(
-                    (userAndPassword.first + ":" + userAndPassword.second)
-                            .getBytes(StandardCharsets.UTF_8), 0);
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final String username = global.getString(PK_HOST_USER, "");
+        if (!username.isEmpty()) {
+            final String password = global.getString(PK_HOST_PASS, "");
+            mAuthHeader = "Basic " + Base64.encodeToString(
+                    (username + ":" + password).getBytes(StandardCharsets.UTF_8), 0);
         } else {
-            mAuthorization = null;
+            mAuthHeader = null;
         }
 
-        mImageDownloader = new ImageDownloader(mSslContext, mAuthorization);
+        mImageDownloader = new ImageDownloader(mSslContext, mAuthHeader);
     }
 
     @AnyThread
@@ -193,16 +230,9 @@ public class CalibreContentServer {
      * @return url
      */
     @NonNull
-    public static Uri getHostUri(@NonNull final Context context) {
-        return Uri.parse(PreferenceManager.getDefaultSharedPreferences(context)
-                                          .getString(PK_HOST_URL, ""));
-    }
-
-    @NonNull
-    public static Pair<String, String> getUserAndPassword(@NonNull final Context context) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        return new Pair<>(global.getString(PK_HOST_USER, ""),
-                          global.getString(PK_HOST_PASS, ""));
+    public static String getHostUrl(@NonNull final Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                                .getString(PK_HOST_URL, "");
     }
 
     @Nullable
@@ -230,6 +260,35 @@ public class CalibreContentServer {
         }
     }
 
+    public static void setFolderUri(@NonNull final Context context,
+                                    @NonNull final Uri uri) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit()
+                         .putString(PK_LOCAL_FOLDER_URI, uri.toString())
+                         .apply();
+
+        context.getContentResolver().takePersistableUriPermission(
+                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+    }
+
+    @NonNull
+    public static Optional<Uri> getFolderUri(@NonNull final Context context) {
+
+        final String folder = PreferenceManager.getDefaultSharedPreferences(context)
+                                               .getString(PK_LOCAL_FOLDER_URI, "");
+        if (folder.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return context.getContentResolver()
+                      .getPersistedUriPermissions()
+                      .stream()
+                      .map(UriPermission::getUri)
+                      .filter(uri -> uri.toString().equals(folder))
+                      .findFirst();
+    }
+
     /**
      * endpoint('/ajax/library-info', postprocess=json)
      * <p>
@@ -248,7 +307,7 @@ public class CalibreContentServer {
     String loadLibraries()
             throws GeneralParsingException, IOException {
         try {
-            final String url = mHostUrl + "/ajax/library-info";
+            final String url = "/ajax/library-info";
             final JSONObject source = new JSONObject(fetch(url, BUFFER_SMALL));
 
             final String defaultLibraryId = source.getString("default_library");
@@ -375,7 +434,7 @@ public class CalibreContentServer {
                           final int offset)
             throws IOException, JSONException {
 
-        final String url = mHostUrl + "/ajax/category/616c6c626f6f6b73/" + libraryId
+        final String url = "/ajax/category/616c6c626f6f6b73/" + libraryId
                            + "?num=" + num + "&offset=" + offset;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
@@ -584,7 +643,10 @@ public class CalibreContentServer {
      *         },
      *         "format_metadata": {
      *             "epub": {
-     *                 "path": "full absolute path to the epub file",
+     *                 "path": "/home/calibre/library
+     *                      /Charles Stross
+     *                      /Accelerando (6)
+     *                      /Accelerando - Charles Stross.epub",
      *                 "size": 408763,
      *                 "mtime": "2020-09-18T15:26:14.871190+00:00"
      *             }
@@ -614,6 +676,32 @@ public class CalibreContentServer {
      *     },
      * </pre>
      * <p>
+     * Books with multiple formats:
+     * <pre>
+     *     "main_format": {
+     *         "epub": "/get/epub/87/library"
+     *     },
+     *     "other_formats": {
+     *         "pdf": "/get/pdf/87/library"
+     *     },
+     *
+     *     "formats": [
+     *         "epub",
+     *         "pdf"
+     *      ],
+     *     "format_metadata": {
+     *         "pdf": {
+     *             "path": "/home/calibre/library/some-author/some-title/some-book.pdf",
+     *             "size": 21951985,
+     *             "mtime": "2021-01-09T13:55:00.100514+00:00"
+     *         },
+     *         "epub": {
+     *             "path": "/home/calibre/library/some-author/some-title/some-book.epub",
+     *             "size": 25307259,
+     *             "mtime": "2021-01-09T13:54:52.140562+00:00"
+     *         }
+     *     },
+     * </pre>
      *
      * @param libraryId to read from
      *
@@ -632,8 +720,7 @@ public class CalibreContentServer {
             ids.add(String.valueOf(calibreIds.getInt(i)));
         }
 
-        final String url = mHostUrl + "/ajax/books/" + libraryId
-                           + "?category_urls=false&ids=" + ids;
+        final String url = "/ajax/books/" + libraryId + "?category_urls=false&ids=" + ids;
         return new JSONObject(fetch(url, BUFFER_BOOK_LIST));
     }
 
@@ -662,9 +749,8 @@ public class CalibreContentServer {
     public JSONObject getBook(@NonNull final String libraryId,
                               @NonNull final String calibreUuid)
             throws IOException, JSONException {
-        final String url = mHostUrl + "/ajax/book/" + calibreUuid + '/' + libraryId
-                           + "?id_is_uuid=true";
 
+        final String url = "/ajax/book/" + calibreUuid + '/' + libraryId + "?id_is_uuid=true";
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
@@ -683,11 +769,10 @@ public class CalibreContentServer {
     public JSONObject getBook(@NonNull final String libraryId,
                               final int calibreId)
             throws IOException, JSONException {
-        final String url = mHostUrl + "/ajax/book/" + calibreId + '/' + libraryId;
 
+        final String url = "/ajax/book/" + calibreId + '/' + libraryId;
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
-
 
     /**
      * Send updates to the server.
@@ -720,8 +805,8 @@ public class CalibreContentServer {
         if (mSslContext != null) {
             ((HttpsURLConnection) request).setSSLSocketFactory(mSslContext.getSocketFactory());
         }
-        if (mAuthorization != null) {
-            request.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthorization);
+        if (mAuthHeader != null) {
+            request.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
         }
 
         // explicit connect for clarity
@@ -742,9 +827,137 @@ public class CalibreContentServer {
     }
 
     /**
-     * Fetch the given URL content as a single string.
+     * Download the main format file for the given book and store it in the given folder.
      *
-     * @param url    to read
+     * @param context Current context
+     * @param folder  to store the download in
+     * @param book    to download
+     *
+     * @return the file
+     *
+     * @throws IOException on failures
+     */
+    @Nullable
+    Uri getFile(@NonNull final Context context,
+                @NonNull final Uri folder,
+                @NonNull final Book book)
+            throws IOException {
+
+        final String url = createBookDownloadUrl(book);
+        final DocumentFile destFile = createBookDestinationFilePath(context, folder, book);
+        final Uri destUri = destFile.getUri();
+
+        try (TerminatorConnection con = new TerminatorConnection(url)) {
+            con.setSSLContext(mSslContext);
+            if (mAuthHeader != null) {
+                con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
+            }
+            checkResponseCode(con.getRequest(), R.string.site_calibre);
+
+            try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
+                if (os != null) {
+                    try (InputStream is = con.getInputStream();
+                         BufferedInputStream bis = new BufferedInputStream(is, BUFFER_FILE);
+                         BufferedOutputStream bos = new BufferedOutputStream(os)) {
+
+                        FileUtils.copy(bis, bos);
+                    }
+                }
+            }
+        }
+
+        if (destFile.exists()) {
+            return destUri;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Build the full URL to download the eBook.
+     *
+     * @param book to get
+     *
+     * @return url
+     */
+    @NonNull
+    private String createBookDownloadUrl(@NonNull final Book book) {
+        // Build the URL from where to download the file
+        final int id = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
+        final String format = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        final String libraryId = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID);
+        return mHostUrl + "/get/" + format + "/" + id + "/" + libraryId;
+    }
+
+    /**
+     * Build the Uri to where we'll write the file
+     */
+    @NonNull
+    private DocumentFile createBookDestinationFilePath(@NonNull final Context context,
+                                                       @NonNull final Uri folder,
+                                                       @NonNull final Book book)
+            throws IOException {
+
+        // we're not assuming ANYTHING....
+        final DocumentFile root = DocumentFile.fromTreeUri(context, folder);
+        if (root == null) {
+            throw new IOException("root was null");
+        }
+
+        final Author primaryAuthor = book.getPrimaryAuthor();
+        if (primaryAuthor == null) {
+            throw new IOException("primaryAuthor was null");
+        }
+
+        final String author = primaryAuthor.getFormattedName(false);
+        DocumentFile authorFolder = root.findFile(author);
+        if (authorFolder == null) {
+            authorFolder = root.createDirectory(author);
+            if (authorFolder == null) {
+                throw new IOException("authorFolder was null");
+            }
+        }
+
+        String seriesPrefix = "";
+        final Series primarySeries = book.getPrimarySeries();
+        if (primarySeries != null) {
+            seriesPrefix = primarySeries.getLabel(context) + " - ";
+        }
+
+        final String format = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        String mimeType = MIME_TYPE_MAP.get(format);
+        if (mimeType == null) {
+            mimeType = "application/" + format;
+        }
+
+        final DocumentFile destFile = authorFolder.createFile(mimeType,
+                                                              seriesPrefix + book.getTitle());
+        if (destFile == null) {
+            throw new IOException("destFile was null");
+        }
+        return destFile;
+    }
+
+    @WorkerThread
+    @Nullable
+    File getCover(@NonNull final Context context,
+                  final int calibreId,
+                  @NonNull final String coverUrl) {
+        try {
+            final File tmpFile = mImageDownloader
+                    .createTmpFile(context, TAG, String.valueOf(calibreId), 0, null);
+            return mImageDownloader.fetch(context, mHostUrl + coverUrl, tmpFile);
+
+        } catch (@NonNull final ExternalStorageException ignore) {
+            // a fail here is never critical, we're ignoring any
+        }
+        return null;
+    }
+
+    /**
+     * Fetch the given url path content as a single string.
+     *
+     * @param path   the path to read
      * @param buffer size for the read
      *
      * @return content
@@ -752,14 +965,14 @@ public class CalibreContentServer {
      * @throws IOException on failures
      */
     @NonNull
-    private String fetch(@NonNull final String url,
+    private String fetch(@NonNull final String path,
                          final int buffer)
             throws IOException {
 
-        try (TerminatorConnection con = new TerminatorConnection(url)) {
+        try (TerminatorConnection con = new TerminatorConnection(mHostUrl + path)) {
             con.setSSLContext(mSslContext);
-            if (mAuthorization != null) {
-                con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthorization);
+            if (mAuthHeader != null) {
+                con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
             }
             checkResponseCode(con.getRequest(), R.string.site_calibre);
 
@@ -775,23 +988,16 @@ public class CalibreContentServer {
         }
     }
 
-    @WorkerThread
+    /**
+     * Create the custom SSLContext if there is a custom CA file configured.
+     *
+     * @param context Current context
+     *
+     * @return an SSLContext, or {@code null} if the custom CA file (certificate) was not found.
+     *
+     * @throws IOException on failures
+     */
     @Nullable
-    File fetchCover(@NonNull final Context context,
-                    final int calibreId,
-                    @NonNull final String coverUrl) {
-        try {
-            final File tmpFile = mImageDownloader
-                    .createTmpFile(context, TAG, String.valueOf(calibreId), 0, null);
-            return mImageDownloader.fetch(context, mHostUrl + coverUrl, tmpFile);
-
-        } catch (@NonNull final ExternalStorageException ignore) {
-            // a fail here is never critical, we're ignoring any
-        }
-        return null;
-    }
-
-    @NonNull
     private SSLContext getSslContext(@NonNull final Context context)
             throws IOException, CertificateException, KeyManagementException {
 
@@ -799,6 +1005,10 @@ public class CalibreContentServer {
             final Certificate ca;
             try (InputStream is = context.openFileInput(CA_FILE)) {
                 ca = CertificateFactory.getInstance("X.509").generateCertificate(is);
+            } catch (@NonNull final FileNotFoundException ignore) {
+                // we are (have to) assuming that the server CA is loaded
+                // in the Android system keystore.
+                return null;
             }
 
             final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -822,7 +1032,7 @@ public class CalibreContentServer {
     }
 
     /**
-     * Check the response code.
+     * Implicitly connect (if not already done so) and check the response code.
      *
      * @param request   to check
      * @param siteResId site identifier
@@ -855,7 +1065,7 @@ public class CalibreContentServer {
 
             default:
                 throw new HttpStatusException(siteResId,
-                                              request.getResponseCode(),
+                                              responseCode,
                                               request.getResponseMessage(),
                                               request.getURL());
         }
