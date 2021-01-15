@@ -133,8 +133,8 @@ public final class TerminatorConnection
      * @param connectTimeoutInMs in millis, use {@code 0} for system default
      * @param readTimeoutInMs    in millis, use {@code 0} for system default
      */
-    public void setTimeouts(@IntRange(from = 0) final int connectTimeoutInMs,
-                            @IntRange(from = 0) final int readTimeoutInMs) {
+    public TerminatorConnection setTimeouts(@IntRange(from = 0) final int connectTimeoutInMs,
+                                            @IntRange(from = 0) final int readTimeoutInMs) {
         Objects.requireNonNull(mRequest, "mRequest");
 
         if (connectTimeoutInMs > 0) {
@@ -148,6 +148,8 @@ public final class TerminatorConnection
         } else {
             mRequest.setReadTimeout(READ_TIMEOUT_MS);
         }
+
+        return this;
     }
 
     /**
@@ -155,8 +157,9 @@ public final class TerminatorConnection
      *
      * @param throttler (optional) to use
      */
-    public void setThrottler(@Nullable final Throttler throttler) {
+    public TerminatorConnection setThrottler(@Nullable final Throttler throttler) {
         mThrottler = throttler;
+        return this;
     }
 
     /**
@@ -166,6 +169,7 @@ public final class TerminatorConnection
      */
     public void setSSLContext(@Nullable final SSLContext sslContext) {
         Objects.requireNonNull(mRequest, "mRequest");
+
         if (sslContext != null) {
             ((HttpsURLConnection) mRequest).setSSLSocketFactory(sslContext.getSocketFactory());
         }

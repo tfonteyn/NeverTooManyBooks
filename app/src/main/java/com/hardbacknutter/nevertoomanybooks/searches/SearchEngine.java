@@ -290,10 +290,9 @@ public interface SearchEngine {
 
         final SearchEngineRegistry.Config config = getConfig();
 
-        final TerminatorConnection con = new TerminatorConnection(url);
-        con.setTimeouts(config.getConnectTimeoutInMs(), config.getReadTimeoutInMs());
-        con.setThrottler(getThrottler());
-        return con;
+        return new TerminatorConnection(url)
+                .setTimeouts(config.getConnectTimeoutInMs(), config.getReadTimeoutInMs())
+                .setThrottler(getThrottler());
     }
 
     /**

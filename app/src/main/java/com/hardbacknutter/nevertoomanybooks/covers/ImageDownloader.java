@@ -174,13 +174,12 @@ public class ImageDownloader {
 
             } else {
                 try (TerminatorConnection con = new TerminatorConnection(url)) {
-                    con.setTimeouts(mConnectTimeoutInMs, mReadTimeoutInMs);
-                    con.setThrottler(mThrottler);
-
+                    con.setTimeouts(mConnectTimeoutInMs, mReadTimeoutInMs)
+                       .setThrottler(mThrottler)
+                       .setSSLContext(mSslContext);
                     if (mAuthHeader != null) {
                         con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
                     }
-                    con.setSSLContext(mSslContext);
 
                     savedFile = FileUtils.copyInputStream(context, con.getInputStream(),
                                                           destination);
