@@ -96,7 +96,7 @@ public class EditBookFieldsFragment
                     mVm.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
                 }
             });
-    /** Handles cover replacement, rotation, etc. */
+    /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
 
     /** manage the validation check next to the ISBN field. */
