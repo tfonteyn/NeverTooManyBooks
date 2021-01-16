@@ -478,7 +478,7 @@ public class ExportFragment
         // not found? create it
         if (dialog == null) {
             dialog = ProgressDialogFragment.newInstance(
-                    getString(R.string.lbl_backing_up), false, true);
+                    getString(R.string.menu_backup_and_export), false, true);
             dialog.show(fm, ProgressDialogFragment.TAG);
         }
 
@@ -556,8 +556,8 @@ public class ExportFragment
 
                 @StringRes
                 final int title = mVm.getExportHelper().isBackup()
-                                  ? R.string.progress_end_backup_success
-                                  : R.string.progress_end_export_success;
+                                  ? R.string.progress_end_backup_successful
+                                  : R.string.progress_end_export_successful;
 
                 //noinspection ConstantConditions
                 final MaterialAlertDialogBuilder dialogBuilder =
