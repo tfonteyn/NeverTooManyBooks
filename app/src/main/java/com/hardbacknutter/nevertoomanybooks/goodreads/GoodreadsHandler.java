@@ -26,6 +26,8 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
@@ -51,9 +53,6 @@ public class GoodreadsHandler {
     /** The host view; used for context, resources, Snackbar. */
     private View mView;
 
-    /**
-     * Full progress dialog to show while running a task.
-     */
     @Nullable
     private ProgressDialogFragment mProgressDialog;
 
@@ -66,6 +65,17 @@ public class GoodreadsHandler {
     private String mSendBookText;
 
     private FragmentManager mFragmentManager;
+
+    public void onViewCreated(@NonNull final FragmentActivity activity,
+                              @NonNull final View view) {
+        onViewCreated(view, activity, activity, activity.getSupportFragmentManager());
+    }
+
+    public void onViewCreated(@NonNull final Fragment fragment) {
+        //noinspection ConstantConditions
+        onViewCreated(fragment.getView(), fragment.getViewLifecycleOwner(),
+                      fragment, fragment.getChildFragmentManager());
+    }
 
     public void onViewCreated(@NonNull final View view,
                               @NonNull final LifecycleOwner lifecycleOwner,
