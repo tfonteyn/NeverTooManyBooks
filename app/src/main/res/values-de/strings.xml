@@ -441,7 +441,7 @@
     <string name="pg_style_groups">Gruppierung</string>
     <string name="pg_ui_field_visibility">Feld Sichtbarkeit bearbeiten</string>
     <string name="pg_ui">Benutzeroberfläche</string>
-    <string name="progress_end_backup_success">Sicherungskopie erfolgreich erstellt</string>
+    <string name="progress_end_backup_successful">Sicherungskopie erfolgreich erstellt</string>
     <string name="progress_end_export_report">Eine %3$s-Datei namens %2$s wurde im Verzeichnis „%1$s“ erzeugt.\n\nSie sollten diese Datei händisch an einen sicheren Ort kopieren, um Ihre Daten vor Beschädigung, Verlust oder Diebstahl zu schützen.</string>
     <string name="progress_end_import_complete">Import vollständig</string>
     <string name="progress_end_import_partially_complete">Teilweise importiert</string>
@@ -709,6 +709,6 @@
     <string name="lbl_test_connection">Testen Sie die Verbindung</string>
     <string name="confirm_test_connection">Es ist ratsam, diese Verbindung zu testen, um später Probleme zu vermeiden.</string>
     <string name="menu_import_all">Importieren Sie alle Bücher</string>
-    <string name="progress_end_export_success">Export erfolgreich</string>
+    <string name="progress_end_export_successful">Export erfolgreich</string>
     <string name="error_export_failed">Export fehlgeschlagen</string>
 </resources>

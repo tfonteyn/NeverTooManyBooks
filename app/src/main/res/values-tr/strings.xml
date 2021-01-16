@@ -415,7 +415,7 @@
     <string name="X_lbl_thumbnails">Ufak resimler</string>
     <string name="pg_ui">Kullanıcı arayüzü</string>
     <string name="pg_ui_field_visibility">Alan görünürlüğünü yönet</string>
-    <string name="progress_end_backup_success">Yedekleme başarılı!</string>
+    <string name="progress_end_backup_successful">Yedekleme başarılı!</string>
     <string name="cancelled">İptal edildi</string>
     <string name="progress_end_import_complete">İçe aktarma başarılı</string>
     <string name="progress_end_import_partially_complete">Kısmi ithalat yapıldı</string>
@@ -705,6 +705,6 @@
     <string name="lbl_test_connection">Bağlantıyı test edin</string>
     <string name="confirm_test_connection">Daha sonra sorunları önlemek için bu bağlantıyı test etmeniz önerilir.</string>
     <string name="menu_import_all">Tüm kitapları içe aktar</string>
-    <string name="progress_end_export_success">İhracat başarılı</string>
+    <string name="progress_end_export_successful">İhracat başarılı</string>
     <string name="error_export_failed">Dışa aktarılamadı</string>
 </resources>

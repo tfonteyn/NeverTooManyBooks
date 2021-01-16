@@ -416,7 +416,7 @@
     <string name="X_lbl_thumbnails">Miniaturas</string>
     <string name="pg_ui">Interfaz de usuario</string>
     <string name="pg_ui_field_visibility">Visibilidad de campos</string>
-    <string name="progress_end_backup_success">Copia de seguridad correcta</string>
+    <string name="progress_end_backup_successful">Copia de seguridad correcta</string>
     <string name="cancelled">Cancelado</string>
     <string name="progress_end_import_complete">Importación finalizada</string>
     <string name="progress_end_import_partially_complete">Importación parcial realizada</string>
@@ -709,6 +709,6 @@
     <string name="lbl_test_connection">Prueba la conexión</string>
     <string name="confirm_test_connection">Es recomendable probar esta conexión para evitar problemas más adelante.</string>
     <string name="menu_import_all">Importar todos los libros</string>
-    <string name="progress_end_export_success">Exportación exitosa</string>
+    <string name="progress_end_export_successful">Exportación exitosa</string>
     <string name="error_export_failed">Exportación fallida</string>
 </resources>

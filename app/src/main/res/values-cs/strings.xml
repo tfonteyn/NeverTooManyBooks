@@ -413,7 +413,7 @@
     <string name="X_lbl_thumbnails">Náhledy</string>
     <string name="pg_ui">Uživatelské rozhraní</string>
     <string name="pg_ui_field_visibility">Spravovat viditelnost jednotlivých polí</string>
-    <string name="progress_end_backup_success">Zálohování proběhlo úspěšně</string>
+    <string name="progress_end_backup_successful">Zálohování proběhlo úspěšně</string>
     <string name="cancelled">Zrušeno</string>
     <string name="progress_end_import_complete">Import byl dokončen</string>
     <string name="progress_end_import_partially_complete">Částečný import byl dokončen</string>
@@ -706,6 +706,6 @@
     <string name="lbl_test_connection">Vyzkoušejte připojení</string>
     <string name="confirm_test_connection">Doporučujeme toto připojení otestovat, abyste se později vyhnuli problémům.</string>
     <string name="menu_import_all">Importujte všechny knihy</string>
-    <string name="progress_end_export_success">Export byl úspěšný</string>
+    <string name="progress_end_export_successful">Export byl úspěšný</string>
     <string name="error_export_failed">Export se nezdařil</string>
 </resources>

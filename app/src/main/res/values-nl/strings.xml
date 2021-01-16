@@ -439,7 +439,7 @@
     <string name="pg_style_groups">Groeperingen</string>
     <string name="pg_ui_field_visibility">Zichtbaarheid velden beheren</string>
     <string name="pg_ui">Gebruikersinterface</string>
-    <string name="progress_end_backup_success">Back-up succesvol</string>
+    <string name="progress_end_backup_successful">Back-up succesvol</string>
     <string name="progress_end_export_report">Een %3$s bestand met de naam %2$s is aangemaakt in de „%1$s” folder.\n\nWe raden aan dit bestand naar een ander plek te kopiëren om de gegevens veilig te stellen in geval uw apparaat wordt gestolen, beschadigd of verloren raakt.</string>
     <string name="progress_end_import_complete">Import Compleet</string>
     <string name="progress_end_import_partially_complete">Gedeeltelijke import voltooid</string>
@@ -707,6 +707,6 @@
     <string name="lbl_test_connection">Test de verbinding</string>
     <string name="confirm_test_connection">Het is raadzaam om deze verbinding te testen om later problemen te voorkomen.</string>
     <string name="menu_import_all">Importeer alle boeken</string>
-    <string name="progress_end_export_success">Export succesvol</string>
+    <string name="progress_end_export_successful">Export succesvol</string>
     <string name="error_export_failed">Export mislukt</string>
 </resources>

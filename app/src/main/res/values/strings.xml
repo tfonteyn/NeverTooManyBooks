@@ -932,8 +932,8 @@
     <string name="txt_export_backup_all">All books, covers, preferences and custom styles will be exported to the archive.</string>
 
     <!-- progress final message - all data was exported. -->
-    <string name="progress_end_backup_success">Backup successful</string>
-    <string name="progress_end_export_success">Export successful</string>
+    <string name="progress_end_backup_successful">Backup successful</string>
+    <string name="progress_end_export_successful">Export successful</string>
     <!-- generic backup failure -->
     <string name="error_backup_failed">Backup Failed.</string>
     <!-- generic export failure -->
@@ -948,6 +948,10 @@
     <string name="menu_send_all">Send all</string>
     <!-- Sync with a remote server. -->
     <string name="menu_send_updated">Send updated books</string>
+
+    <string name="menu_download_file">Download file</string>
+    <string name="error_download_failed">Download failed</string>
+    <string name="progress_end_download_successful">Download successful</string>
 
     <!-- ####################################################################################### -->
     <!-- == Booklist FAB menu options. == -->
@@ -1687,7 +1691,4 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-
-    <string name="menu_download_file">Download file</string>
-
 </resources>

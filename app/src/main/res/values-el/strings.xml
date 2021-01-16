@@ -416,7 +416,7 @@
     <string name="X_lbl_thumbnails">Μικρογραφίες</string>
     <string name="pg_ui">Περιβάλλον Χρήστη</string>
     <string name="pg_ui_field_visibility">Διαχείρηση ορατότητας πεδίου</string>
-    <string name="progress_end_backup_success">Η δημιουργία αντιγράφων ασφαλείας ήταν επιτυχής</string>
+    <string name="progress_end_backup_successful">Η δημιουργία αντιγράφων ασφαλείας ήταν επιτυχής</string>
     <string name="cancelled">Ακυρώθηκε</string>
     <string name="progress_end_import_complete">Εισαγωγή Ολοκληρώθηκε</string>
     <string name="progress_end_import_partially_complete">Έγινε μερική εισαγωγή</string>
@@ -710,6 +710,6 @@
     <string name="lbl_test_connection">Δοκιμάστε τη σύνδεση</string>
     <string name="confirm_test_connection">Συνιστάται να δοκιμάσετε αυτήν τη σύνδεση για να αποφύγετε προβλήματα αργότερα.</string>
     <string name="menu_import_all">Εισαγωγή όλων των βιβλίων</string>
-    <string name="progress_end_export_success">Η εξαγωγή ήταν επιτυχής</string>
+    <string name="progress_end_export_successful">Η εξαγωγή ήταν επιτυχής</string>
     <string name="error_export_failed">Η εξαγωγή απέτυχε</string>
 </resources>

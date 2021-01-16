@@ -411,7 +411,7 @@
     <string name="X_lbl_thumbnails">Miniatury</string>
     <string name="pg_ui">Interfejs użytkownika</string>
     <string name="pg_ui_field_visibility">Dostosuj widoczność pól</string>
-    <string name="progress_end_backup_success">Резервное копирование выполнено успешно</string>
+    <string name="progress_end_backup_successful">Резервное копирование выполнено успешно</string>
     <string name="cancelled">Anulowane</string>
     <string name="progress_end_import_complete">Import zakończony</string>
     <string name="progress_end_import_partially_complete">Wykonano częściowy import</string>
@@ -703,6 +703,6 @@
     <string name="lbl_test_connection">Przetestuj połączenie</string>
     <string name="confirm_test_connection">Zaleca się przetestowanie tego połączenia, aby później uniknąć problemów.</string>
     <string name="menu_import_all">Importuj wszystkie książki</string>
-    <string name="progress_end_export_success">Eksport powiódł się</string>
+    <string name="progress_end_export_successful">Eksport powiódł się</string>
     <string name="error_export_failed">Eksport nie powiódł się</string>
 </resources>

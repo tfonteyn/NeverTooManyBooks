@@ -443,7 +443,7 @@
     <string name="pg_style_groups">Groupes</string>
     <string name="pg_ui_field_visibility">Gérer la visibilité des champs</string>
     <string name="pg_ui">Interface utilisateur</string>
-    <string name="progress_end_backup_success">Sauvegarde réussie</string>
+    <string name="progress_end_backup_successful">Sauvegarde réussie</string>
     <string name="progress_end_export_report">Le fichier %2$s (%3$s) a été créé dans le répertoire «%1$s».\n\nVous devriez le copier sur un autre média comme sauvegarde en cas de perte, vol ou destruction de votre équipement.</string>
     <string name="progress_end_import_complete">Import terminé</string>
     <string name="progress_end_import_partially_complete">Importation partielle effectuée</string>
@@ -711,6 +711,6 @@
     <string name="lbl_test_connection">Tester la connexion</string>
     <string name="confirm_test_connection">Il est conseillé de tester cette connexion pour éviter les problèmes par la suite.</string>
     <string name="menu_import_all">Importer tous les livres</string>
-    <string name="progress_end_export_success">Exportation réussie</string>
+    <string name="progress_end_export_successful">Exportation réussie</string>
     <string name="error_export_failed">L\'exportation a échoué</string>
 </resources>
