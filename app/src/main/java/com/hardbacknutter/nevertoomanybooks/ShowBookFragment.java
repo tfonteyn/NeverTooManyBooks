@@ -114,13 +114,11 @@ public class ShowBookFragment
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
 
-    /**
-     * Handles cover replacement, rotation, etc.
-     * Is bound and depends on the Fragment.
-     * Populating is done in the adapter along with the Book itself.
-     */
+    /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+    /** Delegate for Calibre. */
     private final CalibreHandler mCalibreHandler = new CalibreHandler();
+    /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
     /** View model. */
     private ShowBookViewModel mVm;
@@ -192,9 +190,8 @@ public class ShowBookFragment
         //noinspection ConstantConditions
         mVm.init(getContext(), requireArguments());
 
-        mCalibreHandler.onViewCreated(view, getViewLifecycleOwner(), this, this);
-        mGoodreadsHandler.onViewCreated(view, getViewLifecycleOwner(), this,
-                                        getChildFragmentManager());
+        mCalibreHandler.onViewCreated(this);
+        mGoodreadsHandler.onViewCreated(this);
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
