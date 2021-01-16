@@ -72,6 +72,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookCo
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
+import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
@@ -167,49 +168,53 @@ public class BooksOnBookshelf
     /** Bring up the Goodreads synchronization options. */
     private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
             new GoodreadsAdminFragment.ResultContract(), data -> updateNavigationMenuVisibility());
-
     /** Bring up the Calibre synchronization options. */
     private final ActivityResultLauncher<Void> mCalibreLauncher = registerForActivityResult(
             new CalibreAdminFragment.ResultContract(), data -> updateNavigationMenuVisibility());
+
 
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportFragment.ResultContract(), success -> {});
 
+    /** Delegate for Calibre. */
+    private final CalibreHandler mCalibreHandler = new CalibreHandler();
+    /** Delegate for Goodreads. */
+    private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
+
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
+
+    /** Do an import. */
+    private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
+            new ImportFragment.ResultsContract(), this::onImportFinished);
     /** Display a Book. */
     private final ActivityResultLauncher<ShowBookActivity.ResultContract.Input>
             mDisplayBookLauncher = registerForActivityResult(
-            new ShowBookActivity.ResultContract(), this::onBookEditingDone);
+            new ShowBookActivity.ResultContract(), this::onBookEditFinished);
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> mEditByIdLauncher = registerForActivityResult(
-            new EditBookByIdContract(), this::onBookEditingDone);
+            new EditBookByIdContract(), this::onBookEditFinished);
     /** Duplicate and edit a Book. */
     private final ActivityResultLauncher<Bundle> mDuplicateLauncher = registerForActivityResult(
-            new EditBookFromBundleContract(), this::onBookEditingDone);
-    /** Do an import. */
-    private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
-            new ImportFragment.ResultsContract(), importResults -> {
-                if (importResults != null) {
-                    if (importResults.styles > 0) {
-                        // Force a refresh of the cached styles
-                        StyleDAO.clearCache();
-                    }
-                    if (importResults.preferences > 0) {
-                        // Refresh the preferred bookshelf. This also refreshes its style.
-                        mVm.reloadSelectedBookshelf(this);
-                    }
-
-                    // styles, prefs, books, covers,... it all requires a rebuild.
-                    mVm.setForceRebuildInOnResume(true);
-                }
-            });
+            new EditBookFromBundleContract(), this::onBookEditFinished);
     /** Add a Book by doing a search on the internet. */
     private final ActivityResultLauncher<AddBookBySearchContract.By> mAddBookBySearchLauncher =
-            registerForActivityResult(new AddBookBySearchContract(), this::onBookEditingDone);
+            registerForActivityResult(new AddBookBySearchContract(), this::onBookEditFinished);
+    /** Update an individual Book with information from the internet. */
+    private final ActivityResultLauncher<Book> mUpdateBookLauncher =
+            registerForActivityResult(new UpdateBookContract(), this::onBookEditFinished);
+    /** Update a list of Books with information from the internet. */
+    private final ActivityResultLauncher<UpdateBooklistContract.Input> mUpdateBookListLauncher =
+            registerForActivityResult(new UpdateBooklistContract(), this::onBookEditFinished);
+    /** View all works of an Author. */
+    private final ActivityResultLauncher<AuthorWorksFragment.ResultContract.Input>
+            mAuthorWorksLauncher = registerForActivityResult(
+            new AuthorWorksFragment.ResultContract(), this::onBookEditFinished);
+
+
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
             registerForActivityResult(new SearchFtsFragment.ResultContract(), data -> {
@@ -218,16 +223,8 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
-    /** Update an individual Book with information from the internet. */
-    private final ActivityResultLauncher<Book> mUpdateBookLauncher =
-            registerForActivityResult(new UpdateBookContract(), this::onBookEditingDone);
-    /** Update a list of Books with information from the internet. */
-    private final ActivityResultLauncher<UpdateBooklistContract.Input> mUpdateBookListLauncher =
-            registerForActivityResult(new UpdateBooklistContract(), this::onBookEditingDone);
-    /** View all works of an Author. */
-    private final ActivityResultLauncher<AuthorWorksFragment.ResultContract.Input>
-            mAuthorWorksLauncher = registerForActivityResult(
-            new AuthorWorksFragment.ResultContract(), this::onBookEditingDone);
+
+
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> mManageBookshelvesLauncher =
             registerForActivityResult(new EditBookshelvesFragment.ResultContract(), id -> {
@@ -270,6 +267,7 @@ public class BooksOnBookshelf
                     }
                 }
             });
+
 
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
@@ -353,19 +351,6 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-
-    private final CalibreHandler mCalibreHandler = new CalibreHandler();
-    private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
-
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
-                }
-            };
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -434,6 +419,15 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
+                }
+            };
 
     @Override
     protected void onSetContentView() {
@@ -475,8 +469,8 @@ public class BooksOnBookshelf
         mVm.onFailure().observe(this, this::onBuildFailed);
         mVm.onFinished().observe(this, this::onBuildFinished);
 
-        mCalibreHandler.onViewCreated(mVb.getRoot(), this, this, this);
-        mGoodreadsHandler.onViewCreated(mVb.getRoot(), this, this, fm);
+        mCalibreHandler.onViewCreated(this, mVb.getRoot());
+        mGoodreadsHandler.onViewCreated(this, mVb.getRoot());
 
         // show/hide the sync menus
         updateNavigationMenuVisibility();
@@ -1244,7 +1238,7 @@ public class BooksOnBookshelf
      *
      * @param data returned from the editor Activity
      */
-    private void onBookEditingDone(@Nullable final Bundle data) {
+    private void onBookEditFinished(@Nullable final Bundle data) {
         if (data != null) {
             if (data.getBoolean(Entity.BKEY_DATA_MODIFIED, false)) {
                 mVm.setForceRebuildInOnResume(true);
@@ -1255,6 +1249,30 @@ public class BooksOnBookshelf
             if (bookId > 0) {
                 mVm.setDesiredCentralBookId(bookId);
             }
+        }
+    }
+
+    /**
+     * Called when the user has finished an Import.
+     * <p>
+     * This method is called from a ActivityResultContract after the result intent is parsed.
+     * After this method is executed, the flow will take us to #onResume.
+     *
+     * @param importResults returned from the import
+     */
+    private void onImportFinished(@Nullable final ImportResults importResults) {
+        if (importResults != null) {
+            if (importResults.styles > 0) {
+                // Force a refresh of the cached styles
+                StyleDAO.clearCache();
+            }
+            if (importResults.preferences > 0) {
+                // Refresh the preferred bookshelf. This also refreshes its style.
+                mVm.reloadSelectedBookshelf(this);
+            }
+
+            // styles, prefs, books, covers,... it all requires a rebuild.
+            mVm.setForceRebuildInOnResume(true);
         }
     }
 
