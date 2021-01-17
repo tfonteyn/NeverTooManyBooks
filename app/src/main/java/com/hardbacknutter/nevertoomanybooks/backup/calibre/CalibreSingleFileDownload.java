@@ -26,8 +26,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -39,6 +37,12 @@ public class CalibreSingleFileDownload
 
     private Book mBook;
     private Uri mFolder;
+
+    private CalibreContentServer mServer;
+
+    public void init(@NonNull final CalibreContentServer server) {
+        mServer = server;
+    }
 
     public boolean start(@NonNull final Book book,
                          @NonNull final Uri folder) {
@@ -57,9 +61,11 @@ public class CalibreSingleFileDownload
     @Nullable
     @Override
     protected Uri doWork(@NonNull final Context context)
-            throws IOException, CertificateException, KeyManagementException {
+            throws IOException {
 
-        final CalibreContentServer server = new CalibreContentServer(context);
-        return server.getFile(context, mFolder, mBook);
+        setIndeterminate(true);
+        publishProgressStep(0, context.getString(R.string.progress_msg_please_wait));
+
+        return mServer.getFile(context, mFolder, mBook, this);
     }
 }

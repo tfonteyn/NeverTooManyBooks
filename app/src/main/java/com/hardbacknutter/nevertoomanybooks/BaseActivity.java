@@ -341,7 +341,7 @@ public abstract class BaseActivity
 
         item = menu.findItem(R.id.nav_calibre);
         if (item != null) {
-            item.setVisible(CalibreContentServer.isShowSyncMenus(global));
+            item.setVisible(CalibreContentServer.isEnabled(global));
         }
     }
 

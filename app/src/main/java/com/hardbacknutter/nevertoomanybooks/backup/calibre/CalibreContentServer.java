@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.UriPermission;
 import android.net.Uri;
 import android.util.Base64;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -84,6 +85,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
+import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.HttpConstants;
@@ -95,6 +97,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundExcepti
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException;
 
 /**
+ * Dev Note: the API of this class is still a bit messy and changing fast.
+ *
  * <a href="https://manual.calibre-ebook.com/server.html">User manual</a>
  * <p>
  * <a href="https://github.com/kovidgoyal/calibre/blob/master/src/calibre/srv/ajax.py">
@@ -143,31 +147,8 @@ public class CalibreContentServer {
 
     private static final int BUFFER_FILE = 1_048_576;
 
-    /**
-     * Surely there is a better way ?
-     * <p>
-     * Other formats listed in the Calibre docs:
-     * <p>
-     * AZW3, AZW4, CBZ, CBR, CBC, CHM, DJVU, FB2, FBZ, HTMLZ, LIT, LRF, MOBI, ODT,
-     * PRC, PDB, PML, RB, SNB, TCR, TXTZ
-     * OEB, PMLZ, ZIP
-     */
-    private static final Map<String, String> MIME_TYPE_MAP = new HashMap<>();
-
-    static {
-        MIME_TYPE_MAP.put("azw", "application/vnd.amazon.ebook");
-        MIME_TYPE_MAP.put("doc", "application/msword");
-        MIME_TYPE_MAP.put("docx", "application/vnd.openxmlformats-officedocument"
-                                  + ".wordprocessingml.document");
-        MIME_TYPE_MAP.put("epub", "application/epub+zip");
-        MIME_TYPE_MAP.put("html", "text/html");
-        MIME_TYPE_MAP.put("pdf", "application/pdf");
-        MIME_TYPE_MAP.put("rtf", "application/rtf");
-        MIME_TYPE_MAP.put("txt", "text/plain");
-    }
-
     @NonNull
-    private final String mHostUrl;
+    private final Uri mServerUri;
     private final Map<String, CalibreLibrary> mLibraryMap = new HashMap<>();
     /** The header string: "Basic user:password". (in base64) */
     @Nullable
@@ -178,28 +159,44 @@ public class CalibreContentServer {
      */
     private final Set<CalibreCustomFields.Field> mCustomFields = new HashSet<>();
     private final Map<String, Integer> mTotalBooks = new HashMap<>();
-    @NonNull
-    private final ImageDownloader mImageDownloader;
+    @Nullable
+    private ImageDownloader mImageDownloader;
     @Nullable
     private SSLContext mSslContext;
 
+    /**
+     * Constructor.
+     * Uses the configured content server Uri
+     *
+     * @param context Current context
+     *
+     * @throws IOException          on failures
+     * @throws CertificateException on failures related to the user installed CA.
+     */
     @AnyThread
     CalibreContentServer(@NonNull final Context context)
-            throws IOException,
-                   CertificateException, KeyManagementException {
+            throws IOException, CertificateException {
         this(context, Uri.parse(getHostUrl(context)));
     }
 
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     * @param uri     for the content server
+     *
+     * @throws IOException          on failures
+     * @throws CertificateException on failures related to the user installed CA.
+     */
     @AnyThread
     CalibreContentServer(@NonNull final Context context,
                          @NonNull final Uri uri)
-            throws IOException,
-                   CertificateException, KeyManagementException {
+            throws IOException, CertificateException {
 
-        mHostUrl = uri.toString();
+        mServerUri = uri;
 
         // accommodate the (usually) self-signed CA certificate
-        if ("https".equals(uri.getScheme())) {
+        if ("https".equals(mServerUri.getScheme())) {
             mSslContext = getSslContext(context);
         }
 
@@ -213,12 +210,10 @@ public class CalibreContentServer {
         } else {
             mAuthHeader = null;
         }
-
-        mImageDownloader = new ImageDownloader(mSslContext, mAuthHeader);
     }
 
     @AnyThread
-    public static boolean isShowSyncMenus(@NonNull final SharedPreferences global) {
+    public static boolean isEnabled(@NonNull final SharedPreferences global) {
         return global.getBoolean(PK_ENABLED, true);
     }
 
@@ -260,8 +255,8 @@ public class CalibreContentServer {
         }
     }
 
-    public static void setFolderUri(@NonNull final Context context,
-                                    @NonNull final Uri uri) {
+    static void setFolderUri(@NonNull final Context context,
+                             @NonNull final Uri uri) {
         PreferenceManager.getDefaultSharedPreferences(context)
                          .edit()
                          .putString(PK_LOCAL_FOLDER_URI, uri.toString())
@@ -273,7 +268,7 @@ public class CalibreContentServer {
     }
 
     @NonNull
-    public static Optional<Uri> getFolderUri(@NonNull final Context context) {
+    Optional<Uri> getFolderUri(@NonNull final Context context) {
 
         final String folder = PreferenceManager.getDefaultSharedPreferences(context)
                                                .getString(PK_LOCAL_FOLDER_URI, "");
@@ -328,12 +323,12 @@ public class CalibreContentServer {
 
     @NonNull
     @AnyThread
-    public Map<String, CalibreLibrary> getLibraries() {
+    Map<String, CalibreLibrary> getLibraries() {
         return mLibraryMap;
     }
 
     @NonNull
-    public CalibreLibrary getLibrary(@NonNull final String libraryId) {
+    CalibreLibrary getLibrary(@NonNull final String libraryId) {
         //noinspection ConstantConditions
         return mLibraryMap.get(libraryId);
     }
@@ -774,6 +769,82 @@ public class CalibreContentServer {
         return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
+    @WorkerThread
+    @Nullable
+    File getCover(@NonNull final Context context,
+                  final int calibreId,
+                  @NonNull final String coverUrl) {
+        try {
+            if (mImageDownloader == null) {
+                mImageDownloader = new ImageDownloader(mSslContext, mAuthHeader);
+            }
+            final File tmpFile = mImageDownloader
+                    .createTmpFile(context, TAG, String.valueOf(calibreId), 0, null);
+            return mImageDownloader.fetch(context, mServerUri + coverUrl, tmpFile);
+
+        } catch (@NonNull final ExternalStorageException ignore) {
+            // a fail here is never critical, we're ignoring any
+        }
+        return null;
+    }
+
+    /**
+     * Download the main format file for the given book and store it in the given folder.
+     *
+     * @param context Current context
+     * @param folder  to store the download in
+     * @param book    to download
+     *
+     * @return the file
+     *
+     * @throws IOException on failures
+     */
+    @Nullable
+    Uri getFile(@NonNull final Context context,
+                @NonNull final Uri folder,
+                @NonNull final Book book,
+                @NonNull final ProgressListener progressListener)
+            throws IOException {
+
+        // Build the URL from where to download the file
+        final int id = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
+        final String format = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        final String libraryId = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID);
+        final String url = mServerUri + "/get/" + format + "/" + id + "/" + libraryId;
+
+        // and where to write the file
+        final DocumentFile destFile = getDocumentFile(context, book, folder, true);
+        final Uri destUri = destFile.getUri();
+
+        try (TerminatorConnection con = new TerminatorConnection(url)) {
+            con.setSSLContext(mSslContext);
+            if (mAuthHeader != null) {
+                con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
+            }
+            checkResponseCode(con.getRequest(), R.string.site_calibre);
+
+            try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
+                if (os != null) {
+                    try (InputStream is = con.getInputStream();
+                         BufferedInputStream bis = new BufferedInputStream(is, BUFFER_FILE);
+                         BufferedOutputStream bos = new BufferedOutputStream(os)) {
+
+                        progressListener.publishProgressStep(0, context.getString(
+                                R.string.progress_msg_loading));
+                        FileUtils.copy(bis, bos);
+                    }
+                }
+            }
+        }
+
+        if (destFile.exists()) {
+            return destUri;
+        } else {
+            return null;
+        }
+    }
+
+
     /**
      * Send updates to the server.
      *
@@ -796,7 +867,7 @@ public class CalibreContentServer {
         data.put("loaded_book_ids", loadedBookIds);
         final String postBody = data.toString();
 
-        final String url = mHostUrl + "/cdb/set-fields/" + calibreId + '/' + libraryId;
+        final String url = mServerUri + "/cdb/set-fields/" + calibreId + '/' + libraryId;
 
         final HttpURLConnection request = (HttpURLConnection) new URL(url).openConnection();
         request.setRequestMethod(HttpConstants.POST);
@@ -827,94 +898,76 @@ public class CalibreContentServer {
     }
 
     /**
-     * Download the main format file for the given book and store it in the given folder.
+     * Get the book file from the local folder.
+     * This only works if the user has not renamed the file outside of this app.
      *
      * @param context Current context
-     * @param folder  to store the download in
-     * @param book    to download
+     * @param book    to get
      *
-     * @return the file
+     * @return book
      *
-     * @throws IOException on failures
+     * @throws FileNotFoundException on ...
      */
-    @Nullable
-    Uri getFile(@NonNull final Context context,
-                @NonNull final Uri folder,
-                @NonNull final Book book)
-            throws IOException {
+    @NonNull
+    Uri getDocumentUri(@NonNull final Context context,
+                       @NonNull final Book book)
+            throws FileNotFoundException {
 
-        final String url = createBookDownloadUrl(book);
-        final DocumentFile destFile = createBookDestinationFilePath(context, folder, book);
-        final Uri destUri = destFile.getUri();
-
-        try (TerminatorConnection con = new TerminatorConnection(url)) {
-            con.setSSLContext(mSslContext);
-            if (mAuthHeader != null) {
-                con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
-            }
-            checkResponseCode(con.getRequest(), R.string.site_calibre);
-
-            try (OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
-                if (os != null) {
-                    try (InputStream is = con.getInputStream();
-                         BufferedInputStream bis = new BufferedInputStream(is, BUFFER_FILE);
-                         BufferedOutputStream bos = new BufferedOutputStream(os)) {
-
-                        FileUtils.copy(bis, bos);
-                    }
-                }
+        final Optional<Uri> optFolderUri = getFolderUri(context);
+        if (optFolderUri.isPresent()) {
+            try {
+                return getDocumentFile(context, book, optFolderUri.get(), false).getUri();
+            } catch (@NonNull final IOException e) {
+                // Keep it simple.
+                throw new FileNotFoundException();
             }
         }
-
-        if (destFile.exists()) {
-            return destUri;
-        } else {
-            return null;
-        }
+        throw new FileNotFoundException();
     }
 
     /**
-     * Build the full URL to download the eBook.
+     * Get the DocumentFile for the given book.
      *
-     * @param book to get
-     *
-     * @return url
+     * @param context  Current context
+     * @param book     to get
+     * @param folder   where the files are
+     * @param creating set {@code true} when creating, set {@code false} for checking existence
      */
     @NonNull
-    private String createBookDownloadUrl(@NonNull final Book book) {
-        // Build the URL from where to download the file
-        final int id = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
-        final String format = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-        final String libraryId = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID);
-        return mHostUrl + "/get/" + format + "/" + id + "/" + libraryId;
-    }
-
-    /**
-     * Build the Uri to where we'll write the file
-     */
-    @NonNull
-    private DocumentFile createBookDestinationFilePath(@NonNull final Context context,
-                                                       @NonNull final Uri folder,
-                                                       @NonNull final Book book)
+    private DocumentFile getDocumentFile(@NonNull final Context context,
+                                         @NonNull final Book book,
+                                         @NonNull final Uri folder,
+                                         final boolean creating)
             throws IOException {
 
         // we're not assuming ANYTHING....
         final DocumentFile root = DocumentFile.fromTreeUri(context, folder);
         if (root == null) {
-            throw new IOException("root was null");
+            throw new FileNotFoundException(folder.toString());
         }
 
         final Author primaryAuthor = book.getPrimaryAuthor();
         if (primaryAuthor == null) {
+            // This should never happen... flw
             throw new IOException("primaryAuthor was null");
         }
 
-        final String author = primaryAuthor.getFormattedName(false);
+        String author = primaryAuthor.getFormattedName(false);
+        // A little nastiness... if our name ends with a '.'
+        // then Android, in its infinite wisdom, will remove it
+        // If we escape it, Android will turn it into a '_'
+        // Hence, we remove it ourselves, so a subsequent lookup will work.
+        if (author.endsWith(".")) {
+            author = author.substring(0, author.length() - 2).trim();
+        }
+        // FIRST check if it exists
         DocumentFile authorFolder = root.findFile(author);
         if (authorFolder == null) {
-            authorFolder = root.createDirectory(author);
+            if (creating) {
+                authorFolder = root.createDirectory(author);
+            }
             if (authorFolder == null) {
-                throw new IOException("authorFolder was null");
+                throw new FileNotFoundException(author);
             }
         }
 
@@ -923,35 +976,29 @@ public class CalibreContentServer {
         if (primarySeries != null) {
             seriesPrefix = primarySeries.getLabel(context) + " - ";
         }
+        final String fileName = seriesPrefix + book.getTitle();
 
         final String format = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-        String mimeType = MIME_TYPE_MAP.get(format);
-        if (mimeType == null) {
-            mimeType = "application/" + format;
+
+        // FIRST check if it exists using the format extension
+        DocumentFile bookFile = authorFolder.findFile(fileName + "." + format);
+        if (bookFile == null) {
+            if (creating) {
+                // when creating, we must NOT directly use the extension,
+                // but deduce the mime type from the extension.
+                String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(format);
+                if (mimeType == null) {
+                    // shouldn't be needed, ... flw
+                    mimeType = "application/" + format;
+                }
+                bookFile = authorFolder.createFile(mimeType, fileName);
+            }
+            if (bookFile == null) {
+                throw new FileNotFoundException(fileName);
+            }
         }
 
-        final DocumentFile destFile = authorFolder.createFile(mimeType,
-                                                              seriesPrefix + book.getTitle());
-        if (destFile == null) {
-            throw new IOException("destFile was null");
-        }
-        return destFile;
-    }
-
-    @WorkerThread
-    @Nullable
-    File getCover(@NonNull final Context context,
-                  final int calibreId,
-                  @NonNull final String coverUrl) {
-        try {
-            final File tmpFile = mImageDownloader
-                    .createTmpFile(context, TAG, String.valueOf(calibreId), 0, null);
-            return mImageDownloader.fetch(context, mHostUrl + coverUrl, tmpFile);
-
-        } catch (@NonNull final ExternalStorageException ignore) {
-            // a fail here is never critical, we're ignoring any
-        }
-        return null;
+        return bookFile;
     }
 
     /**
@@ -969,7 +1016,7 @@ public class CalibreContentServer {
                          final int buffer)
             throws IOException {
 
-        try (TerminatorConnection con = new TerminatorConnection(mHostUrl + path)) {
+        try (TerminatorConnection con = new TerminatorConnection(mServerUri + path)) {
             con.setSSLContext(mSslContext);
             if (mAuthHeader != null) {
                 con.setRequestProperty(HttpConstants.AUTHORIZATION, mAuthHeader);
@@ -995,11 +1042,12 @@ public class CalibreContentServer {
      *
      * @return an SSLContext, or {@code null} if the custom CA file (certificate) was not found.
      *
-     * @throws IOException on failures
+     * @throws IOException          on failures
+     * @throws CertificateException on failures related to the user installed CA.
      */
     @Nullable
     private SSLContext getSslContext(@NonNull final Context context)
-            throws IOException, CertificateException, KeyManagementException {
+            throws IOException, CertificateException {
 
         try {
             final Certificate ca;
@@ -1026,8 +1074,14 @@ public class CalibreContentServer {
 
         } catch (@NonNull final KeyStoreException | NoSuchAlgorithmException e) {
             // As we're using defaults for the keystore type and trust algorithm,
-            // we should never get here... flw
+            // we should never get these 2... flw
             throw new SSLException(e);
+
+        } catch (@NonNull final KeyManagementException e) {
+            // wrap for ease of handling; it is in fact almost certain that
+            // we would throw a CertificateException BEFORE we can even
+            // get a KeyManagementException
+            throw new CertificateException(e);
         }
     }
 

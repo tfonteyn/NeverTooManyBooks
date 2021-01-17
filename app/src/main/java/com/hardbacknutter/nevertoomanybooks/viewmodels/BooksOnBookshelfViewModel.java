@@ -626,7 +626,7 @@ public class BooksOnBookshelfViewModel
             }
 
             // Add Calibre bridging data ?
-            if (CalibreContentServer.isShowSyncMenus(global)) {
+            if (CalibreContentServer.isEnabled(global)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_ID,
                         DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBDefinitions.KEY_CALIBRE_BOOK_ID)));

@@ -57,13 +57,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.security.cert.CertificateException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
@@ -176,12 +179,11 @@ public class BooksOnBookshelf
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportFragment.ResultContract(), success -> {});
-
-    /** Delegate for Calibre. */
-    private final CalibreHandler mCalibreHandler = new CalibreHandler();
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
-
+    /** Delegate for Calibre. */
+    @Nullable
+    private CalibreHandler mCalibreHandler;
     /** Multi-type adapter to manage list connection to cursor. */
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
@@ -469,7 +471,13 @@ public class BooksOnBookshelf
         mVm.onFailure().observe(this, this::onBuildFailed);
         mVm.onFinished().observe(this, this::onBuildFinished);
 
-        mCalibreHandler.onViewCreated(this, mVb.getRoot());
+        try {
+            mCalibreHandler = new CalibreHandler(this);
+            mCalibreHandler.onViewCreated(this, mVb.getRoot());
+        } catch (@NonNull final IOException | CertificateException ignore) {
+            // ignore
+        }
+
         mGoodreadsHandler.onViewCreated(this, mVb.getRoot());
 
         // show/hide the sync menus
@@ -671,8 +679,7 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
                     .setVisible(GoodreadsManager.isShowSyncMenus(global));
 
-                menu.findItem(R.id.SUBMENU_CALIBRE)
-                    .setVisible(mCalibreHandler.isCalibreEnabled(global, rowData));
+                prepareCalibreMenu(menu, rowData, global);
 
                 MenuHelper.prepareViewBookOnWebsiteMenu(menu, rowData);
                 MenuHelper.prepareOptionalMenus(menu, rowData);
@@ -786,6 +793,21 @@ public class BooksOnBookshelf
         return menu.size() > 0;
     }
 
+    private void prepareCalibreMenu(@NonNull final Menu menu,
+                                    @NonNull final DataHolder rowData,
+                                    @NonNull final SharedPreferences global) {
+        final boolean calibre = mCalibreHandler != null
+                                && mCalibreHandler.isCalibreEnabled(global, rowData);
+        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
+        if (calibre) {
+            final Book book = Objects.requireNonNull(mVm.getBook(rowData));
+            menu.findItem(R.id.MENU_CALIBRE_READ)
+                .setVisible(mCalibreHandler.existsLocally(book));
+        } else {
+            menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
+        }
+    }
+
     /**
      * Using {@link MenuPicker} for context menus.
      *
@@ -843,11 +865,23 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
 
+        } else if (itemId == R.id.MENU_CALIBRE_READ) {
+            if (mCalibreHandler != null) {
+                final Book book = mVm.getBook(rowData);
+                // Sanity check
+                if (book != null) {
+                    mCalibreHandler.read(book);
+                }
+            }
+            return true;
+
         } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            final Book book = mVm.getBook(rowData);
-            // Sanity check
-            if (book != null) {
-                mCalibreHandler.download(book);
+            if (mCalibreHandler != null) {
+                final Book book = mVm.getBook(rowData);
+                // Sanity check
+                if (book != null) {
+                    mCalibreHandler.download(book);
+                }
             }
             return true;
 

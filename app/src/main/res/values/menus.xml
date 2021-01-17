@@ -169,6 +169,7 @@
     <!-- Calibre submenu -->
     <item name="SUBMENU_CALIBRE" type="id" />
     <item name="MENU_CALIBRE_DOWNLOAD" type="id" />
+    <item name="MENU_CALIBRE_READ" type="id" />
 
 
     <!-- Thumbnail context menu -->

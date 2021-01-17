@@ -38,7 +38,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -48,8 +47,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 
+import java.io.IOException;
+import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -107,7 +107,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
  */
 public class ShowBookFragment
         extends Fragment
-        implements CoverHandler.CoverViewHost {
+        implements CoverHandler.CoverHandlerHost {
 
     /** Log tag. */
     public static final String TAG = "ShowBookFragment";
@@ -116,10 +116,11 @@ public class ShowBookFragment
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
-    /** Delegate for Calibre. */
-    private final CalibreHandler mCalibreHandler = new CalibreHandler();
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
+    /** Delegate for Calibre. */
+    @Nullable
+    private CalibreHandler mCalibreHandler;
     /** View model. */
     private ShowBookViewModel mVm;
     /** Set the hosting Activity result, and close it. */
@@ -190,7 +191,13 @@ public class ShowBookFragment
         //noinspection ConstantConditions
         mVm.init(getContext(), requireArguments());
 
-        mCalibreHandler.onViewCreated(this);
+        try {
+            mCalibreHandler = new CalibreHandler(getContext());
+            mCalibreHandler.onViewCreated(this);
+        } catch (@NonNull final IOException | CertificateException ignore) {
+            // ignore
+        }
+
         mGoodreadsHandler.onViewCreated(this);
 
         // The FAB lives in the activity.
@@ -208,7 +215,7 @@ public class ShowBookFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
 
-            mCoverHandler[0] = new CoverHandler(mVm.getDb(), 0, maxWidth, maxHeight);
+            mCoverHandler[0] = new CoverHandler(this, mVm.getDb(), 0, maxWidth, maxHeight);
             mCoverHandler[0].onViewCreated(this);
             mCoverHandler[0].setProgressBar(mVb.coverOperationProgressBar);
             mCoverHandler[0].setBookSupplier(
@@ -219,7 +226,7 @@ public class ShowBookFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
 
-            mCoverHandler[1] = new CoverHandler(mVm.getDb(), 1, maxWidth, maxHeight);
+            mCoverHandler[1] = new CoverHandler(this, mVm.getDb(), 1, maxWidth, maxHeight);
             mCoverHandler[1].onViewCreated(this);
             mCoverHandler[1].setProgressBar(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(
@@ -276,26 +283,38 @@ public class ShowBookFragment
 
         final boolean isSaved = !book.isNew();
         final boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
-        final boolean isAvailable = mVm.isAvailable(mVb.pager.getCurrentItem());
-
         menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isSaved && isRead);
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
         final boolean useLending = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
+        final boolean isAvailable = mVm.isAvailable(mVb.pager.getCurrentItem());
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
 
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
             .setVisible(GoodreadsManager.isShowSyncMenus(global));
 
-        menu.findItem(R.id.SUBMENU_CALIBRE)
-            .setVisible(mCalibreHandler.isCalibreEnabled(global, book));
+        prepareCalibreMenu(menu, book, global);
 
         MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
         MenuHelper.prepareOptionalMenus(menu, book);
 
         super.onPrepareOptionsMenu(menu);
+    }
+
+    private void prepareCalibreMenu(@NonNull final Menu menu,
+                                    @NonNull final Book book,
+                                    @NonNull final SharedPreferences global) {
+        final boolean calibre = mCalibreHandler != null
+                                && mCalibreHandler.isCalibreEnabled(global, book);
+        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
+        if (calibre) {
+            menu.findItem(R.id.MENU_CALIBRE_READ)
+                .setVisible(mCalibreHandler.existsLocally(book));
+        } else {
+            menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
+        }
     }
 
     @Override
@@ -346,9 +365,17 @@ public class ShowBookFragment
             mGoodreadsHandler.sendBook(book.getId());
             return true;
 
+        } else if (itemId == R.id.MENU_CALIBRE_READ) {
+            if (mCalibreHandler != null) {
+                mCalibreHandler.read(book);
+            }
+            return true;
+
         } else if (itemId == R.id.MENU_CALIBRE_DOWNLOAD) {
-            // Reminder: no need to check the book as the menu is only shown for valid books.
-            mCalibreHandler.download(mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
+            if (mCalibreHandler != null) {
+                // Reminder: no need to check the book as the menu is only shown for valid books.
+                mCalibreHandler.download(book);
+            }
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
@@ -416,12 +443,6 @@ public class ShowBookFragment
     }
 
     @Override
-    public void showMsg(@StringRes final int stringRes) {
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), getString(stringRes), Snackbar.LENGTH_LONG).show();
-    }
-
-    @Override
     public void refresh(@IntRange(from = 0, to = 1) final int cIdx) {
         refreshCurrentBook();
     }
@@ -431,12 +452,6 @@ public class ShowBookFragment
         final Book book = mVm.reloadBookAtPosition(mVb.pager.getCurrentItem());
         mPagerAdapter.notifyItemChanged(mVb.pager.getCurrentItem());
         setActivityTitle(book);
-    }
-
-    @Override
-    public void postRefresh(final int cIdx) {
-        //noinspection ConstantConditions
-        getView().post(() -> refresh(cIdx));
     }
 
     private void setActivityTitle(@NonNull final Book book) {
