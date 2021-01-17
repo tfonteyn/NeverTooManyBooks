@@ -77,6 +77,11 @@ public class GoodreadsHandler {
                       fragment, fragment.getChildFragmentManager());
     }
 
+    /**
+     * Host (Fragment/Activity) independent initializer.
+     *
+     * @param view the hosting component root view
+     */
     public void onViewCreated(@NonNull final View view,
                               @NonNull final LifecycleOwner lifecycleOwner,
                               @NonNull final ViewModelStoreOwner viewModelStoreOwner,
