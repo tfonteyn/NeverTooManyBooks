@@ -53,8 +53,8 @@
     <Button
         android:id="@+id/btn_import"
         style="@style/MenuButton"
-        android:text="@string/menu_import"
-        app:icon="@drawable/ic_file_download"
+        android:text="@string/action_import"
+        app:icon="@drawable/ic_cloud_download"
         app:layout_constraintStart_toStartOf="@id/btn_sync"
         app:layout_constraintTop_toBottomOf="@id/btn_sync"
         />
@@ -63,7 +63,7 @@
         android:id="@+id/btn_send_updated_books"
         style="@style/MenuButton"
         android:text="@string/action_export"
-        app:icon="@drawable/ic_send"
+        app:icon="@drawable/ic_cloud_upload"
         app:layout_constraintStart_toStartOf="@id/btn_sync"
         app:layout_constraintTop_toBottomOf="@id/btn_import"
         />

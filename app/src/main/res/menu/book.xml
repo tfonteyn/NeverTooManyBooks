@@ -93,11 +93,11 @@
         <menu>
             <item
                 android:id="@id/MENU_CALIBRE_READ"
-                android:icon="@drawable/ic_book"
+                android:icon="@drawable/ic_book_open"
                 android:title="@string/lbl_read" />
             <item
                 android:id="@id/MENU_CALIBRE_DOWNLOAD"
-                android:icon="@drawable/ic_file_download"
+                android:icon="@drawable/ic_cloud_download"
                 android:title="@string/menu_download_file" />
         </menu>
     </item>
