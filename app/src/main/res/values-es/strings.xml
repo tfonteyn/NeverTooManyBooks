@@ -72,7 +72,7 @@
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Borrar</string>
     <string name="confirm_scope_for_change">Ha cambiado:\n «%1$s»\n a\n «%2$s»\n\n¿Cómo quiere aplicar este cambio?\n\nNota: La opción «%3$s» se aplicará de manera inmediata.</string>
-    <string name="confirm_delete_book">Se dispone a eliminar el libro con el título «%1$s» de %2$s. ¿Está seguro de que desea continuar?</string>
+    <string name="confirm_delete_book">Se dispone a eliminar el libro con el título «%1$s» de %2$s.\n\n ¿Está seguro de que desea continuar?</string>
     <string name="confirm_delete_series">Confirme la eliminación de la serie «%1$s»\n\nLos libros no se eliminarán.\n\nConsidere la opción de editar la serie para cambiar el nombre, para conservar los datos</string>
     <string name="confirm_delete_toc_entry">¿Realmente elimina la entrada «%1$s» (por %2$s)? Se eliminará de todos los libros en los que figura. Los libros en sí no serán borrados.</string>
     <string name="confirm_duplicate_book_message">El libro que intenta añadir ya está en la base de datos. ¿Desea añadir otra copia?</string>

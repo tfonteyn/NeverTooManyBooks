@@ -71,7 +71,7 @@
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Temizle</string>
     <string name="confirm_scope_for_change">Değiştirdiniz:\n “%1$s”,\n“%2$s”\n olarak.\n\nDeğişiklikleri nasıl uygulamak istersiniz?\n\nNot: “%3$s” seçimi anında uygulanacaktır.</string>
-    <string name="confirm_delete_book">Bu işlem bu kitabı tümüyle silecektir: “%1$s” - %2$s. Sürdürmek istediğinizden emin misiniz?</string>
+    <string name="confirm_delete_book">Bu işlem bu kitabı tümüyle silecektir: “%1$s” - %2$s.\n\nSürdürmek istediğinizden emin misiniz?</string>
     <string name="confirm_delete_publisher">“%1$s” yayıncısını gerçekten silmek istiyor musunuz?\n\nKitapların kendileri silinmeyecek.\n\nBu verileri korumak için yayıncıyı düzenlemeyi ve yayıncı adını başka bir yayıncının adıyla değiştirmeyi düşünün.</string>
     <string name="confirm_delete_series">“%1$s” serisi gerçekten silinsin mi?\n\nKitabın kendisi silinmeyecektir.\n\nSeriyi düzenleyip seri adını başka bir serininkiyle değiştirip bu veriyi korumayı düşünün.</string>
     <string name="confirm_delete_toc_entry">“%1$s” girişini gerçekten sil (%2$s)? Listelendiği tüm kitaplardan silinecek. Kitapların kendisi silinmeyecek.</string>

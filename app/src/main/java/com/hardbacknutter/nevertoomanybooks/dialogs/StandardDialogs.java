@@ -127,7 +127,7 @@ public final class StandardDialogs {
                 .setMessage(context.getString(R.string.confirm_delete_series,
                                               series.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -148,7 +148,7 @@ public final class StandardDialogs {
                 .setMessage(context.getString(R.string.confirm_delete_publisher,
                                               publisher.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -170,7 +170,7 @@ public final class StandardDialogs {
                                               bookshelf.getLabel(context),
                                               context.getString(R.string.bookshelf_all_books)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -194,7 +194,7 @@ public final class StandardDialogs {
                                               title,
                                               author.getLabel(context)))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }
@@ -235,7 +235,7 @@ public final class StandardDialogs {
                 .setTitle(R.string.action_delete)
                 .setMessage(context.getString(R.string.confirm_delete_book, title, authors))
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> onConfirm.run())
+                .setPositiveButton(R.string.action_delete, (d, w) -> onConfirm.run())
                 .create()
                 .show();
     }

@@ -80,7 +80,7 @@
     <string name="bytes">%.0fB</string>
     <string name="confirm_clear_all_data">Dies wird alle Daten entfernen!\n Außer durch Wiederherstellen von einem vorherigen Backup kann dies nicht rückgängig gemacht werden!\n\n Sind Sie sicher, dass Sie fortfahren möchten ?</string>
     <string name="confirm_continue">Sind Sie sicher, dass Sie fortfahren möchten ?</string>
-    <string name="confirm_delete_book">Dieser Vorgang löscht das Buch mit dem Titel „%1$s“ von „%2$s“ vollständig. Wollen Sie das Buch löschen?</string>
+    <string name="confirm_delete_book">Dieser Vorgang löscht das Buch mit dem Titel „%1$s“ von „%2$s“ vollständig.\n\n Wollen Sie das Buch löschen?</string>
     <string name="confirm_delete_bookshelf">Bücherregal „%1$s“ wirklich löschen? Die Bücher selbst werden nicht gelöscht. Sie sind weiterhin in anderen Regalen oder im Regal „%2$s“ vorhanden.</string>
     <string name="confirm_delete_publisher">Herausgeber „%1$s“ wirklich löschen?\n\nDie Bücher selbst werden nicht gelöscht.\n\nBetrachten Sie, den Herausgeber zu bearbeiten und den Herausgebernamen in den Namen eines anderen Herausgebers zu ändern, um diese Daten zu erhalten.</string>
     <string name="confirm_delete_series">Serie „%1$s“ wirklich löschen?\n\nDie Bücher werden nicht gelöscht.\n\n Berücksichtigen Sie, dass Sie ggf. den Namen der Serie ändern können, um die Daten der Serie zu behalten.</string>

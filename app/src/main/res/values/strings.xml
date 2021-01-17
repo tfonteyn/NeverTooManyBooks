@@ -311,7 +311,7 @@
     <string name="confirm_delete_bookshelf">Really delete bookshelf “%1$s”?  The books themselves will not be deleted. They will still be present on any other shelves, or on the “%2$s” shelf.</string>
     <string name="confirm_delete_toc_entry">Really delete the title “%1$s” by %2$s? It will be deleted from all books in which it is listed. The books themselves will not be deleted.</string>
 
-    <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\nAre you sure you want to continue?</string>
+    <string name="confirm_delete_book">This will completely delete the book entitled “%1$s” by %2$s.\n\nAre you sure you want to continue?</string>
 
     <string name="confirm_merge_bookshelves">The bookshelf you are modifying already exists. Would you like to merge them?</string>
     <string name="confirm_merge_authors">The author you are modifying already exists. Would you like to merge them?</string>

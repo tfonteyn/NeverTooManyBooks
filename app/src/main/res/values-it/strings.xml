@@ -71,7 +71,7 @@
     <string name="bytes">%.0fB</string>
     <string name="action_clear">Cancella</string>
     <string name="confirm_scope_for_change">Hai modificato:\n «%1$s»\n in\n «%2$s»\n\nCome desideri applicare questa modifica?\n\nNota: La scelta «%3$s» sarà applicata immediatamente.</string>
-    <string name="confirm_delete_book">Il libro intitolato «%1$s» verrà completamente cancellato da %2$s. Procedere?</string>
+    <string name="confirm_delete_book">Il libro intitolato «%1$s» verrà completamente cancellato da %2$s.\n\n Procedere?</string>
     <string name="confirm_delete_series">Cancellare la serie «%1$s»?\n\nI libri non verranno cancellati.\n\nValuta se modificare la serie e cambiare il nome della serie in quello di un\'altra serie per preservare i dati</string>
     <string name="confirm_delete_toc_entry">Cancellare davvero il titolo «%1$s» (di %2$s)?\nSarà cancellato da tutti i libri in cui è elencato.\n libri stessi non saranno cancellati.</string>
     <string name="confirm_duplicate_book_message">Il libro che stai cercando di aggiungere è già presente nel database, vuoi aggiungerne un\'altra copia?</string>
