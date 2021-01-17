@@ -257,8 +257,8 @@ public class ExportFragment
             mVb.archiveFormat.setVisibility(View.GONE);
 
             mVb.archiveFormatInfo.setText(mPresetEncoding.getRemoteServerDescriptionResId());
-            //URGENT: add a proper info msg
-            mVb.archiveFormatInfoLong.setText("");
+            //noinspection ConstantConditions
+            mVb.archiveFormatInfoLong.setText(CalibreContentServer.getHostUrl(getContext()));
 
         } else {
             //noinspection ConstantConditions
