@@ -32,7 +32,6 @@ import androidx.annotation.WorkerThread;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -272,12 +271,12 @@ public enum ArchiveEncoding
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
+     * @throws CertificateException    on failures with secure connections
      */
     @NonNull
     public ArchiveWriter createWriter(@NonNull final Context context,
                                       @NonNull final ExportHelper helper)
-            throws GeneralParsingException, IOException,
-                   CertificateException, KeyManagementException {
+            throws GeneralParsingException, IOException, CertificateException {
 
         switch (this) {
             case Zip:
@@ -317,13 +316,14 @@ public enum ArchiveEncoding
      * @throws InvalidArchiveException on failure to produce a supported reader
      * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException             on other failures
+     * @throws CertificateException    on failures with secure connections
      */
     @NonNull
     @WorkerThread
     public ArchiveReader createReader(@NonNull final Context context,
                                       @NonNull final ImportHelper helper)
-            throws InvalidArchiveException, GeneralParsingException,
-                   IOException, CertificateException, KeyManagementException {
+            throws InvalidArchiveException,
+                   GeneralParsingException, IOException, CertificateException {
 
         final ArchiveReader reader;
         switch (this) {

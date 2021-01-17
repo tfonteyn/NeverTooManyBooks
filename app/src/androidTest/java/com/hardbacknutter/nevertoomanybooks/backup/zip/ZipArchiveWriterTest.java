@@ -26,7 +26,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 
 import org.junit.Before;
@@ -75,10 +74,8 @@ public class ZipArchiveWriterTest {
 
     @Test
     public void write()
-            throws ImportException,
-                   InvalidArchiveException, GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+            throws ImportException, InvalidArchiveException, GeneralParsingException,
+                   IOException, CertificateException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + ".zip");
         //noinspection ResultOfMethodCallIgnored

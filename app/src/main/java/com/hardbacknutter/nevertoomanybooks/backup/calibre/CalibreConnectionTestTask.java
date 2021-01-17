@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -58,14 +57,13 @@ public class CalibreConnectionTestTask
      *
      * @return {@code true} on success
      *
-     * @throws IOException on failures
+     * @throws CertificateException on failures related to the user installed CA.
+     * @throws IOException          on failures
      */
     @Nullable
     @Override
     protected Boolean doWork(@NonNull final Context context)
-            throws GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+            throws GeneralParsingException, IOException, CertificateException {
 
         try {
             final CalibreContentServer server = new CalibreContentServer(context);

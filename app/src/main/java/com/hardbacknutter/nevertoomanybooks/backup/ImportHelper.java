@@ -31,7 +31,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 import java.util.EnumSet;
 import java.util.Set;
@@ -218,13 +217,13 @@ public final class ImportHelper {
      * @throws InvalidArchiveException on failure to produce a supported reader
      * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException             on other failures
+     * @throws CertificateException    on failures with secure connections
      */
     @NonNull
     @WorkerThread
     public ArchiveReader createArchiveReader(@NonNull final Context context)
             throws InvalidArchiveException, GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+                   IOException, CertificateException {
         if (BuildConfig.DEBUG /* always */) {
             if (mImportEntries.isEmpty()) {
                 throw new IllegalStateException("mImportEntries is empty");

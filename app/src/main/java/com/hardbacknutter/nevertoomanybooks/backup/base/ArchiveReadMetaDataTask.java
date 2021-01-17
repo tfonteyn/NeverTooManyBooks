@@ -27,7 +27,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -64,8 +63,7 @@ public class ArchiveReadMetaDataTask
     @WorkerThread
     protected ArchiveMetaData doWork(@NonNull final Context context)
             throws InvalidArchiveException, GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+                   IOException, CertificateException {
         Thread.currentThread().setName(TAG);
 
         try (ArchiveReader reader = mHelper.createArchiveReader(context)) {

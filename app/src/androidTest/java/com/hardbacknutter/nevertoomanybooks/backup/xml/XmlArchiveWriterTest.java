@@ -26,7 +26,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 
 import org.junit.Before;
@@ -63,8 +62,7 @@ public class XmlArchiveWriterTest {
 
     @Test
     public void write()
-            throws IOException, GeneralParsingException,
-                   CertificateException, KeyManagementException {
+            throws IOException, GeneralParsingException, CertificateException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + ".xml");

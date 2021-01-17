@@ -33,7 +33,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -140,12 +139,11 @@ public class ExportHelper {
      *
      * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
+     * @throws CertificateException    on failures with secure connections
      */
     @NonNull
     public ArchiveWriter createArchiveWriter(@NonNull final Context context)
-            throws GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+            throws GeneralParsingException, IOException, CertificateException {
 
         if (BuildConfig.DEBUG /* always */) {
             Objects.requireNonNull(mUri, "uri");

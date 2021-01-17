@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
@@ -81,8 +80,7 @@ public class CsvArchiveWriterTest {
     public void write()
             throws ImportException, DAO.DaoWriteException,
                    InvalidArchiveException, GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+                   IOException, CertificateException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + ".csv");

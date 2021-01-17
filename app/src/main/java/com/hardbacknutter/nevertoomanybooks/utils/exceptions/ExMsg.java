@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.security.GeneralSecurityException;
+import java.security.cert.CertificateException;
 import java.sql.SQLException;
 
 import javax.net.ssl.SSLException;
@@ -79,9 +79,7 @@ public class ExMsg {
         } else if (e instanceof UnknownHostException) {
             msg = context.getString(R.string.error_search_failed_network);
 
-        } else if (e instanceof GeneralSecurityException) {
-            // One of these 2:
-            // CertificateException, KeyManagementException
+        } else if (e instanceof CertificateException) {
             // TODO: give user detailed message
             // There was something wrong with certificates/key on OUR end
             msg = context.getString(R.string.httpErrorFailedSslHandshake);

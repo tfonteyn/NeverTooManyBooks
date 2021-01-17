@@ -26,7 +26,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
@@ -78,10 +77,8 @@ public class JsonArchiveWriterTest {
 
     @Test
     public void styles()
-            throws ImportException,
-                   InvalidArchiveException, GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+            throws ImportException, InvalidArchiveException, GeneralParsingException,
+                   IOException, CertificateException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + "-styles.json");
@@ -125,8 +122,7 @@ public class JsonArchiveWriterTest {
     public void books()
             throws ImportException, DAO.DaoWriteException,
                    InvalidArchiveException, GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+                   IOException, CertificateException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final File file = AppDir.Log.getFile(context, TAG + "-books.json");

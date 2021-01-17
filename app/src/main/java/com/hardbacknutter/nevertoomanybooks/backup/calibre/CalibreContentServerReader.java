@@ -31,7 +31,6 @@ import androidx.annotation.WorkerThread;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -151,13 +150,12 @@ public class CalibreContentServerReader
      * @param context Current context
      * @param helper  import configuration
      *
-     * @throws IOException on other failures
+     * @throws IOException          on failures
+     * @throws CertificateException on failures related to the user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
                                       @NonNull final ImportHelper helper)
-            throws GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+            throws GeneralParsingException, IOException, CertificateException {
 
         mDb = new DAO(TAG);
 

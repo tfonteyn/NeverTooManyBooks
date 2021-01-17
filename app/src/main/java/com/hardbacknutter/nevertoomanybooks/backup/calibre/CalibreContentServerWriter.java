@@ -28,7 +28,6 @@ import androidx.annotation.NonNull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.KeyManagementException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -82,13 +81,12 @@ public class CalibreContentServerWriter
      * @param context Current context
      * @param helper  export configuration
      *
-     * @throws IOException on failures
+     * @throws IOException          on failures
+     * @throws CertificateException on failures related to the user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
                                       @NonNull final ExportHelper helper)
-            throws GeneralParsingException,
-                   IOException,
-                   CertificateException, KeyManagementException {
+            throws GeneralParsingException, IOException, CertificateException {
         mHelper = helper;
 
         mDb = new DAO(TAG);
