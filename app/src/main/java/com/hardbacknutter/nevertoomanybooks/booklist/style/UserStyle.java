@@ -62,7 +62,7 @@ public class UserStyle
      * @param context Current context
      * @param uuid    UUID of the style
      *
-     * @see com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader
+     * @see com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder
      */
     private UserStyle(@NonNull final Context context,
                       @NonNull final String uuid) {
