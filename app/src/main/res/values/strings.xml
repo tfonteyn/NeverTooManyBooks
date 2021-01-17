@@ -949,6 +949,7 @@
     <!-- Sync with a remote server. -->
     <string name="menu_send_updated">Send updated books</string>
 
+    <string name="menu_download_folder">Download folder</string>
     <string name="menu_download_file">Download file</string>
     <string name="error_download_failed">Download failed</string>
     <string name="progress_end_download_successful">Download successful</string>

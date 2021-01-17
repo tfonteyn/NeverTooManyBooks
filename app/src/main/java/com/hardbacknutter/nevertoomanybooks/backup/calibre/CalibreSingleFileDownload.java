@@ -40,6 +40,11 @@ public class CalibreSingleFileDownload
 
     private CalibreContentServer mServer;
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param server to access Calibre
+     */
     public void init(@NonNull final CalibreContentServer server) {
         mServer = server;
     }

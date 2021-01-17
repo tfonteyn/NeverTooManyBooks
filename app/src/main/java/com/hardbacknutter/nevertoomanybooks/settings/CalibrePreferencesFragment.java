@@ -31,6 +31,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
@@ -61,9 +62,13 @@ public class CalibrePreferencesFragment
 
     public static final String TAG = "CalibrePreferencesFrag";
     private static final String PSK_CA_FROM_FILE = "psk_ca_from_file";
+    private static final String PSK_PICK_FOLDER = "psk_pick_folder";
 
-    private final ActivityResultLauncher<String> mOpenUriLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
+    private final ActivityResultLauncher<String> mOpenCaUriLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenCaUri);
+
+    /** Let the user pick the 'root' folder for storing Calibre downloads. */
+    private ActivityResultLauncher<Uri> mPickFolderLauncher;
 
     private CalibreConnectionTestTask mConnectionTestTask;
 
@@ -141,7 +146,17 @@ public class CalibrePreferencesFragment
         //noinspection ConstantConditions
         setCertificateSummary(caPref);
         caPref.setOnPreferenceClickListener(preference -> {
-            mOpenUriLauncher.launch("*/*");
+            mOpenCaUriLauncher.launch("*/*");
+            return true;
+        });
+
+        final Preference folderPref = findPreference(PSK_PICK_FOLDER);
+        //noinspection ConstantConditions
+        setFolderSummary(folderPref);
+        folderPref.setOnPreferenceClickListener(preference -> {
+            //noinspection ConstantConditions
+            mPickFolderLauncher.launch(CalibreContentServer.getFolderUri(getContext())
+                                                           .orElse(null));
             return true;
         });
     }
@@ -154,6 +169,16 @@ public class CalibrePreferencesFragment
         //noinspection ConstantConditions
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
+
+        mPickFolderLauncher = registerForActivityResult(
+                new ActivityResultContracts.OpenDocumentTree(), uri -> {
+                    if (uri != null) {
+                        //noinspection ConstantConditions
+                        CalibreContentServer.setFolderUri(getContext(), uri);
+                    }
+                    //noinspection ConstantConditions
+                    setFolderSummary(findPreference(PSK_PICK_FOLDER));
+                });
 
         mConnectionTestTask = new ViewModelProvider(this).get(CalibreConnectionTestTask.class);
         mConnectionTestTask.onFailure().observe(getViewLifecycleOwner(), this::onFailure);
@@ -195,7 +220,28 @@ public class CalibrePreferencesFragment
         mToolbar.setSubtitle(R.string.site_calibre);
     }
 
-    private void onOpenUri(@Nullable final Uri uri) {
+    /**
+     * Read the existing download folder, and set the preference summary.
+     *
+     * @param preference to use
+     */
+    private void setFolderSummary(@NonNull final Preference preference) {
+        //noinspection ConstantConditions
+        final Uri uri = CalibreContentServer.getFolderUri(getContext()).orElse(null);
+        if (uri == null) {
+            preference.setSummary(R.string.info_not_set);
+        } else {
+            final DocumentFile df = DocumentFile.fromTreeUri(getContext(), uri);
+            if (df != null) {
+                preference.setSummary(df.getName());
+            } else {
+                // should never happen... flw
+                preference.setSummary(R.string.info_not_set);
+            }
+        }
+    }
+
+    private void onOpenCaUri(@Nullable final Uri uri) {
         if (uri != null) {
             final Preference preference = findPreference(PSK_CA_FROM_FILE);
 

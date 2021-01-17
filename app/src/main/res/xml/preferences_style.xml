@@ -28,7 +28,7 @@
         android:icon="@drawable/ic_edit"
         android:key="style.booklist.name"
         android:title="@string/lbl_name"
-        android:summary="@string/hint_empty_field"
+        android:summary="@string/info_not_set"
         />
 
     <PreferenceCategory

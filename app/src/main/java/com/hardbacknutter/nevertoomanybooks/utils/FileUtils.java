@@ -214,10 +214,9 @@ public final class FileUtils {
                             @NonNull final File source,
                             @NonNull final Uri destUri)
             throws IOException {
-        final ContentResolver cr = context.getContentResolver();
 
         try (InputStream is = new FileInputStream(source);
-             OutputStream os = cr.openOutputStream(destUri)) {
+             OutputStream os = context.getContentResolver().openOutputStream(destUri)) {
             if (os != null) {
                 copy(is, os);
             }
@@ -357,6 +356,9 @@ public final class FileUtils {
 
     /**
      * Get the name and size of the content behind a Uri.
+     * <p>
+     * Dev Note: alternatively use {@link DocumentFile} 'from' methods
+     * and {@link DocumentFile#getName()} / {@link DocumentFile#length()} but that's TWO queries.
      *
      * @param context Current context
      * @param uri     to inspect
@@ -374,26 +376,20 @@ public final class FileUtils {
 
         if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
             final ContentResolver contentResolver = context.getContentResolver();
-            try (Cursor cursor = contentResolver.query(uri, null, null, null, null)) {
+            final String[] columns = new String[]{OpenableColumns.DISPLAY_NAME,
+                                                  OpenableColumns.SIZE};
+            try (Cursor cursor = contentResolver.query(uri, columns, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
 
-                    final String name = cursor.getString(
-                            cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
-                    final long size = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                    // display name
+                    final String name = cursor.getString(0);
+                    // 0 for a directory
+                    final long size = cursor.getLong(1);
+
                     // sanity check, according to the android.provider.OpenableColumns
                     // documentation, the name and size MUST be present.
                     if (name != null && !name.isEmpty()) {
                         return new UriInfo(uri, name, size);
-
-                        //    for (final String cName : cursor.getColumnNames()) {
-                        //        //0 = "document_id"
-                        //        //1 = "mime_type"       it's what we put in when opening
-                        //        //2 = "_display_name"   OpenableColumns.DISPLAY_NAME
-                        //        //3 = "summary"
-                        //        //4 = "last_modified"
-                        //        //5 = "flags"
-                        //        //6 = "_size"           OpenableColumns.SIZE
-                        //    }
                     }
                 }
             }

@@ -154,7 +154,7 @@ public class CalibreHandler {
      * @param book to get
      */
     public void download(@NonNull final Book book) {
-        final Optional<Uri> optionalUri = mServer.getFolderUri(mView.getContext());
+        final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(mView.getContext());
         if (optionalUri.isPresent()) {
             download(book, optionalUri.get());
         } else {

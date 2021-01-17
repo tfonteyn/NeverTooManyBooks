@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.calibre;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -82,6 +83,7 @@ import org.json.JSONObject;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -255,20 +257,40 @@ public class CalibreContentServer {
         }
     }
 
-    static void setFolderUri(@NonNull final Context context,
-                             @NonNull final Uri uri) {
-        PreferenceManager.getDefaultSharedPreferences(context)
-                         .edit()
-                         .putString(PK_LOCAL_FOLDER_URI, uri.toString())
-                         .apply();
+    public static void setFolderUri(@NonNull final Context context,
+                                    @NonNull final Uri uri)
+            throws SecurityException {
+        final ContentResolver contentResolver = context.getContentResolver();
 
-        context.getContentResolver().takePersistableUriPermission(
-                uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
-                     | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+        final String oldFolder = PreferenceManager.getDefaultSharedPreferences(context)
+                                                  .getString(PK_LOCAL_FOLDER_URI, "");
+
+        // If the old one is different then the current selection, release the previous Uri
+        if (!oldFolder.equals(uri.toString())) {
+            getFolderUri(context).ifPresent(
+                    oldUri -> contentResolver.releasePersistableUriPermission(
+                            oldUri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    | Intent.FLAG_GRANT_WRITE_URI_PERMISSION));
+        }
+
+        try {
+            // Take and store the new Uri
+            contentResolver.takePersistableUriPermission(
+                    uri, Intent.FLAG_GRANT_READ_URI_PERMISSION
+                         | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+            PreferenceManager.getDefaultSharedPreferences(context)
+                             .edit()
+                             .putString(PK_LOCAL_FOLDER_URI, uri.toString())
+                             .apply();
+        } catch (@NonNull final SecurityException e) {
+            Logger.error(context, TAG, e, "uri=" + uri.toString());
+            throw e;
+        }
     }
 
     @NonNull
-    Optional<Uri> getFolderUri(@NonNull final Context context) {
+    public static Optional<Uri> getFolderUri(@NonNull final Context context) {
 
         final String folder = PreferenceManager.getDefaultSharedPreferences(context)
                                                .getString(PK_LOCAL_FOLDER_URI, "");
