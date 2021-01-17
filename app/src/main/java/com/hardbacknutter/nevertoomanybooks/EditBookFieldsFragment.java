@@ -37,12 +37,9 @@ import androidx.annotation.IdRes;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class EditBookFieldsFragment
         extends EditBookBaseFragment
-        implements CoverHandler.CoverViewHost {
+        implements CoverHandler.CoverHandlerHost {
 
     /** Log tag. */
     private static final String TAG = "EditBookFieldsFragment";
@@ -206,7 +203,7 @@ public class EditBookFieldsFragment
                                     final int maxHeight,
                                     final int cIdx,
                                     @NonNull final ProgressBar progressBar) {
-        mCoverHandler[cIdx] = new CoverHandler(mVm.getDb(), cIdx, maxWidth, maxHeight);
+        mCoverHandler[cIdx] = new CoverHandler(this, mVm.getDb(), cIdx, maxWidth, maxHeight);
         mCoverHandler[cIdx].onViewCreated(this);
         mCoverHandler[cIdx].setProgressBar(progressBar);
         mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
@@ -303,23 +300,11 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    public void showMsg(@StringRes final int stringRes) {
-        //noinspection ConstantConditions
-        Snackbar.make(getView(), getString(stringRes), Snackbar.LENGTH_LONG).show();
-    }
-
-    @Override
     public void refresh(@IntRange(from = 0, to = 1) final int cIdx) {
         if (mCoverHandler[cIdx] != null) {
             final ImageView view = cIdx == 0 ? mVb.coverImage0 : mVb.coverImage1;
             mCoverHandler[cIdx].onBindView(view, mVm.getBook());
         }
-    }
-
-    @Override
-    public void postRefresh(final int cIdx) {
-        //noinspection ConstantConditions
-        getView().post(() -> refresh(cIdx));
     }
 
     @Override
