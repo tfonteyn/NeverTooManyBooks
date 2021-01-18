@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -83,14 +83,6 @@ public final class DateParser
             "MMM yyyy",
             "MMMM yyyy",
             };
-    /**
-     * Variant of DateTimeFormatter.ISO_DATE_TIME using a space instead of the normal 'T'
-     * '2011-12-03 10:15:30',
-     * '2011-12-03 10:15:30+01:00'
-     * '2011-12-03 10:15:30+01:00[Europe/Paris]'
-     */
-    @SuppressWarnings("WeakerAccess")
-    public static DateTimeFormatter SQLITE_ISO_DATE_TIME;
     /** Singleton. */
     private static DateParser sInstance;
     /** List of patterns we'll use to parse dates. */
@@ -154,7 +146,13 @@ public final class DateParser
 
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
 
-        SQLITE_ISO_DATE_TIME = new DateTimeFormatterBuilder()
+        /*
+         * Variant of DateTimeFormatter.ISO_DATE_TIME using a space instead of the normal 'T'
+         * '2011-12-03 10:15:30',
+         * '2011-12-03 10:15:30+01:00'
+         * '2011-12-03 10:15:30+01:00[Europe/Paris]'
+         */
+        final DateTimeFormatter SQLITE_ISO_DATE_TIME = new DateTimeFormatterBuilder()
                 .parseCaseInsensitive()
                 .append(DateTimeFormatter.ISO_LOCAL_DATE)
                 // A space instead of the normal 'T'
