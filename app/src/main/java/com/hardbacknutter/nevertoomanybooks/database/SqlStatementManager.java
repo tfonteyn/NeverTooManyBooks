@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -45,6 +45,10 @@ public class SqlStatementManager
     /** Log tag. */
     private static final String TAG = "SqlStatementManager";
 
+    /**
+     * Note: the key is a String instead of an int, so we don't have to make sure integers
+     * are unique across different classes using the same SqlStatementManager.
+     */
     @NonNull
     private final Map<String, SynchronizedStatement> mStatements =
             Collections.synchronizedMap(new HashMap<>());
