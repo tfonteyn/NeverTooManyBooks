@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -216,10 +216,10 @@ public class EditLenderDialogFragment
         final boolean success;
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
-            success = mDb.setLoanee(mBookId, mLoanee, true);
+            success = mDb.setLoanee(mBookId, mLoanee);
         } else {
             // return the book
-            success = mDb.setLoanee(mBookId, null, true);
+            success = mDb.setLoanee(mBookId, null);
         }
 
         if (success) {

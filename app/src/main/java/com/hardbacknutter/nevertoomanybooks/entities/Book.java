@@ -735,7 +735,7 @@ public class Book
     @SuppressWarnings("unused")
     public void deleteLoan(@NonNull final DAO db) {
         remove(DBDefinitions.KEY_LOANEE);
-        db.setLoanee(this, null, true);
+        db.setLoanee(this, null);
     }
 
     /**
@@ -933,7 +933,7 @@ public class Book
                .forEach(key -> {
                    final String date = getString(key);
                    // This is very crude... we simply truncate to 10 characters maximum
-                   // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date
+                   // i.e. 'YYYY-MM-DD', but do not verify if it's a valid date.
                    if (date.length() > 10) {
                        putString(key, date.substring(0, 10));
                    }

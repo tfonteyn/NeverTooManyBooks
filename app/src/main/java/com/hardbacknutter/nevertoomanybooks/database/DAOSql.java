@@ -537,6 +537,13 @@ public class DAOSql {
                 + _WHERE_ + KEY_BOOK_UUID + "=?";
 
         /**
+         * Get the id of a {@link Book} by Calibre UUID.
+         */
+        static final String BY_CALIBRE_UUID =
+                SELECT_ + KEY_FK_BOOK + _FROM_ + TBL_CALIBRE_BOOKS.getName()
+                + _WHERE_ + KEY_CALIBRE_BOOK_UUID + "=?";
+
+        /**
          * Get the id of a {@link ListStyle} by UUID.
          */
         static final String BOOKLIST_STYLE_ID_BY_UUID =

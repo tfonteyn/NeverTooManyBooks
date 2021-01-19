@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -221,7 +221,7 @@ public class ShowBookViewModel
     public void deleteLoan(@IntRange(from = 0) final int position) {
         final Book book = getBookAtPosition(position);
         book.remove(DBDefinitions.KEY_LOANEE);
-        mDb.setLoanee(book, null, true);
+        mDb.setLoanee(book, null);
     }
 
     /**

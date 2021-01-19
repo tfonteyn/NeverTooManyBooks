@@ -1009,6 +1009,6 @@ public class BooksOnBookshelfViewModel
     @SuppressWarnings("UnusedReturnValue")
     public boolean lendBook(@IntRange(from = 1) final long bookId,
                             @Nullable final String loanee) {
-        return mDb.setLoanee(bookId, loanee, true);
+        return mDb.setLoanee(bookId, loanee);
     }
 }

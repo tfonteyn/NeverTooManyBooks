@@ -209,43 +209,45 @@ public class DAO
 
     /** statement names; keys into the cache map. */
     private static final String STMT_CHECK_BOOK_EXISTS = "CheckBookExists";
-    private static final String STMT_GET_AUTHOR_ID = "GetAuthorId";
-    private static final String STMT_GET_SERIES_ID = "GetSeriesId";
-    private static final String STMT_GET_PUBLISHER_ID = "GetPublisherId";
-    private static final String STMT_GET_TOC_ENTRY_ID = "GetTOCEntryId";
-    private static final String STMT_GET_BOOK_ISBN = "GetBookIsbn";
-    private static final String STMT_GET_BOOK_TITLE = "GetBookTitle";
-    private static final String STMT_GET_BOOK_UPDATE_DATE = "GetBookUpdateDate";
-    private static final String STMT_GET_BOOK_UUID = "GetBookUuid";
-    private static final String STMT_GET_BOOK_ID_FROM_UUID = "GetBookIdFromUuid";
-    private static final String STMT_GET_BOOKSHELF_ID_BY_NAME = "GetBookshelfIdByName";
-    private static final String STMT_GET_LOANEE_BY_BOOK_ID = "GetLoaneeByBookId";
-    private static final String STMT_GET_BOOKLIST_STYLE = "GetListStyle";
 
-    private static final String STMT_INSERT_AUTHOR = "InsertAuthor";
-    private static final String STMT_INSERT_SERIES = "InsertSeries";
-    private static final String STMT_INSERT_PUBLISHER = "InsertPublisher";
-    private static final String STMT_INSERT_TOC_ENTRY = "InsertTOCEntry";
+    private static final String STMT_GET_AUTHOR_ID = "gAuthorId";
+    private static final String STMT_GET_SERIES_ID = "gSeriesId";
+    private static final String STMT_GET_PUBLISHER_ID = "gPublisherId";
+    private static final String STMT_GET_TOC_ENTRY_ID = "gTOCEntryId";
+    private static final String STMT_GET_BOOK_ISBN = "gBookIsbn";
+    private static final String STMT_GET_BOOK_TITLE = "gBookTitle";
+    private static final String STMT_GET_BOOK_UPDATE_DATE = "gBookUpdateDate";
+    private static final String STMT_GET_BOOK_UUID = "gBookUuid";
+    private static final String STMT_GET_BOOK_ID_FROM_UUID = "gBookIdFromUuid";
+    private static final String STMT_GET_BOOK_ID_FROM_CALIBRE_UUID = "gBookIdFromCalibreUuid";
+    private static final String STMT_GET_BOOKSHELF_ID_BY_NAME = "gBookshelfIdByName";
+    private static final String STMT_GET_LOANEE_BY_BOOK_ID = "gLoaneeByBookId";
+    private static final String STMT_GET_BOOKLIST_STYLE = "gListStyle";
 
-    private static final String STMT_INSERT_BOOK_AUTHORS = "InsertBookAuthors";
-    private static final String STMT_INSERT_BOOK_SERIES = "InsertBookSeries";
-    private static final String STMT_INSERT_BOOK_PUBLISHER = "InsertBookPublisher";
-    private static final String STMT_INSERT_BOOK_TOC_ENTRY = "InsertBookTOCEntry";
-    private static final String STMT_INSERT_BOOK_BOOKSHELF = "InsertBookBookshelf";
+    private static final String STMT_INSERT_AUTHOR = "iAuthor";
+    private static final String STMT_INSERT_SERIES = "iSeries";
+    private static final String STMT_INSERT_PUBLISHER = "iPublisher";
+    private static final String STMT_INSERT_TOC_ENTRY = "iTOCEntry";
 
-    private static final String STMT_DELETE_BOOK = "DeleteBook";
+    private static final String STMT_INSERT_BOOK_AUTHORS = "iBookAuthors";
+    private static final String STMT_INSERT_BOOK_SERIES = "iBookSeries";
+    private static final String STMT_INSERT_BOOK_PUBLISHER = "iBookPublisher";
+    private static final String STMT_INSERT_BOOK_TOC_ENTRY = "iBookTOCEntry";
+    private static final String STMT_INSERT_BOOK_BOOKSHELF = "iBookBookshelf";
 
-    private static final String STMT_DELETE_BOOK_TOC_ENTRIES = "DeleteBookTocEntries";
-    private static final String STMT_DELETE_BOOK_AUTHORS = "DeleteBookAuthors";
-    private static final String STMT_DELETE_BOOK_BOOKSHELF = "DeleteBookBookshelf";
-    private static final String STMT_DELETE_BOOK_SERIES = "DeleteBookSeries";
-    private static final String STMT_DELETE_BOOK_PUBLISHER = "DeleteBookPublisher";
+    private static final String STMT_DELETE_BOOK = "dBook";
 
-    private static final String STMT_UPDATE_GOODREADS_BOOK_ID = "UpdateGoodreadsBookId";
-    private static final String STMT_UPDATE_GOODREADS_SYNC_DATE = "UpdateGoodreadsSyncDate";
+    private static final String STMT_DELETE_BOOK_TOC_ENTRIES = "dBookTocEntries";
+    private static final String STMT_DELETE_BOOK_AUTHORS = "dBookAuthors";
+    private static final String STMT_DELETE_BOOK_BOOKSHELF = "dBookBookshelf";
+    private static final String STMT_DELETE_BOOK_SERIES = "dBookSeries";
+    private static final String STMT_DELETE_BOOK_PUBLISHER = "dBookPublisher";
 
-    private static final String STMT_INSERT_FTS = "InsertFts";
-    private static final String STMT_UPDATE_FTS = "UpdateFts";
+    private static final String STMT_UPDATE_GOODREADS_BOOK_ID = "uGoodreadsBookId";
+    private static final String STMT_UPDATE_GOODREADS_SYNC_DATE = "uGoodreadsSyncDate";
+
+    private static final String STMT_INSERT_FTS = "iFts";
+    private static final String STMT_UPDATE_FTS = "uFts";
 
     /** log error string. */
     private static final String ERROR_FAILED_TO_UPDATE_FTS = "Failed to onProgress FTS";
@@ -261,21 +263,20 @@ public class DAO
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
     /** See {@link #encodeOrderByColumn}. */
     private static final Pattern NON_WORD_CHARACTER_PATTERN = Pattern.compile("\\W");
+    /** See {@link #encodeDate(LocalDateTime)}. */
+    private static final Pattern T = Pattern.compile("T");
 
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
     /** Reference to the singleton. */
     private final DBHelper mDBHelper;
-
     /** Reference to the singleton. */
     private final SynchronizedDb mSyncedDb;
-
     /** Collection of statements pre-compiled for this object. */
     private final SqlStatementManager mSqlStatementManager;
     @NonNull
     private final String mInstanceName;
-
     /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
 
@@ -327,6 +328,24 @@ public class DAO
     @NonNull
     public static String encodeString(@NonNull final CharSequence value) {
         return SINGLE_QUOTE_LITERAL.matcher(value).replaceAll("''");
+    }
+
+    /**
+     * Encode a LocalDateTime. Used to transform Java-ISO to SQL-ISO datetime format.
+     * <p>
+     * Main/only function for now: replace the 'T' character with a ' '
+     * so it matches the "current_timestamp" function in SQLite.
+     * We should just create a formatter which uses a ' '
+     *
+     * @param dateTime to encode
+     *
+     * @return sqlite date time as a string
+     */
+    @NonNull
+    private static String encodeDate(@NonNull final LocalDateTime dateTime) {
+        // We should just create a formatter which uses a ' '...
+        final String date = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        return T.matcher(date).replaceFirst(" ");
     }
 
     /**
@@ -489,16 +508,15 @@ public class DAO
             // correct field types if needed, and filter out fields we don't have in the db table.
             final ContentValues cv = filterValues(TBL_BOOKS, book, book.getLocale(context));
 
-            final String utcNow = LocalDateTime
-                    .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            final String addedOrUpdatedNow = encodeDate(LocalDateTime.now(ZoneOffset.UTC));
 
             // if we do NOT have a date set, use 'now'
             if (!cv.containsKey(DBDefinitions.KEY_UTC_ADDED)) {
-                cv.put(DBDefinitions.KEY_UTC_ADDED, utcNow);
+                cv.put(DBDefinitions.KEY_UTC_ADDED, addedOrUpdatedNow);
             }
             // if we do NOT have a date set, use 'now'
             if (!cv.containsKey(KEY_UTC_LAST_UPDATED)) {
-                cv.put(KEY_UTC_LAST_UPDATED, utcNow);
+                cv.put(KEY_UTC_LAST_UPDATED, addedOrUpdatedNow);
             }
 
             // if allowed, and we have an id, use it.
@@ -594,10 +612,8 @@ public class DAO
             // or if it's not already present.
             if ((flags & BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT) == 0
                 || !cv.containsKey(KEY_UTC_LAST_UPDATED)) {
-                cv.put(KEY_UTC_LAST_UPDATED, LocalDateTime
-                        .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                cv.put(KEY_UTC_LAST_UPDATED, encodeDate(LocalDateTime.now(ZoneOffset.UTC)));
             }
-
 
             // Reminder: We're updating ONLY the fields present in the ContentValues.
             // Other fields in the database row are not affected.
@@ -637,7 +653,6 @@ public class DAO
             }
         }
     }
-
 
     /**
      * Insert the Calibre bridging data.
@@ -701,8 +716,7 @@ public class DAO
      */
     private boolean touchBook(@IntRange(from = 1) final long bookId) {
 
-        try (SynchronizedStatement stmt = mSyncedDb
-                .compileStatement(DAOSql.SqlUpdate.TOUCH)) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.TOUCH)) {
             stmt.bindLong(1, bookId);
             return 0 < stmt.executeUpdateDelete();
         }
@@ -710,7 +724,7 @@ public class DAO
 
     /**
      * Update the 'last updated' of the given book.
-     * If successful, the book itself will also be updated.
+     * If successful, the book itself will also be updated with the current date-time.
      *
      * @param book to update
      *
@@ -720,8 +734,7 @@ public class DAO
     public boolean touchBook(@NonNull final Book book) {
 
         if (touchBook(book.getId())) {
-            book.putString(KEY_UTC_LAST_UPDATED, LocalDateTime
-                    .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+            book.putString(KEY_UTC_LAST_UPDATED, encodeDate(LocalDateTime.now(ZoneOffset.UTC)));
             return true;
 
         } else {
@@ -1001,7 +1014,8 @@ public class DAO
         }
 
         if (book.contains(KEY_LOANEE)) {
-            setLoanee(book, book.getString(KEY_LOANEE), false);
+
+            setLoaneeInternal(book.getId(), book.getString(KEY_LOANEE));
         }
     }
 
@@ -2010,18 +2024,53 @@ public class DAO
 
     /**
      * Lend out a book / return a book.
+     * <p>
      * This method should only be called from places where only the book id is available.
-     * If the full Book is available, use {@link #setLoanee(Book, String, boolean)} instead.
+     * If the full Book is available, use {@link #setLoanee(Book, String)} instead.
      *
-     * @param bookId     book to lend
-     * @param loanee     person to lend to; set to {@code null} or {@code ""} to delete the loan
-     * @param updateBook set to {@code true} to update the book's last-update date
+     * @param bookId book to lend
+     * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
      *
      * @return {@code true} for success.
      */
     public boolean setLoanee(@IntRange(from = 1) final long bookId,
-                             @Nullable final String loanee,
-                             final boolean updateBook) {
+                             @Nullable final String loanee) {
+        final boolean success = setLoaneeInternal(bookId, loanee);
+        if (success) {
+            touchBook(bookId);
+        }
+        return success;
+    }
+
+    /**
+     * Lend out a book / return a book.
+     *
+     * @param book   to lend
+     * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
+     *
+     * @return {@code true} for success.
+     */
+    public boolean setLoanee(@NonNull final Book book,
+                             @Nullable final String loanee) {
+
+        final boolean success = setLoaneeInternal(book.getId(), loanee);
+        if (success) {
+            touchBook(book);
+        }
+        return success;
+    }
+
+    /**
+     * Lend out a book / return a book.
+     * The book's {@link DBDefinitions#KEY_UTC_LAST_UPDATED} <strong>will NOT</strong> be updated.
+     *
+     * @param bookId book to lend
+     * @param loanee person to lend to; set to {@code null} or {@code ""} to delete the loan
+     *
+     * @return {@code true} for success.
+     */
+    private boolean setLoaneeInternal(@IntRange(from = 1) final long bookId,
+                                      @Nullable final String loanee) {
 
         boolean success = false;
 
@@ -2049,32 +2098,6 @@ public class DAO
                                                KEY_FK_BOOK + "=?",
                                                new String[]{String.valueOf(bookId)});
             }
-        }
-
-        if (success && updateBook) {
-            touchBook(bookId);
-        }
-        return success;
-    }
-
-    /**
-     * Lend out a book / return a book.
-     * The book will be updated.
-     *
-     * @param book       to lend
-     * @param loanee     person to lend to; set to {@code null} or {@code ""} to delete the loan
-     * @param updateBook set to {@code true} to update the book's last-update date
-     *
-     * @return {@code true} for success.
-     */
-    public boolean setLoanee(@NonNull final Book book,
-                             @Nullable final String loanee,
-                             final boolean updateBook) {
-
-        final boolean success = setLoanee(book.getId(), loanee, false);
-
-        if (success && updateBook) {
-            touchBook(book);
         }
         return success;
     }
@@ -2473,18 +2496,16 @@ public class DAO
                              TBL_BOOKS.dot(KEY_PK_ID));
     }
 
-    public int countBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
-        if (lastUpdateInUtc == null) {
+    public int countBooksForExport(@Nullable final LocalDateTime since) {
+        if (since == null) {
             try (SynchronizedStatement stmt = mSyncedDb
                     .compileStatement(DAOSql.SqlCount.BOOKS)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } else {
-            final String since = lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                     DAOSql.SqlCount.BOOKS + " WHERE " + KEY_UTC_LAST_UPDATED + ">=?")) {
-                stmt.bindString(1, since);
+                stmt.bindString(1, encodeDate(since));
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         }
@@ -2493,39 +2514,33 @@ public class DAO
     /**
      * Return an Cursor with all Books, or with all updated Books since the given date/time.
      *
-     * @param lastUpdateInUtc to select all books added/modified since that date/time (UTC based).
-     *                        Set to {@code null} for *all* books.
+     * @param since to select all books added/modified since that date/time (UTC based).
+     *              Set to {@code null} for *all* books.
      *
      * @return A Book Cursor with 0..n rows; ordered by book id
      */
     @NonNull
-    public TypedCursor fetchBooksForExport(@Nullable final LocalDateTime lastUpdateInUtc) {
-        if (lastUpdateInUtc == null) {
+    public TypedCursor fetchBooksForExport(@Nullable final LocalDateTime since) {
+        if (since == null) {
             return getBookCursor(null, null, TBL_BOOKS.dot(KEY_PK_ID));
-
         } else {
-            final String since = lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
             return getBookCursor(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED) + ">=?",
-                                 new String[]{since},
+                                 new String[]{encodeDate(since)},
                                  TBL_BOOKS.dot(KEY_PK_ID));
         }
     }
 
     @NonNull
     public TypedCursor fetchBooksForExportToCalibre(@NonNull final String libraryId,
-                                                    @Nullable final LocalDateTime lastUpdateInUtc) {
-        if (lastUpdateInUtc == null) {
+                                                    @Nullable final LocalDateTime since) {
+        if (since == null) {
             return getBookCursor(TBL_CALIBRE_BOOKS.dot(KEY_CALIBRE_BOOK_LIBRARY_ID) + "=?",
                                  new String[]{libraryId},
                                  TBL_BOOKS.dot(KEY_PK_ID));
-
         } else {
-            final String since = lastUpdateInUtc.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
             return getBookCursor(TBL_CALIBRE_BOOKS.dot(KEY_CALIBRE_BOOK_LIBRARY_ID) + "=?"
                                  + " AND " + TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED) + ">=?",
-                                 new String[]{libraryId, since},
+                                 new String[]{libraryId, encodeDate(since)},
                                  TBL_BOOKS.dot(KEY_PK_ID));
         }
     }
@@ -3331,29 +3346,12 @@ public class DAO
      */
     @IntRange(from = 0)
     public long getBookIdFromCalibreUuid(@NonNull final String uuid) {
-        final String sql = "SELECT " + KEY_FK_BOOK + " FROM " + TBL_CALIBRE_BOOKS.getName()
-                           + " WHERE " + KEY_CALIBRE_BOOK_UUID + "=?";
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_BOOK_ID_FROM_CALIBRE_UUID, () -> DAOSql.SqlGetId.BY_CALIBRE_UUID);
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
+        synchronized (stmt) {
             stmt.bindString(1, uuid);
-            return stmt.simpleQueryForLongOrZero();
-        }
-    }
-
-    /**
-     * Check that a book with the passed Calibre ID exists and return the id of the book, or zero.
-     *
-     * @param calibreId Calibre ID
-     *
-     * @return id of the book, or 0 'new' if not found
-     */
-    @IntRange(from = 0)
-    public long getBookIdFromCalibreId(final int calibreId) {
-        final String sql = "SELECT " + KEY_FK_BOOK + " FROM " + TBL_CALIBRE_BOOKS.getName()
-                           + " WHERE " + KEY_CALIBRE_BOOK_ID + "=?";
-
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
-            stmt.bindLong(1, calibreId);
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -3773,12 +3771,7 @@ public class DAO
      */
     public boolean setBookRead(@IntRange(from = 1) final long bookId,
                                final boolean isRead) {
-        final String now;
-        if (isRead) {
-            now = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        } else {
-            now = "";
-        }
+        final String now = isRead ? encodeDate(LocalDateTime.now()) : "";
 
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
             stmt.bindBoolean(1, isRead);
@@ -3799,10 +3792,10 @@ public class DAO
      */
     public boolean setBookRead(@NonNull final Book book,
                                final boolean isRead) {
-        final String now =
-                isRead ? LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) : "";
+        final String now = isRead ? encodeDate(LocalDateTime.now()) : "";
 
         final boolean success;
+        // don't call standalone method, we want to use the same 'now' to update the book
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DAOSql.SqlUpdate.READ)) {
             stmt.bindBoolean(1, isRead);
             stmt.bindString(2, now);
@@ -3814,11 +3807,9 @@ public class DAO
             book.putBoolean(KEY_READ, isRead);
             book.putString(KEY_READ_END, now);
             book.putString(KEY_UTC_LAST_UPDATED, now);
-            return true;
-
-        } else {
-            return false;
         }
+
+        return success;
     }
 
     /**
