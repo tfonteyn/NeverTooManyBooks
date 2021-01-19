@@ -67,7 +67,7 @@ public class CalibreHandler {
     /** Let the user pick the 'root' folder for storing Calibre downloads. */
     private ActivityResultLauncher<Uri> mPickFolderLauncher;
     /** Task to download the Calibre eBook. */
-    private CalibreSingleFileDownload mFileDownload;
+    private SingleFileDownload mFileDownload;
     /** ONLY USED AND VALID WHILE RUNNING THE {@link #mPickFolderLauncher}. */
     @Nullable
     private Book mTempBookWhileRunningPickFolder;
@@ -127,7 +127,7 @@ public class CalibreHandler {
                 });
 
         mFileDownload = new ViewModelProvider(viewModelStoreOwner)
-                .get(CalibreSingleFileDownload.class);
+                .get(SingleFileDownload.class);
         mFileDownload.init(mServer);
 
         mFileDownload.onProgressUpdate().observe(lifecycleOwner, this::onProgress);

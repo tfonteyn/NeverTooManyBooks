@@ -32,7 +32,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
-public class CalibreSingleFileDownload
+public class SingleFileDownload
         extends VMTask<Uri> {
 
     private Book mBook;
