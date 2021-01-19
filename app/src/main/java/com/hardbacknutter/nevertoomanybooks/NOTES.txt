@@ -11,6 +11,12 @@ Not fixing.
 
 ----------------------------------------------------------------------------------------------------
 
+ENHANCE: (Calibre) tags... implement a full tag system in our own database.
+ * bookshelves 'are' tags? redefine the meaning of bookshelf as a 'tag'?
+ * and then define some tags as being shelves ?
+
+ENHANCE: identifier... adopt the Calibre free-style identifiers as our own
+
 ENHANCE: usage "profile": comics versus fiction books versus non-fiction books.
  * optimize all search engines
  * optimize visible fields.
