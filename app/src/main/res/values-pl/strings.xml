@@ -85,7 +85,6 @@
     <string name="debug_body">Poświęć chwilę na krótki opis problemu, z którym się zetknąłeś.</string>
     <string name="debug_send_info_text">Spowoduje to utworzenie kopii zapasowej bazy danych, a także wszelkich plików dziennika i wysłanie jej do programistów. Jeśli nie chesz, by te dane były wysyłane, usuń je z przygotowanej wiadomości przed jej wysłaniem.</string>
     <string name="debug_subject">Zbieranie informacji o problemach technicznych</string>
-    <string name="done">Gotowe</string>
     <string name="action_edit">Edytuj</string>
     <string name="error_authentication_failed">Uwierzytelnianie nie powiodło się</string>
     <string name="error_authorization_failed">Autoryzacja nie powiodła się</string>
@@ -705,4 +704,11 @@
     <string name="menu_import_all">Importuj wszystkie książki</string>
     <string name="progress_end_export_successful">Eksport powiódł się</string>
     <string name="error_export_failed">Eksport nie powiódł się</string>
+    <string name="action_go">"OK"</string>
+    <string name="action_search">"Szukaj"</string>
+    <string name="action_send">"Wyślij"</string>
+    <string name="action_next">"Dalej"</string>
+    <string name="action_done">"Gotowe"</string>
+    <string name="action_previous">"Wstecz"</string>
+    <string name="action_execute">"Wykonaj"</string>
 </resources>

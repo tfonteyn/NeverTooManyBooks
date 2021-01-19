@@ -101,7 +101,6 @@
     <string name="debug_body">Beschrijf in het kort de problemen die je hebt ondervonden.</string>
     <string name="debug_send_info_text">Dit maakt een back-up van je hele database en van alle log-bestanden en zend deze naar de ontwikkelaars. Als je deze bestanden niet wilt opsturen, kan je ze van de bijlagen lijst in het e-mailbericht verwijderen voordat je dit verstuurt.</string>
     <string name="debug_subject">Verzamelde foutopsporingsgegevens</string>
-    <string name="done">Gereed</string>
     <string name="dynamic">Dynamisch</string>
     <string name="error_authentication_failed">Authenticatie mislukt</string>
     <string name="error_authorization_failed">Autorisatie mislukt</string>
@@ -709,4 +708,11 @@
     <string name="menu_import_all">Importeer alle boeken</string>
     <string name="progress_end_export_successful">Export succesvol</string>
     <string name="error_export_failed">Export mislukt</string>
+    <string name="action_go">"Ga"</string>
+    <string name="action_search">"Zoeken"</string>
+    <string name="action_send">"Verzenden"</string>
+    <string name="action_next">"Volgende"</string>
+    <string name="action_done">"Gereed"</string>
+    <string name="action_previous">"Vorige"</string>
+    <string name="action_execute">"Uitvoeren"</string>
 </resources>

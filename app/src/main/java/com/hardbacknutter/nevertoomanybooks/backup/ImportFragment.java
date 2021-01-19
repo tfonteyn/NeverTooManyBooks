@@ -184,7 +184,7 @@ public class ImportFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_import, menu);
+        inflater.inflate(R.menu.toolbar_action_go, menu);
 
         final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
         menuItem.setEnabled(false);
@@ -471,7 +471,7 @@ public class ImportFragment
                 .setIcon(R.drawable.ic_info)
                 .setTitle(titleId)
                 .setMessage(createReport(result))
-                .setPositiveButton(R.string.done, (d, w) -> {
+                .setPositiveButton(R.string.action_done, (d, w) -> {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK, mVm.onImportFinished(result));
                     getActivity().finish();

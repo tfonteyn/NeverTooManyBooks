@@ -86,7 +86,6 @@
     <string name="debug_body">Prenditi qualche secondo per descrivere brevemente il problema riscontrato.</string>
     <string name="debug_send_info_text">Ciò creerà una copia di backup del database e di tutti i file di registro e lo invierà agli sviluppatori. Cancella i file che non vuoi allegare alla email prima di inviarla.</string>
     <string name="debug_subject">Informazioni di debug raccolte</string>
-    <string name="done">Fine</string>
     <string name="action_edit">Modifica</string>
     <string name="error_authentication_failed">Autenticazione fallita</string>
     <string name="error_authorization_failed">Autorizzazione fallita</string>
@@ -710,4 +709,11 @@
     <string name="menu_import_all">Importa tutti i libri</string>
     <string name="progress_end_export_successful">Esportazione riuscita</string>
     <string name="error_export_failed">Esportazione non riuscita</string>
+    <string name="action_go">"Pradėti"</string>
+    <string name="action_search">"Ieškoti"</string>
+    <string name="action_send">"Siųsti"</string>
+    <string name="action_next">"Kitas"</string>
+    <string name="action_done">"Atlikta"</string>
+    <string name="action_previous">"Perž."</string>
+    <string name="action_execute">"Vykdyti"</string>
 </resources>

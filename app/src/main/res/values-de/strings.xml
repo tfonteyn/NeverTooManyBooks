@@ -103,7 +103,6 @@
     <string name="debug_body">Bitte nehmen Sie sich Zeit, das aufgetretene Problem zu beschreiben.</string>
     <string name="debug_send_info_text">Dieser Vorgang erstellt eine Sicherheitskopie Ihrer gesamten Datenbank sowie aller Protokolldateien erstellt und an die Entwickler gesendet. Wenn Sie eine dieser Dateien nicht verschicken wollen, löschen Sie diese vor dem Senden aus dem Anhang.</string>
     <string name="debug_subject">Gesammelte Debug-Informationen</string>
-    <string name="done">Fertig</string>
     <string name="dynamic">Dynamisch</string>
     <string name="error_authentication_failed">Authentifizierung fehlgeschlagen</string>
     <string name="error_authorization_failed">Autorisation fehlgeschlagen</string>
@@ -711,4 +710,11 @@
     <string name="menu_import_all">Importieren Sie alle Bücher</string>
     <string name="progress_end_export_successful">Export erfolgreich</string>
     <string name="error_export_failed">Export fehlgeschlagen</string>
+    <string name="action_go">"Los"</string>
+    <string name="action_search">"Suchen"</string>
+    <string name="action_send">"Senden"</string>
+    <string name="action_next">"Weiter"</string>
+    <string name="action_done">"Fertig"</string>
+    <string name="action_previous">"Zurück"</string>
+    <string name="action_execute">"Ausführen"</string>
 </resources>

@@ -833,7 +833,6 @@
     <!-- ####################################################################################### -->
 
 
-
     <!-- Screen title. -->
     <string name="lbl_search_isbn">ISBN Search</string>
     <!-- Screen title. -->
@@ -1095,6 +1094,21 @@
     <string name="btn_learn_more">Learn more</string>
     <!-- [VERIFIED] -->
     <string name="btn_email">Email</string>
+    <!-- [VERIFIED] -->
+    <string name="action_go">Go</string>
+    <!-- [VERIFIED] -->
+    <string name="action_search">Search</string>
+    <!-- [VERIFIED] -->
+    <string name="action_send">Send</string>
+    <!-- [VERIFIED] 6 chars max -->
+    <string name="action_next">Next</string>
+    <!-- [VERIFIED] 6 chars max -->
+    <string name="action_previous">Prev</string>
+    <!-- [VERIFIED] -->
+    <string name="action_done">Done</string>
+    <!-- [VERIFIED] -->
+    <string name="action_execute">Execute</string>
+
 
     <string name="action_validate">Validate</string>
 
@@ -1336,8 +1350,6 @@
 
     <string name="unused">unused</string>
 
-    <!-- [VERIFIED] Generic string. -->
-    <string name="done">Done</string>
     <!-- [VERIFIED] -->
     <string name="cancelled">Cancelled</string>
 

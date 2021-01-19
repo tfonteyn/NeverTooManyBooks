@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,7 +23,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@id/MENU_ACTION_CONFIRM"
-        android:title="@string/action_save"
+        android:title="@string/action_add"
         app:actionLayout="@layout/mnu_btn_confirm"
         app:showAsAction="always" />
 </menu>

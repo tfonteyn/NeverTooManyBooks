@@ -87,7 +87,6 @@
     <string name="debug_body">Lütfen yaşamakta olduğunuz sorunu kısaca anlatınız.</string>
     <string name="debug_send_info_text">Bu, herhangi bir günlük dosyasının yanı sıra veritabanınızın yedek bir kopyasını oluşturacak ve geliştiricilere gönderecektir. Eğer bu dosyaları bize göndermek istemezseniz göndermeden önce lütfen e-posta eklerinden kaldırın.</string>
     <string name="debug_subject">Hata ayıklama bilgisi alındı</string>
-    <string name="done">Bitti</string>
     <string name="action_edit">Düzenle</string>
     <string name="error_authentication_failed">Kimlik doğrulama başarısız oldu</string>
     <string name="error_authorization_failed">Yetkilendirme başarısız oldu</string>
@@ -707,4 +706,11 @@
     <string name="menu_import_all">Tüm kitapları içe aktar</string>
     <string name="progress_end_export_successful">İhracat başarılı</string>
     <string name="error_export_failed">Dışa aktarılamadı</string>
+    <string name="action_go">"Git"</string>
+    <string name="action_search">"Ara"</string>
+    <string name="action_send">"Gönder"</string>
+    <string name="action_next">"İleri"</string>
+    <string name="action_done">"Bitti"</string>
+    <string name="action_previous">"Önceki"</string>
+    <string name="action_execute">"Çalıştır"</string>
 </resources>

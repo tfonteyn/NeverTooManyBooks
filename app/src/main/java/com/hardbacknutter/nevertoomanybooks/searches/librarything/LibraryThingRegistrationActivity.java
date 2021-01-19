@@ -108,7 +108,7 @@ public class LibraryThingRegistrationActivity
 
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
-        getMenuInflater().inflate(R.menu.toolbar_validate, menu);
+        getMenuInflater().inflate(R.menu.toolbar_action_validate, menu);
 
         final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
         final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);

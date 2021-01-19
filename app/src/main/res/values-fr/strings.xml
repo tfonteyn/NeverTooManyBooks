@@ -104,7 +104,6 @@
     <string name="debug_body">Merci de prendre le temps de décrire brièvement le problème que vous rencontrez.</string>
     <string name="debug_send_info_text">Cela créera une copie de sauvegarde de votre base de données ainsi que de tous les fichiers journaux et l\'enverra aux développeurs. Si vous ne souhaitez pas envoyer certains de ces fichiers, supprimez les des pièces jointes du courriel avant l\'envoi.</string>
     <string name="debug_subject">Collecte des informations de débogage en cours</string>
-    <string name="done">OK</string>
     <string name="dynamic">Dynamique</string>
     <string name="error_authentication_failed">Authentification échouée</string>
     <string name="error_authorization_failed">L\'autorisation à échouée</string>
@@ -713,4 +712,11 @@
     <string name="menu_import_all">Importer tous les livres</string>
     <string name="progress_end_export_successful">Exportation réussie</string>
     <string name="error_export_failed">L\'exportation a échoué</string>
+    <string name="action_go">"OK"</string>
+    <string name="action_search">"Rechercher"</string>
+    <string name="action_send">"Envoyer"</string>
+    <string name="action_next">"Suivant"</string>
+    <string name="action_done">"OK"</string>
+    <string name="action_previous">"Préc."</string>
+    <string name="action_execute">"Exécuter"</string>
 </resources>

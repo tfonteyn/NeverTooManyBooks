@@ -87,7 +87,6 @@
     <string name="debug_body">Por favor, explique brevemente el problema experimentado.</string>
     <string name="debug_send_info_text">Esto creará una copia de seguridad de su base de datos, así como cualquier archivo de registro y la enviará a los desarrolladores. Si no desea enviar alguno de estos ficheros, elimine los correspondientes adjuntos antes de enviar el correo que se generará.</string>
     <string name="debug_subject">Recopilando información sobre fallos</string>
-    <string name="done">Listo</string>
     <string name="action_edit">Editar</string>
     <string name="error_authentication_failed">Autenticación fallida</string>
     <string name="error_authorization_failed">Autorización fallida</string>
@@ -711,4 +710,11 @@
     <string name="menu_import_all">Importar todos los libros</string>
     <string name="progress_end_export_successful">Exportación exitosa</string>
     <string name="error_export_failed">Exportación fallida</string>
+    <string name="action_go">"Ir"</string>
+    <string name="action_search">"Buscar"</string>
+    <string name="action_send">"Enviar"</string>
+    <string name="action_next">"Siguiente"</string>
+    <string name="action_done">"Listo"</string>
+    <string name="action_previous">"Anterior"</string>
+    <string name="action_execute">"Ejecutar"</string>
 </resources>

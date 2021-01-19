@@ -85,7 +85,6 @@
     <string name="debug_body">Пожалуйста, кратко опишите обнаруженную ошибку.</string>
     <string name="debug_send_info_text">Это создаст резервную копию вашей базы данных, а также любых файлов журналов и отправит ее разработчикам. Если вы не хотите отправлять какой-либо из этих файлов, удалите его из приложений письма до отправки.</string>
     <string name="debug_subject">Собрана отладочная информация</string>
-    <string name="done">Готово</string>
     <string name="action_edit">Изменить</string>
     <string name="error_authentication_failed">Ошибка аутентификации</string>
     <string name="error_authorization_failed">Авторизация не удалась</string>
@@ -704,4 +703,12 @@
     <string name="menu_import_all">Импортировать все книги</string>
     <string name="progress_end_export_successful">Экспорт успешен</string>
     <string name="error_export_failed">Ошибка экспорта</string>
+
+    <string name="action_go">"Выбрать"</string>
+    <string name="action_search">"Поиск"</string>
+    <string name="action_send">"Отправить"</string>
+    <string name="action_next">"Далее"</string>
+    <string name="action_done">"Готово"</string>
+    <string name="action_previous">"Пред."</string>
+    <string name="action_execute">"Выполнить"</string>
 </resources>

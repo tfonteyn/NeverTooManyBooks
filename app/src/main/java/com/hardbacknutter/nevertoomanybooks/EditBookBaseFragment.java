@@ -172,7 +172,7 @@ public abstract class EditBookBaseFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_save, menu);
+        inflater.inflate(R.menu.toolbar_action_save, menu);
 
         final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
         final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);

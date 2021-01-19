@@ -86,7 +86,6 @@
     <string name="debug_body">Παρακαλούμε περιγράψτε συνοπτικά το πρόβλημα που αντιμετωπίζετε.</string>
     <string name="debug_send_info_text">Αυτό θα δημιουργήσει ένα αντίγραφο ασφαλείας της βάσης δεδομένων σας καθώς και οποιαδήποτε αρχεία καταγραφής και θα το στείλει στους προγραμματιστές. Εαν δεν θέλετε να στείλετε αυτά τα αρχεία διαγράψτε τα επισυναπτόμενα αρχεία του e-mail πριν την αποστολή.</string>
     <string name="debug_subject">Συλλέχθησαν πληροφορίες debugging</string>
-    <string name="done">Τέλος</string>
     <string name="action_edit">Επεξεργασία</string>
     <string name="error_authentication_failed">Η ταυτοποίηση απέτυχε</string>
     <string name="error_authorization_failed">Η εξουσιοδότηση απέτυχε</string>
@@ -712,4 +711,11 @@
     <string name="menu_import_all">Εισαγωγή όλων των βιβλίων</string>
     <string name="progress_end_export_successful">Η εξαγωγή ήταν επιτυχής</string>
     <string name="error_export_failed">Η εξαγωγή απέτυχε</string>
+    <string name="action_go">"Μετάβαση"</string>
+    <string name="action_search">"Αναζήτηση"</string>
+    <string name="action_send">"Αποστολή"</string>
+    <string name="action_next">"Επόμενο"</string>
+    <string name="action_done">"Τέλος"</string>
+    <string name="action_previous">"Προηγ."</string>
+    <string name="action_execute">"Εκτέλεση"</string>
 </resources>
