@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Iterator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,6 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -50,18 +52,17 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 
 /**
  * Dev Note: while most plumbing to use multiple libraries is in place,
  * right now we only support the default library.
- * TODO: read the list of libs and prompt the user, BEFORE starting a sync
- * <p>
- * https://github.com/kovidgoyal/calibre/blob/master/src/calibre/srv/cdb.py
  */
 public class CalibreContentServerWriter
         implements ArchiveWriter {
 
-    private static final String TAG = "CalibreCSWriter";
+    /** Log tag. */
+    private static final String TAG = "CalibreServerWriter";
     @NonNull
     private final CalibreContentServer mServer;
     @NonNull
@@ -70,10 +71,12 @@ public class CalibreContentServerWriter
     /** Export configuration. */
     @NonNull
     private final ExportHelper mHelper;
-    @NonNull
-    private String mLibraryId;
+    private final boolean mSendCovers;
 
-    private ExportResults mExportResults;
+    @NonNull
+    private final String mLibraryId;
+
+    private ExportResults mResults;
 
     /**
      * Constructor.
@@ -87,9 +90,10 @@ public class CalibreContentServerWriter
     public CalibreContentServerWriter(@NonNull final Context context,
                                       @NonNull final ExportHelper helper)
             throws GeneralParsingException, IOException, CertificateException {
-        mHelper = helper;
 
         mDb = new DAO(TAG);
+        mHelper = helper;
+        mSendCovers = mHelper.getExporterEntries().contains(RecordType.Cover);
 
         mServer = new CalibreContentServer(context, helper.getUri());
         mLibraryId = mServer.loadLibraries();
@@ -100,14 +104,13 @@ public class CalibreContentServerWriter
         return 1;
     }
 
-    // ENHANCE: allow passing in of the DESIRED library to use.
     @NonNull
     @Override
     public ExportResults write(@NonNull final Context context,
                                @NonNull final ProgressListener progressListener)
             throws GeneralParsingException, IOException {
 
-        mExportResults = new ExportResults();
+        mResults = new ExportResults();
 
         progressListener.setIndeterminate(true);
         progressListener.publishProgressStep(
@@ -116,6 +119,8 @@ public class CalibreContentServerWriter
         progressListener.setIndeterminate(null);
 
         try {
+            // Always read the meta data here.
+            // Don't assume we still have the same instance as when readMetaData was called.
             mServer.readMetaData(mLibraryId);
         } catch (@NonNull final JSONException e) {
             throw new GeneralParsingException(e);
@@ -137,39 +142,43 @@ public class CalibreContentServerWriter
             progressListener.setMaxPos(cursor.getCount());
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                final Book book = Book.from(cursor, mDb);
+                final Book localBook = Book.from(cursor, mDb);
 
-                final int calibreId = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
-                final String calibreUuid = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
+                final int calibreId = localBook.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
+                final String calibreUuid = localBook.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
 
                 try {
                     // ENHANCE: full sync in one go.
-                    final JSONObject calibreBook =
-                            mServer.getBook(mLibraryId, calibreUuid);
-
+                    //  The logic below is TO SLOW (as we fetch each book individually)
+                    final CalibreBook calibreBook = mServer.getBook(mLibraryId, calibreUuid);
+                    final LocalDateTime remoteTime = DateParser.getInstance(context).parseISO(
+                            calibreBook.getString(CalibreBook.LAST_MODIFIED));
                     // sanity check, the remote should always have this date field.
-                    if (calibreBook != null && !calibreBook.isNull("last_modified")) {
-                        final LocalDateTime remote = DateParser.getInstance(context).parseISO(
-                                calibreBook.getString("last_modified"));
-                        if (remote != null) {
-                            // is our data newer then the server data ?
-                            final LocalDateTime local = book.getLastUpdateUtcDate(context);
-                            if (local != null && local.isAfter(remote)) {
-                                // finally, we can push updates to the remote
-                                sendUpdates(context, book, calibreId);
-                                mExportResults.addBook(book.getId());
-                            }
+                    if (remoteTime != null) {
+                        // is our data newer then the server data ?
+                        final LocalDateTime local = localBook.getLastUpdateUtcDate(context);
+                        if (local != null && local.isAfter(remoteTime)) {
+
+                            final JSONObject changes =
+                                    collectChanges(context, calibreBook, localBook);
+                            mServer.pushChanges(mLibraryId, calibreId, changes);
+
+                            mResults.addBook(localBook.getId());
                         }
                     }
+                } catch (@NonNull final HttpNotFoundException e404) {
+                    // The book no longer exists on the server.
+                    //FIXME: skipping for now, but we should remove the calibre data
+                    // from the local book
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
-                    Logger.error(context, TAG, e, "bookId=" + book.getId());
+                    Logger.error(context, TAG, e, "bookId=" + localBook.getId());
                 }
 
                 delta++;
                 final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                    progressListener.publishProgressStep(delta, book.getTitle());
+                    progressListener.publishProgressStep(delta, localBook.getTitle());
                     lastUpdate = now;
                     delta = 0;
                 }
@@ -179,78 +188,99 @@ public class CalibreContentServerWriter
         // always set the sync date!
         CalibreContentServer.setLastSyncDate(context, LocalDateTime.now(ZoneOffset.UTC));
 
-        return mExportResults;
+        return mResults;
     }
 
-    private void sendUpdates(@NonNull final Context context,
-                             @NonNull final Book book,
-                             final int calibreId)
+    private JSONObject collectChanges(@NonNull final Context context,
+                                      @NonNull final CalibreBook calibreBook,
+                                      @NonNull final Book localBook)
             throws JSONException, IOException {
 
         // Empty fields MUST be send to make the server remove the data.
 
         final JSONObject changes = new JSONObject();
-        changes.put("title", book.getTitle());
-        changes.put("comments", book.getString(DBDefinitions.KEY_DESCRIPTION));
+        changes.put(CalibreBook.TITLE, localBook.getTitle());
+        changes.put(CalibreBook.DESCRIPTION,
+                    localBook.getString(DBDefinitions.KEY_DESCRIPTION));
         // we don't read this field, but we DO write it.
-        changes.put("pubdate", book.getString(DBDefinitions.KEY_DATE_PUBLISHED));
-        changes.put("last_modified", book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
+        changes.put(CalibreBook.DATE_PUBLISHED,
+                    localBook.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        changes.put(CalibreBook.LAST_MODIFIED,
+                    localBook.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
 
         final JSONArray authors = new JSONArray();
         for (final Author author
-                : book.<Author>getParcelableArrayList(Book.BKEY_AUTHOR_LIST)) {
+                : localBook.<Author>getParcelableArrayList(Book.BKEY_AUTHOR_LIST)) {
             final String name = author.getFormattedName(true);
             authors.put(name);
         }
-        changes.put("authors", authors);
+        changes.put(CalibreBook.AUTHOR_ARRAY, authors);
 
-        final Series series = book.getPrimarySeries();
+        final Series series = localBook.getPrimarySeries();
         if (series != null) {
-            changes.put("series", series.getTitle());
+            changes.put(CalibreBook.SERIES, series.getTitle());
             try {
                 // Calibre can only accept Floats
                 final float number = Float.parseFloat(series.getNumber());
-                changes.put("series_index", number);
+                changes.put(CalibreBook.SERIES_INDEX, number);
             } catch (@NonNull final NumberFormatException ignore) {
                 // send '1' as that is the Calibre default
-                changes.put("series_index", 1);
+                changes.put(CalibreBook.SERIES_INDEX, 1);
             }
         } else {
-            changes.put("series", "");
+            changes.put(CalibreBook.SERIES, "");
             // send '1' as that is the Calibre default
-            changes.put("series_index", 1);
+            changes.put(CalibreBook.SERIES_INDEX, 1);
         }
 
-        final Publisher publisher = book.getPrimaryPublisher();
+        final Publisher publisher = localBook.getPrimaryPublisher();
         if (publisher != null) {
-            changes.put("publisher", publisher.getName());
+            changes.put(CalibreBook.PUBLISHER, publisher.getName());
         } else {
-            changes.put("publisher", "");
+            changes.put(CalibreBook.PUBLISHER, "");
         }
+
+        // sending 0 will remove the rating.
+        changes.put(CalibreBook.RATING, ((int) localBook.getDouble(DBDefinitions.KEY_RATING)));
 
         final JSONArray languages = new JSONArray();
-        final String language = book.getString(DBDefinitions.KEY_LANGUAGE);
+        final String language = localBook.getString(DBDefinitions.KEY_LANGUAGE);
         if (!language.isEmpty()) {
             languages.put(language);
         }
-        changes.put("languages", languages);
+        changes.put(CalibreBook.LANGUAGES_ARRAY, languages);
 
-        // URGENT: any identifier WE don't store are being removed on the server side!
-        final JSONObject identifiers = collectIdentifiers(book);
-        if (identifiers.length() > 0) {
-            changes.put("identifiers", identifiers);
+        // The server expects a FULL set of identifiers. Any no present, will be deleted.
+        // https://github.com/kovidgoyal/calibre/blob/master/src/calibre/db/write.py#L480
+        // So, we send a combination of changes + the identifiers we don't know back to the server.
+        final JSONObject localIdentifiers = collectIdentifiers(localBook);
+        if (localIdentifiers.length() > 0) {
+            final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
+            if (identifiers != null) {
+                // overwrite remotes with locals
+                final Iterator<String> it = localIdentifiers.keys();
+                while (it.hasNext()) {
+                    final String key = it.next();
+                    identifiers.put(key, localIdentifiers.get(key));
+                }
+                changes.put(CalibreBook.IDENTIFIERS, identifiers);
+
+            } else {
+                // no remotes, just send all locals
+                changes.put(CalibreBook.IDENTIFIERS, localIdentifiers);
+            }
         }
 
-        for (final CalibreCustomFields.Field cf : mServer.getCustomFields()) {
+        for (final CustomFields.Field cf : mServer.getCustomFields()) {
             switch (cf.type) {
-                case CalibreCustomFields.TYPE_BOOL: {
-                    changes.put(cf.calibreKey, book.getBoolean(cf.dbKey));
+                case CustomFields.TYPE_BOOL: {
+                    changes.put(cf.calibreKey, localBook.getBoolean(cf.dbKey));
                     break;
                 }
-                case CalibreCustomFields.TYPE_DATETIME:
-                case CalibreCustomFields.TYPE_COMMENTS:
-                case CalibreCustomFields.TYPE_TEXT: {
-                    changes.put(cf.calibreKey, book.getString(cf.dbKey));
+                case CustomFields.TYPE_DATETIME:
+                case CustomFields.TYPE_COMMENTS:
+                case CustomFields.TYPE_TEXT: {
+                    changes.put(cf.calibreKey, localBook.getString(cf.dbKey));
                     break;
                 }
                 default:
@@ -258,72 +288,53 @@ public class CalibreContentServerWriter
             }
         }
 
-        final File coverFile = book.getCoverFile(context, 0);
-        if (coverFile != null) {
-            final byte[] bFile = new byte[(int) coverFile.length()];
-            try (FileInputStream is = new FileInputStream(coverFile)) {
-                //noinspection ResultOfMethodCallIgnored
-                is.read(bFile);
-            }
-            changes.put("cover", Base64.encodeToString(bFile, 0));
-            // FIXME: collecting the names is in fact NOT NEEDED here,
-            //  but the current logic 'ExportResults' requires it,
-            //  or we won't get the **number** of covers exported.
-            mExportResults.addCover(coverFile.getName());
+        if (mSendCovers) {
+            final File coverFile = localBook.getCoverFile(context, 0);
+            if (coverFile != null) {
+                final byte[] bFile = new byte[(int) coverFile.length()];
+                try (FileInputStream is = new FileInputStream(coverFile)) {
+                    //noinspection ResultOfMethodCallIgnored
+                    is.read(bFile);
+                }
+                changes.put(CalibreBook.COVER, Base64.encodeToString(bFile, 0));
+                // FIXME: collecting the names is in fact NOT NEEDED here,
+                //  but the current logic 'ExportResults' requires it,
+                //  or we won't get the **number** of covers exported.
+                mResults.addCover(coverFile.getName());
 
-        } else {
-            changes.put("cover", "");
+            } else {
+                changes.put(CalibreBook.COVER, "");
+            }
         }
 
-        // do the update
-        mServer.pushChanges(mLibraryId, calibreId, changes);
+        return changes;
     }
 
-    private JSONObject collectIdentifiers(@NonNull final Book book)
+    @NonNull
+    private JSONObject collectIdentifiers(@NonNull final Book localBook)
             throws JSONException {
 
         final JSONObject identifiers = new JSONObject();
-        long l;
-        String s;
 
-        l = book.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
-        if (l != 0) {
-            identifiers.put("goodreads", String.valueOf(l));
-        }
-        l = book.getLong(DBDefinitions.KEY_ESID_ISFDB);
-        if (l != 0) {
-            identifiers.put("isfdb", String.valueOf(l));
-        }
-        l = book.getLong(DBDefinitions.KEY_ESID_LIBRARY_THING);
-        if (l != 0) {
-            identifiers.put("librarything", String.valueOf(l));
-        }
+        identifiers.put("isbn", localBook.getString(DBDefinitions.KEY_ISBN));
+        identifiers.put("openlibrary", localBook.getString(DBDefinitions.KEY_ESID_OPEN_LIBRARY));
 
-        s = book.getString(DBDefinitions.KEY_ISBN);
-        if (!s.isEmpty()) {
-            identifiers.put("isbn", s);
-        }
-        s = book.getString(DBDefinitions.KEY_ESID_OPEN_LIBRARY);
-        if (!s.isEmpty()) {
-            identifiers.put("openlibrary", s);
-        }
+        long v;
+        v = localBook.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
+        identifiers.put("goodreads", v != 0 ? String.valueOf(v) : "");
+        v = localBook.getLong(DBDefinitions.KEY_ESID_ISFDB);
+        identifiers.put("isfdb", v != 0 ? String.valueOf(v) : "");
+        v = localBook.getLong(DBDefinitions.KEY_ESID_LIBRARY_THING);
+        identifiers.put("librarything", v != 0 ? String.valueOf(v) : "");
+        v = localBook.getLong(DBDefinitions.KEY_ESID_LIBRARY_THING);
+        identifiers.put("stripinfo", v != 0 ? String.valueOf(v) : "");
+        v = localBook.getLong(DBDefinitions.KEY_ESID_LIBRARY_THING);
+        identifiers.put("lastdodo", v != 0 ? String.valueOf(v) : "");
 
-//        s = book.getString(DBDefinitions.KEY_ESID_ASIN);
-//        if (!s.isEmpty()) {
-//            identifiers.put("amazon", s);
-//        }
-//        s = book.getString(DBDefinitions.KEY_ESID_GOOGLE);
-//        if (!s.isEmpty()) {
-//            identifiers.put("google", s);
-//        }
-//        s = book.getString(DBDefinitions.KEY_ESID_WORLDCAT);
-//        if (!s.isEmpty()) {
-//            identifiers.put("oclc", s);
-//        }
-//        s = book.getString(DBDefinitions.KEY_ESID_LCCN);
-//        if (!s.isEmpty()) {
-//            identifiers.put("lccn", s);
-//        }
+//            identifiers.put("amazon", book.getString(DBDefinitions.KEY_ESID_ASIN));
+//            identifiers.put("google", book.getString(DBDefinitions.KEY_ESID_GOOGLE));
+//            identifiers.put("oclc", book.getString(DBDefinitions.KEY_ESID_WORLDCAT));
+//            identifiers.put("lccn", book.getString(DBDefinitions.KEY_ESID_LCCN));
 
         return identifiers;
     }

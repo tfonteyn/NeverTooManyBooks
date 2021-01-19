@@ -99,12 +99,16 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundExcepti
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException;
 
 /**
- * Dev Note: the API of this class is still a bit messy and changing fast.
- *
- * <a href="https://manual.calibre-ebook.com/server.html">User manual</a>
+ * <ul>
+ *     <li><a href="https://manual.calibre-ebook.com/server.html">User manual</a></li>
+ *     <li><a href="https://github.com/kovidgoyal/calibre/blob/master/src/calibre/srv/ajax.py">
+ *          Reading API</a></li>
+ *     <li><a href="https://github.com/kovidgoyal/calibre/blob/master/src/calibre/srv/cdb.py">
+ *          Writing API</a></li>
+ * </ul>
  * <p>
- * <a href="https://github.com/kovidgoyal/calibre/blob/master/src/calibre/srv/ajax.py">
- * AJAX API</a>
+ * This class can handle multiple Calibre Libraries on a <strong>single</strong> Calibre server.
+ * (Note that this seems not to be fully implemented on the Calibre side)
  */
 public class CalibreContentServer {
 
@@ -125,9 +129,11 @@ public class CalibreContentServer {
 
     public static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
 
+    /** last time we synced with Calibre. */
+    private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
+
     /**
      * The buffer used for all small reads.
-     * <p>
      * 8k is the same as the default in BufferedReader.
      */
     private static final int BUFFER_SMALL = 8_192;
@@ -136,17 +142,16 @@ public class CalibreContentServer {
      */
     private static final int BUFFER_BOOK = 16_384;
 
-    /** last time we synced with Calibre. */
-    private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
-
     /**
-     * We're using a large read buffer for {@link #getBookIds(String, int, int)};
+     * We're using a larger read buffer for {@link #getBookIds(String, int, int)};
      * The size is based on a rough minimum of
      * 8K of data for a single book and we fetch 10 books at a time... hence 128k.
      */
     private static final int BUFFER_BOOK_LIST = 131_072;
 
-
+    /**
+     * And a huge buffer to download the eBook files themselves.
+     */
     private static final int BUFFER_FILE = 1_048_576;
 
     @NonNull
@@ -157,9 +162,9 @@ public class CalibreContentServer {
     private final String mAuthHeader;
     /**
      * The custom fields <strong>present</strong> on the server.
-     * This will be a subset of the supported fields from {@link CalibreCustomFields}.
+     * This will be a subset of the supported fields from {@link CustomFields}.
      */
-    private final Set<CalibreCustomFields.Field> mCustomFields = new HashSet<>();
+    private final Set<CustomFields.Field> mCustomFields = new HashSet<>();
     private final Map<String, Integer> mTotalBooks = new HashMap<>();
     @Nullable
     private ImageDownloader mImageDownloader;
@@ -367,10 +372,10 @@ public class CalibreContentServer {
     }
 
     /**
-     * Read some if the meta data from the server.
+     * Read some of the meta data from the server.
      * <ul>
      *     <li>number of books in the given library</li>
-     *     <li>user custom fields</li>
+     *     <li>user custom fields definitions</li>
      * </ul>
      *
      * @param libraryId to read from
@@ -389,20 +394,16 @@ public class CalibreContentServer {
 
         final JSONArray calibreIds = result.optJSONArray("book_ids");
         if (calibreIds != null && calibreIds.length() > 0) {
-            final JSONObject source = getBook(libraryId, calibreIds.getInt(0));
-            if (source != null && !source.isNull(CalibreCustomFields.USER_METADATA)) {
-                final JSONObject userMetaData = source.optJSONObject(
-                        CalibreCustomFields.USER_METADATA);
-                if (userMetaData != null) {
-
-                    // check the supported fields
-                    for (final CalibreCustomFields.Field cf : CalibreCustomFields.getFields()) {
-                        final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
-                        // do we have a match? (this check is needed, it's NOT a sanity check)
-                        if (data != null && cf.type.equals(data.getString(
-                                CalibreCustomFields.METADATA_DATATYPE))) {
-                            mCustomFields.add(cf);
-                        }
+            final CalibreBook calibreBook = getBook(libraryId, calibreIds.getInt(0));
+            final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
+            if (userMetaData != null) {
+                // check the supported fields
+                for (final CustomFields.Field cf : CustomFields.getFields()) {
+                    final JSONObject data = userMetaData.optJSONObject(cf.calibreKey);
+                    // do we have a match? (this check is needed, it's NOT a sanity check)
+                    if (data != null && cf.type.equals(data.getString(
+                            CustomFields.METADATA_DATATYPE))) {
+                        mCustomFields.add(cf);
                     }
                 }
             }
@@ -410,7 +411,7 @@ public class CalibreContentServer {
     }
 
     @NonNull
-    Set<CalibreCustomFields.Field> getCustomFields() {
+    Set<CustomFields.Field> getCustomFields() {
         return mCustomFields;
     }
 
@@ -423,7 +424,7 @@ public class CalibreContentServer {
      * <p>
      * We're always using the "616c6c626f6f6b73" == "All books" category
      * <p>
-     * JSON response:
+     * Example response:
      * <pre>
      *     {
      *     "total_num": 255,
@@ -468,7 +469,8 @@ public class CalibreContentServer {
      * given category.
      * <p>
      * If id_is_uuid is true then the book_id is assumed to be a book uuid instead.
-     *
+     * <p>
+     * Example response:
      * <pre>
      *     {
      *     "6": {
@@ -762,13 +764,13 @@ public class CalibreContentServer {
      * @throws IOException on failures
      */
     @WorkerThread
-    @Nullable
-    public JSONObject getBook(@NonNull final String libraryId,
-                              @NonNull final String calibreUuid)
+    @NonNull
+    public CalibreBook getBook(@NonNull final String libraryId,
+                               @NonNull final String calibreUuid)
             throws IOException, JSONException {
 
         final String url = "/ajax/book/" + calibreUuid + '/' + libraryId + "?id_is_uuid=true";
-        return new JSONObject(fetch(url, BUFFER_BOOK));
+        return new CalibreBook(new JSONObject(fetch(url, BUFFER_BOOK)));
     }
 
     /**
@@ -782,13 +784,13 @@ public class CalibreContentServer {
      * @throws IOException on failures
      */
     @WorkerThread
-    @Nullable
-    public JSONObject getBook(@NonNull final String libraryId,
-                              final int calibreId)
+    @NonNull
+    public CalibreBook getBook(@NonNull final String libraryId,
+                               final int calibreId)
             throws IOException, JSONException {
 
         final String url = "/ajax/book/" + calibreId + '/' + libraryId;
-        return new JSONObject(fetch(url, BUFFER_BOOK));
+        return new CalibreBook(new JSONObject(fetch(url, BUFFER_BOOK)));
     }
 
     @WorkerThread

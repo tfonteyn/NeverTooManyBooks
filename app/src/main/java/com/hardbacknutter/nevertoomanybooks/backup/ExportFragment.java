@@ -79,11 +79,9 @@ public class ExportFragment
 
     /** Log tag. */
     public static final String TAG = "ExportFragment";
+    public static final String BKEY_ENCODING = TAG + ":encoding";
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
-    public static final String BKEY_ENCODING = TAG + ":encoding";
-
-
     /**
      * The ViewModel and the {@link #mArchiveWriterTask} could be folded into one object,
      * but we're trying to keep task logic separate for now.
@@ -200,7 +198,7 @@ public class ExportFragment
     @Override
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
-        inflater.inflate(R.menu.toolbar_export, menu);
+        inflater.inflate(R.menu.toolbar_action_go, menu);
 
         final MenuItem menuItem = menu.findItem(R.id.MENU_ACTION_CONFIRM);
         final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
@@ -538,63 +536,80 @@ public class ExportFragment
         if (message.isNewEvent()) {
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
 
-            final ExportHelper helper = mVm.getExportHelper();
-            //noinspection ConstantConditions
-            final FileUtils.UriInfo uriInfo = helper.getUriInfo(getContext());
-            final String report = createReport(uriInfo, message.result);
-
-            if (report.isEmpty()) {
+            final List<String> items = extractExportedItems(message.result);
+            if (items.isEmpty()) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
                         .setIcon(R.drawable.ic_warning)
                         .setTitle(R.string.cancelled)
                         .setMessage(R.string.warning_no_matching_book_found)
-                        .setPositiveButton(R.string.done, (d, w) -> getActivity().finish())
+                        .setPositiveButton(R.string.action_done, (d, w)
+                                -> getActivity().finish())
                         .create()
                         .show();
             } else {
 
-                @StringRes
-                final int title = mVm.getExportHelper().isBackup()
-                                  ? R.string.progress_end_backup_successful
-                                  : R.string.progress_end_export_successful;
+                final String itemList = items
+                        .stream()
+                        .map(s -> getString(R.string.list_element, s))
+                        .collect(Collectors.joining("\n"));
 
-                //noinspection ConstantConditions
-                final MaterialAlertDialogBuilder dialogBuilder =
-                        new MaterialAlertDialogBuilder(getContext())
-                                .setIcon(R.drawable.ic_info)
-                                .setTitle(title)
-                                .setPositiveButton(R.string.done, (d, w) -> getActivity().finish());
+                final ExportHelper helper = mVm.getExportHelper();
 
-                final long size = uriInfo.getSize();
-                if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL
-                    && helper.getEncoding().isFile()) {
-                    dialogBuilder
-                            .setMessage(report + "\n\n" + getString(R.string.confirm_email_file))
-                            .setNeutralButton(R.string.btn_email, (d, w) ->
-                                    onExportEmail(uriInfo.getUri(), report));
+                if (helper.getEncoding().isRemoteServer()) {
+                    //noinspection ConstantConditions
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setIcon(R.drawable.ic_info)
+                            .setTitle(R.string.progress_end_export_successful)
+                            .setMessage(itemList)
+                            .setPositiveButton(R.string.action_done, (d, w)
+                                    -> getActivity().finish())
+                            .create()
+                            .show();
                 } else {
-                    dialogBuilder.setMessage(report);
-                }
 
-                dialogBuilder.create()
-                             .show();
+                    @StringRes
+                    final int title = helper.isBackup() ? R.string.progress_end_backup_successful
+                                                        : R.string.progress_end_export_successful;
+
+                    //noinspection ConstantConditions
+                    final MaterialAlertDialogBuilder dialogBuilder =
+                            new MaterialAlertDialogBuilder(getContext())
+                                    .setIcon(R.drawable.ic_info)
+                                    .setTitle(title)
+                                    .setPositiveButton(R.string.action_done, (d, w)
+                                            -> getActivity().finish());
+
+                    final StringBuilder msg = new StringBuilder(itemList);
+
+                    final FileUtils.UriInfo uriInfo = helper.getUriInfo(getContext());
+                    final long size = uriInfo.getSize();
+
+                    // We cannot get the folder name for the file.
+                    // FIXME: We need to change the descriptive string not to include the folder.
+                    msg.append("\n\n")
+                       .append(getString(R.string.progress_end_export_report, "",
+                                         uriInfo.getDisplayName(),
+                                         FileUtils.formatFileSize(getContext(), size)));
+
+                    if (size > 0 && size < MAX_FILE_SIZE_FOR_EMAIL) {
+                        msg.append("\n\n").append(getString(R.string.confirm_email_file));
+
+                        dialogBuilder.setNeutralButton(R.string.btn_email, (d, w) ->
+                                onExportEmail(uriInfo.getUri(), itemList));
+                    }
+
+                    dialogBuilder.setMessage(msg)
+                                 .create()
+                                 .show();
+                }
             }
         }
     }
 
-    /**
-     * Transform the result data into a user friendly report.
-     *
-     * @param uriInfo name and size of the file saved
-     * @param result  to report
-     *
-     * @return report string
-     */
     @NonNull
-    private String createReport(@NonNull final FileUtils.UriInfo uriInfo,
-                                @NonNull final ExportResults result) {
-
+    private List<String> extractExportedItems(
+            @NonNull final ExportResults result) {
         final List<String> items = new LinkedList<>();
 
         if (result.getBookCount() > 0) {
@@ -619,21 +634,7 @@ public class ExportFragment
         if (result.database) {
             items.add(getString(R.string.lbl_database));
         }
-
-        if (items.isEmpty()) {
-            return "";
-
-        } else {
-            // We cannot get the folder name for the file.
-            // FIXME: We need to change the descriptive string not to include the folder.
-            //noinspection ConstantConditions
-            return items.stream()
-                        .map(s -> getString(R.string.list_element, s))
-                        .collect(Collectors.joining("\n"))
-                   + "\n\n" + getString(R.string.progress_end_export_report, "",
-                                        uriInfo.getDisplayName(),
-                                        FileUtils.formatFileSize(getContext(), uriInfo.getSize()));
-        }
+        return items;
     }
 
     /**

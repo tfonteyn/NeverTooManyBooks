@@ -171,16 +171,14 @@ public class BooksOnBookshelf
     /** Bring up the Goodreads synchronization options. */
     private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
             new GoodreadsAdminFragment.ResultContract(), data -> updateNavigationMenuVisibility());
-    /** Bring up the Calibre synchronization options. */
-    private final ActivityResultLauncher<Void> mCalibreLauncher = registerForActivityResult(
-            new CalibreAdminFragment.ResultContract(), data -> updateNavigationMenuVisibility());
-
 
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportFragment.ResultContract(), success -> {});
+
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
+
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
@@ -188,6 +186,15 @@ public class BooksOnBookshelf
     private BooklistAdapter mAdapter;
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
+
+    /** Calibre synchronization options. */
+    private final ActivityResultLauncher<Void> mCalibreLauncher = registerForActivityResult(
+            new CalibreAdminFragment.ResultContract(), data -> {
+                updateNavigationMenuVisibility();
+                if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
+                    mVm.setForceRebuildInOnResume(true);
+                }
+            });
 
     /** Do an import. */
     private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(

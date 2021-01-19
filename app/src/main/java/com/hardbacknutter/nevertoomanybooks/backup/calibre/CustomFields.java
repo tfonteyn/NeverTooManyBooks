@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
  * <p>
  * The names are hardcoded for now, ENHANCE: make custom field names editable.
  */
-public final class CalibreCustomFields {
+public final class CustomFields {
 
     @Type
     static final String TYPE_BOOL = "bool";
@@ -46,13 +46,13 @@ public final class CalibreCustomFields {
     static final String TYPE_TEXT = "text";
 
     static final String METADATA_DATATYPE = "datatype";
-    static final String USER_METADATA = "user_metadata";
+    static final String VALUE = "#value#";
 
-    private static CalibreCustomFields sInstance;
+    private static CustomFields sInstance;
 
     private final Set<Field> mFields = new HashSet<>();
 
-    private CalibreCustomFields() {
+    private CustomFields() {
         mFields.add(new Field("#read", DBDefinitions.KEY_READ, TYPE_BOOL));
 
         mFields.add(new Field("#read_start", DBDefinitions.KEY_READ_START, TYPE_DATETIME));
@@ -65,7 +65,7 @@ public final class CalibreCustomFields {
 
     public static Set<Field> getFields() {
         if (sInstance == null) {
-            sInstance = new CalibreCustomFields();
+            sInstance = new CustomFields();
         }
         return sInstance.mFields;
     }
