@@ -27,6 +27,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
 import java.io.FileNotFoundException;
@@ -53,6 +54,11 @@ public class ImportViewModel
 
     private boolean mInitWasCalled;
 
+    /**
+     * Pseudo constructor.
+     *
+     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     */
     public void init(@Nullable final Bundle args) {
         if (!mInitWasCalled) {
             mInitWasCalled = true;
