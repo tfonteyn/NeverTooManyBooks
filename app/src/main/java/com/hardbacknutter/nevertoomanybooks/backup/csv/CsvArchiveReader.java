@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +43,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
+import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
+import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -52,6 +55,9 @@ public class CsvArchiveReader
 
     /** Log tag. */
     private static final String TAG = "CsvArchiveReader";
+
+    private static final String DB_BACKUP_NAME = "DbCsvBackup.db";
+    private static final int DB_BACKUP_COPIES = 3;
 
     /** Import configuration. */
     @NonNull
@@ -77,6 +83,13 @@ public class CsvArchiveReader
                               @NonNull final ProgressListener progressListener)
             throws GeneralParsingException, ImportException,
                    IOException {
+
+        // Importing CSV which we didn't create can be dangerous.
+        // Backup the database, keeping up to CSV_BACKUP_COPIES copies.
+        // ENHANCE: For now we don't inform the user of this nor offer a restore.
+        FileUtils.copyWithBackup(new File(mDb.getSyncDb().getSQLiteDatabase().getPath()),
+                                 AppDir.Upgrades.getFile(context, DB_BACKUP_NAME),
+                                 DB_BACKUP_COPIES);
 
         @Nullable
         final InputStream is = context.getContentResolver().openInputStream(mHelper.getUri());

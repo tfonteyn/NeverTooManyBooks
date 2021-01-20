@@ -230,7 +230,7 @@ public class ImportFragment
 
             switch (helper.getEncoding()) {
                 case Csv:
-                    //URGENT: should make a backup before ANY csv import!
+                    // CsvArchiveReader will make a database backup before importing.
                     //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
                             .setIcon(R.drawable.ic_warning)
