@@ -74,6 +74,7 @@ public final class FileUtils {
     /** Bytes to Kb: decimal as per <a href="https://en.wikipedia.org/wiki/File_size">IEC</a>. */
     private static final int TO_KILOBYTES = 1_000;
 
+    private static final String ERROR_SOURCE_MISSING = "Source does not exist: ";
     private static final String ERROR_FAILED_TO_RENAME = "Failed to rename: ";
     private static final String ERROR_COULD_NOT_RESOLVE_URI = "Could not resolve uri=";
     private static final String ERROR_UNKNOWN_SCHEME_FOR_URI = "Unknown scheme for uri: ";
@@ -122,6 +123,10 @@ public final class FileUtils {
                              + "|source==destination==" + source.getAbsolutePath());
             }
             return;
+        }
+
+        if (!source.exists()) {
+            throw new IOException(ERROR_SOURCE_MISSING + source);
         }
 
         try {
@@ -224,11 +229,11 @@ public final class FileUtils {
     }
 
     /**
-     * Rename the source file to the destFilename; keeping 'copies' of the old file.
+     * Copy the source file to the destFilename; keeping 'copies' of the old file.
      * <p>
      * The number of the copy is added as a SUFFIX to the name.
      *
-     * @param source      file to rename
+     * @param source      file to copy
      * @param destination final destination file
      * @param copies      #copies of the previous one to keep
      *
@@ -239,22 +244,26 @@ public final class FileUtils {
                                       final int copies)
             throws IOException {
 
-        final String parentDir = source.getParent();
         // remove the oldest copy
-        File previous = new File(parentDir, destination + "." + copies);
+        File previous = new File(destination + "." + copies);
         delete(previous);
 
         // now bump each copy up one suffix.
         for (int i = copies - 1; i > 0; i--) {
-            final File current = new File(parentDir, destination + "." + i);
-            rename(current, previous);
+            final File current = new File(destination + "." + i);
+            if (current.exists()) {
+                rename(current, previous);
+            }
             previous = current;
         }
 
         // Give the previous file a suffix.
-        rename(destination, previous);
+        if (destination.exists()) {
+            rename(destination, previous);
+        }
+
         // and write the new copy.
-        rename(source, destination);
+        copy(source, destination);
     }
 
     /**

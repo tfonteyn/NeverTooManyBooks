@@ -30,7 +30,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
@@ -38,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -74,8 +72,8 @@ public final class Logger {
     /** serious errors are written to this file. Stored in {@link AppDir#Log}. */
     static final String ERROR_LOG_FILE = "error.log";
 
-    /** Keep the last 5 log files. */
-    private static final int LOGFILE_COPIES = 5;
+    /** Keep the last 3 log files. */
+    private static final int LOGFILE_COPIES = 3;
 
     /** Prefix for logfile entries. Not used on the console. */
     private static final String ERROR = "ERROR";
@@ -194,8 +192,8 @@ public final class Logger {
             final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
             //noinspection ImplicitDefaultCharsetUsage
             try (FileWriter fw = new FileWriter(logFile, true);
-                 Writer out = new BufferedWriter(fw)) {
-                out.write(fullMsg);
+                 PrintWriter out = new PrintWriter(fw)) {
+                out.println(fullMsg);
             }
         } catch (@NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
@@ -298,8 +296,9 @@ public final class Logger {
      * @param context Current context
      */
     public static void cycleLogs(@NonNull final Context context) {
+        File logFile = null;
         try {
-            final File logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
+            logFile = AppDir.Log.getFile(context, ERROR_LOG_FILE);
             if (logFile.exists() && logFile.length() > 0) {
                 final File backup = new File(logFile.getPath() + ".bak");
                 FileUtils.copyWithBackup(logFile, backup, LOGFILE_COPIES);
@@ -307,6 +306,8 @@ public final class Logger {
         } catch (@NonNull final Exception ignore) {
             // do nothing - we can't log an error in the logger
         }
+
+        FileUtils.delete(logFile);
     }
 
     /**
