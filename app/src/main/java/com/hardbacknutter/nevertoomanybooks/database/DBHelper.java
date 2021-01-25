@@ -593,27 +593,8 @@ public final class DBHelper
 
         final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
-        TableDefinition.onCreate(db,
-                                 // app tables
-                                 TBL_BOOKLIST_STYLES,
-                                 // basic user data tables
-                                 TBL_BOOKSHELF,
-                                 TBL_AUTHORS,
-                                 TBL_SERIES,
-                                 TBL_PUBLISHERS,
-                                 TBL_BOOKS,
-                                 TBL_TOC_ENTRIES,
-                                 // link tables
-                                 TBL_BOOK_TOC_ENTRIES,
-                                 TBL_BOOK_AUTHOR,
-                                 TBL_BOOK_BOOKSHELF,
-                                 TBL_BOOK_SERIES,
-                                 TBL_BOOK_PUBLISHER,
-                                 TBL_BOOK_LOANEE,
-
-                                 TBL_CALIBRE_BOOKS,
-                                 // permanent booklist management tables
-                                 TBL_BOOK_LIST_NODE_STATE);
+        // Create all the app & user data tables in the correct dependency order
+        TableDefinition.onCreate(db, DBDefinitions.ALL_TABLES.values());
 
         // insert the builtin styles so foreign key rules are possible.
         prepareStylesTable(db);
