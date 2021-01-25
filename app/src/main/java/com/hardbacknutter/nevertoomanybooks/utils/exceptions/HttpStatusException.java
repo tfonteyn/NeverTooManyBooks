@@ -28,6 +28,7 @@ import androidx.annotation.StringRes;
 import java.io.IOException;
 import java.net.URL;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -40,6 +41,9 @@ public class HttpStatusException
     private static final long serialVersionUID = 7064030911654231924L;
 
     private final int mStatusCode;
+    @NonNull
+    private final String mStatusMessage;
+
 
     @Nullable
     private final URL mUrl;
@@ -56,6 +60,7 @@ public class HttpStatusException
         super(statusMessage);
         mSiteResId = siteResId;
         mStatusCode = statusCode;
+        mStatusMessage = statusMessage;
         mUrl = url;
     }
 
@@ -66,6 +71,11 @@ public class HttpStatusException
 
     public int getStatusCode() {
         return mStatusCode;
+    }
+
+    @NonNull
+    public String getStatusMessage() {
+        return mStatusMessage;
     }
 
     @Nullable
@@ -93,8 +103,9 @@ public class HttpStatusException
         return "HttpStatusException{"
                + super.toString()
                + ", mStatusCode=" + mStatusCode
+               + ", mStatusMessage=" + mStatusMessage
                + ", mUrl=" + mUrl
-               + ", mSiteResId=" + mSiteResId
+               + ", mSiteResId=" + App.getAppContext().getString(mSiteResId)
                + '}';
     }
 }
