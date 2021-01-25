@@ -51,7 +51,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -270,9 +269,6 @@ public class ExportFragment
             });
             // setup the spinner
             setupFormatSelection();
-
-            mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
-            mVb.archiveFormatInfoLong.setText("");
         }
 
         mVb.getRoot().setVisibility(View.VISIBLE);
@@ -286,8 +282,7 @@ public class ExportFragment
         list.add(getString(R.string.lbl_archive_type_csv, ArchiveEncoding.Csv.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_json, ArchiveEncoding.Json.getFileExt()));
         list.add(getString(R.string.lbl_archive_type_xml, ArchiveEncoding.Xml.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_db,
-                           ArchiveEncoding.SqLiteDb.getFileExt()));
+        list.add(getString(R.string.lbl_archive_type_db, ArchiveEncoding.SqLiteDb.getFileExt()));
 
         //noinspection ConstantConditions
         final ArrayAdapter<String> archiveFormatAdapter =
@@ -305,7 +300,7 @@ public class ExportFragment
                     return;
                 }
 
-                updateFromFormatSelection(position);
+                updateFormatSelection(position);
             }
 
             @Override
@@ -313,9 +308,12 @@ public class ExportFragment
                 // Do Nothing
             }
         });
+
+        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
+        mVb.archiveFormatInfoLong.setText("");
     }
 
-    private void updateFromFormatSelection(final int position) {
+    private void updateFormatSelection(final int position) {
 
         final ExportHelper helper = mVm.getExportHelper();
         switch (position) {
@@ -610,7 +608,7 @@ public class ExportFragment
     @NonNull
     private List<String> extractExportedItems(
             @NonNull final ExportResults result) {
-        final List<String> items = new LinkedList<>();
+        final List<String> items = new ArrayList<>();
 
         if (result.getBookCount() > 0) {
             items.add(getString(R.string.name_colon_value,

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -87,11 +87,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- used to intercept click events when the FAB menu is showing. -->
+
         <View
             android:id="@+id/fabOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
+            app:layout_anchor="@+id/progressBar"
+            app:layout_anchorGravity="center"
             tools:visibility="visible"
             />
 

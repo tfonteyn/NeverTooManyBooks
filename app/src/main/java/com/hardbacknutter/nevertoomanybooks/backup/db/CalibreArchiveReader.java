@@ -214,8 +214,8 @@ class CalibreArchiveReader
         final Book book = new Book();
 
         // The default Bookshelf to which all books will be added.
-        final Bookshelf bookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
-                                                           Bookshelf.DEFAULT);
+        final Bookshelf bookshelf = Bookshelf
+                .getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
         int colId = -2;
         int colUuid = -2;

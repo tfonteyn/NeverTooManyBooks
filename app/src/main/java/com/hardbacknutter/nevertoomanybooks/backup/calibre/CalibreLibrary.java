@@ -19,51 +19,109 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.calibre;
 
+import android.content.Context;
 import android.os.Parcel;
-import android.os.Parcelable;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
+import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+
 public class CalibreLibrary
-        implements Parcelable {
+        implements Entity {
 
-    public static final Creator<CalibreLibrary> CREATOR = new Creator<CalibreLibrary>() {
-        @Override
-        public CalibreLibrary createFromParcel(@NonNull final Parcel in) {
-            return new CalibreLibrary(in);
-        }
+    public static final Creator<CalibreLibrary> CREATOR =
+            new Creator<CalibreLibrary>() {
+                @Override
+                public CalibreLibrary createFromParcel(@NonNull final Parcel in) {
+                    return new CalibreLibrary(in);
+                }
 
-        @Override
-        public CalibreLibrary[] newArray(final int size) {
-            return new CalibreLibrary[size];
-        }
-    };
-
-    private final boolean mIsDefault;
+                @Override
+                public CalibreLibrary[] newArray(final int size) {
+                    return new CalibreLibrary[size];
+                }
+            };
+    /** The physical Calibre library id. */
     @NonNull
-    private final String mId;
+    private final String mLibraryId;
+    /** Row ID. */
+    private long mId;
+    /** Name library (either physical or virtual); as displayed to the user. */
     @NonNull
-    private final String mName;
+    private String mName;
+    /**
+     * If this is a virtual library, the Calibre search expression.
+     * For a physical library: {@code ""}.
+     */
+    @NonNull
+    private String mExpr;
+    @NonNull
+    private Bookshelf mMappedBookshelf;
 
-    CalibreLibrary(@NonNull final String id,
+    /**
+     * Constructor without ID.
+     */
+    CalibreLibrary(@NonNull final String libraryId,
                    @NonNull final String name,
-                   final boolean isDefault) {
-        this.mId = id;
+                   @NonNull final String expr,
+                   @NonNull final Bookshelf mappedBookshelf) {
+        mLibraryId = libraryId;
         mName = name;
-        this.mIsDefault = isDefault;
+        mExpr = expr;
+        mMappedBookshelf = mappedBookshelf;
+    }
+
+    /**
+     * Full constructor.
+     *
+     * @param id              the CalibreLibrary id
+     * @param mappedBookshelf shelf
+     * @param rowData         with data
+     */
+    public CalibreLibrary(final long id,
+                          @NonNull final Bookshelf mappedBookshelf,
+                          @NonNull final DataHolder rowData) {
+        mId = id;
+        mLibraryId = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_ID);
+        mName = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME);
+        mExpr = rowData.getString(DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR);
+        mMappedBookshelf = mappedBookshelf;
     }
 
     private CalibreLibrary(@NonNull final Parcel in) {
-        mIsDefault = in.readByte() != 0;
+        mId = in.readLong();
         //noinspection ConstantConditions
-        mId = in.readString();
+        mLibraryId = in.readString();
         //noinspection ConstantConditions
         mName = in.readString();
+        //noinspection ConstantConditions
+        mExpr = in.readString();
+        //noinspection ConstantConditions
+        mMappedBookshelf = in.readParcelable(getClass().getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(@NonNull final Parcel dest,
+                              final int flags) {
+        dest.writeLong(mId);
+        dest.writeString(mLibraryId);
+        dest.writeString(mName);
+        dest.writeString(mExpr);
+        dest.writeParcelable(mMappedBookshelf, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
     @NonNull
-    public String getId() {
-        return mId;
+    public String getLibraryId() {
+        return mLibraryId;
     }
 
     @NonNull
@@ -71,20 +129,86 @@ public class CalibreLibrary
         return mName;
     }
 
-    public boolean isDefault() {
-        return mIsDefault;
+    public void setName(@NonNull final String name) {
+        mName = name;
+    }
+
+    @NonNull
+    public String getExpr() {
+        return mExpr;
+    }
+
+    void setExpr(@NonNull final String expr) {
+        mExpr = expr;
+    }
+
+    public boolean isVirtual() {
+        return !mExpr.isEmpty();
+    }
+
+    public boolean isPhysical() {
+        return mExpr.isEmpty();
+    }
+
+    @NonNull
+    public Bookshelf getMappedBookshelf() {
+        return mMappedBookshelf;
+    }
+
+    void setMappedBookshelf(@NonNull final Bookshelf mappedBookshelf) {
+        mMappedBookshelf = mappedBookshelf;
     }
 
     @Override
-    public void writeToParcel(@NonNull final Parcel dest,
-                              final int flags) {
-        dest.writeByte((byte) (mIsDefault ? 1 : 0));
-        dest.writeString(mId);
-        dest.writeString(mName);
+    public long getId() {
+        return mId;
+    }
+
+    public void setId(final long id) {
+        mId = id;
+    }
+
+    @NonNull
+    @Override
+    public String getLabel(@NonNull final Context context) {
+        return mName;
+    }
+
+    /**
+     * Use the library name to create a new bookshelf.
+     * The style is taken from the current Bookshelf.
+     *
+     * @param context Current context
+     * @param db      database access
+     *
+     * @return the new and mapped bookshelf
+     *
+     * @throws DAO.DaoWriteException on failure
+     */
+    @NonNull
+    Bookshelf createAsBookshelf(@NonNull final Context context,
+                                @NonNull final DAO db)
+            throws DAO.DaoWriteException {
+
+        final Bookshelf current = Bookshelf
+                .getBookshelf(context, db, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+
+        final Bookshelf bookshelf = new Bookshelf(mName, current.getStyle(context, db));
+        if (db.insert(context, bookshelf) == -1) {
+            throw new DAO.DaoWriteException("insert Bookshelf");
+        }
+        mMappedBookshelf = bookshelf;
+        return mMappedBookshelf;
     }
 
     @Override
-    public int describeContents() {
-        return 0;
+    @NonNull
+    public String toString() {
+        return "CalibreLibrary{"
+               + "mId=" + mId
+               + ", mLibraryId='" + mLibraryId + '\''
+               + ", mName='" + mName + '\''
+               + ", mMappedBookshelf=" + mMappedBookshelf.getName()
+               + '}';
     }
 }

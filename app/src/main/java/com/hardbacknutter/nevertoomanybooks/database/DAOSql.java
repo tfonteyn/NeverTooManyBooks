@@ -23,6 +23,7 @@ import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -56,9 +57,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
@@ -120,6 +123,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -522,6 +526,28 @@ public class DAOSql {
         static final String LAST_UPDATE_DATE_BY_BOOK_ID =
                 SELECT_ + KEY_UTC_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + KEY_PK_ID + "=?";
+
+        static final String CALIBRE_LIBRARY_BY_LIBRARY_ID =
+                "SELECT " + KEY_PK_ID
+                + ',' + KEY_FK_BOOKSHELF
+                + ',' + KEY_CALIBRE_LIBRARY_ID
+                + ',' + KEY_CALIBRE_LIBRARY_NAME
+                + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
+                + " FROM " + TBL_CALIBRE_LIBRARIES.getName()
+                + " WHERE " + KEY_CALIBRE_LIBRARY_ID + "=?"
+                + " AND " + KEY_CALIBRE_VIRT_LIB_EXPR + "=''";
+
+        static final String CALIBRE_VIRTUAL_LIBRARY_BY_LIBRARY_ID_AND_NAME =
+                "SELECT " + KEY_PK_ID
+                + ',' + KEY_FK_BOOKSHELF
+                + ',' + KEY_CALIBRE_LIBRARY_ID
+                + ',' + KEY_CALIBRE_LIBRARY_NAME
+                + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
+                + " FROM " + TBL_CALIBRE_LIBRARIES.getName()
+                + " WHERE " + KEY_CALIBRE_LIBRARY_ID + "=?"
+                + " AND " + KEY_CALIBRE_LIBRARY_NAME + "=?"
+                + " AND " + KEY_CALIBRE_VIRT_LIB_EXPR + "<>''";
+
     }
 
     /**
@@ -833,7 +859,7 @@ public class DAOSql {
             // LEFT OUTER JOIN, columns default to NULL
             sqlBookTmp.append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_ID))
                       .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_UUID))
-                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_LIBRARY_ID))
+                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_LIBRARY_ID))
                       .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_MAIN_FORMAT));
 
             // COALESCE nulls to "" for the LEFT OUTER JOIN'ed LOANEE name
@@ -1073,6 +1099,21 @@ public class DAOSql {
                 + _FROM_ + TBL_BOOKS.ref()
                 + TBL_BOOKS.join(TBL_BOOK_AUTHOR) + TBL_BOOK_AUTHOR.join(TBL_AUTHORS)
                 + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=?";
+
+
+        /**
+         * The list of virtual libraries for a specified physical library.
+         */
+        static final String CALIBRE_VIRTUAL_LIBRARIES_BY_LIBRARY_ID =
+                SELECT_ + KEY_PK_ID
+                + ',' + KEY_FK_BOOKSHELF
+                + ',' + KEY_CALIBRE_LIBRARY_ID
+                + ',' + KEY_CALIBRE_LIBRARY_NAME
+                + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
+                + _FROM_ + TBL_CALIBRE_LIBRARIES.getName()
+                + _WHERE_ + KEY_CALIBRE_LIBRARY_ID + "=?"
+                + _AND_ + KEY_CALIBRE_VIRT_LIB_EXPR + "<>''"
+                + _ORDER_BY_ + KEY_CALIBRE_LIBRARY_NAME + _COLLATION;
     }
 
     /**
@@ -1226,6 +1267,15 @@ public class DAOSql {
                 + ',' + KEY_STYLE_IS_PREFERRED
                 + ',' + KEY_STYLE_MENU_POSITION
                 + ") VALUES (?,?,?,?)";
+
+        static final String CALIBRE_LIBRARY =
+                INSERT_INTO_ + TBL_CALIBRE_LIBRARIES.getName()
+                + '(' + KEY_CALIBRE_LIBRARY_ID
+                + ',' + KEY_CALIBRE_LIBRARY_NAME
+                + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
+                + ',' + KEY_FK_BOOKSHELF
+                + ") VALUES (?,?,?,?)";
+
     }
 
     /**
@@ -1359,6 +1409,10 @@ public class DAOSql {
         /** Delete a {@link ListStyle}. */
         static final String STYLE_BY_ID =
                 DELETE_FROM_ + TBL_BOOKLIST_STYLES.getName() + _WHERE_ + KEY_PK_ID + "=?";
+        /** Delete a {@link CalibreLibrary}. */
+        static final String CALIBRE_LIBRARY_BY_ID =
+                DELETE_FROM_ + TBL_CALIBRE_LIBRARIES.getName() + _WHERE_ + KEY_PK_ID + "=?";
+
         /**
          * Delete the link between a {@link Book} and an {@link Author}.
          * <p>

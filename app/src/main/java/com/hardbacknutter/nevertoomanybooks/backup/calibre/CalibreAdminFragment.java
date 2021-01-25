@@ -55,6 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 public class CalibreAdminFragment
         extends Fragment {
 
+    /** Log tag. */
     public static final String TAG = "CalibreAdminFragment";
 
     /** View Binding. */
@@ -83,16 +84,29 @@ public class CalibreAdminFragment
         //noinspection ConstantConditions
         mToolbar = getActivity().findViewById(R.id.toolbar);
 
+        mVb.btnLibMap.setOnClickListener(v -> {
+            final String url = CalibreContentServer.getHostUrl(v.getContext());
+            if (!url.isEmpty()) {
+                final Bundle args = new Bundle();
+                args.putString(ImportViewModel.BKEY_URL, url);
 
-        mVb.btnSync.setOnClickListener(v -> {
-
+                final Fragment fragment = new CalibreLibraryMappingFragment();
+                fragment.setArguments(args);
+                final FragmentManager fm = getParentFragmentManager();
+                fm.beginTransaction()
+                  .addToBackStack(CalibreLibraryMappingFragment.TAG)
+                  .replace(R.id.main_fragment, fragment, CalibreLibraryMappingFragment.TAG)
+                  .commit();
+            } else {
+                openSettings();
+            }
         });
-
         mVb.btnImport.setOnClickListener(v -> {
             final String url = CalibreContentServer.getHostUrl(v.getContext());
             if (!url.isEmpty()) {
                 final Bundle args = new Bundle();
                 args.putString(ImportViewModel.BKEY_URL, url);
+
                 final Fragment fragment = new ImportFragment();
                 fragment.setArguments(args);
                 final FragmentManager fm = getParentFragmentManager();

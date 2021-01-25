@@ -22,7 +22,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screenBorder"
@@ -39,15 +38,13 @@
         />
 
     <Button
-        android:id="@+id/btn_sync"
+        android:id="@+id/btn_lib_map"
         style="@style/MenuButton"
         android:layout_marginStart="@dimen/field_margin"
-        android:text="@string/action_synchronize"
-        android:visibility="gone"
-        app:icon="@drawable/ic_sync"
+        android:text="@string/lbl_bookshelves"
+        app:icon="@drawable/ic_sync_alt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
-        tools:visibility="visible"
         />
 
     <Button
@@ -55,8 +52,8 @@
         style="@style/MenuButton"
         android:text="@string/action_import"
         app:icon="@drawable/ic_cloud_download"
-        app:layout_constraintStart_toStartOf="@id/btn_sync"
-        app:layout_constraintTop_toBottomOf="@id/btn_sync"
+        app:layout_constraintStart_toStartOf="@id/btn_lib_map"
+        app:layout_constraintTop_toBottomOf="@id/btn_lib_map"
         />
 
     <Button
@@ -64,7 +61,7 @@
         style="@style/MenuButton"
         android:text="@string/action_export"
         app:icon="@drawable/ic_cloud_upload"
-        app:layout_constraintStart_toStartOf="@id/btn_sync"
+        app:layout_constraintStart_toStartOf="@id/btn_lib_map"
         app:layout_constraintTop_toBottomOf="@id/btn_import"
         />
 

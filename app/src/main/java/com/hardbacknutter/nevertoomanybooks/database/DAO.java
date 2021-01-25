@@ -55,6 +55,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
@@ -100,9 +101,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
@@ -141,6 +144,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -670,7 +674,7 @@ public class DAO
         cv.put(KEY_FK_BOOK, book.getId());
         cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
         cv.put(KEY_CALIBRE_BOOK_UUID, book.getString(KEY_CALIBRE_BOOK_UUID));
-        cv.put(KEY_CALIBRE_BOOK_LIBRARY_ID, book.getString(KEY_CALIBRE_BOOK_LIBRARY_ID));
+        cv.put(KEY_CALIBRE_LIBRARY_ID, book.getString(KEY_CALIBRE_LIBRARY_ID));
         cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, book.getString(KEY_CALIBRE_BOOK_MAIN_FORMAT));
 
         final long rowId = mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
@@ -693,7 +697,7 @@ public class DAO
         // are moved between libraries. But the UUID is fixed.
         final ContentValues cv = new ContentValues();
         cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
-        cv.put(KEY_CALIBRE_BOOK_LIBRARY_ID, book.getString(KEY_CALIBRE_BOOK_LIBRARY_ID));
+        cv.put(KEY_CALIBRE_LIBRARY_ID, book.getString(KEY_CALIBRE_LIBRARY_ID));
         cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, book.getString(KEY_CALIBRE_BOOK_MAIN_FORMAT));
 
         final int rowsAffected = mSyncedDb.update(
@@ -704,6 +708,154 @@ public class DAO
             throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
         }
     }
+
+    /**
+     * Creates a new {@link CalibreLibrary} in the database.
+     *
+     * @param library object to insert. Will be updated with the id.
+     *
+     * @return the row id of the newly inserted row, or {@code -1} if an error occurred
+     */
+    public long insert(@NonNull final CalibreLibrary /* in/out */ library) {
+
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlInsert.CALIBRE_LIBRARY)) {
+            stmt.bindString(1, library.getLibraryId());
+            stmt.bindString(2, library.getName());
+            stmt.bindString(3, library.getExpr());
+            stmt.bindLong(4, library.getMappedBookshelf().getId());
+            final long iId = stmt.executeInsert();
+            if (iId > 0) {
+                library.setId(iId);
+            }
+            return iId;
+        }
+    }
+
+    /**
+     * Update a {@link CalibreLibrary}.
+     *
+     * @param library to update
+     *
+     * @return {@code true} for success.
+     */
+    public boolean update(@NonNull final CalibreLibrary library) {
+
+        final ContentValues cv = new ContentValues();
+        cv.put(KEY_CALIBRE_LIBRARY_ID, library.getLibraryId());
+        cv.put(KEY_CALIBRE_LIBRARY_NAME, library.getName());
+        cv.put(KEY_CALIBRE_VIRT_LIB_EXPR, library.getExpr());
+        cv.put(KEY_FK_BOOKSHELF, library.getMappedBookshelf().getId());
+
+        return 0 < mSyncedDb.update(TBL_CALIBRE_LIBRARIES.getName(), cv, KEY_PK_ID + "=?",
+                                    new String[]{String.valueOf(library.getId())});
+    }
+
+    /**
+     * Delete the passed {@link CalibreLibrary}.
+     *
+     * @param library to delete
+     *
+     * @return {@code true} if a row was deleted
+     */
+    @SuppressWarnings("UnusedReturnValue")
+    public boolean delete(@NonNull final CalibreLibrary library) {
+
+        final int rowsAffected;
+
+        try (SynchronizedStatement stmt = mSyncedDb
+                .compileStatement(DAOSql.SqlDelete.CALIBRE_LIBRARY_BY_ID)) {
+            stmt.bindLong(1, library.getId());
+            rowsAffected = stmt.executeUpdateDelete();
+        }
+
+        if (rowsAffected > 0) {
+            library.setId(0);
+        }
+        return rowsAffected == 1;
+    }
+
+
+    /**
+     * Get the <strong>physical</strong> {@link CalibreLibrary} for the given libraryId.
+     * The mapped {@link Bookshelf} will have been resolved.
+     *
+     * @param libraryId to lookup
+     *
+     * @return physical library
+     */
+    @Nullable
+    public CalibreLibrary getCalibreLibrary(@NonNull final Context context,
+                                            @NonNull final String libraryId) {
+
+        try (Cursor cursor = mSyncedDb.rawQuery(
+                DAOSql.SqlGet.CALIBRE_LIBRARY_BY_LIBRARY_ID, new String[]{libraryId})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            if (cursor.moveToFirst()) {
+                final long bookshelfId = rowData.getLong(KEY_FK_BOOKSHELF);
+                final Bookshelf bookshelf = Bookshelf
+                        .getBookshelf(context, this, bookshelfId, Bookshelf.PREFERRED);
+                return new CalibreLibrary(rowData.getLong(KEY_PK_ID), bookshelf, rowData);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the list of Calibre <strong>virtual</strong>libraries for the given library id.
+     * <p>
+     * The mapped {@link Bookshelf} will have been resolved.
+     *
+     * @param libraryId to reference
+     *
+     * @return list
+     */
+    public ArrayList<CalibreLibrary> getCalibreVirtualLibraries(@NonNull final Context context,
+                                                                @NonNull final String libraryId) {
+
+        final ArrayList<CalibreLibrary> list = new ArrayList<>();
+        try (Cursor cursor = mSyncedDb.rawQuery(
+                DAOSql.SqlSelect.CALIBRE_VIRTUAL_LIBRARIES_BY_LIBRARY_ID,
+                new String[]{libraryId})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            while (cursor.moveToNext()) {
+                final long bookshelfId = rowData.getLong(KEY_FK_BOOKSHELF);
+                final Bookshelf bookshelf = Bookshelf
+                        .getBookshelf(context, this, bookshelfId, Bookshelf.PREFERRED);
+                list.add(new CalibreLibrary(rowData.getLong(KEY_PK_ID), bookshelf, rowData));
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Get the <strong>virtual</strong> {@link CalibreLibrary} for the given library + name.
+     * The mapped {@link Bookshelf} will have been resolved.
+     *
+     * @param library to lookup
+     * @param name    of the virtual library to lookup
+     *
+     * @return physical library
+     */
+    @Nullable
+    public CalibreLibrary getCalibreLibrary(@NonNull final Context context,
+                                            @NonNull final CalibreLibrary library,
+                                            @NonNull final String name) {
+
+        try (Cursor cursor = mSyncedDb.rawQuery(
+                DAOSql.SqlGet.CALIBRE_VIRTUAL_LIBRARY_BY_LIBRARY_ID_AND_NAME,
+                new String[]{library.getLibraryId(), name})) {
+            final DataHolder rowData = new CursorRow(cursor);
+            if (cursor.moveToFirst()) {
+                final long bookshelfId = rowData.getLong(KEY_FK_BOOKSHELF);
+                final Bookshelf bookshelf = Bookshelf
+                        .getBookshelf(context, this, bookshelfId, Bookshelf.PREFERRED);
+                return new CalibreLibrary(rowData.getLong(KEY_PK_ID), bookshelf, rowData);
+            }
+        }
+        return null;
+    }
+
 
     /**
      * Update the 'last updated' of the given book.
@@ -2534,11 +2686,11 @@ public class DAO
     public TypedCursor fetchBooksForExportToCalibre(@NonNull final String libraryId,
                                                     @Nullable final LocalDateTime since) {
         if (since == null) {
-            return getBookCursor(TBL_CALIBRE_BOOKS.dot(KEY_CALIBRE_BOOK_LIBRARY_ID) + "=?",
+            return getBookCursor(TBL_CALIBRE_BOOKS.dot(KEY_CALIBRE_LIBRARY_ID) + "=?",
                                  new String[]{libraryId},
                                  TBL_BOOKS.dot(KEY_PK_ID));
         } else {
-            return getBookCursor(TBL_CALIBRE_BOOKS.dot(KEY_CALIBRE_BOOK_LIBRARY_ID) + "=?"
+            return getBookCursor(TBL_CALIBRE_BOOKS.dot(KEY_CALIBRE_LIBRARY_ID) + "=?"
                                  + " AND " + TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED) + ">=?",
                                  new String[]{libraryId, encodeDate(since)},
                                  TBL_BOOKS.dot(KEY_PK_ID));
@@ -4662,7 +4814,7 @@ public class DAO
 
         private static final long serialVersionUID = -2857466683799399619L;
 
-        DaoWriteException(@NonNull final String message) {
+        public DaoWriteException(@NonNull final String message) {
             super(message);
         }
 

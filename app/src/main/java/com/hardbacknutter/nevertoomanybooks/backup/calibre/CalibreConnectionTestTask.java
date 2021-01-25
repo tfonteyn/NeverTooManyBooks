@@ -31,7 +31,6 @@ import java.security.cert.CertificateException;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * A simple connection test which tries connecting + loading the libraries.
@@ -63,15 +62,13 @@ public class CalibreConnectionTestTask
     @Nullable
     @Override
     protected Boolean doWork(@NonNull final Context context)
-            throws GeneralParsingException, IOException, CertificateException {
-
+            throws IOException, CertificateException {
         try {
-            final CalibreContentServer server = new CalibreContentServer(context);
-            server.loadLibraries();
+            return new CalibreContentServer(context)
+                    .createTestConnection();
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e);
             throw e;
         }
-        return true;
     }
 }

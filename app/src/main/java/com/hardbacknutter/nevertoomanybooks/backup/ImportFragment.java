@@ -50,7 +50,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -366,7 +365,7 @@ public class ImportFragment
 
             // If this is a Calibre import, show the library name
             final CalibreLibrary calibreLibrary = archiveMetaData.getBundle().getParcelable(
-                    CalibreContentServerReader.ARCH_MD_DEFAULT_LIBRARY);
+                    CalibreContentServerReader.BKEY_LIBRARY);
             if (calibreLibrary != null) {
                 info.add(calibreLibrary.getName());
             }
@@ -490,7 +489,7 @@ public class ImportFragment
     @NonNull
     private String createReport(@NonNull final ImportResults result) {
 
-        final List<String> items = new LinkedList<>();
+        final List<String> items = new ArrayList<>();
 
         if (result.booksCreated > 0 || result.booksUpdated > 0 || result.booksSkipped > 0) {
             items.add(getString(R.string.progress_msg_x_created_y_updated_z_skipped,
