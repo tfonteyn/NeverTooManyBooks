@@ -87,7 +87,7 @@ public class ImportViewModel
     }
 
     @NonNull
-    ImportHelper getImportHelper() {
+    public ImportHelper getImportHelper() {
         return Objects.requireNonNull(mImportHelper);
     }
 
