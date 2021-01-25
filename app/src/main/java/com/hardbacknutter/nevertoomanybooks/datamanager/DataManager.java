@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -401,19 +401,13 @@ public class DataManager
         mRawData.putFloat(key, value);
     }
 
-    /**
-     * Get a String value. Non-String values will be cast using toString().
-     *
-     * @param key Key of data object
-     *
-     * @return Value of the data, can be empty, but never {@code null}
-     */
-    @NonNull
+    @Nullable
     @Override
-    public String getString(@NonNull final String key) {
+    public String getString(@NonNull final String key,
+                            @Nullable final String defValue) {
         final Object o = mRawData.get(key);
         if (o == null) {
-            return "";
+            return defValue;
         } else {
             return o.toString().trim();
         }

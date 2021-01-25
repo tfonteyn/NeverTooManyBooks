@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.entities;
 import android.database.Cursor;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Set;
 
@@ -30,8 +31,6 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 /**
  * Read-only interface that allows a method to take both a custom {@link Cursor}
  * and a {@link DataManager} as an argument without having to distinguish between them.
- * <p>
- * URGENT: if no mapping of the desired type exists for the given key.... INCORRECT for CursorRow
  */
 public interface DataHolder {
 
@@ -95,16 +94,32 @@ public interface DataHolder {
     boolean getBoolean(@NonNull String key);
 
     /**
-     * Returns the value associated with the given key, or {@code null} if
-     * no mapping of the desired type exists for the given key or a {@code null}
-     * value is explicitly associated with the key.
+     * Returns the value associated with the given key.
+     * A {@code null} value will be returned as an empty String.
      * <p>
      * If the value was not a String, implementations <strong>must</strong> stringify it.
      *
-     * @param key a String, or {@code null}
+     * @param key a String
      *
-     * @return a String value, or {@code null}
+     * @return Value of the data, can be empty, but never {@code null}
      */
     @NonNull
-    String getString(@NonNull String key);
+    default String getString(@NonNull final String key) {
+        //noinspection ConstantConditions
+        return getString(key, "");
+    }
+
+    /**
+     * Returns the value associated with the given key.
+     * A {@code null} value will be substituted with the 'defValue'.
+     * <p>
+     * If the value was not a String, implementations <strong>must</strong> stringify it.
+     *
+     * @param key a String
+     *
+     * @return Value of the data, or the 'defValue'
+     */
+    @Nullable
+    String getString(@NonNull String key,
+                     @Nullable String defValue);
 }
