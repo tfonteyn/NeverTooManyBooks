@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,7 @@ public class SearchBookByIsbnViewModel
     @NonNull
     private final Intent mResultIntent = new Intent();
     /** The batch mode queue. */
-    private final List<ISBN> mScanQueue = new LinkedList<>();
+    private final List<ISBN> mScanQueue = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;
     @Mode
