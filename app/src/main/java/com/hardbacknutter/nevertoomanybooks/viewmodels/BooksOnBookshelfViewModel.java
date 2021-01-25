@@ -206,10 +206,10 @@ public class BooksOnBookshelfViewModel
         }
 
         // Set the last/preferred bookshelf if not explicitly set above
+        // or use the default == first start of the app
         if (mBookshelf == null) {
-            mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
-                                                // or use the default == first start
-                                                Bookshelf.DEFAULT);
+            mBookshelf = Bookshelf
+                    .getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
         }
     }
 
@@ -318,8 +318,8 @@ public class BooksOnBookshelfViewModel
                                     final long id) {
         mBookshelf = mDb.getBookshelf(id);
         if (mBookshelf == null) {
-            mBookshelf = Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED,
-                                                Bookshelf.ALL_BOOKS);
+            mBookshelf = Bookshelf
+                    .getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         }
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         mBookshelf.setAsPreferred(global);
@@ -327,8 +327,8 @@ public class BooksOnBookshelfViewModel
 
     @SuppressWarnings("UnusedReturnValue")
     public boolean reloadSelectedBookshelf(@NonNull final Context context) {
-        final Bookshelf newBookshelf =
-                Bookshelf.getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
+        final Bookshelf newBookshelf = Bookshelf
+                .getBookshelf(context, mDb, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         if (!newBookshelf.equals(mBookshelf)) {
             // if it was.. switch to it.
             mBookshelf = newBookshelf;
@@ -627,16 +627,19 @@ public class BooksOnBookshelfViewModel
 
             // Add Calibre bridging data ?
             if (CalibreContentServer.isEnabled(global)) {
+                builder.addLeftOuterJoin(DBDefinitions.TBL_CALIBRE_BOOKS);
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_ID,
-                        DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
+                        DBDefinitions.TBL_CALIBRE_BOOKS
+                                .dot(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_UUID,
-                        DBDefinitions.TBL_CALIBRE_BOOKS.dot(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
-                builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_CALIBRE_BOOK_LIBRARY_ID,
                         DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID)));
+                                .dot(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
+                builder.addDomain(new DomainExpression(
+                        DBDefinitions.DOM_CALIBRE_LIBRARY_ID,
+                        DBDefinitions.TBL_CALIBRE_BOOKS
+                                .dot(DBDefinitions.KEY_CALIBRE_LIBRARY_ID)));
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
                         DBDefinitions.TBL_CALIBRE_BOOKS

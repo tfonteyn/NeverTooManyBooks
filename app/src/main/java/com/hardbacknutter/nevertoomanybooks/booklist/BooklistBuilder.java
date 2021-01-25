@@ -69,7 +69,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
@@ -151,6 +150,7 @@ final class BooklistBuilder {
     private TableDefinition mTriggerHelperTable;
     private String mTriggerHelperLevelTriggerName;
     private String mTriggerHelperCurrentValueTriggerName;
+    private Collection<TableDefinition> mLeftOuterJoins;
 
     /**
      * Constructor.
@@ -210,13 +210,18 @@ final class BooklistBuilder {
      * <p>
      * This method does not access the database.
      *
-     * @param context     Current context
-     * @param bookDomains list of domains to add on the book level
-     * @param filters     to use for the WHERE clause
+     * @param context        Current context
+     * @param leftOuterJoins tables to be added as a LEFT OUTER JOIN
+     * @param bookDomains    list of domains to add on the book level
+     * @param filters        to use for the WHERE clause
      **/
     void preBuild(@NonNull final Context context,
+                  @NonNull final Collection<TableDefinition> leftOuterJoins,
                   @NonNull final Collection<DomainExpression> bookDomains,
                   @NonNull final Collection<Filter> filters) {
+
+        // Store for later use in #buildFrom
+        mLeftOuterJoins = leftOuterJoins;
 
         // Always sort by level first; no expression, as this does not represent a value.
         addDomain(new DomainExpression(
@@ -750,13 +755,9 @@ final class BooklistBuilder {
         }
 
 
-        // Join with Calibre bridging table if required.
-        if (mDomainExpressions.stream()
-                              .map(DomainExpression::getDomain)
-                              .map(Domain::getName)
-                              .anyMatch(n -> n.startsWith(DBDefinitions.PREFIX_KEY_CALIBRE))) {
-            sql.append(TBL_BOOKS.leftOuterJoin(TBL_CALIBRE_BOOKS));
-        }
+        // Add LEFT OUTER JOIN tables as needed
+        //noinspection SimplifyStreamApiCallChains
+        mLeftOuterJoins.stream().forEach(table -> sql.append(TBL_BOOKS.leftOuterJoin(table)));
 
         return sql.toString();
     }

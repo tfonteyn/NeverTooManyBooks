@@ -143,6 +143,10 @@ public class Booklist
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final Map<String, DomainExpression> mBookDomains = new HashMap<>();
+    @SuppressWarnings("FieldNotUsedInToString")
+    @NonNull
+    private final Map<String, TableDefinition> mLeftOuterJoins = new HashMap<>();
+
     /** the list of Filters. */
     private final Collection<Filter> mFilters = new ArrayList<>();
     /** Style to use while building the list. */
@@ -268,6 +272,21 @@ public class Booklist
     }
 
     /**
+     * Add a table to be added as a LEFT OUTER JOIN.
+     *
+     * @param tableDefinition TableDefinition to add
+     */
+    public void addLeftOuterJoin(@NonNull final TableDefinition tableDefinition) {
+        if (!mLeftOuterJoins.containsKey(tableDefinition.getName())) {
+            mLeftOuterJoins.put(tableDefinition.getName(), tableDefinition);
+
+        } else {
+            // adding a duplicate here is a bug.
+            throw new IllegalArgumentException("Duplicate table=" + tableDefinition.getName());
+        }
+    }
+
+    /**
      * Adds the FTS book table for a keyword match.
      * <p>
      * An empty filter will silently be rejected.
@@ -372,7 +391,7 @@ public class Booklist
         final BooklistBuilder helper = new BooklistBuilder(mInstanceId,
                                                            mStyle, isFilteredOnBookshelves,
                                                            mRebuildState);
-        helper.preBuild(context, mBookDomains.values(), mFilters);
+        helper.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
 
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
