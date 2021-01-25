@@ -43,6 +43,11 @@
     {"name": "British writers"},
     {"name": "Top shelf"}
   ],
+  "library": [
+    {"name": "Fiction"},
+    {"name": "Non-Fiction"},
+    {"name": "Reading Room"}
+  ],
   "language": [
     {"name": "Quenya"},
     {"name": "American"},
