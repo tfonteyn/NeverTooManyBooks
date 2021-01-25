@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -1267,7 +1267,7 @@ public class IsfdbSearchEngine
                 .forEach(url -> {
                     if (url.contains("www.worldcat.org")) {
                         // http://www.worldcat.org/oclc/60560136
-                        bookData.putString(DBDefinitions.KEY_ESID_WORLDCAT, stripString(url, '/'));
+                        bookData.putString(DBDefinitions.KEY_ESID_OCLC, stripString(url, '/'));
 
                     } else if (url.contains("amazon")) {
                         final int start = url.lastIndexOf('/');

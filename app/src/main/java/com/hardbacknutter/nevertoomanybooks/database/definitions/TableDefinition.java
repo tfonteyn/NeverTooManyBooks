@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -176,6 +176,16 @@ public class TableDefinition {
      */
     public static void onCreate(@NonNull final SQLiteDatabase db,
                                 @NonNull final TableDefinition... tables) {
+        for (final TableDefinition table : tables) {
+            db.execSQL(table.def(table.getName(), true));
+            for (final IndexDefinition index : table.mIndexes) {
+                index.onCreate(db);
+            }
+        }
+    }
+
+    public static void onCreate(@NonNull final SQLiteDatabase db,
+                                @NonNull final Collection<TableDefinition> tables) {
         for (final TableDefinition table : tables) {
             db.execSQL(table.def(table.getName(), true));
             for (final IndexDefinition index : table.mIndexes) {

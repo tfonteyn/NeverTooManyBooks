@@ -121,7 +121,7 @@ public class BookCoder {
 
             + COMMA + '"' + DBDefinitions.KEY_CALIBRE_BOOK_ID + '"'
             + COMMA + '"' + DBDefinitions.KEY_CALIBRE_BOOK_UUID + '"'
-            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID + '"'
+            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_LIBRARY_ID + '"'
             + COMMA + '"' + DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT + '"';
 
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
@@ -200,7 +200,7 @@ public class BookCoder {
 
         line.add(encode(book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
         line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
-        line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID)));
+        line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_ID)));
         line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
 
         // external ID's

@@ -627,7 +627,7 @@ public class OpenLibrarySearchEngine
         }
         a = element.optJSONArray("oclc");
         if (a != null && a.length() > 0) {
-            bookData.putString(DBDefinitions.KEY_ESID_WORLDCAT, a.getString(0));
+            bookData.putString(DBDefinitions.KEY_ESID_OCLC, a.getString(0));
         }
     }
 

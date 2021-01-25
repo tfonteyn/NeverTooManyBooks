@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -88,7 +88,7 @@ class IsfdbBookHandlerTest
         assertEquals(Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS,
                      mRawData.getLong(DBDefinitions.KEY_TOC_BITMASK));
 
-        assertEquals("13665857", mRawData.getString(DBDefinitions.KEY_ESID_WORLDCAT));
+        assertEquals("13665857", mRawData.getString(DBDefinitions.KEY_ESID_OCLC));
 
         assertEquals("Month from Locus1", mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
 

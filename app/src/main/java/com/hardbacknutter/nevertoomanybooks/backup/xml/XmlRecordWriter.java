@@ -452,8 +452,8 @@ public class XmlRecordWriter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_BOOK_UUID,
                                            book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
                 writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID,
-                        book.getString(DBDefinitions.KEY_CALIBRE_BOOK_LIBRARY_ID)));
+                        DBDefinitions.KEY_CALIBRE_LIBRARY_ID,
+                        book.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_ID)));
                 writer.write(XmlUtils.attr(
                         DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT,
                         book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));

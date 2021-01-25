@@ -377,7 +377,7 @@ public final class DBHelper
      * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
      * this will need to be added.
      *
-     * @param db      Database Access
+     * @param db Database Access
      */
     public void createTriggers(@NonNull final SynchronizedDb db) {
 

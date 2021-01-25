@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -87,7 +87,7 @@ class OpenLibrarySearchEngineTest
         assertEquals(8071257L, mRawData.getLong(DBDefinitions.KEY_ESID_LIBRARY_THING));
         assertEquals(6383507L, mRawData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK));
         assertEquals("098020044X", mRawData.getString(DBDefinitions.KEY_ESID_ASIN));
-        assertEquals("297222669", mRawData.getString(DBDefinitions.KEY_ESID_WORLDCAT));
+        assertEquals("297222669", mRawData.getString(DBDefinitions.KEY_ESID_OCLC));
 
         assertEquals("Includes bibliographical references and index.",
                      mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
