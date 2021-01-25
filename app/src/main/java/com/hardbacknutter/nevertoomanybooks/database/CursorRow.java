@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,18 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 /**
@@ -45,9 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
  */
 public class CursorRow
         implements DataHolder {
-
-    /** Log tag. */
-    private static final String TAG = "CursorRow";
 
     /** the mapped cursor. */
     private final Cursor mCursor;
@@ -76,16 +70,9 @@ public class CursorRow
         return mCursor.getColumnIndex(key) > -1;
     }
 
-    /**
-     * @param key the name of the domain to get
-     *
-     * @return the string value of the column.
-     * A {@code null} value will be returned as an empty String.
-     *
-     * @throws ColumnNotPresentException if the column was not present.
-     */
-    @NonNull
-    public String getString(@NonNull final String key)
+    @Nullable
+    public String getString(@NonNull final String key,
+                            @Nullable final String defValue)
             throws ColumnNotPresentException {
 
         final int col = mCursor.getColumnIndex(key);
@@ -93,7 +80,7 @@ public class CursorRow
             throw new ColumnNotPresentException(key);
         }
         if (mCursor.isNull(col)) {
-            return "";
+            return defValue;
         }
         return mCursor.getString(col);
     }
@@ -173,7 +160,7 @@ public class CursorRow
     /**
      * @param key to get
      *
-     * @return the byte array (blob) of the column ({@code null} comes back as 0)
+     * @return the byte array (blob) of the column
      *
      * @throws ColumnNotPresentException if the column was not present.
      */
@@ -190,55 +177,4 @@ public class CursorRow
         return mCursor.getBlob(col);
     }
 
-    /**
-     * See the comments on methods in {@link android.database.CursorWindow}
-     * for info on type conversions which explains our use of getLong/getDouble.
-     *
-     * @param context Current context
-     *
-     * @return a bundle with all the columns present ({@code null} values are dropped).
-     */
-    @SuppressWarnings("unused")
-    @NonNull
-    public Bundle getAll(@NonNull final Context context) {
-        final Bundle result = new Bundle();
-
-        for (final String columnName : mCursor.getColumnNames()) {
-            final int col = mCursor.getColumnIndex(columnName);
-            if (col != -1) {
-                switch (mCursor.getType(col)) {
-                    case Cursor.FIELD_TYPE_STRING:
-                        result.putString(columnName, mCursor.getString(col));
-                        break;
-
-                    case Cursor.FIELD_TYPE_INTEGER:
-                        // mCursor.getInt is really a (int)mCursor.getLong
-                        result.putLong(columnName, mCursor.getLong(col));
-                        break;
-
-                    case Cursor.FIELD_TYPE_FLOAT:
-                        // mCursor.getFloat is really a (float)mCursor.getDouble
-                        result.putDouble(columnName, mCursor.getDouble(col));
-                        break;
-
-                    case Cursor.FIELD_TYPE_BLOB:
-                        result.putByteArray(columnName, mCursor.getBlob(col));
-                        break;
-
-                    case Cursor.FIELD_TYPE_NULL:
-                        // field value null; skip
-                        break;
-
-                    default:
-                        if (BuildConfig.DEBUG /* always */) {
-                            Log.d(TAG, "columnName=" + columnName
-                                       + "|type=" + mCursor.getType(col));
-                        }
-                        break;
-                }
-            }
-        }
-
-        return result;
-    }
 }
