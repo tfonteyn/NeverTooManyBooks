@@ -73,7 +73,7 @@ import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbGetEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -123,7 +123,7 @@ public class EditBookTocFragment
     private TocListEditAdapter mListAdapter;
     /** Drag and drop support for the list view. */
     private ItemTouchHelper mItemTouchHelper;
-    private DiacriticArrayAdapter<String> mAuthorAdapter;
+    private ExtArrayAdapter<String> mAuthorAdapter;
     /**
      * Stores the item position in the list while we're editing that item.
      * Editing is done using a dialog, so no need to store it more permanently.
@@ -450,8 +450,9 @@ public class EditBookTocFragment
         if (isChecked) {
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions
-                mAuthorAdapter = new DiacriticArrayAdapter<>(
+                mAuthorAdapter = new ExtArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
+                        ExtArrayAdapter.FilterType.Diacritic,
                         mVm.getAllAuthorNames());
                 mVb.author.setAdapter(mAuthorAdapter);
             }

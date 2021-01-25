@@ -59,8 +59,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
-import com.hardbacknutter.nevertoomanybooks.fields.FormattedDiacriticArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -359,8 +359,8 @@ public abstract class EditBookBaseFragment
         if (field.isUsed(global)) {
             final FieldFormatter<String> formatter = field.getAccessor().getFormatter();
             //noinspection ConstantConditions
-            final FormattedDiacriticArrayAdapter adapter =
-                    new FormattedDiacriticArrayAdapter(getContext(), list.get(), formatter);
+            final FieldArrayAdapter adapter =
+                    new FieldArrayAdapter(getContext(), list.get(), formatter);
 
             final AutoCompleteTextView view = field.getAccessor().getView();
             //noinspection ConstantConditions

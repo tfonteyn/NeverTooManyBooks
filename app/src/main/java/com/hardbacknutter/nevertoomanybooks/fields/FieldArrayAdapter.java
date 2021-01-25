@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,10 +28,10 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
-public class FormattedDiacriticArrayAdapter
-        extends DiacriticArrayAdapter<String> {
+public class FieldArrayAdapter
+        extends ExtArrayAdapter<String> {
 
     /** The formatter to apply on each line item. */
     @Nullable
@@ -44,20 +44,20 @@ public class FormattedDiacriticArrayAdapter
      * @param objects   The objects to represent in the list view
      * @param formatter to use
      */
-    public FormattedDiacriticArrayAdapter(@NonNull final Context context,
-                                          @NonNull final List<String> objects,
-                                          @Nullable final FieldFormatter<String> formatter) {
-        super(context, R.layout.dropdown_menu_popup_item, 0, objects);
+    public FieldArrayAdapter(@NonNull final Context context,
+                             @NonNull final List<String> objects,
+                             @Nullable final FieldFormatter<String> formatter) {
+        super(context, R.layout.dropdown_menu_popup_item, FilterType.Diacritic, objects);
         mFormatter = formatter;
     }
 
-    @Nullable
+    @NonNull
     @Override
-    public String getItem(final int position) {
+    protected CharSequence getItemText(@Nullable final String item) {
         if (mFormatter != null) {
-            return mFormatter.format(getContext(), super.getItem(position));
+            return mFormatter.format(getContext(), item);
         } else {
-            return super.getItem(position);
+            return super.getItemText(item);
         }
     }
 }

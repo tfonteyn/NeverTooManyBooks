@@ -22,29 +22,23 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -108,6 +102,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
@@ -120,6 +115,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.FabMenu;
 import com.hardbacknutter.nevertoomanybooks.widgets.SpinnerInteractionListener;
 import com.hardbacknutter.nevertoomanybooks.widgets.fastscroller.FastScroller;
@@ -280,8 +276,15 @@ public class BooksOnBookshelf
 
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
-    /** The adapter used to fill the mBookshelfSpinner. */
-    private BookshelfSpinnerAdapter mBookshelfSpinnerAdapter;
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
+                }
+            };
     /** View Binding. */
     private BooksonbookshelfBinding mVb;
     /** List layout manager. */
@@ -360,6 +363,8 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
+    /** The adapter used to fill the Bookshelf selector. */
+    private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -426,15 +431,6 @@ public class BooksOnBookshelf
                         }
                     }
                     return true;
-                }
-            };
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
                 }
             };
 
@@ -510,8 +506,12 @@ public class BooksOnBookshelf
         // Setup the Bookshelf spinner;
         // The list is initially empty here; loading the list and
         // setting/selecting the current shelf are both done in onResume
-        mBookshelfSpinnerAdapter = new BookshelfSpinnerAdapter(this, mVm.getBookshelfList());
-        mVb.bookshelfSpinner.setAdapter(mBookshelfSpinnerAdapter);
+        mBookshelfAdapter = new EntityArrayAdapter<>(this,
+                                                     R.layout.dropdown_menu_popup_item,
+                                                     ExtArrayAdapter.FilterType.Passthrough,
+                                                     mVm.getBookshelfList());
+
+        mVb.bookshelfSpinner.setAdapter(mBookshelfAdapter);
         mVb.bookshelfSpinner.setOnTouchListener(mOnBookshelfSelectionChanged);
         mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
 
@@ -1352,7 +1352,7 @@ public class BooksOnBookshelf
 
         // Initialize/Update the list of bookshelves
         mVm.reloadBookshelfList(this);
-        mBookshelfSpinnerAdapter.notifyDataSetChanged();
+        mBookshelfAdapter.notifyDataSetChanged();
         // and select the current shelf.
         final int selectedPosition = mVm.getSelectedBookshelfSpinnerPosition(this);
         mVb.bookshelfSpinner.setSelection(selectedPosition);
@@ -1738,68 +1738,6 @@ public class BooksOnBookshelf
         @Retention(RetentionPolicy.SOURCE)
         @interface BookChange {
 
-        }
-    }
-
-    private static class BookshelfSpinnerAdapter
-            extends ArrayAdapter<Bookshelf> {
-
-        /** Cached inflater. */
-        @NonNull
-        private final LayoutInflater mInflater;
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         * @param list    of bookshelves
-         */
-        BookshelfSpinnerAdapter(@NonNull final Context context,
-                                @NonNull final List<Bookshelf> list) {
-            // 0: see getView() below.
-            super(context, 0, list);
-            mInflater = LayoutInflater.from(context);
-        }
-
-        @Override
-        public long getItemId(final int position) {
-            //noinspection ConstantConditions
-            return getItem(position).getId();
-        }
-
-        @NonNull
-        @Override
-        public View getView(final int position,
-                            @Nullable final View convertView,
-                            @NonNull final ViewGroup parent) {
-            return getPopulatedView(position, convertView, parent,
-                                    R.layout.bookshelf_spinner_selected);
-        }
-
-        @Override
-        @NonNull
-        public View getDropDownView(final int position,
-                                    @Nullable final View convertView,
-                                    @NonNull final ViewGroup parent) {
-            return getPopulatedView(position, convertView, parent,
-                                    R.layout.dropdown_menu_popup_item);
-        }
-
-        @NonNull
-        private View getPopulatedView(final int position,
-                                      @Nullable final View convertView,
-                                      @NonNull final ViewGroup parent,
-                                      @LayoutRes final int layoutId) {
-            final View view;
-            if (convertView == null) {
-                view = mInflater.inflate(layoutId, parent, false);
-            } else {
-                view = convertView;
-            }
-
-            //noinspection ConstantConditions
-            ((TextView) view).setText(getItem(position).getLabel(getContext()));
-            return view;
         }
     }
 }

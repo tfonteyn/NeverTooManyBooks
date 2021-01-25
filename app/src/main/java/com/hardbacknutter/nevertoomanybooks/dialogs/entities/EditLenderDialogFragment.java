@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
  * Dialog to create a new loan, edit an existing one or remove it (book is returned).
@@ -96,7 +96,7 @@ public class EditLenderDialogFragment
     @Nullable
     private String mLoanee;
     private ArrayList<String> mPeople;
-    private DiacriticArrayAdapter<String> mAdapter;
+    private ExtArrayAdapter<String> mAdapter;
 
     /**
      * See <a href="https://developer.android.com/training/permissions/requesting">
@@ -151,8 +151,8 @@ public class EditLenderDialogFragment
         mVb.toolbar.setSubtitle(mBookTitle);
 
         //noinspection ConstantConditions
-        mAdapter = new DiacriticArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
-                                               mPeople);
+        mAdapter = new ExtArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
+                                         ExtArrayAdapter.FilterType.Diacritic, mPeople);
         mVb.lendTo.setAdapter(mAdapter);
         mVb.lendTo.setText(mLoanee);
 

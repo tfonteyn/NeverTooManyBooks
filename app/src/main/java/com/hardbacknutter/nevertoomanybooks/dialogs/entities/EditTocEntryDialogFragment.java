@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link TocEntry}.
@@ -63,7 +63,7 @@ public class EditTocEntryDialogFragment
     @Nullable
     private String mBookTitle;
 
-    private DiacriticArrayAdapter<String> mAuthorAdapter;
+    private ExtArrayAdapter<String> mAuthorAdapter;
 
     /** The TocEntry we're editing. */
     private TocEntry mTocEntry;
@@ -149,8 +149,9 @@ public class EditTocEntryDialogFragment
         if (mHasMultipleAuthors) {
             if (mAuthorAdapter == null) {
                 //noinspection ConstantConditions
-                mAuthorAdapter = new DiacriticArrayAdapter<>(
+                mAuthorAdapter = new ExtArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
+                        ExtArrayAdapter.FilterType.Diacritic,
                         mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 mVb.author.setAdapter(mAuthorAdapter);
             }

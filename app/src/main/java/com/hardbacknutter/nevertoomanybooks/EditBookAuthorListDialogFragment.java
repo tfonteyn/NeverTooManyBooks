@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -141,8 +141,9 @@ public class EditBookAuthorListDialogFragment
         mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
 
         //noinspection ConstantConditions
-        final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item, mVm.getAllAuthorNames());
+        final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item,
+                ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorNames());
         mVb.author.setAdapter(nameAdapter);
         mVb.author.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -464,14 +465,16 @@ public class EditBookAuthorListDialogFragment
             //noinspection ConstantConditions
             mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
 
-            final DiacriticArrayAdapter<String> familyNameAdapter = new DiacriticArrayAdapter<>(
+            final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
+                    ExtArrayAdapter.FilterType.Diacritic,
                     mVm.getAllAuthorFamilyNames());
             mVb.familyName.setText(mFamilyName);
             mVb.familyName.setAdapter(familyNameAdapter);
 
-            final DiacriticArrayAdapter<String> givenNameAdapter = new DiacriticArrayAdapter<>(
+            final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
+                    ExtArrayAdapter.FilterType.Diacritic,
                     mVm.getAllAuthorGivenNames());
             mVb.givenNames.setText(mGivenNames);
             mVb.givenNames.setAdapter(givenNameAdapter);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByTextViewModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class SearchBookByTextFragment
         extends SearchBookBaseFragment {
@@ -53,9 +53,9 @@ public class SearchBookByTextFragment
     public static final String TAG = "SearchBookByTextFragment";
 
     /** adapter for the AutoCompleteTextView. */
-    private DiacriticArrayAdapter<String> mAuthorAdapter;
+    private ExtArrayAdapter<String> mAuthorAdapter;
     /** adapter for the AutoCompleteTextView. */
-    private DiacriticArrayAdapter<String> mPublisherAdapter;
+    private ExtArrayAdapter<String> mPublisherAdapter;
     /** View Binding. */
     private FragmentBooksearchByTextBinding mVb;
 
@@ -155,8 +155,9 @@ public class SearchBookByTextFragment
         //noinspection ConstantConditions
         final ArrayList<String> authorNames =
                 mVm.getAuthorNames(getContext());
-        mAuthorAdapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item, authorNames);
+        mAuthorAdapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item,
+                ExtArrayAdapter.FilterType.Diacritic, authorNames);
         mVb.author.setAdapter(mAuthorAdapter);
     }
 
@@ -167,8 +168,9 @@ public class SearchBookByTextFragment
         //noinspection ConstantConditions
         final ArrayList<String> publisherNames =
                 mVm.getPublisherNames(getContext());
-        mPublisherAdapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item, publisherNames);
+        mPublisherAdapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item,
+                ExtArrayAdapter.FilterType.Diacritic, publisherNames);
         mVb.publisher.setAdapter(mPublisherAdapter);
     }
 

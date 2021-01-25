@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityStage;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookFragmentViewModel;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.widgets.ItemTouchHelperViewHolderBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.RecyclerViewAdapterBase;
 import com.hardbacknutter.nevertoomanybooks.widgets.SimpleAdapterDataObserver;
@@ -133,8 +133,9 @@ public class EditBookSeriesListDialogFragment
         mVb.toolbar.setSubtitle(mVm.getBook().getTitle());
 
         //noinspection ConstantConditions
-        final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item, mVm.getAllSeriesTitles());
+        final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item,
+                ExtArrayAdapter.FilterType.Diacritic, mVm.getAllSeriesTitles());
         mVb.seriesTitle.setAdapter(nameAdapter);
         mVb.seriesTitle.setOnFocusChangeListener((v, hasFocus) -> {
             if (hasFocus) {
@@ -429,8 +430,9 @@ public class EditBookSeriesListDialogFragment
             mVm = new ViewModelProvider(getActivity()).get(EditBookFragmentViewModel.class);
 
             //noinspection ConstantConditions
-            final DiacriticArrayAdapter<String> nameAdapter = new DiacriticArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item, mVm.getAllSeriesTitles());
+            final ExtArrayAdapter<String> nameAdapter = new ExtArrayAdapter<>(
+                    getContext(), R.layout.dropdown_menu_popup_item,
+                    ExtArrayAdapter.FilterType.Diacritic, mVm.getAllSeriesTitles());
             mVb.seriesTitle.setText(mTitle);
             mVb.seriesTitle.setAdapter(nameAdapter);
 

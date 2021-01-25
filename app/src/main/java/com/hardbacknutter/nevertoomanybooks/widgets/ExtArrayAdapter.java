@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,16 +49,30 @@ import java.util.Locale;
 import java.util.regex.Pattern;
 
 /**
- * A copy of the {@link android.widget.ArrayAdapter} code from Android-29, rev. 4 (2020-01-07)
+ * A copy of the {@link android.widget.ArrayAdapter} code from Android-30, rev. 1 (2021-01-25)
+ * Do <strong>NOT</strong> overwrite from a newer version of the above.
+ * A diff/merge will be needed.
  * <p>
- * Modified to support diacritics. Do not overwrite from a newer version of the above.
- * Source code modification can be found by searching by "diacritics"; being part
- * of variable/method names.
+ * Modified to allow easier extending + some optimizations + annotations added.
+ * <p>
+ * Key features:
+ * <p>
+ * {@link #getItemText(Object)} can/should be overridden if T is not a String.
+ * This allows a custom conversion to be done instead of the default toString().
+ * <p>
+ * {@link #ExtArrayAdapter(Context, int, FilterType, List)}
+ * or {@link #setFilterType(FilterType)} to override the default {@link Filter}
+ * <ul>Choose a filter type:
+ *      <li>To use the Android original: {@link ExtArrayAdapter.FilterType#Default}</li>
+ *      <li>To augment the original with Diacritic support:
+ *          {@link ExtArrayAdapter.FilterType#Diacritic}</li>
+ *      <li>For a material.io ExposedDropDownMenu:
+ *          {@link ExtArrayAdapter.FilterType#Passthrough}</li>
+ * </ul>
  *
- * @param <T> type of objects in the list
+ * @param <T> type of list item
  */
-@SuppressWarnings("ReturnOfInnerClass")
-public class DiacriticArrayAdapter<T>
+public class ExtArrayAdapter<T>
         extends BaseAdapter
         implements Filterable, ThemedSpinnerAdapter {
 
@@ -67,14 +81,13 @@ public class DiacriticArrayAdapter<T>
      * performed on the array should be synchronized on this lock. This lock is also
      * used by the filter (see {@link #getFilter()} to make a synchronized copy of
      * the original array of data.
-     * UnsupportedAppUsage
      */
     private final Object mLock = new Object();
 
+    @NonNull
     private final LayoutInflater mInflater;
-
+    @NonNull
     private final Context mContext;
-
     /**
      * The resource indicating what views to inflate to display the content of this
      * array adapter.
@@ -86,6 +99,9 @@ public class DiacriticArrayAdapter<T>
      * identifier that matches the one defined in the resource file.
      */
     private final int mFieldId;
+    /** Layout inflater used for {@link #getDropDownView(int, View, ViewGroup)}. */
+    @Nullable
+    private LayoutInflater mDropDownInflater;
     /**
      * The resource indicating what views to inflate to display the content of this
      * array adapter in a drop down widget.
@@ -94,8 +110,8 @@ public class DiacriticArrayAdapter<T>
     /**
      * Contains the list of objects that represent the data of this ArrayAdapter.
      * The content of this list is referred to as "the array" in the documentation.
-     * UnsupportedAppUsage
      */
+    @NonNull
     private List<T> mObjects;
     /**
      * Indicates whether the contents of {@link #mObjects} came from static resources.
@@ -108,14 +124,15 @@ public class DiacriticArrayAdapter<T>
     private boolean mNotifyOnChange = true;
 
     // A copy of the original mObjects array, initialized from and then used instead as soon as
-    // the mFilter ArrayFilter is used. mObjects will then only contain the filtered values.
-    //UnsupportedAppUsage
-    private ArrayList<T> mOriginalValues;
-    private ArrayFilter mFilter;
-
-    /** Layout inflater used for {@link #getDropDownView(int, View, ViewGroup)}. */
+    // the mFilter ExtArrayFilter is used. mObjects will then only contain the filtered values.
     @Nullable
-    private LayoutInflater mDropDownInflater;
+    private ArrayList<T> mOriginalValues;
+
+    @Nullable
+    private Filter mFilter;
+    @NonNull
+    private FilterType mFilterType = FilterType.Default;
+
 
     /**
      * Constructor.
@@ -124,9 +141,8 @@ public class DiacriticArrayAdapter<T>
      * @param resource The resource ID for a layout file containing a TextView to use when
      *                 instantiating views.
      */
-    @SuppressWarnings("unused")
-    public DiacriticArrayAdapter(@NonNull final Context context,
-                                 @LayoutRes final int resource) {
+    public ExtArrayAdapter(@NonNull final Context context,
+                           @LayoutRes final int resource) {
         this(context, resource, 0, new ArrayList<>());
     }
 
@@ -138,10 +154,9 @@ public class DiacriticArrayAdapter<T>
      *                           instantiating views.
      * @param textViewResourceId The id of the TextView within the layout resource to be populated
      */
-    @SuppressWarnings("unused")
-    public DiacriticArrayAdapter(@NonNull final Context context,
-                                 @LayoutRes final int resource,
-                                 @IdRes final int textViewResourceId) {
+    public ExtArrayAdapter(@NonNull final Context context,
+                           @LayoutRes final int resource,
+                           @IdRes final int textViewResourceId) {
         this(context, resource, textViewResourceId, new ArrayList<>());
     }
 
@@ -154,10 +169,9 @@ public class DiacriticArrayAdapter<T>
      *                 instantiating views.
      * @param objects  The objects to represent in the ListView.
      */
-    @SuppressWarnings("unused")
-    public DiacriticArrayAdapter(@NonNull final Context context,
-                                 @LayoutRes final int resource,
-                                 @NonNull final T[] objects) {
+    public ExtArrayAdapter(@NonNull final Context context,
+                           @LayoutRes final int resource,
+                           @NonNull final T[] objects) {
         this(context, resource, 0, Arrays.asList(objects));
     }
 
@@ -171,11 +185,10 @@ public class DiacriticArrayAdapter<T>
      * @param textViewResourceId The id of the TextView within the layout resource to be populated
      * @param objects            The objects to represent in the ListView.
      */
-    @SuppressWarnings("unused")
-    public DiacriticArrayAdapter(@NonNull final Context context,
-                                 @LayoutRes final int resource,
-                                 @IdRes final int textViewResourceId,
-                                 @NonNull final T[] objects) {
+    public ExtArrayAdapter(@NonNull final Context context,
+                           @LayoutRes final int resource,
+                           @IdRes final int textViewResourceId,
+                           @NonNull final T[] objects) {
         this(context, resource, textViewResourceId, Arrays.asList(objects));
     }
 
@@ -187,10 +200,27 @@ public class DiacriticArrayAdapter<T>
      *                 instantiating views.
      * @param objects  The objects to represent in the ListView.
      */
-    public DiacriticArrayAdapter(@NonNull final Context context,
-                                 @LayoutRes final int resource,
-                                 @NonNull final List<T> objects) {
+    public ExtArrayAdapter(@NonNull final Context context,
+                           @LayoutRes final int resource,
+                           @NonNull final List<T> objects) {
         this(context, resource, 0, objects);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param context    The current context.
+     * @param resource   The resource ID for a layout file containing a TextView to use when
+     *                   instantiating views.
+     * @param filterType to use
+     * @param objects    The objects to represent in the ListView.
+     */
+    public ExtArrayAdapter(@NonNull final Context context,
+                           @LayoutRes final int resource,
+                           @NonNull final FilterType filterType,
+                           @NonNull final List<T> objects) {
+        this(context, resource, 0, objects);
+        mFilterType = filterType;
     }
 
     /**
@@ -202,44 +232,45 @@ public class DiacriticArrayAdapter<T>
      * @param textViewResourceId The id of the TextView within the layout resource to be populated
      * @param objects            The objects to represent in the ListView.
      */
-    protected DiacriticArrayAdapter(@NonNull final Context context,
-                                    @LayoutRes final int resource,
-                                    @IdRes final int textViewResourceId,
-                                    @NonNull final List<T> objects) {
+    public ExtArrayAdapter(@NonNull final Context context,
+                           @LayoutRes final int resource,
+                           @IdRes final int textViewResourceId,
+                           @NonNull final List<T> objects) {
         this(context, resource, textViewResourceId, objects, false);
     }
 
-    private DiacriticArrayAdapter(@NonNull final Context context,
-                                  @LayoutRes final int resource,
-                                  @IdRes final int textViewResourceId,
-                                  @NonNull final List<T> objects,
-                                  final boolean objectsFromResources) {
+    private ExtArrayAdapter(@NonNull final Context context,
+                            @LayoutRes final int resource,
+                            @IdRes final int textViewResourceId,
+                            @NonNull final List<T> objects,
+                            final boolean objectsFromResources) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
-        mResource = mDropDownResource = resource;
+        mResource = resource;
+        mDropDownResource = resource;
         mObjects = objects;
         mObjectsFromResources = objectsFromResources;
         mFieldId = textViewResourceId;
     }
 
     /**
-     * Creates a new DiacriticArrayAdapter from external resources. The content of the array is
+     * Creates a new ExtArrayAdapter from external resources. The content of the array is
      * obtained through {@link android.content.res.Resources#getTextArray(int)}.
      *
      * @param context        The application's environment.
      * @param textArrayResId The identifier of the array to use as the data source.
      * @param textViewResId  The identifier of the layout used to create views.
      *
-     * @return a DiacriticArrayAdapter&lt;CharSequence&gt;.
+     * @return An ExtArrayAdapter<CharSequence>.
      */
-    @SuppressWarnings({"WeakerAccess", "unused"})
+    @SuppressWarnings("WeakerAccess")
     @NonNull
-    public static DiacriticArrayAdapter<CharSequence> createFromResource(
+    public static ExtArrayAdapter<CharSequence> createFromResource(
             @NonNull final Context context,
             @ArrayRes final int textArrayResId,
             @LayoutRes final int textViewResId) {
         final CharSequence[] strings = context.getResources().getTextArray(textArrayResId);
-        return new DiacriticArrayAdapter<>(context, textViewResId, 0, Arrays.asList(strings), true);
+        return new ExtArrayAdapter<>(context, textViewResId, 0, Arrays.asList(strings), true);
     }
 
     /**
@@ -272,13 +303,11 @@ public class DiacriticArrayAdapter<T>
      *                                       is not supported by this list
      * @throws ClassCastException            if the class of an element of the specified
      *                                       collection prevents it from being added to this list
-     * @throws NullPointerException          if the specified collection contains one
-     *                                       or more null elements and this list does not permit
-     *                                       null
+     * @throws NullPointerException          if the specified collection contains one or more
+     *                                       null elements and this list does not permit null
      *                                       elements, or if the specified collection is null
-     * @throws IllegalArgumentException      if some property of an element of the
-     *                                       specified collection prevents it from being added to
-     *                                       this list
+     * @throws IllegalArgumentException      if some property of an element of the specified
+     *                                       collection prevents it from being added to this list
      */
     public void addAll(@NonNull final Collection<? extends T> collection) {
         synchronized (mLock) {
@@ -301,8 +330,7 @@ public class DiacriticArrayAdapter<T>
      *
      * @throws UnsupportedOperationException if the underlying data collection is immutable
      */
-    @SuppressWarnings("unchecked")
-    public void addAll(@NonNull final T... items) {
+    public void addAll(final T... items) {
         synchronized (mLock) {
             if (mOriginalValues != null) {
                 Collections.addAll(mOriginalValues, items);
@@ -418,7 +446,6 @@ public class DiacriticArrayAdapter<T>
      *                       automatically call {@link
      *                       #notifyDataSetChanged}
      */
-    @SuppressWarnings("unused")
     public void setNotifyOnChange(final boolean notifyOnChange) {
         mNotifyOnChange = notifyOnChange;
     }
@@ -430,7 +457,7 @@ public class DiacriticArrayAdapter<T>
      * @return The Context associated with this adapter.
      */
     @NonNull
-    protected Context getContext() {
+    public Context getContext() {
         return mContext;
     }
 
@@ -439,8 +466,8 @@ public class DiacriticArrayAdapter<T>
         return mObjects.size();
     }
 
-    @Nullable
     @Override
+    @Nullable
     public T getItem(final int position) {
         return mObjects.get(position);
     }
@@ -452,7 +479,6 @@ public class DiacriticArrayAdapter<T>
      *
      * @return The position of the specified item.
      */
-    @SuppressWarnings("unused")
     public int getPosition(@Nullable final T item) {
         return mObjects.indexOf(item);
     }
@@ -463,56 +489,72 @@ public class DiacriticArrayAdapter<T>
     }
 
     @NonNull
-    @Override
-    public View getView(final int position,
-                        @Nullable final View convertView,
-                        @NonNull final ViewGroup parent) {
-        return createViewFromResource(mInflater, position, convertView, parent, mResource);
-    }
-
-    @NonNull
     private View createViewFromResource(@NonNull final LayoutInflater inflater,
-                                        final int position,
                                         @Nullable final View convertView,
                                         @NonNull final ViewGroup parent,
                                         final int resource) {
         final View view;
-        final TextView text;
-
         if (convertView == null) {
             view = inflater.inflate(resource, parent, false);
         } else {
             view = convertView;
         }
+        return view;
+    }
 
+    @NonNull
+    private TextView findTextView(@NonNull final View view) {
+        final TextView textView;
         try {
             if (mFieldId == 0) {
                 //  If no custom field is assigned, assume the whole resource is a TextView
-                text = (TextView) view;
+                textView = (TextView) view;
             } else {
                 //  Otherwise, find the TextView field within the layout
-                text = view.findViewById(mFieldId);
+                textView = view.findViewById(mFieldId);
 
-                if (text == null) {
+                if (textView == null) {
                     throw new RuntimeException("Failed to find view with ID "
                                                + mContext.getResources().getResourceName(mFieldId)
                                                + " in item layout");
                 }
             }
         } catch (@NonNull final ClassCastException e) {
-            Log.e("DiacriticArrayAdapter", "You must supply a resource ID for a TextView");
+            Log.e("ExtArrayAdapter", "You must supply a resource ID for a TextView");
             throw new IllegalStateException(
-                    "DiacriticArrayAdapter requires the resource ID to be a TextView", e);
+                    "ExtArrayAdapter requires the resource ID to be a TextView", e);
         }
+        return textView;
+    }
+
+    /**
+     * Override to provide a custom string conversion instead of the default toString().
+     *
+     * @param item to convert
+     *
+     * @return stringified item
+     */
+    @NonNull
+    protected CharSequence getItemText(@Nullable final T item) {
+        if (item instanceof CharSequence) {
+            return (CharSequence) item;
+        } else if (item != null) {
+            return item.toString();
+        } else {
+            return "";
+        }
+    }
+
+    @Override
+    @NonNull
+    public View getView(final int position,
+                        @Nullable final View convertView,
+                        @NonNull final ViewGroup parent) {
+        final View view = createViewFromResource(mInflater, convertView, parent, mResource);
+        final TextView textView = findTextView(view);
 
         final T item = getItem(position);
-        if (item instanceof CharSequence) {
-            text.setText((CharSequence) item);
-        } else if (item != null) {
-            text.setText(item.toString());
-        } else {
-            text.setText("");
-        }
+        textView.setText(getItemText(item));
 
         return view;
     }
@@ -524,14 +566,14 @@ public class DiacriticArrayAdapter<T>
      *
      * @see #getDropDownView(int, android.view.View, android.view.ViewGroup)
      */
-    @SuppressWarnings("unused")
     public void setDropDownViewResource(@LayoutRes final int resource) {
         this.mDropDownResource = resource;
     }
 
-    @Nullable
     @Override
+    @Nullable
     public Resources.Theme getDropDownViewTheme() {
+        //noinspection ReturnOfInnerClass
         return mDropDownInflater == null ? null : mDropDownInflater.getContext().getTheme();
     }
 
@@ -560,30 +602,52 @@ public class DiacriticArrayAdapter<T>
     }
 
     @Override
-    @NonNull
     public View getDropDownView(final int position,
                                 @Nullable final View convertView,
                                 @NonNull final ViewGroup parent) {
         final LayoutInflater inflater = mDropDownInflater == null ? mInflater : mDropDownInflater;
-        return createViewFromResource(inflater, position, convertView, parent, mDropDownResource);
+        final View view = createViewFromResource(inflater, convertView, parent, mDropDownResource);
+        final TextView textView = findTextView(view);
+
+        final T item = getItem(position);
+        textView.setText(getItemText(item));
+
+        return view;
     }
 
-    @NonNull
+    public void setFilterType(@NonNull final FilterType filterType) {
+        mFilterType = filterType;
+    }
+
     @Override
+    @NonNull
     public Filter getFilter() {
         if (mFilter == null) {
-            mFilter = new ArrayFilter();
+            switch (mFilterType) {
+                case Diacritic:
+                    mFilter = new DiacriticArrayFilter();
+                    break;
+                case Passthrough:
+                    mFilter = new PassthroughFilter();
+                    break;
+
+                case Default:
+                default:
+                    mFilter = new ArrayFilter();
+                    break;
+            }
         }
         return mFilter;
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @return values from the string array used by {@link #createFromResource(Context, int, int)},
      * or {@code null} if object was created otherwise or if contents were dynamically changed after
      * creation.
      */
     @Override
-    @Nullable
     public CharSequence[] getAutofillOptions() {
         // First check if app developer explicitly set them.
         final CharSequence[] explicitOptions = super.getAutofillOptions();
@@ -592,70 +656,126 @@ public class DiacriticArrayAdapter<T>
         }
 
         // Otherwise, only return options that came from static resources.
-        if (!mObjectsFromResources || mObjects == null || mObjects.isEmpty()) {
+        if (!mObjectsFromResources || mObjects.isEmpty()) {
             return null;
         }
-        final int size = mObjects.size();
-        final CharSequence[] options = new CharSequence[size];
-        //noinspection SuspiciousToArrayCall
-        mObjects.toArray(options);
-        return options;
+
+        return mObjects.stream()
+                       .map(this::getItemText)
+                       .toArray(CharSequence[]::new);
+    }
+
+    /** Builtin Filters. */
+    public enum FilterType {
+        Default, Diacritic, Passthrough
     }
 
     /**
+     * The original.
+     *
      * <p>An array filter constrains the content of the array adapter with
      * a prefix. Each item that does not start with the supplied prefix
      * is removed from the list.</p>
      */
     private class ArrayFilter
-            extends Filter {
+            extends AbstractArrayFilter {
+
+        @Override
+        protected FilterResults performFiltering(@Nullable final CharSequence prefix) {
+            final ArrayList<T> values;
+            synchronized (mLock) {
+                if (mOriginalValues == null) {
+                    mOriginalValues = new ArrayList<>(mObjects);
+                }
+                values = new ArrayList<>(mOriginalValues);
+            }
+
+            final FilterResults results = new FilterResults();
+
+            if (prefix == null || prefix.length() == 0) {
+                results.values = values;
+                results.count = values.size();
+            } else {
+                final String prefixString = prefix.toString().toLowerCase(Locale.getDefault());
+
+                final int count = values.size();
+                final List<T> newValues = new ArrayList<>();
+
+                for (int i = 0; i < count; i++) {
+                    final T value = values.get(i);
+                    final String valueText = getItemText(value)
+                            .toString().toLowerCase(Locale.getDefault());
+
+                    // First match against the whole, non-split value
+                    if (valueText.startsWith(prefixString)) {
+                        newValues.add(value);
+                    } else {
+                        final String[] words = valueText.split(" ");
+                        for (final String word : words) {
+                            if (word.startsWith(prefixString)) {
+                                newValues.add(value);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                results.values = newValues;
+                results.count = newValues.size();
+            }
+
+            return results;
+        }
+    }
+
+    /**
+     * This versions also filters on Diacritic characters.
+     *
+     * <p>An array filter constrains the content of the array adapter with
+     * a prefix. Each item that does not start with the supplied prefix
+     * is removed from the list.</p>
+     */
+    protected class DiacriticArrayFilter
+            extends AbstractArrayFilter {
 
         private final Pattern DIACRITICS_PATTERN = Pattern.compile("[^\\p{ASCII}]");
 
         @Override
         protected FilterResults performFiltering(@Nullable final CharSequence prefix) {
-            final FilterResults results = new FilterResults();
-
-            if (mOriginalValues == null) {
-                synchronized (mLock) {
+            final ArrayList<T> values;
+            synchronized (mLock) {
+                if (mOriginalValues == null) {
                     mOriginalValues = new ArrayList<>(mObjects);
                 }
+                values = new ArrayList<>(mOriginalValues);
             }
 
+            final FilterResults results = new FilterResults();
+
             if (prefix == null || prefix.length() == 0) {
-                final ArrayList<T> list;
-                synchronized (mLock) {
-                    list = new ArrayList<>(mOriginalValues);
-                }
-                results.values = list;
-                results.count = list.size();
+                results.values = values;
+                results.count = values.size();
             } else {
                 final String prefixString = prefix.toString().toLowerCase(Locale.getDefault());
-
-                final ArrayList<T> values;
-                synchronized (mLock) {
-                    values = new ArrayList<>(mOriginalValues);
-                }
+                final String ndPrefixString = toAsciiLowerCase(prefixString);
 
                 final int count = values.size();
                 final Collection<T> newValues = new ArrayList<>();
 
                 for (int i = 0; i < count; i++) {
                     final T value = values.get(i);
-                    final String valueText = value.toString().toLowerCase(Locale.getDefault());
-
-                    final String valueTextNoDiacritics = filterDiacritics(valueText);
-                    final String prefixStringNoDiacritics = filterDiacritics(prefixString);
+                    final String valueText = getItemText(value)
+                            .toString().toLowerCase(Locale.getDefault());
 
                     // First match against the whole, non-split value
                     if (valueText.startsWith(prefixString)
-                        || valueTextNoDiacritics.startsWith(prefixStringNoDiacritics)) {
+                        || toAsciiLowerCase(valueText).startsWith(ndPrefixString)) {
                         newValues.add(value);
                     } else {
                         final String[] words = valueText.split(" ");
                         for (final String word : words) {
                             if (word.startsWith(prefixString)
-                                || valueTextNoDiacritics.startsWith(prefixStringNoDiacritics)) {
+                                || toAsciiLowerCase(word).startsWith(ndPrefixString)) {
                                 newValues.add(value);
                                 break;
                             }
@@ -671,20 +791,52 @@ public class DiacriticArrayAdapter<T>
         }
 
         /**
-         * Normalize a given string to contain only ASCII characters.
+         * Normalize a given string to contain only lower case ASCII characters.
          *
          * @param text to normalize
          *
          * @return ascii text
          */
-        private String filterDiacritics(@NonNull final CharSequence text) {
+        private String toAsciiLowerCase(@NonNull final CharSequence text) {
             return DIACRITICS_PATTERN.matcher(Normalizer.normalize(text, Normalizer.Form.NFD))
                                      .replaceAll("")
                                      .toLowerCase(Locale.getDefault());
         }
+    }
+
+    private class PassthroughFilter
+            extends AbstractArrayFilter {
 
         @Override
-        protected void publishResults(final CharSequence constraint,
+        @NonNull
+        protected FilterResults performFiltering(@Nullable final CharSequence constraint) {
+            // Mimic other filter behaviour for maximum compatibility
+            final ArrayList<T> values;
+            synchronized (mLock) {
+                if (mOriginalValues == null) {
+                    mOriginalValues = new ArrayList<>(mObjects);
+                }
+                values = new ArrayList<>(mOriginalValues);
+            }
+
+            final FilterResults results = new FilterResults();
+            results.values = values;
+            results.count = values.size();
+            return results;
+        }
+    }
+
+    private abstract class AbstractArrayFilter
+            extends Filter {
+
+        @Override
+        public CharSequence convertResultToString(@Nullable final Object resultValue) {
+            //noinspection unchecked
+            return getItemText((T) resultValue);
+        }
+
+        @Override
+        protected void publishResults(@Nullable final CharSequence constraint,
                                       @NonNull final FilterResults results) {
             //noinspection unchecked
             mObjects = (List<T>) results.values;
@@ -696,3 +848,4 @@ public class DiacriticArrayAdapter<T>
         }
     }
 }
+

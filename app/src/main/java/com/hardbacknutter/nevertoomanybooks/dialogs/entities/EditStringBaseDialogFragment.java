@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
  * Base Dialog class to edit an <strong>in-line in Books table</strong> String field.
@@ -129,8 +129,9 @@ public abstract class EditStringBaseDialogFragment
         final List<String> objects = getList();
         if (objects != null) {
             //noinspection ConstantConditions
-            final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
-                    getContext(), R.layout.dropdown_menu_popup_item, objects);
+            final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
+                    getContext(), R.layout.dropdown_menu_popup_item,
+                    ExtArrayAdapter.FilterType.Diacritic, objects);
             mVb.editString.setAdapter(adapter);
         }
     }

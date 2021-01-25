@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
-import com.hardbacknutter.nevertoomanybooks.widgets.DiacriticArrayAdapter;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
  * Dialog to edit an <strong>EXISTING or NEW</strong> {@link Publisher}.
@@ -121,8 +121,9 @@ public class EditPublisherDialogFragment
         mVb = DialogEditPublisherBinding.bind(view);
 
         //noinspection ConstantConditions
-        final DiacriticArrayAdapter<String> adapter = new DiacriticArrayAdapter<>(
-                getContext(), R.layout.dropdown_menu_popup_item, mDb.getPublisherNames());
+        final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
+                getContext(), R.layout.dropdown_menu_popup_item,
+                ExtArrayAdapter.FilterType.Diacritic, mDb.getPublisherNames());
         mVb.publisher.setText(mName);
         mVb.publisher.setAdapter(adapter);
     }
