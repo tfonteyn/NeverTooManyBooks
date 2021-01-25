@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -86,7 +86,7 @@ public class Bookshelf
      * Storing the name and not the id. If you export/import... the id will be different.
      */
     private static final String PREF_BOOKSHELF_CURRENT = "Bookshelf.CurrentBookshelf";
-    /** Bookshelf id. */
+    /** Row ID. */
     private long mId;
     /** Bookshelf name. */
     @NonNull
@@ -118,21 +118,6 @@ public class Bookshelf
      */
     public Bookshelf(@NonNull final String name,
                      @NonNull final ListStyle style) {
-        mName = name.trim();
-        mStyleUuid = style.getUuid();
-    }
-
-    /**
-     * Full Constructor for {@link PredefinedBookshelf} instances.
-     *
-     * @param id    the Bookshelf id; one of {@link PredefinedBookshelf}
-     * @param name  for the Bookshelf
-     * @param style the style to apply to this shelf
-     */
-    private Bookshelf(@PredefinedBookshelf final long id,
-                      @NonNull final String name,
-                      @NonNull final ListStyle style) {
-        mId = id;
         mName = name.trim();
         mStyleUuid = style.getUuid();
     }
@@ -208,12 +193,16 @@ public class Bookshelf
                                          @NonNull final DAO db,
                                          final long id) {
         if (id == ALL_BOOKS) {
-            return new Bookshelf(ALL_BOOKS, context.getString(R.string.bookshelf_all_books),
-                                 StyleDAO.getDefault(context, db));
+            final Bookshelf bookshelf = new Bookshelf(context.getString(
+                    R.string.bookshelf_all_books), StyleDAO.getDefault(context, db));
+            bookshelf.setId(ALL_BOOKS);
+            return bookshelf;
 
         } else if (id == DEFAULT) {
-            return new Bookshelf(DEFAULT, context.getString(R.string.bookshelf_my_books),
-                                 StyleDAO.getDefault(context, db));
+            final Bookshelf bookshelf = new Bookshelf(context.getString(
+                    R.string.bookshelf_my_books), StyleDAO.getDefault(context, db));
+            bookshelf.setId(DEFAULT);
+            return bookshelf;
 
         } else if (id == PREFERRED) {
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
