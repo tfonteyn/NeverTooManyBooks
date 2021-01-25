@@ -31,9 +31,9 @@ import java.net.URL;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * Dedicated 403 HTTP_FORBIDDEN providing a user readable/localized message.
+ * Dedicated 401 HTTP_UNAUTHORIZED providing a user readable/localized message.
  * <p>
- * This could be due to Authentication and/or Authorization (e.g. Goodreads OAuth, Calibre write).
+ * This could be due to Authentication and/or Authorization (e.g. Goodreads OAuth, Calibre).
  * Maybe this should be split in two classes.
  */
 public class CredentialsException
