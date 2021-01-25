@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,6 +43,7 @@ public class TQEvent
     private static final long serialVersionUID = -8207960724623016221L;
     @NonNull
     private final String mDescription;
+    /** Row ID. */
     private long mId;
 
     /**

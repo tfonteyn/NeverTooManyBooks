@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -59,7 +59,6 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * API 26   3.18.2
  * API 25   3.9.2
  * API 24   3.9.2
- * API 23   3.8.10.2
  * <p>
  * But some device manufacturers include different versions of SQLite on their devices.
  */
