@@ -124,7 +124,7 @@ public class Filters {
         // this and related code all works fine, but is clashing with how
         // a single bookshelf is the 'main' in the BoB view.
         // i.e.
-        // - selection of a bookshelf versus 'all books' in the BoB spinner
+        // - selection of a bookshelf versus 'all books' in the BoB toolbar
         // and the use of it as a single item filter
         // - bookshelves as groups in the BoB builder
         // - this new filtering on multiple bookshelves

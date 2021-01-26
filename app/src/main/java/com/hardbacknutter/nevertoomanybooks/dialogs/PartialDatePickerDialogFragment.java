@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 /**
  * DialogFragment class to allow for selection of partial dates from 0AD to 9999AD.
  * <p>
- * Seems reasonable to disable relevant spinners if one is invalid, but it's actually
+ * Seems reasonable to disable relevant day/month pickers if one is invalid, but it's actually
  * not very friendly when entering data for new books so we don't.
  * So for instance, if a day/month/year are set, and the user select "--" (unset) the month,
  * we leave the day setting unchanged.
@@ -192,7 +192,7 @@ public class PartialDatePickerDialogFragment
         mDayPicker = view.findViewById(R.id.day);
         // 0: 'not set'
         mDayPicker.setMinValue(0);
-        // Make sure that the spinner can initially take any 'day' value. Otherwise,
+        // Make sure that the picker can initially take any 'day' value. Otherwise,
         // when a dialog is reconstructed after rotation, the 'day' field will not be
         // restored by Android.
         mDayPicker.setMaxValue(31);

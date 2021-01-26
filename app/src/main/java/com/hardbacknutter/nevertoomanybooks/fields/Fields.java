@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  * <ul>Features provides are:
  *      <li>Handling of visibility via preferences / 'mIsUsedKey' property of a field.</li>
  *      <li>Understanding of kinds of views (setting a Checkbox (Checkable) value to 'true'
- *          will work as expected as will setting the value of a Spinner).
+ *          will work as expected as will setting the value of an ExposedDropDownMenu).
  *          As new view types are added, it will be necessary to add new {@link FieldViewAccessor}
  *          implementations.
  *          In some specific circumstances, an accessor can be defined manually.</li>
