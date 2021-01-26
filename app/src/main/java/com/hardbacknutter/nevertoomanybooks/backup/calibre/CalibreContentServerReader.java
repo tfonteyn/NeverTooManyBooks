@@ -84,10 +84,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 public class CalibreContentServerReader
         implements ArchiveReader {
 
-    /** Custom field for {@link ArchiveMetaData}. */
-    public static final String BKEY_LIBRARY = TAG + ":lib";
     /** Log tag. */
     private static final String TAG = "CalibreServerReader";
+
+    /** Custom field for {@link ArchiveMetaData}. */
+    public static final String BKEY_LIBRARY = TAG + ":lib";
+
     /** Custom field for {@link ArchiveMetaData}. */
     public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
     /** Custom field for {@link ArchiveMetaData}. */
