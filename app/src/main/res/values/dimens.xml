@@ -82,7 +82,7 @@
 
 
     <!-- The content padding used for the CardView content displaying a Book. -->
-    <dimen name="bob_book_card_padding">2dp</dimen>
+    <dimen name="bob_book_card_padding">4dp</dimen>
     <!-- top margin for the top-level rows; also known as "fat_finger_spacer" -->
     <dimen name="bob_row_level_1_top_margin">4dp</dimen>
     <!-- indent multiplier for the levels in the booklist:
