@@ -191,6 +191,11 @@ public class CalibreLibraryMappingFragment
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
             final CalibreLibrary library = mVm.getLibrary(position);
+            if (library.isVirtual()) {
+                holder.mVb.lblLibraryName.setHint(R.string.lbl_virtual_library);
+            } else {
+                holder.mVb.lblLibraryName.setHint(R.string.lbl_library);
+            }
             holder.mVb.libraryName.setText(library.getName());
             holder.mVb.bookshelf.setText(library.getMappedBookshelf().getName(), false);
             holder.mVb.btnCreate.setEnabled(!mVm.isLibraryNameAnExistingBookshelfName(position));
