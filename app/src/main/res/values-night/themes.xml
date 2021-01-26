@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,28 +21,28 @@
 
 <resources>
 
+    <!-- Top level Theme to be used in AndroidManifest.xml-->
     <style name="Theme.App" parent="Base.Theme.App">
         <!-- ====================================== -->
         <!-- Material color attributes (dark theme) -->
         <!-- ====================================== -->
         <item name="colorPrimary">@color/night_primary</item>
         <item name="colorPrimaryVariant">@color/night_primary_variant</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/night_on_primary</item>
 
         <item name="colorSecondary">@color/night_secondary</item>
         <item name="colorSecondaryVariant">@color/night_secondary_variant</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/night_on_secondary</item>
 
         <!--    <item name="colorSurface">#121212</item>-->
         <!--    <item name="colorOnSurface">@color/white</item>-->
 
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
+        <!-- ====================================== -->
+        <!-- Application specific (dark theme) -->
+        <!-- ====================================== -->
         <item name="appPreferenceAlertColor">@color/red_500</item>
-
-        <!-- the default colorSurface #121212 -->
-        <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
+        <!-- the default colorSurface #121212 works fine in night. -->
+        <item name="appCardBackgroundColor">?attr/colorSurface</item>
 
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_800</item>
@@ -51,11 +51,9 @@
     </style>
 
     <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
-        <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
     </style>
 
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
-        <item name="appBookCardBackgroundColor">?attr/colorSurface</item>
     </style>
 
 </resources>

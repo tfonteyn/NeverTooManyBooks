@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,8 +26,8 @@
     <attr name="appChipFilterStyle" format="reference" />
     <attr name="appChipQueueStyle" format="reference" />
 
-    <!-- The card "cardBackgroundColor" for a book on the BoB screen. -->
-    <attr name="appBookCardBackgroundColor" format="reference|color" />
+    <!-- The CardView -->
+    <attr name="appCardBackgroundColor" format="reference|color" />
 
     <!-- Color gradient used in the Navigation side bar. -->
     <attr name="appNavBarColorStart" format="reference|color" />

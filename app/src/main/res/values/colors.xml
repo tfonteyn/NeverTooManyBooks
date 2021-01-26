@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,20 +21,25 @@
 
 <resources>
 
-    <!-- the theme colors. -->
+    <!-- ########## the theme colors. ########## -->
     <color name="day_primary">@color/blue_grey_400</color>
     <color name="day_primary_variant">@color/blue_grey_200</color>
+    <color name="day_on_primary">@color/black</color>
 
     <color name="day_secondary">@color/cyan_400</color>
     <color name="day_secondary_variant">@color/cyan_200</color>
+    <color name="day_on_secondary">@color/black</color>
 
     <color name="night_primary">@color/blue_grey_300</color>
     <color name="night_primary_variant">@color/blue_grey_400</color>
+    <color name="night_on_primary">@color/white</color>
 
     <color name="night_secondary">@color/cyan_300</color>
     <color name="night_secondary_variant">@color/cyan_400</color>
+    <color name="night_on_secondary">@color/black</color>
 
-    <!-- These are not themed. -->
+
+    <!-- ########## custom colors, same color is used in day and night. ########## -->
     <color name="cropper_focus">@color/grey_600</color>
     <color name="cropper_outline_rectangle">@color/orange_600</color>
 </resources>

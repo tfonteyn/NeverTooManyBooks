@@ -188,8 +188,6 @@
         <item name="iconPadding">0dp</item>
     </style>
 
-    <!-- parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense" -->
-    <!-- parent="Widget.MaterialComponents.TextInputLayout.FilledBox.Dense" -->
     <style name="Envelope.EditText"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
@@ -289,7 +287,6 @@
         <item name="android:completionThreshold">1</item>
         <item name="android:singleLine">true</item>
     </style>
-
 
     <style name="EditText.Isbn">
         <item name="android:digits">1234567890xX</item>
@@ -523,14 +520,13 @@
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
     </style>
 
-
     <!-- The content container (MaterialCardView) for a book in the booklist. -->
     <style name="BoB.BookContainer" parent="Widget.MaterialComponents.CardView">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_margin">@dimen/border2</item>
         <item name="contentPadding">@dimen/bob_book_card_padding</item>
-        <item name="cardBackgroundColor">?attr/appBookCardBackgroundColor</item>
+        <item name="cardBackgroundColor">?attr/appCardBackgroundColor</item>
     </style>
 
     <!-- A book in the booklist; direct child of the BookContainer. -->
@@ -694,6 +690,13 @@
         <item name="tabMode">scrollable</item>
     </style>
 
+    <style name="TopNestedScroller">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:fillViewport">true</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
     <!-- A button in a list of action-options. -->
     <style name="MenuButton" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:layout_width">@dimen/large_menu_button</item>
@@ -707,9 +710,17 @@
     </style>
 
     <style name="ExposedDropdownMenu"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- make the drop down arrow better visible. -->
+        <item name="endIconTint">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="ExposedDropdownMenu.Dense"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">?attr/listPreferredItemHeight</item>
+        <item name="android:layout_height">wrap_content</item>
         <!-- make the drop down arrow better visible. -->
         <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
@@ -725,21 +736,6 @@
 
     <!-- *************************************************************************************** -->
 
-    <style name="App.TextAppearance.Body1" parent="TextAppearance.MaterialComponents.Body1">
-        <!-- text size: 16sp -->
-        <!--Your custom type style here-->
-    </style>
 
-    <style name="App.TextAppearance.Body2" parent="TextAppearance.MaterialComponents.Body2">
-        <!-- text size: 14sp -->
-        <!--Your custom type style here-->
-    </style>
-
-    <style name="TopNestedScroller">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:fillViewport">true</item>
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-    </style>
 
 </resources>

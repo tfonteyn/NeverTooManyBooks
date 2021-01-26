@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -46,11 +46,11 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorPrimaryVariant">@color/day_primary_variant</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/day_on_primary</item>
 
         <item name="colorSecondary">@color/day_secondary</item>
         <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/day_on_secondary</item>
 
         <!--  <item name="colorSurface">@color/white</item>-->
         <!--  <item name="colorOnSurface">@color/black</item>-->
@@ -62,19 +62,31 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!-- framework - The color applied to control highlights (e.g. ripples, list selectors). -->
         <!--  <item name="colorControlHighlight">DEFAULT</item>-->
 
-        <!-- ==================== -->
-        <!-- Application specific -->
-        <!-- ==================== -->
+        <!-- ======================================= -->
+        <!-- Application specific (light theme) -->
+        <!-- ======================================= -->
         <item name="appPreferenceAlertColor">@color/red_400</item>
-
-        <!-- the default colorSurface is "too white". -->
-        <item name="appBookCardBackgroundColor">@color/grey_50</item>
+        <!-- the default colorSurface is "too white". And grey_50 (#FAFAFA) is just to dark...-->
+        <item name="appCardBackgroundColor">#FDFDFD</item>
 
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_500</item>
         <item name="appNavBarColorCenter">@color/blue_grey_300</item>
         <item name="appNavBarColorEnd">@color/blue_grey_50</item>
     </style>
+
+    <!-- Top level Theme for the startup activity so it looks like a dialog as intended. -->
+    <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
+
+        <item name="colorPrimary">@color/day_primary</item>
+        <item name="colorPrimaryVariant">@color/day_primary_variant</item>
+        <item name="colorOnPrimary">@color/day_on_primary</item>
+
+        <item name="colorSecondary">@color/day_secondary</item>
+        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
+        <item name="colorOnSecondary">@color/day_on_secondary</item>
+    </style>
+
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
@@ -88,41 +100,26 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="materialCalendarFullscreenTheme">@style/ThemeOverlay.App.MaterialCalendar</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
-        <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
-        <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>
     </style>
 
-    <!-- Specific Theme for the startup activity so it looks like a dialog as intended. -->
-    <style name="Theme.App.Startup" parent="Base.Theme.App.Startup">
-
-        <item name="colorPrimary">@color/day_primary</item>
-        <item name="colorPrimaryVariant">@color/day_primary_variant</item>
-        <item name="colorOnPrimary">@color/black</item>
-
-        <item name="colorSecondary">@color/day_secondary</item>
-        <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
-        <item name="colorOnSecondary">@color/black</item>
-    </style>
 
     <!-- Base theme used by both Day and Night themes. -->
     <style name="Base.Theme.App.Startup" parent="Theme.MaterialComponents.DayNight.Dialog">
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
 
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
-        <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
-        <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
-        <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>
     </style>
+
 
     <!-- custom ThemeOverlay used by the "materialAlertDialogTheme" attribute. -->
     <style name="ThemeOverlay.App.MaterialAlertDialog" parent="Base.ThemeOverlay.App.MaterialAlertDialog">
         <item name="colorPrimary">@color/day_primary</item>
         <item name="colorPrimaryVariant">@color/day_primary_variant</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/day_on_primary</item>
 
         <item name="colorSecondary">@color/day_secondary</item>
         <item name="colorSecondaryVariant">@color/day_secondary_variant</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorOnSecondary">@color/day_on_secondary</item>
     </style>
 
     <!-- Base theme used by both Day and Night themes. -->
@@ -133,8 +130,6 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
 
         <item name="materialAlertDialogTheme">@style/ThemeOverlay.App.MaterialAlertDialog</item>
         <item name="snackbarTextViewStyle">@style/App.SnackbarTextView</item>
-        <item name="textAppearanceBody1">@style/App.TextAppearance.Body1</item>
-        <item name="textAppearanceBody2">@style/App.TextAppearance.Body2</item>
     </style>
 
     <!-- custom ThemeOverlay used by the "materialCalendarFullscreenTheme" attribute. -->
