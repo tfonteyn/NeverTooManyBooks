@@ -104,5 +104,10 @@
     {"name": "Cut"},
     {"name": "Copy"},
     {"name": "Paste"}
+  ],
+  "export_format": [
+    {"name": "Backup (.zip)"},
+    {"name": "Books (.csv)"},
+    {"name": "XML export (.xml)"}
   ]
 }
