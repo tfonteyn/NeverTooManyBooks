@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,7 +57,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
  *         </com.google.android.material.textfield.TextInputLayout>}
  * </pre>
  */
-public class MaterialSpinnerAccessor
+public class ExposedDropDownMenuAccessor
         extends BaseDataAccessor<Integer, AutoCompleteTextView> {
 
     @NonNull
@@ -69,8 +69,8 @@ public class MaterialSpinnerAccessor
      * @param context    Current context
      * @param arrayResId to use; the array <strong>must not</strong> be empty
      */
-    public MaterialSpinnerAccessor(@NonNull final Context context,
-                                   @ArrayRes final int arrayResId) {
+    public ExposedDropDownMenuAccessor(@NonNull final Context context,
+                                       @ArrayRes final int arrayResId) {
         mAdapter = ArrayAdapter.createFromResource(context, arrayResId,
                                                    R.layout.dropdown_menu_popup_item);
         SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");
@@ -80,8 +80,6 @@ public class MaterialSpinnerAccessor
     public void setView(@NonNull final AutoCompleteTextView view) {
         super.setView(view);
         view.setAdapter(mAdapter);
-        // FIXME: opening works fine, but a second click closes AND re-opens the MaterialSpinner
-        //view.setOnClickListener(v -> view.showDropDown());
         if (mIsEditable) {
             addTouchSignalsDirty(view);
         }

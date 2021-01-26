@@ -196,12 +196,12 @@
     <string name="lbl_added_year">Eklenen yıl</string>
     <string name="lbl_advanced_options">Gelişmiş</string>
     <string name="lbl_anthology">Seçmeler</string>
-    <string name="lbl_archive_type_csv">Kitaplar (%1$s)</string>
+    <string name="lbl_archive_type_csv">Kitaplar (.csv)</string>
     <string name="lbl_archive_type_csv_info">Kitapların bir CSV dosyasına aktarılması</string>
-    <string name="lbl_archive_type_backup">Yedek kopya (%1$s)</string>
+    <string name="lbl_archive_type_backup">Yedek kopya ((.zip)</string>
     <string name="lbl_archive_type_backup_info">Tam Yedekleme / Geri Yükleme arşivi</string>
-    <string name="lbl_archive_type_xml">XML dışa aktarma (%1$s)</string>
-    <string name="lbl_archive_type_json">JSON dışa aktarma (%1$s)</string>
+    <string name="lbl_archive_type_xml">XML dışa aktarma (.xml)</string>
+    <string name="lbl_archive_type_json">JSON dışa aktarma (.json)</string>
     <string name="lbl_archive_format_xml_info">Tüm veriler XML formatında.</string>
     <string name="lbl_archive_format_json_info">Tüm veriler JSON formatında.</string>
     <string name="lbl_archive_is_export_only">Bu yalnızca verileri dışa aktarmak içindir; içe aktarma desteklenmez.</string>
@@ -665,7 +665,7 @@
     <string name="action_export">İhracat</string>
     <string name="lbl_database">Veri tabanı</string>
     <string name="lbl_archive_format_db_info">SQLite veritabanı.</string>
-    <string name="lbl_archive_type_db">Veritabanı dosyası (%1$s)</string>
+    <string name="lbl_archive_type_db">Veritabanı dosyası (.db)</string>
     <string name="confirm_delete_bookshelf">Kitap rafı “%1$s” gerçekten silinsin mi? Kitapların kendileri silinmeyecektir. Diğer raflarda veya “%2$s” rafında bulunmaya devam edecekler.</string>
     <string name="system">(Sistem)</string>
     <string name="system_default">(Sistem varsayılanı)</string>

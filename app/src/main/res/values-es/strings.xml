@@ -198,13 +198,13 @@
     <string name="lbl_added_year">Año de inclusión</string>
     <string name="lbl_advanced_options">Ajustes avanzados</string>
     <string name="lbl_anthology">Antología</string>
-    <string name="lbl_archive_type_csv">Los libros (%1$s)</string>
+    <string name="lbl_archive_type_csv">Los libros (.csv)</string>
     <string name="lbl_archive_type_csv_info">Exportación de los libros a fichero CSV</string>
-    <string name="lbl_archive_type_backup">Copia de respaldo (%1$s)</string>
+    <string name="lbl_archive_type_backup">Copia de respaldo ((.zip)</string>
     <string name="lbl_archive_type_backup_info">Copia de seguridad completa / Restaurar archivo</string>
-    <string name="lbl_archive_type_xml">Exportación XML (%1$s)</string>
+    <string name="lbl_archive_type_xml">Exportación XML (.xml)</string>
     <string name="lbl_archive_format_xml_info">Todos los datos en formato XML.</string>
-    <string name="lbl_archive_type_json">Exportación JSON (%1$s)</string>
+    <string name="lbl_archive_type_json">Exportación JSON (.json)</string>
     <string name="lbl_archive_format_json_info">Todos los datos en formato JSON.</string>
     <string name="lbl_archive_is_export_only">Esto es solo para exportar datos; no se admite la importación.</string>
     <string name="lbl_author">Autor</string>
@@ -669,7 +669,7 @@
     <string name="action_export">Exportar</string>
     <string name="lbl_database">Base de datos</string>
     <string name="lbl_archive_format_db_info">La base de datos SQLite.</string>
-    <string name="lbl_archive_type_db">Archivo de base de datos (%1$s)</string>
+    <string name="lbl_archive_type_db">Archivo de base de datos (.db)</string>
     <string name="confirm_delete_bookshelf">¿Realmente eliminar la estantería «%1$s»? Los libros en sí no se eliminarán. Seguirán estando presentes en cualquier otro estante o en el estante «%2$s».</string>
     <string name="system">(Sistema)</string>
     <string name="system_default">(Predeterminados del sistema)</string>

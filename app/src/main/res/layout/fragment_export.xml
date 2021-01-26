@@ -112,32 +112,31 @@
         app:layout_constraintTop_toBottomOf="@id/cbx_covers"
         />
 
-    <TextView
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_archive_format"
-        style="@style/Text.Header"
-        android:layout_marginTop="@dimen/border2"
-        android:text="@string/lbl_archive_format"
+        style="@style/ExposedDropdownMenu"
+        android:hint="@string/lbl_archive_format"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/formatDivider"
-        />
+        >
 
-    <Spinner
-        android:id="@+id/archive_format"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
-        android:padding="@dimen/border2"
-        app:layout_constraintStart_toStartOf="@id/lbl_archive_format"
-        app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
-        tools:entries="@array/tools_spinner_title"
-        />
+        <AutoCompleteTextView
+            android:id="@+id/archive_format"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            tools:ignore="LabelFor"
+            tools:text="@sample/data.json/export_format/name"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
         android:id="@+id/archive_format_info"
         style="@style/Text.Body.Small"
         android:layout_marginStart="@dimen/field_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/archive_format"
+        app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_archive_format_xml_info"
         />

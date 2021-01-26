@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,17 +19,40 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 import androidx.lifecycle.ViewModel;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 
 public class ExportViewModel
         extends ViewModel {
 
-    private boolean mQuickOptionsAlreadyShown;
+    private static final List<ArchiveEncoding> ENCODINGS =
+            Arrays.asList(ArchiveEncoding.Zip,
+                          ArchiveEncoding.Csv,
+                          ArchiveEncoding.Json,
+                          ArchiveEncoding.Xml,
+                          ArchiveEncoding.SqLiteDb);
+
+    private static final int[] ENCODING_RES_IDS = {
+            R.string.lbl_archive_type_backup,
+            R.string.lbl_archive_type_csv,
+            R.string.lbl_archive_type_json,
+            R.string.lbl_archive_type_xml,
+            R.string.lbl_archive_type_db};
 
     /** Export configuration. */
     @NonNull
     private final ExportHelper mExportHelper = new ExportHelper();
+    private boolean mQuickOptionsAlreadyShown;
 
     @NonNull
     ExportHelper getExportHelper() {
@@ -43,5 +66,42 @@ public class ExportViewModel
     void setQuickOptionsAlreadyShown(
             @SuppressWarnings("SameParameterValue") final boolean quickOptionsAlreadyShown) {
         mQuickOptionsAlreadyShown = quickOptionsAlreadyShown;
+    }
+
+
+    /**
+     * Get the {@link ArchiveEncoding} for the given position in the dropdown menu.
+     *
+     * @param position to get
+     *
+     * @return encoding
+     */
+    @NonNull
+    ArchiveEncoding getEncoding(final int position) {
+        return ENCODINGS.get(position);
+    }
+
+    /**
+     * Get the list of options (and initial position) for the drop down menu
+     * for the archive format.
+     *
+     * @param context Current context
+     *
+     * @return initial position + list
+     */
+    @NonNull
+    Pair<Integer, ArrayList<String>> getFormatOptions(@NonNull final Context context) {
+        final ArchiveEncoding currentEncoding = mExportHelper.getEncoding();
+        int initialPos = 0;
+        final ArrayList<String> list = new ArrayList<>();
+        for (int i = 0; i < ENCODINGS.size(); i++) {
+            final ArchiveEncoding encoding = ENCODINGS.get(i);
+            if (encoding == currentEncoding) {
+                initialPos = i;
+            }
+            list.add(context.getString(ENCODING_RES_IDS[i]));
+        }
+
+        return new Pair<>(initialPos, list);
     }
 }

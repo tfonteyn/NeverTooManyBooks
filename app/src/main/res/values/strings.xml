@@ -1558,33 +1558,33 @@
     <string name="lbl_publication_year">Publication Year</string>
     <string name="lbl_publication_month">Publication Month</string>
 
-    <!-- Label for the spinner where the user selects the format of the export file/archive. -->
+    <!-- Label for the dropdown menu where the user selects the format of the export file/archive. -->
     <string name="lbl_archive_format">Format</string>
 
     <string name="lbl_archive_is_export_only">This is only for exporting data; importing is not supported.</string>
 
-    <!-- Text in a spinner dropdown. Must be fairly short. -->
-    <string name="lbl_archive_type_backup">Backup (%1$s)</string>
+    <!-- Text in a dropdown menu. Must be fairly short. -->
+    <string name="lbl_archive_type_backup">Backup (.zip)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_type_backup_info">Full Backup / Restore archive</string>
 
-    <!-- Text in a spinner dropdown. Must be fairly short. -->
-    <string name="lbl_archive_type_csv">Books (%1$s)</string>
+    <!-- Text in a dropdown menu. Must be fairly short. -->
+    <string name="lbl_archive_type_csv">Books (.csv)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_type_csv_info">Export of the books to a CSV file</string>
 
-    <!-- Text in a spinner dropdown. Must be fairly short. -->
-    <string name="lbl_archive_type_xml">XML export (%1$s)</string>
+    <!-- Text in a dropdown menu. Must be fairly short. -->
+    <string name="lbl_archive_type_xml">XML export (.xml)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_format_xml_info">All data in XML format.</string>
 
-    <!-- Text in a spinner dropdown. Must be fairly short. -->
-    <string name="lbl_archive_type_json">JSON export (%1$s)</string>
+    <!-- Text in a dropdown menu. Must be fairly short. -->
+    <string name="lbl_archive_type_json">JSON export (.json)</string>
     <!-- Explanatory note for 'lbl_archive_type_json' -->
     <string name="lbl_archive_format_json_info">All data in JSON format.</string>
 
-    <!-- Text in a spinner dropdown. Must be fairly short. -->
-    <string name="lbl_archive_type_db">Database file (%1$s)</string>
+    <!-- Text in a dropdown menu. Must be fairly short. -->
+    <string name="lbl_archive_type_db">Database file (.db)</string>
     <!-- Explanatory note for 'lbl_archive_type_xml' -->
     <string name="lbl_archive_format_db_info">The SQLite database.</string>
     <string name="lbl_database">Database</string>
@@ -1705,4 +1705,6 @@
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
     <string name="action_create">Create</string>
+    <string name="lbl_library">Library</string>
+    <string name="lbl_virtual_library">Virtual Library</string>
 </resources>

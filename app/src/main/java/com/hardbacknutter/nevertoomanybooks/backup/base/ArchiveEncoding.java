@@ -269,14 +269,13 @@ public enum ArchiveEncoding
      *
      * @return a new writer
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException             on failures
      * @throws CertificateException    on failures with secure connections
      */
     @NonNull
     public ArchiveWriter createWriter(@NonNull final Context context,
                                       @NonNull final ExportHelper helper)
-            throws GeneralParsingException, IOException, CertificateException {
+            throws IOException, CertificateException {
 
         switch (this) {
             case Zip:

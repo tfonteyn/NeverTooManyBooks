@@ -46,7 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
-import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 public class ExportHelper {
 
@@ -137,13 +136,12 @@ public class ExportHelper {
      *
      * @return a new writer
      *
-     * @throws GeneralParsingException on a decoding/parsing of data issue
-     * @throws IOException             on failures
-     * @throws CertificateException    on failures with secure connections
+     * @throws IOException          on failures
+     * @throws CertificateException on failures with secure connections
      */
     @NonNull
     public ArchiveWriter createArchiveWriter(@NonNull final Context context)
-            throws GeneralParsingException, IOException, CertificateException {
+            throws IOException, CertificateException {
 
         if (BuildConfig.DEBUG /* always */) {
             Objects.requireNonNull(mUri, "uri");

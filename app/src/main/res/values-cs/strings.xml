@@ -196,12 +196,12 @@
     <string name="lbl_added_year">Rok přidání</string>
     <string name="lbl_advanced_options">Rozšířené nastavení</string>
     <string name="lbl_anthology">Antologie</string>
-    <string name="lbl_archive_type_csv">Knihy (%1$s)</string>
+    <string name="lbl_archive_type_csv">Knihy (.csv)</string>
     <string name="lbl_archive_type_csv_info">Export knih do souboru CSV</string>
-    <string name="lbl_archive_type_backup">Záložní kopie (%1$s)</string>
+    <string name="lbl_archive_type_backup">Záložní kopie (.zip)</string>
     <string name="lbl_archive_type_backup_info">Úplný archiv zálohy / obnovy</string>
-    <string name="lbl_archive_type_xml">Export XML (%1$s)</string>
-    <string name="lbl_archive_type_json">Export JSON (%1$s)</string>
+    <string name="lbl_archive_type_xml">Export XML (.xml)</string>
+    <string name="lbl_archive_type_json">Export JSON (.json)</string>
     <string name="lbl_archive_format_xml_info">Všechna data ve formátu XML.</string>
     <string name="lbl_archive_format_json_info">Všechna data ve formátu JSON.</string>
     <string name="lbl_archive_is_export_only">Toto je pouze pro export dat; import není podporován.</string>
@@ -665,7 +665,7 @@
     <string name="action_export">Vývozní</string>
     <string name="lbl_database">Databáze</string>
     <string name="lbl_archive_format_db_info">Databáze SQLite.</string>
-    <string name="lbl_archive_type_db">Soubor databáze (%1$s)</string>
+    <string name="lbl_archive_type_db">Soubor databáze (.db)</string>
     <string name="confirm_delete_bookshelf">Opravdu odstranit polici „%1$s“? Samotné knihy nebudou smazány. Stále budou přítomny na jakýchkoli jiných policích nebo na polici „%2$s“.</string>
     <string name="system">(Systém)</string>
     <string name="system_default">(Výchozí nastavení systému)</string>

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAcc
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.CompoundButtonAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.MaterialSpinnerAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.ExposedDropDownMenuAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.RatingBarAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.DateFieldFormatter;
@@ -127,11 +127,11 @@ public class EditBookNotesFragment
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
         fields.add(R.id.condition,
-                   new MaterialSpinnerAccessor(context, R.array.conditions_book),
+                   new ExposedDropDownMenuAccessor(context, R.array.conditions_book),
                    DBDefinitions.KEY_BOOK_CONDITION)
               .setRelatedFields(R.id.lbl_condition);
         fields.add(R.id.condition_cover,
-                   new MaterialSpinnerAccessor(context, R.array.conditions_dust_cover),
+                   new ExposedDropDownMenuAccessor(context, R.array.conditions_dust_cover),
                    DBDefinitions.KEY_BOOK_CONDITION_COVER)
               .setRelatedFields(R.id.lbl_condition_cover);
 

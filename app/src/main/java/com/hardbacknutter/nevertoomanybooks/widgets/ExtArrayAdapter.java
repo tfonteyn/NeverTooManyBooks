@@ -259,10 +259,16 @@ public class ExtArrayAdapter<T>
     /**
      * Creates a new ExtArrayAdapter from external resources. The content of the array is
      * obtained through {@link android.content.res.Resources#getTextArray(int)}.
+     * <p>
+     * The method name should really be "createFromTextArray".
+     * <p>
+     * The Filter is set to {@link FilterType#Passthrough} as this is what usually is needed.
+     * Override by calling {@link #setFilterType(FilterType)}.
      *
-     * @param context        The application's environment.
+     * @param context        The current context.
      * @param textArrayResId The identifier of the array to use as the data source.
-     * @param textViewResId  The identifier of the layout used to create views.
+     * @param resource       The resource ID for a layout file containing a layout to use when
+     *                       instantiating views.
      *
      * @return An ExtArrayAdapter<CharSequence>.
      */
@@ -271,9 +277,12 @@ public class ExtArrayAdapter<T>
     public static ExtArrayAdapter<CharSequence> createFromResource(
             @NonNull final Context context,
             @ArrayRes final int textArrayResId,
-            @LayoutRes final int textViewResId) {
+            @LayoutRes final int resource) {
         final CharSequence[] strings = context.getResources().getTextArray(textArrayResId);
-        return new ExtArrayAdapter<>(context, textViewResId, 0, Arrays.asList(strings), true);
+        final ExtArrayAdapter<CharSequence> adapter = new ExtArrayAdapter<>(
+                context, resource, 0, Arrays.asList(strings), true);
+        adapter.setFilterType(FilterType.Passthrough);
+        return adapter;
     }
 
     /**

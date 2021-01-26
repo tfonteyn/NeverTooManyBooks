@@ -212,12 +212,12 @@
     <string name="lbl_archive_format">Format</string>
     <string name="lbl_archive_is_export_only">Dies dient nur zum Exportieren von Daten. Der Import wird nicht unterstützt.</string>
     <string name="lbl_archive_type_backup_info">Vollständiges Backup / Restore-Archiv</string>
-    <string name="lbl_archive_type_backup">Sicherheitskopie (%1$s)</string>
+    <string name="lbl_archive_type_backup">Sicherheitskopie ((.zip)</string>
     <string name="lbl_archive_type_csv_info">Export der Bücher in eine CSV-Datei</string>
-    <string name="lbl_archive_type_csv">Bücher (%1$s)</string>
-    <string name="lbl_archive_type_db">Datenbankdatei (%1$s)</string>
-    <string name="lbl_archive_type_xml">XML-Export (%1$s)</string>
-    <string name="lbl_archive_type_json">JSON-Export (%1$s)</string>
+    <string name="lbl_archive_type_csv">Bücher (.csv)</string>
+    <string name="lbl_archive_type_db">Datenbankdatei (.db)</string>
+    <string name="lbl_archive_type_xml">XML-Export (.xml)</string>
+    <string name="lbl_archive_type_json">JSON-Export (.json)</string>
     <string name="lbl_author_type_artist">Abbildungen</string>
     <string name="lbl_author_type_colorist">Farbe</string>
     <string name="lbl_author_type_contributor">Mitarbeiter</string>

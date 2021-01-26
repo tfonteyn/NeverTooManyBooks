@@ -31,8 +31,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -41,6 +39,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.ViewModelProvider;
@@ -72,6 +71,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class ExportFragment
         extends Fragment {
@@ -81,12 +81,12 @@ public class ExportFragment
     public static final String BKEY_ENCODING = TAG + ":encoding";
     /** The maximum file size for an export file for which we'll offer to send it as an email. */
     private static final int MAX_FILE_SIZE_FOR_EMAIL = 5_000_000;
+
     /**
      * The ViewModel and the {@link #mArchiveWriterTask} could be folded into one object,
      * but we're trying to keep task logic separate for now.
      */
     private ExportViewModel mVm;
-
     private ArchiveWriterTask mArchiveWriterTask;
     /** The launcher for picking a Uri to write to. */
     private final ActivityResultLauncher<String> mCreateDocumentLauncher =
@@ -96,8 +96,6 @@ public class ExportFragment
     private ProgressDialogFragment mProgressDialog;
     /** View Binding. */
     private FragmentExportBinding mVb;
-    /** prevent first-time {@link AdapterView.OnItemSelectedListener#onItemSelected} call. */
-    private boolean mArchiveFormatIsSet;
     @Nullable
     private ArchiveEncoding mPresetEncoding;
 
@@ -249,7 +247,6 @@ public class ExportFragment
 
             mVb.rbExportBooksOptionNewAndUpdated.setChecked(true);
 
-            // setupFormatSelection: just hide the spinner
             mVb.lblArchiveFormat.setVisibility(View.GONE);
             mVb.archiveFormat.setVisibility(View.GONE);
 
@@ -258,66 +255,39 @@ public class ExportFragment
             mVb.archiveFormatInfoLong.setText(CalibreContentServer.getHostUrl(getContext()));
 
         } else {
-            //noinspection ConstantConditions
-            getActivity().setTitle(R.string.lbl_backup);
-            helper.setEncoding(ArchiveEncoding.Zip);
-
             mVb.cbxBooks.setChecked(exportEntities.contains(RecordType.Books));
             mVb.cbxBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                helper.setExportEntry(RecordType.Books, isChecked);
+                mVm.getExportHelper().setExportEntry(RecordType.Books, isChecked);
                 mVb.rbBooksGroup.setEnabled(isChecked);
             });
-            // setup the spinner
-            setupFormatSelection();
+
+            //noinspection ConstantConditions
+            final Pair<Integer, ArrayList<String>> fo = mVm.getFormatOptions(getContext());
+            final int initialPos = fo.first;
+            final ArrayList<String> list = fo.second;
+
+            final ExtArrayAdapter<String> archiveFormatAdapter = new ExtArrayAdapter<>(
+                    getContext(), R.layout.dropdown_menu_popup_item,
+                    ExtArrayAdapter.FilterType.Passthrough, list);
+            mVb.archiveFormat.setAdapter(archiveFormatAdapter);
+            mVb.archiveFormat.setOnItemClickListener(
+                    (parent, view, position, id) -> updateFormatSelection(
+                            mVm.getEncoding(position)));
+
+            mVb.archiveFormat.setText(list.get(initialPos), false);
+            updateFormatSelection(helper.getEncoding());
         }
 
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
-    private void setupFormatSelection() {
-        // Options by position!
-        // Any changes here must be also be done in updateFromFormatSelection
-        final ArrayList<String> list = new ArrayList<>();
-        list.add(getString(R.string.lbl_archive_type_backup, ArchiveEncoding.Zip.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_csv, ArchiveEncoding.Csv.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_json, ArchiveEncoding.Json.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_xml, ArchiveEncoding.Xml.getFileExt()));
-        list.add(getString(R.string.lbl_archive_type_db, ArchiveEncoding.SqLiteDb.getFileExt()));
-
-        //noinspection ConstantConditions
-        final ArrayAdapter<String> archiveFormatAdapter =
-                new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, list);
-        archiveFormatAdapter.setDropDownViewResource(R.layout.dropdown_menu_popup_item);
-        mVb.archiveFormat.setAdapter(archiveFormatAdapter);
-        mVb.archiveFormat.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(@NonNull final AdapterView<?> parent,
-                                       @NonNull final View view,
-                                       final int position,
-                                       final long id) {
-                if (!mArchiveFormatIsSet) {
-                    mArchiveFormatIsSet = true;
-                    return;
-                }
-
-                updateFormatSelection(position);
-            }
-
-            @Override
-            public void onNothingSelected(@NonNull final AdapterView<?> parent) {
-                // Do Nothing
-            }
-        });
-
-        mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
-        mVb.archiveFormatInfoLong.setText("");
-    }
-
-    private void updateFormatSelection(final int position) {
+    private void updateFormatSelection(@NonNull final ArchiveEncoding encoding) {
 
         final ExportHelper helper = mVm.getExportHelper();
-        switch (position) {
-            case 0: {
+
+        //noinspection EnumSwitchStatementWhichMissesCases
+        switch (encoding) {
+            case Zip: {
                 //noinspection ConstantConditions
                 getActivity().setTitle(R.string.lbl_backup);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_backup_info);
@@ -337,7 +307,7 @@ public class ExportFragment
                 mVb.cbxCovers.setEnabled(true);
                 break;
             }
-            case 1: {
+            case Csv: {
                 //noinspection ConstantConditions
                 getActivity().setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_type_csv_info);
@@ -357,7 +327,7 @@ public class ExportFragment
                 mVb.cbxCovers.setEnabled(false);
                 break;
             }
-            case 2: {
+            case Json: {
                 //noinspection ConstantConditions
                 getActivity().setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_json_info);
@@ -377,7 +347,7 @@ public class ExportFragment
                 mVb.cbxCovers.setEnabled(false);
                 break;
             }
-            case 3: {
+            case Xml: {
                 //noinspection ConstantConditions
                 getActivity().setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_xml_info);
@@ -398,7 +368,7 @@ public class ExportFragment
                 mVb.cbxCovers.setEnabled(false);
                 break;
             }
-            case 4: {
+            case SqLiteDb: {
                 //noinspection ConstantConditions
                 getActivity().setTitle(R.string.action_export);
                 mVb.archiveFormatInfo.setText(R.string.lbl_archive_format_db_info);
@@ -419,7 +389,7 @@ public class ExportFragment
                 break;
             }
             default:
-                throw new IllegalArgumentException(String.valueOf(position));
+                throw new IllegalArgumentException(encoding.toString());
         }
     }
 

@@ -197,12 +197,12 @@
     <string name="lbl_added_year">Έτος Πρόσθεσης</string>
     <string name="lbl_advanced_options">Για προχωρημένους</string>
     <string name="lbl_anthology">Ανθολογία</string>
-    <string name="lbl_archive_type_csv">βιβλία (%1$s)</string>
+    <string name="lbl_archive_type_csv">βιβλία (.csv)</string>
     <string name="lbl_archive_type_csv_info">Εξαγωγή βιβλίων σε αρχείο CSV</string>
-    <string name="lbl_archive_type_backup">Αντίγραφο ασφαλείας (%1$s)</string>
+    <string name="lbl_archive_type_backup">Αντίγραφο ασφαλείας ((.zip)</string>
     <string name="lbl_archive_type_backup_info">Αρχείο πλήρους αντιγράφου ασφαλείας / επαναφοράς</string>
-    <string name="lbl_archive_type_xml">Εξαγωγή XML (%1$s)</string>
-    <string name="lbl_archive_type_json">Εξαγωγή JSON (%1$s)</string>
+    <string name="lbl_archive_type_xml">Εξαγωγή XML (.xml)</string>
+    <string name="lbl_archive_type_json">Εξαγωγή JSON (.json)</string>
     <string name="lbl_archive_format_xml_info">Όλα τα δεδομένα σε μορφή XML.</string>
     <string name="lbl_archive_format_json_info">Όλα τα δεδομένα σε μορφή JSON.</string>
     <string name="lbl_archive_is_export_only">Αυτό προορίζεται μόνο για εξαγωγή δεδομένων. η εισαγωγή δεν υποστηρίζεται.</string>
@@ -670,7 +670,7 @@
     <string name="action_export">Εξαγωγή</string>
     <string name="lbl_database">Βάση δεδομένων</string>
     <string name="lbl_archive_format_db_info">Η βάση δεδομένων SQLite.</string>
-    <string name="lbl_archive_type_db">Αρχείο βάσης δεδομένων (%1$s)</string>
+    <string name="lbl_archive_type_db">Αρχείο βάσης δεδομένων (.db)</string>
     <string name="confirm_delete_bookshelf">Να διαγραφεί πραγματικά το ράφι βιβλίου «%1$s»; Τα ίδια τα βιβλία δεν θα διαγραφούν. Θα εξακολουθούν να είναι παρόντα σε άλλα ράφια ή στο ράφι «%2$s».</string>
     <string name="system">(Σύστημα)</string>
     <string name="system_default">(Προεπιλογή συστήματος)</string>

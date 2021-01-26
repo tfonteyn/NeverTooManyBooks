@@ -193,13 +193,13 @@
     <string name="lbl_added_year">Dodano rok</string>
     <string name="lbl_advanced_options">Zaawansowane</string>
     <string name="lbl_anthology">Antologia</string>
-    <string name="lbl_archive_type_csv">Książki (%1$s)</string>
+    <string name="lbl_archive_type_csv">Książki (.csv)</string>
     <string name="lbl_archive_type_csv_info">Eksport książek do pliku CSV</string>
-    <string name="lbl_archive_type_backup">Kopia zapasowa (%1$s)</string>
+    <string name="lbl_archive_type_backup">Kopia zapasowa ((.zip)</string>
     <string name="lbl_archive_type_backup_info">Pełne archiwum kopii zapasowej / przywracania</string>
-    <string name="lbl_archive_type_xml">Eksport XML (%1$s)</string>
+    <string name="lbl_archive_type_xml">Eksport XML (.xml)</string>
     <string name="lbl_archive_format_xml_info">Wszystkie dane w formacie XML.</string>
-    <string name="lbl_archive_type_json">Eksport JSON (%1$s)</string>
+    <string name="lbl_archive_type_json">Eksport JSON (.json)</string>
     <string name="lbl_archive_format_json_info">Wszystkie dane w formacie JSON.</string>
     <string name="lbl_archive_is_export_only">Dotyczy to tylko eksportowania danych; import nie jest obsługiwany.</string>
     <string name="lbl_author">Autor</string>
@@ -663,7 +663,7 @@
     <string name="action_export">Eksport</string>
     <string name="lbl_database">Baza danych</string>
     <string name="lbl_archive_format_db_info">Baza danych SQLite.</string>
-    <string name="lbl_archive_type_db">Plik bazy danych (%1$s)</string>
+    <string name="lbl_archive_type_db">Plik bazy danych (.db)</string>
     <string name="confirm_delete_bookshelf">Naprawdę usunąć półkę „%1$s”? Same książki nie zostaną usunięte. Nadal będą obecne na innych półkach lub na półce „%2$s”.</string>
     <string name="system">(Systemowa)</string>
     <string name="system_default">(Domyślna aplikacja systemu)</string>
