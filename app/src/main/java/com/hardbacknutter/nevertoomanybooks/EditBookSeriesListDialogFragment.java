@@ -343,6 +343,7 @@ public class EditBookSeriesListDialogFragment
         /** FragmentResultListener request key to use for our response. */
         private String mRequestKey;
 
+        @SuppressWarnings("FieldCanBeLocal")
         private EditBookFragmentViewModel mVm;
 
         /** Displayed for info only. */

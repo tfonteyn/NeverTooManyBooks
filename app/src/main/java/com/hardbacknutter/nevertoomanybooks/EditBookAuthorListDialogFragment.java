@@ -372,6 +372,7 @@ public class EditBookAuthorListDialogFragment
         private final SparseArray<CompoundButton> mTypeButtons = new SparseArray<>();
         /** FragmentResultListener request key to use for our response. */
         private String mRequestKey;
+        @SuppressWarnings("FieldCanBeLocal")
         private EditBookFragmentViewModel mVm;
         /** Displayed for info only. */
         @Nullable
@@ -467,15 +468,13 @@ public class EditBookAuthorListDialogFragment
 
             final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
-                    ExtArrayAdapter.FilterType.Diacritic,
-                    mVm.getAllAuthorFamilyNames());
+                    ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorFamilyNames());
             mVb.familyName.setText(mFamilyName);
             mVb.familyName.setAdapter(familyNameAdapter);
 
             final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                     getContext(), R.layout.dropdown_menu_popup_item,
-                    ExtArrayAdapter.FilterType.Diacritic,
-                    mVm.getAllAuthorGivenNames());
+                    ExtArrayAdapter.FilterType.Diacritic, mVm.getAllAuthorGivenNames());
             mVb.givenNames.setText(mGivenNames);
             mVb.givenNames.setAdapter(givenNameAdapter);
 

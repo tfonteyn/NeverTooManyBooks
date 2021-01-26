@@ -153,11 +153,9 @@ public class SearchBookByTextFragment
      */
     private void populateAuthorList() {
         //noinspection ConstantConditions
-        final ArrayList<String> authorNames =
-                mVm.getAuthorNames(getContext());
         mAuthorAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
-                ExtArrayAdapter.FilterType.Diacritic, authorNames);
+                ExtArrayAdapter.FilterType.Diacritic, mVm.getAuthorNames(getContext()));
         mVb.author.setAdapter(mAuthorAdapter);
     }
 
@@ -166,11 +164,9 @@ public class SearchBookByTextFragment
      */
     private void populatePublisherList() {
         //noinspection ConstantConditions
-        final ArrayList<String> publisherNames =
-                mVm.getPublisherNames(getContext());
         mPublisherAdapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
-                ExtArrayAdapter.FilterType.Diacritic, publisherNames);
+                ExtArrayAdapter.FilterType.Diacritic, mVm.getPublisherNames(getContext()));
         mVb.publisher.setAdapter(mPublisherAdapter);
     }
 

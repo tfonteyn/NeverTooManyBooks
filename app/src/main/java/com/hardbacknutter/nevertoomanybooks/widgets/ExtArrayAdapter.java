@@ -62,9 +62,9 @@ import java.util.regex.Pattern;
  * <p>
  * {@link #ExtArrayAdapter(Context, int, FilterType, List)}
  * or {@link #setFilterType(FilterType)} to override the default {@link Filter}
- * <ul>Choose a filter type:
- *      <li>To use the Android original: {@link ExtArrayAdapter.FilterType#Default}</li>
- *      <li>To augment the original with Diacritic support:
+ * <ul>
+ *      <li>The Android original: {@link ExtArrayAdapter.FilterType#Default}</li>
+ *      <li>Augment the original with Diacritic support:
  *          {@link ExtArrayAdapter.FilterType#Diacritic}</li>
  *      <li>For a material.io ExposedDropDownMenu:
  *          {@link ExtArrayAdapter.FilterType#Passthrough}</li>
@@ -92,12 +92,14 @@ public class ExtArrayAdapter<T>
      * The resource indicating what views to inflate to display the content of this
      * array adapter.
      */
+    @LayoutRes
     private final int mResource;
     /**
      * If the inflated resource is not a TextView, {@code mFieldId} is used to find
      * a TextView inside the inflated views hierarchy. This field must contain the
      * identifier that matches the one defined in the resource file.
      */
+    @IdRes
     private final int mFieldId;
     /** Layout inflater used for {@link #getDropDownView(int, View, ViewGroup)}. */
     @Nullable
@@ -106,6 +108,7 @@ public class ExtArrayAdapter<T>
      * The resource indicating what views to inflate to display the content of this
      * array adapter in a drop down widget.
      */
+    @LayoutRes
     private int mDropDownResource;
     /**
      * Contains the list of objects that represent the data of this ArrayAdapter.
@@ -735,7 +738,7 @@ public class ExtArrayAdapter<T>
      * a prefix. Each item that does not start with the supplied prefix
      * is removed from the list.</p>
      */
-    protected class DiacriticArrayFilter
+    private class DiacriticArrayFilter
             extends AbstractArrayFilter {
 
         private final Pattern DIACRITICS_PATTERN = Pattern.compile("[^\\p{ASCII}]");
