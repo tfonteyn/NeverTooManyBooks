@@ -66,8 +66,8 @@ https://material.io/design/material-theming/implementing-your-theme.html#color
         <!-- Application specific (light theme) -->
         <!-- ======================================= -->
         <item name="appPreferenceAlertColor">@color/red_400</item>
-        <!-- the default colorSurface is "too white". And grey_50 (#FAFAFA) is just to dark...-->
-        <item name="appCardBackgroundColor">#FDFDFD</item>
+        <!-- the default colorSurface is "too white". -->
+        <item name="appCardBackgroundColor">@color/grey_50</item>
 
         <!-- gradient used in the Navigation side bar. -->
         <item name="appNavBarColorStart">@color/blue_grey_500</item>
