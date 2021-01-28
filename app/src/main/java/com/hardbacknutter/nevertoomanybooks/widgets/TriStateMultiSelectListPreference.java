@@ -169,10 +169,10 @@ public class TriStateMultiSelectListPreference
     public void setValues(@NonNull final Set<String> values) {
         if (isActive()) {
             getSharedPreferences().edit().putBoolean(getKey() + ACTIVE, true).apply();
-            super.setValues(values);
         } else {
             getSharedPreferences().edit().remove(getKey() + ACTIVE).remove(getKey()).apply();
         }
+        super.setValues(values);
     }
 
     /**
