@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *     {@code
  *             <com.google.android.material.textfield.TextInputLayout
  *             android:id="@+id/lbl_description"
- *             style="@style/Envelope.EditText"
+ *             style="@style/TIL.EditText"
  *             android:hint="@string/lbl_description"
  *             app:layout_constraintEnd_toEndOf="parent"
  *             app:layout_constraintStart_toStartOf="parent"

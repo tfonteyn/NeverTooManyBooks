@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
 import android.content.Context;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.ArrayRes;
@@ -30,6 +29,7 @@ import androidx.annotation.Nullable;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
  * The value is expected to be the list position.
@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
  *     {@code
  *             <com.google.android.material.textfield.TextInputLayout
  *             android:id="@+id/lbl_condition"
- *             style="@style/Envelope.AutoCompleteTextView"
+ *             style="@style/ExposedDropdownMenu.Dense"
  *             android:hint="@string/lbl_condition"
  *             app:layout_constraintStart_toStartOf="parent"
  *             app:layout_constraintEnd_toStartOf="@id/lbl_condition_cover"
@@ -49,8 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
  *
  *             <AutoCompleteTextView
  *                 android:id="@+id/condition"
- *                 style="@style/EditText.Spinner"
  *                 android:layout_width="match_parent"
+ *                 android:layout_height="wrap_content"
+ *                 android:inputType="none"
  *                 tools:ignore="LabelFor"
  *                 />
  *
@@ -61,7 +62,7 @@ public class ExposedDropDownMenuAccessor
         extends BaseDataAccessor<Integer, AutoCompleteTextView> {
 
     @NonNull
-    private final ArrayAdapter<CharSequence> mAdapter;
+    private final ExtArrayAdapter<CharSequence> mAdapter;
 
     /**
      * Constructor.
@@ -70,9 +71,13 @@ public class ExposedDropDownMenuAccessor
      * @param arrayResId to use; the array <strong>must not</strong> be empty
      */
     public ExposedDropDownMenuAccessor(@NonNull final Context context,
-                                       @ArrayRes final int arrayResId) {
-        mAdapter = ArrayAdapter.createFromResource(context, arrayResId,
-                                                   R.layout.dropdown_menu_popup_item);
+                                       @ArrayRes final int arrayResId,
+                                       final boolean isEditable) {
+
+        mAdapter = ExtArrayAdapter.createFromResource(
+                context, arrayResId, R.layout.dropdown_menu_popup_item);
+        mIsEditable = isEditable;
+
         SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");
     }
 
@@ -81,20 +86,17 @@ public class ExposedDropDownMenuAccessor
         super.setView(view);
         view.setAdapter(mAdapter);
         if (mIsEditable) {
-            addTouchSignalsDirty(view);
+            view.setOnItemClickListener((parent, v, position, id) -> {
+                mRawValue = position;
+                broadcastChange();
+            });
         }
     }
 
     @Override
     @NonNull
     public Integer getValue() {
-        final AutoCompleteTextView view = getView();
-        if (view != null) {
-            final String current = view.getText().toString();
-            return mAdapter.getPosition(current);
-        } else {
-            return mRawValue != null ? mRawValue : 0;
-        }
+        return mRawValue != null ? mRawValue : 0;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
  *     {@code
  *             <com.google.android.material.textfield.TextInputLayout
  *             android:id="@+id/lbl_price_paid"
- *             style="@style/Envelope.EditText"
+ *             style="@style/TIL.EditText"
  *             android:hint="@string/lbl_price_paid"
  *             app:layout_constraintEnd_toEndOf="parent"
  *             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"

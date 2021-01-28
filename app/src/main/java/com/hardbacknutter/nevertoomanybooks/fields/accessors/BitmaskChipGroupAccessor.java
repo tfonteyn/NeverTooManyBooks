@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -72,6 +72,7 @@ public class BitmaskChipGroupAccessor
                     // remove
                     mRawValue &= ~current;
                 }
+                broadcastChange();
             };
         } else {
             mEditChipListener = null;
@@ -104,7 +105,6 @@ public class BitmaskChipGroupAccessor
                         chip = new Chip(context, null, R.attr.appChipFilterStyle);
                         chip.setChecked(isSet);
                         chip.setOnClickListener(mEditChipListener);
-                        addTouchSignalsDirty(chip);
 
                     } else {
                         chip = new Chip(context, null, R.attr.appChipDisplayStyle);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,23 +57,25 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 public class CompoundButtonAccessor
         extends BaseDataAccessor<Boolean, CompoundButton> {
 
+    public CompoundButtonAccessor(final boolean isEditable) {
+        mIsEditable = isEditable;
+    }
+
     @Override
     public void setView(@NonNull final CompoundButton view) {
         super.setView(view);
         if (mIsEditable) {
-            addTouchSignalsDirty(view);
+            view.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                mRawValue = isChecked;
+                broadcastChange();
+            });
         }
     }
 
     @NonNull
     @Override
     public Boolean getValue() {
-        final CompoundButton view = getView();
-        if (view != null) {
-            return view.isChecked();
-        } else {
-            return mRawValue != null ? mRawValue : false;
-        }
+        return mRawValue != null ? mRawValue : false;
     }
 
     @Override

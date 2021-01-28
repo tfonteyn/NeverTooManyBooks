@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,36 +35,38 @@ import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
  *     {@code
  *             <RatingBar
  *             android:id="@+id/rating"
- *             style="?attr/ratingBarStyle"
+ *             style="@style/Field.RatingBar"
  *             android:layout_width="wrap_content"
  *             android:layout_height="wrap_content"
- *             android:numStars="5"
  *             app:layout_constraintStart_toStartOf="parent"
  *             app:layout_constraintTop_toBottomOf="@id/lbl_rating"
- *             tools:rating="5"
  *             />}
  * </pre>
  */
 public class RatingBarAccessor
         extends BaseDataAccessor<Float, RatingBar> {
 
+    public RatingBarAccessor(final boolean isEditable) {
+        mIsEditable = isEditable;
+    }
+
     @Override
     public void setView(@NonNull final RatingBar view) {
         super.setView(view);
         if (mIsEditable) {
-            addTouchSignalsDirty(view);
+            view.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
+                if (fromUser) {
+                    mRawValue = rating;
+                    broadcastChange();
+                }
+            });
         }
     }
 
     @NonNull
     @Override
     public Float getValue() {
-        final RatingBar view = getView();
-        if (view != null) {
-            return view.getRating();
-        } else {
-            return mRawValue != null ? mRawValue : 0f;
-        }
+        return mRawValue != null ? mRawValue : 0f;
     }
 
     @Override
@@ -89,6 +91,6 @@ public class RatingBarAccessor
 
     @Override
     public boolean isEmpty() {
-        return getValue().equals(0.0f);
+        return getValue().equals(0f);
     }
 }

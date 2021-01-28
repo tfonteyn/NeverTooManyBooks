@@ -22,49 +22,53 @@ package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.AutoCompleteTextView;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.fields.FieldArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.EditFieldFormatter;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
 
+
 /**
- * Stores and retrieves data from an EditText.
+ * The value is the text of the AutoCompleteTextView.
+ * <p>
+ * A {@code null} value is always handled as {@code ""}.
  *
  * <pre>
- *     {@code
  *             <com.google.android.material.textfield.TextInputLayout
- *             android:id="@+id/lbl_title"
- *             style="@style/TIL.EditText"
- *             android:hint="@string/lbl_title"
+ *             android:id="@+id/lbl_genre"
+ *             style="@style/TIL.AutoCompleteTextView"
+ *             android:hint="@string/lbl_genre"
  *             app:layout_constraintEnd_toEndOf="parent"
  *             app:layout_constraintStart_toStartOf="parent"
- *             app:layout_constraintTop_toBottomOf="@id/lbl_author"
+ *             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
  *             >
  *
- *             <com.google.android.material.textfield.TextInputEditText
- *                 android:id="@+id/title"
- *                 style="@style/titleTextEntry"
+ *             <AutoCompleteTextView
+ *                 android:id="@+id/genre"
+ *                 style="@style/autoCompleteTextEntry"
  *                 android:layout_width="match_parent"
- *                 tools:ignore="Autofill"
- *                 tools:text="@sample/data.json/book/title"
+ *                 android:imeOptions="actionNext"
+ *                 tools:ignore="LabelFor"
+ *                 tools:text="Fiction"
  *                 />
  *
- *         </com.google.android.material.textfield.TextInputLayout>}
+ *         </com.google.android.material.textfield.TextInputLayout>
  * </pre>
- *
- * @param <T> type of Field value.
  */
-public class EditTextAccessor<T>
-        extends TextAccessor<T, EditText>
+public class AutoCompleteTextAccessor
+        extends TextAccessor<String, AutoCompleteTextView>
         implements TextWatcher {
 
     /** Log tag. */
-    private static final String TAG = "EditTextAccessor";
+    private static final String TAG = "AutoCompleteTextAcc";
 
     /** Reformat only every 0.5 seconds: this is good enough and easier on the user. */
     private static final int REFORMAT_DELAY_MS = 500;
@@ -72,56 +76,62 @@ public class EditTextAccessor<T>
     /** Enable or disable the formatting text watcher. */
     private final boolean mEnableReformat;
 
+    /** The list for the adapter. */
+    @NonNull
+    private final Supplier<List<String>> mListSupplier;
+
     /** Timer for the text watcher. */
     private long mLastChange;
 
     /**
      * Constructor.
+     *
+     * @param listSupplier Supplier with auto complete values
      */
-    public EditTextAccessor() {
+    public AutoCompleteTextAccessor(@NonNull final Supplier<List<String>> listSupplier) {
         super(null);
+        mListSupplier = listSupplier;
         mEnableReformat = false;
     }
 
     /**
      * Constructor.
      *
+     * @param listSupplier   Supplier with auto complete values
      * @param formatter      to use
      * @param enableReformat flag: reformat after every user-change.
      */
-    public EditTextAccessor(@NonNull final FieldFormatter<T> formatter,
-                            final boolean enableReformat) {
+    public AutoCompleteTextAccessor(@NonNull final Supplier<List<String>> listSupplier,
+                                    @NonNull final FieldFormatter<String> formatter,
+                                    final boolean enableReformat) {
         super(formatter);
+        mListSupplier = listSupplier;
         mEnableReformat = enableReformat && formatter instanceof EditFieldFormatter;
     }
 
     @Override
-    public void setView(@NonNull final EditText view) {
+    public void setView(@NonNull final AutoCompleteTextView view) {
         super.setView(view);
+        view.setAdapter(new FieldArrayAdapter(view.getContext(), mListSupplier.get(), mFormatter));
         view.addTextChangedListener(this);
     }
 
     @Nullable
     @Override
-    public T getValue() {
-        final TextView view = getView();
+    public String getValue() {
+        final AutoCompleteTextView view = getView();
         if (view != null) {
             final String text = view.getText().toString().trim();
             if (mFormatter != null) {
                 if (mFormatter instanceof EditFieldFormatter) {
-                    return ((EditFieldFormatter<T>) mFormatter)
+                    return ((EditFieldFormatter<String>) mFormatter)
                             .extract(view.getContext(), text);
                 } else {
                     // otherwise use the locale variable
                     return mRawValue;
                 }
             } else {
-                // Without a formatter, we MUST assume <T> to be a String,
-                // and SHOULD just get the value from the field as-is.
-                // This DOES mean that an original null value is returned as the empty String.
-                // If we get an Exception here then the developer made a boo-boo.
-                //noinspection unchecked
-                return (T) text;
+                return text;
             }
 
         } else {
@@ -130,10 +140,10 @@ public class EditTextAccessor<T>
     }
 
     @Override
-    public void setValue(@Nullable final T value) {
+    public void setValue(@Nullable final String value) {
         mRawValue = value;
 
-        final TextView view = getView();
+        final AutoCompleteTextView view = getView();
         if (view != null) {
             // We need to do this in two steps. First format the value as normal.
             String text = null;
@@ -151,7 +161,7 @@ public class EditTextAccessor<T>
 
             // No formatter, or ClassCastException.
             if (text == null) {
-                text = mRawValue != null ? String.valueOf(mRawValue) : "";
+                text = mRawValue != null ? mRawValue : "";
             }
 
             // Second step set the view but ...
@@ -159,12 +169,8 @@ public class EditTextAccessor<T>
             // Disable the ChangedTextWatcher.
             view.removeTextChangedListener(this);
 
-            if (view instanceof AutoCompleteTextView) {
-                // prevent auto-completion to kick in / stop the dropdown from opening.
-                ((AutoCompleteTextView) view).setText(text, false);
-            } else {
-                view.setText(text);
-            }
+            // prevent auto-completion to kick in / stop the dropdown from opening.
+            view.setText(text, false);
 
             // finally re-enable the watcher
             view.addTextChangedListener(this);
@@ -190,7 +196,7 @@ public class EditTextAccessor<T>
             final TextView view = getView();
             // We have mEnableReformat, hence we can access the EditFieldFormatter directly.
             //noinspection ConstantConditions
-            final T value = ((EditFieldFormatter<T>) mFormatter)
+            final String value = ((EditFieldFormatter<String>) mFormatter)
                     .extract(view.getContext(), view.getText().toString().trim());
             final String formatted = mFormatter.format(view.getContext(), value);
 

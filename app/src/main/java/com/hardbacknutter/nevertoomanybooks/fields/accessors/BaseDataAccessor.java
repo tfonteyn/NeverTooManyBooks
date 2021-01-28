@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,8 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.accessors;
 
-import android.annotation.SuppressLint;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -47,6 +45,7 @@ public abstract class BaseDataAccessor<T, V extends View>
     @Nullable
     T mRawValue;
 
+    /** Specific to accessors that need to know if we're viewing or editing a Field. */
     boolean mIsEditable;
     @Nullable
     private WeakReference<V> mViewReference;
@@ -54,6 +53,9 @@ public abstract class BaseDataAccessor<T, V extends View>
     private WeakReference<View> mErrorViewReference;
     @Nullable
     private String mErrorText;
+
+    /** broadcast a change only once. */
+    private boolean mOnChangeCalled;
 
     @Override
     public void setField(@NonNull final Field<T, V> field) {
@@ -114,20 +116,14 @@ public abstract class BaseDataAccessor<T, V extends View>
     }
 
     /**
-     * Add on onTouchListener that signals a 'dirty' event when touched.
-     * This is/should only be added to fields with non-text Views while {@link #mIsEditable}
-     * is {@code true}.
-     *
-     * @param view The view to watch
+     * Let the field know the value was changed.
+     * <p>
+     * We broadcast a change only once.
      */
-    @SuppressWarnings("SameReturnValue")
-    @SuppressLint("ClickableViewAccessibility")
-    void addTouchSignalsDirty(@NonNull final View view) {
-        view.setOnTouchListener((v, event) -> {
-            if (MotionEvent.ACTION_UP == event.getAction()) {
-                mField.onChanged(false);
-            }
-            return false;
-        });
+    void broadcastChange() {
+        if (!mOnChangeCalled) {
+            mOnChangeCalled = true;
+            mField.onChanged(false);
+        }
     }
 }
