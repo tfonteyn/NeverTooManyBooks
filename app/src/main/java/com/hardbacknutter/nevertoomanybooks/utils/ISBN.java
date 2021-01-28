@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -951,8 +951,8 @@ public class ISBN {
         /**
          * Constructor.
          *
-         * @param layoutView        envelope layout
-         * @param editText          the view to watch
+         * @param layoutView        TIL layout View
+         * @param editText          the View to watch
          * @param isbnValidityCheck validity check-level for ISBN codes
          */
         public ValidationTextWatcher(@NonNull final TextInputLayout layoutView,
