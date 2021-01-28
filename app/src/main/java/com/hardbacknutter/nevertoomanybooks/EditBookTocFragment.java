@@ -428,15 +428,20 @@ public class EditBookTocFragment
      */
     private void deleteEntry(final int position) {
         final TocEntry tocEntry = mList.get(position);
-        //noinspection ConstantConditions
-        StandardDialogs.deleteTocEntry(getContext(),
-                                       tocEntry.getTitle(),
-                                       tocEntry.getPrimaryAuthor(), () -> {
-                    if (mVm.deleteTocEntry(getContext(), tocEntry)) {
-                        mList.remove(tocEntry);
-                        mListAdapter.notifyItemRemoved(position);
-                    }
-                });
+        if (tocEntry.getId() != 0) {
+            //noinspection ConstantConditions
+            StandardDialogs.deleteTocEntry(getContext(),
+                                           tocEntry.getTitle(),
+                                           tocEntry.getPrimaryAuthor(), () -> {
+                        if (mVm.deleteTocEntry(getContext(), tocEntry)) {
+                            mList.remove(tocEntry);
+                            mListAdapter.notifyItemRemoved(position);
+                        }
+                    });
+        } else {
+            mList.remove(tocEntry);
+            mListAdapter.notifyItemRemoved(position);
+        }
     }
 
     private void populateTocBits(@NonNull final Book book) {
