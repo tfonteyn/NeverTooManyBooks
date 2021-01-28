@@ -347,24 +347,20 @@ public abstract class EditBookBaseFragment
      * <p>
      * Dev. note: a Supplier is used so we don't load the list if the Field is actually not in use
      *
-     * @param global Global preferences
-     * @param field  to setup
-     * @param list   Supplier with auto complete values
+     * @param global       Global preferences
+     * @param field        to setup
+     * @param listSupplier Supplier with auto complete values
      */
     void addAutocomplete(@NonNull final SharedPreferences global,
                          @NonNull final Field<String, AutoCompleteTextView> field,
-                         @NonNull final Supplier<List<String>> list) {
+                         @NonNull final Supplier<List<String>> listSupplier) {
 
         // only bother when it's in use
         if (field.isUsed(global)) {
             final FieldFormatter<String> formatter = field.getAccessor().getFormatter();
-            //noinspection ConstantConditions
-            final FieldArrayAdapter adapter =
-                    new FieldArrayAdapter(getContext(), list.get(), formatter);
-
             final AutoCompleteTextView view = field.getAccessor().getView();
             //noinspection ConstantConditions
-            view.setAdapter(adapter);
+            view.setAdapter(new FieldArrayAdapter(getContext(), listSupplier.get(), formatter));
         }
     }
 

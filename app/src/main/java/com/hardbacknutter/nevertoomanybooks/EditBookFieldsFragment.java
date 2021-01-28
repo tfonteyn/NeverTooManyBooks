@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.formatters.AuthorListFormatter;
@@ -215,22 +216,6 @@ public class EditBookFieldsFragment
     }
 
     @Override
-    public void onResume() {
-        //noinspection ConstantConditions
-        mVm.pruneAuthors(getContext());
-        mVm.pruneSeries(getContext());
-
-        // hook up the Views, and calls {@link #onPopulateViews}
-        super.onResume();
-        // With all Views populated, (re-)add the helpers which rely on fields having valid views
-
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-        addAutocomplete(global, getField(R.id.genre), () -> mVm.getAllGenres());
-        addAutocomplete(global, getField(R.id.language), () -> mVm.getAllLanguagesCodes());
-    }
-
-    @Override
     protected void onInitFields(@NonNull final Fields fields) {
 
         final String nonBlankRequired = getString(R.string.vldt_non_blank_required);
@@ -241,7 +226,6 @@ public class EditBookFieldsFragment
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Short, true, false)),
                    Book.BKEY_AUTHOR_LIST, DBDefinitions.KEY_FK_AUTHOR)
-              .setRelatedFields(R.id.lbl_author)
               .setErrorViewId(R.id.lbl_author)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
@@ -250,7 +234,7 @@ public class EditBookFieldsFragment
                    Book.BKEY_SERIES_LIST, DBDefinitions.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
-        fields.add(R.id.title, new EditTextAccessor<String>(), DBDefinitions.KEY_TITLE)
+        fields.add(R.id.title, new EditTextAccessor<>(), DBDefinitions.KEY_TITLE)
               .setErrorViewId(R.id.lbl_title)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
@@ -261,13 +245,14 @@ public class EditBookFieldsFragment
         fields.add(R.id.isbn, new EditTextAccessor<>(), DBDefinitions.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
-        fields.add(R.id.language, new EditTextAccessor<>(new LanguageFormatter(userLocale), true),
+        fields.add(R.id.language, new AutoCompleteTextAccessor(
+                           () -> mVm.getAllLanguagesCodes(), new LanguageFormatter(userLocale), true),
                    DBDefinitions.KEY_LANGUAGE)
-              .setRelatedFields(R.id.lbl_language)
               .setErrorViewId(R.id.lbl_language)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
-        fields.add(R.id.genre, new EditTextAccessor<>(), DBDefinitions.KEY_GENRE)
+        fields.add(R.id.genre, new AutoCompleteTextAccessor(() -> mVm.getAllGenres()),
+                   DBDefinitions.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
         // Personal fields
@@ -297,6 +282,16 @@ public class EditBookFieldsFragment
         // hide unwanted and empty fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
+    }
+
+    @Override
+    public void onResume() {
+        //noinspection ConstantConditions
+        mVm.pruneAuthors(getContext());
+        mVm.pruneSeries(getContext());
+
+        // hook up the Views, and calls {@link #onPopulateViews}
+        super.onResume();
     }
 
     @Override

@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.CompoundButtonAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
@@ -73,32 +74,6 @@ public class EditBookNotesFragment
     }
 
     @Override
-    public void onResume() {
-        // hook up the Views, and calls {@link #onPopulateViews}
-        super.onResume();
-        // With all Views populated, (re-)add the helpers which rely on fields having valid views
-
-        //noinspection ConstantConditions
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-
-        addReadCheckboxOnClickListener(global);
-
-        addAutocomplete(global, getField(R.id.price_paid_currency),
-                        () -> mVm.getAllPricePaidCurrencyCodes());
-        addAutocomplete(global, getField(R.id.location),
-                        () -> mVm.getAllLocations());
-
-        addDatePicker(global, getField(R.id.date_acquired), R.string.lbl_date_acquired, true);
-
-        addDateRangePicker(global,
-                           R.string.lbl_read,
-                           R.string.lbl_read_start, getField(R.id.read_start),
-                           R.string.lbl_read_end, getField(R.id.read_end),
-                           true);
-    }
-
-    @Override
     protected void onInitFields(@NonNull final Fields fields) {
 
         final Context context = getContext();
@@ -109,10 +84,10 @@ public class EditBookNotesFragment
         // These FieldFormatter's can be shared between multiple fields.
         final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
 
-        fields.add(R.id.cbx_read, new CompoundButtonAccessor(), DBDefinitions.KEY_READ);
-        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(), DBDefinitions.KEY_SIGNED);
+        fields.add(R.id.cbx_read, new CompoundButtonAccessor(true), DBDefinitions.KEY_READ);
+        fields.add(R.id.cbx_signed, new CompoundButtonAccessor(true), DBDefinitions.KEY_SIGNED);
 
-        fields.add(R.id.rating, new RatingBarAccessor(), DBDefinitions.KEY_RATING)
+        fields.add(R.id.rating, new RatingBarAccessor(true), DBDefinitions.KEY_RATING)
               .setRelatedFields(R.id.lbl_rating);
 
         fields.add(R.id.notes, new EditTextAccessor<>(), DBDefinitions.KEY_PRIVATE_NOTES)
@@ -121,21 +96,23 @@ public class EditBookNotesFragment
         // MUST be defined before the currency.
         fields.add(R.id.price_paid, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
                    DBDefinitions.KEY_PRICE_PAID);
-        fields.add(R.id.price_paid_currency, new EditTextAccessor<>(),
+        fields.add(R.id.price_paid_currency,
+                   new AutoCompleteTextAccessor(() -> mVm.getAllPricePaidCurrencyCodes()),
                    DBDefinitions.KEY_PRICE_PAID_CURRENCY)
               .setRelatedFields(R.id.lbl_price_paid,
                                 R.id.lbl_price_paid_currency, R.id.price_paid_currency);
 
         fields.add(R.id.condition,
-                   new ExposedDropDownMenuAccessor(context, R.array.conditions_book),
+                   new ExposedDropDownMenuAccessor(context, R.array.conditions_book, true),
                    DBDefinitions.KEY_BOOK_CONDITION)
               .setRelatedFields(R.id.lbl_condition);
         fields.add(R.id.condition_cover,
-                   new ExposedDropDownMenuAccessor(context, R.array.conditions_dust_cover),
+                   new ExposedDropDownMenuAccessor(context, R.array.conditions_dust_cover, true),
                    DBDefinitions.KEY_BOOK_CONDITION_COVER)
               .setRelatedFields(R.id.lbl_condition_cover);
 
-        fields.add(R.id.location, new EditTextAccessor<String>(), DBDefinitions.KEY_LOCATION)
+        fields.add(R.id.location, new AutoCompleteTextAccessor(() -> mVm.getAllLocations()),
+                   DBDefinitions.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
         fields.add(R.id.edition,
@@ -166,6 +143,27 @@ public class EditBookNotesFragment
         // hide unwanted fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
+    }
+
+    @Override
+    public void onResume() {
+        // hook up the Views, and calls {@link #onPopulateViews}
+        super.onResume();
+        // With all Views populated, (re-)add the helpers which rely on fields having valid views
+
+        //noinspection ConstantConditions
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+
+        addReadCheckboxOnClickListener(global);
+
+        addDatePicker(global, getField(R.id.date_acquired), R.string.lbl_date_acquired, true);
+
+        addDateRangePicker(global,
+                           R.string.lbl_read,
+                           R.string.lbl_read_start, getField(R.id.read_start),
+                           R.string.lbl_read_end, getField(R.id.read_end),
+                           true);
     }
 
     /**

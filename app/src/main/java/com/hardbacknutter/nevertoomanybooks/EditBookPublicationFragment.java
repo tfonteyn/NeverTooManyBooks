@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,6 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
@@ -90,29 +91,6 @@ public class EditBookPublicationFragment
     }
 
     @Override
-    public void onResume() {
-        //noinspection ConstantConditions
-        mVm.prunePublishers(getContext());
-
-        // hook up the Views, and calls {@link #onPopulateViews}
-        super.onResume();
-        // With all Views populated, (re-)add the helpers which rely on fields having valid views
-
-        final SharedPreferences global = PreferenceManager
-                .getDefaultSharedPreferences(getContext());
-        addAutocomplete(global, getField(R.id.format), () -> mVm.getAllFormats());
-        addAutocomplete(global, getField(R.id.color), () -> mVm.getAllColors());
-        addAutocomplete(global, getField(R.id.price_listed_currency),
-                        () -> mVm.getAllListPriceCurrencyCodes());
-
-        addPartialDatePicker(global, getField(R.id.date_published),
-                             R.string.lbl_date_published, false);
-
-        addPartialDatePicker(global, getField(R.id.first_publication),
-                             R.string.lbl_first_publication, false);
-    }
-
-    @Override
     protected void onInitFields(@NonNull final Fields fields) {
 
         //noinspection ConstantConditions
@@ -125,10 +103,12 @@ public class EditBookPublicationFragment
         fields.add(R.id.pages, new EditTextAccessor<>(), DBDefinitions.KEY_PAGES)
               .setRelatedFields(R.id.lbl_pages);
 
-        fields.add(R.id.format, new EditTextAccessor<>(), DBDefinitions.KEY_FORMAT)
+        fields.add(R.id.format, new AutoCompleteTextAccessor(() -> mVm.getAllFormats()),
+                   DBDefinitions.KEY_FORMAT)
               .setRelatedFields(R.id.lbl_format);
 
-        fields.add(R.id.color, new EditTextAccessor<>(), DBDefinitions.KEY_COLOR)
+        fields.add(R.id.color, new AutoCompleteTextAccessor(() -> mVm.getAllColors()),
+                   DBDefinitions.KEY_COLOR)
               .setRelatedFields(R.id.lbl_color);
 
         fields.add(R.id.publisher, new TextViewAccessor<>(new CsvFormatter()),
@@ -149,7 +129,8 @@ public class EditBookPublicationFragment
         // MUST be defined before the currency field is defined.
         fields.add(R.id.price_listed, new DecimalEditTextAccessor(new DoubleNumberFormatter()),
                    DBDefinitions.KEY_PRICE_LISTED);
-        fields.add(R.id.price_listed_currency, new EditTextAccessor<>(),
+        fields.add(R.id.price_listed_currency,
+                   new AutoCompleteTextAccessor(() -> mVm.getAllListPriceCurrencyCodes()),
                    DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
               .setRelatedFields(R.id.lbl_price_listed,
                                 R.id.lbl_price_listed_currency, R.id.price_listed_currency);
@@ -163,5 +144,24 @@ public class EditBookPublicationFragment
         // hide unwanted fields
         //noinspection ConstantConditions
         fields.setVisibility(getView(), false, false);
+    }
+
+    @Override
+    public void onResume() {
+        //noinspection ConstantConditions
+        mVm.prunePublishers(getContext());
+
+        // hook up the Views, and calls {@link #onPopulateViews}
+        super.onResume();
+        // With all Views populated, (re-)add the helpers which rely on fields having valid views
+
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(getContext());
+
+        addPartialDatePicker(global, getField(R.id.date_published),
+                             R.string.lbl_date_published, false);
+
+        addPartialDatePicker(global, getField(R.id.first_publication),
+                             R.string.lbl_first_publication, false);
     }
 }
