@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -27,8 +27,8 @@
     <corners
         android:radius="4dp" />
     <padding
-        android:bottom="@dimen/outlineBorder"
-        android:left="@dimen/outlineBorder"
-        android:right="@dimen/outlineBorder"
-        android:top="@dimen/outlineBorder" />
+        android:bottom="4dp"
+        android:left="4dp"
+        android:right="4dp"
+        android:top="4dp" />
 </shape>
