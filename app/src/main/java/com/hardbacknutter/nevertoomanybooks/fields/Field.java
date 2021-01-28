@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,9 +32,9 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -87,7 +87,7 @@ public class Field<T, V extends View> {
     private final FieldViewAccessor<T, V> mFieldViewAccessor;
     /** Fields that need to follow visibility. */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final Collection<Integer> mRelatedFields = new ArrayList<>();
+    private final Collection<Integer> mRelatedFields = new HashSet<>();
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private WeakReference<Fields.AfterChangeListener> mAfterFieldChangeListener;
@@ -164,6 +164,9 @@ public class Field<T, V extends View> {
 
     /**
      * set the field ID's which should follow visibility with this Field.
+     * <p>
+     * Consider calling {@link #setErrorViewId} instead if it's a single related label-field.
+     *
      * <p>
      * <strong>Dev. note:</strong> this could be done using
      * {@link androidx.constraintlayout.widget.Group}
@@ -254,29 +257,32 @@ public class Field<T, V extends View> {
      *     <li>The id is added to {@link #setRelatedFields} so it is used for visibility.</li>
      * </ul>
      *
-     * @param textInputLayoutId view id
+     * @param viewId view id
      *
      * @return Field (for chaining)
      */
-    public Field<T, V> setTextInputLayout(@IdRes final int textInputLayoutId) {
-        mTextInputLayoutId = textInputLayoutId;
-        mErrorViewId = textInputLayoutId;
-        mRelatedFields.add(textInputLayoutId);
+    public Field<T, V> setTextInputLayout(@IdRes final int viewId) {
+        mTextInputLayoutId = viewId;
+        mErrorViewId = viewId;
+        mRelatedFields.add(viewId);
         return this;
     }
 
     /**
      * Set the id for the error view. This can be set independently from calling
      * {@link #setFieldValidator} for cross-validation / error reporting.
-     * <p>
-     * This call will override the value set by {@link #setTextInputLayout}.
+     * <ul>
+     *     <li>This call will override the value set by {@link #setTextInputLayout}.</li>
+     *     <li>The id is added to {@link #setRelatedFields} so it is used for visibility.</li>
+     * </ul>
      *
-     * @param errorViewId view id
+     * @param viewId view id
      *
      * @return Field (for chaining)
      */
-    public Field<T, V> setErrorViewId(@IdRes final int errorViewId) {
-        mErrorViewId = errorViewId;
+    public Field<T, V> setErrorViewId(@IdRes final int viewId) {
+        mErrorViewId = viewId;
+        mRelatedFields.add(viewId);
         return this;
     }
 
