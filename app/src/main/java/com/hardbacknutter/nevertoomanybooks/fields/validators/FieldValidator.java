@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.Field;
 
 /**
  * Interface for all field-level validators.
+ * Could be replaced with a {@code Consumer<Field<T, V>>}.
  */
 public interface FieldValidator<T, V extends View> {
 
