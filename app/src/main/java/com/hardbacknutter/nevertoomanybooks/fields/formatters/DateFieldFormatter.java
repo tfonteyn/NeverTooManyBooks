@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
 import android.content.Context;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,7 +35,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * FieldFormatter for 'date' fields.
  * <ul>
  *      <li>Multiple fields: <strong>yes</strong></li>
- *      <li>Extract: <strong>View</strong></li>
  * </ul>
  * <p>
  * This class can be used in two ways:
@@ -85,7 +83,8 @@ public class DateFieldFormatter
      */
     @Override
     @NonNull
-    public String extract(@NonNull final TextView view) {
-        return new PartialDate(view.getText().toString().trim()).getIsoString();
+    public String extract(@NonNull final Context context,
+                          @NonNull final String text) {
+        return new PartialDate(text).getIsoString();
     }
 }

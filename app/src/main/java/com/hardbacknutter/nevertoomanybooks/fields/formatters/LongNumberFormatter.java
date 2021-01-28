@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
 import android.content.Context;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +29,6 @@ import androidx.annotation.Nullable;
  *
  * <ul>
  *      <li>Multiple fields: <strong>yes</strong></li>
- *      <li>Extract: <strong>View</strong></li>
  * </ul>
  */
 public class LongNumberFormatter
@@ -55,14 +53,14 @@ public class LongNumberFormatter
 
     @NonNull
     @Override
-    public Number extract(@NonNull final TextView view) {
-        final String sv = view.getText().toString().trim();
-        if (sv.isEmpty()) {
+    public Number extract(@NonNull final Context context,
+                          @NonNull final String text) {
+        if (text.isEmpty()) {
             return 0;
         }
 
         try {
-            return Long.parseLong(sv);
+            return Long.parseLong(text);
 
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw

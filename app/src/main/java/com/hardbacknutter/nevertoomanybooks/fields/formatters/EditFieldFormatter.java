@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
-import android.widget.TextView;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 
@@ -35,11 +35,14 @@ public interface EditFieldFormatter<T>
 
     /**
      * Extract the native typed value from the displayed version.
+     * This should basically do the reverse operation of {@link #format(Context, Object)}.
      *
-     * @param view to extract the value from
+     * @param context Current context
+     * @param text    to extract the value from
      *
      * @return The extracted value
      */
     @NonNull
-    T extract(@NonNull TextView view);
+    T extract(@NonNull Context context,
+              @NonNull String text);
 }

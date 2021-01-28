@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
 import android.content.Context;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +32,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
  * FieldFormatter for language fields.
  * <ul>
  *      <li>Multiple fields: <strong>yes</strong></li>
- *      <li>Extract: <strong>View</strong></li>
  * </ul>
  */
 public class LanguageFormatter
@@ -69,8 +67,8 @@ public class LanguageFormatter
      */
     @NonNull
     @Override
-    public String extract(@NonNull final TextView view) {
-        final String text = view.getText().toString().trim();
-        return Languages.getInstance().getISO3FromDisplayName(view.getContext(), mLocale, text);
+    public String extract(@NonNull final Context context,
+                          @NonNull final String text) {
+        return Languages.getInstance().getISO3FromDisplayName(context, mLocale, text);
     }
 }

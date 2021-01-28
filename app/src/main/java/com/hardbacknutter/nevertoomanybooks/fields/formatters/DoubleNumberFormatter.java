@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.fields.formatters;
 
 import android.content.Context;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +34,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  *
  * <ul>
  *      <li>Multiple fields: <strong>yes</strong></li>
- *      <li>Extract: <strong>View</strong></li>
  * </ul>
  */
 public class DoubleNumberFormatter
@@ -65,15 +63,15 @@ public class DoubleNumberFormatter
 
     @NonNull
     @Override
-    public Number extract(@NonNull final TextView view) {
-        final String sv = view.getText().toString().trim();
-        if (sv.isEmpty()) {
+    public Number extract(@NonNull final Context context,
+                          @NonNull final String text) {
+        if (text.isEmpty()) {
             return 0;
         }
 
         try {
-            // getSystemLocale: the user types it in
-            return ParseUtils.parseDouble(sv, AppLocale.getInstance().getSystemLocale());
+            // getSystemLocale: the user types it in on the SYSTEM keypad using a , or .
+            return ParseUtils.parseDouble(text, AppLocale.getInstance().getSystemLocale());
         } catch (@NonNull final NumberFormatException e) {
             // this should never happen... flw
             return 0;
