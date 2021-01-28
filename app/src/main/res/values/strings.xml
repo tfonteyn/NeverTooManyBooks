@@ -505,7 +505,7 @@
         to register with LibraryThing (free) and request a LibraryThing developer key (also free).
     </string>
     <string name="lt_url_text_register">Register with LibraryThing</string>
-    <string name="lt_url_text_dev_key">Request LibraryThing\ndeveloper key</string>
+    <string name="lt_url_text_dev_key">Request developer key</string>
     <string name="lt_lbl_key">Once you have the developer key, enter it below and it will be used to get extra data.</string>
     <string name="lt_key_is_correct">Your LibraryThing Developer Key is valid.</string>
     <string name="lt_key_is_incorrect">Your LibraryThing Developer Key was incorrect, or we could not connect to verify.</string>
@@ -870,7 +870,6 @@
 
     <!-- Navigation panel menu option -->
     <string name="menu_backup_and_export">Backup &amp; Export</string>
-    <string name="menu_export_import">Import &amp; Export</string>
     <string name="X_lbl_data_import_export">Backup &amp; Import</string>
 
     <!-- Button text; must be short. -->

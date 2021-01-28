@@ -371,7 +371,7 @@
     <string name="lt_key_is_correct">Uw LibraryThing ontwikkelaarssleutel is geldig.</string>
     <string name="lt_key_is_incorrect">Uw LibraryThing ontwikkelaarssleutel was niet juist, of er kon geen verbinding worden gemaakt met het netwerk ter verificatie.</string>
     <string name="lt_lbl_key">Zodra je de sleutel hebt kan je die hieronder invullen om zo gebruik te maken van de extra gegevensbron.</string>
-    <string name="lt_url_text_dev_key">Aanvragen LibraryThing\nontwikkelaarssleutel</string>
+    <string name="lt_url_text_dev_key">Ontwikkelaarssleutel aanvragen</string>
     <string name="lt_url_text_register">Registeren bij LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="menu_amazon_books_by_author_in_series">Boeken per auteur/reeks</string>

@@ -331,7 +331,7 @@
     <string name="lt_key_is_correct">Váš vývojářský klíč LibraryThing je platný.</string>
     <string name="lt_key_is_incorrect">Váš vývojářský klíč LibraryThing je neplatný, nebo není k dispozici připojení k internetu nutné k jeho ověření.</string>
     <string name="lt_lbl_key">Až získáte svůj vývojářský klíč, jednoduše jej vložte níže, aby mohl být použit pro získání extra informací.</string>
-    <string name="lt_url_text_dev_key">Získat vývojářský\nklíč LibraryThing</string>
+    <string name="lt_url_text_dev_key">Získat vývojářský klíč</string>
     <string name="lt_url_text_register">Registrovat na LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">O této aplikaci</string>

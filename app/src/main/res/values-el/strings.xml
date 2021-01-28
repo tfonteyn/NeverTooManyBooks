@@ -334,7 +334,7 @@
     <string name="lt_key_is_correct">Το κλειδί developer από το LibraryThing είναι έγκυρο.</string>
     <string name="lt_key_is_incorrect">Το κλειδί developer από το LibraryThing είναι λάθος, ή δεν ήταν εφικτή η σύνδεση στο δίκτυο για επαλήθευση.</string>
     <string name="lt_lbl_key">Όταν αποκτήσετε κλειδί developer, μπορείτε να το εισάγετε παρακάτω και θα χρησιμοποιηθεί για λήψη επιπλεόν δεδομένων.</string>
-    <string name="lt_url_text_dev_key">Ζητήστε κλειδί developer\nαπό το LibraryThing</string>
+    <string name="lt_url_text_dev_key">Αίτημα κλειδιού προγραμματιστή</string>
     <string name="lt_url_text_register">Εγγραφή με LibraryThing</string>
     <string name="megabytes">%.2fMB</string>
     <string name="lbl_about">Σχετικά με την εφαρμογή</string>

@@ -327,7 +327,7 @@
     <string name="lt_key_is_correct">Ваш ключ разработика LibraryThing действителен.</string>
     <string name="lt_key_is_incorrect">Ваш ключ разработчика LibraryThing не действителен или не возможно установить соединение, чтобы его проверить.</string>
     <string name="lt_lbl_key">Как только вы получите ключ разработчика, просто введите его в поле ниже. Он будет использован для получения дополнительной информации о книге.</string>
-    <string name="lt_url_text_dev_key">Запросить ключ\nразработчика LibraryThing</string>
+    <string name="lt_url_text_dev_key">Запросить ключ разработчика</string>
     <string name="lt_url_text_register">Зарегистрироваться в LibraryThing</string>
     <string name="megabytes">%.2fМб</string>
     <string name="lbl_about">О приложении…</string>

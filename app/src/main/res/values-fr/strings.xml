@@ -375,7 +375,7 @@
     <string name="lt_key_is_correct">Votre clé de développeur LibraryThing est valable.</string>
     <string name="lt_key_is_incorrect">Votre clé de développeur LibraryThing est incorrecte ou nous n\'avons pas pu nous connecter au réseau pour la vérifier.</string>
     <string name="lt_lbl_key">Une fois votre clé développeur obtenue, entrez la simplement ci-dessous et elle sera utilisée pour obtenir des données supplémentaires.</string>
-    <string name="lt_url_text_dev_key">Demander une clé\ndéveloppeur LibraryThing</string>
+    <string name="lt_url_text_dev_key">Demander une clé développeur</string>
     <string name="lt_url_text_register">S\'enregistrer auprès de LibraryThing</string>
     <string name="megabytes">%.2fMo</string>
     <string name="menu_amazon_books_by_author_in_series">Livres par auteur par série</string>
