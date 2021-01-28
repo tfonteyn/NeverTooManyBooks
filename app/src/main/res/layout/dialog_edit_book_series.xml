@@ -66,7 +66,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_series_title"
-                    style="@style/Envelope.AutoCompleteTextView"
+                    style="@style/TIL.AutoCompleteTextView"
                     android:hint="@string/lbl_series"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -85,7 +85,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_series_num"
-                    style="@style/Envelope.EditText.SeriesNum"
+                    style="@style/TIL.EditText.SeriesNum"
                     android:hint="@string/lbl_series_num"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lbl_series_title"

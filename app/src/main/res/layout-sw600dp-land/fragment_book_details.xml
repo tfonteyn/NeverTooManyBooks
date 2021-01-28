@@ -31,7 +31,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screenBorder"
+        android:layout_margin="@dimen/screen_border"
         >
 
         <TextView
@@ -119,12 +119,9 @@
 
         <RatingBar
             android:id="@+id/rating"
-            style="?attr/ratingBarStyleSmall"
+            style="@style/Field.RatingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/field_margin"
-            android:layout_marginTop="@dimen/border1"
-            android:numStars="5"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/title"
             />
@@ -161,7 +158,7 @@
             android:id="@+id/publication_section"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/border2"
+            android:layout_marginTop="@dimen/field_label_margin_top"
             app:layout_constraintEnd_toStartOf="@id/personal_data_section"
             app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/author"
@@ -267,8 +264,6 @@
         <TextView
             android:id="@+id/description"
             style="@style/Field.Description"
-            android:layout_marginStart="@dimen/field_margin_inline"
-            android:layout_marginEnd="@dimen/field_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/notes"

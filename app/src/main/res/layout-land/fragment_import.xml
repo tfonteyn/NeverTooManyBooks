@@ -25,7 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/screenBorder"
+    android:layout_margin="@dimen/screen_border"
     android:visibility="invisible"
     tools:context=".FragmentHostActivity"
     tools:visibility="visible"
@@ -42,25 +42,21 @@
     <TextView
         android:id="@+id/archive_name"
         style="@style/Text.Body"
-        android:layout_marginStart="@dimen/field_margin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textIsSelectable="true"
+        android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="archive name"
+        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/archive_content"
         style="@style/Text.Body.Small"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin_inline"
-        android:textIsSelectable="true"
+        android:layout_marginStart="@dimen/field_margin_inline_start"
         app:layout_constraintBaseline_toBaselineOf="@id/archive_name"
         app:layout_constraintStart_toEndOf="@id/archive_name"
         tools:text="archive content"
+        tools:ignore="SelectableText"
         />
 
     <androidx.constraintlayout.widget.Guideline
@@ -77,14 +73,14 @@
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="@string/lbl_books"
-        android:layout_marginStart="@dimen/field_margin"
+        android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/archive_content"
         />
 
     <RadioButton
         android:id="@+id/rb_import_books_option_new_only"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
         android:text="@string/lbl_import_books_option_new_only"
@@ -102,7 +98,7 @@
 
     <RadioButton
         android:id="@+id/rb_import_books_option_new_and_updated"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
         android:checked="true"
@@ -121,7 +117,7 @@
 
     <RadioButton
         android:id="@+id/rb_import_books_option_all"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
         android:text="@string/lbl_import_books_option_all"

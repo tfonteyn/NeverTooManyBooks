@@ -59,7 +59,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lbl_family_name"
-                style="@style/Envelope.AutoCompleteTextView"
+                style="@style/TIL.AutoCompleteTextView"
                 android:hint="@string/lbl_family_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +78,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/lbl_given_names"
-                style="@style/Envelope.AutoCompleteTextView"
+                style="@style/TIL.AutoCompleteTextView"
                 android:hint="@string/lbl_given_names"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

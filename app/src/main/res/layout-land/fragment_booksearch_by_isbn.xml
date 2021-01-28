@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_isbn"
-        style="@style/Envelope.EditText.Isbn"
+        style="@style/TIL.EditText.Isbn"
         app:layout_constraintEnd_toStartOf="@id/isbn_del"
         app:layout_constraintStart_toEndOf="@id/barrier_keypad_start"
         app:layout_constraintTop_toTopOf="parent"
@@ -54,8 +54,6 @@
     <Button
         android:id="@+id/isbn_del"
         style="@style/IsbnKeyPad.BackspaceButton"
-        android:layout_marginStart="@dimen/indent2"
-        android:contentDescription="@string/action_delete"
         app:layout_constraintBottom_toBottomOf="@id/lbl_isbn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/lbl_isbn"
@@ -64,7 +62,7 @@
     <Space
         android:id="@+id/keypadSpacer"
         android:layout_width="0dp"
-        android:layout_height="@dimen/border2"
+        android:layout_height="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
@@ -236,31 +234,32 @@
         style="@style/Field.ChipGroup"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/border1"
         android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@id/lbl_isbn"
         app:layout_constraintStart_toStartOf="@id/lbl_queue"
         app:layout_constraintTop_toBottomOf="@id/lbl_queue"
         tools:visibility="visible"
         >
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            tools:text="@sample/data.json/isbn/d13"-->
-        <!--            app:closeIconVisible="true"-->
-        <!--            />-->
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            tools:text="@sample/data.json/isbn/d13"-->
-        <!--            app:closeIconVisible="true"-->
-        <!--            />-->
-        <!--        <com.google.android.material.chip.Chip-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            tools:text="@sample/data.json/isbn/d13"-->
-        <!--            app:closeIconVisible="true"-->
-        <!--            />-->
+        <!--                <com.google.android.material.chip.Chip-->
+        <!--                    style="?attr/appChipQueueStyle"-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    tools:text="@sample/data.json/isbn/d13"-->
+        <!--                    />-->
+
+        <!--                <com.google.android.material.chip.Chip-->
+        <!--                    style="?attr/appChipQueueStyle"-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    tools:text="@sample/data.json/isbn/d13"-->
+        <!--                    />-->
+
+        <!--                <com.google.android.material.chip.Chip-->
+        <!--                    style="?attr/appChipQueueStyle"-->
+        <!--                    android:layout_width="wrap_content"-->
+        <!--                    android:layout_height="wrap_content"-->
+        <!--                    tools:text="@sample/data.json/isbn/d13"-->
+        <!--                    />-->
     </com.google.android.material.chip.ChipGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -44,7 +44,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/screenBorder"
+        android:layout_margin="@dimen/screen_border"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
 
@@ -58,9 +58,9 @@
 
         <Button
             android:id="@+id/register_url"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/lt_url_text_register"
+            style="@style/Button.Url"
+            android:layout_width="@dimen/large_menu_button"
+            android:text="@string/lbl_library_thing_url"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/b1"
@@ -68,8 +68,8 @@
 
         <Button
             android:id="@+id/dev_key_url"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/Button.Url"
+            android:layout_width="@dimen/large_menu_button"
             android:text="@string/lt_url_text_dev_key"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -86,7 +86,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_dev_key"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:hint="@string/hint_developer_key"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

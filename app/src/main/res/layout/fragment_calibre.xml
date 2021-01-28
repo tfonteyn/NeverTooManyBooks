@@ -24,14 +24,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/screenBorder"
+    android:layout_margin="@dimen/screen_border"
     >
 
     <TextView
         android:id="@+id/header"
         style="@style/Text.Header"
-        android:layout_marginStart="@dimen/indent_header"
-        android:layout_marginTop="@dimen/border2"
+        android:layout_marginStart="@dimen/header_margin_start"
+        android:layout_marginTop="@dimen/header_margin_top"
         android:text="@string/pt_maintenance"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -39,8 +39,7 @@
 
     <Button
         android:id="@+id/btn_lib_map"
-        style="@style/MenuButton"
-        android:layout_marginStart="@dimen/field_margin"
+        style="@style/Button.Menu"
         android:text="@string/lbl_bookshelves"
         app:icon="@drawable/ic_sync_alt"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,19 +48,19 @@
 
     <Button
         android:id="@+id/btn_import"
-        style="@style/MenuButton"
+        style="@style/Button.Menu"
         android:text="@string/action_import"
         app:icon="@drawable/ic_cloud_download"
-        app:layout_constraintStart_toStartOf="@id/btn_lib_map"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_lib_map"
         />
 
     <Button
         android:id="@+id/btn_send_updated_books"
-        style="@style/MenuButton"
+        style="@style/Button.Menu"
         android:text="@string/action_export"
         app:icon="@drawable/ic_cloud_upload"
-        app:layout_constraintStart_toStartOf="@id/btn_lib_map"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_import"
         />
 

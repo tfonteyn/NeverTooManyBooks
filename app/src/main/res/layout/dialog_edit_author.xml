@@ -59,7 +59,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_family_name"
-                    style="@style/Envelope.AutoCompleteTextView"
+                    style="@style/TIL.AutoCompleteTextView"
                     android:hint="@string/lbl_family_name"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -78,7 +78,7 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_given_names"
-                    style="@style/Envelope.AutoCompleteTextView"
+                    style="@style/TIL.AutoCompleteTextView"
                     android:hint="@string/lbl_given_names"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -97,10 +97,8 @@
 
                 <CheckBox
                     android:id="@+id/cbx_is_complete"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="@dimen/indent2"
-                    android:paddingEnd="@dimen/indent2"
                     android:text="@string/lbl_is_complete"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/lbl_given_names"

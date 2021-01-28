@@ -25,7 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/screenBorder"
+    android:layout_margin="@dimen/screen_border"
     android:visibility="invisible"
     tools:context=".FragmentHostActivity"
     tools:visibility="visible"
@@ -43,8 +43,6 @@
     <TextView
         android:id="@+id/info"
         style="@style/Text.Header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         android:text="@string/lbl_export_options"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -55,7 +53,7 @@
         android:id="@+id/cbx_books"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
+        android:layout_marginStart="@dimen/field_margin_start"
         android:checked="true"
         android:text="@string/lbl_books"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +62,7 @@
 
     <RadioButton
         android:id="@+id/rb_export_books_option_all"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
         android:checked="true"
@@ -75,7 +73,7 @@
 
     <RadioButton
         android:id="@+id/rb_export_books_option_new_and_updated"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/indent_radio_button"
         android:text="@string/lbl_export_books_option_since_last_full_backup"
@@ -95,7 +93,7 @@
         android:id="@+id/cbx_covers"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
+        android:layout_marginStart="@dimen/field_margin_start"
         android:checked="true"
         android:text="@string/lbl_covers_long"
         app:layout_constraintStart_toStartOf="parent"
@@ -115,6 +113,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_archive_format"
         style="@style/ExposedDropdownMenu"
+        android:layout_margin="@dimen/field_margin_start"
         android:hint="@string/lbl_archive_format"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/formatDivider"
@@ -134,7 +133,7 @@
     <TextView
         android:id="@+id/archive_format_info"
         style="@style/Text.Body.Small"
-        android:layout_marginStart="@dimen/field_margin"
+        android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_archive_format"
         tools:ignore="SelectableText"
@@ -144,7 +143,7 @@
     <TextView
         android:id="@+id/archive_format_info_long"
         style="@style/Text.Body.Small"
-        android:layout_marginStart="@dimen/field_margin"
+        android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/archive_format_info"
         tools:ignore="SelectableText"

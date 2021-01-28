@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -45,45 +45,59 @@
         style="@style/TopNestedScroller"
         >
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/screenBorder"
+            android:layout_margin="@dimen/screen_border"
             android:orientation="vertical"
             >
 
             <TextView
+                android:id="@+id/blurb"
                 style="@style/Text.Body"
                 android:text="@string/gr_auth_blurb_part1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 />
 
             <Button
                 android:id="@+id/goodreads_url"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:textAllCaps="false"
-                app:icon="@drawable/ic_link"
-                tools:text="https://www.goodreads.com"
+                style="@style/Button.Url"
+                android:layout_width="@dimen/large_menu_button"
+                android:text="@string/lbl_goodreads_url"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/blurb"
                 />
 
             <TextView
+                android:id="@+id/blurb2"
                 style="@style/Text.Body"
                 android:text="@string/gr_auth_blurb_part2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/goodreads_url"
                 />
 
             <TextView
+                android:id="@+id/blurb3"
                 style="@style/Text.Body"
                 android:text="@string/gr_auth_blurb_part3"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/blurb2"
                 />
 
             <Button
                 android:id="@+id/btn_authorize"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                style="@style/Button.Url"
+                android:layout_width="@dimen/large_menu_button"
                 android:text="@string/info_authorized_needed"
                 app:icon="@drawable/ic_security"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/blurb3"
                 />
 
             <TextView
@@ -91,21 +105,26 @@
                 style="@style/Text.Body"
                 android:text="@string/gr_auth_blurb_part4"
                 android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_authorize"
                 tools:visibility="visible"
                 />
 
             <Button
                 android:id="@+id/btn_delete_credentials"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
+                style="@style/Button.Action"
+                android:layout_width="@dimen/large_menu_button"
                 android:text="@string/action_clear_credentials"
                 android:visibility="gone"
                 app:icon="@drawable/ic_delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/lbl_delete_credentials"
                 tools:visibility="visible"
                 />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.core.widget.NestedScrollView>
 

@@ -26,8 +26,8 @@
     style="Widget.MaterialComponents.CardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/border2"
-    app:contentPadding="@dimen/border2"
+    android:layout_margin="8dp"
+    app:contentPadding="8dp"
     app:cardBackgroundColor="?attr/appCardBackgroundColor"
     >
 
@@ -41,7 +41,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/field_margin_inline"
+            android:layout_marginEnd="@dimen/field_margin_inline_start"
             android:hint="@string/lbl_library"
             app:layout_constraintEnd_toStartOf="@id/btn_create"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,10 +61,7 @@
 
         <Button
             android:id="@+id/btn_create"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="2dp"
+            style="@style/Button.Form.Submit"
             android:text="@string/action_create"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/lbl_library_name"
@@ -75,7 +72,7 @@
             android:id="@+id/lbl_bookshelf"
             style="@style/ExposedDropdownMenu.Dense"
             android:hint="@string/lbl_bookshelf"
-            android:layout_marginTop="@dimen/border2"
+            android:layout_marginTop="@dimen/field_label_margin_top"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_library_name"

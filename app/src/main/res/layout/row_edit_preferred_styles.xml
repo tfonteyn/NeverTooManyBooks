@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -32,7 +32,6 @@
     <CheckBox
         android:id="@id/ROW_CHECKABLE_BTN"
         style="@style/RowButton.Checkable"
-        android:contentDescription="@string/action_select"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/ROW_ONCLICK_TARGET"
         app:layout_constraintStart_toStartOf="parent"

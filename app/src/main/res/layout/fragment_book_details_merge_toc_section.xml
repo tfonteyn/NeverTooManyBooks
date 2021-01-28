@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,8 +29,6 @@
     <TextView
         android:id="@+id/lbl_toc"
         style="@style/Field.Label"
-        android:layout_marginTop="@dimen/border1"
-        android:layout_marginBottom="@dimen/border1"
         android:text="@string/lbl_table_of_content"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,7 +39,7 @@
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/btn_show_toc"
         style="@style/TocSwitch"
-        android:layout_marginStart="@dimen/field_margin_inline"
+        android:layout_marginStart="@dimen/field_margin_inline_start"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/lbl_toc"
         tools:checked="true"
@@ -60,7 +58,7 @@
     <ImageView
         android:id="@+id/icon_anthology"
         style="@style/Flag"
-        android:layout_marginStart="@dimen/field_margin_inline"
+        android:layout_marginStart="@dimen/field_margin_inline_start"
         android:contentDescription="@string/lbl_anthology"
         android:src="@drawable/ic_check"
         app:tint="?attr/colorSecondaryVariant"

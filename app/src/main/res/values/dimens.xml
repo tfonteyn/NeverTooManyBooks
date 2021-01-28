@@ -43,6 +43,12 @@
 -->
 <resources>
 
+    <!-- elevation for a progress bar overlaying a View. -->
+    <dimen name="progress_z">10dp</dimen>
+
+    <!-- layout_margin for top level layouts. -->
+    <dimen name="screen_border">4dp</dimen>
+
     <!-- Navigation panel header. -->
     <dimen name="nav_header_horizontal_padding">16dp</dimen>
     <dimen name="nav_header_vertical_padding">16dp</dimen>
@@ -81,14 +87,15 @@
     <dimen name="afs_md2_popup_text_size">18sp</dimen>
 
 
+    <!-- the margin around the CardView. -->
+    <dimen name="bob_book_card_margin">8dp</dimen>
     <!-- The content padding used for the CardView content displaying a Book. -->
-    <dimen name="bob_book_card_padding">4dp</dimen>
+    <dimen name="bob_book_card_content_padding">4dp</dimen>
     <!-- top margin for the top-level rows; also known as "fat_finger_spacer" -->
     <dimen name="bob_row_level_1_top_margin">4dp</dimen>
     <!-- indent multiplier for the levels in the booklist:
          paddingIndent = (level-1) * booklist_level_indent -->
     <dimen name="bob_level_indent">8dp</dimen>
-
     <!--
         The text size (in sp units, but in float notation) for all text in a book list row.
         For reference:
@@ -120,6 +127,19 @@
         <item>1.22</item>
     </array>
 
+
+    <!-- above the label of a field. -->
+    <dimen name="field_label_margin_top">4dp</dimen>
+    <!-- Margin applied around all TextInputLayout fields. -->
+    <dimen name="til_field_margin">2dp</dimen>
+    <!-- Start margin (and optional end) applied to a field.
+         Used for individual fields, or with a Guideline for a group of fields. -->
+    <dimen name="field_margin_start">8dp</dimen>
+    <dimen name="field_margin_start_large">16dp</dimen>
+    <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->
+    <dimen name="field_margin_inline_start">12dp</dimen>
+
+
     <!-- The width of an on-screen menu button.
          Intended to be 'almost' as wide as a phone screen in portrait mode.
          The 296 value is based on 4WVGA (480 x 800; hdpi) - 240dpi - sw320dp
@@ -129,30 +149,16 @@
 
     <!-- specific fixed-width fields. -->
     <dimen name="field_external_id_width">280dp</dimen>
+    <dimen name="field_about_number_width">60dp</dimen>
 
 
-    <!-- elevation for a progress bar. -->
-    <dimen name="progress_z">10dp</dimen>
 
-    <!-- layout_margin for top level layouts. -->
-    <dimen name="screenBorder">4dp</dimen>
-
-    <!-- drawable outline -->
-    <dimen name="outlineBorder">4dp</dimen>
 
     <!-- Spacing either for all around, or for bottom/top. NOT for start/end, for the latter use 'indent' -->
-    <dimen name="border1">4dp</dimen>
     <dimen name="border2">8dp</dimen>
 
-    <!-- indent, usually start only, but can be used for end as well. -->
-    <dimen name="indent2">8dp</dimen>
-
-    <!-- indent a radio button as a sub-list; e.g. radio buttons under a checkbox. -->
+    <!-- indent a radio button. -->
     <dimen name="indent_radio_button">16dp</dimen>
-
-    <!-- Make a header text align with list elements which are preceded by an icon.
-    Intention is to mimic a PreferenceCategory title indent. -->
-    <dimen name="indent_header">52dp</dimen>
 
     <!-- the width for a Button displaying an icon (24dp) and no text. -->
     <dimen name="icon_button_width">48dp</dimen>
@@ -160,21 +166,16 @@
     <!-- indent for the check on a ROW_CHECKABLE_BTN. -->
     <dimen name="indent_row_checkable_btn">12dp</dimen>
 
-    <!-- generic drawable padding. -->
-    <dimen name="drawable_padding1">4dp</dimen>
+    <!-- generic drawable padding (between icon and text). -->
+    <dimen name="drawable_padding">20dp</dimen>
 
-    <!-- Margin applied around all TextInputLayout fields. -->
-    <dimen name="envelope_edit_text_margin">2dp</dimen>
-    <!-- Start margin (and optional end) applied to a field.
-         Used for individual fields, or with a Guideline for a group of fields. -->
-    <dimen name="field_margin">8dp</dimen>
-    <dimen name="field_margin_large">16dp</dimen>
-    <!-- Start margin applied to the 2nd, 3rd.. field on a line of fields. -->
-    <dimen name="field_margin_inline">12dp</dimen>
+
+    <!-- Make a header text align with list elements which are preceded by an icon.
+         Intention is to mimic a PreferenceCategory title indent. -->
+    <dimen name="header_margin_top">4dp</dimen>
+    <dimen name="header_margin_start">52dp</dimen>
+
 
     <!-- Material medium text size. -->
     <dimen name="editText_isbn_textSize">18sp</dimen>
-
-    <dimen name="about_number_field_width">60dp</dimen>
-
 </resources>

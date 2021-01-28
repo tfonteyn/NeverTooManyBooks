@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screenBorder"
+        android:layout_margin="@dimen/screen_border"
         >
 
         <TextView
@@ -43,22 +43,18 @@
 
         <RatingBar
             android:id="@+id/rating"
-            style="?attr/ratingBarStyle"
+            style="@style/Field.RatingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:numStars="5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_rating"
-            tools:rating="5"
             />
 
         <CheckBox
             android:id="@+id/cbx_read"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/lbl_read"
-            android:paddingStart="@dimen/field_margin"
-            android:paddingEnd="@dimen/field_margin"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/rating"
             tools:checked="true"
@@ -66,7 +62,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_start"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:hint="@string/lbl_read_start"
             app:layout_constraintEnd_toStartOf="@id/lbl_read_end"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,7 +80,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_read_end"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:hint="@string/lbl_read_end"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_read_start"
@@ -110,7 +106,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_location"
-            style="@style/Envelope.AutoCompleteTextView"
+            style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_location"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -120,8 +116,8 @@
             <AutoCompleteTextView
                 android:id="@+id/location"
                 style="@style/autoCompleteTextEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="LabelFor"
                 />
 
@@ -129,7 +125,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_acquired"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:hint="@string/lbl_date_acquired"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -147,7 +143,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid_currency"
-            style="@style/Envelope.AutoCompleteTextView"
+            style="@style/TIL.AutoCompleteTextView"
             android:layout_width="wrap_content"
             android:hint="@string/lbl_currency"
             app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid"
@@ -167,7 +163,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_price_paid"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:hint="@string/lbl_price_paid"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
@@ -177,8 +173,8 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/price_paid"
                 style="@style/priceTextEntry"
-                android:imeOptions="actionNext"
                 android:layout_width="match_parent"
+                android:imeOptions="actionNext"
                 tools:ignore="Autofill"
                 tools:text="12.99"
                 />
@@ -187,7 +183,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_condition"
-            style="@style/Envelope.AutoCompleteTextView"
+            style="@style/ExposedDropdownMenu.Dense"
             android:hint="@string/lbl_condition"
             app:layout_constraintEnd_toStartOf="@id/lbl_condition_cover"
             app:layout_constraintStart_toStartOf="parent"
@@ -196,8 +192,9 @@
 
             <AutoCompleteTextView
                 android:id="@+id/condition"
-                style="@style/EditText.Spinner"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
                 tools:ignore="LabelFor"
                 tools:text="@string/lbl_condition_reading_copy"
                 />
@@ -206,7 +203,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_condition_cover"
-            style="@style/Envelope.AutoCompleteTextView"
+            style="@style/ExposedDropdownMenu.Dense"
             android:hint="@string/lbl_dust_cover"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_condition"
@@ -215,8 +212,9 @@
 
             <AutoCompleteTextView
                 android:id="@+id/condition_cover"
-                style="@style/EditText.Spinner"
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
                 tools:ignore="LabelFor"
                 tools:text="@string/lbl_condition_dust_cover_missing_or_bad"
                 />
@@ -265,10 +263,9 @@
 
         <CheckBox
             android:id="@+id/cbx_signed"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/lbl_signed"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/edition"
             tools:checked="true"
@@ -276,7 +273,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_personal_notes"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:hint="@string/lbl_personal_notes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

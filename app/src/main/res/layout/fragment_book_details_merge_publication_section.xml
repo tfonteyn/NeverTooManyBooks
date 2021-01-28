@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -180,13 +180,13 @@
         >
         <!-- chips will be added here dynamically -->
         <!--         <com.google.android.material.chip.Chip-->
-        <!--             style="?attr/appChipActionStyle"-->
+        <!--             style="?attr/appChipDisplayStyle"-->
         <!--             android:layout_width="wrap_content"-->
         <!--             android:layout_height="wrap_content"-->
         <!--             android:text="@string/lbl_edition_first_edition"-->
         <!--            />-->
         <!--         <com.google.android.material.chip.Chip-->
-        <!--             style="?attr/appChipActionStyle"-->
+        <!--             style="?attr/appChipDisplayStyle"-->
         <!--             android:layout_width="wrap_content"-->
         <!--             android:layout_height="wrap_content"-->
         <!--             android:text="@string/lbl_edition_first_impression"-->

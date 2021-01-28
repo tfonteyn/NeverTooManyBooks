@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -21,18 +21,15 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@id/ROW_ONCLICK_TARGET"
     style="@style/BoB.Group"
     >
 
     <RatingBar
         android:id="@+id/rating"
-        style="?attr/ratingBarStyleIndicator"
+        style="@style/Field.RatingBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:numStars="5"
-        tools:rating="5"
         />
 
 </LinearLayout>

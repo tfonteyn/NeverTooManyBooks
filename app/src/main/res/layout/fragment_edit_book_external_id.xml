@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -30,14 +30,14 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/screenBorder"
+        android:layout_margin="@dimen/screen_border"
         >
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_goodreads"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:layout_width="@dimen/field_external_id_width"
-            android:layout_marginTop="@dimen/border2"
+            android:layout_marginTop="@dimen/field_label_margin_top"
             android:hint="@string/site_goodreads"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,7 +57,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_isfdb"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:layout_width="@dimen/field_external_id_width"
             android:hint="@string/site_isfdb"
             app:layout_constraintEnd_toEndOf="parent"
@@ -78,7 +78,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_library_thing"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:layout_width="@dimen/field_external_id_width"
             android:hint="@string/site_library_thing"
             app:layout_constraintEnd_toEndOf="parent"
@@ -99,7 +99,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_open_library"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:layout_width="@dimen/field_external_id_width"
             android:hint="@string/site_open_library"
             app:layout_constraintEnd_toEndOf="parent"
@@ -120,7 +120,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_strip_info_be"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:layout_width="@dimen/field_external_id_width"
             android:hint="@string/site_stripinfo_be"
             app:layout_constraintEnd_toEndOf="parent"

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -64,21 +64,18 @@
 
             <TextView
                 android:id="@+id/statusMessage"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:textAppearance="?attr/textAppearanceSubtitle2"
-                android:textIsSelectable="false"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                style="@style/Text.Body.Small"
+                app:layout_constraintStart_toStartOf="@id/progressBar"
                 app:layout_constraintTop_toBottomOf="@id/progressBar"
                 tools:text="@string/progress_msg_searching_editions"
+                tools:ignore="SelectableText"
                 />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/gallery"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/border2"
+                android:layout_marginTop="@dimen/field_label_margin_top"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"

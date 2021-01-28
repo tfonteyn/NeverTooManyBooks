@@ -31,6 +31,7 @@
     <style name="Field">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textIsSelectable">true</item>
     </style>
 
@@ -39,25 +40,20 @@
         -->
     <style name="Field.Label">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/field_margin</item>
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
         <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
-    </style>
-
-    <style name="Field.Label.Large">
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
     <!-- 'medium' detail field; for example Series title, ...
         Set app:layout_constraintStart_toStartOf="@id/thisFieldsLabel"
         -->
     <style name="Field.Generic">
-        <item name="android:layout_marginStart">@dimen/field_margin</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
     <style name="Field.Generic.Inline">
-        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
-        <item name="layout_goneMarginStart">@dimen/field_margin</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline_start</item>
+        <item name="layout_goneMarginStart">@dimen/field_margin_start</item>
     </style>
 
     <!-- 'minor' detail field; for example format, isbn,... -->
@@ -80,7 +76,6 @@
     </style>
 
     <style name="Field.Isbn">
-        <item name="android:layout_marginStart">@dimen/field_margin</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
     </style>
 
@@ -90,24 +85,37 @@
 
     <!-- Book personal notes. -->
     <style name="Field.Notes">
-        <item name="android:layout_marginStart">@dimen/field_margin</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <!-- A bigger text field just looks nicer with these start/end margins. -->
+        <item name="android:layout_marginStart">@dimen/field_margin_inline_start</item>
+        <item name="android:layout_marginEnd">@dimen/field_margin_inline_start</item>
     </style>
 
     <!-- Book Description. -->
     <style name="Field.Description">
-        <item name="android:layout_marginTop">@dimen/border1</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
         <item name="android:background">@drawable/outline_rounded</item>
+        <!-- serves as it's own label. -->
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <!-- A bigger text field just looks nicer with these start/end margins. -->
+        <item name="android:layout_marginStart">@dimen/field_margin_inline_start</item>
+        <item name="android:layout_marginEnd">@dimen/field_margin_inline_start</item>
     </style>
 
     <!-- Lend out to X. -->
     <style name="Field.LendOutToBar">
-        <item name="android:paddingStart">@dimen/indent2</item>
-        <item name="android:paddingEnd">@dimen/indent2</item>
-        <item name="android:background">?attr/colorOnSurface</item>
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
+        <item name="android:background">?attr/colorOnSurface</item>
         <item name="android:textColor">?attr/colorSurface</item>
+        <!-- we want it centered, hence use and end-margin equal to the start margin -->
+        <item name="android:layout_marginEnd">@dimen/field_margin_start</item>
+    </style>
+
+    <style name="Field.RatingBar" parent="Widget.AppCompat.RatingBar.Small">
+        <item name="android:numStars">5</item>
+        <!-- serves as it's own label. -->
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -116,7 +124,8 @@
     <style name="Field.ChipGroup" parent="Widget.MaterialComponents.ChipGroup">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginStart">@dimen/field_margin</item>
+        <!-- without margin, the chips are glued to the label. -->
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
     </style>
 
     <!-- Read-Write style for Book-edit screen. -->
@@ -173,42 +182,43 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- Edit fields; An 'Envelope' is normally a TextInputLayout, but see 'Envelope.Button' -->
+    <!-- Edit fields; 'TIL' == TextInputLayout. -->
     <!-- *************************************************************************************** -->
 
-    <!-- slight misnomer as this is not an Envelope, but this way the naming
-         is in line with "Envelope.EditText";
-          i.e. a (secondary) Button next to an EditText. -->
-    <style name="Envelope.Button"
+    <!-- Button (icon only) positioned 'after' an EditText; serving as a extended edit action. -->
+    <style name="TIL.EditText.Button"
         parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:enabled">true</item>
         <item name="android:layout_width">@dimen/icon_button_width</item>
         <item name="android:layout_height">0dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginStart">8dp</item>
         <item name="iconTint">?attr/editTextColor</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">0dp</item>
     </style>
 
-    <style name="Envelope.EditText"
+    <style name="TIL.EditText"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/envelope_edit_text_margin</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
         <item name="endIconMode">clear_text</item>
     </style>
 
     <!-- a fixed width box for a 4-digit year. -->
-    <style name="Envelope.EditText.Year">
+    <style name="TIL.EditText.Year">
         <item name="android:hint">@string/lbl_year</item>
         <item name="android:layout_width">120dp</item>
     </style>
 
-    <style name="Envelope.EditText.Isbn">
+    <style name="TIL.EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
         <item name="startIconDrawable">@drawable/ic_check</item>
         <item name="startIconTint">?attr/colorSecondaryVariant</item>
     </style>
 
-    <style name="Envelope.EditText.SeriesNum">
+    <style name="TIL.EditText.SeriesNum">
         <item name="android:layout_width">200dp</item>
     </style>
 
@@ -219,11 +229,11 @@
         Good read (but fails to mention setOnItemClickListener, and talks about textchange listener...)
         https://blog.usejournal.com/there-is-no-material-design-spinner-for-android-3261b7c77da8
     -->
-    <style name="Envelope.AutoCompleteTextView"
+    <style name="TIL.AutoCompleteTextView"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/envelope_edit_text_margin</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
         <!-- make the drop down arrow better visible. -->
         <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
@@ -232,14 +242,6 @@
     <style name="EditText">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-    </style>
-
-    <style name="EditText.Spinner">
-        <item name="android:clickable">false</item>
-        <item name="android:focusable">false</item>
-        <item name="android:inputType">none</item>
-        <item name="android:cursorVisible">false</item>
-        <item name="android:longClickable">false</item>
     </style>
 
     <!-- A disabled edit text field, {@link com.google.android.material.textfield.TextInputEditText}
@@ -316,10 +318,13 @@
     </style>
 
     <style name="IsbnKeyPad.BackspaceButton">
-        <item name="android:paddingLeft">@dimen/isbn_keypad_backspace_key_icon_padding</item>
+        <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_width">@dimen/isbn_keypad_backspace_key_width</item>
         <item name="android:layout_height">wrap_content</item>
+        <!-- yes, LEFT! - this is to offset the icon so its centered -->
+        <item name="android:paddingLeft">@dimen/isbn_keypad_backspace_key_icon_padding</item>
         <item name="icon">@drawable/ic_backspace</item>
+        <item name="android:contentDescription">@string/action_delete</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -330,15 +335,20 @@
     <style name="RowButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:padding">@dimen/border2</item>
+        <item name="android:padding">8dp</item>
     </style>
 
-    <!-- CheckBox - editable checkbox with custom icon -->
-    <style name="RowButton.Checkable">
+    <!-- CheckBox with custom (larger) icon -->
+    <style name="RowButton.Checkable" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <!-- don't want it to close to the edge of the screen. -->
         <item name="android:layout_marginStart">@dimen/indent_row_checkable_btn</item>
-        <item name="android:focusable">true</item>
-        <item name="android:focusableInTouchMode">false</item>
+        <!-- larger icon, without box.
+             In Studio preview, it does not look centered,
+             but it IS FINE when the app is running for real. -->
         <item name="android:button">?android:attr/textCheckMark</item>
+        <item name="android:contentDescription">@string/action_select</item>
     </style>
 
     <!-- ImageButton - 'delete this row' -->
@@ -380,7 +390,7 @@
     <!-- Secondary rows inside a list details row. -->
     <style name="RowTextLine.Secondary">
         <item name="android:textAppearance">?attr/textAppearanceListItemSecondary</item>
-        <item name="android:layout_marginStart">@dimen/indent2</item>
+        <item name="android:layout_marginStart">8dp</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -456,8 +466,8 @@
         <item name="android:layout_width">0dp</item>
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textIsSelectable">true</item>
-        <item name="android:layout_marginStart">@dimen/indent2</item>
-        <item name="android:layout_marginEnd">@dimen/indent2</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
     </style>
@@ -524,8 +534,8 @@
     <style name="BoB.BookContainer" parent="Widget.MaterialComponents.CardView">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_margin">@dimen/border2</item>
-        <item name="contentPadding">@dimen/bob_book_card_padding</item>
+        <item name="android:layout_margin">@dimen/bob_book_card_margin</item>
+        <item name="contentPadding">@dimen/bob_book_card_content_padding</item>
         <item name="cardBackgroundColor">?attr/appCardBackgroundColor</item>
     </style>
 
@@ -538,6 +548,7 @@
     <!-- Text element in a 'book' row -->
     <style name="BoB.Book.Text">
         <item name="android:layout_width">0dp</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textIsSelectable">false</item>
         <item name="android:textAppearance">?attr/textAppearanceBody2</item>
     </style>
@@ -612,6 +623,51 @@
         <item name="android:layout_margin">@dimen/fab_margin</item>
         <item name="android:visibility">invisible</item>
         <item name="iconGravity">end</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
+    <!-- Generic buttons -->
+    <!-- *************************************************************************************** -->
+
+    <!-- A button in a list of action-options. -->
+    <style name="Button.Menu" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:layout_width">@dimen/large_menu_button</item>
+        <item name="android:layout_height">?attr/listPreferredItemHeight</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <!-- icon space is 48dp, minus the icon of 24dp, divided by 2 -->
+        <item name="iconPadding">12dp</item>
+    </style>
+
+    <!-- A button to save/submit some form. Meant to be placed on the 'end' & 'bottom' of the form. -->
+    <style name="Button.Form.Submit" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+    </style>
+
+    <!-- generic lower-importance action button. -->
+    <style name="Button.Action" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
+    </style>
+
+    <!-- A button which will take the user to some external website. -->
+    <style name="Button.Url" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+        <item name="android:textColor">?attr/colorOnBackground</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="icon">@drawable/ic_link</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -697,18 +753,7 @@
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
     </style>
 
-    <!-- A button in a list of action-options. -->
-    <style name="MenuButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:layout_width">@dimen/large_menu_button</item>
-        <item name="android:layout_height">?attr/listPreferredItemHeight</item>
-        <item name="android:textAppearance">?attr/textAppearanceListItem</item>
-        <item name="android:textColor">?attr/colorOnBackground</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:gravity">start|center_vertical</item>
-        <!-- icon space is 48dp, minus the icon of 24dp, divided by 2 -->
-        <item name="iconPadding">12dp</item>
-    </style>
-
+    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
     <style name="ExposedDropdownMenu"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
@@ -717,10 +762,12 @@
         <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
+    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
     <style name="ExposedDropdownMenu.Dense"
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
         <!-- make the drop down arrow better visible. -->
         <item name="endIconTint">?attr/colorOnSurface</item>
     </style>

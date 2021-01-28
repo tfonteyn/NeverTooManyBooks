@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,12 +25,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/screenBorder"
+    android:layout_margin="@dimen/screen_border"
     >
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_title"
-        style="@style/Envelope.EditText"
+        style="@style/TIL.EditText"
         android:hint="@string/lbl_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +49,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_first_publication"
-        style="@style/Envelope.EditText.Year"
+        style="@style/TIL.EditText.Year"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
         >
@@ -65,7 +65,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/lbl_author"
-        style="@style/Envelope.AutoCompleteTextView"
+        style="@style/TIL.AutoCompleteTextView"
         android:hint="@string/lbl_author"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -84,17 +84,19 @@
 
     <CheckBox
         android:id="@+id/cbx_is_anthology"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/lbl_anthology"
-        app:layout_constraintBaseline_toBaselineOf="@id/lbl_first_publication"
+        android:layout_marginTop="@dimen/field_label_margin_top"
+        app:layout_constraintTop_toBottomOf="@id/lbl_title"
         app:layout_constraintStart_toStartOf="parent"
         tools:checked="true"
         />
 
     <CheckBox
         android:id="@+id/cbx_multiple_authors"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
+        android:layout_marginTop="@dimen/field_label_margin_top"
         android:layout_height="wrap_content"
         android:text="@string/lbl_toc_multiple_authors"
         app:layout_constraintStart_toStartOf="parent"
@@ -104,12 +106,11 @@
 
     <Button
         android:id="@+id/btn_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/border1"
+        style="@style/Button.Form.Submit"
         android:text="@string/action_add"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_author"
+        app:layout_constraintBottom_toTopOf="@id/tocList"
         />
 
     <androidx.constraintlayout.widget.Barrier
@@ -124,7 +125,6 @@
         android:id="@+id/tocList"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/border2"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"

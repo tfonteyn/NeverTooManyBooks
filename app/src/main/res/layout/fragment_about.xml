@@ -25,7 +25,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="@dimen/screenBorder"
+    android:layout_margin="@dimen/screen_border"
     tools:context=".FragmentHostActivity"
     >
 
@@ -33,9 +33,9 @@
         android:id="@+id/app_icon"
         android:layout_width="@dimen/app_logo"
         android:layout_height="@dimen/app_logo"
+        android:layout_marginStart="8dp"
         android:contentDescription="@string/app_name"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:layout_marginStart="@dimen/indent2"
         android:src="@drawable/ic_nevertoomanybooks_about"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -112,7 +112,7 @@
     <TextView
         android:id="@+id/book_count"
         style="@style/Field.Generic.Inline.Small"
-        android:layout_width="@dimen/about_number_field_width"
+        android:layout_width="@dimen/field_about_number_width"
         android:gravity="end"
         android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_books"
@@ -123,7 +123,7 @@
     <TextView
         android:id="@+id/series_count"
         style="@style/Field.Generic.Inline.Small"
-        android:layout_width="@dimen/about_number_field_width"
+        android:layout_width="@dimen/field_about_number_width"
         android:gravity="end"
         android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_series"
@@ -134,7 +134,7 @@
     <TextView
         android:id="@+id/author_count"
         style="@style/Field.Generic.Inline.Small"
-        android:layout_width="@dimen/about_number_field_width"
+        android:layout_width="@dimen/field_about_number_width"
         android:gravity="end"
         android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_authors"
@@ -145,7 +145,7 @@
     <TextView
         android:id="@+id/publisher_count"
         style="@style/Field.Generic.Inline.Small"
-        android:layout_width="@dimen/about_number_field_width"
+        android:layout_width="@dimen/field_about_number_width"
         android:gravity="end"
         android:textIsSelectable="true"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_publishers"
@@ -156,8 +156,8 @@
     <TextView
         android:id="@+id/contacts"
         style="@style/Text.Header"
-        android:layout_marginStart="@dimen/field_margin"
         android:layout_marginTop="24dp"
+        android:layout_marginStart="@dimen/field_margin_start"
         android:text="@string/lbl_about_contact"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_publishers"
@@ -165,12 +165,8 @@
 
     <Button
         android:id="@+id/btn_sourcecode_url"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
+        style="@style/Button.Url"
         android:text="@string/lbl_sourcecode_url"
-        app:icon="@drawable/ic_link"
         app:layout_constraintStart_toStartOf="@id/contacts"
         app:layout_constraintTop_toBottomOf="@id/contacts"
         />
@@ -183,7 +179,6 @@
         style="@style/Field.Generic.Small"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
         android:layout_marginBottom="?attr/actionBarSize"
         android:text=""
         android:textStyle="italic"

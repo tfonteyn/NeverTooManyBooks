@@ -29,14 +29,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="@dimen/screenBorder"
+        android:layout_margin="@dimen/screen_border"
         >
 
         <TextView
             android:id="@+id/header"
             style="@style/Text.Header"
-            android:layout_marginTop="@dimen/border2"
-            android:layout_marginStart="@dimen/indent_header"
+            android:layout_marginStart="@dimen/header_margin_start"
+            android:layout_marginTop="@dimen/header_margin_top"
             android:text="@string/pt_maintenance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -44,54 +44,54 @@
 
         <Button
             android:id="@+id/btn_reset_tips"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:text="@string/tip_reset_all"
             app:icon="@drawable/ic_undo"
-            android:layout_marginStart="@dimen/field_margin"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/header"
             />
 
         <Button
             android:id="@+id/btn_purge_files"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:text="@string/lbl_purge_files"
             app:icon="@drawable/ic_close"
-            app:layout_constraintStart_toStartOf="@id/btn_reset_tips"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_reset_tips"
             />
 
         <Button
             android:id="@+id/btn_purge_blns"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:text="@string/lbl_purge_blns"
             app:icon="@drawable/ic_close"
-            app:layout_constraintStart_toStartOf="@id/btn_reset_tips"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_purge_files"
             />
 
         <Button
             android:id="@+id/btn_rebuild_fts"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:text="@string/menu_rebuild_fts"
             app:icon="@drawable/ic_manage"
-            app:layout_constraintStart_toStartOf="@id/btn_reset_tips"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_purge_blns"
             />
 
         <Button
             android:id="@+id/btn_rebuild_index"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:text="@string/menu_rebuild_index"
             app:icon="@drawable/ic_manage"
-            app:layout_constraintStart_toStartOf="@id/btn_reset_tips"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_rebuild_fts"
             />
 
         <TextView
             android:id="@+id/btn_debug"
             style="@style/Text.Header"
-            android:layout_marginStart="@dimen/indent_header"
+            android:layout_marginStart="@dimen/header_margin_start"
+            android:layout_marginTop="@dimen/header_margin_top"
             android:text="@string/debug"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_rebuild_index"
@@ -99,45 +99,45 @@
 
         <Button
             android:id="@+id/btn_debug_send_mail"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:text="@string/lbl_send_debug"
             app:icon="@drawable/ic_bug_report"
-            app:layout_constraintStart_toStartOf="@id/btn_reset_tips"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_debug"
             />
 
         <Button
             android:id="@+id/btn_debug_dump_prefs"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:text="@string/debug_dump_prefs"
             android:visibility="gone"
             app:icon="@drawable/ic_details"
-            tools:visibility="visible"
-            app:layout_constraintStart_toStartOf="@id/btn_reset_tips"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_debug_send_mail"
+            tools:visibility="visible"
             />
 
         <Button
             android:id="@+id/btn_debug_sq_shell"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:text="@string/debug_sq_shell"
             android:visibility="gone"
             app:icon="@drawable/ic_keyboard"
-            tools:visibility="visible"
-            app:layout_constraintStart_toStartOf="@id/btn_reset_tips"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btn_debug_dump_prefs"
+            tools:visibility="visible"
             />
 
         <Button
             android:id="@+id/btn_debug_clear_db"
-            style="@style/MenuButton"
+            style="@style/Button.Menu"
             android:backgroundTint="?attr/colorError"
             android:text="@string/action_clear_all_data"
             android:textColor="?attr/colorOnError"
-            app:layout_constraintStart_toStartOf="@id/btn_reset_tips"
-            app:layout_constraintTop_toBottomOf="@id/btn_debug_sq_shell"
             android:visibility="gone"
             app:icon="@drawable/ic_delete"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_debug_sq_shell"
             tools:visibility="visible"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -31,9 +31,10 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/field_margin"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginEnd="@dimen/field_margin_start"
         android:textAppearance="?attr/textAppearanceListItem"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"

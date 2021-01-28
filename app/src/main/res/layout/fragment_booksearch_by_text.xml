@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -29,12 +29,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/screenBorder"
+        android:layout_margin="@dimen/screen_border"
         >
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_author"
-            style="@style/Envelope.AutoCompleteTextView"
+            style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_author"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -53,7 +53,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_title"
-            style="@style/Envelope.EditText"
+            style="@style/TIL.EditText"
             android:hint="@string/lbl_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +72,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_publisher"
-            style="@style/Envelope.AutoCompleteTextView"
+            style="@style/TIL.AutoCompleteTextView"
             android:hint="@string/lbl_publisher"
             android:visibility="gone"
             app:helperText="@string/isfdb_warning_limited_to"
@@ -95,9 +95,7 @@
 
         <Button
             android:id="@+id/btn_search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/border2"
+            style="@style/Button.Form.Submit"
             android:text="@android:string/search_go"
             app:icon="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"
