@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckedTextView;
+import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -37,7 +37,7 @@ import java.util.Set;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
- * Add a list of CheckedTextView to a RecyclerView.
+ * Add a list of CheckBox options to a RecyclerView.
  * <p>
  * Row layout: {@code R.layout.row_choice_multi}
  *
@@ -101,8 +101,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
 
         final int position = holder.getAbsoluteAdapterPosition();
 
-        final boolean selected = !holder.buttonView.isChecked();
-        holder.buttonView.setChecked(selected);
+        final boolean selected = holder.buttonView.isChecked();
 
         final ID itemId = mItems.get(position).first;
         if (selected) {
@@ -145,7 +144,7 @@ public class ChecklistRecyclerAdapter<ID, CS extends CharSequence>
             extends RecyclerView.ViewHolder {
 
         @NonNull
-        final CheckedTextView buttonView;
+        final CheckBox buttonView;
 
         Holder(@NonNull final View itemView) {
             super(itemView);
