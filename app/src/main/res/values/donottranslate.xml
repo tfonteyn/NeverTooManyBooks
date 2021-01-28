@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -28,11 +28,15 @@
 
     <string name="app_name" translatable="false">&APP_NAME;</string>
 
-    <string name="lbl_sourcecode_url" translatable="false">github.com</string>
+    <string name="lbl_sourcecode_url" translatable="false">https://github.com</string>
     <string name="sourcecode_url" translatable="false">https://github.com/tfonteyn/NeverTooManyBooks</string>
 
     <!--  acronyms -->
     <string name="lbl_isbn" translatable="false">ISBN</string>
+
+    <!-- external sites URL to display to the user. -->
+    <string name="lbl_goodreads_url" translatable="false">https://www.goodreads.com</string>
+    <string name="lbl_library_thing_url" translatable="false">https://www.librarything.com</string>
 
     <!-- External sites / trademarks  -->
     <string name="site_amazon" translatable="false">Amazon</string>
