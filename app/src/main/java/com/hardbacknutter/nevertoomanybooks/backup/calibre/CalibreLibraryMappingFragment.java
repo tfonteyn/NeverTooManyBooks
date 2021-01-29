@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -44,10 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class CalibreLibraryMappingFragment
@@ -115,10 +116,26 @@ public class CalibreLibraryMappingFragment
         mAdapter.notifyDataSetChanged();
     }
 
-    private void onMetaDataFailure(final FinishedMessage<Exception> message) {
-        //URGENT: clean screen + good msg + offer to go to connection options
+    private void onMetaDataFailure(@NonNull final FinishedMessage<Exception> message) {
+        final Context context = getContext();
         //noinspection ConstantConditions
-        StandardDialogs.showError(getContext(), R.string.error_unknown);
+        String msg = ExMsg.map(context, TAG, message.result);
+        if (msg == null) {
+            msg = ExMsg.ioExFallbackMsg(context, message.result,
+                                        getString(R.string.error_network_site_access_failed,
+                                                  CalibreContentServer.getHostUrl(context)));
+        }
+        new MaterialAlertDialogBuilder(context)
+                .setIcon(R.drawable.ic_error)
+                .setTitle(R.string.httpError)
+                .setMessage(msg)
+                .setPositiveButton(android.R.string.ok, (d, w) -> {
+                    d.dismiss();
+                    // just pop, we're always called from a fragment
+                    getParentFragmentManager().popBackStack();
+                })
+                .create()
+                .show();
     }
 
     private static class Holder
