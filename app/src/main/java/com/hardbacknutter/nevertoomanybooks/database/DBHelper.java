@@ -100,6 +100,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -792,6 +793,8 @@ public final class DBHelper
         }
         if (oldVersion < 14) {
             TBL_CALIBRE_BOOKS.create(syncedDb, true);
+            TBL_CALIBRE_LIBRARIES.create(syncedDb, true);
+
             syncedDb.execSQL("INSERT INTO " + TBL_CALIBRE_BOOKS.getName()
                              + '(' + KEY_FK_BOOK + ',' + KEY_CALIBRE_BOOK_UUID + ')'
                              + " SELECT " + KEY_PK_ID + ',' + KEY_CALIBRE_BOOK_UUID
@@ -799,6 +802,12 @@ public final class DBHelper
                              + " WHERE " + KEY_CALIBRE_BOOK_UUID + " IS NOT NULL");
             syncedDb.execSQL("UPDATE " + TBL_BOOKS.getName()
                              + " SET " + KEY_CALIBRE_BOOK_UUID + "=NULL");
+
+            PreferenceManager.getDefaultSharedPreferences(context)
+                             .edit()
+                             .remove("scanner.preferred")
+                             .remove("compat.image.cropper.viewlayertype")
+                             .apply();
         }
 
         //URGENT: the use of recreateAndReload is dangerous right now and can break updates.
@@ -809,12 +818,6 @@ public final class DBHelper
         //TODO: if at a future time we make a change that requires to copy/reload the books table:
         // 1. change DOM_UTC_LAST_SYNC_DATE_GOODREADS -> See note in the DBDefinitions class.
         // 2. remove the column "clb_uuid"
-
-        //TODO:  prefs.edit()
-        // .remove("scanner.preferred")
-        // .remove("compat.image.cropper.viewlayertype")
-        // .apply();
-
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
         //TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_your_engine_external_id);
