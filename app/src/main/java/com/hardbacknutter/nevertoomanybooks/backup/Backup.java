@@ -26,13 +26,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
@@ -101,37 +98,12 @@ public final class Backup {
     @NonNull
     static String createErrorReport(@NonNull final Context context,
                                     @Nullable final Exception e) {
-        String msg = ExMsg.map(context, TAG, e);
-
-        if (msg == null) {
-            // generic storage related IOException message
-            if (e instanceof IOException) {
-                if (BuildConfig.DEBUG /* always */) {
-                    // in debug mode show the raw exception
-                    msg = context.getString(R.string.error_unknown)
-                          + "\n\n" + e.getLocalizedMessage();
-                } else {
-                    msg = StandardDialogs
-                            .createBadError(context, R.string.error_storage_not_writable);
-                }
-            }
-
-            // generic unknown message
-            if (msg == null || msg.isEmpty()) {
-                if (BuildConfig.DEBUG /* always */) {
-                    // in debug mode show the raw exception
-                    msg = context.getString(R.string.error_unknown);
-                    if (e != null) {
-                        msg += "\n\n" + e.getLocalizedMessage();
-                    }
-                } else {
-                    // when not in debug, ask for feedback
-                    msg = StandardDialogs.createBadError(context, R.string.error_unknown);
-                }
-            }
+        final String msg = ExMsg.map(context, TAG, e);
+        if (msg != null) {
+            return msg;
         }
 
-        return msg;
+        return ExMsg.ioExFallbackMsg(context, e, context.getString(
+                R.string.error_storage_not_writable));
     }
-
 }

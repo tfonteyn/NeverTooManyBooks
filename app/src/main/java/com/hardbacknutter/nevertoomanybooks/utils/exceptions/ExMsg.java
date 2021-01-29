@@ -37,8 +37,10 @@ import java.sql.SQLException;
 
 import javax.net.ssl.SSLException;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
+import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
 public class ExMsg {
 
@@ -112,4 +114,37 @@ public class ExMsg {
         return msg;
     }
 
+
+    @NonNull
+    public static String ioExFallbackMsg(@NonNull final Context context,
+                                         @Nullable final Exception e,
+                                         @NonNull final String fallbackMsg) {
+        String msg = null;
+        // generic storage related IOException message
+        if (e instanceof IOException) {
+            if (BuildConfig.DEBUG /* always */) {
+                // in debug mode show the raw exception
+                msg = context.getString(R.string.error_unknown)
+                      + "\n\n" + e.getLocalizedMessage();
+            } else {
+                msg = StandardDialogs.createBadError(context, fallbackMsg);
+            }
+        }
+
+        // generic unknown message
+        if (msg == null || msg.isEmpty()) {
+            if (BuildConfig.DEBUG /* always */) {
+                // in debug mode show the raw exception
+                msg = context.getString(R.string.error_unknown);
+                if (e != null) {
+                    msg += "\n\n" + e.getLocalizedMessage();
+                }
+            } else {
+                // when not in debug, ask for feedback
+                msg = StandardDialogs.createBadError(context, R.string.error_unknown);
+            }
+        }
+
+        return msg;
+    }
 }
