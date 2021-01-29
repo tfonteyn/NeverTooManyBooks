@@ -711,4 +711,12 @@
     <string name="action_done">"Gotowe"</string>
     <string name="action_previous">"Wstecz"</string>
     <string name="action_execute">"Wykonaj"</string>
+    <string name="lbl_virtual_library">Wirtualna biblioteka</string>
+    <string name="lbl_library">Biblioteka</string>
+    <string name="action_create">Stwórz</string>
+    <string name="menu_download_folder">Lokalny folder pobierania</string>
+    <string name="menu_download_ebook_format">Pobierz eBook (%1s)</string>
+    <string name="progress_msg_downloading">Ściąganie…</string>
+    <string name="progress_end_download_successful">Pobieranie powiodło się</string>
+    <string name="error_download_failed">Pobieranie nie udane</string>
 </resources>

@@ -714,4 +714,12 @@
     <string name="action_done">"Hotovo"</string>
     <string name="action_previous">"Předch."</string>
     <string name="action_execute">"Spustit"</string>
+    <string name="lbl_virtual_library">Virtuální knihovna</string>
+    <string name="lbl_library">Knihovny</string>
+    <string name="action_create">Vytvořit</string>
+    <string name="menu_download_folder">Místní složka pro stahování</string>
+    <string name="menu_download_ebook_format">Stáhnout eBook (%1s)</string>
+    <string name="progress_msg_downloading">Stahování…</string>
+    <string name="progress_end_download_successful">Stahování bylo úspěšné</string>
+    <string name="error_download_failed">Stažení se nezdařilo</string>
 </resources>

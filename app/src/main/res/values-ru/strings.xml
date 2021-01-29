@@ -711,4 +711,12 @@
     <string name="action_done">"Готово"</string>
     <string name="action_previous">"Пред."</string>
     <string name="action_execute">"Выполнить"</string>
+    <string name="lbl_virtual_library">Виртуальная библиотека</string>
+    <string name="lbl_library">библиотека</string>
+    <string name="action_create">Создайте</string>
+    <string name="menu_download_folder">Локальная папка загрузки</string>
+    <string name="menu_download_ebook_format">Скачать электронную книгу (%1s)</string>
+    <string name="progress_msg_downloading">Скачивание…</string>
+    <string name="progress_end_download_successful">Загрузка прошла успешно</string>
+    <string name="error_download_failed">Загрузка не удалась</string>
 </resources>

@@ -947,10 +947,11 @@
     <!-- Sync with a remote server. -->
     <string name="menu_send_updated">Send updated books</string>
 
-    <string name="menu_download_folder">Download folder</string>
-    <string name="menu_download_file">Download file</string>
-    <string name="error_download_failed">Download failed</string>
+    <string name="menu_download_folder">Local download folder</string>
+    <string name="menu_download_ebook_format">Download eBook (%1s)</string>
+    <string name="progress_msg_downloading">Downloading…</string>
     <string name="progress_end_download_successful">Download successful</string>
+    <string name="error_download_failed">Download failed</string>
 
     <!-- ####################################################################################### -->
     <!-- == Booklist FAB menu options. == -->
@@ -1110,6 +1111,8 @@
 
 
     <string name="action_validate">Validate</string>
+
+    <string name="action_create">Create</string>
 
     <!-- merging two bookshelves -->
     <string name="action_merge">Merge</string>
@@ -1491,6 +1494,8 @@
     <string name="lbl_site_book_id">Website book ID</string>
     <string name="lbl_select_website">Select a website:</string>
 
+    <string name="lbl_library">Library</string>
+    <string name="lbl_virtual_library">Virtual Library</string>
 
     <!-- checkbox for the TOC edit screen. -->
     <string name="lbl_toc_multiple_authors">Multiple authors</string>
@@ -1703,7 +1708,5 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-    <string name="action_create">Create</string>
-    <string name="lbl_library">Library</string>
-    <string name="lbl_virtual_library">Virtual Library</string>
+
 </resources>

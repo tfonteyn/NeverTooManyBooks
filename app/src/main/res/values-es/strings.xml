@@ -717,4 +717,12 @@
     <string name="action_done">"Listo"</string>
     <string name="action_previous">"Anterior"</string>
     <string name="action_execute">"Ejecutar"</string>
+    <string name="lbl_virtual_library">Biblioteca virtual</string>
+    <string name="lbl_library">Biblioteca</string>
+    <string name="action_create">Crear</string>
+    <string name="menu_download_folder">Carpeta de descarga local</string>
+    <string name="menu_download_ebook_format">Descargar eBook (%1s)</string>
+    <string name="progress_msg_downloading">Descargando…</string>
+    <string name="progress_end_download_successful">Descarga exitosa</string>
+    <string name="error_download_failed">Descarga fracasó</string>
 </resources>

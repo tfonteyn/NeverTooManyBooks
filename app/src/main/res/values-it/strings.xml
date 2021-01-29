@@ -716,4 +716,12 @@
     <string name="action_done">"Atlikta"</string>
     <string name="action_previous">"Perž."</string>
     <string name="action_execute">"Vykdyti"</string>
+    <string name="lbl_virtual_library">Biblioteca Virtuale</string>
+    <string name="lbl_library">Biblioteca</string>
+    <string name="action_create">Creare</string>
+    <string name="menu_download_folder">Cartella di download locale</string>
+    <string name="menu_download_ebook_format">Scarica eBook (%1s)</string>
+    <string name="progress_msg_downloading">Download in corso ...</string>
+    <string name="progress_end_download_successful">Download riuscito</string>
+    <string name="error_download_failed">Scaricamento fallito</string>
 </resources>

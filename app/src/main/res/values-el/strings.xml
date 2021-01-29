@@ -718,4 +718,12 @@
     <string name="action_done">"Τέλος"</string>
     <string name="action_previous">"Προηγ."</string>
     <string name="action_execute">"Εκτέλεση"</string>
+    <string name="lbl_virtual_library">Εικονική βιβλιοθήκη</string>
+    <string name="lbl_library">βιβλιοθήκης</string>
+    <string name="action_create">Δημιουργώ</string>
+    <string name="menu_download_folder">Τοπικός φάκελος λήψης</string>
+    <string name="menu_download_ebook_format">Λήψη eBook (%1s)</string>
+    <string name="progress_msg_downloading">Λήψη…</string>
+    <string name="progress_end_download_successful">Η λήψη ήταν επιτυχής</string>
+    <string name="error_download_failed">Η λήψη απέτυχε</string>
 </resources>

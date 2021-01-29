@@ -713,4 +713,12 @@
     <string name="action_done">"Bitti"</string>
     <string name="action_previous">"Önceki"</string>
     <string name="action_execute">"Çalıştır"</string>
+    <string name="lbl_virtual_library">Sanal Kitaplık</string>
+    <string name="lbl_library">Kitaplık</string>
+    <string name="action_create">Oluşturmak</string>
+    <string name="menu_download_folder">Yerel indirme klasörü</string>
+    <string name="menu_download_ebook_format">E-Kitabı İndir (%1s)</string>
+    <string name="progress_msg_downloading">İndiriliyor…</string>
+    <string name="progress_end_download_successful">İndirme başarılı</string>
+    <string name="error_download_failed">Yükleme başarısız</string>
 </resources>
