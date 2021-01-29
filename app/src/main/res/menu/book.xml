@@ -95,10 +95,12 @@
                 android:id="@id/MENU_CALIBRE_READ"
                 android:icon="@drawable/ic_book_open"
                 android:title="@string/lbl_read" />
+
+            <!-- title always set from code; the below is just a placeholder. -->
             <item
                 android:id="@id/MENU_CALIBRE_DOWNLOAD"
                 android:icon="@drawable/ic_cloud_download"
-                android:title="@string/menu_download_file" />
+                android:title="@string/book_format_ebook" />
         </menu>
     </item>
 </menu>

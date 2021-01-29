@@ -221,7 +221,7 @@ public class CalibreHandler {
         // not found? create it
         if (dialog == null) {
             dialog = ProgressDialogFragment.newInstance(
-                    mView.getContext().getString(R.string.menu_download_file), true, true);
+                    mView.getContext().getString(R.string.progress_msg_downloading), true, true);
             dialog.show(mFragmentManager, ProgressDialogFragment.TAG);
         }
 

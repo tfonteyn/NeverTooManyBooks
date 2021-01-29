@@ -306,12 +306,18 @@ public class ShowBookFragment
     private void prepareCalibreMenu(@NonNull final Menu menu,
                                     @NonNull final Book book,
                                     @NonNull final SharedPreferences global) {
+
         final boolean calibre = mCalibreHandler != null
                                 && mCalibreHandler.isCalibreEnabled(global, book);
         menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
         if (calibre) {
             menu.findItem(R.id.MENU_CALIBRE_READ)
                 .setVisible(mCalibreHandler.existsLocally(book));
+
+            final String fileFormat = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+            menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
+                .setTitle(getString(R.string.menu_download_ebook_format, fileFormat));
+
         } else {
             menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
         }
