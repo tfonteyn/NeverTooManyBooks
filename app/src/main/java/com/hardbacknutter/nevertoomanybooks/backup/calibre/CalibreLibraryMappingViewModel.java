@@ -93,7 +93,7 @@ public class CalibreLibraryMappingViewModel
     }
 
     @NonNull
-    public List<Bookshelf> getBookshelfList() {
+    List<Bookshelf> getBookshelfList() {
         return mBookshelfList;
     }
 
