@@ -1010,7 +1010,7 @@ public final class DBDefinitions {
          * ====================================================================================== */
         DOM_CALIBRE_LIBRARY_ID =
                 new Domain.Builder(KEY_CALIBRE_LIBRARY_ID, ColumnInfo.TYPE_TEXT)
-                        .notNull().build();
+                        .notNull().withDefaultEmptyString().localized().build();
 
         DOM_CALIBRE_BOOK_ID =
                 new Domain.Builder(KEY_CALIBRE_BOOK_ID, ColumnInfo.TYPE_INTEGER).build();
@@ -1025,7 +1025,7 @@ public final class DBDefinitions {
 
         DOM_CALIBRE_VIRT_LIB_NAME =
                 new Domain.Builder(KEY_CALIBRE_LIBRARY_NAME, ColumnInfo.TYPE_TEXT)
-                        .notNull().localized().build();
+                        .notNull().withDefaultEmptyString().localized().build();
         DOM_CALIBRE_VIRT_LIB_EXPR =
                 new Domain.Builder(KEY_CALIBRE_VIRT_LIB_EXPR, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().build();
@@ -1362,6 +1362,9 @@ public final class DBDefinitions {
 
 
 
+        // Do NOT add a reference to the TBL_CALIBRE_LIBRARIES DOM_CALIBRE_LIBRARY_ID column!
+        // If the user changes their library on the Calibre Server, all our references
+        // might/would go bad.
         TBL_CALIBRE_BOOKS.addDomains(DOM_FK_BOOK,
                                      DOM_CALIBRE_BOOK_ID,
                                      DOM_CALIBRE_BOOK_UUID,
