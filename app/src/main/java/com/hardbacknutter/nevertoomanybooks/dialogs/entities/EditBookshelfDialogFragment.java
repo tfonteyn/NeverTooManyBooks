@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -181,6 +181,7 @@ public class EditBookshelfDialogFragment
     }
 
     private void viewToModel() {
+        //noinspection ConstantConditions
         mName = mVb.bookshelf.getText().toString().trim();
     }
 

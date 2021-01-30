@@ -59,16 +59,16 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/lbl_bookshelf"
-                    style="@style/TIL.AutoCompleteTextView"
+                    style="@style/TIL.EditText"
                     android:hint="@string/lbl_bookshelf"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     >
 
-                    <AutoCompleteTextView
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/bookshelf"
-                        style="@style/titleTextEntryAutoComplete"
+                        style="@style/titleTextEntry"
                         android:layout_width="match_parent"
                         android:imeOptions="actionDone"
                         tools:ignore="LabelFor"
