@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -160,7 +160,9 @@ public class Groups
      */
     @NonNull
     public BooklistGroup getGroupByIdOrCrash(final int id) {
-        /* Dev note: we want this call to ALWAYS return a valid group.
+        /* Dev note: Leaving the below for historical purposes; fixed now.
+         *
+         * we want this call to ALWAYS return a valid group.
          * We had (have?) a bug in the past:
          * <p>
          * at BooklistStyle.getGroupById(BooklistStyle.java:1152)
@@ -172,7 +174,6 @@ public class Groups
          * 14 is READ_YEAR
          * but the style dumped was "Books - Author, Series"
          * so it's the STYLE itself which was wrong...
-         * TEST: We're using newListCursor everywhere now.
          * Seems 'get' -> existing cursor, with link to builder with link to style
          * while elsewhere we already have a new builder/style.
          */

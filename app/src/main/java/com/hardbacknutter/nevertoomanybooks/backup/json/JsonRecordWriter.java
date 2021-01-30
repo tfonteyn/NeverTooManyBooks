@@ -149,10 +149,6 @@ public class JsonRecordWriter
 
                 final JSONArray bookArray = new JSONArray();
                 try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
-                    //TEST: performance between manual loop(book/encode) versus list / encode:
-                    // We could read all books from the cursor into a list,
-                    // and then encode in one go.
-                    // Memory:  now: JSONArray + 1 Book at a time / versus JSONArray AND all Books.
                     while (cursor.moveToNext() && !progressListener.isCancelled()) {
                         final Book book = Book.from(cursor, mDb);
                         bookArray.put(coder.encode(book));
