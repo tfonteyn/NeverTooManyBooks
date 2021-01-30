@@ -233,8 +233,6 @@ public abstract class BaseActivity
             fragment.setArguments(getIntent().getExtras());
 
             fm.beginTransaction()
-              // FIXME: https://issuetracker.google.com/issues/169874632
-              //   .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
               .add(containerViewId, fragment, fragmentTag)
               .commit();
         }
