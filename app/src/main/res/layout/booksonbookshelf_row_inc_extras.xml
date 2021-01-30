@@ -25,8 +25,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/border2"
-    android:paddingEnd="@dimen/border2"
+    android:paddingStart="@dimen/field_margin_start"
+    android:paddingEnd="@dimen/field_margin_start"
     tools:layout_width="match_parent"
     >
 

@@ -75,7 +75,7 @@
                 android:id="@+id/gallery"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/field_label_margin_top"
+                android:layout_marginTop="@dimen/section_margin_top"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -89,7 +89,6 @@
             <ImageView
                 android:id="@+id/preview"
                 style="@style/CoverImage.Preview"
-                android:layout_marginTop="8dp"
                 android:visibility="invisible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

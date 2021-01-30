@@ -31,6 +31,7 @@
 
     <LinearLayout
         android:id="@+id/item_list"
+        style="@style/Dialog.Body"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
@@ -40,7 +41,6 @@
         android:fadingEdge="none"
         android:orientation="vertical"
         android:overScrollMode="ifContentScrolls"
-        android:padding="8dp"
         android:scrollbars="vertical"
         android:textAlignment="viewStart"
         />

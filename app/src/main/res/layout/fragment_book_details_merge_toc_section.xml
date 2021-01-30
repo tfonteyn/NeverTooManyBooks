@@ -31,17 +31,16 @@
         style="@style/Field.Label"
         android:text="@string/lbl_table_of_content"
         android:visibility="gone"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBaseline_toBaselineOf="@id/btn_show_toc"
+        app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible"
         />
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/btn_show_toc"
         style="@style/TocSwitch"
-        android:layout_marginStart="@dimen/field_margin_inline_start"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toEndOf="@id/lbl_toc"
+        app:layout_constraintTop_toTopOf="parent"
         tools:checked="true"
         tools:visibility="visible"
         />
@@ -49,20 +48,11 @@
     <TextView
         android:id="@+id/lbl_anthology"
         style="@style/Field.Label"
+        android:drawablePadding="@dimen/drawable_padding_end"
         android:text="@string/lbl_anthology"
-        app:layout_constraintBottom_toBottomOf="@id/icon_anthology"
+        app:drawableEndCompat="@drawable/ic_check"
+        app:drawableTint="?attr/colorSecondaryVariant"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/icon_anthology"
-        />
-
-    <ImageView
-        android:id="@+id/icon_anthology"
-        style="@style/Flag"
-        android:layout_marginStart="@dimen/field_margin_inline_start"
-        android:contentDescription="@string/lbl_anthology"
-        android:src="@drawable/ic_check"
-        app:tint="?attr/colorSecondaryVariant"
-        app:layout_constraintStart_toEndOf="@id/lbl_anthology"
         app:layout_constraintTop_toBottomOf="@id/lbl_toc"
         />
 
@@ -77,7 +67,7 @@
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/icon_anthology"
+        app:layout_constraintTop_toBottomOf="@id/lbl_anthology"
         tools:visibility="visible"
         >
         <!-- rows will be added here dynamically -->

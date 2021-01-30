@@ -32,7 +32,7 @@
         android:id="@+id/title"
         style="@style/Field.BookTitle"
         android:drawableStart="@drawable/ic_library_books"
-        android:drawablePadding="@dimen/drawable_padding"
+        android:drawablePadding="@dimen/drawable_padding_start"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/year"

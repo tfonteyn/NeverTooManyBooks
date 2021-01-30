@@ -28,7 +28,6 @@
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:contentPadding="8dp"
-    app:cardBackgroundColor="?attr/appCardBackgroundColor"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -41,7 +40,7 @@
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/field_margin_inline_start"
+            android:layout_marginEnd="@dimen/field_margin_inline"
             android:hint="@string/lbl_library"
             app:layout_constraintEnd_toStartOf="@id/btn_create"
             app:layout_constraintStart_toStartOf="parent"
@@ -70,9 +69,9 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_bookshelf"
-            style="@style/ExposedDropdownMenu.Dense"
+            style="@style/ExposedDropdownMenu"
             android:hint="@string/lbl_bookshelf"
-            android:layout_marginTop="@dimen/field_label_margin_top"
+            android:paddingTop="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_library_name"

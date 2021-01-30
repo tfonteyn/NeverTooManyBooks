@@ -54,7 +54,7 @@
         android:id="@+id/item_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="18dp"
+        android:paddingTop="@dimen/dialogPreferredPaddingTop"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:itemCount="8"

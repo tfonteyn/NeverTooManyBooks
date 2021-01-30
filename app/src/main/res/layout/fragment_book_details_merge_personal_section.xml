@@ -37,14 +37,13 @@
         style="@style/Field.Label"
         android:text="@string/lbl_signed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="@id/icon_signed"
-        app:layout_constraintTop_toTopOf="@id/icon_signed"
+        app:layout_constraintTop_toTopOf="parent"
         />
 
     <ImageView
         android:id="@+id/icon_signed"
         style="@style/Flag"
-        android:layout_marginStart="@dimen/field_margin_inline_start"
+        android:layout_marginStart="@dimen/drawable_padding_end"
         android:contentDescription="@string/lbl_signed"
         android:src="@drawable/ic_check"
         app:tint="?attr/colorSecondaryVariant"

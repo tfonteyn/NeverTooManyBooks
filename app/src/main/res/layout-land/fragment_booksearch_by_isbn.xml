@@ -64,7 +64,7 @@
         android:layout_width="0dp"
         android:layout_height="12dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@id/barrier_keypad_start"
         app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
         />
 

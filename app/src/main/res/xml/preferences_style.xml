@@ -27,8 +27,8 @@
     <EditTextPreference
         android:icon="@drawable/ic_edit"
         android:key="style.booklist.name"
-        android:title="@string/lbl_name"
         android:summary="@string/info_not_set"
+        android:title="@string/lbl_name"
         />
 
     <PreferenceCategory
@@ -109,6 +109,9 @@
             app:min="0"
             />
 
+        <!-- This is the value used for the "android:layout_height" of a GROUP row
+             true : "?attr/listPreferredItemHeightSmall"
+             false: "wrap_content" -->
         <SwitchPreference
             android:defaultValue="true"
             android:icon="@drawable/ic_format_line_spacing"

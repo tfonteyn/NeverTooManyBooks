@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,8 +26,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:ellipsize="end"
+    android:gravity="center_vertical"
     android:maxLines="1"
-    android:padding="16dp"
-    android:textAppearance="?attr/textAppearanceSubtitle1"
-    tools:text="dropdown text line"
+    android:minHeight="?attr/listPreferredItemHeightSmall"
+    android:paddingStart="?attr/listPreferredItemPaddingStart"
+    android:paddingEnd="?attr/listPreferredItemPaddingEnd"
+    android:textAppearance="?attr/textAppearanceListItem"
+    tools:text="@sample/data.json/context_menu/name"
     />

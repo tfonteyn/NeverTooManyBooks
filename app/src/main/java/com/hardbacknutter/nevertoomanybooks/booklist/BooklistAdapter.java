@@ -154,7 +154,8 @@ public class BooklistAdapter
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
         mImageCachingEnabled = ImageUtils.isImageCachingEnabled(context);
 
-        mLevelIndent = context.getResources().getDimensionPixelSize(R.dimen.bob_level_indent);
+        mLevelIndent = context.getResources()
+                              .getDimensionPixelSize(R.dimen.bob_group_level_padding_start);
         mConditionDescriptions = context.getResources().getStringArray(R.array.conditions_book);
 
         mReorderTitleForDisplaying = ItemWithTitle.isReorderTitleForDisplaying(context);
@@ -180,7 +181,7 @@ public class BooklistAdapter
         mGroupRowHeight = mStyle.getGroupRowHeight(context);
         if (mGroupRowHeight == ViewGroup.LayoutParams.WRAP_CONTENT) {
             mGroupLevel1topMargin = context
-                    .getResources().getDimensionPixelSize(R.dimen.bob_row_level_1_top_margin);
+                    .getResources().getDimensionPixelSize(R.dimen.bob_group_level_1_margin_top);
         }
 
         @ListStyle.CoverScale

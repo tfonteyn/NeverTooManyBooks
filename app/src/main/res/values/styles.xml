@@ -52,7 +52,7 @@
     </style>
 
     <style name="Field.Generic.Inline">
-        <item name="android:layout_marginStart">@dimen/field_margin_inline_start</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
         <item name="layout_goneMarginStart">@dimen/field_margin_start</item>
     </style>
 
@@ -63,6 +63,14 @@
 
     <style name="Field.Generic.Inline.Small">
         <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+    </style>
+
+    <style name="Field.About.Statistic" parent="Field">
+        <item name="android:layout_width">60dp</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="android:gravity">end</item>
+        <item name="android:textAppearance">?attr/textAppearanceBody2</item>
+        <item name="android:textIsSelectable">true</item>
     </style>
 
     <style name="Field.BookTitle">
@@ -87,8 +95,8 @@
     <style name="Field.Notes">
         <item name="android:textAppearance">?attr/textAppearanceBody1</item>
         <!-- A bigger text field just looks nicer with these start/end margins. -->
-        <item name="android:layout_marginStart">@dimen/field_margin_inline_start</item>
-        <item name="android:layout_marginEnd">@dimen/field_margin_inline_start</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="android:layout_marginEnd">@dimen/field_margin_inline</item>
     </style>
 
     <!-- Book Description. -->
@@ -98,8 +106,8 @@
         <!-- serves as it's own label. -->
         <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
         <!-- A bigger text field just looks nicer with these start/end margins. -->
-        <item name="android:layout_marginStart">@dimen/field_margin_inline_start</item>
-        <item name="android:layout_marginEnd">@dimen/field_margin_inline_start</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
+        <item name="android:layout_marginEnd">@dimen/field_margin_inline</item>
     </style>
 
     <!-- Lend out to X. -->
@@ -124,8 +132,8 @@
     <style name="Field.ChipGroup" parent="Widget.MaterialComponents.ChipGroup">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
-        <!-- without margin, the chips are glued to the label. -->
-        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <!-- without some extra margin, the chips are glued to the label above the group. -->
+        <item name="android:layout_marginTop">4dp</item>
     </style>
 
     <!-- Read-Write style for Book-edit screen. -->
@@ -168,8 +176,15 @@
     </style>
 
     <style name="Text.Header">
+        <item name="android:layout_marginTop">4dp</item>
         <item name="android:textColor">?attr/colorAccent</item>
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+    </style>
+
+    <style name="Text.Header.Indented">
+        <!-- Make a header text align with list elements which are preceded by an icon.
+             Intention is to mimic a PreferenceCategory title indent. -->
+        <item name="android:layout_marginStart">52dp</item>
     </style>
 
     <style name="Text.Body">
@@ -189,7 +204,7 @@
     <style name="TIL.EditText.Button"
         parent="Widget.MaterialComponents.Button.OutlinedButton">
         <item name="android:enabled">true</item>
-        <item name="android:layout_width">@dimen/icon_button_width</item>
+        <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_marginTop">6dp</item>
         <item name="android:layout_marginStart">8dp</item>
@@ -204,6 +219,10 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/til_field_margin</item>
         <item name="endIconMode">clear_text</item>
+    </style>
+
+    <style name="TIL.EditText.ExternalId">
+        <item name="android:layout_width">280dp</item>
     </style>
 
     <!-- a fixed width box for a 4-digit year. -->
@@ -226,7 +245,7 @@
         AutoCompleteTextView is automatically replaced with MaterialAutoCompleteTextView
         and setOnItemSelectedListener() DOES NOT WORK with AutoCompleteTextView.
         Use setOnItemClickListener() instead!
-        Good read (but fails to mention setOnItemClickListener, and talks about textchange listener...)
+        Good read (but fails to mention setOnItemClickListener, and talks about text-change listener...)
         https://blog.usejournal.com/there-is-no-material-design-spinner-for-android-3261b7c77da8
     -->
     <style name="TIL.AutoCompleteTextView"
@@ -294,7 +313,7 @@
         <item name="android:digits">1234567890xX</item>
         <!-- the inputType is IGNORED when the field is a {@link EditIsbn} -->
         <item name="android:inputType">textCapCharacters|textNoSuggestions</item>
-        <item name="android:textSize">@dimen/editText_isbn_textSize</item>
+        <item name="android:textSize">@dimen/isbn_edit_text_size</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -343,7 +362,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <!-- don't want it to close to the edge of the screen. -->
-        <item name="android:layout_marginStart">@dimen/indent_row_checkable_btn</item>
+        <item name="android:layout_marginStart">12dp</item>
         <!-- larger icon, without box.
              In Studio preview, it does not look centered,
              but it IS FINE when the app is running for real. -->
@@ -362,7 +381,7 @@
 
     <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
     <style name="RowButton.DragHandle">
-        <item name="android:src">@drawable/ic_reorder</item>
+        <item name="android:src">@drawable/ic_drag_handle</item>
     </style>
 
     <!-- LinearLayout/ConstraintLayout - the details part of the row in a list row. -->
@@ -421,7 +440,7 @@
     <!-- Read-only boolean Flags. GONE when false, VISIBLE when true.  -->
     <!-- *************************************************************************************** -->
 
-    <!-- ImageView. Generic Flag. -->
+    <!-- ImageView. Generic Flag. 24dp: standard icon. -->
     <style name="Flag">
         <item name="android:layout_width">24dp</item>
         <item name="android:layout_height">24dp</item>
@@ -483,7 +502,7 @@
     </style>
 
     <style name="BoB.Group.Level1">
-        <item name="android:layout_marginTop">@dimen/bob_row_level_1_top_margin</item>
+        <item name="android:layout_marginTop">@dimen/bob_group_level_1_margin_top</item>
     </style>
 
     <style name="BoB.Group.Level2">
@@ -596,11 +615,10 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-        <!-- abc_dialog_padding_top_material -->
-        <item name="android:paddingTop">18dp</item>
+        <item name="android:paddingTop">@dimen/dialogPreferredPaddingTop</item>
         <item name="android:paddingStart">?attr/dialogPreferredPadding</item>
         <item name="android:paddingEnd">?attr/dialogPreferredPadding</item>
-        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingBottom">@dimen/dialogPreferredPaddingBottom</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -668,6 +686,10 @@
         <item name="android:textColor">?attr/colorOnBackground</item>
         <item name="android:textAllCaps">false</item>
         <item name="icon">@drawable/ic_link</item>
+    </style>
+
+    <style name="Button.Radio" parent="Widget.MaterialComponents.CompoundButton.RadioButton">
+        <item name="android:layout_marginStart">20dp</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -758,6 +780,7 @@
         parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
         <!-- make the drop down arrow better visible. -->
         <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
@@ -776,13 +799,13 @@
     <style name="TocSwitch" parent="Widget.MaterialComponents.CompoundButton.Switch">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_inline</item>
         <item name="android:buttonTint">@android:color/transparent</item>
         <item name="android:contentDescription">@string/lbl_table_of_content</item>
         <item name="android:visibility">gone</item>
     </style>
 
     <!-- *************************************************************************************** -->
-
 
 
 </resources>

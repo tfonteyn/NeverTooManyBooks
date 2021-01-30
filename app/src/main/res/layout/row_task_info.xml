@@ -32,7 +32,7 @@
         android:id="@+id/cbx_selected"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/indent_row_checkable_btn"
+        android:layout_marginStart="@dimen/field_margin_start"
         android:focusable="false"
         android:text=""
         android:visibility="gone"

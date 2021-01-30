@@ -86,18 +86,18 @@
         android:id="@+id/cbx_is_anthology"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/lbl_anthology"
         android:layout_marginTop="@dimen/field_label_margin_top"
-        app:layout_constraintTop_toBottomOf="@id/lbl_title"
+        android:text="@string/lbl_anthology"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_title"
         tools:checked="true"
         />
 
     <CheckBox
         android:id="@+id/cbx_multiple_authors"
         android:layout_width="wrap_content"
-        android:layout_marginTop="@dimen/field_label_margin_top"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/field_label_margin_top"
         android:text="@string/lbl_toc_multiple_authors"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_author"
@@ -108,9 +108,9 @@
         android:id="@+id/btn_add"
         style="@style/Button.Form.Submit"
         android:text="@string/action_add"
+        app:layout_constraintBottom_toTopOf="@id/tocList"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_author"
-        app:layout_constraintBottom_toTopOf="@id/tocList"
         />
 
     <androidx.constraintlayout.widget.Barrier

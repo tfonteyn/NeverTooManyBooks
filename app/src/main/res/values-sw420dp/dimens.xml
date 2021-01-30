@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,6 +26,6 @@
     land: w683dp h387dp
 -->
 <resources>
-    <!-- Material large text size is 22sp. -->
-    <dimen name="editText_isbn_textSize">22sp</dimen>
+    <!-- The ISBN edit field. 22sp is the Material large text size. -->
+    <dimen name="isbn_edit_text_size">22sp</dimen>
 </resources>

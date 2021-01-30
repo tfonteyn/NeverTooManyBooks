@@ -709,7 +709,6 @@ public class ShowBookFragment
                 // Anthology/TOC fields
                 if (!mUseToc) {
                     mVbToc.lblAnthology.setVisibility(View.GONE);
-                    mVbToc.iconAnthology.setVisibility(View.GONE);
                     mVbToc.lblToc.setVisibility(View.GONE);
                     mVbToc.toc.setVisibility(View.GONE);
                     mVbToc.btnShowToc.setVisibility(View.GONE);
@@ -808,7 +807,6 @@ public class ShowBookFragment
                 final boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
                                                           Book.TOC_MULTIPLE_WORKS);
                 mVbToc.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
-                mVbToc.iconAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
 
                 mVbToc.toc.removeAllViews();
                 mVbToc.toc.setVisibility(View.GONE);

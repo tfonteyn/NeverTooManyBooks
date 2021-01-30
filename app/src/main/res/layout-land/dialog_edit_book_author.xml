@@ -114,6 +114,8 @@
                 android:id="@+id/lbl_given_names"
                 style="@style/TIL.AutoCompleteTextView"
                 android:hint="@string/lbl_given_names"
+                android:paddingStart="@dimen/field_margin_inline"
+                android:paddingEnd="@dimen/field_margin_inline"
                 app:layout_constraintBaseline_toBaselineOf="@id/lbl_family_name"
                 app:layout_constraintEnd_toStartOf="@id/cbx_is_complete"
                 app:layout_constraintStart_toEndOf="@id/lbl_family_name"
@@ -131,13 +133,12 @@
 
             <CheckBox
                 android:id="@+id/cbx_is_complete"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
                 android:text="@string/lbl_is_complete"
                 app:layout_constraintBaseline_toBaselineOf="@id/lbl_family_name"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/lbl_given_names"
                 />
 
             <com.google.android.material.switchmaterial.SwitchMaterial

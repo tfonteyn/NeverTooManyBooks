@@ -140,7 +140,7 @@ public abstract class BooklistStyle
     PBitmask mShowHeaderInfo;
     /**
      * Should rows be shown using WRAP_CONTENT (false),
-     * or as system minimum list-item height (true).
+     * or as system "?attr/listPreferredItemHeightSmall" (true).
      */
     PBoolean mGroupRowPreferredHeight;
     /** Text related settings. */

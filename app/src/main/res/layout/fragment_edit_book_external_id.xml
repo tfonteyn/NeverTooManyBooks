@@ -35,9 +35,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_goodreads"
-            style="@style/TIL.EditText"
-            android:layout_width="@dimen/field_external_id_width"
-            android:layout_marginTop="@dimen/field_label_margin_top"
+            style="@style/TIL.EditText.ExternalId"
+            android:layout_marginTop="@dimen/section_margin_top"
             android:hint="@string/site_goodreads"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,8 +56,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_isfdb"
-            style="@style/TIL.EditText"
-            android:layout_width="@dimen/field_external_id_width"
+            style="@style/TIL.EditText.ExternalId"
             android:hint="@string/site_isfdb"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -78,8 +76,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_library_thing"
-            style="@style/TIL.EditText"
-            android:layout_width="@dimen/field_external_id_width"
+            style="@style/TIL.EditText.ExternalId"
             android:hint="@string/site_library_thing"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -99,8 +96,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_open_library"
-            style="@style/TIL.EditText"
-            android:layout_width="@dimen/field_external_id_width"
+            style="@style/TIL.EditText.ExternalId"
             android:hint="@string/site_open_library"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -120,8 +116,7 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_site_strip_info_be"
-            style="@style/TIL.EditText"
-            android:layout_width="@dimen/field_external_id_width"
+            style="@style/TIL.EditText.ExternalId"
             android:hint="@string/site_stripinfo_be"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

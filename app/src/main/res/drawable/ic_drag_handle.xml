@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
@@ -19,18 +18,13 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<CheckBox
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@id/btn_option"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:drawablePadding="@dimen/drawable_padding_start"
-    android:ellipsize="marquee"
-    android:gravity="center_vertical"
-    android:minHeight="?attr/listPreferredItemHeightSmall"
-    android:paddingStart="?attr/listPreferredItemPaddingStart"
-    android:paddingEnd="?attr/listPreferredItemPaddingEnd"
-    android:textAppearance="?attr/textAppearanceListItem"
-    tools:text="@sample/data.json/editions/name"
-    />
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="?attr/colorControlNormal"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M20,9H4v2h16V9zM4,15h16v-2H4V15z" />
+</vector>

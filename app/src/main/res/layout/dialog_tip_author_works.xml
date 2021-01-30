@@ -28,9 +28,7 @@
 
     <TextView
         android:id="@+id/fixedContent"
-        style="@style/Text.Header"
-        android:layout_marginStart="@dimen/header_margin_start"
-        android:layout_marginTop="@dimen/header_margin_top"
+        style="@style/Text.Header.Indented"
         android:text="@string/tip_authors_works"
         tools:ignore="SelectableText"
         />
@@ -38,9 +36,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/field_label_margin_top"
+        android:layout_marginTop="@dimen/section_margin_top"
         android:drawableStart="@drawable/ic_library_books"
-        android:drawablePadding="@dimen/drawable_padding"
+        android:drawablePadding="@dimen/drawable_padding_start"
         android:text="@string/tip_authors_works_multiple_books"
         tools:ignore="UseCompatTextViewDrawableXml"
         />
@@ -49,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableStart="@drawable/ic_book"
-        android:drawablePadding="@dimen/drawable_padding"
+        android:drawablePadding="@dimen/drawable_padding_start"
         android:text="@string/tip_authors_works_book"
         tools:ignore="UseCompatTextViewDrawableXml"
         />

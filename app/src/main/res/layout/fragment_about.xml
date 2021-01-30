@@ -111,46 +111,38 @@
 
     <TextView
         android:id="@+id/book_count"
-        style="@style/Field.Generic.Inline.Small"
-        android:layout_width="@dimen/field_about_number_width"
-        android:gravity="end"
-        android:textIsSelectable="true"
+        style="@style/Field.About.Statistic"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_books"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         tools:text="1234"
+        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/series_count"
-        style="@style/Field.Generic.Inline.Small"
-        android:layout_width="@dimen/field_about_number_width"
-        android:gravity="end"
-        android:textIsSelectable="true"
+        style="@style/Field.About.Statistic"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_series"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         tools:text="234"
+        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/author_count"
-        style="@style/Field.Generic.Inline.Small"
-        android:layout_width="@dimen/field_about_number_width"
-        android:gravity="end"
-        android:textIsSelectable="true"
+        style="@style/Field.About.Statistic"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_authors"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         tools:text="567"
+        tools:ignore="SelectableText"
         />
 
     <TextView
         android:id="@+id/publisher_count"
-        style="@style/Field.Generic.Inline.Small"
-        android:layout_width="@dimen/field_about_number_width"
-        android:gravity="end"
-        android:textIsSelectable="true"
+        style="@style/Field.About.Statistic"
         app:layout_constraintBaseline_toBaselineOf="@id/lbl_publishers"
         app:layout_constraintStart_toEndOf="@id/barrier_labels_end"
         tools:text="89"
+        tools:ignore="SelectableText"
         />
 
     <TextView

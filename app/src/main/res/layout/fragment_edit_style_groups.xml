@@ -30,9 +30,7 @@
 
     <TextView
         android:id="@+id/header"
-        style="@style/Text.Header"
-        android:layout_marginStart="@dimen/header_margin_start"
-        android:layout_marginTop="@dimen/header_margin_top"
+        style="@style/Text.Header.Indented"
         android:text="@string/pg_style_groups"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
