@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -256,10 +256,11 @@ public class DBCleaner {
             final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
-            }
             try {
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
+                }
+
                 for (final long bookId : bookIds) {
                     final ArrayList<Author> list = mDb.getAuthorsByBookId(bookId);
                     mDb.insertBookAuthors(context, bookId, list, false, bookLocale);
@@ -306,10 +307,11 @@ public class DBCleaner {
             final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
-            }
             try {
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
+                }
+
                 for (final long bookId : bookIds) {
                     final ArrayList<Series> list = mDb.getSeriesByBookId(bookId);
                     mDb.insertBookSeries(context, bookId, list, false, bookLocale);
@@ -355,10 +357,11 @@ public class DBCleaner {
             final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
-            }
             try {
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
+                }
+
                 for (final long bookId : bookIds) {
                     final ArrayList<Publisher> list = mDb.getPublishersByBookId(bookId);
                     mDb.insertBookPublishers(context, bookId, list, false, bookLocale);
@@ -406,10 +409,11 @@ public class DBCleaner {
             final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
             Synchronizer.SyncLock txLock = null;
-            if (!mDb.inTransaction()) {
-                txLock = mDb.beginTransaction(true);
-            }
             try {
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
+                }
+
                 for (final long bookId : bookIds) {
                     final ArrayList<TocEntry> list = mDb.getTocEntryByBookId(bookId);
                     mDb.saveTocList(context, bookId, list, false, bookLocale);

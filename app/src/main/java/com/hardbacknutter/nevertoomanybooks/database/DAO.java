@@ -63,7 +63,6 @@ import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -447,7 +446,7 @@ public class DAO
      * @return the lock
      */
     @NonNull
-    public SyncLock beginTransaction(final boolean isUpdate) {
+    public Synchronizer.SyncLock beginTransaction(final boolean isUpdate) {
         return mSyncedDb.beginTransaction(isUpdate);
     }
 
@@ -456,7 +455,7 @@ public class DAO
      *
      * @param txLock Lock returned from BeginTransaction().
      */
-    public void endTransaction(@Nullable final SyncLock txLock) {
+    public void endTransaction(@Nullable final Synchronizer.SyncLock txLock) {
         // it's cleaner to have the null detection here
         mSyncedDb.endTransaction(Objects.requireNonNull(txLock));
     }
@@ -495,12 +494,12 @@ public class DAO
                        @BookFlags final int flags)
             throws DaoWriteException {
 
-        SyncLock txLock = null;
-        if (!mSyncedDb.inTransaction()) {
-            txLock = mSyncedDb.beginTransaction(true);
-        }
-
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             book.preprocessForStoring(context, true);
 
             // Make sure we have at least one author
@@ -596,12 +595,12 @@ public class DAO
                        @BookFlags final int flags)
             throws DaoWriteException {
 
-        SyncLock txLock = null;
-        if (!mSyncedDb.inTransaction()) {
-            txLock = mSyncedDb.beginTransaction(true);
-        }
-
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             book.preprocessForStoring(context, false);
 
             // correct field types if needed, and filter out fields we don't have in the db table.
@@ -1064,8 +1063,12 @@ public class DAO
         }
 
         int rowsAffected = 0;
-        final SyncLock txLock = mSyncedDb.beginTransaction(true);
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             final SynchronizedStatement stmt = mSqlStatementManager.get(
                     STMT_DELETE_BOOK, () -> DAOSql.SqlDelete.BOOK_BY_ID);
 
@@ -1088,11 +1091,16 @@ public class DAO
                     }
                 }
             }
-            mSyncedDb.setTransactionSuccessful();
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e, "Failed to delete book");
+
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            if (txLock != null) {
+                mSyncedDb.endTransaction(txLock);
+            }
         }
 
         return rowsAffected == 1;
@@ -1586,8 +1594,12 @@ public class DAO
 
         final int rowsAffected;
 
-        final SyncLock txLock = mSyncedDb.beginTransaction(true);
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             purgeNodeStatesByBookshelf(bookshelf.getId());
 
             try (SynchronizedStatement stmt = mSyncedDb
@@ -1595,9 +1607,13 @@ public class DAO
                 stmt.bindLong(1, bookshelf.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
-            mSyncedDb.setTransactionSuccessful();
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            if (txLock != null) {
+                mSyncedDb.endTransaction(txLock);
+            }
         }
 
         if (rowsAffected > 0) {
@@ -2337,8 +2353,12 @@ public class DAO
 
         final int rowsAffected;
 
-        final SyncLock txLock = mSyncedDb.beginTransaction(true);
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             purgeNodeStatesByStyle(style.getId());
 
             try (SynchronizedStatement stmt = mSyncedDb
@@ -2346,9 +2366,13 @@ public class DAO
                 stmt.bindLong(1, style.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
-            mSyncedDb.setTransactionSuccessful();
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            if (txLock != null) {
+                mSyncedDb.endTransaction(txLock);
+            }
         }
 
         if (rowsAffected > 0) {
@@ -4053,8 +4077,12 @@ public class DAO
 
         final int rowsAffected;
 
-        final SyncLock txLock = mSyncedDb.beginTransaction(true);
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             // we don't hold 'position' for shelves... so just do a mass update
             rowsAffected = mSyncedDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
                                             KEY_FK_BOOKSHELF + "=?",
@@ -4063,9 +4091,13 @@ public class DAO
             // delete the obsolete source.
             delete(source);
 
-            mSyncedDb.setTransactionSuccessful();
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            if (txLock != null) {
+                mSyncedDb.endTransaction(txLock);
+            }
         }
 
         return rowsAffected;
@@ -4086,8 +4118,12 @@ public class DAO
                       final long destId)
             throws DaoWriteException {
 
-        final SyncLock txLock = mSyncedDb.beginTransaction(true);
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             // TOC is easy: just do a mass update
             final ContentValues cv = new ContentValues();
             cv.put(KEY_FK_AUTHOR, destId);
@@ -4124,9 +4160,13 @@ public class DAO
             // delete the obsolete source.
             delete(context, source);
 
-            mSyncedDb.setTransactionSuccessful();
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            if (txLock != null) {
+                mSyncedDb.endTransaction(txLock);
+            }
         }
     }
 
@@ -4148,8 +4188,12 @@ public class DAO
         final ContentValues cv = new ContentValues();
         cv.put(KEY_FK_SERIES, destId);
 
-        final SyncLock txLock = mSyncedDb.beginTransaction(true);
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             // see #merge(Context, Author, long)
             final Series destination = getSeries(destId);
             for (final long bookId : getBookIdsBySeries(source.getId())) {
@@ -4172,9 +4216,13 @@ public class DAO
             // delete the obsolete source.
             delete(context, source);
 
-            mSyncedDb.setTransactionSuccessful();
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            if (txLock != null) {
+                mSyncedDb.endTransaction(txLock);
+            }
         }
     }
 
@@ -4196,8 +4244,12 @@ public class DAO
         final ContentValues cv = new ContentValues();
         cv.put(KEY_FK_PUBLISHER, destId);
 
-        final SyncLock txLock = mSyncedDb.beginTransaction(true);
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             // see #merge(Context, Author, long)
             final Publisher destination = getPublisher(destId);
             for (final long bookId : getBookIdsByPublisher(source.getId())) {
@@ -4220,9 +4272,13 @@ public class DAO
             // delete the obsolete source.
             delete(context, source);
 
-            mSyncedDb.setTransactionSuccessful();
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            if (txLock != null) {
+                mSyncedDb.endTransaction(txLock);
+            }
         }
     }
 
@@ -4653,9 +4709,12 @@ public class DAO
         final String tmpTableName = "books_fts_rebuilding";
         final TableDefinition ftsTemp = FtsDefinition.createTableDefinition(tmpTableName);
 
-        final Synchronizer.SyncLock txLock = mSyncedDb.beginTransaction(true);
-
+        Synchronizer.SyncLock txLock = null;
         try {
+            if (!mSyncedDb.inTransaction()) {
+                txLock = mSyncedDb.beginTransaction(true);
+            }
+
             //IMPORTANT: withDomainConstraints MUST BE false
             ftsTemp.recreate(mSyncedDb, false);
 
@@ -4665,8 +4724,9 @@ public class DAO
                 ftsProcessBooks(cursor, stmt);
             }
 
-            mSyncedDb.setTransactionSuccessful();
-
+            if (txLock != null) {
+                mSyncedDb.setTransactionSuccessful();
+            }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
             Logger.error(context, TAG, e);
@@ -4674,7 +4734,9 @@ public class DAO
             mSyncedDb.drop(tmpTableName);
 
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            if (txLock != null) {
+                mSyncedDb.endTransaction(txLock);
+            }
 
             /*
             http://sqlite.1065341.n5.nabble.com/Bug-in-FTS3-when-trying-to-rename-table-within-a-transaction-td11430.html
