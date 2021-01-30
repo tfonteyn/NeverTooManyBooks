@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -48,8 +47,7 @@ public class EditBookshelvesViewModel
     private static final String TAG = "EditBookshelvesViewModel";
 
     public static final String BKEY_CURRENT_BOOKSHELF = TAG + ":current";
-    private final MutableLiveData<Pair<Integer, Integer>> mSelectedPositionLD =
-            new MutableLiveData<>();
+    private final MutableLiveData<Void> mSelectedPositionChanged = new MutableLiveData<>();
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
@@ -131,17 +129,16 @@ public class EditBookshelvesViewModel
     }
 
     public void setSelectedPosition(final int position) {
-        final int oldPos = mSelectedPosition;
         mSelectedPosition = position;
         // update the fragment -> it will update the adapter
-        mSelectedPositionLD.setValue(new Pair<>(oldPos, mSelectedPosition));
+        mSelectedPositionChanged.setValue(null);
         // update the activity result.
         mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, getBookshelf(mSelectedPosition).getId());
     }
 
     @NonNull
-    public MutableLiveData<Pair<Integer, Integer>> onSelectedPositionChanged() {
-        return mSelectedPositionLD;
+    public MutableLiveData<Void> onSelectedPositionChanged() {
+        return mSelectedPositionChanged;
     }
 
     @NonNull

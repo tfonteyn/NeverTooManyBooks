@@ -142,12 +142,8 @@ public class EditBookshelvesFragment
 
         mVm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
         mVm.init(getArguments());
-        mVm.onSelectedPositionChanged().observe(getViewLifecycleOwner(), positionPair -> {
-            // old position
-            mAdapter.notifyItemChanged(positionPair.first);
-            // current/new position
-            mAdapter.notifyItemChanged(positionPair.second);
-        });
+        mVm.onSelectedPositionChanged().observe(getViewLifecycleOwner(),
+                                                aVoid -> mAdapter.notifyDataSetChanged());
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
