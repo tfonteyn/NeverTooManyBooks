@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -205,7 +205,7 @@ public class CsvRecordReader
         // Count the nr of books in between progress updates.
         int delta = 0;
 
-        SyncLock txLock = null;
+        Synchronizer.SyncLock txLock = null;
         try {
             // not perfect, but good enough
             if (progressListener.getMaxPos() < books.size()) {
