@@ -19,15 +19,104 @@
   ~ along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<androidx.recyclerview.widget.RecyclerView
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/libraryList"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/screen_border"
-    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:listitem="@layout/row_edit_calibre_library"
-    />
+    android:visibility="invisible"
+    tools:visibility="visible"
+    >
+
+    <TextView
+        android:id="@+id/header"
+        style="@style/Text.Header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_library"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_library_name"
+        style="@style/ExposedDropdownMenu.Dense"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginEnd="@dimen/field_margin_inline"
+        app:layout_constraintEnd_toStartOf="@id/btn_create"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/library_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            tools:ignore="LabelFor"
+            tools:text="@sample/data.json/library/name"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/btn_create"
+        style="@style/Button.Form.Submit"
+        android:text="@string/action_create"
+        app:layout_constraintBottom_toBottomOf="@id/lbl_library_name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/lbl_library_name"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_bookshelf"
+        style="@style/ExposedDropdownMenu"
+        android:hint="@string/lbl_bookshelf"
+        android:paddingTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/lbl_library_name"
+        app:layout_constraintTop_toBottomOf="@id/lbl_library_name"
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/bookshelf"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            tools:ignore="LabelFor"
+            tools:text="@sample/data.json/shelves/name"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/header_vlibs"
+        style="@style/Text.Header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_virtual_libraries"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_bookshelf"
+        tools:visibility="visible"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/virtualLibraries"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/screen_border"
+        android:visibility="gone"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_vlibs"
+        tools:listitem="@layout/row_edit_calibre_library"
+        tools:visibility="visible"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,6 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -141,6 +142,13 @@ public class Book
      * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
      */
     public static final String BKEY_BOOKSHELF_LIST = "bookshelf_list";
+
+    /**
+     * Bundle key for {@code CalibreLibrary (Parcelable)}.
+     * <strong>No prefix, NEVER change this string as it's used in export/import.</strong>
+     */
+    public static final String BKEY_CALIBRE_LIBRARY = "calibre_library";
+
     /** Log tag. */
     private static final String TAG = "Book";
     /**
@@ -314,6 +322,14 @@ public class Book
         putParcelableArrayList(BKEY_SERIES_LIST, db.getSeriesByBookId(bookId));
         putParcelableArrayList(BKEY_PUBLISHER_LIST, db.getPublishersByBookId(bookId));
         putParcelableArrayList(BKEY_TOC_LIST, db.getTocEntryByBookId(bookId));
+
+        // do NOT preload the full library object. We hardly ever need it as such.
+        // see #getCalibreLibrary
+//        final CalibreLibrary calibreLibrary = db
+//                .getCalibreLibrary(getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY));
+//        if (calibreLibrary != null) {
+//            putParcelable(BKEY_CALIBRE_LIBRARY, calibreLibrary);
+//        }
     }
 
     /**
@@ -703,6 +719,37 @@ public class Book
         }
     }
 
+    @Nullable
+    public CalibreLibrary getCalibreLibrary(@NonNull final DAO db) {
+        // We MIGHT have it (probably not) ...
+        if (contains(BKEY_CALIBRE_LIBRARY)) {
+            return getParcelable(BKEY_CALIBRE_LIBRARY);
+
+        } else {
+            // but if not, go explicitly fetch it.
+            final CalibreLibrary library = db.getCalibreLibrary(
+                    getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY));
+            if (library != null) {
+                // store for reuse
+                putParcelable(BKEY_CALIBRE_LIBRARY, library);
+            }
+            return library;
+        }
+    }
+
+    public void setCalibreLibrary(@Nullable final CalibreLibrary library) {
+        if (library != null) {
+            putLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY, library.getId());
+            putParcelable(Book.BKEY_CALIBRE_LIBRARY, library);
+        } else {
+            remove(DBDefinitions.KEY_FK_CALIBRE_LIBRARY);
+            remove(Book.BKEY_CALIBRE_LIBRARY);
+
+            remove(DBDefinitions.KEY_CALIBRE_BOOK_ID);
+            remove(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
+            remove(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        }
+    }
 
     /**
      * Get the name of the loanee (if any).
@@ -723,6 +770,7 @@ public class Book
             if (loanee == null) {
                 loanee = "";
             }
+            // store for reuse
             putString(DBDefinitions.KEY_LOANEE, loanee);
             return loanee;
         }

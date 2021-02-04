@@ -149,18 +149,18 @@ public final class FileUtils {
      * @param is       InputStream to read
      * @param destFile File to write to
      *
-     * @return File written to (the one passed in), or {@code null} if writing failed.
-     * FIXME: bad API... don't return null... just throw
+     * @return File written to (the one passed in)
      *
-     * @throws IOException on failure
+     * @throws FileNotFoundException if the input stream was {@code null}
+     * @throws IOException           on failure
      */
-    @Nullable
+    @NonNull
     public static File copyInputStream(@NonNull final Context context,
                                        @Nullable final InputStream is,
                                        @NonNull final File destFile)
             throws IOException {
         if (is == null) {
-            return null;
+            throw new FileNotFoundException("is was NULL");
         }
 
         final File tmpFile = AppDir.Cache.getFile(context, System.nanoTime() + ".jpg");

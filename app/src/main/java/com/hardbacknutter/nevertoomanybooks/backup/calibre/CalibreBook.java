@@ -19,16 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.calibre;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-/**
- * A thin layer around a JSON object containing Calibre book data.
- */
 class CalibreBook {
 
     static final String ID = "application_id";
@@ -53,52 +43,4 @@ class CalibreBook {
 
     static final String DATE_PUBLISHED = "pubdate";
     static final String EBOOK_FORMAT = "main_format";
-
-    @NonNull
-    private final JSONObject mData;
-
-    CalibreBook(@NonNull final JSONObject jsonBook) {
-        mData = jsonBook;
-    }
-
-    boolean contains(@NonNull final String key) {
-        return !mData.isNull(key);
-    }
-
-    @Nullable
-    String getString(@NonNull final String key) {
-        if (!mData.isNull(key)) {
-            try {
-                return mData.getString(key);
-            } catch (@NonNull final JSONException ignore) {
-            }
-        }
-        return null;
-    }
-
-    int getInt(@NonNull final String key) {
-        if (!mData.isNull(key)) {
-            try {
-                return mData.getInt(key);
-            } catch (@NonNull final JSONException ignore) {
-            }
-        }
-        return 0;
-    }
-
-    @Nullable
-    JSONObject optJSONObject(@NonNull final String key) {
-        if (!mData.isNull(key)) {
-            return mData.optJSONObject(key);
-        }
-        return null;
-    }
-
-    @Nullable
-    JSONArray optJSONArray(@NonNull final String key) {
-        if (!mData.isNull(key)) {
-            return mData.optJSONArray(key);
-        }
-        return null;
-    }
 }

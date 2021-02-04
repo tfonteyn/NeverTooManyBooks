@@ -137,6 +137,7 @@ public final class DBDefinitions {
     /** A bridge to a Calibre database. Partially imported date. */
     public static final TableDefinition TBL_CALIBRE_BOOKS;
     public static final TableDefinition TBL_CALIBRE_LIBRARIES;
+    public static final TableDefinition TBL_CALIBRE_VIRTUAL_LIBRARIES;
 
     /** Keeps track of nodes in the list across application restarts. */
     public static final TableDefinition TBL_BOOK_LIST_NODE_STATE;
@@ -159,6 +160,8 @@ public final class DBDefinitions {
     public static final Domain DOM_FK_PUBLISHER;
     /** Foreign key. */
     public static final Domain DOM_FK_TOC_ENTRY;
+    /** Foreign key. */
+    public static final Domain DOM_FK_CALIBRE_LIBRARY;
     /**
      * Foreign key.
      * When a style is deleted, this key will be (re)set to
@@ -299,8 +302,22 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_ESID_LAST_DODO_NL;
 
-    /** {@link #TBL_CALIBRE_BOOKS} {@link #TBL_CALIBRE_LIBRARIES}. The physical Calibre library. */
-    public static final Domain DOM_CALIBRE_LIBRARY_ID;
+    /**
+     * {@link #TBL_CALIBRE_LIBRARIES}.
+     * The physical Calibre library ID as needed in ajax calls.
+     */
+    public static final Domain DOM_CALIBRE_LIBRARY_STRING_ID;
+
+    /** {@link #TBL_CALIBRE_LIBRARIES}. */
+    public static final Domain DOM_CALIBRE_LIBRARY_LAST_SYNC_DATE;
+
+    /** {@link #TBL_CALIBRE_LIBRARIES}. */
+    public static final Domain DOM_CALIBRE_LIBRARY_UUID;
+    /** {@link #TBL_CALIBRE_LIBRARIES} {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. Display name. */
+    public static final Domain DOM_CALIBRE_LIBRARY_NAME;
+
+    /** {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. Expression or {@code null} for the physical lib. */
+    public static final Domain DOM_CALIBRE_VIRT_LIB_EXPR;
 
     /** {@link #TBL_CALIBRE_BOOKS}. */
     public static final Domain DOM_CALIBRE_BOOK_ID;
@@ -308,11 +325,6 @@ public final class DBDefinitions {
     public static final Domain DOM_CALIBRE_BOOK_UUID;
     /** {@link #TBL_CALIBRE_BOOKS}. */
     public static final Domain DOM_CALIBRE_BOOK_MAIN_FORMAT;
-
-    /** {@link #TBL_CALIBRE_LIBRARIES}. Name or {@code null} for the physical lib. */
-    public static final Domain DOM_CALIBRE_VIRT_LIB_NAME;
-    /** {@link #TBL_CALIBRE_LIBRARIES}. Expression or {@code null} for the physical lib. */
-    public static final Domain DOM_CALIBRE_VIRT_LIB_EXPR;
 
 
     /** {@link #TBL_BOOK_LOANEE}. */
@@ -357,7 +369,7 @@ public final class DBDefinitions {
     public static final Domain DOM_BOOK_PUBLISHER_POSITION;
 
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
-    public static final Domain DOM_UUID;
+    public static final Domain DOM_STYLE_UUID;
     /** For sorting in the {@link Booklist}. */
     public static final Domain DOM_BL_AUTHOR_SORT;
 
@@ -429,6 +441,8 @@ public final class DBDefinitions {
     public static final String KEY_FK_STYLE = "style";
     /** Foreign key. */
     public static final String KEY_FK_BL_ROW_ID = "bl_row_id";
+    /** Foreign key. */
+    public static final String KEY_FK_CALIBRE_LIBRARY = "clb_lib_id";
 
     /** External Site id. - Long. */
     public static final String KEY_ESID_GOODREADS_BOOK = "goodreads_book_id";
@@ -455,21 +469,25 @@ public final class DBDefinitions {
     public static final String KEY_ESID_LCCN = "lccn_book_id";
 
 
+    /** {@link #TBL_CALIBRE_LIBRARIES}. */
+    public static final String KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE = "clb_lib_last_sync";
+    public static final String KEY_CALIBRE_LIBRARY_STRING_ID = "clb_lib_id";
+    public static final String KEY_CALIBRE_LIBRARY_UUID = "clb_lib_uuid";
+
+    /** {@link #TBL_CALIBRE_LIBRARIES} {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. */
+    public static final String KEY_CALIBRE_LIBRARY_NAME = "clb_lib_name";
+    /** {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. */
+    public static final String KEY_CALIBRE_VIRT_LIB_EXPR = "clb_vlib_expr";
+
     /**
      * External to this app, but NOT an "external Site id"
      * as it comes from a user importing their Calibre libraries.
      * {@link #TBL_CALIBRE_BOOKS}.
      */
-    public static final String KEY_CALIBRE_BOOK_ID = "clb_id";
-    public static final String KEY_CALIBRE_BOOK_UUID = "clb_uuid";
-    public static final String KEY_CALIBRE_BOOK_MAIN_FORMAT = "main_format";
+    public static final String KEY_CALIBRE_BOOK_ID = "clb_book_id";
+    public static final String KEY_CALIBRE_BOOK_UUID = "clb_book_uuid";
+    public static final String KEY_CALIBRE_BOOK_MAIN_FORMAT = "clb_book_main_format";
 
-    /** {@link #TBL_CALIBRE_LIBRARIES}. */
-    public static final String KEY_CALIBRE_LIBRARY_NAME = "vlib_name";
-    public static final String KEY_CALIBRE_VIRT_LIB_EXPR = "expression";
-
-    /** {@link #TBL_CALIBRE_BOOKS} {@link #TBL_CALIBRE_LIBRARIES}. */
-    public static final String KEY_CALIBRE_LIBRARY_ID = "library";
 
     /** {@link #TBL_BOOKSHELF}. */
     public static final String KEY_BOOKSHELF_NAME = "bookshelf_name";
@@ -515,7 +533,7 @@ public final class DBDefinitions {
     public static final String KEY_UTC_ADDED = "date_added";
     public static final String KEY_UTC_LAST_UPDATED = "last_update_date";
 
-    public static final String KEY_UUID = "uuid";
+    public static final String KEY_STYLE_UUID = "uuid";
     public static final String KEY_TITLE = "title";
     public static final String KEY_TITLE_OB = KEY_TITLE + SUFFIX_KEY_ORDER_BY;
     public static final String KEY_ISBN = "isbn";
@@ -637,8 +655,9 @@ public final class DBDefinitions {
         TBL_BOOK_LOANEE = new TableDefinition("loan").setAlias("l");
         TBL_BOOK_TOC_ENTRIES = new TableDefinition("book_anthology").setAlias("bat");
 
+        TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib").setAlias("clb_l");
+        TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib").setAlias("clb_vl");
         TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books").setAlias("clb_b");
-        TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_vlib").setAlias("clb_vl");
 
         TBL_BOOKLIST_STYLES = new TableDefinition("book_list_styles").setAlias("bls");
 
@@ -681,6 +700,12 @@ public final class DBDefinitions {
                 new Domain.Builder(KEY_FK_TOC_ENTRY, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .references(TBL_TOC_ENTRIES, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .build();
+
+        DOM_FK_CALIBRE_LIBRARY =
+                new Domain.Builder(KEY_FK_CALIBRE_LIBRARY, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .references(TBL_CALIBRE_LIBRARIES, "ON DELETE CASCADE ON UPDATE CASCADE")
                         .build();
         DOM_FK_STYLE =
                 new Domain.Builder(KEY_FK_STYLE, ColumnInfo.TYPE_INTEGER)
@@ -972,23 +997,15 @@ public final class DBDefinitions {
         DOM_ESID_GOODREADS_BOOK =
                 new Domain.Builder(KEY_ESID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER).build();
 
-        // Stores dates in UTC format!
         DOM_UTC_LAST_SYNC_DATE_GOODREADS =
                 // The default of 0000-00-00 is not needed.
                 new Domain.Builder(KEY_UTC_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATETIME)
                         .notNull().withDefault("'0000-00-00'").build();
         // It SHOULD be:
         //      new Domain.Builder(KEY_UTC_LAST_SYNC_DATE_GOODREADS, ColumnInfo.TYPE_DATETIME)
-        //              .build();
+        //              .notNull().withDefaultEmptyString().build();
         // As modifying the schema requires copying the entire books table,
         // we just leave it as is for now until we have a more urgent need to recreate that table.
-        // In addition to the above, DBHelper where the triggers are created also should be
-        // modified to:
-        //      KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=null"
-        //
-        // For now this has been partially corrected there and we now set it to an empty string:
-        //      KEY_UTC_LAST_SYNC_DATE_GOODREADS + "=''"
-
 
         DOM_ESID_ISFDB =
                 new Domain.Builder(KEY_ESID_ISFDB, ColumnInfo.TYPE_INTEGER).build();
@@ -1008,24 +1025,31 @@ public final class DBDefinitions {
         /* ======================================================================================
          *  Calibre bridge table domains
          * ====================================================================================== */
-        DOM_CALIBRE_LIBRARY_ID =
-                new Domain.Builder(KEY_CALIBRE_LIBRARY_ID, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().localized().build();
-
-        DOM_CALIBRE_BOOK_ID =
-                new Domain.Builder(KEY_CALIBRE_BOOK_ID, ColumnInfo.TYPE_INTEGER).build();
         DOM_CALIBRE_BOOK_UUID =
                 new Domain.Builder(KEY_CALIBRE_BOOK_UUID, ColumnInfo.TYPE_TEXT)
                         .notNull().build();
-
+        DOM_CALIBRE_BOOK_ID =
+                new Domain.Builder(KEY_CALIBRE_BOOK_ID, ColumnInfo.TYPE_INTEGER).build();
         DOM_CALIBRE_BOOK_MAIN_FORMAT =
                 new Domain.Builder(KEY_CALIBRE_BOOK_MAIN_FORMAT, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().build();
 
+        DOM_CALIBRE_LIBRARY_LAST_SYNC_DATE =
+                new Domain.Builder(KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE, ColumnInfo.TYPE_DATETIME)
+                        .notNull().withDefaultEmptyString().build();
 
-        DOM_CALIBRE_VIRT_LIB_NAME =
+        DOM_CALIBRE_LIBRARY_STRING_ID =
+                new Domain.Builder(KEY_CALIBRE_LIBRARY_STRING_ID, ColumnInfo.TYPE_TEXT)
+                        .notNull().withDefaultEmptyString().localized().build();
+        // can be empty when our Calibre extension is not installed
+        DOM_CALIBRE_LIBRARY_UUID =
+                new Domain.Builder(KEY_CALIBRE_LIBRARY_UUID, ColumnInfo.TYPE_TEXT)
+                        .notNull().withDefaultEmptyString().localized().build();
+
+        DOM_CALIBRE_LIBRARY_NAME =
                 new Domain.Builder(KEY_CALIBRE_LIBRARY_NAME, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().localized().build();
+        // not sure if we should allow empty?
         DOM_CALIBRE_VIRT_LIB_EXPR =
                 new Domain.Builder(KEY_CALIBRE_VIRT_LIB_EXPR, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().build();
@@ -1074,8 +1098,8 @@ public final class DBDefinitions {
          *  Style domains
          * ====================================================================================== */
 
-        DOM_UUID =
-                new Domain.Builder(KEY_UUID, ColumnInfo.TYPE_TEXT)
+        DOM_STYLE_UUID =
+                new Domain.Builder(KEY_STYLE_UUID, ColumnInfo.TYPE_TEXT)
                         .notNull().withDefaultEmptyString().build();
         DOM_STYLE_IS_BUILTIN =
                 new Domain.Builder(KEY_STYLE_IS_BUILTIN, ColumnInfo.TYPE_BOOLEAN)
@@ -1130,9 +1154,9 @@ public final class DBDefinitions {
                                        DOM_STYLE_IS_BUILTIN,
                                        DOM_STYLE_IS_PREFERRED,
                                        DOM_STYLE_MENU_POSITION,
-                                       DOM_UUID)
+                                       DOM_STYLE_UUID)
                            .setPrimaryKey(DOM_PK_ID)
-                           .addIndex(KEY_UUID, true, DOM_UUID)
+                           .addIndex(KEY_STYLE_UUID, true, DOM_STYLE_UUID)
                            .addIndex(KEY_STYLE_MENU_POSITION, false, DOM_STYLE_MENU_POSITION);
         ALL_TABLES.put(TBL_BOOKLIST_STYLES.getName(), TBL_BOOKLIST_STYLES);
 
@@ -1362,46 +1386,55 @@ public final class DBDefinitions {
 
 
 
-        // Do NOT add a reference to the TBL_CALIBRE_LIBRARIES DOM_CALIBRE_LIBRARY_ID column!
-        // If the user changes their library on the Calibre Server, all our references
-        // might/would go bad.
         TBL_CALIBRE_BOOKS.addDomains(DOM_FK_BOOK,
                                      DOM_CALIBRE_BOOK_ID,
                                      DOM_CALIBRE_BOOK_UUID,
                                      DOM_CALIBRE_BOOK_MAIN_FORMAT,
-                                     DOM_CALIBRE_LIBRARY_ID)
+                                     DOM_FK_CALIBRE_LIBRARY)
                          .setPrimaryKey(DOM_FK_BOOK)
                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                         .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
                          .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_CALIBRE_BOOKS.getName(), TBL_CALIBRE_BOOKS);
 
 
         TBL_CALIBRE_LIBRARIES.addDomains(DOM_PK_ID,
                                          DOM_FK_BOOKSHELF,
-                                         DOM_CALIBRE_LIBRARY_ID,
-                                         DOM_CALIBRE_VIRT_LIB_NAME,
-                                         DOM_CALIBRE_VIRT_LIB_EXPR)
+                                         DOM_CALIBRE_LIBRARY_UUID,
+                                         DOM_CALIBRE_LIBRARY_STRING_ID,
+                                         DOM_CALIBRE_LIBRARY_NAME,
+                                         DOM_CALIBRE_LIBRARY_LAST_SYNC_DATE)
                              .setPrimaryKey(DOM_PK_ID)
                              .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
                              .addIndex(KEY_CALIBRE_LIBRARY_NAME, true,
-                                       DOM_CALIBRE_LIBRARY_ID, DOM_CALIBRE_VIRT_LIB_NAME);
+                                       DOM_CALIBRE_LIBRARY_STRING_ID, DOM_CALIBRE_LIBRARY_NAME);
         ALL_TABLES.put(TBL_CALIBRE_LIBRARIES.getName(), TBL_CALIBRE_LIBRARIES);
 
+        TBL_CALIBRE_VIRTUAL_LIBRARIES.addDomains(DOM_PK_ID,
+                                                 DOM_FK_BOOKSHELF,
+                                                 DOM_FK_CALIBRE_LIBRARY,
+                                                 DOM_CALIBRE_LIBRARY_NAME,
+                                                 DOM_CALIBRE_VIRT_LIB_EXPR)
+                                     .setPrimaryKey(DOM_PK_ID)
+                                     .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
+                                     .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
+                                     .addIndex(KEY_CALIBRE_LIBRARY_NAME, true,
+                                               DOM_FK_CALIBRE_LIBRARY, DOM_CALIBRE_LIBRARY_NAME);
+        ALL_TABLES.put(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), TBL_CALIBRE_VIRTUAL_LIBRARIES);
 
 
-        TBL_BOOK_LIST_NODE_STATE
-                .addDomains(DOM_PK_ID,
-                            DOM_FK_BOOKSHELF,
-                            DOM_FK_STYLE,
+        TBL_BOOK_LIST_NODE_STATE.addDomains(DOM_PK_ID,
+                                            DOM_FK_BOOKSHELF,
+                                            DOM_FK_STYLE,
 
-                            DOM_BL_NODE_KEY,
-                            DOM_BL_NODE_LEVEL,
-                            DOM_BL_NODE_GROUP,
-                            DOM_BL_NODE_EXPANDED,
-                            DOM_BL_NODE_VISIBLE
-                           )
-                .setPrimaryKey(DOM_PK_ID)
-                .addIndex("BOOKSHELF_STYLE", false, DOM_FK_BOOKSHELF, DOM_FK_STYLE);
+                                            DOM_BL_NODE_KEY,
+                                            DOM_BL_NODE_LEVEL,
+                                            DOM_BL_NODE_GROUP,
+                                            DOM_BL_NODE_EXPANDED,
+                                            DOM_BL_NODE_VISIBLE)
+                                .setPrimaryKey(DOM_PK_ID)
+                                .addIndex("BOOKSHELF_STYLE", false,
+                                          DOM_FK_BOOKSHELF, DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(), TBL_BOOK_LIST_NODE_STATE);
     }
 

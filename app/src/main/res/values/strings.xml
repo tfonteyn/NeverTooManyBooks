@@ -1708,5 +1708,6 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
+    <string name="lbl_virtual_libraries">Virtual libraries in this library</string>
 
 </resources>

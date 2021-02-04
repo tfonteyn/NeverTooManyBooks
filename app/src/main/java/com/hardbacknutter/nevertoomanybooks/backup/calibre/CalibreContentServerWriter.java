@@ -24,6 +24,7 @@ import android.database.Cursor;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -55,24 +56,29 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 
 /**
- * Dev Note: while most plumbing to use multiple libraries is in place,
- * right now we only support the default library.
+ * This class will only UPDATE books which exist on the server.
+ * It will not push new books to the server !
+ * If a book no longer exists on the server, BKEY_DELETE_LOCAL_BOOKS decides.
  */
 public class CalibreContentServerWriter
         implements ArchiveWriter {
 
     /** Log tag. */
     private static final String TAG = "CalibreServerWriter";
+
+    public static final String BKEY_DELETE_LOCAL_BOOKS = TAG + ":delLocal";
+
     @NonNull
     private final CalibreContentServer mServer;
     @NonNull
     private final DAO mDb;
+
     /** Export configuration. */
     @NonNull
     private final ExportHelper mHelper;
     private final boolean mDoCovers;
-    @SuppressWarnings("FieldCanBeLocal")
-    private CalibreLibrary mLibrary;
+    private final boolean mDeleteLocalBook;
+
     private ExportResults mResults;
 
     /**
@@ -89,10 +95,13 @@ public class CalibreContentServerWriter
             throws IOException, CertificateException {
 
         mDb = new DAO(TAG);
+
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
 
         mDoCovers = mHelper.getExporterEntries().contains(RecordType.Cover);
+
+        mDeleteLocalBook = mHelper.getExtraArgs().getBoolean(BKEY_DELETE_LOCAL_BOOKS);
     }
 
     @Override
@@ -115,82 +124,107 @@ public class CalibreContentServerWriter
         progressListener.setIndeterminate(null);
 
         try {
-            // Always read the meta data here.
             mServer.readMetaData(context, mDb);
-            mLibrary = mServer.getDefaultLibrary();
 
+            for (final CalibreLibrary library : mServer.getLibraries()) {
+
+                final LocalDateTime dateSince;
+                if (mHelper.isIncremental()) {
+                    dateSince = library.getLastSyncDate(context);
+                } else {
+                    dateSince = null;
+                }
+
+                // sanity check, we only update existing books... so no books -> skip library.
+                if (library.getTotalBooks() > 0) {
+                    syncLibrary(context, library, dateSince, progressListener);
+                }
+                // always set the sync date!
+                library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
+                mDb.update(library);
+            }
         } catch (@NonNull final JSONException e) {
             throw new GeneralParsingException(e);
         }
+        return mResults;
+    }
 
-        final LocalDateTime dateSince;
-        if (mHelper.isIncremental()) {
-            dateSince = CalibreContentServer.getLastSyncDate(context);
-        } else {
-            dateSince = null;
-        }
+    private void syncLibrary(@NonNull final Context context,
+                             @NonNull final CalibreLibrary library,
+                             @Nullable final LocalDateTime dateSince,
+                             @NonNull final ProgressListener progressListener)
+            throws IOException {
+        try (Cursor cursor = mDb.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
 
-        int delta = 0;
-        long lastUpdate = 0;
-
-        try (DAO db = new DAO(TAG);
-             Cursor cursor = db.fetchBooksForExportToCalibre(mLibrary.getLibraryId(), dateSince)) {
-
+            int delta = 0;
+            long lastUpdate = 0;
             progressListener.setMaxPos(cursor.getCount());
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                final Book localBook = Book.from(cursor, mDb);
+                final Book book = Book.from(cursor, mDb);
 
-                final int calibreId = localBook.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
-                final String calibreUuid = localBook.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
+                final int calibreId = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
+                final String calibreUuid = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
 
                 try {
                     // ENHANCE: full sync in one go.
                     //  The logic below is TO SLOW as we fetch each book individually
-                    final CalibreBook calibreBook = mServer.getBook(mLibrary.getLibraryId(),
-                                                                    calibreUuid);
-                    final LocalDateTime remoteTime = DateParser.getInstance(context).parseISO(
-                            calibreBook.getString(CalibreBook.LAST_MODIFIED));
+                    final JSONObject calibreBook = mServer
+                            .getBook(library.getLibraryStringId(), calibreUuid);
+
+                    String dateStr = null;
+                    if (!calibreBook.isNull(CalibreBook.LAST_MODIFIED)) {
+                        try {
+                            dateStr = calibreBook.getString(CalibreBook.LAST_MODIFIED);
+                        } catch (@NonNull final JSONException ignore) {
+                        }
+                    }
+
+                    final LocalDateTime remoteTime = DateParser.getInstance(context)
+                                                               .parseISO(dateStr);
                     // sanity check, the remote should always have this date field.
                     if (remoteTime != null) {
                         // is our data newer then the server data ?
-                        final LocalDateTime local = localBook.getLastUpdateUtcDate(context);
-                        if (local != null && local.isAfter(remoteTime)) {
+                        final LocalDateTime localTime = book.getLastUpdateUtcDate(context);
+                        if (localTime != null && localTime.isAfter(remoteTime)) {
 
                             final JSONObject changes =
-                                    collectChanges(context, calibreBook, localBook);
-                            mServer.pushChanges(mLibrary.getLibraryId(), calibreId, changes);
+                                    collectChanges(context, library, calibreBook, book);
+                            mServer.pushChanges(library.getLibraryStringId(), calibreId,
+                                                changes);
 
-                            mResults.addBook(localBook.getId());
+                            mResults.addBook(book.getId());
                         }
                     }
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
-                    //FIXME: skipping for now, but we should remove the calibre data
-                    // from the local book
+                    if (mDeleteLocalBook) {
+                        mDb.delete(context, book);
+
+                    } else {
+                        mDb.deleteBookCalibreData(book);
+                        book.setCalibreLibrary(null);
+                    }
+
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
-                    Logger.error(context, TAG, e, "bookId=" + localBook.getId());
+                    Logger.error(context, TAG, e, "bookId=" + book.getId());
                 }
 
                 delta++;
                 final long now = System.currentTimeMillis();
                 if ((now - lastUpdate) > progressListener.getUpdateIntervalInMs()) {
-                    progressListener.publishProgressStep(delta, localBook.getTitle());
+                    progressListener.publishProgressStep(delta, book.getTitle());
                     lastUpdate = now;
                     delta = 0;
                 }
             }
         }
-
-        // always set the sync date!
-        CalibreContentServer.setLastSyncDate(context, LocalDateTime.now(ZoneOffset.UTC));
-
-        return mResults;
     }
 
     private JSONObject collectChanges(@NonNull final Context context,
-                                      @NonNull final CalibreBook calibreBook,
+                                      @NonNull final CalibreLibrary library,
+                                      @NonNull final JSONObject calibreBook,
                                       @NonNull final Book localBook)
             throws JSONException, IOException {
 
@@ -267,7 +301,7 @@ public class CalibreContentServerWriter
             }
         }
 
-        for (final CustomFields.Field cf : mServer.getCustomFields()) {
+        for (final CustomFields.Field cf : library.getCustomFields()) {
             switch (cf.type) {
                 case CustomFields.TYPE_BOOL: {
                     changes.put(cf.calibreKey, localBook.getBoolean(cf.dbKey));

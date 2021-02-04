@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
@@ -60,7 +59,6 @@ public class CalibreAdminFragment
 
     /** View Binding. */
     private FragmentCalibreBinding mVb;
-    private Toolbar mToolbar;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -82,7 +80,7 @@ public class CalibreAdminFragment
                               @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //noinspection ConstantConditions
-        mToolbar = getActivity().findViewById(R.id.toolbar);
+        getActivity().setTitle(R.string.site_calibre);
 
         mVb.btnLibMap.setOnClickListener(v -> {
             final String url = CalibreContentServer.getHostUrl(v.getContext());
@@ -135,13 +133,6 @@ public class CalibreAdminFragment
                 openSettings();
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mToolbar.setTitle(R.string.site_calibre);
-        mToolbar.setSubtitle("");
     }
 
     @Override

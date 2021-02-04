@@ -80,7 +80,7 @@ public class UserStyle
      */
     private UserStyle(@NonNull final Context context,
                       @NonNull final DataHolder dataHolder) {
-        super(context, dataHolder.getString(DBDefinitions.KEY_UUID), true);
+        super(context, dataHolder.getString(DBDefinitions.KEY_STYLE_UUID), true);
 
         mId = dataHolder.getLong(DBDefinitions.KEY_PK_ID);
         mIsPreferred = dataHolder.getBoolean(DBDefinitions.KEY_STYLE_IS_PREFERRED);

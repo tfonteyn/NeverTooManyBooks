@@ -40,22 +40,62 @@
         />
 
     <TextView
+        android:id="@+id/header"
+        style="@style/Text.Header"
+        android:text="@string/lbl_import_options"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
         android:id="@+id/archive_name"
         style="@style/Text.Body"
         android:layout_marginStart="20dp"
+        android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header"
         tools:text="archive name"
         tools:ignore="SelectableText"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lbl_calibre_library"
+        style="@style/ExposedDropdownMenu.Dense"
+        android:layout_marginTop="@dimen/section_margin_top"
+        android:hint="@string/lbl_library"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="@id/archive_name"
+        app:layout_constraintTop_toBottomOf="@id/archive_name"
+        tools:visibility="visible"
+        >
+
+        <AutoCompleteTextView
+            android:id="@+id/calibre_library"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            tools:ignore="LabelFor"
+            tools:text="@sample/data.json/library/name"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier_top"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="archive_name,lbl_calibre_library"
         />
 
     <TextView
         android:id="@+id/archive_content"
         style="@style/Text.Body.Small"
+        android:layout_marginTop="@dimen/section_margin_top"
         android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toStartOf="@id/archive_name"
-        app:layout_constraintTop_toBottomOf="@id/archive_name"
-        tools:text="archive content"
+        app:layout_constraintTop_toBottomOf="@id/barrier_top"
+        tools:text="Books: 123\nCovers: 456"
         tools:ignore="SelectableText"
         />
 
@@ -64,18 +104,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.6"
+        app:layout_constraintGuide_percent="0.5"
         />
 
     <CheckBox
         android:id="@+id/cbx_books"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginTop="@dimen/section_margin_top"
         android:checked="true"
         android:text="@string/lbl_books"
-        android:layout_marginStart="@dimen/field_margin_start"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/archive_content"
+        app:layout_constraintStart_toEndOf="@id/middle"
+        app:layout_constraintTop_toBottomOf="@id/header"
         />
 
     <RadioButton
@@ -139,8 +180,8 @@
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="@string/lbl_covers_long"
-        app:layout_constraintStart_toEndOf="@id/middle"
-        app:layout_constraintTop_toTopOf="@id/cbx_books"
+        app:layout_constraintStart_toStartOf="@id/cbx_books"
+        app:layout_constraintTop_toBottomOf="@id/rb_import_books_option_all"
         />
 
     <CheckBox
@@ -149,8 +190,8 @@
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="@string/lbl_settings"
-        app:layout_constraintStart_toEndOf="@id/middle"
-        app:layout_constraintTop_toBottomOf="@id/cbx_covers"
+        app:layout_constraintBottom_toTopOf="@id/cbx_styles"
+        app:layout_constraintStart_toStartOf="@id/archive_name"
         />
 
     <CheckBox
@@ -159,8 +200,8 @@
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="@string/lbl_styles"
-        app:layout_constraintStart_toEndOf="@id/middle"
-        app:layout_constraintTop_toBottomOf="@id/cbx_prefs"
+        app:layout_constraintStart_toStartOf="@id/archive_name"
+        app:layout_constraintTop_toTopOf="@id/cbx_covers"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

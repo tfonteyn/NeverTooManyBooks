@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@
         <!-- but these domains don't yet support https. 2020-01-04. -->
         <domain includeSubdomains="true">isfdb.org</domain>
         <domain includeSubdomains="true">kb.nl</domain>
+        <domain includeSubdomains="true">192.168.0.202</domain>
 
         <!-- Added 2020-07-08.
         http://ecx.images-amazon.com/images/I/41lQH44CfyL.jpg

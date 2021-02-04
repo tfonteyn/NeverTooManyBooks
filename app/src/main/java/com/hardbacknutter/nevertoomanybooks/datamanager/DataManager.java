@@ -523,6 +523,11 @@ public class DataManager
         return (ArrayList<T>) o;
     }
 
+    @Nullable
+    public <T extends Parcelable> T getParcelable(@NonNull final String key) {
+        return mRawData.getParcelable(key);
+    }
+
     /**
      * <strong>Copy</strong> the content of the given list into the
      * {@link Parcelable} {@link ArrayList} in the collection.
@@ -555,6 +560,18 @@ public class DataManager
     public <T extends Parcelable> void putParcelableArrayList(@NonNull final String key,
                                                               @NonNull final ArrayList<T> value) {
         mRawData.putParcelableArrayList(key, value);
+    }
+
+    /**
+     * Store a {@link Parcelable} in the collection.
+     *
+     * @param key   Key of data object
+     * @param value to store
+     * @param <T>   type of object
+     */
+    public <T extends Parcelable> void putParcelable(@NonNull final String key,
+                                                     @NonNull final T value) {
+        mRawData.putParcelable(key, value);
     }
 
     /**

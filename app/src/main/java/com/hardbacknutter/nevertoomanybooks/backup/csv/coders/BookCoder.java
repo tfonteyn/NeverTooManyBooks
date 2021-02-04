@@ -25,12 +25,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -47,6 +48,13 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
  * due to backward compatibility.
  * TODO: make the current ones LEGACY, and start using the Books keys, but still support reading
  * the old ones.
+ *
+ * <strong>LIMITATIONS:</strong> Calibre book data is handled, but Calibre library is NOT.
+ * The Calibre native string-id is written out.
+ * When reading, the Calibre native string-id is checked against already existing data,
+ * but if there is no match all Calibre data for the book is discarded.
+ * <p>
+ * In other words: this coder is (no longer) a full backup/restore!
  */
 public class BookCoder {
 
@@ -119,10 +127,12 @@ public class BookCoder {
             + COMMA + '"' + DBDefinitions.KEY_LANGUAGE + '"'
             + COMMA + '"' + DBDefinitions.KEY_UTC_ADDED + '"'
 
+            // the Calibre book ID/UUID as they define the book on the Calibre Server
             + COMMA + '"' + DBDefinitions.KEY_CALIBRE_BOOK_ID + '"'
             + COMMA + '"' + DBDefinitions.KEY_CALIBRE_BOOK_UUID + '"'
-            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_LIBRARY_ID + '"'
-            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT + '"';
+            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT + '"'
+            // we write the String ID! not the internal row id
+            + COMMA + '"' + DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID + '"';
 
     private final StringList<Author> mAuthorCoder = new StringList<>(new AuthorCoder());
     private final StringList<Series> mSeriesCoder = new StringList<>(new SeriesCoder());
@@ -130,12 +140,28 @@ public class BookCoder {
     private final StringList<TocEntry> mTocCoder = new StringList<>(new TocEntryCoder());
     private final StringList<Bookshelf> mBookshelfCoder;
 
+    @NonNull
     private final List<Domain> externalIdDomains;
 
-    public BookCoder(@NonNull final ListStyle defStyle) {
-        mBookshelfCoder = new StringList<>(new BookshelfCoder(defStyle));
+    private final Map<Long, String> mCalibreLibraryId2StrMap = new HashMap<>();
+    private final Map<String, Long> mCalibreLibraryStr2IdMap = new HashMap<>();
+
+    public BookCoder(@NonNull final Context context,
+                     @NonNull final DAO db) {
+
+        mBookshelfCoder = new StringList<>(new BookshelfCoder(context, db));
 
         externalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
+
+        //noinspection SimplifyStreamApiCallChains
+        db.getCalibreLibraries()
+          .stream()
+          .forEach(library -> {
+              mCalibreLibraryId2StrMap.put(library.getId(),
+                                           library.getLibraryStringId());
+              mCalibreLibraryStr2IdMap.put(library.getLibraryStringId(),
+                                           library.getId());
+          });
     }
 
     @NonNull
@@ -200,8 +226,17 @@ public class BookCoder {
 
         line.add(encode(book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
         line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
-        line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_ID)));
         line.add(encode(book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+
+        // we write the String ID! not the internal row id
+        final String clbStrId = mCalibreLibraryId2StrMap.get(
+                book.getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY));
+        // Guard against obsolete libraries (not actually sure this is needed... paranoia)
+        if (clbStrId != null && !clbStrId.isEmpty()) {
+            line.add(encode(clbStrId));
+        } else {
+            line.add("");
+        }
 
         // external ID's
         for (final Domain domain : externalIdDomains) {
@@ -303,11 +338,29 @@ public class BookCoder {
         decodePublishers(context, db, book, bookLocale);
         decodeToc(context, db, book, bookLocale);
         decodeBookshelves(db, book);
+        decodeCalibreData(book);
 
         //URGENT: implement full parsing/formatting of incoming dates for validity
         //verifyDates(context, mDb, book);
 
         return book;
+    }
+
+    private void decodeCalibreData(@NonNull final Book /* in/out */ book) {
+        // we need to convert the string id to the row id.
+        final String stringId = book.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID);
+        // and discard the string-id
+        book.remove(DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID);
+
+        if (!stringId.isEmpty()) {
+            final Long id = mCalibreLibraryStr2IdMap.get(stringId);
+            if (id != null) {
+                book.putLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY, id);
+            } else {
+                // Don't try to recover; just remove all calibre keys from this book.
+                book.setCalibreLibrary(null);
+            }
+        }
     }
 
     /**

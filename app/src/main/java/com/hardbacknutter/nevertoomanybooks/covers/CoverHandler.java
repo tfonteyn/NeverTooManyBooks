@@ -529,12 +529,15 @@ public class CoverHandler {
      * @param uri to load the image from
      */
     private void onGetContentResult(@Nullable final Uri uri) {
-        final Context context = mView.getContext();
         if (uri != null) {
-            File file = null;
+            final Context context = mView.getContext();
             try (InputStream is = context.getContentResolver().openInputStream(uri)) {
                 // copy the data, and retrieve the (potentially) resolved file
-                file = FileUtils.copyInputStream(context, is, getTempFile(context));
+                final File file = FileUtils.copyInputStream(context, is, getTempFile(context));
+
+                showProgress(true);
+                mTransFormTaskViewModel.startTask(
+                        new TransFormTaskViewModel.Transformation(file).setScale(true));
 
             } catch (@NonNull final ExternalStorageException e) {
                 StandardDialogs.showError(context, e);
@@ -543,14 +546,6 @@ public class CoverHandler {
                 if (BuildConfig.DEBUG /* always */) {
                     Log.d(TAG, "Unable to copy content to file", e);
                 }
-            }
-
-            if (file != null) {
-                showProgress(true);
-                mTransFormTaskViewModel.startTask(
-                        new TransFormTaskViewModel.Transformation(file)
-                                .setScale(true));
-            } else {
                 StandardDialogs.showError(context, R.string.warning_image_copy_failed);
             }
         }

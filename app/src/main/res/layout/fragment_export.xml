@@ -39,14 +39,12 @@
         tools:ignore="MissingConstraints"
         />
 
-    <!-- Not present in landscape layout; displayed as the subtitle of the toolbar. -->
     <TextView
-        android:id="@+id/info"
+        android:id="@+id/header"
         style="@style/Text.Header"
         android:text="@string/lbl_export_options"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="InconsistentLayout"
         />
 
     <CheckBox
@@ -57,7 +55,7 @@
         android:checked="true"
         android:text="@string/lbl_books"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/info"
+        app:layout_constraintTop_toBottomOf="@id/header"
         />
 
     <RadioButton
@@ -143,8 +141,10 @@
     <TextView
         android:id="@+id/archive_format_info_long"
         style="@style/Text.Body.Small"
+        android:layout_width="0dp"
         android:layout_marginStart="@dimen/field_margin_start"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/archive_format_info"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_archive_is_export_only"

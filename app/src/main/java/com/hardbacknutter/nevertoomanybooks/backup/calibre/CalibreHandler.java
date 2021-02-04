@@ -136,10 +136,6 @@ public class CalibreHandler {
         mFileDownload.onFinished().observe(lifecycleOwner, this::onFinished);
     }
 
-    public boolean isCalibreEnabled(@NonNull final DataHolder book) {
-        return !book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID).isEmpty();
-    }
-
     public boolean isCalibreEnabled(@NonNull final SharedPreferences global,
                                     @NonNull final DataHolder book) {
         return CalibreContentServer.isEnabled(global)
@@ -261,17 +257,11 @@ public class CalibreHandler {
         closeProgressDialog();
 
         if (message.isNewEvent()) {
+            Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             final Uri uri = message.result;
-
-            if (uri != null) {
-                Snackbar.make(mView, R.string.progress_end_download_successful,
-                              Snackbar.LENGTH_LONG)
-                        .setAction(R.string.lbl_read, v -> openBookUri(uri))
-                        .show();
-            } else {
-                Snackbar.make(mView, R.string.error_download_failed,
-                              Snackbar.LENGTH_LONG).show();
-            }
+            Snackbar.make(mView, R.string.progress_end_download_successful, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.lbl_read, v -> openBookUri(uri))
+                    .show();
         }
     }
 

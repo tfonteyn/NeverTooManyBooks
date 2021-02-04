@@ -50,6 +50,7 @@ import java.io.OutputStreamWriter;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
@@ -59,13 +60,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -82,6 +80,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -94,7 +93,6 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.HttpConstants;
-import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
@@ -110,7 +108,32 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException
  * </ul>
  * <p>
  * This class can handle multiple Calibre Libraries on a <strong>single</strong> Calibre server.
- * (Note that this seems not to be fully implemented on the Calibre side)
+ * <p>
+ * Notes on using multiple libraries:
+ *     src/calibre/srv/standalone.py, "main"
+ * <p>
+ *    calibre-server ... /path/to/lib
+ *    ==> will serve the single specified lib.
+ * <p>
+ *    WITHOUT specifying the path, Calibre will read from
+ * <p>
+ *    C:\Users\USER\AppData\Roaming\calibre\gui.json
+ *    /home/USER/.config/calibre/gui.json
+ *    key:
+ *    "library_usage_stats": {
+ *     "C:/Users/USER/Calibre Library": 184,
+ *     "C:/Users/USER/Downloads/testlib": 1
+ *   },
+ * <p>
+ * The default lib seems to be simply the first one in the list.
+ * <p>
+ *   NOT actually tested on Linux, but other config files are in visible USER/.config/calibre
+ * <p>
+ *   To check:
+ * <p>
+ *   seems if it does not find the above, it will look for "global.py.json"
+ *   key:
+ *   "library_path": "C:\\Users\\USER\\Downloads\\testlib",
  */
 public class CalibreContentServer {
 
@@ -122,9 +145,16 @@ public class CalibreContentServer {
     static final String RESPONSE_TAG_NUM = "num";
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
+    /** Custom field for {@link ArchiveMetaData}. */
+    public static final String BKEY_LIBRARY = TAG + ":defLib";
 
     /** Log tag. */
     private static final String TAG = "CalibreContentServer";
+    /** Custom field for {@link ArchiveMetaData}. */
+    public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
+    /** Response root tag. */
+    private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
+
     /** DER encoded CA certificate. */
     public static final String CA_FILE = TAG + ".ca";
     /** Preferences prefix. */
@@ -136,8 +166,7 @@ public class CalibreContentServer {
     /** Whether to show any sync menus at all. */
     public static final String PK_ENABLED = PREF_KEY + ".enabled";
     private static final String PK_LOCAL_FOLDER_URI = PREF_KEY + ".folder";
-    /** last time we synced with Calibre. */
-    private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
+
     /**
      * The buffer used for all small reads.
      * 8k is the same as the default in BufferedReader.
@@ -166,17 +195,10 @@ public class CalibreContentServer {
     /** The header string: "Basic user:password". (in base64) */
     @Nullable
     private final String mAuthHeader;
-    /**
-     * The custom fields <strong>present</strong> on the server.
-     * This will be a subset of the supported fields from {@link CustomFields}.
-     */
-    private final Set<CustomFields.Field> mCustomFields = new HashSet<>();
-    private final Map<String, Integer> mTotalBooks = new HashMap<>();
+
     /** As read from the Content Server. */
     @NonNull
     private final ArrayList<CalibreLibrary> mLibraries = new ArrayList<>();
-    @NonNull
-    private final ArrayList<CalibreLibrary> mVirtualLibraries = new ArrayList<>();
     /** As read from the Content Server. */
     @Nullable
     private CalibreLibrary mDefaultLibrary;
@@ -254,33 +276,6 @@ public class CalibreContentServer {
                                 .getString(PK_HOST_URL, "");
     }
 
-    @Nullable
-    @AnyThread
-    static LocalDateTime getLastSyncDate(@NonNull final Context context) {
-        final String date = PreferenceManager.getDefaultSharedPreferences(context)
-                                             .getString(PK_LAST_SYNC_DATE, null);
-
-        if (date != null && !date.isEmpty()) {
-            return DateParser.getInstance(context).parseISO(date);
-        }
-
-        return null;
-    }
-
-    @AnyThread
-    static void setLastSyncDate(@NonNull final Context context,
-                                @Nullable final LocalDateTime dateTime) {
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-        if (dateTime == null) {
-            global.edit().remove(PK_LAST_SYNC_DATE).apply();
-        } else {
-            global.edit()
-                  .putString(PK_LAST_SYNC_DATE, dateTime
-                          .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-                  .apply();
-        }
-    }
-
     @AnyThread
     public static void setFolderUri(@NonNull final Context context,
                                     @NonNull final Uri uri)
@@ -345,49 +340,13 @@ public class CalibreContentServer {
     }
 
     /**
-     * Read the required meta data from the server.
-     * <ul>
-     *     <li>number of books in the given library</li>
-     *     <li>user custom fields definitions</li>
-     *     <li>Virtual libraries</li>
-     * </ul>
-     *
-     * @param context Current context
-     * @param db      Database access
-     *
-     * @throws IOException on other failures
-     */
-    @WorkerThread
-    void readMetaData(@NonNull final Context context,
-                      @NonNull final DAO db)
-            throws IOException, JSONException {
-
-        loadLibraries(context, db);
-        // Sanity check
-        Objects.requireNonNull(mDefaultLibrary, "mDefaultLibrary");
-        try {
-            loadVirtualLibraries(context, db, mDefaultLibrary);
-        } catch (@NonNull final HttpNotFoundException e) {
-            Logger.warn(context, TAG, "Calibre extension not installed");
-        } catch (@NonNull final HttpStatusException e) {
-            Logger.warn(context, TAG, e.toString());
-        }
-
-        // read the first book available to get the customs fields (if any)
-        final JSONObject result = getBookIds(mDefaultLibrary.getLibraryId(), 1, 0);
-        // grab the initial/current total number of books while we have it
-        mTotalBooks.put(mDefaultLibrary.getLibraryId(), result.optInt(RESPONSE_TAG_TOTAL_NUM));
-
-        final JSONArray calibreIds = result.optJSONArray(RESPONSE_TAG_BOOK_IDS);
-        if (calibreIds != null && calibreIds.length() > 0) {
-            loadCustomFieldDefinitions(mDefaultLibrary.getLibraryId(), calibreIds.getInt(0));
-        }
-    }
-
-    /**
      * endpoint('/ajax/library-info', postprocess=json)
      * <p>
-     * Return info about available libraries.
+     * Return info about available libraries and their meta data from the server.
+     * <ul>
+     *     <li>number of books in the given library</li>
+     *     <li>user custom fields definitions for this library</li>
+     * </ul>
      *
      * <pre>
      * {"library_map":
@@ -404,8 +363,8 @@ public class CalibreContentServer {
      * @throws IOException on failures
      */
     @WorkerThread
-    private void loadLibraries(@NonNull final Context context,
-                               @NonNull final DAO db)
+    void readMetaData(@NonNull final Context context,
+                      @NonNull final DAO db)
             throws IOException, JSONException {
 
         mLibraries.clear();
@@ -417,112 +376,121 @@ public class CalibreContentServer {
         final String url = "/ajax/library-info";
         final JSONObject source = new JSONObject(fetch(url, BUFFER_SMALL));
 
-        final JSONObject server_libs = source.getJSONObject("library_map");
+        final JSONObject libraryMap = source.getJSONObject("library_map");
         final String defaultLibraryId = source.getString("default_library");
+        // only present if our extension is installed
+        final JSONObject libraryDetails = source.optJSONObject("library_details");
+        mCalibreExtensionInstalled = libraryDetails != null;
 
-        final Iterator<String> it = server_libs.keys();
+        final Iterator<String> it = libraryMap.keys();
         while (it.hasNext()) {
             final String libraryId = it.next();
-            final String name = server_libs.getString(libraryId);
+            // read the standard info
+            final String name = libraryMap.getString(libraryId);
 
-            CalibreLibrary dbLib = db.getCalibreLibrary(context, libraryId);
-            if (dbLib == null) {
-                dbLib = new CalibreLibrary(libraryId, name, "", currentBookshelf);
-                db.insert(dbLib);
-            } else {
-                // Check if any data was changed
-                if (!name.equals(dbLib.getName())) {
-                    dbLib.setName(name);
-                    db.update(dbLib);
-                }
-            }
-
-            mLibraries.add(dbLib);
-            if (libraryId.equals(defaultLibraryId)) {
-                mDefaultLibrary = dbLib;
-            }
-        }
-    }
-
-
-    /**
-     * endpoint('/ntmb/virtual-library-info/{library_id=None}', postprocess=json)
-     * <p>
-     * Return info about available virtual libraries
-     * <p>
-     * This method uses an extension which needs to be installed on the Calibre Content Server.
-     * <p>
-     * Example response:
-     * <pre>
-     *      {
-     *      "virtual_libraries": {
-     *              "Non-Fiction": "tags:\"=Non-Fiction\"",
-     *              "Fiction": "not tags:\"Non-Fiction\""
-     *          }
-     *      }
-     * </pre>
-     *
-     * @param context Current context
-     * @param db      Database access
-     *
-     * @throws HttpNotFoundException if our extension is not installed
-     * @throws IOException           on other failures
-     */
-    @WorkerThread
-    private void loadVirtualLibraries(@NonNull final Context context,
-                                      @NonNull final DAO db,
-                                      @NonNull final CalibreLibrary library)
-            throws IOException, JSONException {
-
-        mVirtualLibraries.clear();
-
-        final String url = "/ntmb/virtual-library-info/" + library.getLibraryId();
-        final JSONObject result = new JSONObject(fetch(url, BUFFER_SMALL));
-
-        // If we get here without getting a 404, our extension is installed.
-        mCalibreExtensionInstalled = true;
-
-        if (!result.isNull("virtual_libraries")) {
-            final JSONObject server_libs = result.getJSONObject("virtual_libraries");
-            final Iterator<String> it = server_libs.keys();
-            while (it.hasNext()) {
-                final String name = it.next();
-                final String expr = server_libs.getString(name);
-
-                CalibreLibrary dbLib = db.getCalibreLibrary(context, library, name);
-                if (dbLib == null) {
-                    dbLib = new CalibreLibrary(library.getLibraryId(), name, expr,
-                                               library.getMappedBookshelf());
-                    db.insert(dbLib);
+            // read the extended info if present
+            final String uuid;
+            final JSONObject vlibs;
+            if (libraryDetails != null && !libraryDetails.isNull(libraryId)) {
+                final JSONObject details = libraryDetails.getJSONObject(libraryId);
+                uuid = details.getString("uuid");
+                if (!details.isNull(RESPONSE_TAG_VIRTUAL_LIBRARIES)) {
+                    vlibs = details.getJSONObject(RESPONSE_TAG_VIRTUAL_LIBRARIES);
                 } else {
-                    // Check if any data was changed
-                    if (!name.equals(dbLib.getName()) || !expr.equals(dbLib.getExpr())) {
-                        dbLib.setName(name);
-                        dbLib.setExpr(expr);
-                        db.update(dbLib);
-                    }
+                    vlibs = null;
                 }
-                mVirtualLibraries.add(dbLib);
+            } else {
+                uuid = "";
+                vlibs = null;
+            }
+
+            @Nullable
+            CalibreLibrary library = null;
+            if (!uuid.isEmpty()) {
+                library = db.getCalibreLibraryByUuid(uuid);
+            }
+            if (library == null) {
+                library = db.getCalibreLibraryByStringId(libraryId);
+            }
+            if (library == null) {
+                // must be a new one.
+                library = new CalibreLibrary(uuid, libraryId, name, currentBookshelf.getId());
+
+            } else {
+                // we found it by uuid or id, update it with the server info
+                // (even if unchanged... )
+                library.setUuid(uuid);
+                library.setName(name);
+            }
+
+            // If we have vl info, process it
+            // If we don't; the library will keep any vl's defined previously
+            if (vlibs != null) {
+                processVirtualLibraries(db, library, vlibs);
+            }
+
+            if (library.getId() > 0) {
+                db.update(library);
+            } else {
+                db.insert(library);
+            }
+
+            // add to cached list
+            mLibraries.add(library);
+            // and set as default if it is.
+            if (libraryId.equals(defaultLibraryId)) {
+                mDefaultLibrary = library;
+            }
+
+
+            // read the first book available to get the customs fields (if any)
+            final JSONObject result = getBookIds(library.getLibraryStringId(), 1, 0);
+            // grab the initial/current total number of books while we have it
+            library.setTotalBooks(result.optInt(RESPONSE_TAG_TOTAL_NUM));
+
+            final JSONArray calibreIds = result.optJSONArray(RESPONSE_TAG_BOOK_IDS);
+            if (calibreIds != null && calibreIds.length() > 0) {
+                loadCustomFieldDefinitions(library, calibreIds.getInt(0));
             }
         }
 
-        // Now remove any virtual libs in the database which are not present in mVirtualLibraries
-        for (final CalibreLibrary dbLib
-                : db.getCalibreVirtualLibraries(context, library.getLibraryId())) {
-            if (mVirtualLibraries.stream()
-                                 .map(CalibreLibrary::getId)
-                                 .noneMatch(id -> id == dbLib.getId())) {
-                db.delete(dbLib);
-            }
-        }
+        // Sanity check
+        Objects.requireNonNull(mDefaultLibrary, "mDefaultLibrary");
     }
 
-    private void loadCustomFieldDefinitions(@NonNull final String libraryId,
+    private void processVirtualLibraries(@NonNull final DAO db,
+                                         @NonNull final CalibreLibrary library,
+                                         @NonNull final JSONObject virtualLibraries)
+            throws JSONException {
+
+        final List<CalibreVirtualLibrary> vlibs = new ArrayList<>();
+
+        final Iterator<String> it = virtualLibraries.keys();
+        while (it.hasNext()) {
+            final String name = it.next();
+            final String expr = virtualLibraries.getString(name);
+
+            CalibreVirtualLibrary dbVirtLib = db.getCalibreVirtualLibrary(library.getId(), name);
+            if (dbVirtLib == null) {
+                dbVirtLib = new CalibreVirtualLibrary(library.getId(), name, expr,
+                                                      library.getMappedBookshelfId());
+            } else {
+                dbVirtLib.setName(name);
+                dbVirtLib.setExpr(expr);
+            }
+            vlibs.add(dbVirtLib);
+        }
+
+        // hook them up to the library itself; always overwriting the current(previous) list.
+        library.setVirtualLibraries(vlibs);
+    }
+
+    private void loadCustomFieldDefinitions(@NonNull final CalibreLibrary library,
                                             final int bookId)
             throws IOException, JSONException {
 
-        mCustomFields.clear();
-        final CalibreBook calibreBook = getBook(libraryId, bookId);
+        final Set<CustomFields.Field> customFields = new HashSet<>();
+        final JSONObject calibreBook = getBook(library.getLibraryStringId(), bookId);
         final JSONObject userMetaData = calibreBook.optJSONObject(CalibreBook.USER_METADATA);
         if (userMetaData != null) {
             // check the supported fields
@@ -531,17 +499,12 @@ public class CalibreContentServer {
                 // do we have a match? (this check is needed, it's NOT a sanity check)
                 if (data != null && cf.type.equals(data.getString(
                         CustomFields.METADATA_DATATYPE))) {
-                    mCustomFields.add(cf);
+                    customFields.add(cf);
                 }
             }
         }
-    }
-
-
-    @NonNull
-    @AnyThread
-    Set<CustomFields.Field> getCustomFields() {
-        return mCustomFields;
+        // finally, hook them up to the library itself.
+        library.setCustomFields(customFields);
     }
 
 
@@ -551,7 +514,7 @@ public class CalibreContentServer {
     }
 
     /**
-     * Get the full list of <strong>physical</strong> libraries; usually just the one.
+     * Get the list of libraries; usually just the one.
      *
      * @return list
      */
@@ -562,70 +525,13 @@ public class CalibreContentServer {
     }
 
     /**
-     * Get the default <strong>physical</strong> library.
+     * Get the default library.
      *
      * @return library
      */
     @NonNull
     CalibreLibrary getDefaultLibrary() {
         return Objects.requireNonNull(mDefaultLibrary, "mDefaultLibrary");
-    }
-
-    /**
-     * Get the <strong>physical</strong> library for the given libraryId.
-     *
-     * @return library
-     */
-    @NonNull
-    @AnyThread
-    Optional<CalibreLibrary> getLibrary(@NonNull final String libraryId) {
-        return mLibraries.stream()
-                         .filter(lib -> lib.getLibraryId().equals(libraryId))
-                         .filter(CalibreLibrary::isPhysical)
-                         .findFirst();
-    }
-
-    /**
-     * Get the <strong>virtual</strong> library for the given libraryId + name.
-     *
-     * @return library
-     */
-    @NonNull
-    @AnyThread
-    Optional<CalibreLibrary> getLibrary(@NonNull final String libraryId,
-                                        @NonNull final String name) {
-        return mLibraries.stream()
-                         .filter(lib -> lib.getLibraryId().equals(libraryId))
-                         .filter(lib -> lib.getName().equals(name))
-                         .filter(CalibreLibrary::isVirtual)
-                         .findFirst();
-    }
-
-    /**
-     * Get the list of <strong>virtual</strong> libraries.
-     * Call {@link #isCalibreExtensionInstalled()} before calling this method.
-     *
-     * @return list
-     */
-    @NonNull
-    @AnyThread
-    ArrayList<CalibreLibrary> getVirtualLibraries() {
-        if (!mCalibreExtensionInstalled) {
-            throw new IllegalStateException("no ntmb ext");
-        }
-
-        return mVirtualLibraries;
-    }
-
-
-    /**
-     * Get the number of books in the given library.
-     *
-     * @return number
-     */
-    @AnyThread
-    int getTotalBooks(@NonNull final String libraryId) {
-        return Objects.requireNonNull(mTotalBooks.get(libraryId), "Must call readMetaData first");
     }
 
     /**
@@ -660,8 +566,8 @@ public class CalibreContentServer {
             return null;
         }
 
-        final String url = "/ntmb/virtual-libraries-for-books/" + libraryId
-                           + "?ids=" + getCsvIds(calibreIds);
+        final String url = "/ntmb/virtual-libraries-for-books/"
+                           + getCsvIds(calibreIds) + "/" + libraryId;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
 
@@ -1062,12 +968,12 @@ public class CalibreContentServer {
      */
     @WorkerThread
     @NonNull
-    public CalibreBook getBook(@NonNull final String libraryId,
-                               @NonNull final String calibreUuid)
+    public JSONObject getBook(@NonNull final String libraryId,
+                              @NonNull final String calibreUuid)
             throws IOException, JSONException {
 
         final String url = "/ajax/book/" + calibreUuid + '/' + libraryId + "?id_is_uuid=true";
-        return new CalibreBook(new JSONObject(fetch(url, BUFFER_BOOK)));
+        return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
     /**
@@ -1082,12 +988,12 @@ public class CalibreContentServer {
      */
     @WorkerThread
     @NonNull
-    public CalibreBook getBook(@NonNull final String libraryId,
-                               final int calibreId)
+    public JSONObject getBook(@NonNull final String libraryId,
+                              final int calibreId)
             throws IOException, JSONException {
 
         final String url = "/ajax/book/" + calibreId + '/' + libraryId;
-        return new CalibreBook(new JSONObject(fetch(url, BUFFER_BOOK)));
+        return new JSONObject(fetch(url, BUFFER_BOOK));
     }
 
     @WorkerThread
@@ -1120,7 +1026,7 @@ public class CalibreContentServer {
      *
      * @throws IOException on failures
      */
-    @Nullable
+    @NonNull
     Uri getFile(@NonNull final Context context,
                 @NonNull final Uri folder,
                 @NonNull final Book book,
@@ -1130,8 +1036,18 @@ public class CalibreContentServer {
         // Build the URL from where to download the file
         final int id = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
         final String format = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-        final String libraryId = book.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_ID);
-        final String url = mServerUri + "/get/" + format + "/" + id + "/" + libraryId;
+        final long libraryId = book.getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY);
+
+        final Optional<CalibreLibrary> calibreLibrary =
+                mLibraries.stream()
+                          .filter(library -> library.getId() == libraryId)
+                          .findFirst();
+        if (!calibreLibrary.isPresent()) {
+            throw new FileNotFoundException("library not found: " + libraryId);
+        }
+
+        final String url = mServerUri + "/get/" + format + "/" + id + "/"
+                           + calibreLibrary.get().getLibraryStringId();
 
         // and where to write the file
         final DocumentFile destFile = getDocumentFile(context, book, folder, true);
@@ -1161,7 +1077,7 @@ public class CalibreContentServer {
         if (destFile.exists()) {
             return destUri;
         } else {
-            return null;
+            throw new FileNotFoundException("No error, but not found?");
         }
     }
 
@@ -1438,6 +1354,10 @@ public class CalibreContentServer {
                 throw new HttpNotFoundException(siteResId,
                                                 request.getResponseMessage(),
                                                 request.getURL());
+
+            case HttpURLConnection.HTTP_CLIENT_TIMEOUT:
+                // for easier reporting issues to the user, map a 408 to an STE
+                throw new SocketTimeoutException("408 " + request.getResponseMessage());
 
             default:
                 throw new HttpStatusException(siteResId,

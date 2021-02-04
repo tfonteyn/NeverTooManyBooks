@@ -86,7 +86,7 @@ public class ListStyleCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBDefinitions.KEY_UUID, style.getUuid());
+        out.put(DBDefinitions.KEY_STYLE_UUID, style.getUuid());
         out.put(DBDefinitions.KEY_STYLE_IS_PREFERRED, style.isPreferred());
         out.put(DBDefinitions.KEY_STYLE_MENU_POSITION, style.getMenuPosition());
 
@@ -115,7 +115,7 @@ public class ListStyleCoder
             throws JSONException {
         Objects.requireNonNull(mDb);
 
-        final String uuid = data.getString(DBDefinitions.KEY_UUID);
+        final String uuid = data.getString(DBDefinitions.KEY_STYLE_UUID);
 
         if (StyleDAO.BuiltinStyles.isBuiltin(uuid)) {
             final ListStyle style = Objects.requireNonNull(StyleDAO.getStyle(mContext, mDb, uuid));

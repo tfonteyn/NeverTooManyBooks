@@ -142,7 +142,7 @@ public class JsonRecordWriter
                 && !progressListener.isCancelled()) {
                 final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
 
-                final JsonCoder<Book> coder = new BookCoder(StyleDAO.getDefault(context, mDb));
+                final JsonCoder<Book> coder = new BookCoder(context, mDb);
 
                 int delta = 0;
                 long lastUpdate = 0;

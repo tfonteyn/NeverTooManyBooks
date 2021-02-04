@@ -48,7 +48,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -139,7 +138,7 @@ public class CsvRecordReader
     public CsvRecordReader(@NonNull final Context context,
                            @NonNull final DAO db) {
         mDb = db;
-        mBookCoder = new BookCoder(StyleDAO.getDefault(context, mDb));
+        mBookCoder = new BookCoder(context, mDb);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
 
         mBooksString = context.getString(R.string.lbl_books);
@@ -497,11 +496,11 @@ public class CsvRecordReader
                 book.remove(DBDefinitions.KEY_BOOK_UUID);
             }
 
-        } else if (book.contains(DBDefinitions.KEY_UUID)) {
+        } else if (book.contains("uuid")) {
             // second chance: see if we have a "uuid" column.
-            uuid = book.getString(DBDefinitions.KEY_UUID);
+            uuid = book.getString("uuid");
             // ALWAYS remove as we won't use this key again.
-            book.remove(DBDefinitions.KEY_UUID);
+            book.remove("uuid");
             // but if we got a UUID from it, store it again, using the correct key
             if (!uuid.isEmpty()) {
                 book.putString(DBDefinitions.KEY_BOOK_UUID, uuid);

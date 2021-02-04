@@ -25,6 +25,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,7 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -61,7 +62,10 @@ public class CalibreLibraryMappingFragment
 
     /** View Binding. */
     private FragmentCalibreLibraryMapperBinding mVb;
-    private LibraryBookshelfMapperAdapter mAdapter;
+
+    private List<Bookshelf> mBookshelfList;
+    private ExtArrayAdapter<CalibreLibrary> mLibraryArrayAdapter;
+    private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
 
     @Nullable
     @Override
@@ -86,34 +90,97 @@ public class CalibreLibraryMappingFragment
         readMetaDataTask.onFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         readMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
 
+        //noinspection ConstantConditions
+        mLibraryArrayAdapter =
+                new EntityArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
+                                         ExtArrayAdapter.FilterType.Passthrough,
+                                         mVm.getLibraries());
+        mVb.libraryName.setAdapter(mLibraryArrayAdapter);
+        mVb.libraryName.setOnItemClickListener(
+                (av, v, position, id) -> onLibrarySelected(position));
+
+        mBookshelfList = mVm.getBookshelfList();
+        mBookshelfAdapter =
+                new EntityArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
+                                         ExtArrayAdapter.FilterType.Passthrough,
+                                         mBookshelfList);
+        mVb.bookshelf.setAdapter(mBookshelfAdapter);
+        mVb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
+            final Bookshelf bookshelf = mBookshelfAdapter.getItem(position);
+            //noinspection ConstantConditions
+            mVm.mapBookshelfToLibrary(bookshelf);
+            mVb.bookshelf.setText(bookshelf.getName());
+        });
+
+        mVb.btnCreate.setOnClickListener(btn -> {
+            try {
+                btn.setEnabled(false);
+                final Bookshelf bookshelf = mVm.createLibraryAsBookshelf(getContext());
+                addBookshelf(bookshelf, mVb.bookshelf);
+
+            } catch (@NonNull final DAO.DaoWriteException e) {
+                //TODO: better error msg
+                Snackbar.make(mVb.getRoot(), R.string.error_unknown,
+                              Snackbar.LENGTH_LONG).show();
+            }
+        });
+
         if (mVm.getLibraries().isEmpty()) {
             final ImportHelper helper = mVm.getImportHelper();
             Snackbar.make(view, R.string.progress_msg_connecting, Snackbar.LENGTH_SHORT).show();
             readMetaDataTask.start(helper);
+        } else {
+            onLibrarySelected(0);
+            mVb.getRoot().setVisibility(View.VISIBLE);
         }
+    }
 
-        //noinspection ConstantConditions
-        mAdapter = new LibraryBookshelfMapperAdapter(getContext());
-        mVb.libraryList.setAdapter(mAdapter);
+    private void addBookshelf(@NonNull final Bookshelf bookshelf,
+                              @NonNull final AutoCompleteTextView view) {
+        mBookshelfAdapter.add(bookshelf);
+        view.setText(bookshelf.getName(), false);
+        // ESSENTIAL STEP: force the internal filtered list to ALSO add the new object
+        // See internal code for ArrayAdapter#add and the use of mObjects/mOriginalValues
+        mBookshelfAdapter.getFilter().filter(bookshelf.getName());
     }
 
     private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
         Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
 
-        // at this moment, all server libs have been synced with our database
-        // and are mapped to a valid bookshelf
+        mVm.setLibraries(message.result);
+        mLibraryArrayAdapter.notifyDataSetChanged();
 
-        final Bundle metadata = message.result.getBundle();
-        //TODO: once again, we only support the single physical lib.
-        final CalibreLibrary calibreLibrary = metadata.getParcelable(
-                CalibreContentServerReader.BKEY_LIBRARY);
-        Objects.requireNonNull(calibreLibrary, "calibreLibrary");
+        onLibrarySelected(0);
+        mVb.getRoot().setVisibility(View.VISIBLE);
+    }
 
-        final ArrayList<CalibreLibrary> vLibs = metadata.getParcelableArrayList(
-                CalibreContentServerReader.BKEY_VIRTUAL_LIBRARY_LIST);
+    private void onLibrarySelected(final int position) {
+        // remember and display data for the selected library
+        mVm.setCurrentLibrary(position);
+        final CalibreLibrary library = mVm.getCurrentLibrary();
+        mVb.libraryName.setText(library.getName(), false);
 
-        mVm.setLibraries(calibreLibrary, vLibs);
-        mAdapter.notifyDataSetChanged();
+        mBookshelfList.stream()
+                      .filter(bookshelf -> bookshelf.getId() == library.getMappedBookshelfId())
+                      .map(Bookshelf::getName)
+                      .findFirst()
+                      .ifPresent(mVb.bookshelf::setText);
+
+        mVb.btnCreate.setEnabled(mBookshelfList.stream()
+                                               .map(Bookshelf::getName)
+                                               .noneMatch(name -> name.equals(library.getName())));
+
+        if (library.getVirtualLibraries().isEmpty()) {
+            mVb.headerVlibs.setVisibility(View.GONE);
+            mVb.virtualLibraries.setVisibility(View.GONE);
+            mVb.virtualLibraries.setAdapter(null);
+
+        } else {
+            mVb.headerVlibs.setVisibility(View.VISIBLE);
+            mVb.virtualLibraries.setVisibility(View.VISIBLE);
+            //noinspection ConstantConditions
+            mVb.virtualLibraries.setAdapter(new VirtualLibraryMapperAdapter(getContext()));
+        }
     }
 
     private void onMetaDataFailure(@NonNull final FinishedMessage<Exception> message) {
@@ -127,7 +194,7 @@ public class CalibreLibraryMappingFragment
         }
         new MaterialAlertDialogBuilder(context)
                 .setIcon(R.drawable.ic_error)
-                .setTitle(R.string.httpError)
+                .setTitle(R.string.lbl_calibre_content_server)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     d.dismiss();
@@ -150,10 +217,9 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-    public class LibraryBookshelfMapperAdapter
+    public class VirtualLibraryMapperAdapter
             extends RecyclerView.Adapter<Holder> {
 
-        final ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
         /** Cached inflater. */
         private final LayoutInflater mInflater;
 
@@ -162,13 +228,8 @@ public class CalibreLibraryMappingFragment
          *
          * @param context Current context
          */
-        LibraryBookshelfMapperAdapter(@NonNull final Context context) {
-            super();
+        VirtualLibraryMapperAdapter(@NonNull final Context context) {
             mInflater = LayoutInflater.from(context);
-            mBookshelfAdapter = new EntityArrayAdapter<>(context,
-                                                         R.layout.dropdown_menu_popup_item,
-                                                         ExtArrayAdapter.FilterType.Passthrough,
-                                                         mVm.getBookshelfList());
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -181,18 +242,20 @@ public class CalibreLibraryMappingFragment
             final Holder holder = new Holder(itemView);
 
             holder.mVb.bookshelf.setAdapter(mBookshelfAdapter);
-            // reminder: setOnItemSelectedListener() DOES NOT WORK with AutoCompleteTextView.
-            // Use setOnItemClickListener() instead!
-            holder.mVb.bookshelf.setOnItemClickListener((adapterView, view, position, id) -> mVm
-                    .setLibraryBookshelf(holder.getBindingAdapterPosition(), position));
+            holder.mVb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
+                final Bookshelf bookshelf = mBookshelfAdapter.getItem(position);
+                //noinspection ConstantConditions
+                mVm.mapBookshelfToVirtualLibrary(bookshelf, holder.getBindingAdapterPosition());
+                holder.mVb.bookshelf.setText(bookshelf.getName());
+            });
 
             holder.mVb.btnCreate.setOnClickListener(btn -> {
                 try {
                     btn.setEnabled(false);
-                    final Bookshelf bookshelf = mVm.createLibraryAsBookshelf(
-                            btn.getContext(), holder.getBindingAdapterPosition());
-                    mBookshelfAdapter.notifyDataSetChanged();
-                    holder.mVb.bookshelf.setText(bookshelf.getName(), false);
+                    //noinspection ConstantConditions
+                    final Bookshelf bookshelf = mVm.createVirtualLibraryAsBookshelf(
+                            getContext(), holder.getBindingAdapterPosition());
+                    addBookshelf(bookshelf, holder.mVb.bookshelf);
 
                 } catch (@NonNull final DAO.DaoWriteException e) {
                     //TODO: better error msg
@@ -207,20 +270,24 @@ public class CalibreLibraryMappingFragment
         @Override
         public void onBindViewHolder(@NonNull final Holder holder,
                                      final int position) {
-            final CalibreLibrary library = mVm.getLibrary(position);
-            if (library.isVirtual()) {
-                holder.mVb.lblLibraryName.setHint(R.string.lbl_virtual_library);
-            } else {
-                holder.mVb.lblLibraryName.setHint(R.string.lbl_library);
-            }
-            holder.mVb.libraryName.setText(library.getName());
-            holder.mVb.bookshelf.setText(library.getMappedBookshelf().getName(), false);
-            holder.mVb.btnCreate.setEnabled(!mVm.isLibraryNameAnExistingBookshelfName(position));
+            final CalibreVirtualLibrary vlib = mVm.getVirtualLibrary(position);
+            holder.mVb.libraryName.setText(vlib.getName());
+
+            mBookshelfList.stream()
+                          .filter(bookshelf -> bookshelf.getId() == vlib.getMappedBookshelfId())
+                          .map(Bookshelf::getName)
+                          .findFirst()
+                          .ifPresent(holder.mVb.bookshelf::setText);
+
+            holder.mVb.btnCreate.setEnabled(
+                    mBookshelfList.stream()
+                                  .map(Bookshelf::getName)
+                                  .noneMatch(name -> name.equals(vlib.getName())));
         }
 
         @Override
         public int getItemCount() {
-            return mVm.getLibraries().size();
+            return mVm.getCurrentLibrary().getVirtualLibraries().size();
         }
     }
 }

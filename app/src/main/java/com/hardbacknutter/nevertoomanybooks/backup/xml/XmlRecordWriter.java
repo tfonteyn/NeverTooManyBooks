@@ -41,6 +41,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreVirtualLibrary;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -142,6 +144,10 @@ public class XmlRecordWriter
             writeBookshelves(writer, progressListener);
 
             progressListener.publishProgressStep(
+                    1, context.getString(R.string.site_calibre));
+            writeCalibreLibraries(writer, progressListener);
+
+            progressListener.publishProgressStep(
                     1, context.getString(R.string.lbl_authors));
             writeAuthors(writer, progressListener);
 
@@ -164,6 +170,53 @@ public class XmlRecordWriter
         }
 
         return results;
+    }
+
+    private void writeCalibreLibraries(@NonNull final Writer writer,
+                                       @NonNull final ProgressListener progressListener)
+            throws IOException {
+        final ArrayList<CalibreLibrary> calibreLibraries = mDb.getCalibreLibraries();
+        if (!calibreLibraries.isEmpty()) {
+            writer.write("<CalibreLibraryList");
+            writer.write(XmlUtils.versionAttr(1));
+            writer.write(XmlUtils.sizeAttr(calibreLibraries.size()));
+            writer.write(">\n");
+            for (final CalibreLibrary library : calibreLibraries) {
+                writer.write("<CalibreLibrary");
+                writer.write(XmlUtils.idAttr(library.getId()));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID,
+                                           library.getLibraryStringId()));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_UUID,
+                                           library.getUuid()));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME,
+                                           library.getName()));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE,
+                                           library.getLastSyncDateAsString()));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_BOOKSHELF,
+                                           library.getMappedBookshelfId()));
+                writer.write(">");
+
+                final ArrayList<CalibreVirtualLibrary> virtualLibraries = library
+                        .getVirtualLibraries();
+                if (!virtualLibraries.isEmpty()) {
+                    for (final CalibreVirtualLibrary vlib : virtualLibraries) {
+                        writer.write("<CalibreVirtualLibrary");
+                        writer.write(XmlUtils.idAttr(vlib.getId()));
+                        writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_CALIBRE_LIBRARY,
+                                                   vlib.getLibraryId()));
+                        writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME,
+                                                   vlib.getName()));
+                        writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR,
+                                                   vlib.getExpr()));
+                        writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_BOOKSHELF,
+                                                   vlib.getMappedBookshelfId()));
+                        writer.write("/>");
+                    }
+                }
+                writer.write("</CalibreLibrary>\n");
+            }
+            writer.write("</CalibreLibraryList>\n");
+        }
     }
 
     /**
@@ -191,7 +244,7 @@ public class XmlRecordWriter
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOKSHELF_NAME,
                                            rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_STYLE,
-                                           rowData.getString(DBDefinitions.KEY_UUID)));
+                                           rowData.getString(DBDefinitions.KEY_STYLE_UUID)));
                 writer.write("/>\n");
             }
             writer.write("</" + Book.BKEY_BOOKSHELF_LIST + ">\n");
@@ -451,12 +504,11 @@ public class XmlRecordWriter
                                            book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_BOOK_UUID,
                                            book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
-                writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_CALIBRE_LIBRARY_ID,
-                        book.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_ID)));
-                writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT,
-                        book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT,
+                                           book.getString(
+                                                   DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_CALIBRE_LIBRARY,
+                                           book.getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY)));
 
                 // external ID's
                 for (final Domain domain : externalIdDomains) {

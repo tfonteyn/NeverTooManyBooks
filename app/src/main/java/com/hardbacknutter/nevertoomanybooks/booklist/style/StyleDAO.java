@@ -386,7 +386,7 @@ public final class StyleDAO {
                 try (Cursor cursor = db.fetchStyles(true)) {
                     final DataHolder rowData = new CursorRow(cursor);
                     while (cursor.moveToNext()) {
-                        final String uuid = rowData.getString(DBDefinitions.KEY_UUID);
+                        final String uuid = rowData.getString(DBDefinitions.KEY_STYLE_UUID);
                         map.put(uuid, UserStyle.createFromDatabase(context, rowData));
                     }
                 }

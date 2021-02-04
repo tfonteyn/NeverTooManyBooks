@@ -132,7 +132,7 @@ public class Bookshelf
                      @NonNull final DataHolder rowData) {
         mId = id;
         mName = rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
-        mStyleUuid = rowData.getString(DBDefinitions.KEY_UUID);
+        mStyleUuid = rowData.getString(DBDefinitions.KEY_STYLE_UUID);
 
         mTopItemPosition = rowData.getInt(DBDefinitions.KEY_BOOKSHELF_BL_TOP_POS);
         mTopViewOffset = rowData.getInt(DBDefinitions.KEY_BOOKSHELF_BL_TOP_OFFSET);

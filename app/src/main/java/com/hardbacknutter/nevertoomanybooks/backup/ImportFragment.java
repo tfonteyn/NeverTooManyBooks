@@ -61,26 +61,30 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerReader;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
+import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 public class ImportFragment
         extends Fragment {
 
     /** Log tag. */
     public static final String TAG = "ImportFragment";
+
     /**
      * The mime types accepted for importing files SHOULD be set to this list:
      * "application/zip", "application/x-tar", "text/csv", "application/x-sqlite3"
@@ -111,7 +115,9 @@ public class ImportFragment
             };
     /** View Binding. */
     private FragmentImportBinding mVb;
-    private ArchiveReadMetaDataTask mReadMetaDataTask;
+
+    private ArchiveReadMetaDataTask mMetaDataTask;
+
     /**
      * The launcher for picking a Uri to read from.
      *
@@ -121,9 +127,9 @@ public class ImportFragment
     private final ActivityResultLauncher<String> mOpenUriLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), this::onOpenUri);
     private ArchiveReaderTask mArchiveReaderTask;
+
     @Nullable
     private ProgressDialogFragment mProgressDialog;
-
     private Toolbar mToolbar;
 
     @Override
@@ -147,6 +153,7 @@ public class ImportFragment
         super.onViewCreated(view, savedInstanceState);
         //noinspection ConstantConditions
         mToolbar = getActivity().findViewById(R.id.toolbar);
+        mToolbar.setTitle(R.string.lbl_import);
 
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
@@ -154,9 +161,9 @@ public class ImportFragment
         mVm = new ViewModelProvider(getActivity()).get(ImportViewModel.class);
         mVm.init(getArguments());
 
-        mReadMetaDataTask = new ViewModelProvider(this).get(ArchiveReadMetaDataTask.class);
-        mReadMetaDataTask.onFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
-        mReadMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
+        mMetaDataTask = new ViewModelProvider(this).get(ArchiveReadMetaDataTask.class);
+        mMetaDataTask.onFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
+        mMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
 
         mArchiveReaderTask = new ViewModelProvider(this).get(ArchiveReaderTask.class);
         mArchiveReaderTask.onProgressUpdate().observe(getViewLifecycleOwner(), this::onProgress);
@@ -164,11 +171,6 @@ public class ImportFragment
         mArchiveReaderTask.onFailure().observe(getViewLifecycleOwner(), this::onImportFailure);
         mArchiveReaderTask.onFinished().observe(getViewLifecycleOwner(), this::onImportFinished);
 
-        mToolbar.setTitle(R.string.lbl_import);
-        if (mVb.header == null) {
-            // landscape layout only
-            mToolbar.setSubtitle(R.string.lbl_import_options);
-        }
 
         if (!mVm.hasUri()) {
             // start the import process by asking the user for a Uri
@@ -176,7 +178,7 @@ public class ImportFragment
         } else {
             // or if we already have a uri when called,
             // or e.g. after a screen rotation, just show the screen/options again
-            showScreen();
+            showOptions();
         }
     }
 
@@ -190,6 +192,14 @@ public class ImportFragment
         final Button button = menuItem.getActionView().findViewById(R.id.btn_confirm);
         button.setText(menuItem.getTitle());
         button.setOnClickListener(v -> onOptionsItemSelected(menuItem));
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(@NonNull final Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
+        menuItem.setEnabled(mVm.isReadyToGo());
     }
 
     @Override
@@ -237,7 +247,7 @@ public class ImportFragment
                             .setMessage(R.string.warning_import_csv)
                             .setNegativeButton(android.R.string.cancel,
                                                (d, w) -> getActivity().finish())
-                            .setPositiveButton(android.R.string.ok, (d, w) -> showScreen())
+                            .setPositiveButton(android.R.string.ok, (d, w) -> showOptions())
                             .create()
                             .show();
                     break;
@@ -247,7 +257,7 @@ public class ImportFragment
                 case SqLiteDb:
                 case Json:
                 case CalibreCS:
-                    showScreen();
+                    showOptions();
                     break;
 
                 case Xml:
@@ -261,15 +271,13 @@ public class ImportFragment
     /**
      * Update the screen with archive specific options and values.
      */
-    private void showScreen() {
+    private void showOptions() {
         final ImportHelper helper = mVm.getImportHelper();
 
-        // Hide the content field, and start the metadata task which will provide the content
-        mVb.archiveContent.setVisibility(View.INVISIBLE);
-        mReadMetaDataTask.start(helper);
-
-        //noinspection ConstantConditions
-        mVb.archiveName.setText(helper.getUriInfo(getContext()).getDisplayName());
+        showArchiveDetails();
+        if (mVm.getArchiveMetaData() == null) {
+            mMetaDataTask.start(helper);
+        }
 
         final Set<RecordType> entries = helper.getImportEntries();
 
@@ -341,57 +349,122 @@ public class ImportFragment
                 mVb.cbxStyles.setVisibility(View.GONE);
                 break;
             }
-            case CalibreCS:
+            case CalibreCS: {
                 mVb.cbxBooks.setEnabled(false);
                 mVb.cbxBooks.setVisibility(View.VISIBLE);
                 mVb.cbxCovers.setVisibility(View.VISIBLE);
                 mVb.cbxStyles.setVisibility(View.GONE);
                 mVb.cbxPrefs.setVisibility(View.GONE);
                 break;
-
-            case Xml:
+            }
+            case Xml: {
                 // shouldn't even get here
                 onImportNotSupported(R.string.error_import_file_not_supported);
                 break;
+            }
         }
 
         mVb.getRoot().setVisibility(View.VISIBLE);
     }
 
     private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
-        final ArchiveMetaData archiveMetaData = message.result;
-        if (archiveMetaData != null) {
-            final StringJoiner info = new StringJoiner("\n");
+        if (message.isNewEvent()) {
+            mVm.setArchiveMetaData(message.result);
+            showArchiveDetails();
+        }
+    }
 
-            // If this is a Calibre import, show the library name
-            final CalibreLibrary calibreLibrary = archiveMetaData.getBundle().getParcelable(
-                    CalibreContentServerReader.BKEY_LIBRARY);
-            if (calibreLibrary != null) {
-                info.add(calibreLibrary.getName());
-            }
+    /**
+     * Display the name of the archive + any valid data we can get from the archive.
+     * <p>
+     * All visibility for the archiveContent + calibreLibrary is handled here.
+     */
+    private void showArchiveDetails() {
+        final ImportHelper helper = mVm.getImportHelper();
 
-            final int bookCount = archiveMetaData.getBookCount();
-            if (bookCount > 0) {
-                info.add(getString(R.string.name_colon_value,
-                                   getString(R.string.lbl_books), String.valueOf(bookCount)));
-            }
-            final int coverCount = archiveMetaData.getCoverCount();
-            if (coverCount > 0) {
-                info.add(getString(R.string.name_colon_value,
-                                   getString(R.string.lbl_covers), String.valueOf(coverCount)));
-            }
-            if (info.length() > 0) {
-                mVb.archiveContent.setText(info.toString());
-                mVb.archiveContent.setVisibility(View.VISIBLE);
+        //noinspection ConstantConditions
+        mVb.archiveName.setText(helper.getUriInfo(getContext()).getDisplayName());
+
+        final ArchiveMetaData metaData = mVm.getArchiveMetaData();
+        if (metaData != null) {
+            // got data, we'll fill this field, SHOW it
+            mVb.archiveContent.setVisibility(View.VISIBLE);
+
+            if (helper.getEncoding() == ArchiveEncoding.CalibreCS) {
+                mVb.lblCalibreLibrary.setVisibility(View.VISIBLE);
+                showCalibreMetaData(metaData);
             } else {
-                mVb.archiveContent.setVisibility(View.INVISIBLE);
+                mVb.lblCalibreLibrary.setVisibility(View.GONE);
+                showArchiveMetaData(metaData);
             }
         } else {
+            // no metadata at all, REMOVE the calibre field, HIDE the content field
+            mVb.lblCalibreLibrary.setVisibility(View.GONE);
             mVb.archiveContent.setVisibility(View.INVISIBLE);
         }
+    }
 
-        final MenuItem menuItem = mToolbar.getMenu().findItem(R.id.MENU_ACTION_CONFIRM);
-        menuItem.setEnabled(true);
+    private void showArchiveMetaData(@NonNull final ArchiveMetaData metaData) {
+        // some stats of what's inside the archive
+        final StringJoiner archiveContent = new StringJoiner("\n");
+
+        if (metaData.hasBookCount()) {
+            archiveContent.add(getString(R.string.name_colon_value,
+                                         getString(R.string.lbl_books),
+                                         String.valueOf(metaData.getBookCount())));
+        }
+
+        if (metaData.hasCoverCount()) {
+            archiveContent.add(getString(R.string.name_colon_value,
+                                         getString(R.string.lbl_covers),
+                                         String.valueOf(metaData.getCoverCount())));
+        }
+        mVb.archiveContent.setText(archiveContent.toString());
+    }
+
+    private void showCalibreMetaData(@NonNull final ArchiveMetaData metaData) {
+
+        final ArrayList<CalibreLibrary> libraries = metaData
+                .getBundle().getParcelableArrayList(CalibreContentServer.BKEY_LIBRARY_LIST);
+
+        //noinspection ConstantConditions
+        if (libraries.size() == 1) {
+            onCalibreLibrarySelected(libraries.get(0));
+
+        } else {
+            //noinspection ConstantConditions
+            final ExtArrayAdapter<CalibreLibrary> adapter =
+                    new EntityArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
+                                             ExtArrayAdapter.FilterType.Passthrough, libraries);
+
+            mVb.calibreLibrary.setAdapter(adapter);
+            mVb.calibreLibrary.setOnItemClickListener(
+                    (av, v, position, id) -> onCalibreLibrarySelected(libraries.get(position)));
+
+            @Nullable
+            final CalibreLibrary selectedLibrary = mVm
+                    .getImportHelper().getExtraArgs()
+                    .getParcelable(CalibreContentServer.BKEY_LIBRARY);
+            if (selectedLibrary != null) {
+                onCalibreLibrarySelected(selectedLibrary);
+            } else {
+                final CalibreLibrary defaultLibrary = metaData
+                        .getBundle().getParcelable(CalibreContentServer.BKEY_LIBRARY);
+                //noinspection ConstantConditions
+                onCalibreLibrarySelected(defaultLibrary);
+            }
+        }
+    }
+
+    private void onCalibreLibrarySelected(@NonNull final CalibreLibrary library) {
+        mVb.calibreLibrary.setText(library.getName(), false);
+
+        mVb.archiveContent.setText(getString(R.string.name_colon_value,
+                                             getString(R.string.lbl_books),
+                                             String.valueOf(library.getTotalBooks())));
+        mVm.getImportHelper()
+           .getExtraArgs()
+           .putParcelable(CalibreContentServer.BKEY_LIBRARY, library);
     }
 
     private void onImportNotSupported(@StringRes final int stringResId) {

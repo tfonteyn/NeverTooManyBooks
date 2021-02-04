@@ -19,6 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.calibre;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 
@@ -76,8 +79,20 @@ public final class CustomFields {
 
     }
 
-    public static class Field {
+    public static class Field
+            implements Parcelable {
 
+        public static final Creator<Field> CREATOR = new Creator<Field>() {
+            @Override
+            public Field createFromParcel(@NonNull final Parcel in) {
+                return new Field(in);
+            }
+
+            @Override
+            public Field[] newArray(final int size) {
+                return new Field[size];
+            }
+        };
         @NonNull
         final String calibreKey;
         @NonNull
@@ -92,6 +107,28 @@ public final class CustomFields {
             this.calibreKey = calibreKey;
             this.dbKey = dbKey;
             this.type = type;
+        }
+
+        protected Field(@NonNull final Parcel in) {
+            //noinspection ConstantConditions
+            calibreKey = in.readString();
+            //noinspection ConstantConditions
+            dbKey = in.readString();
+            //noinspection ConstantConditions
+            type = in.readString();
+        }
+
+        @Override
+        public void writeToParcel(@NonNull final Parcel dest,
+                                  final int flags) {
+            dest.writeString(calibreKey);
+            dest.writeString(dbKey);
+            dest.writeString(type);
+        }
+
+        @Override
+        public int describeContents() {
+            return 0;
         }
     }
 }

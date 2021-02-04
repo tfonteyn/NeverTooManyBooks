@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
+import android.content.Context;
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
@@ -28,7 +31,8 @@ import java.util.Iterator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -50,10 +54,17 @@ public class BookCoder
     private final JsonCoder<Publisher> mPublisherCoder = new PublisherCoder();
     private final JsonCoder<Series> mSeriesCoder = new SeriesCoder();
     private final JsonCoder<TocEntry> mTocEntryCoder = new TocEntryCoder();
+    private final JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
     private final JsonCoder<Bookshelf> mBookshelfCoder;
 
-    public BookCoder(@NonNull final ListStyle defStyle) {
-        mBookshelfCoder = new BookshelfCoder(defStyle);
+    private final DAO mDb;
+
+    public BookCoder(@NonNull final Context context,
+                     @NonNull final DAO db) {
+        mDb = db;
+
+        mBookshelfCoder = new BookshelfCoder(context, mDb);
+        mCalibreLibraryCoder = new CalibreLibraryCoder();
     }
 
     @Override
@@ -96,6 +107,15 @@ public class BookCoder
             // always write regardless of being 'false'
             out.put(key, element);
 
+        } else if (element instanceof Parcelable) {
+            if (Book.BKEY_CALIBRE_LIBRARY.equals(key)) {
+                final CalibreLibrary library = book.getCalibreLibrary(mDb);
+                if (library != null) {
+                    out.put(key, mCalibreLibraryCoder.encode(library));
+                }
+            } else {
+                throw new IllegalArgumentException("Parcelable not implemented for: " + element);
+            }
         } else if (element instanceof ArrayList) {
             switch (key) {
                 case Book.BKEY_AUTHOR_LIST: {
@@ -139,7 +159,7 @@ public class BookCoder
             }
 
         } else if (element instanceof Serializable) {
-            throw new IllegalArgumentException("Serializable not implemented o=" + element);
+            throw new IllegalArgumentException("Serializable not implemented for: " + element);
 
         } else if (element != null) {
             throw new IllegalArgumentException("key=" + key + "|o=" + element);
@@ -178,6 +198,10 @@ public class BookCoder
                 case Book.BKEY_TOC_LIST:
                     book.putParcelableArrayList(
                             key, mTocEntryCoder.decode(data.getJSONArray(key)));
+                    break;
+
+                case Book.BKEY_CALIBRE_LIBRARY:
+                    book.setCalibreLibrary(mCalibreLibraryCoder.decode(data.getJSONObject(key)));
                     break;
 
                 default: {

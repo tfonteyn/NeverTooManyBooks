@@ -816,6 +816,10 @@ public class ExtArrayAdapter<T>
         }
     }
 
+    /**
+     * Does no actual filtering.
+     * Should be used with the Material ExposedDropDownMenu
+     */
     private class PassthroughFilter
             extends AbstractArrayFilter {
 

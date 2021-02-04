@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -175,7 +175,7 @@ public class ArchiveMetaData {
      * Will return {@code false} if there is no number (or if the number is 0).
      * This does not mean there might not be any books though.
      *
-     * @return {@code true} if the number of books is known
+     * @return {@code true} if the number of books is <strong>known</strong>
      */
     public boolean hasBookCount() {
         return mInfo.containsKey(INFO_NUMBER_OF_BOOKS)
@@ -195,9 +195,9 @@ public class ArchiveMetaData {
      * Will return {@code false} if there is no number (or if the number is 0).
      * This does not mean there might not be any covers though.
      *
-     * @return {@code true} if the number of books is known
+     * @return {@code true} if the number of books is <strong>known</strong>
      */
-    boolean hasCoverCount() {
+    public boolean hasCoverCount() {
         return mInfo.containsKey(INFO_NUMBER_OF_COVERS)
                && mInfo.getInt(INFO_NUMBER_OF_COVERS) > 0;
     }

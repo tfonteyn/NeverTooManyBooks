@@ -49,6 +49,7 @@ import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -71,10 +72,13 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ST
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_CALIBRE_LIBRARY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
@@ -85,9 +89,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PU
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_PREFERRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_MENU_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -101,6 +105,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_VIRTUAL_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -115,7 +120,7 @@ public final class DBHelper
         extends SQLiteOpenHelper {
 
     /** Current version. */
-    public static final int DATABASE_VERSION = 14;
+    public static final int DATABASE_VERSION = 15;
 
     /**
      * Prefix for the filename of a database backup before doing an upgrade.
@@ -299,7 +304,7 @@ public final class DBHelper
                 // 0==false
                 + ',' + KEY_STYLE_IS_PREFERRED
                 + ',' + KEY_STYLE_MENU_POSITION
-                + ',' + KEY_UUID
+                + ',' + KEY_STYLE_UUID
                 + ") VALUES(?,1,0,?,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
             for (int id = StyleDAO.BuiltinStyles.MAX_ID; id < 0; id++) {
@@ -767,6 +772,9 @@ public final class DBHelper
             StartupViewModel.scheduleMaintenance(context, true);
         }
         if (oldVersion < 13) {
+            //
+            // This is the v1.2.0 / 1.3.0 release.
+            //
             TBL_BOOKLIST_STYLES.alterTableAddColumns(syncedDb,
                                                      DOM_STYLE_MENU_POSITION,
                                                      DOM_STYLE_IS_PREFERRED);
@@ -784,7 +792,7 @@ public final class DBHelper
                             cv.put(KEY_STYLE_MENU_POSITION, i);
                             cv.put(KEY_STYLE_IS_PREFERRED, 1);
                             syncedDb.update(TBL_BOOKLIST_STYLES.getName(),
-                                            cv, KEY_UUID + "=?", new String[]{uuid});
+                                            cv, KEY_STYLE_UUID + "=?", new String[]{uuid});
                         }
                     }
                 }
@@ -807,6 +815,94 @@ public final class DBHelper
                              .edit()
                              .remove("scanner.preferred")
                              .remove("compat.image.cropper.viewlayertype")
+                             .apply();
+        }
+        if (oldVersion < 15) {
+
+            db.execSQL("ALTER TABLE calibre_books RENAME TO tmp_cb");
+            db.execSQL("ALTER TABLE calibre_vlib RENAME TO tmp_vl");
+
+            // TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib").setAlias("clb_l");
+            // TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib").setAlias("clb_vl");
+            // TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books").setAlias("clb_b");
+            TBL_CALIBRE_BOOKS.create(syncedDb, true);
+            TBL_CALIBRE_LIBRARIES.create(syncedDb, true);
+            TBL_CALIBRE_VIRTUAL_LIBRARIES.create(syncedDb, true);
+
+            final Map<String, Long> libString2Id = new HashMap<>();
+            try (Cursor cursor = db.rawQuery(
+                    "SELECT library, vlib_name, bookshelf_id FROM tmp_vl"
+                    + " WHERE expression = ''", null)) {
+                while (cursor.moveToNext()) {
+                    final String libraryId = cursor.getString(0);
+                    final String name = cursor.getString(1);
+                    final long bookshelfId = cursor.getLong(2);
+
+                    try (SynchronizedStatement stmt = syncedDb
+                            .compileStatement(DAOSql.SqlInsert.CALIBRE_LIBRARY)) {
+                        stmt.bindString(1, "");
+                        stmt.bindString(2, libraryId);
+                        stmt.bindString(3, name);
+                        stmt.bindString(4, "");
+                        stmt.bindLong(5, bookshelfId);
+                        final long iId = stmt.executeInsert();
+                        libString2Id.put(libraryId, iId);
+                    }
+                }
+            }
+            try (Cursor cursor = db.rawQuery(
+                    "SELECT library, vlib_name, bookshelf_id, expression FROM tmp_vl"
+                    + " WHERE expression <> ''", null)) {
+                while (cursor.moveToNext()) {
+                    final String libraryId = cursor.getString(0);
+                    final String name = cursor.getString(1);
+                    final long bookshelfId = cursor.getLong(2);
+                    final String expression = cursor.getString(3);
+
+                    final Long libId = libString2Id.get(libraryId);
+                    // db14 dev had a cleanup-bug, skip if not there.
+                    if (libId != null) {
+                        try (SynchronizedStatement stmt = syncedDb
+                                .compileStatement(DAOSql.SqlInsert.CALIBRE_VIRTUAL_LIBRARY)) {
+                            stmt.bindLong(1, libId);
+                            stmt.bindString(2, name);
+                            stmt.bindString(3, expression);
+                            stmt.bindLong(4, bookshelfId);
+                            stmt.executeInsert();
+                        }
+                    }
+                }
+            }
+
+            try (Cursor cursor = db.rawQuery(
+                    "SELECT book, clb_id, clb_uuid, main_format, library FROM tmp_cb", null)) {
+                while (cursor.moveToNext()) {
+                    final long bookId = cursor.getLong(0);
+                    final long clbBookId = cursor.getLong(1);
+                    final String clbUuid = cursor.getString(2);
+                    final String format = cursor.getString(3);
+                    final String libraryId = cursor.getString(4);
+
+                    final Long libId = libString2Id.get(libraryId);
+                    if (libId != null) {
+                        final ContentValues cv = new ContentValues();
+                        cv.put(KEY_FK_BOOK, bookId);
+                        cv.put(KEY_CALIBRE_BOOK_ID, clbBookId);
+                        cv.put(KEY_CALIBRE_BOOK_UUID, clbUuid);
+                        cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
+                        cv.put(KEY_FK_CALIBRE_LIBRARY, libId);
+
+                        syncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
+                    }
+                }
+            }
+
+            db.execSQL("DROP TABLE tmp_vl");
+            db.execSQL("DROP TABLE tmp_cb");
+
+            PreferenceManager.getDefaultSharedPreferences(context)
+                             .edit()
+                             .remove("calibre.last.sync.date")
                              .apply();
         }
 
@@ -873,6 +969,7 @@ public final class DBHelper
           .remove("startup.lastVersion")
           .remove("tmp.edit.book.tab.authSer")
           .remove("scanner.preferred")
+          .remove("calibre.last.sync.date")
           .apply();
     }
 

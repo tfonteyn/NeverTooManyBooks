@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
 /**
+ * URGENT: Calibre DB import: either update or remove
  * Copies the standard fields (book, author, publisher, series).
  * <p>
  * Supports custom columns, see {@link #handleCustomColumns(Book, int)}.

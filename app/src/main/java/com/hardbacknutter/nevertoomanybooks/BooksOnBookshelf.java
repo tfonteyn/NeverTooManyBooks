@@ -276,15 +276,6 @@ public class BooksOnBookshelf
 
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
-                }
-            };
     /** View Binding. */
     private BooksonbookshelfBinding mVb;
     /** List layout manager. */
@@ -363,8 +354,15 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-    /** The adapter used to fill the Bookshelf selector. */
-    private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
+                }
+            };
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -433,6 +431,8 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
+    /** The adapter used to fill the Bookshelf selector. */
+    private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
 
     @Override
     protected void onSetContentView() {
@@ -492,7 +492,7 @@ public class BooksOnBookshelf
         mVb.list.addItemDecoration(new TopLevelItemDecoration(this));
         FastScroller.attach(mVb.list);
 
-        // TEST: Number of views to cache offscreen: default is 2
+        // Number of views to cache offscreen arbitrarily set to 20; the default is 2.
         mVb.list.setItemViewCacheSize(20);
         mVb.list.setDrawingCacheEnabled(true);
         mVb.list.setDrawingCacheQuality(View.DRAWING_CACHE_QUALITY_HIGH);
@@ -1440,8 +1440,10 @@ public class BooksOnBookshelf
                 displayList(null);
             } else {
                 // Something is REALLY BAD
-                // This is usually due to the developer making an oopsie with the Styles.
-                // i.e. the style used to build is very likely corrupt.
+                // This is usually (BUT NOT ALWAYS) due to the developer making an oopsie
+                // with the Styles. i.e. the style used to build is very likely corrupt.
+                // Another reason can be during development when the database structure
+                // was changed...
                 final ListStyle style = mVm.getCurrentStyle(this);
                 // so we reset the style to recover.. and restarting the app will work.
                 mVm.onStyleChanged(this, StyleDAO.BuiltinStyles.DEFAULT_STYLE_UUID);

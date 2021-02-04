@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,12 +19,16 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -36,11 +40,10 @@ public class BookshelfCoder
 
     /**
      * Constructor.
-     *
-     * @param defaultStyle to use for bookshelves without a style set.
      */
-    BookshelfCoder(@NonNull final ListStyle defaultStyle) {
-        mDefaultStyle = defaultStyle;
+    BookshelfCoder(@NonNull final Context context,
+                   @NonNull final DAO db) {
+        mDefaultStyle = StyleDAO.getDefault(context, db);
     }
 
     @Override

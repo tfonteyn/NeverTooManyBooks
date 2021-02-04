@@ -23,7 +23,6 @@ import android.content.Context;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.io.IOException;
 
@@ -63,7 +62,7 @@ public class SingleFileDownload
         return true;
     }
 
-    @Nullable
+    @NonNull
     @Override
     protected Uri doWork(@NonNull final Context context)
             throws IOException {

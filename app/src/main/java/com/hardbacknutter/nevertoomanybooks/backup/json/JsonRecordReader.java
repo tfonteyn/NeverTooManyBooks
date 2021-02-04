@@ -125,7 +125,7 @@ public class JsonRecordReader
         mDb = db;
         mImportEntriesAllowed = importEntriesAllowed;
 
-        mBookCoder = new BookCoder(StyleDAO.getDefault(context, mDb));
+        mBookCoder = new BookCoder(context, mDb);
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);

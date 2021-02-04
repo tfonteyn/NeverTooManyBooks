@@ -33,7 +33,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
-import java.sql.SQLException;
 
 import javax.net.ssl.SSLException;
 
@@ -72,6 +71,10 @@ public class ExMsg {
         } else if (e instanceof FileNotFoundException) {
             msg = context.getString(R.string.httpErrorFile);
 
+        } else if (e instanceof android.database.SQLException
+                   || e instanceof java.sql.SQLException) {
+            msg = context.getString(R.string.error_unknown_long);
+
         } else if (e instanceof SocketTimeoutException) {
             msg = context.getString(R.string.httpErrorTimeout);
 
@@ -105,7 +108,9 @@ public class ExMsg {
                     Logger.warn(context, tag, "errno=" + errno);
                 }
 
-            } else if (cause instanceof SQLException) {
+            } else if (cause instanceof android.database.SQLException
+                       || cause instanceof java.sql.SQLException) {
+                // An SQLException was wrapped in an IOException...
                 //TODO: give user detailed message
                 msg = context.getString(R.string.error_unknown_long);
             }

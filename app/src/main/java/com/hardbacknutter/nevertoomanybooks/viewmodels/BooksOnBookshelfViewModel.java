@@ -637,13 +637,14 @@ public class BooksOnBookshelfViewModel
                         DBDefinitions.TBL_CALIBRE_BOOKS
                                 .dot(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
                 builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_CALIBRE_LIBRARY_ID,
-                        DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBDefinitions.KEY_CALIBRE_LIBRARY_ID)));
-                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
                         DBDefinitions.TBL_CALIBRE_BOOKS
                                 .dot(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+
+                builder.addDomain(new DomainExpression(
+                        DBDefinitions.DOM_FK_CALIBRE_LIBRARY,
+                        DBDefinitions.TBL_CALIBRE_BOOKS
+                                .dot(DBDefinitions.KEY_FK_CALIBRE_LIBRARY)));
             }
 
             // Add the conditional domains; global level.

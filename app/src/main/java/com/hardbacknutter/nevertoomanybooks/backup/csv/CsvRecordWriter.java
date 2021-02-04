@@ -36,7 +36,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -87,7 +86,7 @@ public class CsvRecordWriter
         if (entries.contains(RecordType.Books)) {
 
             final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
-            final BookCoder bookCoder = new BookCoder(StyleDAO.getDefault(context, mDb));
+            final BookCoder bookCoder = new BookCoder(context, mDb);
 
             int delta = 0;
             long lastUpdate = 0;

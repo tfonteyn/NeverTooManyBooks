@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -70,6 +71,9 @@ public class ExportHelper {
      * </ul>
      */
     private boolean mIncremental;
+
+    /** Extra arguments for specific writers. The writer must define them. */
+    private final Bundle mExtraArgs = new Bundle();
 
     /**
      * Constructor.
@@ -151,6 +155,11 @@ public class ExportHelper {
         }
 
         return mArchiveEncoding.createWriter(context, this);
+    }
+
+    @NonNull
+    public Bundle getExtraArgs() {
+        return mExtraArgs;
     }
 
     /**
@@ -247,6 +256,7 @@ public class ExportHelper {
                + ", mUri=" + mUri
                + ", mArchiveEncoding=" + mArchiveEncoding
                + ", mIncremental=" + mIncremental
+               + ", mExtraArgs=" + mExtraArgs
                + '}';
     }
 }

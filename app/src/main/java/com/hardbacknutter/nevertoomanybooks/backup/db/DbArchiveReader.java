@@ -89,12 +89,8 @@ public class DbArchiveReader
             // Copy the file from the uri to a place where we can access it as a database.
             File tmpDb = AppDir.Cache.getFile(context, System.nanoTime() + ".db");
             tmpDb = FileUtils.copyInputStream(context, is, tmpDb);
-            if (tmpDb != null) {
-                mSQLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
-                                                              SQLiteDatabase.OPEN_READONLY);
-            } else {
-                mSQLiteDatabase = null;
-            }
+            mSQLiteDatabase = SQLiteDatabase.openDatabase(tmpDb.getAbsolutePath(), null,
+                                                          SQLiteDatabase.OPEN_READONLY);
         }
     }
 

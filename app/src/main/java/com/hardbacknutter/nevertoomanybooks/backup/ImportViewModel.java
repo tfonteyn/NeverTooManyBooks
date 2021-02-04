@@ -34,7 +34,10 @@ import java.io.FileNotFoundException;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
 
 public class ImportViewModel
@@ -54,6 +57,9 @@ public class ImportViewModel
 
     private boolean mInitWasCalled;
 
+    @Nullable
+    private ArchiveMetaData mArchiveMetaData;
+
     /**
      * Pseudo constructor.
      *
@@ -65,8 +71,8 @@ public class ImportViewModel
             if (args != null) {
                 final String url = args.getString(BKEY_URL);
                 if (url != null) {
-                    mImportHelper = ImportHelper.withRemoteServer(Uri.parse(url),
-                                                                  ArchiveEncoding.CalibreCS);
+                    mImportHelper = ImportHelper.withRemoteServer(
+                            Uri.parse(url), ArchiveEncoding.CalibreCS);
                 }
             }
         }
@@ -86,9 +92,25 @@ public class ImportViewModel
         return mImportHelper != null;
     }
 
+    /**
+     * The caller <strong>must</strong> ensure that the helper has been created previously.
+     *
+     * @return the helper
+     *
+     * @throws NullPointerException as a bug
+     */
     @NonNull
     public ImportHelper getImportHelper() {
-        return Objects.requireNonNull(mImportHelper);
+        return Objects.requireNonNull(mImportHelper, "mImportHelper");
+    }
+
+    @Nullable
+    ArchiveMetaData getArchiveMetaData() {
+        return mArchiveMetaData;
+    }
+
+    void setArchiveMetaData(@Nullable final ArchiveMetaData archiveMetaData) {
+        mArchiveMetaData = archiveMetaData;
     }
 
     @Override
@@ -101,5 +123,21 @@ public class ImportViewModel
     Intent onImportFinished(@NonNull final ImportResults result) {
         mResultIntent.putExtra(ImportResults.BKEY_IMPORT_RESULTS, result);
         return mResultIntent;
+    }
+
+    /**
+     * Do we have sufficient data to start an import ?
+     *
+     * @return {@code true} if the "Go" button should be made available
+     */
+    boolean isReadyToGo() {
+        if (mImportHelper != null && mImportHelper.getEncoding() == ArchiveEncoding.CalibreCS) {
+            @Nullable
+            final CalibreLibrary selectedLibrary = mImportHelper.getExtraArgs().getParcelable(
+                    CalibreContentServer.BKEY_LIBRARY);
+            return selectedLibrary != null && selectedLibrary.getTotalBooks() > 0;
+        } else {
+            return mArchiveMetaData != null;
+        }
     }
 }

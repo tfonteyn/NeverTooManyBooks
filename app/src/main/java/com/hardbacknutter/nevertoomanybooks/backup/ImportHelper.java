@@ -21,6 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Bundle;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -75,6 +76,9 @@ public final class ImportHelper {
     /** Bitmask.  Contains extra options for the {@link RecordReader}. */
     @Options
     private int mOptions;
+
+    /** Extra arguments for specific readers. The reader must define them. */
+    private final Bundle mExtraArgs = new Bundle();
 
     /**
      * Private constructor. Use the factory methods instead.
@@ -232,6 +236,11 @@ public final class ImportHelper {
         return mEncoding.createReader(context, this);
     }
 
+    @NonNull
+    public Bundle getExtraArgs() {
+        return mExtraArgs;
+    }
+
     public void setImportEntry(@NonNull final RecordType recordType,
                                final boolean isSet) {
         if (isSet) {
@@ -299,6 +308,7 @@ public final class ImportHelper {
                + ", mArchiveEncoding=" + mEncoding
                + ", mImportEntries=" + mImportEntries
                + ", mOptions=0b" + Integer.toBinaryString(mOptions) + ": " + options.toString()
+               + ", mExtraArgs=" + mExtraArgs
                + '}';
     }
 

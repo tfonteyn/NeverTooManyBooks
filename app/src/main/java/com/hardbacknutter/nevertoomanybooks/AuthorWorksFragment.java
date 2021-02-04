@@ -430,7 +430,6 @@ public class AuthorWorksFragment
          * @param context Current context
          */
         TocAdapter(@NonNull final Context context) {
-            super();
             mInflater = LayoutInflater.from(context);
 
             final Resources.Theme theme = context.getTheme();

@@ -721,7 +721,7 @@
     <string name="action_create">Creare</string>
     <string name="menu_download_folder">Cartella di download locale</string>
     <string name="menu_download_ebook_format">Scarica eBook (%1s)</string>
-    <string name="progress_msg_downloading">Download in corso ...</string>
+    <string name="progress_msg_downloading">Download in corso…</string>
     <string name="progress_end_download_successful">Download riuscito</string>
     <string name="error_download_failed">Scaricamento fallito</string>
 </resources>

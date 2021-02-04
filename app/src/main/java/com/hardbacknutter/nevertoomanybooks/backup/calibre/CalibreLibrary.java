@@ -23,15 +23,23 @@ import android.content.Context;
 import android.os.Parcel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
+import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
 public class CalibreLibrary
-        implements Entity {
+        extends LibraryBase {
 
     public static final Creator<CalibreLibrary> CREATOR =
             new Creator<CalibreLibrary>() {
@@ -45,170 +53,171 @@ public class CalibreLibrary
                     return new CalibreLibrary[size];
                 }
             };
-    /** The physical Calibre library id. */
+
+    /** The physical Calibre library STRING id. */
     @NonNull
-    private final String mLibraryId;
-    /** Row ID. */
-    private long mId;
-    /** Name library (either physical or virtual); as displayed to the user. */
-    @NonNull
-    private String mName;
+    private final String mLibraryStringId;
     /**
-     * If this is a virtual library, the Calibre search expression.
-     * For a physical library: {@code ""}.
+     * The custom fields <strong>present</strong> on the server.
+     * This will be a subset of the supported fields from {@link CustomFields}.
+     * <p>
+     * Not stored locally. Only valid while importing/exporting.
      */
+    @SuppressWarnings("FieldNotUsedInToString")
+    private final Set<CustomFields.Field> mCustomFields = new HashSet<>();
+    private final ArrayList<CalibreVirtualLibrary> mVirtualLibraries = new ArrayList<>();
+    /** The physical Calibre library uuid. */
     @NonNull
-    private String mExpr;
+    private String mUuid;
     @NonNull
-    private Bookshelf mMappedBookshelf;
+    private String mLastSyncDate;
+    /** Not stored locally. Only valid while importing/exporting. */
+    private int mTotalBooks;
 
     /**
      * Constructor without ID.
      */
-    CalibreLibrary(@NonNull final String libraryId,
-                   @NonNull final String name,
-                   @NonNull final String expr,
-                   @NonNull final Bookshelf mappedBookshelf) {
-        mLibraryId = libraryId;
-        mName = name;
-        mExpr = expr;
-        mMappedBookshelf = mappedBookshelf;
+    public CalibreLibrary(@NonNull final String uuid,
+                          @NonNull final String libraryId,
+                          @NonNull final String name,
+                          final long mappedBookshelfId) {
+        super(name, mappedBookshelfId);
+
+        mLibraryStringId = libraryId;
+        mUuid = uuid;
+        mLastSyncDate = "";
     }
 
     /**
      * Full constructor.
      *
-     * @param id              the CalibreLibrary id
-     * @param mappedBookshelf shelf
-     * @param rowData         with data
+     * @param id      row id
+     * @param rowData with data
      */
     public CalibreLibrary(final long id,
-                          @NonNull final Bookshelf mappedBookshelf,
                           @NonNull final DataHolder rowData) {
-        mId = id;
-        mLibraryId = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_ID);
-        mName = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME);
-        mExpr = rowData.getString(DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR);
-        mMappedBookshelf = mappedBookshelf;
+        super(id, rowData);
+
+        mLibraryStringId = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID);
+        mUuid = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_UUID);
+        mLastSyncDate = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE);
     }
 
     private CalibreLibrary(@NonNull final Parcel in) {
-        mId = in.readLong();
+        super(in);
+
         //noinspection ConstantConditions
-        mLibraryId = in.readString();
+        mLibraryStringId = in.readString();
         //noinspection ConstantConditions
-        mName = in.readString();
+        mUuid = in.readString();
         //noinspection ConstantConditions
-        mExpr = in.readString();
+        mLastSyncDate = in.readString();
+
+        ParcelUtils.readParcelableList(in, mVirtualLibraries, getClass().getClassLoader());
+
+
+        mTotalBooks = in.readInt();
         //noinspection ConstantConditions
-        mMappedBookshelf = in.readParcelable(getClass().getClassLoader());
+        Arrays.stream(in.readParcelableArray(getClass().getClassLoader()))
+              .forEach(field -> mCustomFields.add((CustomFields.Field) field));
+    }
+
+    @NonNull
+    public String getLibraryStringId() {
+        return mLibraryStringId;
+    }
+
+    @NonNull
+    public String getUuid() {
+        return mUuid;
+    }
+
+    public void setUuid(@NonNull final String uuid) {
+        mUuid = uuid;
+    }
+
+    public void setLastSyncDate(@NonNull final String lastSyncDate) {
+        mLastSyncDate = lastSyncDate;
+    }
+
+    void setLastSyncDate(@Nullable final LocalDateTime lastSyncDate) {
+        if (lastSyncDate != null) {
+            mLastSyncDate = lastSyncDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+        } else {
+            mLastSyncDate = "";
+        }
+    }
+
+    @NonNull
+    public String getLastSyncDateAsString() {
+        return mLastSyncDate;
+    }
+
+    @Nullable
+    LocalDateTime getLastSyncDate(@NonNull final Context context) {
+        if (!mLastSyncDate.isEmpty()) {
+            return DateParser.getInstance(context).parseISO(mLastSyncDate);
+        }
+
+        return null;
+    }
+
+    public int getTotalBooks() {
+        return mTotalBooks;
+    }
+
+    void setTotalBooks(final int totalBooks) {
+        mTotalBooks = totalBooks;
+    }
+
+    @NonNull
+    Set<CustomFields.Field> getCustomFields() {
+        return mCustomFields;
+    }
+
+    void setCustomFields(final Set<CustomFields.Field> customFields) {
+        mCustomFields.clear();
+        mCustomFields.addAll(customFields);
+    }
+
+    @NonNull
+    public ArrayList<CalibreVirtualLibrary> getVirtualLibraries() {
+        return mVirtualLibraries;
+    }
+
+    public void setVirtualLibraries(@NonNull final List<CalibreVirtualLibrary> virtualLibraries) {
+        mVirtualLibraries.clear();
+        mVirtualLibraries.addAll(virtualLibraries);
     }
 
     @Override
     public void writeToParcel(@NonNull final Parcel dest,
                               final int flags) {
-        dest.writeLong(mId);
-        dest.writeString(mLibraryId);
-        dest.writeString(mName);
-        dest.writeString(mExpr);
-        dest.writeParcelable(mMappedBookshelf, flags);
-    }
+        super.writeToParcel(dest, flags);
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
+        dest.writeString(mLibraryStringId);
+        dest.writeString(mUuid);
+        dest.writeString(mLastSyncDate);
 
-    @NonNull
-    public String getLibraryId() {
-        return mLibraryId;
-    }
+        ParcelUtils.writeParcelableList(dest, mVirtualLibraries, flags);
 
-    @NonNull
-    public String getName() {
-        return mName;
-    }
 
-    public void setName(@NonNull final String name) {
-        mName = name;
-    }
-
-    @NonNull
-    public String getExpr() {
-        return mExpr;
-    }
-
-    void setExpr(@NonNull final String expr) {
-        mExpr = expr;
-    }
-
-    public boolean isVirtual() {
-        return !mExpr.isEmpty();
-    }
-
-    public boolean isPhysical() {
-        return mExpr.isEmpty();
-    }
-
-    @NonNull
-    public Bookshelf getMappedBookshelf() {
-        return mMappedBookshelf;
-    }
-
-    void setMappedBookshelf(@NonNull final Bookshelf mappedBookshelf) {
-        mMappedBookshelf = mappedBookshelf;
-    }
-
-    @Override
-    public long getId() {
-        return mId;
-    }
-
-    public void setId(final long id) {
-        mId = id;
-    }
-
-    @NonNull
-    @Override
-    public String getLabel(@NonNull final Context context) {
-        return mName;
-    }
-
-    /**
-     * Use the library name to create a new bookshelf.
-     * The style is taken from the current Bookshelf.
-     *
-     * @param context Current context
-     * @param db      database access
-     *
-     * @return the new and mapped bookshelf
-     *
-     * @throws DAO.DaoWriteException on failure
-     */
-    @NonNull
-    Bookshelf createAsBookshelf(@NonNull final Context context,
-                                @NonNull final DAO db)
-            throws DAO.DaoWriteException {
-
-        final Bookshelf current = Bookshelf
-                .getBookshelf(context, db, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
-
-        final Bookshelf bookshelf = new Bookshelf(mName, current.getStyle(context, db));
-        if (db.insert(context, bookshelf) == -1) {
-            throw new DAO.DaoWriteException("insert Bookshelf");
-        }
-        mMappedBookshelf = bookshelf;
-        return mMappedBookshelf;
+        dest.writeInt(mTotalBooks);
+        //noinspection ZeroLengthArrayAllocation
+        dest.writeParcelableArray(mCustomFields.toArray(new CustomFields.Field[0]), flags);
     }
 
     @Override
     @NonNull
     public String toString() {
         return "CalibreLibrary{"
-               + "mId=" + mId
-               + ", mLibraryId='" + mLibraryId + '\''
-               + ", mName='" + mName + '\''
-               + ", mMappedBookshelf=" + mMappedBookshelf.getName()
+               + super.toString()
+               + ", mUuid=`" + mUuid + '`'
+               + ", mLibraryId=`" + mLibraryStringId + '`'
+               + ", mLastSyncDate=`" + mLastSyncDate + '`'
+               + ", mTotalBooks=" + mTotalBooks
+               + ", mVirtualLibraries=" + mVirtualLibraries
                + '}';
     }
+
 }

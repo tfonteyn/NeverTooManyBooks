@@ -59,8 +59,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
@@ -72,6 +74,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ES
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_CALIBRE_LIBRARY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
@@ -103,6 +106,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SI
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_PREFERRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_MENU_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_BITMASK;
@@ -110,7 +114,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_ADDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -124,6 +127,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_VIRTUAL_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
@@ -527,27 +531,30 @@ public class DAOSql {
                 SELECT_ + KEY_UTC_LAST_UPDATED + _FROM_ + TBL_BOOKS.getName()
                 + _WHERE_ + KEY_PK_ID + "=?";
 
-        static final String CALIBRE_LIBRARY_BY_LIBRARY_ID =
-                "SELECT " + KEY_PK_ID
-                + ',' + KEY_FK_BOOKSHELF
-                + ',' + KEY_CALIBRE_LIBRARY_ID
-                + ',' + KEY_CALIBRE_LIBRARY_NAME
-                + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
-                + " FROM " + TBL_CALIBRE_LIBRARIES.getName()
-                + " WHERE " + KEY_CALIBRE_LIBRARY_ID + "=?"
-                + " AND " + KEY_CALIBRE_VIRT_LIB_EXPR + "=''";
 
         static final String CALIBRE_VIRTUAL_LIBRARY_BY_LIBRARY_ID_AND_NAME =
                 "SELECT " + KEY_PK_ID
                 + ',' + KEY_FK_BOOKSHELF
-                + ',' + KEY_CALIBRE_LIBRARY_ID
+                + ',' + KEY_FK_CALIBRE_LIBRARY
                 + ',' + KEY_CALIBRE_LIBRARY_NAME
                 + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
-                + " FROM " + TBL_CALIBRE_LIBRARIES.getName()
-                + " WHERE " + KEY_CALIBRE_LIBRARY_ID + "=?"
-                + " AND " + KEY_CALIBRE_LIBRARY_NAME + "=?"
-                + " AND " + KEY_CALIBRE_VIRT_LIB_EXPR + "<>''";
-
+                + " FROM " + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
+                + " WHERE " + KEY_FK_CALIBRE_LIBRARY + "=?"
+                + " AND " + KEY_CALIBRE_LIBRARY_NAME + "=?";
+        private static final String CALIBRE_BASE_SELECT =
+                "SELECT " + KEY_PK_ID
+                + ',' + KEY_FK_BOOKSHELF
+                + ',' + KEY_CALIBRE_LIBRARY_UUID
+                + ',' + KEY_CALIBRE_LIBRARY_STRING_ID
+                + ',' + KEY_CALIBRE_LIBRARY_NAME
+                + ',' + KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE
+                + " FROM " + TBL_CALIBRE_LIBRARIES.getName();
+        static final String CALIBRE_LIBRARY_BY_ID =
+                CALIBRE_BASE_SELECT + " WHERE " + KEY_PK_ID + "=?";
+        static final String CALIBRE_LIBRARY_BY_LIBRARY_ID =
+                CALIBRE_BASE_SELECT + " WHERE " + KEY_CALIBRE_LIBRARY_STRING_ID + "=?";
+        static final String CALIBRE_LIBRARY_BY_LIBRARY_UUID =
+                CALIBRE_BASE_SELECT + " WHERE " + KEY_CALIBRE_LIBRARY_UUID + "=?";
     }
 
     /**
@@ -574,7 +581,7 @@ public class DAOSql {
          */
         static final String BOOKLIST_STYLE_ID_BY_UUID =
                 SELECT_ + KEY_PK_ID + _FROM_ + TBL_BOOKLIST_STYLES.getName()
-                + _WHERE_ + KEY_UUID + "=?";
+                + _WHERE_ + KEY_STYLE_UUID + "=?";
 
         /**
          * Get the id of a {@link Bookshelf} by name.
@@ -749,7 +756,7 @@ public class DAOSql {
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_POS)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_OFFSET)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_FK_STYLE)
-                + ',' + TBL_BOOKLIST_STYLES.dotAs(KEY_UUID)
+                + ',' + TBL_BOOKLIST_STYLES.dotAs(KEY_STYLE_UUID)
                 + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOKLIST_STYLES);
 
         /** User defined {@link Bookshelf} all columns; linked with the styles table. */
@@ -796,6 +803,19 @@ public class DAOSql {
                 // The index of KEY_PK_ID, KEY_TITLE, KEY_TITLE_OB is hardcoded - don't change!
                 SELECT_ + KEY_PK_ID + ',' + KEY_TITLE + ',' + KEY_TITLE_OB
                 + _FROM_ + TBL_TOC_ENTRIES.getName();
+
+        /**
+         * The list of all physical Calibre libraries.
+         */
+        static final String CALIBRE_LIBRARIES =
+                SELECT_ + KEY_PK_ID
+                + ',' + KEY_FK_BOOKSHELF
+                + ',' + KEY_CALIBRE_LIBRARY_UUID
+                + ',' + KEY_CALIBRE_LIBRARY_STRING_ID
+                + ',' + KEY_CALIBRE_LIBRARY_NAME
+                + ',' + KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE
+                + _FROM_ + TBL_CALIBRE_LIBRARIES.getName()
+                + _ORDER_BY_ + KEY_CALIBRE_LIBRARY_NAME + _COLLATION;
 
         /**
          * The SELECT and FROM clause for getting a book (list).
@@ -855,12 +875,11 @@ public class DAOSql {
             //NEWTHINGS: adding a new search engine: optional: add engine specific keys
             sqlBookTmp.append(',').append(TBL_BOOKS.dotAs(KEY_UTC_GOODREADS_LAST_SYNC_DATE));
 
-
             // LEFT OUTER JOIN, columns default to NULL
             sqlBookTmp.append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_ID))
                       .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_UUID))
-                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_LIBRARY_ID))
-                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_MAIN_FORMAT));
+                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_CALIBRE_BOOK_MAIN_FORMAT))
+                      .append(',').append(TBL_CALIBRE_BOOKS.dotAs(KEY_FK_CALIBRE_LIBRARY));
 
             // COALESCE nulls to "" for the LEFT OUTER JOIN'ed LOANEE name
             sqlBookTmp.append(",COALESCE(").append(TBL_BOOK_LOANEE.dot(KEY_LOANEE)).append(", '')")
@@ -912,7 +931,7 @@ public class DAOSql {
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_POS)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_BOOKSHELF_BL_TOP_OFFSET)
                 + ',' + TBL_BOOKSHELF.dotAs(KEY_FK_STYLE)
-                + ',' + TBL_BOOKLIST_STYLES.dotAs(KEY_UUID)
+                + ',' + TBL_BOOKLIST_STYLES.dotAs(KEY_STYLE_UUID)
 
                 + _FROM_ + TBL_BOOK_BOOKSHELF.ref()
                 + TBL_BOOK_BOOKSHELF.join(TBL_BOOKSHELF)
@@ -1107,12 +1126,11 @@ public class DAOSql {
         static final String CALIBRE_VIRTUAL_LIBRARIES_BY_LIBRARY_ID =
                 SELECT_ + KEY_PK_ID
                 + ',' + KEY_FK_BOOKSHELF
-                + ',' + KEY_CALIBRE_LIBRARY_ID
+                + ',' + KEY_FK_CALIBRE_LIBRARY
                 + ',' + KEY_CALIBRE_LIBRARY_NAME
                 + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
-                + _FROM_ + TBL_CALIBRE_LIBRARIES.getName()
-                + _WHERE_ + KEY_CALIBRE_LIBRARY_ID + "=?"
-                + _AND_ + KEY_CALIBRE_VIRT_LIB_EXPR + "<>''"
+                + _FROM_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
+                + _WHERE_ + KEY_FK_CALIBRE_LIBRARY + "=?"
                 + _ORDER_BY_ + KEY_CALIBRE_LIBRARY_NAME + _COLLATION;
     }
 
@@ -1172,7 +1190,7 @@ public class DAOSql {
     /**
      * Sql INSERT.
      */
-    static final class SqlInsert {
+    public static final class SqlInsert {
 
         static final String INSERT_INTO_ = "INSERT INTO ";
 
@@ -1260,17 +1278,24 @@ public class DAOSql {
                 + ") VALUES(?,?)";
 
 
+        public static final String CALIBRE_LIBRARY =
+                INSERT_INTO_ + TBL_CALIBRE_LIBRARIES.getName()
+                + '(' + KEY_CALIBRE_LIBRARY_UUID
+                + ',' + KEY_CALIBRE_LIBRARY_STRING_ID
+                + ',' + KEY_CALIBRE_LIBRARY_NAME
+                + ',' + KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE
+                + ',' + KEY_FK_BOOKSHELF
+                + ") VALUES (?,?,?,?,?)";
         static final String BOOKLIST_STYLE =
                 INSERT_INTO_ + TBL_BOOKLIST_STYLES.getName()
-                + '(' + KEY_UUID
+                + '(' + KEY_STYLE_UUID
                 + ',' + KEY_STYLE_IS_BUILTIN
                 + ',' + KEY_STYLE_IS_PREFERRED
                 + ',' + KEY_STYLE_MENU_POSITION
                 + ") VALUES (?,?,?,?)";
-
-        static final String CALIBRE_LIBRARY =
-                INSERT_INTO_ + TBL_CALIBRE_LIBRARIES.getName()
-                + '(' + KEY_CALIBRE_LIBRARY_ID
+        static final String CALIBRE_VIRTUAL_LIBRARY =
+                INSERT_INTO_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
+                + '(' + KEY_FK_CALIBRE_LIBRARY
                 + ',' + KEY_CALIBRE_LIBRARY_NAME
                 + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
                 + ',' + KEY_FK_BOOKSHELF
@@ -1384,7 +1409,7 @@ public class DAOSql {
      * All 'link' tables will be updated due to their FOREIGN KEY constraints.
      * The 'other-side' of a link table is cleaned by triggers.
      */
-    static final class SqlDelete {
+    public static final class SqlDelete {
 
         static final String _NOT_IN_ = " NOT IN ";
         private static final String DELETE_FROM_ = "DELETE FROM ";
@@ -1409,9 +1434,20 @@ public class DAOSql {
         /** Delete a {@link ListStyle}. */
         static final String STYLE_BY_ID =
                 DELETE_FROM_ + TBL_BOOKLIST_STYLES.getName() + _WHERE_ + KEY_PK_ID + "=?";
+
         /** Delete a {@link CalibreLibrary}. */
         static final String CALIBRE_LIBRARY_BY_ID =
                 DELETE_FROM_ + TBL_CALIBRE_LIBRARIES.getName() + _WHERE_ + KEY_PK_ID + "=?";
+
+        /** Delete all virtual libs for a given library. */
+        static final String CALIBRE_VIRTUAL_LIBRARIES_BY_LIBRARY_ID =
+                DELETE_FROM_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
+                + _WHERE_ + KEY_FK_CALIBRE_LIBRARY + "=?";
+
+        /** Delete a single virtual lib. */
+        static final String CALIBRE_VIRTUAL_LIBRARY_BY_ID =
+                DELETE_FROM_ + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
+                + _WHERE_ + KEY_PK_ID + "=?";
 
         /**
          * Delete the link between a {@link Book} and an {@link Author}.

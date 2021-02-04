@@ -856,7 +856,7 @@ public class XmlRecordReader
         public void startElement(final int version,
                                  @NonNull final TagInfo tag) {
 
-            String uuid = tag.attrs.getValue(DBDefinitions.KEY_UUID);
+            String uuid = tag.attrs.getValue(DBDefinitions.KEY_STYLE_UUID);
             if (uuid == null) {
                 // backwards compatibility
                 uuid = tag.name;
