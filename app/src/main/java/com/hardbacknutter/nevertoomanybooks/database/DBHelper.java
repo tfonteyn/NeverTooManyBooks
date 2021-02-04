@@ -822,9 +822,6 @@ public final class DBHelper
             db.execSQL("ALTER TABLE calibre_books RENAME TO tmp_cb");
             db.execSQL("ALTER TABLE calibre_vlib RENAME TO tmp_vl");
 
-            // TBL_CALIBRE_LIBRARIES = new TableDefinition("calibre_lib").setAlias("clb_l");
-            // TBL_CALIBRE_VIRTUAL_LIBRARIES = new TableDefinition("calibre_vlib").setAlias("clb_vl");
-            // TBL_CALIBRE_BOOKS = new TableDefinition("calibre_books").setAlias("clb_b");
             TBL_CALIBRE_BOOKS.create(syncedDb, true);
             TBL_CALIBRE_LIBRARIES.create(syncedDb, true);
             TBL_CALIBRE_VIRTUAL_LIBRARIES.create(syncedDb, true);

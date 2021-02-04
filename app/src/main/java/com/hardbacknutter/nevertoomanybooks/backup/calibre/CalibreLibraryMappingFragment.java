@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.calibre;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -135,15 +134,6 @@ public class CalibreLibraryMappingFragment
         }
     }
 
-    private void addBookshelf(@NonNull final Bookshelf bookshelf,
-                              @NonNull final AutoCompleteTextView view) {
-        mBookshelfAdapter.add(bookshelf);
-        view.setText(bookshelf.getName(), false);
-        // ESSENTIAL STEP: force the internal filtered list to ALSO add the new object
-        // See internal code for ArrayAdapter#add and the use of mObjects/mOriginalValues
-        mBookshelfAdapter.getFilter().filter(bookshelf.getName());
-    }
-
     private void onMetaDataRead(@NonNull final FinishedMessage<ArchiveMetaData> message) {
         Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
 
@@ -152,6 +142,15 @@ public class CalibreLibraryMappingFragment
 
         onLibrarySelected(0);
         mVb.getRoot().setVisibility(View.VISIBLE);
+    }
+
+    private void addBookshelf(@NonNull final Bookshelf bookshelf,
+                              @NonNull final AutoCompleteTextView view) {
+        mBookshelfAdapter.add(bookshelf);
+        view.setText(bookshelf.getName(), false);
+        // ESSENTIAL STEP: force the internal filtered list to ALSO add the new object
+        // See internal code for ArrayAdapter#add and the use of mObjects/mOriginalValues
+        mBookshelfAdapter.getFilter().filter(bookshelf.getName());
     }
 
     private void onLibrarySelected(final int position) {
@@ -232,7 +231,6 @@ public class CalibreLibraryMappingFragment
             mInflater = LayoutInflater.from(context);
         }
 
-        @SuppressLint("ClickableViewAccessibility")
         @NonNull
         @Override
         public Holder onCreateViewHolder(@NonNull final ViewGroup parent,

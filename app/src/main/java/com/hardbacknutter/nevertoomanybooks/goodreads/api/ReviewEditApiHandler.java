@@ -84,7 +84,7 @@ public class ReviewEditApiHandler
      * @param readStart       (optional) Date when we started reading this book, YYYY-MM-DD format
      * @param readEnd         (optional) Date when we finished reading this book, YYYY-MM-DD format
      * @param rating          Rating 0-5 with 0 == No rating
-     *                        //@param privateNotes    (optional) Text for the Goodreads PRIVATE notes
+     *                        //@param privateNotes (optional) Text for the Goodreads PRIVATE notes
      * @param review          (optional) Text for the review, PUBLIC
      *
      * @throws IOException on failures
