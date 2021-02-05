@@ -26,13 +26,18 @@ import androidx.annotation.NonNull;
 
 import java.io.IOException;
 
+import org.json.JSONException;
+
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 public class SingleFileDownload
         extends VMTask<Uri> {
+
+    private static final String TAG = "SingleFileDownload";
 
     private Book mBook;
     private Uri mFolder;
@@ -65,11 +70,16 @@ public class SingleFileDownload
     @NonNull
     @Override
     protected Uri doWork(@NonNull final Context context)
-            throws IOException {
+            throws IOException, JSONException {
 
         setIndeterminate(true);
         publishProgressStep(0, context.getString(R.string.progress_msg_please_wait));
 
+        if (!mServer.isMetaDataRead()) {
+            try (DAO db = new DAO(TAG)) {
+                mServer.readMetaData(context, db);
+            }
+        }
         return mServer.getFile(context, mFolder, mBook, this);
     }
 }

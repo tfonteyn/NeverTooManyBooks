@@ -137,6 +137,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException
  */
 public class CalibreContentServer {
 
+    /** Log tag. */
+    private static final String TAG = "CalibreContentServer";
+
     /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
     static final String VALUE_IS_NONE = "None";
     /** Response root tag: Total number of items found in a query. */
@@ -148,8 +151,7 @@ public class CalibreContentServer {
     /** Custom field for {@link ArchiveMetaData}. */
     public static final String BKEY_LIBRARY = TAG + ":defLib";
 
-    /** Log tag. */
-    private static final String TAG = "CalibreContentServer";
+
     /** Custom field for {@link ArchiveMetaData}. */
     public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
     /** Response root tag. */
@@ -337,6 +339,10 @@ public class CalibreContentServer {
     boolean createTestConnection()
             throws IOException {
         return !fetch("/ajax/library-info", BUFFER_SMALL).isEmpty();
+    }
+
+    boolean isMetaDataRead() {
+        return mDefaultLibrary != null;
     }
 
     /**
