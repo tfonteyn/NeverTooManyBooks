@@ -36,6 +36,8 @@ import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLException;
 
+import org.json.JSONException;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -70,6 +72,9 @@ public class ExMsg {
 
         } else if (e instanceof FileNotFoundException) {
             msg = context.getString(R.string.httpErrorFile);
+
+        } else if (e instanceof JSONException) {
+            msg = context.getString(R.string.error_unknown_long);
 
         } else if (e instanceof android.database.SQLException
                    || e instanceof java.sql.SQLException) {
