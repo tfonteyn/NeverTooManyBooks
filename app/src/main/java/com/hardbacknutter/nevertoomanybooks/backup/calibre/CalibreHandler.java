@@ -269,6 +269,7 @@ public class CalibreHandler {
         final Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setData(uri)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        mView.getContext().startActivity(intent);
+        mView.getContext().startActivity(Intent.createChooser(
+                intent, mView.getContext().getString(R.string.whichViewApplication)));
     }
 }
