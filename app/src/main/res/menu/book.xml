@@ -76,7 +76,7 @@
         android:id="@id/MENU_SHARE"
         android:icon="@drawable/ic_share"
         android:orderInCategory="@integer/MENU_ORDER_SHARE"
-        android:title="@string/menu_share_this" />
+        android:title="@string/whichSendApplication" />
 
     <item
         android:id="@id/MENU_BOOK_SEND_TO_GOODREADS"

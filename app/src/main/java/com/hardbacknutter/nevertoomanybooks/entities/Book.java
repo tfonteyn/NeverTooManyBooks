@@ -1464,7 +1464,7 @@ public class Book
         return Intent.createChooser(new Intent(Intent.ACTION_SEND)
                                             .setType("text/plain")
                                             .putExtra(Intent.EXTRA_TEXT, text),
-                                    context.getString(R.string.menu_share_this));
+                                    context.getString(R.string.whichSendApplication));
     }
 
     /** Used exclusively during display / populating the Views when loading the book. */

@@ -494,7 +494,7 @@ public class CoverHandler {
                                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
             }
 
-            final String prompt = context.getString(R.string.action_edit);
+            final String prompt = context.getString(R.string.whichEditApplication);
             mEditPictureLauncher.launch(Intent.createChooser(intent, prompt));
 
         } else {
