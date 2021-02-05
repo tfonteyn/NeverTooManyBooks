@@ -1,15 +1,12 @@
 Installing the Calibre extension:
 
- * Edit  $CROOT/calibre/srv/ajax.py, and look for the line
- * {@code from calibre.srv.errors import HTTPNotFound, BookNotFound}
- * modify it:
- * {@code from calibre.srv.errors import HTTPNotFound, BookNotFound, HTTPBadRequest}
- * <p>
+Edit  $CROOT/calibre/srv/ajax.py, and look for the line
 
-Add to the top add the 'HTTPBadRequest' to the existing line
+    from calibre.srv.errors import HTTPNotFound, BookNotFound
+
+ modify it:
 
     from calibre.srv.errors import HTTPNotFound, BookNotFound, HTTPBadRequest
-
 
 At the end of the file:
 - REPLACE the endpoint '/ajax/library-info'
