@@ -368,7 +368,7 @@
     <string name="menu_set_incomplete">Nastaveno na „neúplné“</string>
     <string name="menu_set_read">Nastavit jako čtení</string>
     <string name="menu_set_unread">Nastavit jako „nepřečtené“</string>
-    <string name="menu_share_this">Sdílet</string>
+    <string name="whichSendApplication">Sdílet</string>
     <string name="lbl_sort_and_style_ellipsis">Seřadit &amp; Styl…</string>
     <string name="lbl_strict_isbn">Přísné ISBN</string>
     <string name="menu_update_books">Aktualizujte knihy</string>
@@ -722,4 +722,9 @@
     <string name="progress_msg_downloading">Stahování…</string>
     <string name="progress_end_download_successful">Stahování bylo úspěšné</string>
     <string name="error_download_failed">Stažení se nezdařilo</string>
+    <string name="aerr_report">Odeslat zpětnou vazbu</string>
+    <string name="whichViewApplication">Otevřít v aplikaci</string>
+    <string name="whichEditApplication">Upravit v aplikaci</string>
+    <string name="whichSendToApplication">Odeslat pomocí aplikace</string>
+    <string name="whichImageCaptureApplication">Vyfotit pomocí aplikace</string>
 </resources>

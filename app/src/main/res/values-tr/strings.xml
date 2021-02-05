@@ -370,7 +370,7 @@
     <string name="menu_set_incomplete">Eksik ayarla</string>
     <string name="menu_set_read">Okundu olarak işaretle</string>
     <string name="menu_set_unread">Okunmamış olarak işaretle</string>
-    <string name="menu_share_this">Paylaş</string>
+    <string name="whichSendApplication">Paylaş</string>
     <string name="lbl_sort_and_style_ellipsis">Sıralama &amp; biçemi…</string>
     <string name="lbl_strict_isbn">Sıkı ISBN</string>
     <string name="menu_update_books">Kitapları güncelle</string>
@@ -721,4 +721,9 @@
     <string name="progress_msg_downloading">İndiriliyor…</string>
     <string name="progress_end_download_successful">İndirme başarılı</string>
     <string name="error_download_failed">Yükleme başarısız</string>
+    <string name="aerr_report">Geri bildirim gönder</string>
+    <string name="whichViewApplication">Şununla aç:</string>
+    <string name="whichEditApplication">Şununla düzenle:</string>
+    <string name="whichSendToApplication">Göndermek için kullanılacak uygulama</string>
+    <string name="whichImageCaptureApplication">Fotoğraf çekmek için şu uygulamayı kullan:</string>
 </resources>

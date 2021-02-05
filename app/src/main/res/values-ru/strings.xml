@@ -364,7 +364,7 @@
     <string name="menu_set_incomplete">Отметить не полностью</string>
     <string name="menu_set_read">Марк читать</string>
     <string name="menu_set_unread">Марк не читается</string>
-    <string name="menu_share_this">Отправить</string>
+    <string name="whichSendApplication">Отправка данных</string>
     <string name="lbl_sort_and_style_ellipsis">Сортировать &amp; Стиль…</string>
     <string name="lbl_strict_isbn">Строгий ISBN</string>
     <string name="menu_update_books">Обновите книги</string>
@@ -719,4 +719,9 @@
     <string name="progress_msg_downloading">Скачивание…</string>
     <string name="progress_end_download_successful">Загрузка прошла успешно</string>
     <string name="error_download_failed">Загрузка не удалась</string>
+    <string name="aerr_report">Отправить отзыв</string>
+    <string name="whichViewApplication">Открыть с помощью приложения:</string>
+    <string name="whichEditApplication">Редактировать с помощью приложения:</string>
+    <string name="whichSendToApplication">Выберите приложение</string>
+    <string name="whichImageCaptureApplication">Делать снимки с помощью:</string>
 </resources>

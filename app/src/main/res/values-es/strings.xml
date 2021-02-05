@@ -371,7 +371,7 @@
     <string name="menu_set_incomplete">Marcar como incompleto</string>
     <string name="menu_set_read">Marcar como leído</string>
     <string name="menu_set_unread">Marcar como no leído</string>
-    <string name="menu_share_this">Compartir</string>
+    <string name="whichSendApplication">Compartir</string>
     <string name="lbl_sort_and_style_ellipsis">Estilo de &amp; ordenación…</string>
     <string name="lbl_strict_isbn">ISBN estricto</string>
     <string name="menu_update_books">Actualiza los libros</string>
@@ -725,4 +725,9 @@
     <string name="progress_msg_downloading">Descargando…</string>
     <string name="progress_end_download_successful">Descarga exitosa</string>
     <string name="error_download_failed">Descarga fracasó</string>
+    <string name="aerr_report">Enviar comentarios</string>
+    <string name="whichViewApplication">Abrir con</string>
+    <string name="whichEditApplication">Editar con</string>
+    <string name="whichSendToApplication">Enviar con</string>
+    <string name="whichImageCaptureApplication">Capturar imagen con</string>
 </resources>

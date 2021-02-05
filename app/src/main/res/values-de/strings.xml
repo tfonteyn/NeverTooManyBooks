@@ -400,7 +400,7 @@
     <string name="menu_set_incomplete">Als unvollständig markieren</string>
     <string name="menu_set_read">Als gelesen markieren</string>
     <string name="menu_set_unread">Als ungelesen markieren</string>
-    <string name="menu_share_this">Teilen</string>
+    <string name="whichSendApplication">Teilen</string>
     <string name="menu_update_books">Bücher aktualisieren</string>
     <string name="menu_update_fields">Aktualisieren</string>
     <string name="menu_view_book_at">Anschauen auf…</string>
@@ -725,4 +725,9 @@
     <string name="progress_msg_downloading">Wird heruntergeladen…</string>
     <string name="progress_end_download_successful">Herunterladen erfolgreich</string>
     <string name="error_download_failed">Herunterladen fehlgeschlagen</string>
+    <string name="aerr_report">Feedback geben</string>
+    <string name="whichViewApplication">Öffnen mit</string>
+    <string name="whichEditApplication">Bearbeiten mit</string>
+    <string name="whichSendToApplication">Senden via</string>
+    <string name="whichImageCaptureApplication">Bild aufnehmen mit</string>
 </resources>

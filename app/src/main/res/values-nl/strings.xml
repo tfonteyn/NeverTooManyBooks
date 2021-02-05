@@ -398,7 +398,7 @@
     <string name="menu_set_incomplete">Markeer als onvolledig</string>
     <string name="menu_set_read">Markeer als gelezen</string>
     <string name="menu_set_unread">Markeer als ongelezen</string>
-    <string name="menu_share_this">Delen</string>
+    <string name="whichSendApplication">Delen</string>
     <string name="menu_update_books">Boeken bijwerken</string>
     <string name="menu_update_fields">Bijwerken velden</string>
     <string name="menu_view_book_at">Bekijk op…</string>
@@ -723,4 +723,9 @@
     <string name="progress_msg_downloading">Downloaden…</string>
     <string name="progress_end_download_successful">Download succesvol</string>
     <string name="error_download_failed">Download mislukt</string>
+    <string name="aerr_report">Feedback verzenden</string>
+    <string name="whichViewApplication">Openen met</string>
+    <string name="whichEditApplication">Bewerken met</string>
+    <string name="whichSendToApplication">Verzenden met</string>
+    <string name="whichImageCaptureApplication">Afbeelding vastleggen met</string>
 </resources>

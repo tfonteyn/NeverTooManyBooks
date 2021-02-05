@@ -1025,8 +1025,7 @@
     <string name="menu_lend_out_book">Lend out to…</string>
     <!-- Book context/options menu option: the current book was returned. -->
     <string name="menu_lend_return_book">Lend book is returned</string>
-    <!-- [VERIFIED] Book context/options menu option: bring up the Android generic share chooser -->
-    <string name="menu_share_this">Share</string>
+
     <!-- Book context/options Update Fields from internet for a single book -->
     <string name="menu_update_fields">Update fields</string>
     <!-- Book context/options submenu - will contain links to external websites for the current book.  -->
@@ -1113,6 +1112,20 @@
     <string name="action_validate">Validate</string>
 
     <string name="action_create">Create</string>
+
+    <!-- [VERIFIED] Title of intent resolver dialog when selecting a viewer application to run. -->
+    <string name="whichViewApplication">Open with</string>
+    <!-- [VERIFIED] Title of intent resolver dialog when selecting an editor application to run. -->
+    <string name="whichEditApplication">Edit with</string>
+    <!-- [VERIFIED] Title of intent resolver dialog when selecting an application to run to
+     send content to a specific recipient. -->
+    <string name="whichSendToApplication">Send using</string>
+    <!-- [VERIFIED] Title of intent resolver dialog when capturing an image. -->
+    <string name="whichImageCaptureApplication">Capture image with</string>
+    <!-- [VERIFIED] Title of intent resolver dialog when selecting a sharing application to run. -->
+    <string name="whichSendApplication">Share</string>
+    <!-- [VERIFIED] Button that sends feedback about a crashed application -->
+    <string name="aerr_report">Send feedback</string>
 
     <!-- merging two bookshelves -->
     <string name="action_merge">Merge</string>

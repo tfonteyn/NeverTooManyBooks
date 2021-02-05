@@ -371,7 +371,7 @@
     <string name="menu_set_incomplete">Ρυθμίστε σε «ατελές»</string>
     <string name="menu_set_read">Ορίστε ως «διαβάσετε»</string>
     <string name="menu_set_unread">Ορίστε ως «μη αναγνωσμένο»</string>
-    <string name="menu_share_this">Κοινή χρ.</string>
+    <string name="whichSendApplication">Κοινοποίηση</string>
     <string name="lbl_sort_and_style_ellipsis">Ταξινόμηση &amp; Στυλ…</string>
     <string name="lbl_strict_isbn">Αυστηρό ISBN</string>
     <string name="menu_update_books">Ενημέρωση βιβλίων</string>
@@ -726,4 +726,9 @@
     <string name="progress_msg_downloading">Λήψη…</string>
     <string name="progress_end_download_successful">Η λήψη ήταν επιτυχής</string>
     <string name="error_download_failed">Η λήψη απέτυχε</string>
+    <string name="aerr_report">Αποστολή σχολίων</string>
+    <string name="whichViewApplication">Άνοιγμα με</string>
+    <string name="whichEditApplication">Επεξεργασία με</string>
+    <string name="whichSendToApplication">Αποστολή μέσω</string>
+    <string name="whichImageCaptureApplication">Λήψη εικόνας με</string>
 </resources>
