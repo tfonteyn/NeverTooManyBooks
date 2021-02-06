@@ -37,6 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 public class CalibreLibraryMappingViewModel
         extends ImportViewModel {
 
+    /** Log tag. */
     private static final String TAG = "CalibreLibraryMappingVM";
 
     private final ArrayList<CalibreLibrary> mLibraries = new ArrayList<>();

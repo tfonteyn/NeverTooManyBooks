@@ -36,10 +36,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterAbstract;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 
@@ -78,6 +78,7 @@ public class ZipArchiveWriter
             case MetaData:
             case Styles:
             case Preferences:
+            case Certificates:
             case Books:
             case AutoDetect:
                 return RecordEncoding.Json;

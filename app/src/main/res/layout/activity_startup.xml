@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -66,6 +66,7 @@
         android:id="@+id/progressMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/section_margin_top"
         android:text="@string/progress_msg_starting_up"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:textIsSelectable="true"

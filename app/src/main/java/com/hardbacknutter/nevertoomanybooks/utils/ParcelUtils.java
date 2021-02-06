@@ -83,12 +83,10 @@ public final class ParcelUtils {
         final int M = list.size();
         int i = 0;
         for (; i < M && i < N; i++) {
-            //noinspection unchecked
-            list.set(i, (T) in.readParcelable(cl));
+            list.set(i, in.readParcelable(cl));
         }
         for (; i < N; i++) {
-            //noinspection unchecked
-            list.add((T) in.readParcelable(cl));
+            list.add(in.readParcelable(cl));
         }
         for (; i < M; i++) {
             list.remove(N);

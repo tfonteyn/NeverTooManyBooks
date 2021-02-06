@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLException;
@@ -52,18 +53,36 @@ public class ExMsg {
      *
      * @param context Localized context
      * @param tag     the tag from the caller object
-     * @param e       Exception to process
+     * @param e       Throwable to process
      *
      * @return user-friendly error message for the given site
      */
     @Nullable
     public static String map(@NonNull final Context context,
                              @NonNull final String tag,
-                             @Nullable final Exception e) {
+                             @Nullable final Throwable e) {
         if (e == null) {
             return null;
         }
 
+        String msg = getMsg(context, tag, e);
+        if (msg != null) {
+            return msg;
+        }
+
+        if (e instanceof IOException) {
+            // Handle encapsulated exceptions, but don't handle pure IOException
+            // The latter must be handled by the caller.
+            msg = getMsg(context, tag, e.getCause());
+        }
+
+        return msg;
+    }
+
+    @Nullable
+    private static String getMsg(@NonNull final Context context,
+                                 @NonNull final String tag,
+                                 @Nullable final Throwable e) {
         String msg = null;
 
         // One of ours ? use the embedded localised message
@@ -89,8 +108,10 @@ public class ExMsg {
         } else if (e instanceof UnknownHostException) {
             msg = context.getString(R.string.error_search_failed_network);
 
+        } else if (e instanceof CertificateEncodingException) {
+            msg = context.getString(R.string.error_certificate_invalid);
+
         } else if (e instanceof CertificateException) {
-            // TODO: give user detailed message
             // There was something wrong with certificates/key on OUR end
             msg = context.getString(R.string.httpErrorFailedSslHandshake);
 
@@ -99,31 +120,20 @@ public class ExMsg {
             // There was something wrong with certificates/key on the REMOTE end
             msg = context.getString(R.string.httpErrorFailedSslHandshake);
 
-        } else if (e instanceof IOException) {
-            final Throwable cause = e.getCause();
-            // Only handle these specific IOException causes, leave other to the caller.
-            if (cause instanceof ErrnoException) {
-                final int errno = ((ErrnoException) cause).errno;
-                // write failed: ENOSPC (No space left on device)
-                if (errno == OsConstants.ENOSPC) {
-                    msg = context.getString(R.string.error_storage_no_space_left);
-                } else {
-                    msg = Os.strerror(errno);
-                    // write to logfile for future reporting enhancements.
-                    Logger.warn(context, tag, "errno=" + errno);
-                }
-
-            } else if (cause instanceof android.database.SQLException
-                       || cause instanceof java.sql.SQLException) {
-                // An SQLException was wrapped in an IOException...
-                //TODO: give user detailed message
-                msg = context.getString(R.string.error_unknown_long);
+        } else if (e instanceof ErrnoException) {
+            final int errno = ((ErrnoException) e).errno;
+            // write failed: ENOSPC (No space left on device)
+            if (errno == OsConstants.ENOSPC) {
+                msg = context.getString(R.string.error_storage_no_space_left);
+            } else {
+                msg = Os.strerror(errno);
+                // write to logfile for future reporting enhancements.
+                Logger.warn(context, tag, "errno=" + errno);
             }
         }
 
         return msg;
     }
-
 
     @NonNull
     public static String ioExFallbackMsg(@NonNull final Context context,

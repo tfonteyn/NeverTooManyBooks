@@ -42,6 +42,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -57,9 +58,10 @@ import java.security.KeyManagementException;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.Certificate;
+import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -122,7 +124,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException
  *    key:
  *    "library_usage_stats": {
  *     "C:/Users/USER/Calibre Library": 184,
- *     "C:/Users/USER/Downloads/testlib": 1
+ *     "C:/Users/USER/Downloads/test": 1
  *   },
  * <p>
  * The default lib seems to be simply the first one in the list.
@@ -133,12 +135,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException
  * <p>
  *   seems if it does not find the above, it will look for "global.py.json"
  *   key:
- *   "library_path": "C:\\Users\\USER\\Downloads\\testlib",
+ *   "library_path": "C:\\Users\\USER\\Downloads\\test",
  */
 public class CalibreContentServer {
 
-    /** Log tag. */
-    private static final String TAG = "CalibreContentServer";
+    /** CA certificate identifier. */
+    public static final String SERVER_CA = "CalibreContentServer.ca";
 
     /** A text "None" as value. Can/will be seen. This is the python equivalent of {@code null}. */
     static final String VALUE_IS_NONE = "None";
@@ -148,19 +150,20 @@ public class CalibreContentServer {
     static final String RESPONSE_TAG_NUM = "num";
     /** Response root tag: The array of book ids returned in 'this' call. */
     static final String RESPONSE_TAG_BOOK_IDS = "book_ids";
+
+    /** Log tag. */
+    private static final String TAG = "CalibreContentServer";
     /** Custom field for {@link ArchiveMetaData}. */
     public static final String BKEY_LIBRARY = TAG + ":defLib";
-
-
     /** Custom field for {@link ArchiveMetaData}. */
     public static final String BKEY_LIBRARY_LIST = TAG + ":libs";
+
     /** Response root tag. */
     private static final String RESPONSE_TAG_VIRTUAL_LIBRARIES = "virtual_libraries";
 
-    /** DER encoded CA certificate. */
-    public static final String CA_FILE = TAG + ".ca";
     /** Preferences prefix. */
     private static final String PREF_KEY = "calibre";
+
     /** Type: {@code String}. Matches "res/xml/preferences_calibre.xml". */
     public static final String PK_HOST_URL = PREF_KEY + ".host.url";
     public static final String PK_HOST_USER = PREF_KEY + ".host.user";
@@ -217,12 +220,12 @@ public class CalibreContentServer {
      *
      * @param context Current context
      *
-     * @throws IOException          on failures
-     * @throws CertificateException on failures related to the user installed CA.
+     * @throws CertificateException on failures related to a user installed CA.
+     * @throws SSLException         on secure connection failures
      */
     @AnyThread
     CalibreContentServer(@NonNull final Context context)
-            throws IOException, CertificateException {
+            throws CertificateException, SSLException {
         this(context, Uri.parse(getHostUrl(context)));
     }
 
@@ -232,13 +235,13 @@ public class CalibreContentServer {
      * @param context Current context
      * @param uri     for the content server
      *
-     * @throws IOException          on failures
-     * @throws CertificateException on failures related to the user installed CA.
+     * @throws CertificateException on failures related to a user installed CA.
+     * @throws SSLException         on secure connection failures
      */
     @AnyThread
     CalibreContentServer(@NonNull final Context context,
                          @NonNull final Uri uri)
-            throws IOException, CertificateException {
+            throws CertificateException, SSLException {
 
         mServerUri = uri;
 
@@ -327,6 +330,27 @@ public class CalibreContentServer {
                       .map(UriPermission::getUri)
                       .filter(uri -> uri.toString().equals(folder))
                       .findFirst();
+    }
+
+    public static void setCertificate(@NonNull final Context context,
+                                      @Nullable final X509Certificate ca)
+            throws IOException, CertificateEncodingException {
+        if (ca != null) {
+            try (FileOutputStream fos = context.openFileOutput(SERVER_CA, Context.MODE_PRIVATE)) {
+                fos.write(ca.getEncoded());
+            }
+        } else {
+            context.deleteFile(SERVER_CA);
+        }
+    }
+
+    @NonNull
+    public static X509Certificate getCertificate(@NonNull final Context context)
+            throws CertificateException, IOException {
+        try (InputStream is = context.openFileInput(SERVER_CA)) {
+            return (X509Certificate) CertificateFactory.getInstance("X.509")
+                                                       .generateCertificate(is);
+        }
     }
 
     /**
@@ -513,7 +537,6 @@ public class CalibreContentServer {
         library.setCustomFields(customFields);
     }
 
-
     @AnyThread
     boolean isCalibreExtensionInstalled() {
         return mCalibreExtensionInstalled;
@@ -576,7 +599,6 @@ public class CalibreContentServer {
                            + getCsvIds(calibreIds) + "/" + libraryId;
         return new JSONObject(fetch(url, BUFFER_SMALL));
     }
-
 
     /**
      * endpoint('/ajax/category/{encoded_name}/{library_id=None}', postprocess=json)
@@ -1087,7 +1109,6 @@ public class CalibreContentServer {
         }
     }
 
-
     /**
      * Send updates to the server.
      *
@@ -1141,34 +1162,6 @@ public class CalibreContentServer {
     }
 
     /**
-     * Get the book file from the local folder.
-     * This only works if the user has not renamed the file outside of this app.
-     *
-     * @param context Current context
-     * @param book    to get
-     *
-     * @return book
-     *
-     * @throws FileNotFoundException on ...
-     */
-    @NonNull
-    Uri getDocumentUri(@NonNull final Context context,
-                       @NonNull final Book book)
-            throws FileNotFoundException {
-
-        final Optional<Uri> optFolderUri = getFolderUri(context);
-        if (optFolderUri.isPresent()) {
-            try {
-                return getDocumentFile(context, book, optFolderUri.get(), false).getUri();
-            } catch (@NonNull final IOException e) {
-                // Keep it simple.
-                throw new FileNotFoundException();
-            }
-        }
-        throw new FileNotFoundException();
-    }
-
-    /**
      * Get the DocumentFile for the given book.
      *
      * @param context  Current context
@@ -1177,10 +1170,10 @@ public class CalibreContentServer {
      * @param creating set {@code true} when creating, set {@code false} for checking existence
      */
     @NonNull
-    private DocumentFile getDocumentFile(@NonNull final Context context,
-                                         @NonNull final Book book,
-                                         @NonNull final Uri folder,
-                                         final boolean creating)
+    DocumentFile getDocumentFile(@NonNull final Context context,
+                                 @NonNull final Book book,
+                                 @NonNull final Uri folder,
+                                 final boolean creating)
             throws IOException {
 
         // we're not assuming ANYTHING....
@@ -1286,26 +1279,19 @@ public class CalibreContentServer {
      *
      * @return an SSLContext, or {@code null} if the custom CA file (certificate) was not found.
      *
-     * @throws IOException          on failures
-     * @throws CertificateException on failures related to the user installed CA.
+     * @throws CertificateException on failures related to a user installed CA.
+     * @throws SSLException         on secure connection failures
      */
     @Nullable
     private SSLContext getSslContext(@NonNull final Context context)
-            throws IOException, CertificateException {
+            throws CertificateException, SSLException {
 
         try {
-            final Certificate ca;
-            try (InputStream is = context.openFileInput(CA_FILE)) {
-                ca = CertificateFactory.getInstance("X.509").generateCertificate(is);
-            } catch (@NonNull final FileNotFoundException ignore) {
-                // we are (have to) assuming that the server CA is loaded
-                // in the Android system keystore.
-                return null;
-            }
+            final X509Certificate ca = getCertificate(context);
 
             final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null, null);
-            keyStore.setCertificateEntry("calibre", ca);
+            keyStore.setCertificateEntry(SERVER_CA, ca);
 
             final TrustManagerFactory tmf = TrustManagerFactory
                     .getInstance(TrustManagerFactory.getDefaultAlgorithm());
@@ -1326,6 +1312,11 @@ public class CalibreContentServer {
             // we would throw a CertificateException BEFORE we can even
             // get a KeyManagementException
             throw new CertificateException(e);
+
+        } catch (@NonNull final IOException ignore) {
+            // we are (have to) assuming that the server CA is loaded
+            // in the Android system keystore.
+            return null;
         }
     }
 

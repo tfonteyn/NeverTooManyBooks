@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.view.Menu;
 import android.view.View;
 
 import androidx.activity.result.ActivityResultCaller;
@@ -45,10 +46,11 @@ import java.security.cert.CertificateException;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.net.ssl.SSLException;
+
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
@@ -60,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.LiveDataEvent;
  */
 public class CalibreHandler {
 
+    /** Log tag. */
     private static final String TAG = "CalibreHandler";
     /** The Calibre API object. */
     @NonNull
@@ -82,11 +85,11 @@ public class CalibreHandler {
      *
      * @param context Current context
      *
-     * @throws IOException          on failures
-     * @throws CertificateException on failures related to the user installed CA.
+     * @throws CertificateException on failures related to a user installed CA.
+     * @throws SSLException         on secure connection failures
      */
     public CalibreHandler(@NonNull final Context context)
-            throws IOException, CertificateException {
+            throws CertificateException, SSLException {
         mServer = new CalibreContentServer(context);
     }
 
@@ -134,72 +137,6 @@ public class CalibreHandler {
         mFileDownload.onCancelled().observe(lifecycleOwner, this::onCancelled);
         mFileDownload.onFailure().observe(lifecycleOwner, this::onFailure);
         mFileDownload.onFinished().observe(lifecycleOwner, this::onFinished);
-    }
-
-    public boolean isCalibreEnabled(@NonNull final SharedPreferences global,
-                                    @NonNull final DataHolder book) {
-        return CalibreContentServer.isEnabled(global)
-               && !book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID).isEmpty();
-    }
-
-    /**
-     * Download the given book.
-     * <p>
-     * Will ask for a download folder if not done before.
-     *
-     * @param book to get
-     */
-    public void download(@NonNull final Book book) {
-        final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(mView.getContext());
-        if (optionalUri.isPresent()) {
-            download(book, optionalUri.get());
-        } else {
-            mTempBookWhileRunningPickFolder = book;
-            mPickFolderLauncher.launch(null);
-        }
-    }
-
-    private void download(@NonNull final Book book,
-                          @NonNull final Uri folder) {
-        if (!mFileDownload.start(book, folder)) {
-            //TODO: better message
-            Snackbar.make(mView, R.string.error_download_failed, Snackbar.LENGTH_LONG).show();
-        }
-    }
-
-    /**
-     * Check if we have the book in the local folder.
-     * This only works if the user has not renamed the file outside of this app.
-     *
-     * @param book to check
-     *
-     * @return {@code true} if we have the file
-     */
-    public boolean existsLocally(@NonNull final Book book) {
-        try {
-            mServer.getDocumentUri(mView.getContext(), book);
-            return true;
-
-        } catch (@NonNull final FileNotFoundException ignore) {
-            return false;
-        }
-    }
-
-    /**
-     * Open the given book for reading.
-     * This only works if the user has not renamed the file outside of this app.
-     *
-     * @param book to get
-     */
-    public void read(@NonNull final Book book) {
-        try {
-            openBookUri(mServer.getDocumentUri(mView.getContext(), book));
-
-        } catch (@NonNull final FileNotFoundException e) {
-            //TODO: better message and/or start the download?
-            Snackbar.make(mView, R.string.httpErrorFileNotFound, Snackbar.LENGTH_LONG).show();
-            // download(book);
-        }
     }
 
     private void onProgress(@NonNull final ProgressMessage message) {
@@ -265,11 +202,136 @@ public class CalibreHandler {
         }
     }
 
+    /**
+     * Download the given book.
+     * <p>
+     * Will ask for a download folder if not done before.
+     *
+     * @param book to get
+     */
+    public void download(@NonNull final Book book) {
+        final Optional<Uri> optionalUri = CalibreContentServer.getFolderUri(mView.getContext());
+        if (optionalUri.isPresent()) {
+            download(book, optionalUri.get());
+        } else {
+            mTempBookWhileRunningPickFolder = book;
+            mPickFolderLauncher.launch(null);
+        }
+    }
+
+    private void download(@NonNull final Book book,
+                          @NonNull final Uri folder) {
+        if (!mFileDownload.start(book, folder)) {
+            //TODO: better message
+            Snackbar.make(mView, R.string.error_download_failed, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Check if we have the book in the local folder.
+     * This only works if the user has not renamed the file outside of this app.
+     *
+     * @param book to check
+     *
+     * @return {@code true} if we have the file
+     */
+    private boolean existsLocally(@NonNull final Book book) {
+        try {
+            getDocumentUri(mView.getContext(), book);
+            return true;
+
+        } catch (@NonNull final FileNotFoundException ignore) {
+            return false;
+        }
+    }
+
+    /**
+     * Open the given book for reading.
+     * This only works if the user has not renamed the file outside of this app.
+     *
+     * @param book to get
+     */
+    public void read(@NonNull final Book book) {
+        try {
+            openBookUri(getDocumentUri(mView.getContext(), book));
+
+        } catch (@NonNull final FileNotFoundException e) {
+            Snackbar.make(mView, R.string.httpErrorFileNotFound, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    /**
+     * Get the book file from the local folder.
+     * This only works if the user has not renamed the file outside of this app.
+     *
+     * @param context Current context
+     * @param book    to get
+     *
+     * @return book
+     *
+     * @throws FileNotFoundException on ...
+     */
+    @NonNull
+    private Uri getDocumentUri(@NonNull final Context context,
+                               @NonNull final Book book)
+            throws FileNotFoundException {
+
+        final Optional<Uri> optFolderUri = CalibreContentServer.getFolderUri(context);
+        if (optFolderUri.isPresent()) {
+            try {
+                return mServer.getDocumentFile(context, book, optFolderUri.get(), false).getUri();
+            } catch (@NonNull final IOException e) {
+                // Keep it simple.
+                throw new FileNotFoundException();
+            }
+        }
+        throw new FileNotFoundException();
+    }
+
     private void openBookUri(@NonNull final Uri uri) {
         final Intent intent = new Intent(Intent.ACTION_VIEW)
                 .setData(uri)
                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         mView.getContext().startActivity(Intent.createChooser(
                 intent, mView.getContext().getString(R.string.whichViewApplication)));
+    }
+
+    public void prepareMenu(@NonNull final Menu menu,
+                            @NonNull final Book book,
+                            @NonNull final SharedPreferences global) {
+
+        final boolean calibre = CalibreContentServer.isEnabled(global)
+                                && !book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID).isEmpty();
+
+        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
+        if (calibre) {
+            if (CalibreContentServer.getFolderUri(mView.getContext()).isPresent()) {
+                // conditional
+                menu.findItem(R.id.MENU_CALIBRE_READ)
+                    .setVisible(existsLocally(book));
+
+                // always shown
+                final String fileFormat = book
+                        .getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+                menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
+                    .setTitle(mView.getContext()
+                                   .getString(R.string.menu_download_ebook_format, fileFormat))
+                    .setVisible(true);
+
+                // don't show
+                menu.findItem(R.id.MENU_CALIBRE_SETTING)
+                    .setVisible(false);
+            } else {
+                // Calibre is enabled, but the folder is not set
+                menu.findItem(R.id.MENU_CALIBRE_SETTING)
+                    .setTitle(R.string.menu_set_download_folder)
+                    .setVisible(true);
+            }
+
+        } else {
+            menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
+            menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
+            menu.findItem(R.id.MENU_CALIBRE_SETTING).setVisible(false);
+        }
     }
 }

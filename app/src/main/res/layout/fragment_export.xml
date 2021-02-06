@@ -143,10 +143,35 @@
         style="@style/Text.Body.Small"
         android:layout_width="0dp"
         android:layout_marginStart="@dimen/field_margin_start"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/archive_format_info"
         tools:ignore="SelectableText"
         tools:text="@string/lbl_archive_is_export_only"
+        />
+
+    <TextView
+        android:id="@+id/lbl_remote_server"
+        style="@style/Text.Body.Small"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/archive_format_info_long"
+        tools:ignore="SelectableText"
+        tools:text="@string/lbl_calibre_content_server"
+        tools:visibility="visible"
+        />
+
+    <CheckBox
+        android:id="@+id/cbx_delete_removed_books"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/field_margin_start"
+        android:checked="false"
+        android:text="@string/lbl_delete_removed_books"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lbl_remote_server"
+        tools:visibility="visible"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

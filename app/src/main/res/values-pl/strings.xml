@@ -187,7 +187,6 @@
     <string name="lbl_about_contact">Kontakt:</string>
     <string name="X_lbl_about_sourcecode">Kod źródłowy:</string>
     <string name="X_lbl_about_special_thanks">Szczególne podziękowania</string>
-    <string name="X_lbl_about_website">Strona	 WWW:</string>
     <string name="lbl_added_day">Dodano dzień</string>
     <string name="lbl_added_month">Dodano miesiąc</string>
     <string name="lbl_added_year">Dodano rok</string>
@@ -222,7 +221,6 @@
     <string name="lbl_books">Książki</string>
     <string name="lbl_bookshelf">Półka</string>
     <string name="lbl_bookshelves">Wybierz półki</string>
-    <string name="X_lbl_by_author_s">Według %1$s</string>
     <string name="lbl_color">Kolor</string>
     <string name="lbl_condition">Stan</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Brakujący/zadowalający</string>
@@ -298,7 +296,6 @@
     <string name="lbl_read_month">Miesiąc przeczytany</string>
     <string name="lbl_read_start">Data rozpoczęcia czytania</string>
     <string name="lbl_read_year">Przeczytaj rok</string>
-    <string name="X_lbl_search_criteria">Kryteria wyszukiwania</string>
     <string name="lbl_search_filtered_on_x">Przefiltrowany: %1$s</string>
     <string name="lbl_select_fields">Wybierz pola</string>
     <string name="lbl_select_website">Wybierz stronę internetową:</string>
@@ -397,7 +394,6 @@
     <string name="pe_ui_theme_dark">Ciemny</string>
     <string name="pe_ui_theme_day_night">Dzień / Noc</string>
     <string name="pe_ui_theme_light">Światło</string>
-    <string name="X_pe_use_recommended_option">Użyj zalecanej opcji</string>
     <string name="pg_barcode_scanner">Skaner kodów kreskowych</string>
     <string name="pg_bob_show_details">Szczegóły książki</string>
     <string name="pg_booklist">Listy książek</string>
@@ -405,7 +401,7 @@
     <string name="pg_filters">Filtry</string>
     <string name="X_pg_general">Ogólne</string>
     <string name="pg_image_cache">Pamięć podręczna zdjęć</string>
-    <string name="X_pg_internet_search">Wyszukiwania w Internecie</string>
+    <string name="pg_internet_search">Wyszukiwania w Internecie</string>
     <string name="pg_style_groups">Grupowanie</string>
     <string name="X_lbl_thumbnails">Miniatury</string>
     <string name="pg_ui">Interfejs użytkownika</string>
@@ -454,7 +450,6 @@
     <string name="pt_search_reformat_format">Standaryzuj nazwy „formatu książki”</string>
     <string name="pt_search_uses_publisher">Wyszukiwanie używa wydawcy</string>
     <string name="pt_show_author_name_given_first">Formatowanie nazwiska autora</string>
-    <string name="X_pt_show_goodreads">Pokaż menu Goodreads</string>
     <string name="pt_show_title_reordered">Pokaż tytuły jako</string>
     <string name="pt_site_settings">Ustawienia strony internetowej</string>
     <string name="pt_sort_author_name_given_first">Sortowanie nazwisk autorów</string>
@@ -558,7 +553,6 @@
     <string name="lbl_select_an_action">Wybierz akcję</string>
     <string name="X_lbl_select_image">Wybierz zdjęcie…</string>
     <string name="lbl_select_style">Wybierz styl</string>
-    <string name="X_lbl_send_mail">Wysłać email…</string>
     <string name="unknown_author">[Nieznany autor]</string>
     <string name="unused">nie używany</string>
     <string name="vldt_blank_required_for_x">Oczekiwana wartość pusta dla „%1$s”</string>
@@ -570,7 +564,6 @@
     <string name="vldt_non_blank_required_for_x">Oczekiwana wartość niepusta dla „%1$s”</string>
     <string name="vldt_read_start_after_end">Data rozpoczęcia czytania późniejsza od daty zakończenia</string>
     <string name="vldt_real_expected_for_x">Oczekiwana wartość liczbowa dla „%1$s”</string>
-    <string name="X_warning_already_in_list_author">Autor jest już na liście</string>
     <string name="warning_backup_request">Czy chcesz wykonac kopię zapasową na karcie SD?</string>
     <string name="warning_book_no_longer_exists">Określona książka już nie istnieje</string>
     <string name="warning_book_not_found">Nie mogę znaleźć tej książki</string>
@@ -596,7 +589,6 @@
     <string name="warning_requires_site_and_id">Wybierz stronę internetową i wprowadź identyfikator.</string>
     <string name="warning_select_at_least_1_field">Wybierz przynajmniej jedno pole do zaktualizowania.</string>
     <string name="warning_select_at_least_1_group">Wybierz co najmniej jedną grupę.</string>
-    <string name="X_warning_already_in_list_series">Seria (tom) jest na liście</string>
     <string name="warning_toc_confirm">Potwierdź, czy te pozycje antologii są (zasadniczo) poprawne</string>
     <string name="warning_x_already_exists">%1$s już istnieje.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s” nie jest prawidłowym kod</string>
@@ -688,13 +680,12 @@
     <string name="btn_clear_queue">Wyczyść kolejkę</string>
     <string name="lbl_calibre_content_server">Serwer zawartości Calibre</string>
     <string name="enabled">Włączone</string>
-    <string name="menu_calibre_import">Calibre (Importuj)</string>
     <string name="httpError">Wystąpił błąd sieci.</string>
     <string name="httpErrorAuth">Nie można uwierzytelnić.</string>
     <string name="httpErrorFailedSslHandshake">Nie można ustanowić bezpiecznego połączenia.</string>
     <string name="httpErrorFile">Nie można znaleźć żądanego pliku.</string>
     <string name="httpErrorFileNotFound">Nie można znaleźć żądanego pliku.</string>
-    <string name="lbl_calibre_content_server_ca_cert">Certyfikat urzędu certyfikacji</string>
+    <string name="lbl_certificate_ca">Certyfikat urzędu certyfikacji</string>
     <string name="error_certificate_invalid">Certyfikat jest nieważny lub niedostępny.</string>
     <string name="username">nazwa użytkownika</string>
     <string name="password">hasło</string>
@@ -724,4 +715,7 @@
     <string name="whichEditApplication">Edytuj w aplikacji</string>
     <string name="whichSendToApplication">Wyślij za pomocą</string>
     <string name="whichImageCaptureApplication">Zrób zdjęcie w aplikacji</string>
+    <string name="lbl_certificates">Certyfikaty</string>
+    <string name="lbl_delete_removed_books">Usuń książki, których nie ma już na serwerze</string>
+    <string name="lbl_virtual_libraries">Biblioteki wirtualne w tej bibliotece</string>
 </resources>

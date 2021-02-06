@@ -20,7 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks.backup.db;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
@@ -52,16 +51,15 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 public class DbArchiveReader
         implements ArchiveReader {
 
-    private static final String SQL_LIST_TABLES =
-            "SELECT tbl_name FROM sqlite_master WHERE type='table'";
-
     /** Import configuration. */
+    @SuppressWarnings("FieldCanBeLocal")
     @NonNull
     private final ImportHelper mHelper;
 
     @Nullable
     private final SQLiteDatabase mSQLiteDatabase;
 
+    @SuppressWarnings("unused")
     @Nullable
     private ArchiveReader mDelegateReader;
 
@@ -96,7 +94,7 @@ public class DbArchiveReader
 
     @Override
     public void validate(@NonNull final Context context)
-            throws InvalidArchiveException, GeneralParsingException, IOException {
+            throws InvalidArchiveException, FileNotFoundException {
 
         // sanity check
         if (mSQLiteDatabase == null) {
@@ -105,27 +103,14 @@ public class DbArchiveReader
 
         // Determine if the database file is a supported format (for now, only check for Calibre).
 
-        // checking 6 tables should be sufficient (and likely excessive)
-        int calibreTables = 6;
-        try (Cursor cursor = mSQLiteDatabase.rawQuery(SQL_LIST_TABLES, null)) {
-            while (cursor.moveToNext()) {
-                final String tableName = cursor.getString(0);
-                if ("library_id".equals(tableName)
-                    || "books".equals(tableName)
-                    || "authors".equals(tableName)
-                    || "books_authors_link".equals(tableName)
-                    || "series".equals(tableName)
-                    || "books_series_link".equals(tableName)) {
-                    calibreTables--;
-                    if (calibreTables == 0) {
-                        mDelegateReader = new CalibreArchiveReader(context, mHelper,
-                                                                   mSQLiteDatabase);
-                        mDelegateReader.validate(context);
-                        return;
-                    }
-                }
-            }
-        }
+        // Disabled as the CalibreArchiveReader (from a db) code is not up to date
+        // with the new database tables used by the CalibreContentServerReader.
+        // 2021-02-06: a decision needs to be made to either update it or just scrap it.
+//        mDelegateReader = CalibreArchiveReader.getReader(context, mSQLiteDatabase, mHelper);
+//        if (mDelegateReader != null) {
+//            mDelegateReader.validate(context);
+//            return;
+//        }
 
         throw new InvalidArchiveException(ArchiveReader.ERROR_NO_READER_AVAILABLE);
     }

@@ -161,7 +161,7 @@
 
         <Button
             android:id="@+id/btn_search"
-            style="@style/Button.Form.Submit"
+            style="@style/Button.Action.Submit"
             android:text="@android:string/search_go"
             app:icon="@drawable/ic_search"
             app:layout_constraintEnd_toEndOf="parent"

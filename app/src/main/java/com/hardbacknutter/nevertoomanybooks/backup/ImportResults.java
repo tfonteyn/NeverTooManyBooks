@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
 
 /**
  * Value class to report back what was imported.
@@ -89,6 +88,8 @@ public class ImportResults
     public int styles;
     /** #preferences we imported. */
     public int preferences;
+    /** #certificates we imported. */
+    public int certificates;
 
     public ImportResults() {
     }
@@ -111,6 +112,7 @@ public class ImportResults
 
         styles = in.readInt();
         preferences = in.readInt();
+        certificates = in.readInt();
 
         in.readList(failedLinesNr, getClass().getClassLoader());
         in.readList(failedLinesMessage, getClass().getClassLoader());
@@ -129,6 +131,7 @@ public class ImportResults
 
         styles += results.styles;
         preferences += results.preferences;
+        certificates += results.certificates;
 
         failedLinesNr.addAll(results.failedLinesNr);
         failedLinesMessage.addAll(results.failedLinesMessage);
@@ -149,6 +152,7 @@ public class ImportResults
 
         dest.writeInt(styles);
         dest.writeInt(preferences);
+        dest.writeInt(certificates);
 
         dest.writeList(failedLinesNr);
         dest.writeList(failedLinesMessage);
@@ -175,6 +179,7 @@ public class ImportResults
 
                + ", styles=" + styles
                + ", preferences=" + preferences
+               + ", certificates=" + certificates
 
                + ", failedLinesNr=" + failedLinesNr
                + ", failedLinesMessage=" + failedLinesMessage

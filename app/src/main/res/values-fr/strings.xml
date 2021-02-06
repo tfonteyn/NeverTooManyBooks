@@ -486,7 +486,6 @@
     <string name="pt_search_reformat_format">Normaliser les noms de «format livre»</string>
     <string name="pt_search_uses_publisher">La recherche utilise l\'éditeur</string>
     <string name="pt_show_author_name_given_first">Formatage du nom de l\'auteur</string>
-    <string name="X_pt_show_goodreads">Afficher les menus Goodreads</string>
     <string name="pt_show_title_reordered">Afficher les titres en tant que</string>
     <string name="pt_show_titles_reordered_off">Le titre</string>
     <string name="pt_show_titles_reordered_on">titre, Le</string>
@@ -635,9 +634,7 @@
     <string name="X_hardware">Matériel</string>
     <string name="X_lbl_about_sourcecode">Code source :</string>
     <string name="X_lbl_about_special_thanks">Remerciements particuliers </string>
-    <string name="X_lbl_about_website">Site web :</string>
     <string name="lbl_advanced_options">Paramètres avancés</string>
-    <string name="X_lbl_by_author_s">par %1$s</string>
     <string name="X_lbl_clear_search_filters">Effacer les filtres</string>
     <string name="X_lbl_data_import_export">Sauvegarde et importation</string>
     <string name="X_lbl_delete_book">Supprimer un livre</string>
@@ -649,15 +646,12 @@
     <string name="X_lbl_edit_series">Modifier la série</string>
     <string name="X_lbl_edit_toc_entry">Modifier l\'entrée</string>
     <string name="X_lbl_preferred_styles">Styles favoris</string>
-    <string name="X_lbl_search_criteria">Critères de recherche</string>
     <string name="X_lbl_select_fields_to_update">Sélection des champs à mettre à jour</string>
     <string name="X_lbl_select_image">Choisissez une image…</string>
-    <string name="X_lbl_send_mail">Envoyer un email…</string>
     <string name="X_lbl_thumbnails">Miniatures</string>
     <string name="x_of_y">%1$d de %2$d</string>
-    <string name="X_pe_use_recommended_option">Utilisez l\'option recommandée</string>
     <string name="X_pg_general">Général</string>
-    <string name="X_pg_internet_search">Recherches sur le web</string>
+    <string name="pg_internet_search">Recherches sur le web</string>
     <string name="X_progress_msg_n_books_processed">%1$d livres traités</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d couvertures traitées (%2$d/%3$d manquantes, %4$d ignorées)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d couvertures traitées\n(%2$d/%3$d manquante)</string>
@@ -667,8 +661,6 @@
     <string name="X_tip_booklist_global_properties">Vous pouvez utiliser cet écran pour définir les caractéristiques par défaut de tous les styles de liste de livres. La plupart des propriétés peuvent être remplacées par des styles individuels, mais les valeurs par défaut sont définies ici. Vous pouvez modifier le mode d\'affichage des listes au démarrage et définir diverses autres préférences qui seront appliquées à tous vos styles dans la mesure du possible.</string>
     <string name="X_use_default_setting">Utiliser les paramètres par défaut</string>
     <string name="X_vldt_failed_for_x">La validation a échoué pour «%1$s»</string>
-    <string name="X_warning_already_in_list_author">L\'auteur est déjà dans la liste</string>
-    <string name="X_warning_already_in_list_series">La série est déjà dans la liste</string>
     <string name="X_warning_image_processing_failed">L\'image n\'a pas pu être traitée.</string>
     <string name="X_warning_required_field_x">%1$s ne doit pas être vide</string>
     <string name="yes">Oui</string>
@@ -696,13 +688,12 @@
     <string name="btn_clear_queue">Effacer la file d\'attente</string>
     <string name="lbl_calibre_content_server">Serveur de contenu Calibre</string>
     <string name="enabled">Activée</string>
-    <string name="menu_calibre_import">Calibre (Importer)</string>
     <string name="httpError">Une erreur réseau s\'est produite.</string>
     <string name="httpErrorAuth">Impossible de procéder à l\'authentification.</string>
     <string name="httpErrorFailedSslHandshake">Impossible d\'établir une connexion sécurisée.</string>
     <string name="httpErrorFile">Impossible d\'accéder au fichier.</string>
     <string name="httpErrorFileNotFound">Impossible de trouver le fichier demandé.</string>
-    <string name="lbl_calibre_content_server_ca_cert">Certificat CA</string>
+    <string name="lbl_certificate_ca">Certificat CA</string>
     <string name="error_certificate_invalid">Le certificat est incorrect ou inaccessible.</string>
     <string name="username">nom d\'utilisateur</string>
     <string name="password">mot de passe</string>
@@ -732,4 +723,7 @@
     <string name="whichEditApplication">Modifier avec</string>
     <string name="whichSendToApplication">Envoyer avec</string>
     <string name="whichImageCaptureApplication">Capturer une image avec</string>
+    <string name="lbl_certificates">Certificats</string>
+    <string name="lbl_delete_removed_books">Supprimer les livres qui ne sont plus présents sur le serveur</string>
+    <string name="lbl_virtual_libraries">Bibliothèques virtuelles dans cette bibliothèque</string>
 </resources>

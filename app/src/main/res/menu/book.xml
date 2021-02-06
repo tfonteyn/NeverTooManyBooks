@@ -102,6 +102,11 @@
                 android:id="@id/MENU_CALIBRE_DOWNLOAD"
                 android:icon="@drawable/ic_cloud_download"
                 android:title="@string/book_format_ebook" />
+
+            <item
+                android:id="@id/MENU_CALIBRE_SETTING"
+                android:icon="@drawable/ic_settings"
+                android:title="@string/lbl_settings" />
         </menu>
     </item>
 </menu>

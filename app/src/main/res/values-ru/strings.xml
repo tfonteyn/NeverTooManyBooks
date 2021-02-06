@@ -187,7 +187,6 @@
     <string name="lbl_about_contact">Контакты разработчиков:</string>
     <string name="X_lbl_about_sourcecode">Исходный код:</string>
     <string name="X_lbl_about_special_thanks">Особые благодарности</string>
-    <string name="X_lbl_about_website">Веб-адрес проекта:</string>
     <string name="lbl_added_day">Добавленый день</string>
     <string name="lbl_added_month">Добавленый месяц</string>
     <string name="lbl_added_year">Добавленый год</string>
@@ -222,7 +221,6 @@
     <string name="lbl_books">книги</string>
     <string name="lbl_bookshelf">Книжная полка</string>
     <string name="lbl_bookshelves">Книжные полки</string>
-    <string name="X_lbl_by_author_s">к %1$s</string>
     <string name="lbl_color">Цвет</string>
     <string name="lbl_condition">Условие</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Отсутствует/приемлемо</string>
@@ -296,7 +294,6 @@
     <string name="lbl_read_month">Месяц прочтения</string>
     <string name="lbl_read_start">Начало чтения</string>
     <string name="lbl_read_year">Год прочтения</string>
-    <string name="X_lbl_search_criteria">Параметры поиска</string>
     <string name="lbl_search_filtered_on_x">отфильтрованный: %1$s</string>
     <string name="lbl_select_fields">Выберите поля</string>
     <string name="lbl_select_website">Выберите сайт:</string>
@@ -395,7 +392,6 @@
     <string name="pe_ui_theme_dark">темный</string>
     <string name="pe_ui_theme_day_night">День / Ночь</string>
     <string name="pe_ui_theme_light">свет</string>
-    <string name="X_pe_use_recommended_option">Используйте рекомендуемый вариант</string>
     <string name="pg_barcode_scanner">Сканер штрих-кода</string>
     <string name="pg_bob_show_details">Детали книги</string>
     <string name="pg_booklist">Списки книг</string>
@@ -403,7 +399,7 @@
     <string name="pg_filters">Фильтры книг</string>
     <string name="X_pg_general">Основные</string>
     <string name="pg_image_cache">Кэш изображений</string>
-    <string name="X_pg_internet_search">веб-поиск</string>
+    <string name="pg_internet_search">веб-поиск</string>
     <string name="pg_style_groups">Группирование</string>
     <string name="X_lbl_thumbnails">Миниатюры</string>
     <string name="pg_ui">Пользовательский интерфейс</string>
@@ -452,7 +448,6 @@
     <string name="pt_search_reformat_format">Стандартизировать имена в формате книги</string>
     <string name="pt_search_uses_publisher">Поиск использует издатель</string>
     <string name="pt_show_author_name_given_first">Форматирование имени автора</string>
-    <string name="X_pt_show_goodreads">Показать Goodreads меню</string>
     <string name="pt_show_title_reordered">Показать названия как</string>
     <string name="pt_site_settings">Настройки сайта</string>
     <string name="pt_sort_author_name_given_first">Сортировка имени автора</string>
@@ -557,7 +552,6 @@
     <string name="lbl_select_an_action">Выберете дествие</string>
     <string name="X_lbl_select_image">Выбор картинки…</string>
     <string name="lbl_select_style">Выбрать стиль</string>
-    <string name="X_lbl_send_mail">Эл. адрес…</string>
     <string name="unknown_author">[Неизвестный автор]</string>
     <string name="unused">неиспользуемый</string>
     <string name="vldt_blank_required_for_x">Требуется пустое значение: «%1$s»</string>
@@ -569,7 +563,6 @@
     <string name="vldt_non_blank_required_for_x">Требуется не пустое значение для: «%1$s»</string>
     <string name="vldt_read_start_after_end">Дата начала чтения позже даты завершения</string>
     <string name="vldt_real_expected_for_x">Введите действительное число: «%1$s»</string>
-    <string name="X_warning_already_in_list_author">Автор уже есть в списке</string>
     <string name="warning_backup_request">Вы хотите создать резервную копию базы данных на SD-карте?</string>
     <string name="warning_book_no_longer_exists">Указанная книга больше не существует</string>
     <string name="warning_book_not_found">Поиск указанной книги не удался</string>
@@ -595,7 +588,6 @@
     <string name="warning_requires_site_and_id">Выберите сайт и введите идентификатор.</string>
     <string name="warning_select_at_least_1_field">Выберите хотя бы одно поле для обновления.</string>
     <string name="warning_select_at_least_1_group">Выберите хотя бы одну группу.</string>
-    <string name="X_warning_already_in_list_series">Серия уже есть в списке</string>
     <string name="warning_toc_confirm">Пожалуйста, подтвердите, что названия антологий (в основном) правильны</string>
     <string name="warning_x_already_exists">%1$s уже существует.</string>
     <string name="warning_x_is_not_a_valid_code">«%1$s» не является допустимым кодом</string>
@@ -687,13 +679,12 @@
     <string name="btn_clear_queue">Очистить очередь</string>
     <string name="lbl_calibre_content_server">Сервер содержимого Calibre</string>
     <string name="enabled">Включено</string>
-    <string name="menu_calibre_import">Calibre (Импортировать)</string>
     <string name="httpError">Ошибка сети.</string>
     <string name="httpErrorAuth">Ошибка аутентификации.</string>
     <string name="httpErrorFailedSslHandshake">Не удалось установить защищенное соединение.</string>
     <string name="httpErrorFile">Не удалось получить доступ к файлу.</string>
     <string name="httpErrorFileNotFound">Не удалось найти файл.</string>
-    <string name="lbl_calibre_content_server_ca_cert">Сертификат центра сертификации</string>
+    <string name="lbl_certificate_ca">Сертификат центра сертификации</string>
     <string name="error_certificate_invalid">Сертификат недействителен или недоступен.</string>
     <string name="username">имя пользователя</string>
     <string name="password">Пароль</string>
@@ -724,4 +715,7 @@
     <string name="whichEditApplication">Редактировать с помощью приложения:</string>
     <string name="whichSendToApplication">Выберите приложение</string>
     <string name="whichImageCaptureApplication">Делать снимки с помощью:</string>
+    <string name="lbl_certificates">Cертификаты</string>
+    <string name="lbl_delete_removed_books">Удалите книги, которых больше нет на сервере</string>
+    <string name="lbl_virtual_libraries">Виртуальные библиотеки в этой библиотеке</string>
 </resources>

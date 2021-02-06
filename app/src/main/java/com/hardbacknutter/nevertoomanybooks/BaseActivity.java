@@ -130,11 +130,11 @@ public abstract class BaseActivity
     @Nullable
     private NavigationView mNavigationView;
 
-    private final ActivityResultLauncher<Bundle> mSettingsLauncher = registerForActivityResult(
-            new SettingsHostActivity.ResultContract(SettingsFragment.TAG), data -> {
+    private final ActivityResultLauncher<Bundle> mSettingsLauncher =
+            registerForActivityResult(new SettingsHostActivity.ResultContract(
+                    SettingsFragment.TAG), data -> {
 
                 updateNavigationMenuVisibility();
-
                 if (data != null) {
                     // Handle the generic return flag requiring a recreate of the current Activity
                     if (data.getBoolean(BKEY_PREF_CHANGE_REQUIRES_RECREATE, false)) {
@@ -146,7 +146,6 @@ public abstract class BaseActivity
                         finish();
                     }
                 }
-
             });
     /** Flag indicating this Activity is a self-proclaimed root Activity. */
     private boolean mHomeIsRootMenu;

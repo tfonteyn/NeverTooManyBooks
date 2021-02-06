@@ -48,12 +48,13 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
+
+import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookContract;
@@ -92,6 +93,8 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResForm
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -118,6 +121,10 @@ public class ShowBookFragment
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
+    /** Calibre preferences screen. */
+    private final ActivityResultLauncher<Bundle> mCalibrePreferencesLauncher =
+            registerForActivityResult(new SettingsHostActivity.ResultContract(
+                    CalibrePreferencesFragment.TAG), data -> { });
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
@@ -194,7 +201,7 @@ public class ShowBookFragment
         try {
             mCalibreHandler = new CalibreHandler(getContext());
             mCalibreHandler.onViewCreated(this);
-        } catch (@NonNull final IOException | CertificateException ignore) {
+        } catch (@NonNull final SSLException | CertificateException ignore) {
             // ignore
         }
 
@@ -295,32 +302,14 @@ public class ShowBookFragment
         menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
             .setVisible(GoodreadsManager.isShowSyncMenus(global));
 
-        prepareCalibreMenu(menu, book, global);
+        if (mCalibreHandler != null) {
+            mCalibreHandler.prepareMenu(menu, book, global);
+        }
 
         MenuHelper.prepareViewBookOnWebsiteMenu(menu, book);
         MenuHelper.prepareOptionalMenus(menu, book);
 
         super.onPrepareOptionsMenu(menu);
-    }
-
-    private void prepareCalibreMenu(@NonNull final Menu menu,
-                                    @NonNull final Book book,
-                                    @NonNull final SharedPreferences global) {
-
-        final boolean calibre = mCalibreHandler != null
-                                && mCalibreHandler.isCalibreEnabled(global, book);
-        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
-        if (calibre) {
-            menu.findItem(R.id.MENU_CALIBRE_READ)
-                .setVisible(mCalibreHandler.existsLocally(book));
-
-            final String fileFormat = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-            menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
-                .setTitle(getString(R.string.menu_download_ebook_format, fileFormat));
-
-        } else {
-            menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
-        }
     }
 
     @Override
@@ -382,6 +371,10 @@ public class ShowBookFragment
                 // Reminder: no need to check the book as the menu is only shown for valid books.
                 mCalibreHandler.download(book);
             }
+            return true;
+
+        } else if (itemId == R.id.MENU_CALIBRE_SETTING) {
+            mCalibrePreferencesLauncher.launch(null);
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {

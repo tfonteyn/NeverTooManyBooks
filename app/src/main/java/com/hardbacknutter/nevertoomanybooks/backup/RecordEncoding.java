@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 
@@ -30,6 +30,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.CsvRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;

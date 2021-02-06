@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -81,9 +81,11 @@ public class EditBookActivity
         mTabAdapter = new TabAdapter(this);
         mVb.pager.setAdapter(mTabAdapter);
 
-        new TabLayoutMediator(mVb.tabPanel, mVb.pager, (tab, position) ->
-                tab.setText(getString(mTabAdapter.getTabTitle(position))))
-                .attach();
+        new TabLayoutMediator(mVb.tabPanel, mVb.pager, (tab, position) -> {
+            final TabAdapter.TabInfo tabInfo = mTabAdapter.getTabInfo(position);
+            tab.setText(tabInfo.titleId);
+            tab.setContentDescription(tabInfo.contentDescriptionId);
+        }).attach();
     }
 
     @Override
@@ -261,21 +263,31 @@ public class EditBookActivity
                     PreferenceManager.getDefaultSharedPreferences(activity);
 
             // Build the tab class/title list.
-            mTabs.add(new TabInfo(EditBookFieldsFragment.class, R.string.tab_lbl_details));
-            mTabs.add(new TabInfo(EditBookPublicationFragment.class, R.string.tab_lbl_publication));
-            mTabs.add(new TabInfo(EditBookNotesFragment.class, R.string.tab_lbl_notes));
+            mTabs.add(new TabInfo(EditBookFieldsFragment.class,
+                                  R.string.tab_lbl_details,
+                                  R.string.tab_lbl_details));
+            mTabs.add(new TabInfo(EditBookPublicationFragment.class,
+                                  R.string.tab_lbl_publication,
+                                  R.string.lbl_publication));
+            mTabs.add(new TabInfo(EditBookNotesFragment.class,
+                                  R.string.tab_lbl_notes,
+                                  R.string.lbl_personal_notes));
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_TOC_BITMASK)) {
-                mTabs.add(new TabInfo(EditBookTocFragment.class, R.string.tab_lbl_content));
+                mTabs.add(new TabInfo(EditBookTocFragment.class,
+                                      R.string.tab_lbl_content,
+                                      R.string.lbl_table_of_content));
             }
             if (EditBookExternalIdFragment.showEditBookTabExternalId(global)) {
-                mTabs.add(new TabInfo(EditBookExternalIdFragment.class, R.string.tab_lbl_ext_id));
+                mTabs.add(new TabInfo(EditBookExternalIdFragment.class,
+                                      R.string.tab_lbl_ext_id,
+                                      R.string.tab_lbl_ext_id));
             }
         }
 
-        @StringRes
-        int getTabTitle(final int position) {
-            return mTabs.get(position).titleId;
+        @NonNull
+        TabInfo getTabInfo(final int position) {
+            return mTabs.get(position);
         }
 
         @Override
@@ -302,11 +314,15 @@ public class EditBookActivity
             final Class<? extends Fragment> clazz;
             @StringRes
             final int titleId;
+            @StringRes
+            final int contentDescriptionId;
 
             TabInfo(@NonNull final Class<? extends Fragment> clazz,
-                    @StringRes final int titleId) {
+                    @StringRes final int titleId,
+                    @StringRes final int contentDescriptionId) {
                 this.clazz = clazz;
                 this.titleId = titleId;
+                this.contentDescriptionId = contentDescriptionId;
             }
         }
     }

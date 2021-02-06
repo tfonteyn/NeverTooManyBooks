@@ -38,6 +38,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.net.ssl.SSLException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,9 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -129,12 +131,12 @@ public class CalibreContentServerReader
      * @param context Current context
      * @param helper  import configuration
      *
-     * @throws IOException          on failures
-     * @throws CertificateException on failures related to the user installed CA.
+     * @throws SSLException         on secure connection failures
+     * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerReader(@NonNull final Context context,
                                       @NonNull final ImportHelper helper)
-            throws IOException, CertificateException {
+            throws CertificateException, SSLException {
 
         mDb = new DAO(TAG);
 

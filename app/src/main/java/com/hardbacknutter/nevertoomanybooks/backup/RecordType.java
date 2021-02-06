@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,13 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
 import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
 import com.hardbacknutter.nevertoomanybooks.App;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -67,6 +69,12 @@ public enum RecordType {
      * ONLY ONE PER ARCHIVE.
      */
     Preferences("preferences"),
+
+    /**
+     * Collection of named Certificates.
+     * ONLY ONE PER ARCHIVE.
+     */
+    Certificates("certificates"),
 
     /**
      * A <strong>list</strong> of {@link Book} elements.

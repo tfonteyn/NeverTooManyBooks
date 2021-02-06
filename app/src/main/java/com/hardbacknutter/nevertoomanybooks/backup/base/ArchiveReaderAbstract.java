@@ -40,6 +40,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -55,19 +58,21 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * <ul>
  *     <li>v3:
  *         <ul>
- *             <li>{@link RecordType#MetaData} :    {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#Styles} :      {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#Preferences} : {@link RecordEncoding#Json}</li>
- *             <li>{@link RecordType#Books} :       {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Styles} :       {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Preferences} :  {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Certificates} : {@link RecordEncoding#Json}</li>
+ *             <li>{@link RecordType#Books} :        {@link RecordEncoding#Json}</li>
  *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
  *     <li>v2:
  *         <ul>
- *             <li>{@link RecordType#MetaData} :    {@link RecordEncoding#Xml}</li>
- *             <li>{@link RecordType#Styles} :      {@link RecordEncoding#Xml}</li>
- *             <li>{@link RecordType#Preferences} : {@link RecordEncoding#Xml}</li>
- *             <li>{@link RecordType#Books} :       {@link RecordEncoding#Csv}</li>
+ *             <li>{@link RecordType#MetaData} :     {@link RecordEncoding#Xml}</li>
+ *             <li>{@link RecordType#Styles} :       {@link RecordEncoding#Xml}</li>
+ *             <li>{@link RecordType#Preferences} :  {@link RecordEncoding#Xml}</li>
+ *             <li>{@link RecordType#Certificates} : {@link RecordEncoding#Xml}</li>
+ *             <li>{@link RecordType#Books} :        {@link RecordEncoding#Csv}</li>
  *             <li>Multiple {@link RecordType#Cover}</li>
  *         </ul>
  *     </li>
@@ -252,6 +257,7 @@ public abstract class ArchiveReaderAbstract
         try {
             final boolean readBooks = importEntries.contains(RecordType.Books);
             final boolean readCovers = importEntries.contains(RecordType.Cover);
+            final boolean readCertificates = importEntries.contains(RecordType.Certificates);
 
             //noinspection ConstantConditions
             int estimatedSteps = 1 + mArchiveMetaData.getBookCount();
@@ -294,10 +300,12 @@ public abstract class ArchiveReaderAbstract
             // process each entry based on type, unless we are cancelled.
             while (record != null && !progressListener.isCancelled()) {
                 if (record.getType().isPresent()) {
-                    final RecordType recordType = record.getType().get();
-                    if (recordType == RecordType.Cover && readCovers) {
-                        readRecord(context, record, progressListener);
-                    } else if (recordType == RecordType.Books && readBooks) {
+                    final RecordType type = record.getType().get();
+
+                    if ((type == RecordType.Cover && readCovers)
+                        || (type == RecordType.Books && readBooks)
+                        || (type == RecordType.Certificates && readCertificates)
+                    ) {
                         readRecord(context, record, progressListener);
                     }
                 }

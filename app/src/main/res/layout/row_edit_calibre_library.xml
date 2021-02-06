@@ -59,7 +59,7 @@
 
         <Button
             android:id="@+id/btn_create"
-            style="@style/Button.Form.Submit"
+            style="@style/Button.Action.Submit"
             android:text="@string/action_create"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/lbl_library_name"

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 
 /**
  * Interface provided by every record read from an archive file.
@@ -97,6 +101,7 @@ public interface ArchiveReaderRecord {
      *
      * @throws IOException on failure
      */
+    @NonNull
     default String asString()
             throws IOException {
         // Don't close this stream
@@ -120,6 +125,7 @@ public interface ArchiveReaderRecord {
      *
      * @throws IOException on failure
      */
+    @NonNull
     default List<String> asList()
             throws IOException {
         // Don't close this stream

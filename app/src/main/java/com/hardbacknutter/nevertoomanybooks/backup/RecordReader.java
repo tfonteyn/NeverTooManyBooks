@@ -17,73 +17,64 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.backup.base;
+package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.WorkerThread;
+import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.Writer;
-import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
-public interface RecordWriter
+/**
+ * Implements Closeable to enforce a cleanup structure.
+ */
+public interface RecordReader
         extends Closeable {
 
-    /** Buffer for the Writer. */
+    /** Buffer for the readers. */
     int BUFFER_SIZE = 65535;
 
     /**
-     * Get the format version that this RecordWriter is writing out.
+     * Read the archive information block.
      *
-     * @return the version
-     */
-    @AnyThread
-    int getVersion();
-
-    /**
-     * Write a {@link RecordType#MetaData} record.
+     * @param record to read data from
      *
-     * @param writer   Writer to write to
-     * @param metaData the bundle of information to write
+     * @return the archive info
      *
      * @throws IOException on failure
      */
-    @WorkerThread
-    default void writeMetaData(@NonNull final Writer writer,
-                               @NonNull final ArchiveMetaData metaData)
+    @Nullable
+    default ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
             throws GeneralParsingException, IOException {
-        // do nothing
+        return null;
     }
 
     /**
-     * Write a set of {@link RecordType} records.
-     * Unsupported record types should/will be silently skipped.
+     * Read an {@link ArchiveReaderRecord}.
      *
      * @param context          Current context
-     * @param writer           Writer to write to
-     * @param entries          The set of entries which should be written.
-     * @param progressListener Progress and cancellation interface
+     * @param record           to read data from
+     * @param options          any applicable options
+     * @param progressListener Progress and cancellation provider
      *
-     * @return {@link ExportResults}
+     * @return {@link ImportResults}
      *
-     * @throws IOException on failure
+     * @throws IOException     on failure
+     * @throws ImportException on failure
      */
-    @WorkerThread
     @NonNull
-    ExportResults write(@NonNull Context context,
-                        @NonNull Writer writer,
-                        @NonNull Set<RecordType> entries,
-                        @NonNull ProgressListener progressListener)
-            throws GeneralParsingException, IOException;
-
+    ImportResults read(@NonNull Context context,
+                       @NonNull ArchiveReaderRecord record,
+                       @ImportHelper.Options int options,
+                       @NonNull ProgressListener progressListener)
+            throws GeneralParsingException, ImportException, IOException;
 
     /**
      * Override if the implementation needs to close something.

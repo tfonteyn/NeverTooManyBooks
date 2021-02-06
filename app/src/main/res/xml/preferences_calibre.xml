@@ -51,7 +51,7 @@
             android:icon="@drawable/ic_security"
             android:key="psk_ca_from_file"
             android:summary="@string/info_not_set"
-            android:title="@string/lbl_calibre_content_server_ca_cert"
+            android:title="@string/lbl_certificate_ca"
             />
 
         <EditTextPreference

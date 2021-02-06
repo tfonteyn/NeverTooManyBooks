@@ -31,6 +31,8 @@ import androidx.preference.PreferenceManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -41,11 +43,13 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
@@ -136,6 +140,28 @@ public class JsonRecordWriter
                 jsonData.put(RecordType.Preferences.getName(),
                              coder.encode(PreferenceManager.getDefaultSharedPreferences(context)));
                 results.preferences = 1;
+            }
+
+            if (entries.contains(RecordType.Certificates)
+                && !progressListener.isCancelled()) {
+                progressListener.publishProgressStep(1, context.getString(
+                        R.string.lbl_certificate_ca));
+
+                final JsonCoder<X509Certificate> coder = new CertificateCoder();
+                final JSONObject certificates = new JSONObject();
+                try {
+                    // always export even if the CCS is disabled!
+                    // The user might have temporarily switched it off.
+                    certificates.put(CalibreContentServer.SERVER_CA, coder.encode(
+                            CalibreContentServer.getCertificate(context)));
+                    results.certificates++;
+
+                } catch (@NonNull final IOException | CertificateException ignore) {
+                    // no certificate (IOException) or invalid cert
+                }
+                if (certificates.length() > 0) {
+                    jsonData.put(RecordType.Certificates.getName(), certificates);
+                }
             }
 
             if (entries.contains(RecordType.Books)

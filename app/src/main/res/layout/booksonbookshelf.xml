@@ -87,7 +87,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- used to intercept click events when the FAB menu is showing. -->
-
         <View
             android:id="@+id/fabOverlay"
             android:layout_width="match_parent"

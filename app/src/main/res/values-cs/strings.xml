@@ -190,7 +190,6 @@
     <string name="lbl_about_contact">Kontakt:</string>
     <string name="X_lbl_about_sourcecode">Zdrojový kód:</string>
     <string name="X_lbl_about_special_thanks">Zvláštní poděkování</string>
-    <string name="X_lbl_about_website">WWW stránky:</string>
     <string name="lbl_added_day">Den přidání</string>
     <string name="lbl_added_month">Měsíc přidání</string>
     <string name="lbl_added_year">Rok přidání</string>
@@ -225,7 +224,6 @@
     <string name="lbl_books">Knihy</string>
     <string name="lbl_bookshelf">Knihovna</string>
     <string name="lbl_bookshelves">Zvolte knihovnu</string>
-    <string name="X_lbl_by_author_s">(kým) %1$s</string>
     <string name="lbl_color">Barva</string>
     <string name="lbl_condition">Stav</string>
     <string name="lbl_condition_dust_cover_missing_or_bad">Chybějící/přijatelný</string>
@@ -300,7 +298,6 @@
     <string name="lbl_read_month">Měsíc přečetl</string>
     <string name="lbl_read_start">Datum začátku čtení</string>
     <string name="lbl_read_year">Rok čtení</string>
-    <string name="X_lbl_search_criteria">Kritéria pro vyhledávání</string>
     <string name="lbl_search_filtered_on_x">Filtrovaný: %1$s</string>
     <string name="lbl_select_fields">Zvolit pole</string>
     <string name="lbl_select_website">Vyberte web.:</string>
@@ -399,7 +396,6 @@
     <string name="pe_ui_theme_dark">Temný</string>
     <string name="pe_ui_theme_day_night">Den / Noc</string>
     <string name="pe_ui_theme_light">Světlo</string>
-    <string name="X_pe_use_recommended_option">Použijte doporučenou možnost</string>
     <string name="pg_barcode_scanner">Čtečka kódů</string>
     <string name="pg_bob_show_details">Podrobnosti knihy</string>
     <string name="pg_booklist">Seznamy knih</string>
@@ -407,7 +403,7 @@
     <string name="pg_filters">Filtry knih</string>
     <string name="X_pg_general">Obecné</string>
     <string name="pg_image_cache">Obrázky mezipaměti</string>
-    <string name="X_pg_internet_search">Vyhledávání na webu</string>
+    <string name="pg_internet_search">Vyhledávání na webu</string>
     <string name="pg_style_groups">Seskupení</string>
     <string name="X_lbl_thumbnails">Náhledy</string>
     <string name="pg_ui">Uživatelské rozhraní</string>
@@ -456,7 +452,6 @@
     <string name="pt_search_reformat_format">Standardizujte názvy „formát knihy“</string>
     <string name="pt_search_uses_publisher">Vyhledávání používá vydavatele</string>
     <string name="pt_show_author_name_given_first">Formátování jména autora</string>
-    <string name="X_pt_show_goodreads">Zobrazit nabídky Goodreads</string>
     <string name="pt_show_title_reordered">Zobrazit tituly jako</string>
     <string name="pt_site_settings">Nastavení webových stránek</string>
     <string name="pt_sort_author_name_given_first">Třídění autorských jmen</string>
@@ -560,7 +555,6 @@
     <string name="lbl_select_an_action">Zvolte akci</string>
     <string name="X_lbl_select_image">Zvolit obrázek…</string>
     <string name="lbl_select_style">Zvolit styl</string>
-    <string name="X_lbl_send_mail">Poslat e-mailem…</string>
     <string name="unknown_author">[Neznámý autor]</string>
     <string name="unused">nepoužitý</string>
     <string name="vldt_blank_required_for_x">Prázdná hodnota vyžadována pro „%1$s“</string>
@@ -572,7 +566,6 @@
     <string name="vldt_non_blank_required_for_x">Neprázdná hodnota vyžadována pro „%1$s“</string>
     <string name="vldt_read_start_after_end">Datum začátku čtení musí předcházet datu ukončení čtení.</string>
     <string name="vldt_real_expected_for_x">Očekáváno reálné číslo pro „%1$s“</string>
-    <string name="X_warning_already_in_list_author">Autor je již v seznamu</string>
     <string name="warning_backup_request">Přejete si zálohovat Vaši databázi na SD kartu</string>
     <string name="warning_book_no_longer_exists">Zadaná kniha již neexistuje</string>
     <string name="warning_book_not_found">Nepodařilo se nalézt zadanou knihu</string>
@@ -598,7 +591,6 @@
     <string name="warning_requires_site_and_id">Vyberte web a zadejte ID.</string>
     <string name="warning_select_at_least_1_field">Zvolte alespoň jedno pole k aktualizaci.</string>
     <string name="warning_select_at_least_1_group">Vyberte alespoň jednu skupinu.</string>
-    <string name="X_warning_already_in_list_series">Série je již v seznamu</string>
     <string name="warning_toc_confirm">Prosím zkontrolujte, zda jsou tyto antologie v pořádku</string>
     <string name="warning_x_already_exists">%1$s již existuje.</string>
     <string name="warning_x_is_not_a_valid_code">„%1$s“ není platné číslo kód</string>
@@ -691,13 +683,12 @@
     <string name="btn_clear_queue">Vymazat frontu</string>
     <string name="enabled">Povoleno</string>
     <string name="lbl_calibre_content_server">Server obsahu Calibre</string>
-    <string name="menu_calibre_import">Calibre (Importovat)</string>
     <string name="httpErrorFailedSslHandshake">Nelze navázat bezpečné připojení.</string>
     <string name="httpErrorAuth">Nelze provést ověření.</string>
     <string name="httpError">Došlo k chybě sítě.</string>
     <string name="httpErrorFile">Do souboru nelze získat přístup.</string>
     <string name="httpErrorFileNotFound">Požadovaný soubor nelze najít.</string>
-    <string name="lbl_calibre_content_server_ca_cert">Certifikát CA</string>
+    <string name="lbl_certificate_ca">Certifikát CA</string>
     <string name="error_certificate_invalid">Certifikát je neplatný nebo nedostupný.</string>
     <string name="username">uživatelské jméno</string>
     <string name="password">heslo</string>
@@ -727,4 +718,7 @@
     <string name="whichEditApplication">Upravit v aplikaci</string>
     <string name="whichSendToApplication">Odeslat pomocí aplikace</string>
     <string name="whichImageCaptureApplication">Vyfotit pomocí aplikace</string>
+    <string name="lbl_certificates">Certifikáty</string>
+    <string name="lbl_delete_removed_books">Odstraňte knihy, které již na serveru nejsou</string>
+    <string name="lbl_virtual_libraries">Virtuální knihovny v této knihovně</string>
 </resources>

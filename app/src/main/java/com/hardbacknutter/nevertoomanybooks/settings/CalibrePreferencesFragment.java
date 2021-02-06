@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -41,7 +40,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.BufferedInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertificateException;
@@ -254,11 +252,7 @@ public class CalibrePreferencesFragment
                                 .getInstance("X.509").generateCertificate(bis);
                         ca.checkValidity();
                     }
-
-                    try (FileOutputStream fos = getContext()
-                            .openFileOutput(CalibreContentServer.CA_FILE, Context.MODE_PRIVATE)) {
-                        fos.write(ca.getEncoded());
-                    }
+                    CalibreContentServer.setCertificate(getContext(), ca);
 
                     //noinspection ConstantConditions
                     preference.setSummary("S: " + ca.getSubjectX500Principal().getName()
@@ -277,16 +271,13 @@ public class CalibrePreferencesFragment
      * @param preference to use
      */
     private void setCertificateSummary(@NonNull final Preference preference) {
-        //noinspection ConstantConditions
-        try (InputStream is = getContext().openFileInput(CalibreContentServer.CA_FILE)) {
-            final X509Certificate ca;
-            try (BufferedInputStream bis = new BufferedInputStream(is)) {
-                ca = (X509Certificate) CertificateFactory
-                        .getInstance("X.509").generateCertificate(bis);
-                ca.checkValidity();
-                preference.setSummary("S: " + ca.getSubjectX500Principal().getName()
-                                      + "\nI: " + ca.getIssuerX500Principal().getName());
-            }
+        try {
+            //noinspection ConstantConditions
+            final X509Certificate ca = CalibreContentServer.getCertificate(getContext());
+            ca.checkValidity();
+            preference.setSummary("S: " + ca.getSubjectX500Principal().getName()
+                                  + "\nI: " + ca.getIssuerX500Principal().getName());
+
         } catch (@NonNull final CertificateException e) {
             preference.setSummary(R.string.error_certificate_invalid);
 

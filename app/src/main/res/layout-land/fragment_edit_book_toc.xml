@@ -105,7 +105,7 @@
 
     <Button
         android:id="@+id/btn_add"
-        style="@style/Button.Form.Submit"
+        style="@style/Button.Action.Submit"
         android:text="@string/action_add"
         app:layout_constraintBottom_toTopOf="@id/barrier_header_bottom"
         app:layout_constraintEnd_toEndOf="parent"

@@ -33,8 +33,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -44,6 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
  * <ul>Supports:
  *      <li>{@link RecordType#Books}</li>
  * </ul>
+ * <p>
+ *  * <strong>LIMITATIONS:</strong> see {@link BookCoder}.
  */
 public class CsvRecordWriter
         implements RecordWriter {

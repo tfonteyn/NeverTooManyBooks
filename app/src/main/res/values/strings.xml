@@ -298,6 +298,11 @@
     <string name="error_site_authorization_failed">%1$s authorization resulted in an error.</string>
     <string name="error_site_authentication_failed">%1$s authentication failed</string>
 
+    <!-- [VERIFIED] -->
+    <string name="lbl_certificate_ca">CA Certificate</string>
+    <!-- [VERIFIED] -->
+    <string name="lbl_certificates">Certificates</string>
+
     <!-- ####################################################################################### -->
     <!-- ========== Messages for actions that need confirming first. ========== -->
     <!-- ####################################################################################### -->
@@ -489,12 +494,8 @@
     <!-- ========== Calibre specific ========== -->
     <!-- ####################################################################################### -->
 
-    <string name="menu_calibre_import">Calibre (Import)</string>
-
     <!-- [VERIFIED] -->
     <string name="lbl_calibre_content_server">Calibre Content Server</string>
-    <!-- [VERIFIED] -->
-    <string name="lbl_calibre_content_server_ca_cert">CA Certificate</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== Library Thing specific ========== -->
@@ -668,6 +669,7 @@
     -->
     <string name="pv_reformat_titles_prefixes">a|A|an|An|the|The</string>
 
+    <string name="pg_internet_search">Web Searches</string>
 
     <!-- Preference Category -->
     <string name="pg_booklist">Booklists</string>
@@ -1509,6 +1511,8 @@
 
     <string name="lbl_library">Library</string>
     <string name="lbl_virtual_library">Virtual Library</string>
+    <string name="lbl_virtual_libraries">Virtual libraries in this library</string>
+    <string name="lbl_delete_removed_books">Delete local books which are no longer present on the server</string>
 
     <!-- checkbox for the TOC edit screen. -->
     <string name="lbl_toc_multiple_authors">Multiple authors</string>
@@ -1630,7 +1634,6 @@
     <!-- [VERIFIED] Admin GROUP -->
     <string name="lbl_advanced_options">Advanced</string>
 
-    <string name="X_lbl_about_website">Web page</string>
     <string name="X_lbl_about_sourcecode">Source Code</string>
 
     <string name="X_tip_booklist_global_properties">
@@ -1666,25 +1669,16 @@
     <string name="X_lbl_edit_toc_entry">Edit entry</string>
     <string name="X_lbl_edit_bookshelf">Edit Bookshelf</string>
 
-    <!-- Author. -->
-    <string name="X_lbl_by_author_s">by %1$s</string>
-
     <string name="X_lbl_clear_search_filters">Clear Filters</string>
 
     <string name="X_lbl_preferred_styles">Preferred styles</string>
     <string name="X_lbl_select_fields_to_update">Select Fields to Update</string>
 
-    <!-- alternative used in some places for lbl_keywords -->
-    <string name="X_lbl_search_criteria">Search Criteria</string>
-
     <string name="X_error_not_available">%1$s is not available.</string>
     <string name="X_error_file_must_contain_column">File must contain column named “%1$s”</string>
 
     <string name="X_warning_required_field_x">%1$s must not be blank</string>
-    <string name="X_warning_already_in_list_author">Author is already in the list</string>
-    <string name="X_warning_already_in_list_series">Series is already in the list</string>
     <string name="X_warning_image_processing_failed">Image could not be processed.</string>
-
 
     <string name="X_progress_msg_x_created_y_updated" tools:ignore="PluralsCandidate">%1$s: %2$d created, %3$d updated</string>
     <string name="X_progress_msg_n_books_processed" tools:ignore="PluralsCandidate">%1$d books processed</string>
@@ -1694,7 +1688,6 @@
 
     <!-- Preference Category -->
     <string name="X_pg_general">General</string>
-    <string name="X_pg_internet_search">Web Searches</string>
     <string name="X_lbl_thumbnails">Thumbnails</string>
 
     <string name="X_anthology_titles">Anthology Titles</string>
@@ -1702,15 +1695,10 @@
     <string name="X_use_default_setting">Use default values</string>
 
     <string name="X_gr_tq_requested_task_is_already_queued">Requested task is already queued</string>
-    <string name="X_pt_show_goodreads">Show Goodreads menus</string>
 
-    <string name="X_lbl_send_mail">Send email…</string>
     <string name="X_lbl_select_image">Select image…</string>
     <string name="X_hardware">Hardware</string>
     <string name="X_software">Software</string>
-
-    <!-- Used in multiple places: the 'default' for a setting the user really should not change. -->
-    <string name="X_pe_use_recommended_option">Use the recommended option</string>
 
     <!-- ####################################################################################### -->
     <!-- ========== likely to change still  ========== -->
@@ -1721,6 +1709,6 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-    <string name="lbl_virtual_libraries">Virtual libraries in this library</string>
+    <string name="menu_set_download_folder">Set the download folder</string>
 
 </resources>

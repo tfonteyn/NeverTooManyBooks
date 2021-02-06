@@ -36,6 +36,8 @@ import java.security.cert.CertificateException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
+import javax.net.ssl.SSLException;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
@@ -54,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.zip.ZipArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
+import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
@@ -269,13 +272,16 @@ public enum ArchiveEncoding
      *
      * @return a new writer
      *
-     * @throws IOException             on failures
-     * @throws CertificateException    on failures with secure connections
+     * @throws CertificateException on failures related to a user installed CA.
+     * @throws SSLException         on secure connection failures
      */
     @NonNull
     public ArchiveWriter createWriter(@NonNull final Context context,
                                       @NonNull final ExportHelper helper)
-            throws IOException, CertificateException {
+            throws CertificateException,
+                   SSLException,
+                   FileNotFoundException,
+                   ExternalStorageException {
 
         switch (this) {
             case Zip:
@@ -315,14 +321,17 @@ public enum ArchiveEncoding
      * @throws InvalidArchiveException on failure to produce a supported reader
      * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException             on other failures
-     * @throws CertificateException    on failures with secure connections
+     * @throws CertificateException    on failures related to a user installed CA.
+     * @throws SSLException            on secure connection failures
      */
     @NonNull
     @WorkerThread
     public ArchiveReader createReader(@NonNull final Context context,
                                       @NonNull final ImportHelper helper)
             throws InvalidArchiveException,
-                   GeneralParsingException, IOException, CertificateException {
+                   GeneralParsingException,
+                   IOException,
+                   CertificateException {
 
         final ArchiveReader reader;
         switch (this) {

@@ -90,6 +90,11 @@ class CalibreArchiveReader
     /** Log tag. */
     private static final String TAG = "CalibreArchiveReader";
 
+    private static final String SQL_LIST_TABLES =
+            "SELECT tbl_name FROM sqlite_master WHERE type='table'";
+
+    private static final String SQL_LIBRARY_ID = "SELECT uuid FROM library_id WHERE id=1";
+
     private static final String SQL_COUNT_BOOKS = "SELECT COUNT(*) FROM books";
 
     /** The main fields from the books table. */
@@ -157,6 +162,8 @@ class CalibreArchiveReader
     private Collection<CustomColumn> mCustomColumns;
     @Nullable
     private ArchiveMetaData mArchiveMetaData;
+    private String mLibraryName;
+    private String mLibraryUuid;
 
     /**
      * Constructor.
@@ -165,9 +172,9 @@ class CalibreArchiveReader
      * @param helper    import configuration
      * @param calibreDb <strong>OPEN</strong> (read-only) database
      */
-    CalibreArchiveReader(@NonNull final Context context,
-                         @NonNull final ImportHelper helper,
-                         @NonNull final SQLiteDatabase calibreDb) {
+    private CalibreArchiveReader(@NonNull final Context context,
+                                 @NonNull final ImportHelper helper,
+                                 @NonNull final SQLiteDatabase calibreDb) {
         mCalibreDb = calibreDb;
         mDb = new DAO(TAG);
 
@@ -177,6 +184,32 @@ class CalibreArchiveReader
         mEBookString = context.getString(R.string.book_format_ebook);
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
+    }
+
+    @Nullable
+    static ArchiveReader getReader(@NonNull final Context context,
+                                   @NonNull final SQLiteDatabase sqLiteDatabase,
+                                   @NonNull final ImportHelper helper) {
+
+        // checking 6 tables should be sufficient (and likely excessive)
+        int calibreTables = 6;
+        try (Cursor cursor = sqLiteDatabase.rawQuery(SQL_LIST_TABLES, null)) {
+            while (cursor.moveToNext()) {
+                final String tableName = cursor.getString(0);
+                if ("library_id".equals(tableName)
+                    || "books".equals(tableName)
+                    || "authors".equals(tableName)
+                    || "books_authors_link".equals(tableName)
+                    || "series".equals(tableName)
+                    || "books_series_link".equals(tableName)) {
+                    calibreTables--;
+                    if (calibreTables == 0) {
+                        return new CalibreArchiveReader(context, helper, sqLiteDatabase);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -191,8 +224,19 @@ class CalibreArchiveReader
     @Override
     @WorkerThread
     public ArchiveMetaData readMetaData(@NonNull final Context context)
-            throws IOException {
+            throws IOException, InvalidArchiveException {
         if (mArchiveMetaData == null) {
+
+            // not ideal...
+            mLibraryName = mCalibreDb.getPath();
+            try (Cursor cursor = mCalibreDb.rawQuery(SQL_LIBRARY_ID, null)) {
+                if (cursor.moveToFirst()) {
+                    mLibraryUuid = cursor.getString(0);
+                } else {
+                    throw new InvalidArchiveException("no library id?");
+                }
+            }
+
             // construct the header
             mArchiveMetaData = new ArchiveMetaData();
             try (SQLiteStatement stmt = mCalibreDb.compileStatement(SQL_COUNT_BOOKS)) {

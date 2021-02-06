@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,8 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
@@ -52,6 +54,15 @@ public class SettingsHostActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback,
                    SharedPreferences.OnSharedPreferenceChangeListener {
 
+    private static final Map<String, Class<? extends BasePreferenceFragment>> sMap =
+            new HashMap<>();
+
+    static {
+        sMap.put(SettingsFragment.TAG, SettingsFragment.class);
+        sMap.put(StyleFragment.TAG, StyleFragment.class);
+        sMap.put(CalibrePreferencesFragment.TAG, CalibrePreferencesFragment.class);
+    }
+
     @Override
     protected void onSetContentView() {
         setContentView(R.layout.activity_main);
@@ -60,24 +71,15 @@ public class SettingsHostActivity
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         final String tag = Objects.requireNonNull(
                 getIntent().getStringExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG), "tag");
 
-        switch (tag) {
-            case SettingsFragment.TAG:
-                addFirstFragment(R.id.main_fragment, SettingsFragment.class, tag);
-                return;
-
-            case StyleFragment.TAG:
-                addFirstFragment(R.id.main_fragment, StyleFragment.class, tag);
-                return;
-
-            case CalibrePreferencesFragment.TAG:
-                addFirstFragment(R.id.main_fragment, CalibrePreferencesFragment.class, tag);
-                return;
-
-            default:
-                throw new IllegalArgumentException(tag);
+        final Class<? extends BasePreferenceFragment> aClass = sMap.get(tag);
+        if (aClass != null) {
+            addFirstFragment(R.id.main_fragment, aClass, tag);
+        } else {
+            throw new IllegalArgumentException(tag);
         }
     }
 

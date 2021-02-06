@@ -37,12 +37,12 @@ import java.util.EnumSet;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import javax.net.ssl.SSLException;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -142,6 +142,7 @@ public final class ImportHelper {
                 // Default: update all entries and sync updates
                 mImportEntries.add(RecordType.Styles);
                 mImportEntries.add(RecordType.Preferences);
+                mImportEntries.add(RecordType.Certificates);
                 mImportEntries.add(RecordType.Books);
                 mImportEntries.add(RecordType.Cover);
                 setNewAndUpdatedBooks();
@@ -156,6 +157,7 @@ public final class ImportHelper {
             case Json:
                 mImportEntries.add(RecordType.Styles);
                 mImportEntries.add(RecordType.Preferences);
+                mImportEntries.add(RecordType.Certificates);
                 mImportEntries.add(RecordType.Books);
                 setNewAndUpdatedBooks();
                 break;
@@ -221,13 +223,16 @@ public final class ImportHelper {
      * @throws InvalidArchiveException on failure to produce a supported reader
      * @throws GeneralParsingException on a decoding/parsing of data issue
      * @throws IOException             on other failures
-     * @throws CertificateException    on failures with secure connections
+     * @throws CertificateException    on failures related to a user installed CA.
+     * @throws SSLException            on secure connection failures
      */
     @NonNull
     @WorkerThread
     public ArchiveReader createArchiveReader(@NonNull final Context context)
-            throws InvalidArchiveException, GeneralParsingException,
-                   IOException, CertificateException {
+            throws InvalidArchiveException,
+                   GeneralParsingException,
+                   IOException,
+                   CertificateException {
         if (BuildConfig.DEBUG /* always */) {
             if (mImportEntries.isEmpty()) {
                 throw new IllegalStateException("mImportEntries is empty");

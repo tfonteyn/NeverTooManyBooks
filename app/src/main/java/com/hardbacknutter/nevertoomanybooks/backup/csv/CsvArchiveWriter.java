@@ -36,15 +36,18 @@ import java.util.EnumSet;
 import com.hardbacknutter.nevertoomanybooks.backup.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
 /**
  * Hardcoded to only write {@link RecordType#Books} into an CSV file.
+ *
+ * <strong>LIMITATIONS:</strong> see {@link BookCoder}.
  */
 public class CsvArchiveWriter
         implements ArchiveWriter {

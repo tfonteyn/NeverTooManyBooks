@@ -63,8 +63,8 @@ import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerWriter;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -250,10 +250,17 @@ public class ExportFragment
 
             mVb.lblArchiveFormat.setVisibility(View.GONE);
             mVb.archiveFormat.setVisibility(View.GONE);
+            mVb.archiveFormatInfo.setVisibility(View.GONE);
+            mVb.archiveFormatInfoLong.setVisibility(View.GONE);
 
-            mVb.archiveFormatInfo.setText(mPresetEncoding.getRemoteServerDescriptionResId());
-            //noinspection ConstantConditions
-            mVb.archiveFormatInfoLong.setText(CalibreContentServer.getHostUrl(getContext()));
+            mVb.lblRemoteServer.setVisibility(View.VISIBLE);
+            mVb.lblRemoteServer.setText(mPresetEncoding.getRemoteServerDescriptionResId());
+            mVb.cbxDeleteRemovedBooks.setVisibility(View.VISIBLE);
+            mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                mVm.getExportHelper()
+                   .getExtraArgs()
+                   .putBoolean(CalibreContentServerWriter.BKEY_DELETE_LOCAL_BOOKS, isChecked);
+            });
 
         } else {
             mVb.cbxBooks.setChecked(exportEntities.contains(RecordType.Books));
@@ -296,6 +303,7 @@ public class ExportFragment
                 helper.setEncoding(ArchiveEncoding.Zip);
                 helper.setExportEntry(RecordType.Styles, true);
                 helper.setExportEntry(RecordType.Preferences, true);
+                helper.setExportEntry(RecordType.Certificates, true);
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(true);
@@ -315,6 +323,7 @@ public class ExportFragment
                 helper.setEncoding(ArchiveEncoding.Csv);
                 helper.setExportEntry(RecordType.Styles, false);
                 helper.setExportEntry(RecordType.Preferences, false);
+                helper.setExportEntry(RecordType.Certificates, false);
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
@@ -334,6 +343,8 @@ public class ExportFragment
                 helper.setEncoding(ArchiveEncoding.Json);
                 helper.setExportEntry(RecordType.Styles, false);
                 helper.setExportEntry(RecordType.Preferences, false);
+                helper.setExportEntry(RecordType.Certificates, false);
+
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
@@ -353,6 +364,8 @@ public class ExportFragment
                 helper.setEncoding(ArchiveEncoding.Xml);
                 helper.setExportEntry(RecordType.Styles, false);
                 helper.setExportEntry(RecordType.Preferences, false);
+                helper.setExportEntry(RecordType.Certificates, false);
+
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
@@ -373,6 +386,8 @@ public class ExportFragment
                 helper.setEncoding(ArchiveEncoding.SqLiteDb);
                 helper.setExportEntry(RecordType.Styles, false);
                 helper.setExportEntry(RecordType.Preferences, false);
+                helper.setExportEntry(RecordType.Certificates, false);
+
 
                 mVb.cbxBooks.setChecked(true);
                 mVb.cbxBooks.setEnabled(false);
@@ -417,6 +432,8 @@ public class ExportFragment
         final ExportHelper helper = mVm.getExportHelper();
         helper.setExportEntry(RecordType.Styles, false);
         helper.setExportEntry(RecordType.Preferences, false);
+        helper.setExportEntry(RecordType.Certificates, false);
+
 
         //noinspection ConstantConditions
         helper.setUri(Uri.parse(CalibreContentServer.getHostUrl(getContext())));
@@ -504,8 +521,8 @@ public class ExportFragment
             if (items.isEmpty()) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
-                        .setTitle(R.string.cancelled)
+                        .setIcon(R.drawable.ic_info)
+                        .setTitle(R.string.menu_backup_and_export)
                         .setMessage(R.string.warning_no_matching_book_found)
                         .setPositiveButton(R.string.action_done, (d, w)
                                 -> getActivity().finish())
@@ -594,6 +611,11 @@ public class ExportFragment
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));
+        }
+        if (result.certificates > 0) {
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_certificates),
+                                String.valueOf(result.certificates)));
         }
         if (result.database) {
             items.add(getString(R.string.lbl_database));

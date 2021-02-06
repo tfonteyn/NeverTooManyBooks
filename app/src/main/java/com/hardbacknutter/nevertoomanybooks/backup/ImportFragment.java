@@ -66,7 +66,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
@@ -296,8 +295,10 @@ public class ImportFragment
                 .setImportEntry(RecordType.Styles, isChecked));
 
         mVb.cbxPrefs.setChecked(entries.contains(RecordType.Preferences));
-        mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> helper
-                .setImportEntry(RecordType.Preferences, isChecked));
+        mVb.cbxPrefs.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            helper.setImportEntry(RecordType.Preferences, isChecked);
+            helper.setImportEntry(RecordType.Certificates, isChecked);
+        });
 
 
         mVb.rbImportBooksOptionNewOnly.setChecked(helper.isNewBooksOnly());
@@ -586,7 +587,11 @@ public class ImportFragment
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));
         }
-
+        if (result.certificates > 0) {
+            items.add(getString(R.string.name_colon_value,
+                                getString(R.string.lbl_certificates),
+                                String.valueOf(result.certificates)));
+        }
         final String report = items.stream()
                                    .map(s -> getString(R.string.list_element, s))
                                    .collect(Collectors.joining("\n"));

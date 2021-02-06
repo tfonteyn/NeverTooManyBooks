@@ -482,7 +482,6 @@
     <string name="pt_search_reformat_format">Standaardiseer namen van „boekformaten”</string>
     <string name="pt_search_uses_publisher">Zoeken maakt gebruik van de uitgever</string>
     <string name="pt_show_author_name_given_first">Opmaak van auteursnamen</string>
-    <string name="X_pt_show_goodreads">Toon Goodreads-menu\'s</string>
     <string name="pt_show_title_reordered">Toon titels als</string>
     <string name="pt_show_titles_reordered_off">De titel</string>
     <string name="pt_show_titles_reordered_on">titel, De</string>
@@ -631,9 +630,7 @@
     <string name="X_hardware">Hardware</string>
     <string name="X_lbl_about_sourcecode">Broncode:</string>
     <string name="X_lbl_about_special_thanks">Speciale dankbetuiging</string>
-    <string name="X_lbl_about_website">Webpagina:</string>
     <string name="lbl_advanced_options">Geavanceerd</string>
-    <string name="X_lbl_by_author_s">door %1$s</string>
     <string name="X_lbl_clear_search_filters">Filters verwijderen</string>
     <string name="X_lbl_data_import_export">Back-up &amp; import</string>
     <string name="X_lbl_delete_book">Boek verwijderen</string>
@@ -645,15 +642,12 @@
     <string name="X_lbl_edit_series">>Reeks bewerken</string>
     <string name="X_lbl_edit_toc_entry">Inhouds titel bewerken</string>
     <string name="X_lbl_preferred_styles">Voorkeursstijlen</string>
-    <string name="X_lbl_search_criteria">Zoekcriteria</string>
     <string name="X_lbl_select_fields_to_update">Selecteer bij te werken velden</string>
     <string name="X_lbl_select_image">Selecteer afbeelding…</string>
-    <string name="X_lbl_send_mail">Bericht versturen…</string>
     <string name="X_lbl_thumbnails">Miniaturen</string>
     <string name="x_of_y">%1$d van %2$d</string>
-    <string name="X_pe_use_recommended_option">Gebruik de aanbevolen optie</string>
     <string name="X_pg_general">Algemeen</string>
-    <string name="X_pg_internet_search">Internet Zoekopdrachten</string>
+    <string name="pg_internet_search">Internet Zoekopdrachten</string>
     <string name="X_progress_msg_n_books_processed">%1$d boeken verwerkt</string>
     <string name="X_progress_msg_n_covers_processed_m_missing_s_skipped">%1$d afbeeldingen verwerkt (%2$d/%3$d missend, %4$d overgeslagen)</string>
     <string name="X_progress_msg_n_covers_processed_m_missing">%1$d afbeeldingen verwerkt\n(%2$d/%3$d missend)</string>
@@ -663,8 +657,6 @@
     <string name="X_tip_booklist_global_properties">Je kan dit scherm gebruiken om de standaardkenmerken van alle stijlen van de boekenlijst in te stellen. De meeste eigenschappen kunnen worden overschreven door afzonderlijke stijlen, maar de standaardwaarden worden hier gedefinieerd. Je kan de manier wijzigen waarop lijsten worden weergegeven bij het opstarten en een aantal andere voorkeuren aanpassen die indien mogelijk op al uw stijlen worden toegepast.</string>
     <string name="X_use_default_setting">Standaardinstellingen gebruiken</string>
     <string name="X_vldt_failed_for_x">Validatie mislukt voor „%1$s”</string>
-    <string name="X_warning_already_in_list_author">Auteur staat al in de lijst</string>
-    <string name="X_warning_already_in_list_series">Reeks staat al in de lijst</string>
     <string name="X_warning_image_processing_failed">Afbeelding kan niet worden verwerkt.</string>
     <string name="X_warning_required_field_x">%1$s mag niet leeg zijn</string>
     <string name="yes">Ja</string>
@@ -692,13 +684,12 @@
     <string name="btn_clear_queue">Wachtrij wissen</string>
     <string name="lbl_calibre_content_server">Calibre-inhoudsserver</string>
     <string name="enabled">Ingeschakeld</string>
-    <string name="menu_calibre_import">Calibre (Importeren)</string>
     <string name="httpErrorFailedSslHandshake">Er kan geen beveiligde verbinding tot stand worden gebracht.</string>
     <string name="httpError">Er is een netwerkfout opgetreden.</string>
     <string name="httpErrorAuth">Kan niet verifiëren.</string>
     <string name="httpErrorFile">Kan het bestand niet openen.</string>
     <string name="httpErrorFileNotFound">Kan het opgevraagde bestand niet vinden.</string>
-    <string name="lbl_calibre_content_server_ca_cert">CA-certificaat</string>
+    <string name="lbl_certificate_ca">CA-certificaat</string>
     <string name="error_certificate_invalid">Het certificaat is ongeldig of niet toegankelijk.</string>
     <string name="username">gebruikersnaam</string>
     <string name="password">Wachtwoord</string>
@@ -728,4 +719,7 @@
     <string name="whichEditApplication">Bewerken met</string>
     <string name="whichSendToApplication">Verzenden met</string>
     <string name="whichImageCaptureApplication">Afbeelding vastleggen met</string>
+    <string name="lbl_certificates">Certificaten</string>
+    <string name="lbl_delete_removed_books">Verwijder boeken die niet meer op de server staan</string>
+    <string name="lbl_virtual_libraries">Virtuele bibliotheken in deze bibliotheek</string>
 </resources>

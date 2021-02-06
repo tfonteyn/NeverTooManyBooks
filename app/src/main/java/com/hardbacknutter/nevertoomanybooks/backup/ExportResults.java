@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordWriter;
 
 /**
  * Value class to report back what was exported.
@@ -61,6 +60,8 @@ public class ExportResults
     public int styles;
     /** #preferences we exported. */
     public int preferences;
+    /** #certificates we exported. */
+    public int certificates;
     /** whether we exported the actual database. */
     public boolean database;
 
@@ -78,6 +79,7 @@ public class ExportResults
 
         styles = in.readInt();
         preferences = in.readInt();
+        certificates = in.readInt();
         database = in.readByte() != 0;
     }
 
@@ -92,6 +94,7 @@ public class ExportResults
 
         styles += results.styles;
         preferences += results.preferences;
+        certificates += results.certificates;
     }
 
     public void addBook(@IntRange(from = 1) final long bookId) {
@@ -138,6 +141,7 @@ public class ExportResults
 
         dest.writeInt(styles);
         dest.writeInt(preferences);
+        dest.writeInt(certificates);
         dest.writeByte((byte) (database ? 1 : 0));
     }
 
@@ -154,6 +158,7 @@ public class ExportResults
                + ", mCoversExported=" + mCoversExported
                + ", styles=" + styles
                + ", preferences=" + preferences
+               + ", certificates=" + certificates
                + ", database=" + database
                + '}';
     }

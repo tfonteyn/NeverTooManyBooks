@@ -40,10 +40,11 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.net.ssl.SSLException;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
@@ -140,12 +141,15 @@ public class ExportHelper {
      *
      * @return a new writer
      *
-     * @throws IOException          on failures
-     * @throws CertificateException on failures with secure connections
+     * @throws CertificateException on failures related to a user installed CA.
+     * @throws SSLException         on secure connection failures
      */
     @NonNull
     public ArchiveWriter createArchiveWriter(@NonNull final Context context)
-            throws IOException, CertificateException {
+            throws CertificateException,
+                   SSLException,
+                   FileNotFoundException,
+                   ExternalStorageException {
 
         if (BuildConfig.DEBUG /* always */) {
             Objects.requireNonNull(mUri, "uri");

@@ -45,6 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.Backup;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -180,6 +183,12 @@ public abstract class ArchiveWriterAbstract
             if (!progressListener.isCancelled()
                 && exportEntities.contains(RecordType.Preferences)) {
                 writeRecord(context, RecordType.Preferences, getEncoding(RecordType.Preferences),
+                            progressListener);
+            }
+
+            if (!progressListener.isCancelled()
+                && exportEntities.contains(RecordType.Certificates)) {
+                writeRecord(context, RecordType.Certificates, getEncoding(RecordType.Certificates),
                             progressListener);
             }
 

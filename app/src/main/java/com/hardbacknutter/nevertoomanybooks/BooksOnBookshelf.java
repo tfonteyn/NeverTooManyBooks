@@ -51,7 +51,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.security.cert.CertificateException;
@@ -61,6 +60,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
@@ -109,6 +110,8 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
+import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
+import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
@@ -172,9 +175,9 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
             registerForActivityResult(new ExportFragment.ResultContract(), success -> {});
 
+
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
-
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
@@ -183,18 +186,7 @@ public class BooksOnBookshelf
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
 
-    /** Calibre synchronization options. */
-    private final ActivityResultLauncher<Void> mCalibreLauncher = registerForActivityResult(
-            new CalibreAdminFragment.ResultContract(), data -> {
-                updateNavigationMenuVisibility();
-                if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
-                    mVm.setForceRebuildInOnResume(true);
-                }
-            });
 
-    /** Do an import. */
-    private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
-            new ImportFragment.ResultsContract(), this::onImportFinished);
     /** Display a Book. */
     private final ActivityResultLauncher<ShowBookActivity.ResultContract.Input>
             mDisplayBookLauncher = registerForActivityResult(
@@ -218,8 +210,6 @@ public class BooksOnBookshelf
     private final ActivityResultLauncher<AuthorWorksFragment.ResultContract.Input>
             mAuthorWorksLauncher = registerForActivityResult(
             new AuthorWorksFragment.ResultContract(), this::onBookEditFinished);
-
-
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
             registerForActivityResult(new SearchFtsFragment.ResultContract(), data -> {
@@ -228,8 +218,6 @@ public class BooksOnBookshelf
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
-
-
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> mManageBookshelvesLauncher =
             registerForActivityResult(new EditBookshelvesFragment.ResultContract(), id -> {
@@ -270,6 +258,27 @@ public class BooksOnBookshelf
                         // i.e. same as in mOnStylePickerListener
                         mVm.setForceRebuildInOnResume(true);
                     }
+                }
+            });
+    /** Do an import. */
+    private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
+            new ImportFragment.ResultsContract(), this::onImportFinished);
+    /** Calibre synchronization options. */
+    private final ActivityResultLauncher<Void> mCalibreAdminLauncher =
+            registerForActivityResult(new CalibreAdminFragment.ResultContract(), data -> {
+                updateNavigationMenuVisibility();
+                if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
+                    mVm.setForceRebuildInOnResume(true);
+                }
+            });
+    /** Calibre preferences screen. */
+    private final ActivityResultLauncher<Bundle> mCalibrePreferencesLauncher =
+            registerForActivityResult(new SettingsHostActivity.ResultContract(
+                    CalibrePreferencesFragment.TAG), data -> {
+
+                updateNavigationMenuVisibility();
+                if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
+                    mVm.setForceRebuildInOnResume(true);
                 }
             });
 
@@ -354,15 +363,7 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
-                }
-            };
+
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -431,6 +432,17 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
+
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher() {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
+                }
+            };
+
     /** The adapter used to fill the Bookshelf selector. */
     private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
 
@@ -477,7 +489,7 @@ public class BooksOnBookshelf
         try {
             mCalibreHandler = new CalibreHandler(this);
             mCalibreHandler.onViewCreated(this, mVb.getRoot());
-        } catch (@NonNull final IOException | CertificateException ignore) {
+        } catch (@NonNull final SSLException | CertificateException ignore) {
             // ignore
         }
 
@@ -686,7 +698,10 @@ public class BooksOnBookshelf
                 menu.findItem(R.id.MENU_BOOK_SEND_TO_GOODREADS)
                     .setVisible(GoodreadsManager.isShowSyncMenus(global));
 
-                prepareCalibreMenu(menu, rowData, global);
+                if (mCalibreHandler != null) {
+                    final Book book = Objects.requireNonNull(mVm.getBook(rowData));
+                    mCalibreHandler.prepareMenu(menu, book, global);
+                }
 
                 MenuHelper.prepareViewBookOnWebsiteMenu(menu, rowData);
                 MenuHelper.prepareOptionalMenus(menu, rowData);
@@ -800,26 +815,6 @@ public class BooksOnBookshelf
         return menu.size() > 0;
     }
 
-    private void prepareCalibreMenu(@NonNull final Menu menu,
-                                    @NonNull final DataHolder rowData,
-                                    @NonNull final SharedPreferences global) {
-        final boolean calibre = mCalibreHandler != null
-                                && mCalibreHandler.isCalibreEnabled(global, rowData);
-        menu.findItem(R.id.SUBMENU_CALIBRE).setVisible(calibre);
-        if (calibre) {
-            final Book book = Objects.requireNonNull(mVm.getBook(rowData));
-            menu.findItem(R.id.MENU_CALIBRE_READ)
-                .setVisible(mCalibreHandler.existsLocally(book));
-
-            final String fileFormat = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-            menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD)
-                .setTitle(getString(R.string.menu_download_ebook_format, fileFormat));
-
-        } else {
-            menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
-        }
-    }
-
     /**
      * Using {@link MenuPicker} for context menus.
      *
@@ -895,6 +890,10 @@ public class BooksOnBookshelf
                     mCalibreHandler.download(book);
                 }
             }
+            return true;
+
+        } else if (itemId == R.id.MENU_CALIBRE_SETTING) {
+            mCalibrePreferencesLauncher.launch(null);
             return true;
 
             /* ********************************************************************************** */
@@ -1150,7 +1149,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.nav_calibre) {
-            mCalibreLauncher.launch(null);
+            mCalibreAdminLauncher.launch(null);
             return true;
         }
 

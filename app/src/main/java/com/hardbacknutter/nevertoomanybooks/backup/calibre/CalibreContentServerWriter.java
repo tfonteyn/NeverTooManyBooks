@@ -34,6 +34,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Iterator;
 
+import javax.net.ssl.SSLException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,8 +43,8 @@ import org.json.JSONObject;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -58,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundExcepti
 /**
  * This class will only UPDATE books which exist on the server.
  * It will not push new books to the server !
- * If a book no longer exists on the server, BKEY_DELETE_LOCAL_BOOKS decides.
+ * If a book no longer exists on the server, {@link #BKEY_DELETE_LOCAL_BOOKS} decides.
  */
 public class CalibreContentServerWriter
         implements ArchiveWriter {
@@ -87,12 +89,12 @@ public class CalibreContentServerWriter
      * @param context Current context
      * @param helper  export configuration
      *
-     * @throws IOException          on failures
-     * @throws CertificateException on failures related to the user installed CA.
+     * @throws SSLException         on secure connection failures
+     * @throws CertificateException on failures related to a user installed CA.
      */
     public CalibreContentServerWriter(@NonNull final Context context,
                                       @NonNull final ExportHelper helper)
-            throws IOException, CertificateException {
+            throws CertificateException, SSLException {
 
         mDb = new DAO(TAG);
 
@@ -135,7 +137,7 @@ public class CalibreContentServerWriter
                     dateSince = null;
                 }
 
-                // sanity check, we only update existing books... so no books -> skip library.
+                // sanity check, we only update existing books... no books -> skip library.
                 if (library.getTotalBooks() > 0) {
                     syncLibrary(context, library, dateSince, progressListener);
                 }
@@ -162,50 +164,18 @@ public class CalibreContentServerWriter
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 final Book book = Book.from(cursor, mDb);
-
-                final int calibreId = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
-                final String calibreUuid = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
-
                 try {
-                    // ENHANCE: full sync in one go.
-                    //  The logic below is TO SLOW as we fetch each book individually
-                    final JSONObject calibreBook = mServer
-                            .getBook(library.getLibraryStringId(), calibreUuid);
+                    syncBook(context, library, book);
 
-                    String dateStr = null;
-                    if (!calibreBook.isNull(CalibreBook.LAST_MODIFIED)) {
-                        try {
-                            dateStr = calibreBook.getString(CalibreBook.LAST_MODIFIED);
-                        } catch (@NonNull final JSONException ignore) {
-                        }
-                    }
-
-                    final LocalDateTime remoteTime = DateParser.getInstance(context)
-                                                               .parseISO(dateStr);
-                    // sanity check, the remote should always have this date field.
-                    if (remoteTime != null) {
-                        // is our data newer then the server data ?
-                        final LocalDateTime localTime = book.getLastUpdateUtcDate(context);
-                        if (localTime != null && localTime.isAfter(remoteTime)) {
-
-                            final JSONObject changes =
-                                    collectChanges(context, library, calibreBook, book);
-                            mServer.pushChanges(library.getLibraryStringId(), calibreId,
-                                                changes);
-
-                            mResults.addBook(book.getId());
-                        }
-                    }
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
                     if (mDeleteLocalBook) {
                         mDb.delete(context, book);
-
                     } else {
+                        // keep the book but remove the calibre data for it
                         mDb.deleteBookCalibreData(book);
                         book.setCalibreLibrary(null);
                     }
-
                 } catch (@NonNull final JSONException e) {
                     // ignore, just move on to the next book
                     Logger.error(context, TAG, e, "bookId=" + book.getId());
@@ -218,6 +188,40 @@ public class CalibreContentServerWriter
                     lastUpdate = now;
                     delta = 0;
                 }
+            }
+        }
+    }
+
+    private void syncBook(@NonNull final Context context,
+                          @NonNull final CalibreLibrary library,
+                          @NonNull final Book book)
+            throws IOException, JSONException {
+
+        final int calibreId = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
+        final String calibreUuid = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
+
+        // ENHANCE: full sync in one go.
+        //  The logic below is TO SLOW as we fetch each book individually
+        final JSONObject calibreBook = mServer
+                .getBook(library.getLibraryStringId(), calibreUuid);
+
+        String dateStr = null;
+        if (!calibreBook.isNull(CalibreBook.LAST_MODIFIED)) {
+            try {
+                dateStr = calibreBook.getString(CalibreBook.LAST_MODIFIED);
+            } catch (@NonNull final JSONException ignore) {
+            }
+        }
+
+        final LocalDateTime remoteTime = DateParser.getInstance(context).parseISO(dateStr);
+        // sanity check, the remote should always have this date field.
+        if (remoteTime != null) {
+            // is our data newer then the server data ?
+            final LocalDateTime localTime = book.getLastUpdateUtcDate(context);
+            if (localTime != null && localTime.isAfter(remoteTime)) {
+                final JSONObject changes = collectChanges(context, library, calibreBook, book);
+                mServer.pushChanges(library.getLibraryStringId(), calibreId, changes);
+                mResults.addBook(book.getId());
             }
         }
     }

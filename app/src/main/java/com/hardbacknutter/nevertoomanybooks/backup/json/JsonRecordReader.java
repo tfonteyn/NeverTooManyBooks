@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.security.cert.CertificateEncodingException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
@@ -44,12 +45,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportException;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
+import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.backup.base.RecordType;
+import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.BundleCoder;
+import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
@@ -155,56 +158,84 @@ public class JsonRecordReader
         if (record.getType().isPresent()) {
             final RecordType recordType = record.getType().get();
 
-            try {
-                JSONObject root = new JSONObject(record.asString());
+            final String rootStr = record.asString();
+            if (!rootStr.isEmpty()) {
+                try {
+                    JSONObject root = new JSONObject(rootStr);
 
-                // All-in-one archive ? descend to the actual data object
-                if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
-                    root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT);
-                    root = root.getJSONObject(RecordType.AutoDetect.getName());
+                    // All-in-one archive ? descend to the actual data object
+                    if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
+                        root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT);
+                        root = root.getJSONObject(RecordType.AutoDetect.getName());
+                    }
+
+                    if (mImportEntriesAllowed.contains(recordType)
+                        || recordType == RecordType.AutoDetect) {
+
+                        if (recordType == RecordType.Styles
+                            || recordType == RecordType.AutoDetect) {
+
+                            final JSONArray jsonRoot = root
+                                    .optJSONArray(RecordType.Styles.getName());
+                            if (jsonRoot != null) {
+                                //noinspection SimplifyStreamApiCallChains
+                                new ListStyleCoder(context, mDb)
+                                        .decode(jsonRoot)
+                                        .stream()
+                                        .forEach(listStyle -> StyleDAO
+                                                .updateOrInsert(mDb, listStyle));
+                                mResults.styles = jsonRoot.length();
+                            }
+                        }
+
+                        if (recordType == RecordType.Preferences
+                            || recordType == RecordType.AutoDetect) {
+
+                            final JSONObject jsonRoot =
+                                    root.optJSONObject(RecordType.Preferences.getName());
+                            if (jsonRoot != null) {
+                                new SharedPreferencesCoder(
+                                        PreferenceManager.getDefaultSharedPreferences(context))
+                                        .decode(jsonRoot);
+                                mResults.preferences = 1;
+                            }
+                        }
+
+                        if (recordType == RecordType.Certificates
+                            || recordType == RecordType.AutoDetect) {
+                            final JSONObject jsonRoot =
+                                    root.optJSONObject(RecordType.Certificates.getName());
+                            if (jsonRoot != null) {
+                                final CertificateCoder coder = new CertificateCoder();
+
+                                final JSONObject jsonCert =
+                                        jsonRoot.optJSONObject(CalibreContentServer.SERVER_CA);
+                                if (jsonCert != null) {
+                                    try {
+                                        CalibreContentServer.setCertificate(context,
+                                                                            coder.decode(jsonCert));
+                                        mResults.certificates++;
+                                    } catch (@NonNull final CertificateEncodingException e) {
+                                        // log but don't quit
+                                        Logger.error(context, TAG, e);
+                                    }
+                                }
+                            }
+                        }
+
+                        if (recordType == RecordType.Books
+                            || recordType == RecordType.AutoDetect) {
+
+                            final JSONArray jsonRoot = root
+                                    .optJSONArray(RecordType.Books.getName());
+                            if (jsonRoot != null) {
+                                readBooks(context, options, jsonRoot, progressListener);
+                            }
+                        }
+                    }
+                } catch (@NonNull final JSONException e) {
+                    throw new ImportException(context.getString(R.string.error_import_failed), e);
                 }
-
-                if (mImportEntriesAllowed.contains(recordType)
-                    || recordType == RecordType.AutoDetect) {
-
-                    if (recordType == RecordType.Styles
-                        || recordType == RecordType.AutoDetect) {
-
-                        final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
-                        if (jsonRoot != null) {
-                            //noinspection SimplifyStreamApiCallChains
-                            new ListStyleCoder(context, mDb)
-                                    .decode(jsonRoot)
-                                    .stream()
-                                    .forEach(listStyle -> StyleDAO.updateOrInsert(mDb, listStyle));
-                            mResults.styles = jsonRoot.length();
-                        }
-                    }
-
-                    if (recordType == RecordType.Preferences
-                        || recordType == RecordType.AutoDetect) {
-
-                        final JSONObject jsonRoot =
-                                root.optJSONObject(RecordType.Preferences.getName());
-                        if (jsonRoot != null) {
-                            new SharedPreferencesCoder(
-                                    PreferenceManager.getDefaultSharedPreferences(context))
-                                    .decode(jsonRoot);
-                            mResults.preferences = 1;
-                        }
-                    }
-
-                    if (recordType == RecordType.Books
-                        || recordType == RecordType.AutoDetect) {
-
-                        final JSONArray jsonRoot = root.optJSONArray(RecordType.Books.getName());
-                        if (jsonRoot != null) {
-                            readBooks(context, options, jsonRoot, progressListener);
-                        }
-                    }
-                }
-            } catch (@NonNull final JSONException e) {
-                throw new ImportException(context.getString(R.string.error_import_failed), e);
             }
         }
         return mResults;

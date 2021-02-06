@@ -51,6 +51,6 @@ public class SearchInternetPreferenceFragment
     public void onResume() {
         super.onResume();
         mToolbar.setTitle(R.string.lbl_settings);
-        mToolbar.setSubtitle(R.string.X_pg_internet_search);
+        mToolbar.setSubtitle(R.string.pg_internet_search);
     }
 }

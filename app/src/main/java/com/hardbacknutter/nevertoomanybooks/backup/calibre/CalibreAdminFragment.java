@@ -139,7 +139,7 @@ public class CalibreAdminFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
 
-        menu.add(Menu.NONE, R.id.MENU_SETTINGS, 0, R.string.lbl_settings)
+        menu.add(Menu.NONE, R.id.MENU_CALIBRE_SETTING, 0, R.string.lbl_settings)
             .setIcon(R.drawable.ic_settings)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
@@ -150,7 +150,7 @@ public class CalibreAdminFragment
     public boolean onOptionsItemSelected(@NonNull final MenuItem item) {
         final int itemId = item.getItemId();
 
-        if (itemId == R.id.MENU_SETTINGS) {
+        if (itemId == R.id.MENU_CALIBRE_SETTING) {
             openSettings();
             return true;
         }
