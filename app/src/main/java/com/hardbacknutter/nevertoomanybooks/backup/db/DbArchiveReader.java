@@ -101,12 +101,8 @@ public class DbArchiveReader
             throw new FileNotFoundException("no db file");
         }
 
-        // Determine if the database file is a supported format (for now, only check for Calibre).
-
-        // Disabled as the CalibreArchiveReader (from a db) code is not up to date
-        // with the new database tables used by the CalibreContentServerReader.
-        // 2021-02-06: a decision needs to be made to either update it or just scrap it.
-//        mDelegateReader = CalibreArchiveReader.getReader(context, mSQLiteDatabase, mHelper);
+        // Determine if the database file is a supported format
+//        mDelegateReader = SomeDatabaseArchiveReader.getReader(context, mSQLiteDatabase, mHelper);
 //        if (mDelegateReader != null) {
 //            mDelegateReader.validate(context);
 //            return;
