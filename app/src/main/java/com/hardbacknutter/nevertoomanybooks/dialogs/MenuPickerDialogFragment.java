@@ -127,10 +127,10 @@ public class MenuPickerDialogFragment
         private static final String MENU_ITEM = "menuItem";
         private static final String POSITION = "position";
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @IdRes final int menuItemId,
-                               final int position) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @IdRes final int menuItemId,
+                              final int position) {
             final Bundle result = new Bundle(2);
             result.putInt(MENU_ITEM, menuItemId);
             result.putInt(POSITION, position);
@@ -497,8 +497,8 @@ public class MenuPickerDialogFragment
                     setMenu(item.getSubMenu());
                 } else {
                     dismiss();
-                    Launcher.sendResult(MenuPickerDialogFragment.this,
-                                        mRequestKey, item.getItemId(), mPosition);
+                    Launcher.setResult(MenuPickerDialogFragment.this,
+                                       mRequestKey, item.getItemId(), mPosition);
                 }
             }
         }

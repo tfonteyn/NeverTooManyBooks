@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByExte
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByExternalIdViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup;
 
@@ -69,7 +69,7 @@ public class SearchBookByExternalIdFragment
 
     @NonNull
     @Override
-    public ActivityResultViewModel getActivityResultViewModel() {
+    public ResultIntentOwner getResultIntentOwner() {
         return mVm;
     }
 

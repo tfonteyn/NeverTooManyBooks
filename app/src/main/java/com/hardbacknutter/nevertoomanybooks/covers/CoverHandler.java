@@ -36,7 +36,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCaller;
@@ -55,6 +54,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.preference.PreferenceManager;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -147,7 +147,7 @@ public class CoverHandler {
     private Supplier<String> mCoverBrowserTitleSupplier;
     /** Optional progress bar to display during operations. */
     @Nullable
-    private ProgressBar mProgressBar;
+    private CircularProgressIndicator mProgressIndicator;
     /** Used to display a hint if user rotates a camera image. */
     private boolean mShowHintAboutRotating;
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
@@ -230,7 +230,7 @@ public class CoverHandler {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.COVERS) {
                 Log.d(TAG, "mTransFormTaskViewModel.onFinished()|event=" + event);
             }
-            showProgress(false);
+            hideProgress();
             if (event.isNewEvent()) {
                 Objects.requireNonNull(event.result, FinishedMessage.MISSING_TASK_RESULTS);
                 onAfterTransform(event.result);
@@ -238,8 +238,8 @@ public class CoverHandler {
         });
     }
 
-    public void setProgressBar(@Nullable final ProgressBar progressBar) {
-        mProgressBar = progressBar;
+    public void setProgressView(@Nullable final CircularProgressIndicator progressIndicator) {
+        mProgressIndicator = progressIndicator;
     }
 
     public void setBookSupplier(@NonNull final Supplier<Book> bookSupplier) {
@@ -508,7 +508,7 @@ public class CoverHandler {
             try {
                 final File file = getTempFile(context);
                 if (file.exists()) {
-                    showProgress(true);
+                    showProgress();
                     mTransFormTaskViewModel.startTask(
                             new TransFormTaskViewModel.Transformation(file)
                                     .setScale(true));
@@ -535,7 +535,7 @@ public class CoverHandler {
                 // copy the data, and retrieve the (potentially) resolved file
                 final File file = FileUtils.copyInputStream(context, is, getTempFile(context));
 
-                showProgress(true);
+                showProgress();
                 mTransFormTaskViewModel.startTask(
                         new TransFormTaskViewModel.Transformation(file).setScale(true));
 
@@ -606,7 +606,7 @@ public class CoverHandler {
                 final int action = ParseUtils
                         .getIntListPref(global, Prefs.pk_camera_image_action, ACTION_DONE);
 
-                showProgress(true);
+                showProgress();
                 mTransFormTaskViewModel.startTask(
                         new TransFormTaskViewModel.Transformation(file)
                                 .setScale(true)
@@ -626,7 +626,7 @@ public class CoverHandler {
         final Context context = mView.getContext();
         try {
             final File srcFile = mBookSupplier.get().createTempCoverFile(context, mCIdx);
-            showProgress(true);
+            showProgress();
             mTransFormTaskViewModel.startTask(
                     new TransFormTaskViewModel.Transformation(srcFile)
                             .setRotation(angle));
@@ -707,9 +707,15 @@ public class CoverHandler {
         }
     }
 
-    private void showProgress(final boolean show) {
-        if (mProgressBar != null) {
-            mProgressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+    private void showProgress() {
+        if (mProgressIndicator != null) {
+            mProgressIndicator.hide();
+        }
+    }
+
+    private void hideProgress() {
+        if (mProgressIndicator != null) {
+            mProgressIndicator.hide();
         }
     }
 

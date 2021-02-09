@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByTextViewModel;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -63,7 +63,7 @@ public class SearchBookByTextFragment
 
     @NonNull
     @Override
-    public ActivityResultViewModel getActivityResultViewModel() {
+    public ResultIntentOwner getResultIntentOwner() {
         return mVm;
     }
 

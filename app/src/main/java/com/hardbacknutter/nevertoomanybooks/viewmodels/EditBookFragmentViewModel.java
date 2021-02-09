@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -57,13 +57,13 @@ import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 
 public class EditBookFragmentViewModel
         extends ViewModel
-        implements ActivityResultViewModel {
+        implements ResultIntentOwner {
 
     /** Log tag. */
     private static final String TAG = "EditBookFragmentVM";
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
-    protected final Intent mResultIntent = new Intent();
+    private final Intent mResultIntent = new Intent();
     /** The fields collection handled in this model. The key is the fragment tag. */
     private final Map<String, Fields> mFieldsMap = new HashMap<>();
     /** The key is the fragment tag. */

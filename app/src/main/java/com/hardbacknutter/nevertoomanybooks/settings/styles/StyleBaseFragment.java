@@ -39,8 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.settings.BasePreferenceFragment;
 public abstract class StyleBaseFragment
         extends BasePreferenceFragment {
 
-    /** Style we are editing. */
-    StyleViewModel mStyleViewModel;
+    StyleViewModel mVm;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -48,11 +47,11 @@ public abstract class StyleBaseFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
 
         //noinspection ConstantConditions
-        mStyleViewModel = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(StyleViewModel.class);
         //noinspection ConstantConditions
-        mStyleViewModel.init(getContext(), requireArguments());
+        mVm.init(getContext(), requireArguments());
 
-        final ListStyle style = mStyleViewModel.getStyle();
+        final ListStyle style = mVm.getStyle();
         if (!style.isGlobal()) {
             // non-global, set the correct UUID SharedPreferences to use
             getPreferenceManager().setSharedPreferencesName(style.getUuid());
@@ -63,7 +62,7 @@ public abstract class StyleBaseFragment
     public void onResume() {
         super.onResume();
 
-        final ListStyle style = mStyleViewModel.getStyle();
+        final ListStyle style = mVm.getStyle();
         if (style.getId() == 0) {
             mToolbar.setTitle(R.string.lbl_clone_style);
         } else {
@@ -78,7 +77,7 @@ public abstract class StyleBaseFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences stylePrefs,
                                           @NonNull final String key) {
         // set the result (and again and again...)
-        mStyleViewModel.setModified();
+        mVm.setModified();
 
         super.onSharedPreferenceChanged(stylePrefs, key);
     }

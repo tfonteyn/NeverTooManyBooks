@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -39,12 +39,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public class SearchBookByTextViewModel
         extends ViewModel
-        implements ActivityResultViewModel {
+        implements ResultIntentOwner {
 
     private static final String TAG = "SearchBookByTextViewModel";
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
+
     /**
      * A list of author names we have already searched for in this session.
      */
@@ -60,10 +58,10 @@ public class SearchBookByTextViewModel
     /** Flag: allow/provide searching by publisher. */
     private boolean mUsePublisher;
 
-    /**
-     * Inherits the result from {@link com.hardbacknutter.nevertoomanybooks.EditBookActivity}.
-     */
-    @Override
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private final Intent mResultIntent = new Intent();
+
     @NonNull
     public Intent getResultIntent() {
         return mResultIntent;

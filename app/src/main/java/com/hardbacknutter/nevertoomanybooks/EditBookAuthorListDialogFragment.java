@@ -558,7 +558,7 @@ public class EditBookAuthorListDialogFragment
             }
 
             EditBookBaseFragment.EditItemLauncher
-                    .sendResult(this, mRequestKey, mAuthor, tmpAuthor);
+                    .setResult(this, mRequestKey, mAuthor, tmpAuthor);
             return true;
         }
 

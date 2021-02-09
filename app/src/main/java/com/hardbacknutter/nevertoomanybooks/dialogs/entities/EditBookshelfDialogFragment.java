@@ -155,7 +155,7 @@ public class EditBookshelfDialogFragment
                 success = mDb.update(getContext(), mBookshelf);
             }
             if (success) {
-                Launcher.sendResult(this, mRequestKey, mBookshelf.getId());
+                Launcher.setResult(this, mRequestKey, mBookshelf.getId());
                 return true;
             }
         } else {
@@ -170,7 +170,7 @@ public class EditBookshelfDialogFragment
                         // move all books from the one being edited to the existing one
                         mDb.merge(mBookshelf, existingId);
 
-                        Launcher.sendResult(this, mRequestKey, existingId);
+                        Launcher.setResult(this, mRequestKey, existingId);
                         dismiss();
                     })
                     .create()
@@ -208,9 +208,9 @@ public class EditBookshelfDialogFragment
     public abstract static class Launcher
             extends DialogFragmentLauncherBase {
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @IntRange(from = 1) final long bookshelfId) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @IntRange(from = 1) final long bookshelfId) {
             final Bundle result = new Bundle(1);
             result.putLong(DBDefinitions.KEY_FK_BOOKSHELF, bookshelfId);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);

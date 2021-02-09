@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -41,12 +40,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.BookAsWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
 public class AuthorWorksViewModel
-        extends ViewModel
-        implements ResultIntent {
+        extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksViewModel";
@@ -63,28 +60,14 @@ public class AuthorWorksViewModel
     private boolean mWithBooks = true;
     /** Show all shelves, or only the initially selected shelf. */
     private boolean mAllBookshelves;
-
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
+    /** Set to {@code true} when ... used to report back to BoB to decide rebuilding BoB list. */
+    private boolean mDataModified;
 
     @Override
     protected void onCleared() {
         if (mDb != null) {
             mDb.close();
         }
-    }
-
-    /**
-     * <ul>
-     * <li>{@link DBDefinitions#KEY_PK_ID}          book id</li>
-     * <li>{@link Entity#BKEY_DATA_MODIFIED}  boolean</li>
-     * </ul>
-     */
-    @NonNull
-    @Override
-    public Intent getResultIntent() {
-        return mResultIntent;
     }
 
     /**
@@ -166,7 +149,7 @@ public class AuthorWorksViewModel
         } else if (work instanceof BookAsWork) {
             success = mDb.deleteBook(context, work.getId());
             if (success) {
-                mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
+                mDataModified = true;
             }
 
         } else {
@@ -205,5 +188,9 @@ public class AuthorWorksViewModel
         } else {
             return "" + mBookshelf.getName();
         }
+    }
+
+    public boolean isDataModified() {
+        return mDataModified;
     }
 }

@@ -4542,12 +4542,12 @@ public class DAO
      */
     @Nullable
     Cursor fetchSearchSuggestions(@NonNull final String keywords) {
-        final String query = FtsDefinition.cleanupFtsCriterion(keywords, null);
+        final String query = FtsDefinitions.cleanupFtsCriterion(keywords, null);
         // do we have anything to search for?
         if (query.isEmpty()) {
             return null;
         }
-        return mSyncedDb.rawQuery(FtsDefinition.Sql.SEARCH_SUGGESTIONS, new String[]{query});
+        return mSyncedDb.rawQuery(FtsDefinitions.Sql.SEARCH_SUGGESTIONS, new String[]{query});
     }
 
     /**
@@ -4571,14 +4571,14 @@ public class DAO
                                             @Nullable final String keywords,
                                             final int limit) {
 
-        final String query = FtsDefinition.createMatchString(author, title, seriesTitle,
-                                                             publisherName, keywords);
+        final String query = FtsDefinitions.createMatchString(author, title, seriesTitle,
+                                                              publisherName, keywords);
         // do we have anything to search for?
         if (query.isEmpty()) {
             return null;
         }
         return mSyncedDb
-                .rawQuery(FtsDefinition.Sql.SEARCH, new String[]{query, String.valueOf(limit)});
+                .rawQuery(FtsDefinitions.Sql.SEARCH, new String[]{query, String.valueOf(limit)});
     }
 
     /**
@@ -4600,9 +4600,9 @@ public class DAO
 
         try {
             final SynchronizedStatement stmt = mSqlStatementManager.get(
-                    STMT_INSERT_FTS, () -> FtsDefinition.Sql.INSERT);
+                    STMT_INSERT_FTS, () -> FtsDefinitions.Sql.INSERT);
 
-            try (Cursor cursor = mSyncedDb.rawQuery(FtsDefinition.Sql.BOOK_BY_ID,
+            try (Cursor cursor = mSyncedDb.rawQuery(FtsDefinitions.Sql.BOOK_BY_ID,
                                                     new String[]{String.valueOf(bookId)})) {
                 ftsProcessBooks(cursor, stmt);
             }
@@ -4631,9 +4631,9 @@ public class DAO
 
         try {
             final SynchronizedStatement stmt = mSqlStatementManager.get(
-                    STMT_UPDATE_FTS, () -> FtsDefinition.Sql.UPDATE);
+                    STMT_UPDATE_FTS, () -> FtsDefinitions.Sql.UPDATE);
 
-            try (Cursor cursor = mSyncedDb.rawQuery(FtsDefinition.Sql.BOOK_BY_ID,
+            try (Cursor cursor = mSyncedDb.rawQuery(FtsDefinitions.Sql.BOOK_BY_ID,
                                                     new String[]{String.valueOf(bookId)})) {
                 ftsProcessBooks(cursor, stmt);
             }
@@ -4647,8 +4647,8 @@ public class DAO
      * Process the book details from the cursor using the passed fts query.
      * <p>
      * <strong>Note:</strong> This assumes a specific order for query parameters.
-     * If modified, then update {@link FtsDefinition.Sql#INSERT_BODY},
-     * {@link FtsDefinition.Sql#UPDATE}
+     * If modified, then update {@link FtsDefinitions.Sql#INSERT_BODY},
+     * {@link FtsDefinitions.Sql#UPDATE}
      *
      * <strong>Transaction:</strong> required
      *
@@ -4694,7 +4694,7 @@ public class DAO
 
             // Get list of authors
             try (Cursor authors = mSyncedDb
-                    .rawQuery(FtsDefinition.Sql.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
+                    .rawQuery(FtsDefinitions.Sql.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndex(KEY_AUTHOR_GIVEN_NAMES);
@@ -4713,7 +4713,7 @@ public class DAO
 
             // Get list of series
             try (Cursor series = mSyncedDb
-                    .rawQuery(FtsDefinition.Sql.GET_SERIES_BY_BOOK_ID, qpBookId)) {
+                    .rawQuery(FtsDefinitions.Sql.GET_SERIES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colSeriesTitle < 0) {
                     colSeriesTitle = series.getColumnIndexOrThrow(KEY_SERIES_TITLE);
@@ -4726,7 +4726,7 @@ public class DAO
 
             // Get list of publishers
             try (Cursor publishers = mSyncedDb
-                    .rawQuery(FtsDefinition.Sql.GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
+                    .rawQuery(FtsDefinitions.Sql.GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colPublisherName < 0) {
                     colPublisherName = publishers.getColumnIndexOrThrow(KEY_PUBLISHER_NAME);
@@ -4739,7 +4739,7 @@ public class DAO
 
             // Get list of TOC titles
             try (Cursor toc = mSyncedDb
-                    .rawQuery(FtsDefinition.Sql.GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
+                    .rawQuery(FtsDefinitions.Sql.GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colTOCEntryTitle < 0) {
                     colTOCEntryTitle = toc.getColumnIndexOrThrow(KEY_TITLE);
@@ -4805,7 +4805,7 @@ public class DAO
         boolean gotError = false;
 
         final String tmpTableName = "books_fts_rebuilding";
-        final TableDefinition ftsTemp = FtsDefinition.createTableDefinition(tmpTableName);
+        final TableDefinition ftsTemp = FtsDefinitions.createTableDefinition(tmpTableName);
 
         Synchronizer.SyncLock txLock = null;
         try {
@@ -4817,8 +4817,8 @@ public class DAO
             ftsTemp.recreate(mSyncedDb, false);
 
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                    "INSERT INTO " + tmpTableName + FtsDefinition.Sql.INSERT_BODY);
-                 Cursor cursor = mSyncedDb.rawQuery(FtsDefinition.Sql.ALL_BOOKS, null)) {
+                    "INSERT INTO " + tmpTableName + FtsDefinitions.Sql.INSERT_BODY);
+                 Cursor cursor = mSyncedDb.rawQuery(FtsDefinitions.Sql.ALL_BOOKS, null)) {
                 ftsProcessBooks(cursor, stmt);
             }
 
@@ -4843,9 +4843,9 @@ public class DAO
             //  Delete old table and rename the new table
             if (!gotError) {
                 // Drop old table, ready for rename
-                mSyncedDb.drop(FtsDefinition.TBL_FTS_BOOKS.getName());
+                mSyncedDb.drop(FtsDefinitions.TBL_FTS_BOOKS.getName());
                 mSyncedDb.execSQL("ALTER TABLE " + tmpTableName
-                                  + " RENAME TO " + FtsDefinition.TBL_FTS_BOOKS.getName());
+                                  + " RENAME TO " + FtsDefinitions.TBL_FTS_BOOKS.getName());
             }
         }
 

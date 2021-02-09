@@ -668,7 +668,7 @@ public class ExportFragment
         public Intent createIntent(@NonNull final Context context,
                                    @Nullable final ArchiveEncoding encoding) {
             final Intent intent = new Intent(context, FragmentHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, ExportFragment.TAG);
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, TAG);
             if (encoding != null) {
                 intent.putExtra(ExportFragment.BKEY_ENCODING, (Parcelable) encoding);
             }

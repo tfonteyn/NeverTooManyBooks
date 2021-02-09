@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,16 +27,12 @@ import androidx.lifecycle.ViewModel;
 
 public class SearchBookByExternalIdViewModel
         extends ViewModel
-        implements ActivityResultViewModel {
+        implements ResultIntentOwner {
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
 
-    /**
-     * Inherits the result from {@link com.hardbacknutter.nevertoomanybooks.EditBookActivity}.
-     */
-    @Override
     @NonNull
     public Intent getResultIntent() {
         return mResultIntent;

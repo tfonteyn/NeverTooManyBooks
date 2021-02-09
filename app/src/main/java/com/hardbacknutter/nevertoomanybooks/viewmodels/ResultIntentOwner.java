@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,11 +24,7 @@ import android.content.Intent;
 
 import androidx.annotation.NonNull;
 
-/**
- * Really just a 'marker' interface forcing classes to use the same method name
- * as a reminder to the developer.
- */
-public interface ResultIntent {
+public interface ResultIntentOwner {
 
     /**
      * Get the data intent to pass to {@link Activity#setResult}.

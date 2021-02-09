@@ -949,6 +949,7 @@
     <!-- Sync with a remote server. -->
     <string name="menu_send_updated">Send updated books</string>
 
+    <string name="menu_set_download_folder">Set the download folder</string>
     <string name="menu_download_folder">Local download folder</string>
     <string name="menu_download_ebook_format">Download eBook (%1s)</string>
     <string name="progress_msg_downloading">Downloading…</string>
@@ -1709,6 +1710,7 @@
     <string name="info_purge_blns_all">Purge all BLNS</string>
     <!-- param 1: type of item; param 2: item name.  Example: "Purge BLNS for Bookshelf “ToRead” " -->
     <string name="info_purge_blns_item_name">Purge BLNS for %1$s “%2$s” ?</string>
-    <string name="menu_set_download_folder">Set the download folder</string>
+
+    <string name="error_upgrade_not_supported">Upgrading from versions older than %1$s is not supported.</string>
 
 </resources>

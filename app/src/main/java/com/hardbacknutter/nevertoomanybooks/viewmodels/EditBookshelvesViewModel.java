@@ -19,7 +19,6 @@
  */
 package com.hardbacknutter.nevertoomanybooks.viewmodels;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -36,22 +35,17 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesViewModel
-        extends ViewModel
-        implements ResultIntent {
+        extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "EditBookshelvesViewModel";
 
     public static final String BKEY_CURRENT_BOOKSHELF = TAG + ":current";
-    private final MutableLiveData<Void> mSelectedPositionChanged = new MutableLiveData<>();
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
+    private final MutableLiveData<Void> mSelectedPositionChanged = new MutableLiveData<>();
 
     /** Database Access. */
     private DAO mDb;
@@ -61,6 +55,8 @@ public class EditBookshelvesViewModel
 
     /** The list we're editing. */
     private ArrayList<Bookshelf> mList;
+    /** the selected bookshelf id, can be {@code 0} for none. */
+    private long mSelectedBookshelfId;
 
     @Override
     protected void onCleared() {
@@ -69,13 +65,8 @@ public class EditBookshelvesViewModel
         }
     }
 
-    /**
-     * {@link DBDefinitions#KEY_PK_ID} the selected bookshelf id, can be {@code 0} for none.
-     */
-    @NonNull
-    @Override
-    public Intent getResultIntent() {
-        return mResultIntent;
+    public long getSelectedBookshelfId() {
+        return mSelectedBookshelfId;
     }
 
     /**
@@ -90,10 +81,9 @@ public class EditBookshelvesViewModel
             mDb = new DAO(TAG);
             mList = mDb.getBookshelves();
             if (args != null) {
-                final long bookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
-                mSelectedPosition = findSelectedPosition(bookshelfId);
                 // set as the initial result
-                mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, bookshelfId);
+                mSelectedBookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
+                mSelectedPosition = findSelectedPosition(mSelectedBookshelfId);
             }
         }
     }
@@ -133,7 +123,7 @@ public class EditBookshelvesViewModel
         // update the fragment -> it will update the adapter
         mSelectedPositionChanged.setValue(null);
         // update the activity result.
-        mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, getBookshelf(mSelectedPosition).getId());
+        mSelectedBookshelfId = getBookshelf(mSelectedPosition).getId();
     }
 
     @NonNull

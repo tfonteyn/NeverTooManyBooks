@@ -20,15 +20,12 @@
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,24 +35,16 @@ import androidx.preference.SeekBarPreference;
 import androidx.preference.SwitchPreference;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BooklistStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.DetailScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.TextScale;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.AuthorBooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.widgets.MultiSelectListPreferenceSummaryProvider;
 
 /**
@@ -80,10 +69,10 @@ public class StyleFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    mStyleViewModel.updateOrInsertStyle();
+                    mVm.updateOrInsertStyle();
 
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mStyleViewModel.getResultIntent());
+                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
                     getActivity().finish();
                 }
             };
@@ -116,13 +105,13 @@ public class StyleFragment
 
         //noinspection ConstantConditions
         findPreference(ListScreenBookFields.PK_COVER_SCALE)
-                .setSummaryProvider(p -> mStyleViewModel
+                .setSummaryProvider(p -> mVm
                         .getStyle().getListScreenBookFields()
                         .getCoverScaleSummaryText(getContext()));
 
         //noinspection ConstantConditions
         findPreference(TextScale.PK_TEXT_SCALE)
-                .setSummaryProvider(p -> mStyleViewModel
+                .setSummaryProvider(p -> mVm
                         .getStyle().getTextScale().getFontScaleSummaryText(getContext()));
 
         //noinspection ConstantConditions
@@ -158,7 +147,7 @@ public class StyleFragment
         // and hide for groups we don't/no longer have.
         // Use the global style to get the groups.
 
-        final UserStyle style = mStyleViewModel.getStyle();
+        final UserStyle style = mVm.getStyle();
         final Groups styleGroups = style.getGroups();
 
         final PreferenceScreen screen = getPreferenceScreen();
@@ -199,7 +188,7 @@ public class StyleFragment
      * or changes to ANOTHER KEY.
      */
     private void updateSummaries() {
-        final UserStyle style = mStyleViewModel.getStyle();
+        final UserStyle style = mVm.getStyle();
 
         // the 'book details' fields in use.
         //noinspection ConstantConditions
@@ -247,89 +236,4 @@ public class StyleFragment
         super.onSharedPreferenceChanged(stylePrefs, key);
     }
 
-    public static class ResultContract
-            extends ActivityResultContract<ResultContract.Input, ResultContract.Output> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @NonNull final Input input) {
-            return new Intent(context, SettingsHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, StyleFragment.TAG)
-                    .putExtra(StyleViewModel.BKEY_ACTION, input.action)
-                    .putExtra(ListStyle.BKEY_STYLE_UUID, input.uuid)
-                    .putExtra(StyleViewModel.BKEY_SET_AS_PREFERRED, input.setAsPreferred);
-        }
-
-        @Override
-        @Nullable
-        public Output parseResult(final int resultCode,
-                                  @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return null;
-            }
-
-            final Bundle data = intent.getExtras();
-            if (data == null) {
-                // should not actually ever be the case...
-                return null;
-            }
-
-            return new Output(
-                    Objects.requireNonNull(data.getString(StyleViewModel.BKEY_TEMPLATE_UUID),
-                                           "BKEY_TEMPLATE_UUID"),
-                    data.getBoolean(StyleViewModel.BKEY_STYLE_MODIFIED, false),
-                    data.getString(ListStyle.BKEY_STYLE_UUID));
-        }
-
-        public static class Input {
-
-            @StyleViewModel.EditAction
-            final int action;
-
-            @NonNull
-            final String uuid;
-
-            /**
-             * If set to {@code true} the edited/cloned style will be set to preferred.
-             * If set to {@code false} the preferred state will not be touched.
-             */
-            final boolean setAsPreferred;
-
-            public Input(@StyleViewModel.EditAction final int action,
-                         @NonNull final String uuid,
-                         final boolean setAsPreferred) {
-                this.action = action;
-                this.uuid = uuid;
-                this.setAsPreferred = setAsPreferred;
-            }
-        }
-
-        public static class Output {
-
-            /**
-             * Either a new UUID if we cloned a style, or the UUID of the style we edited.
-             * Will be {@code null} if we edited the global style
-             */
-            @Nullable
-            public final String uuid;
-
-            /** The uuid which was passed into the {@link Input#uuid} for editing. */
-            @NonNull
-            final String templateUuid;
-            final boolean modified;
-
-            Output(@NonNull final String templateUuid,
-                   final boolean modified,
-                   @Nullable final String uuid) {
-                this.templateUuid = templateUuid;
-                this.modified = modified;
-                this.uuid = uuid;
-            }
-        }
-    }
 }

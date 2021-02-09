@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -118,18 +118,18 @@ public final class WrappedMaterialDatePicker<S>
     @Override
     public void onPositiveButtonClick(@Nullable final S selection) {
         if (selection == null) {
-            Launcher.sendResult(mPicker, mRequestKey, mFieldIds, NO_SELECTION);
+            Launcher.setResult(mPicker, mRequestKey, mFieldIds, NO_SELECTION);
 
         } else if (selection instanceof Long) {
             final long date = (Long) selection;
-            Launcher.sendResult(mPicker, mRequestKey, mFieldIds, date);
+            Launcher.setResult(mPicker, mRequestKey, mFieldIds, date);
 
         } else if (selection instanceof Pair) {
             //noinspection unchecked
             final Pair<Long, Long> range = (Pair<Long, Long>) selection;
             final long start = range.first != null ? range.first : NO_SELECTION;
             final long end = range.second != null ? range.second : NO_SELECTION;
-            Launcher.sendResult(mPicker, mRequestKey, mFieldIds, start, end);
+            Launcher.setResult(mPicker, mRequestKey, mFieldIds, start, end);
 
         } else {
             throw new IllegalArgumentException(selection.toString());
@@ -142,10 +142,10 @@ public final class WrappedMaterialDatePicker<S>
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTIONS = "selections";
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @NonNull final int[] fieldIds,
-                               @Nullable final long... selection) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @NonNull final int[] fieldIds,
+                              @Nullable final long... selection) {
             final Bundle result = new Bundle(2);
             result.putIntArray(FIELD_ID, fieldIds);
             result.putLongArray(SELECTIONS, selection);

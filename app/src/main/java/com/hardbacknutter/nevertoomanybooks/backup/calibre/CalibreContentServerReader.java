@@ -80,6 +80,10 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  * Note we're not taking "books.pubdate"; most metadata downloaded by Calibre contains
  * bad/incorrect dates (at least the ones we've seen)
  * <p>
+ * ENHANCE: tags... this would require implementing a full tag system in our own database.
+ * => bookshelves 'are' tags? redefine the meaning of bookshelf as a 'tag'?
+ * => and then define some tags as being shelves ?
+ * <p>
  * ENHANCE: implement {@link com.hardbacknutter.nevertoomanybooks.entities.FieldUsage.Usage}.
  * For now overwrite/skip is a bit ad-hoc.
  */

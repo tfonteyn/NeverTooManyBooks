@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,8 +61,6 @@ public class MaintenanceFragment
 
     /** Log tag. */
     public static final String TAG = "MaintenanceFragment";
-
-    static final String BKEY_RESTART_APP = TAG + ":restartApp";
 
     /**
      * After clicking the debug category header 3 times, we display the debug options.
@@ -267,10 +263,9 @@ public class MaintenanceFragment
                 AppDir.deleteAllContent(getContext());
                 //FIXME: restore all preferences.
 
-                final Intent resultIntent = new Intent()
-                        .putExtra(BKEY_RESTART_APP, true);
+                // Exit the app
                 //noinspection ConstantConditions
-                getActivity().setResult(Activity.RESULT_OK, resultIntent);
+                getActivity().finishAndRemoveTask();
             }
         } catch (@NonNull final ExternalStorageException e) {
             StandardDialogs.showError(getContext(), e);

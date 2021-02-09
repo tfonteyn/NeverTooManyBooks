@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -23,7 +23,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
@@ -197,9 +196,9 @@ public class ProgressDialogFragment
             // Flipping the new com.google.android.material.progressindicator.*
             // from determinate to indeterminate requires this step.
             // For simplicity, we do it the other way around as well.
-            mVb.progressBar.setVisibility(View.INVISIBLE);
+            mVb.progressBar.hide();
             mVb.progressBar.setIndeterminate(isIndeterminate);
-            mVb.progressBar.setVisibility(View.VISIBLE);
+            mVb.progressBar.show();
         }
 
         mVb.progressBar.setProgress(currentPosition);

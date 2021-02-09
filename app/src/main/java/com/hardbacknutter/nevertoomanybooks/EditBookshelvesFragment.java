@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -33,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,9 +45,8 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookshelvesBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -65,7 +61,7 @@ public class EditBookshelvesFragment
         extends Fragment {
 
     /** Log tag. */
-    static final String TAG = "EditBookshelvesFragment";
+    public static final String TAG = "EditBookshelvesFragment";
 
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
@@ -82,7 +78,18 @@ public class EditBookshelvesFragment
                     mVm.reloadListAndSetSelectedPosition(bookshelfId);
                 }
             };
-
+    /** Set the hosting Activity result, and close it. */
+    private final OnBackPressedCallback mOnBackPressedCallback =
+            new OnBackPressedCallback(true) {
+                @Override
+                public void handleOnBackPressed() {
+                    //noinspection ConstantConditions
+                    EditBookshelvesContract
+                            .setResultAndFinish(getActivity(), mVm.getSelectedBookshelfId());
+                }
+            };
+    /** View Binding. */
+    private FragmentEditBookshelvesBinding mVb;
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
             new MenuPickerDialogFragment.Launcher() {
                 @Override
@@ -91,21 +98,6 @@ public class EditBookshelvesFragment
                     return onContextItemSelected(menuItemId, position);
                 }
             };
-
-    /** Set the hosting Activity result, and close it. */
-    private final OnBackPressedCallback mOnBackPressedCallback =
-            new OnBackPressedCallback(true) {
-                @Override
-                public void handleOnBackPressed() {
-                    //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
-                    getActivity().finish();
-                }
-            };
-
-
-    /** View Binding. */
-    private FragmentEditBookshelvesBinding mVb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -286,38 +278,6 @@ public class EditBookshelvesFragment
         Holder(@NonNull final View itemView) {
             super(itemView);
             nameView = itemView.findViewById(R.id.name);
-        }
-    }
-
-    public static class ResultContract
-            extends ActivityResultContract<Long, Long> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @NonNull final Long bookshelfId) {
-            final Intent intent = new Intent(context, FragmentHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
-            if (bookshelfId != 0) {
-                intent.putExtra(EditBookshelvesViewModel.BKEY_CURRENT_BOOKSHELF, bookshelfId);
-            }
-            return intent;
-        }
-
-        @NonNull
-        @Override
-        public Long parseResult(final int resultCode,
-                                @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return 0L;
-            }
-
-            // the last edited/inserted shelf
-            return intent.getLongExtra(DBDefinitions.KEY_PK_ID, Bookshelf.DEFAULT);
         }
     }
 

@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.FtsDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.FtsDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -303,15 +303,15 @@ public class Booklist
                                     @Nullable final String publisherName,
                                     @Nullable final String keywords) {
 
-        final String query = FtsDefinition.createMatchString(author, title, seriesTitle,
-                                                             publisherName, keywords);
+        final String query = FtsDefinitions.createMatchString(author, title, seriesTitle,
+                                                              publisherName, keywords);
         if (!query.isEmpty()) {
             mFilters.add(context ->
                                  '(' + TBL_BOOKS.dot(KEY_PK_ID) + " IN ("
                                  // fetch the ID's only
-                                 + SELECT_ + FtsDefinition.KEY_FTS_BOOK_ID
-                                 + _FROM_ + FtsDefinition.TBL_FTS_BOOKS.getName()
-                                 + _WHERE_ + FtsDefinition.TBL_FTS_BOOKS.getName()
+                                 + SELECT_ + FtsDefinitions.KEY_FTS_BOOK_ID
+                                 + _FROM_ + FtsDefinitions.TBL_FTS_BOOKS.getName()
+                                 + _WHERE_ + FtsDefinitions.TBL_FTS_BOOKS.getName()
                                  + " MATCH '" + query + "')"
                                  + ')');
         }

@@ -678,8 +678,7 @@ public class ImportFragment
         public ImportResults parseResult(final int resultCode,
                                          @Nullable final Intent intent) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult",
-                         "|resultCode=" + resultCode + "|intent=" + intent);
+                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
             }
 
             if (intent == null || resultCode != Activity.RESULT_OK) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBooksearchByIsbnBinding;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByIsbnViewModel;
 
 /**
@@ -95,7 +95,7 @@ public class SearchBookByIsbnFragment
 
     @NonNull
     @Override
-    public ActivityResultViewModel getActivityResultViewModel() {
+    public ResultIntentOwner getResultIntentOwner() {
         return mVm;
     }
 

@@ -223,7 +223,7 @@ public class EditLenderDialogFragment
         }
 
         if (success) {
-            Launcher.sendResult(this, mRequestKey, mBookId, mLoanee);
+            Launcher.setResult(this, mRequestKey, mBookId, mLoanee);
             return true;
         }
         return false;
@@ -258,10 +258,10 @@ public class EditLenderDialogFragment
     public abstract static class Launcher
             extends DialogFragmentLauncherBase {
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @IntRange(from = 1) final long bookId,
-                               @NonNull final String loanee) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @IntRange(from = 1) final long bookId,
+                              @NonNull final String loanee) {
             final Bundle result = new Bundle(2);
             result.putLong(DBDefinitions.KEY_FK_BOOK, bookId);
             result.putString(DBDefinitions.KEY_LOANEE, loanee);

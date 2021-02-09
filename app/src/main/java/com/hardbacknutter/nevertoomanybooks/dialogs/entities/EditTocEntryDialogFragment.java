@@ -190,7 +190,7 @@ public class EditTocEntryDialogFragment
 
         // We don't update/insert to the database here, but just send the data back.
         // TOCs are updated in bulk/list per Book
-        Launcher.sendResult(this, mRequestKey, mTocEntry, mHasMultipleAuthors);
+        Launcher.setResult(this, mRequestKey, mTocEntry, mHasMultipleAuthors);
         return true;
     }
 
@@ -230,10 +230,10 @@ public class EditTocEntryDialogFragment
     public abstract static class Launcher
             extends DialogFragmentLauncherBase {
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @NonNull final TocEntry tocEntry,
-                               final boolean hasMultipleAuthors) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @NonNull final TocEntry tocEntry,
+                              final boolean hasMultipleAuthors) {
 
             final Bundle result = new Bundle(2);
             result.putParcelable(BKEY_TOC_ENTRY, tocEntry);

@@ -53,7 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.ProgressMessage;
 import com.hardbacknutter.nevertoomanybooks.utils.NetworkUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ActivityResultViewModel;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 
 public abstract class SearchBookBaseFragment
         extends Fragment {
@@ -67,7 +67,7 @@ public abstract class SearchBookBaseFragment
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
                     getActivity().setResult(Activity.RESULT_OK,
-                                            getActivityResultViewModel().getResultIntent());
+                                            getResultIntentOwner().getResultIntent());
                     getActivity().finish();
                 }
             };
@@ -84,11 +84,13 @@ public abstract class SearchBookBaseFragment
     private ProgressDialogFragment mProgressDialog;
 
     @NonNull
-    public abstract ActivityResultViewModel getActivityResultViewModel();
+    public abstract ResultIntentOwner getResultIntentOwner();
 
     @CallSuper
     void onBookEditingDone(@Nullable final Bundle data) {
-        getActivityResultViewModel().putResultData(data);
+        if (data != null) {
+            getResultIntentOwner().getResultIntent().putExtras(data);
+        }
     }
 
     @Override

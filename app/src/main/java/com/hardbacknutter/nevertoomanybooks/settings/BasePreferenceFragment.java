@@ -50,8 +50,7 @@ public abstract class BasePreferenceFragment
     private static final String TAG = "BasePreferenceFragment";
 
     /** Allows auto-scrolling on opening the preference screen to the desired key. */
-    @SuppressWarnings("WeakerAccess")
-    public static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
+    static final String BKEY_AUTO_SCROLL_TO_KEY = TAG + ":scrollTo";
     protected Toolbar mToolbar;
     @Nullable
     private String mAutoScrollToKey;

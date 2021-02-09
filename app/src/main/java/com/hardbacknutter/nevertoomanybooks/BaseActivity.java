@@ -49,10 +49,10 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
@@ -84,20 +84,6 @@ public abstract class BaseActivity
     /** Used by {@link #showError} Snackbar.LENGTH_LONG is 2750 ms. */
     public static final int ERROR_DELAY_MS = 3000;
 
-    /** Log tag. */
-    private static final String TAG = "BaseActivity";
-
-    /**
-     * Something changed (or not) that warrants a recreation of the caller to be needed.
-     * This is normally/always set by one of the settings components if they decide the
-     * use changed some setting that required the caller to be recreated.
-     *
-     * <p>
-     * <br>type: {@code boolean}
-     * setResult
-     */
-    public static final String BKEY_PREF_CHANGE_REQUIRES_RECREATE = TAG + ":recreate";
-
     /** Situation normal. */
     private static final int ACTIVITY_IS_RUNNING = 0;
     /** Activity is in need of recreating. */
@@ -113,11 +99,11 @@ public abstract class BaseActivity
      */
     @ActivityStatus
     private static int sActivityRecreateStatus = ACTIVITY_IS_RUNNING;
+
     private final ActivityResultLauncher<Long> mManageBookshelvesBaseLauncher =
-            registerForActivityResult(new EditBookshelvesFragment.ResultContract(), bookshelfId -> {
-                // Nothing to do here, but see BooksOnBookshelf Activity
-                // where we override this one
-            });
+            registerForActivityResult(new EditBookshelvesContract(),
+                                      bookshelfId -> {});
+
     /** Locale at {@link #onCreate} time. */
     private String mInitialLocaleSpec;
     /** Night-mode at {@link #onCreate} time. */
@@ -130,23 +116,14 @@ public abstract class BaseActivity
     @Nullable
     private NavigationView mNavigationView;
 
-    private final ActivityResultLauncher<Bundle> mSettingsLauncher =
-            registerForActivityResult(new SettingsHostActivity.ResultContract(
-                    SettingsFragment.TAG), data -> {
-
+    private final ActivityResultLauncher<String> mSettingsLauncher =
+            registerForActivityResult(new SettingsFragment.ResultContract(), recreateActivity -> {
                 updateNavigationMenuVisibility();
-                if (data != null) {
-                    // Handle the generic return flag requiring a recreate of the current Activity
-                    if (data.getBoolean(BKEY_PREF_CHANGE_REQUIRES_RECREATE, false)) {
-                        sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
-                    }
-
-                    // unconditional exit of the app
-                    if (data.getBoolean(MaintenanceFragment.BKEY_RESTART_APP, false)) {
-                        finish();
-                    }
+                if (recreateActivity) {
+                    sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;
                 }
             });
+
     /** Flag indicating this Activity is a self-proclaimed root Activity. */
     private boolean mHomeIsRootMenu;
 

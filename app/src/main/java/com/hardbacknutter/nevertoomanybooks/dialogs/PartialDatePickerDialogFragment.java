@@ -229,7 +229,7 @@ public class PartialDatePickerDialogFragment
                           Snackbar.LENGTH_LONG).show();
 
         } else {
-            Launcher.sendResult(this, mRequestKey, mFieldId, mYear, mMonth, mDay);
+            Launcher.setResult(this, mRequestKey, mFieldId, mYear, mMonth, mDay);
             return true;
         }
 
@@ -388,12 +388,12 @@ public class PartialDatePickerDialogFragment
         private static final String MONTH = "month";
         private static final String DAY = "day";
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @IdRes final int fieldId,
-                               final int year,
-                               final int month,
-                               final int day) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @IdRes final int fieldId,
+                              final int year,
+                              final int month,
+                              final int day) {
             final Bundle result = new Bundle(4);
             result.putInt(FIELD_ID, fieldId);
             result.putInt(YEAR, year);

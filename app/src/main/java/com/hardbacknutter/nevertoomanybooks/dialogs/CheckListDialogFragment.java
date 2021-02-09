@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -123,7 +123,7 @@ public class CheckListDialogFragment
     }
 
     private void saveChanges() {
-        Launcher.sendResult(this, mRequestKey, mFieldId, mSelectedItems);
+        Launcher.setResult(this, mRequestKey, mFieldId, mSelectedItems);
     }
 
     @Override
@@ -139,10 +139,10 @@ public class CheckListDialogFragment
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTED_ITEMS = "selectedItems";
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @IdRes final int fieldId,
-                               @NonNull final ArrayList<Entity> selectedItems) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @IdRes final int fieldId,
+                              @NonNull final ArrayList<Entity> selectedItems) {
             final Bundle result = new Bundle(2);
             result.putInt(FIELD_ID, fieldId);
             result.putParcelableArrayList(SELECTED_ITEMS, selectedItems);

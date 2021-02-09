@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
 public class ShowBookViewModel
         extends ViewModel
-        implements ActivityResultViewModel {
+        implements ResultIntentOwner {
 
     /** Log tag. */
     private static final String TAG = "ShowBookViewModel";

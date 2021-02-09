@@ -19,6 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
+import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -26,6 +28,7 @@ import android.view.View;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -47,6 +50,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
+import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreConnectionTestTask;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
@@ -283,6 +287,25 @@ public class CalibrePreferencesFragment
 
         } catch (@NonNull final IOException e) {
             preference.setSummary(R.string.info_not_set);
+        }
+    }
+
+    public static class ResultContract
+            extends ActivityResultContract<Void, Void> {
+
+        @NonNull
+        @Override
+        public Intent createIntent(@NonNull final Context context,
+                                   @Nullable final Void aVoid) {
+            return new Intent(context, SettingsHostActivity.class)
+                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, TAG);
+        }
+
+        @Override
+        @Nullable
+        public Void parseResult(final int resultCode,
+                                @Nullable final Intent intent) {
+            return null;
         }
     }
 }

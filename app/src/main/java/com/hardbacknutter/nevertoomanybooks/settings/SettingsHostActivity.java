@@ -19,12 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,11 +36,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 
 /**
@@ -59,8 +53,8 @@ public class SettingsHostActivity
 
     static {
         sMap.put(SettingsFragment.TAG, SettingsFragment.class);
-        sMap.put(StyleFragment.TAG, StyleFragment.class);
         sMap.put(CalibrePreferencesFragment.TAG, CalibrePreferencesFragment.class);
+        sMap.put(StyleFragment.TAG, StyleFragment.class);
     }
 
     @Override
@@ -142,43 +136,5 @@ public class SettingsHostActivity
           .replace(R.id.main_fragment, fragment)
           .commit();
         return true;
-    }
-
-    public static class ResultContract
-            extends ActivityResultContract<Bundle, Bundle> {
-
-        @NonNull
-        private final String mFragmentTag;
-
-        public ResultContract(@NonNull final String fragmentTag) {
-            mFragmentTag = fragmentTag;
-        }
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @Nullable final Bundle args) {
-            final Intent intent = new Intent(context, SettingsHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, mFragmentTag);
-            if (args != null && !args.isEmpty()) {
-                intent.putExtras(args);
-            }
-            return intent;
-        }
-
-        @Override
-        @Nullable
-        public Bundle parseResult(final int resultCode,
-                                  @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(mFragmentTag, "parseResult",
-                         "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            if (intent == null || resultCode != RESULT_OK) {
-                return null;
-            }
-            return intent.getExtras();
-        }
     }
 }

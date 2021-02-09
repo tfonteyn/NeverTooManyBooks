@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,30 +19,21 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings;
 
-import android.app.Activity;
-import android.content.Intent;
-
-import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 
-import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
-
+/**
+ * Shared on the Activity level.
+ */
 public class SettingsViewModel
-        extends ViewModel
-        implements ResultIntent {
+        extends ViewModel {
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
+    private boolean mRequiresActivityRecreation;
 
-    @Override
-    @NonNull
-    public Intent getResultIntent() {
-        return mResultIntent;
+    boolean getRequiresActivityRecreation() {
+        return mRequiresActivityRecreation;
     }
 
     void setRequiresActivityRecreation() {
-        mResultIntent.putExtra(BaseActivity.BKEY_PREF_CHANGE_REQUIRES_RECREATE, true);
+        mRequiresActivityRecreation = true;
     }
 }

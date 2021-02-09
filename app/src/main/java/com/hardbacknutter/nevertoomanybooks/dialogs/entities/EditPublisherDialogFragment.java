@@ -172,9 +172,9 @@ public class EditPublisherDialogFragment
             }
             if (success) {
                 BooksOnBookshelf.RowChangeListener
-                        .sendResult(this, mRequestKey,
-                                    BooksOnBookshelf.RowChangeListener.PUBLISHER,
-                                    mPublisher.getId());
+                        .setResult(this, mRequestKey,
+                                   BooksOnBookshelf.RowChangeListener.PUBLISHER,
+                                   mPublisher.getId());
                 return true;
             }
         } else {
@@ -189,7 +189,7 @@ public class EditPublisherDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             mDb.merge(context, mPublisher, existingId);
-                            BooksOnBookshelf.RowChangeListener.sendResult(
+                            BooksOnBookshelf.RowChangeListener.setResult(
                                     this, mRequestKey,
                                     // return the publisher who 'lost' it's books
                                     BooksOnBookshelf.RowChangeListener.PUBLISHER,

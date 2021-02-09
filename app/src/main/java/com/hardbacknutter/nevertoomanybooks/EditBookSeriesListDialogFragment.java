@@ -467,7 +467,7 @@ public class EditBookSeriesListDialogFragment
             tmpSeries.setNumber(mNumber);
 
             EditBookBaseFragment.EditItemLauncher
-                    .sendResult(this, mRequestKey, mSeries, tmpSeries);
+                    .setResult(this, mRequestKey, mSeries, tmpSeries);
             return true;
         }
 

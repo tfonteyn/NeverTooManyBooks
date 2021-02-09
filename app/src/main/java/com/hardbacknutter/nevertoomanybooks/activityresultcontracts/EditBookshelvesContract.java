@@ -22,71 +22,57 @@ package com.hardbacknutter.nevertoomanybooks.activityresultcontracts;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.ArrayList;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.EditBookshelvesFragment;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.SearchBookUpdatesFragment;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesViewModel;
 
-/**
- * Update a list of Books.
- */
-public class UpdateBooklistContract
-        extends ActivityResultContract<UpdateBooklistContract.Input, Bundle> {
+public class EditBookshelvesContract
+        extends ActivityResultContract<Long, Long> {
+
+    public static void setResultAndFinish(@NonNull final Activity activity,
+                                          final long bookshelfId) {
+        final Intent resultIntent = new Intent()
+                .putExtra(DBDefinitions.KEY_PK_ID, bookshelfId);
+        activity.setResult(Activity.RESULT_OK, resultIntent);
+        activity.finish();
+    }
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
+                               @NonNull final Long bookshelfId) {
         final Intent intent = new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
-                .putExtra(Book.BKEY_BOOK_ID_LIST, input.bookIdList);
-
-        if (input.subTitle != null) {
-            intent.putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE, input.subTitle);
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, EditBookshelvesFragment.TAG);
+        if (bookshelfId != 0) {
+            intent.putExtra(EditBookshelvesViewModel.BKEY_CURRENT_BOOKSHELF, bookshelfId);
         }
         return intent;
     }
 
+    @NonNull
     @Override
-    @Nullable
-    public Bundle parseResult(final int resultCode,
-                              @Nullable final Intent intent) {
+    public Long parseResult(final int resultCode,
+                            @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(SearchBookUpdatesFragment.TAG, "parseResult",
+            Logger.d(EditBookshelvesFragment.TAG, "parseResult",
                      "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
-            return null;
+            return 0L;
         }
-        return intent.getExtras();
-    }
 
-    public static class Input {
-
-        @NonNull
-        final ArrayList<Long> bookIdList;
-        @Nullable
-        final String title;
-        @Nullable
-        final String subTitle;
-
-        public Input(@NonNull final ArrayList<Long> bookIdList,
-                     @Nullable final String title,
-                     @Nullable final String subTitle) {
-            this.bookIdList = bookIdList;
-            this.title = title;
-            this.subTitle = subTitle;
-        }
+        // the last edited/inserted shelf
+        return intent.getLongExtra(DBDefinitions.KEY_PK_ID, Bookshelf.DEFAULT);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -142,7 +142,7 @@ public class StylePickerDialogFragment
             return;
         }
 
-        Launcher.sendResult(this, mRequestKey, mCurrentStyleUuid);
+        Launcher.setResult(this, mRequestKey, mCurrentStyleUuid);
 
         dismiss();
     }
@@ -199,9 +199,9 @@ public class StylePickerDialogFragment
     public abstract static class Launcher
             extends DialogFragmentLauncherBase {
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @NonNull final String uuid) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @NonNull final String uuid) {
             final Bundle result = new Bundle(1);
             result.putString(DBDefinitions.KEY_FK_STYLE, uuid);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);

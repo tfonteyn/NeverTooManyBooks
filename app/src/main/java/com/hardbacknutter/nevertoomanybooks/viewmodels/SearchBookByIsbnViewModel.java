@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class SearchBookByIsbnViewModel
         extends ViewModel
-        implements ActivityResultViewModel {
+        implements ResultIntentOwner {
 
     /** Manual entry by user. */
     public static final int SCANNER_OFF = 0;
@@ -64,9 +64,6 @@ public class SearchBookByIsbnViewModel
     private static final String TAG = "SearchBookByIsbnViewModel";
     public static final String BKEY_SCAN_MODE = TAG + ":scanMode";
 
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
     /** The batch mode queue. */
     private final List<ISBN> mScanQueue = new ArrayList<>();
     /** Database Access. */
@@ -76,10 +73,10 @@ public class SearchBookByIsbnViewModel
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean mFirstStart = true;
 
-    /**
-     * Inherits the result from {@link com.hardbacknutter.nevertoomanybooks.EditBookActivity}.
-     */
-    @Override
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private final Intent mResultIntent = new Intent();
+
     @NonNull
     public Intent getResultIntent() {
         return mResultIntent;

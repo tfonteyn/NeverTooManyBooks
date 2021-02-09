@@ -196,8 +196,8 @@ public class EditAuthorDialogFragment
             }
             if (success) {
                 BooksOnBookshelf.RowChangeListener
-                        .sendResult(this, mRequestKey,
-                                    BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());
+                        .setResult(this, mRequestKey,
+                                   BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());
                 return true;
             }
         } else {
@@ -212,7 +212,7 @@ public class EditAuthorDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             mDb.merge(context, mAuthor, existingId);
-                            BooksOnBookshelf.RowChangeListener.sendResult(
+                            BooksOnBookshelf.RowChangeListener.setResult(
                                     this, mRequestKey,
                                     // return the author who 'lost' their books
                                     BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());

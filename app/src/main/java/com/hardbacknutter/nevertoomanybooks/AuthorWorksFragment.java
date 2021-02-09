@@ -35,7 +35,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,10 +49,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -99,8 +98,7 @@ public class AuthorWorksFragment
                 @Override
                 public void handleOnBackPressed() {
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, mVm.getResultIntent());
-                    getActivity().finish();
+                    AuthorWorksContract.setResultAndFinish(getActivity(), mVm.isDataModified());
                 }
             };
     /** The Adapter. */
@@ -369,47 +367,6 @@ public class AuthorWorksFragment
             authorView = itemView.findViewById(R.id.author);
             // optional
             firstPublicationView = itemView.findViewById(R.id.year);
-        }
-    }
-
-    public static class ResultContract
-            extends ActivityResultContract<ResultContract.Input, Bundle> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @NonNull final ResultContract.Input input) {
-            return new Intent(context, FragmentHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, AuthorWorksFragment.TAG)
-                    .putExtra(DBDefinitions.KEY_PK_ID, input.authorId)
-                    .putExtra(DBDefinitions.KEY_FK_BOOKSHELF, input.bookshelfId);
-        }
-
-        @Override
-        @Nullable
-        public Bundle parseResult(final int resultCode,
-                                  @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult",
-                         "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return null;
-            }
-            return intent.getExtras();
-        }
-
-        static class Input {
-
-            final long authorId;
-            final long bookshelfId;
-
-            Input(final long authorId,
-                  final long bookshelfId) {
-                this.authorId = authorId;
-                this.bookshelfId = bookshelfId;
-            }
         }
     }
 

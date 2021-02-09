@@ -47,7 +47,7 @@ public class FieldVisibilityPreferenceFragment
             };
 
     /** The Activity results. */
-    private SettingsViewModel mSettingsViewModel;
+    private SettingsViewModel mVm;
 
     @Override
     public void onCreatePreferences(@Nullable final Bundle savedInstanceState,
@@ -56,7 +56,7 @@ public class FieldVisibilityPreferenceFragment
         setPreferencesFromResource(R.xml.preferences_field_visibility, rootKey);
 
         //noinspection ConstantConditions
-        mSettingsViewModel = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
+        mVm = new ViewModelProvider(getActivity()).get(SettingsViewModel.class);
     }
 
     @Override
@@ -82,7 +82,7 @@ public class FieldVisibilityPreferenceFragment
         // Changing ANY field visibility will usually require recreating the activity which
         // was active when the prefs screen was called.
         // TODO: make this fine-grained
-        mSettingsViewModel.setRequiresActivityRecreation();
+        mVm.setRequiresActivityRecreation();
 
         super.onSharedPreferenceChanged(preferences, key);
     }

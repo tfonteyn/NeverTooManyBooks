@@ -19,9 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.settings.styles;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,7 +32,6 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,14 +45,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditStylesBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -141,27 +137,15 @@ public class PreferredStylesFragment
             new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
-                    final Intent resultIntent = new Intent();
-
-                    // Return the currently selected style UUID, so the caller can apply it.
-                    // This is independent from any modification to this or another style,
-                    // or the order of the styles.
-                    final ListStyle selectedStyle = mListAdapter.getSelectedStyle();
-                    if (selectedStyle != null) {
-                        resultIntent.putExtra(ListStyle.BKEY_STYLE_UUID, selectedStyle.getUuid());
-                    }
-
-                    // Same here, this is independent from the returned style
-                    resultIntent.putExtra(StyleViewModel.BKEY_STYLE_MODIFIED, mVm.isDirty());
-
                     //noinspection ConstantConditions
-                    getActivity().setResult(Activity.RESULT_OK, resultIntent);
-                    getActivity().finish();
+                    PreferredStylesContract.setResultAndFinish(getActivity(),
+                                                               mListAdapter.getSelectedStyle(),
+                                                               mVm.isDirty());
                 }
             };
 
-    private final ActivityResultLauncher<StyleFragment.ResultContract.Input> mEditStyleContract =
-            registerForActivityResult(new StyleFragment.ResultContract(), data -> {
+    private final ActivityResultLauncher<EditStyleContract.Input> mEditStyleContract =
+            registerForActivityResult(new EditStyleContract(), data -> {
                 if (data != null) {
                     @Nullable
                     final ListStyle style;
@@ -372,7 +356,7 @@ public class PreferredStylesFragment
                     throw new IllegalStateException("Not a UserStyle");
                 }
             }
-            mEditStyleContract.launch(new StyleFragment.ResultContract.Input(
+            mEditStyleContract.launch(new EditStyleContract.Input(
                     StyleViewModel.BKEY_ACTION_EDIT, style.getUuid(), style.isPreferred()));
             return true;
 
@@ -383,7 +367,7 @@ public class PreferredStylesFragment
             return true;
 
         } else if (itemId == R.id.MENU_DUPLICATE) {
-            mEditStyleContract.launch(new StyleFragment.ResultContract.Input(
+            mEditStyleContract.launch(new EditStyleContract.Input(
                     StyleViewModel.BKEY_ACTION_CLONE, style.getUuid(), style.isPreferred()));
             return true;
         }
@@ -409,33 +393,6 @@ public class PreferredStylesFragment
             nameView = itemView.findViewById(R.id.name);
             groupsView = itemView.findViewById(R.id.groups);
             typeView = itemView.findViewById(R.id.type);
-        }
-    }
-
-    public static class ResultContract
-            extends ActivityResultContract<String, Bundle> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @NonNull final String styleUuid) {
-            return new Intent(context, FragmentHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, PreferredStylesFragment.TAG)
-                    .putExtra(ListStyle.BKEY_STYLE_UUID, styleUuid);
-        }
-
-        @Override
-        @Nullable
-        public Bundle parseResult(final int resultCode,
-                                  @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return null;
-            }
-            return intent.getExtras();
         }
     }
 

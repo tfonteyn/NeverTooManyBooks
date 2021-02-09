@@ -180,8 +180,8 @@ public class EditSeriesDialogFragment
             }
             if (success) {
                 BooksOnBookshelf.RowChangeListener
-                        .sendResult(this, mRequestKey,
-                                    BooksOnBookshelf.RowChangeListener.SERIES, mSeries.getId());
+                        .setResult(this, mRequestKey,
+                                   BooksOnBookshelf.RowChangeListener.SERIES, mSeries.getId());
                 return true;
             }
         } else {
@@ -196,7 +196,7 @@ public class EditSeriesDialogFragment
                         // move all books from the one being edited to the existing one
                         try {
                             mDb.merge(context, mSeries, existingId);
-                            BooksOnBookshelf.RowChangeListener.sendResult(
+                            BooksOnBookshelf.RowChangeListener.setResult(
                                     this, mRequestKey,
                                     // return the series who 'lost' it's books
                                     BooksOnBookshelf.RowChangeListener.SERIES, mSeries.getId());

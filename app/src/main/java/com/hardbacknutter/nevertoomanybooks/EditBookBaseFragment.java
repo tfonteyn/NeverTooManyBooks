@@ -513,10 +513,10 @@ public abstract class EditBookBaseFragment
         private static final String ORIGINAL = "original";
         private static final String MODIFIED = "modified";
 
-        static <T extends Parcelable> void sendResult(@NonNull final Fragment fragment,
-                                                      @NonNull final String requestKey,
-                                                      @NonNull final T original,
-                                                      @NonNull final T modified) {
+        static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
+                                                     @NonNull final String requestKey,
+                                                     @NonNull final T original,
+                                                     @NonNull final T modified) {
             final Bundle result = new Bundle(2);
             result.putParcelable(ORIGINAL, original);
             result.putParcelable(MODIFIED, modified);

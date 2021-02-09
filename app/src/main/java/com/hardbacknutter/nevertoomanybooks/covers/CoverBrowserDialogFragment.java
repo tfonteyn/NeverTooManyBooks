@@ -149,7 +149,7 @@ public class CoverBrowserDialogFragment
             }
 
             if (mModel.getSelectedFileAbsPath() != null) {
-                Launcher.sendResult(this, mRequestKey, mModel.getSelectedFileAbsPath());
+                Launcher.setResult(this, mRequestKey, mModel.getSelectedFileAbsPath());
             }
             // close the CoverBrowserDialogFragment
             dismiss();
@@ -166,8 +166,13 @@ public class CoverBrowserDialogFragment
         mModel.init(requireArguments());
         mModel.onGalleryImage().observe(getViewLifecycleOwner(), this::setGalleryImage);
         mModel.onSelectedImage().observe(getViewLifecycleOwner(), this::setSelectedImage);
-        mModel.onShowGalleryProgress().observe(getViewLifecycleOwner(), show ->
-                mVb.progressBar.setVisibility(show ? View.VISIBLE : View.INVISIBLE));
+        mModel.onShowGalleryProgress().observe(getViewLifecycleOwner(), show -> {
+            if (show) {
+                mVb.progressBar.show();
+            } else {
+                mVb.progressBar.hide();
+            }
+        });
     }
 
     @Override
@@ -184,7 +189,7 @@ public class CoverBrowserDialogFragment
             if (mModel.getEditions().isEmpty()) {
                 // start the task
                 mVb.statusMessage.setText(R.string.progress_msg_searching_editions);
-                mVb.progressBar.setVisibility(View.VISIBLE);
+                mVb.progressBar.show();
                 mSearchEditionsTask.search(mModel.getBaseIsbn());
             }
         }
@@ -209,7 +214,7 @@ public class CoverBrowserDialogFragment
 
         if (message.isNewEvent()) {
             if (message.result == null || message.result.isEmpty()) {
-                mVb.progressBar.setVisibility(View.INVISIBLE);
+                mVb.progressBar.hide();
                 mVb.statusMessage.setText(R.string.warning_no_editions);
                 mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
                 return;
@@ -266,7 +271,7 @@ public class CoverBrowserDialogFragment
 
         // if none left, dismiss.
         if (mGalleryAdapter.getItemCount() == 0) {
-            mVb.progressBar.setVisibility(View.INVISIBLE);
+            mVb.progressBar.hide();
             mVb.statusMessage.setText(R.string.warning_image_not_found);
             mVb.statusMessage.postDelayed(this::dismiss, BaseActivity.ERROR_DELAY_MS);
         }
@@ -289,7 +294,7 @@ public class CoverBrowserDialogFragment
 
             } else {
                 mVb.preview.setVisibility(View.INVISIBLE);
-                mVb.previewProgressBar.setVisibility(View.VISIBLE);
+                mVb.previewProgressBar.show();
 
                 // start a task to fetch a larger image
                 mModel.fetchSelectedImage(imageFileInfo);
@@ -306,7 +311,7 @@ public class CoverBrowserDialogFragment
         // Always reset the preview and hide the progress bar
         mModel.setSelectedFile(null);
         mVb.preview.setVisibility(View.INVISIBLE);
-        mVb.previewProgressBar.setVisibility(View.INVISIBLE);
+        mVb.previewProgressBar.hide();
 
         if (imageFileInfo != null) {
             final File file = imageFileInfo.getFile();
@@ -334,9 +339,9 @@ public class CoverBrowserDialogFragment
 
         private static final String COVER_FILE_SPEC = "fileSpec";
 
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @NonNull final String fileSpec) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @NonNull final String fileSpec) {
             final Bundle result = new Bundle(1);
             result.putString(COVER_FILE_SPEC, fileSpec);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);

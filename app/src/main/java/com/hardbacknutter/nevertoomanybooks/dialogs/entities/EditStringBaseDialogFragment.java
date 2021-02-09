@@ -171,7 +171,7 @@ public abstract class EditStringBaseDialogFragment
 
         onSave(mOriginalText, mCurrentText);
 
-        BooksOnBookshelf.RowChangeListener.sendResult(this, mRequestKey, mFieldFlag, 0);
+        BooksOnBookshelf.RowChangeListener.setResult(this, mRequestKey, mFieldFlag, 0);
         return true;
     }
 

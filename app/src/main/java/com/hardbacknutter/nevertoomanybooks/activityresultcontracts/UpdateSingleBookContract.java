@@ -38,23 +38,26 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
- * Update a list of Books.
+ * Update a single Book.
  */
-public class UpdateBooklistContract
-        extends ActivityResultContract<UpdateBooklistContract.Input, Bundle> {
+public class UpdateSingleBookContract
+        extends ActivityResultContract<Book, Bundle> {
 
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final Input input) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class)
-                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
-                .putExtra(Book.BKEY_BOOK_ID_LIST, input.bookIdList);
+                               @NonNull final Book book) {
 
-        if (input.subTitle != null) {
-            intent.putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE, input.subTitle);
-        }
-        return intent;
+        final ArrayList<Long> bookIdList = new ArrayList<>();
+        bookIdList.add(book.getId());
+
+        //noinspection ConstantConditions
+        return new Intent(context, FragmentHostActivity.class)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchBookUpdatesFragment.TAG)
+                .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
+                .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_TITLE, book.getTitle())
+                .putExtra(SearchBookUpdatesFragment.BKEY_SCREEN_SUBTITLE,
+                          book.getPrimaryAuthor().getLabel(context));
     }
 
     @Override
@@ -70,23 +73,5 @@ public class UpdateBooklistContract
             return null;
         }
         return intent.getExtras();
-    }
-
-    public static class Input {
-
-        @NonNull
-        final ArrayList<Long> bookIdList;
-        @Nullable
-        final String title;
-        @Nullable
-        final String subTitle;
-
-        public Input(@NonNull final ArrayList<Long> bookIdList,
-                     @Nullable final String title,
-                     @Nullable final String subTitle) {
-            this.bookIdList = bookIdList;
-            this.title = title;
-            this.subTitle = subTitle;
-        }
     }
 }

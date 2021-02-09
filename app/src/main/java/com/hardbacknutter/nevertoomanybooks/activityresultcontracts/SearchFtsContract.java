@@ -28,34 +28,38 @@ import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.ArrayList;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.SearchBookByExternalIdFragment;
-import com.hardbacknutter.nevertoomanybooks.SearchBookByIsbnFragment;
-import com.hardbacknutter.nevertoomanybooks.SearchBookByTextFragment;
+import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
+import com.hardbacknutter.nevertoomanybooks.SearchFtsFragment;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Entity;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.SearchBookByIsbnViewModel;
+import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
-/**
- * <ul>
- *     <li>param: {@link By} which method to use to add a book</li>
- *     <li>return: {@link Bundle}</li>
- * </ul>
- */
-public class AddBookBySearchContract
-        extends ActivityResultContract<AddBookBySearchContract.By, Bundle> {
-
-    private static final String TAG = "AddBookBySearchContract";
+public class SearchFtsContract
+        extends ActivityResultContract<SearchCriteria, Bundle> {
 
     public static void setResultAndFinish(@NonNull final Activity activity,
-                                          final long bookId,
-                                          final boolean modified) {
+                                          @SuppressWarnings("TypeMayBeWeakened")
+                                          @NonNull final ArrayList<Long> bookIdList,
+                                          @Nullable final String titleSearchText,
+                                          @Nullable final String seriesTitleSearchText,
+                                          @Nullable final String authorSearchText,
+                                          @Nullable final String publisherNameSearchText,
+                                          @Nullable final String keywordsSearchText) {
+
         final Intent resultIntent = new Intent()
-                .putExtra(DBDefinitions.KEY_PK_ID, bookId)
-                .putExtra(Entity.BKEY_DATA_MODIFIED, modified);
+                // pass the book ID's for the list
+                .putExtra(Book.BKEY_BOOK_ID_LIST, bookIdList)
+                // pass these for displaying to the user
+                .putExtra(DBDefinitions.KEY_TITLE, titleSearchText)
+                .putExtra(DBDefinitions.KEY_SERIES_TITLE, seriesTitleSearchText)
+                .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, authorSearchText)
+                .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, publisherNameSearchText)
+                .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS, keywordsSearchText);
         activity.setResult(Activity.RESULT_OK, resultIntent);
         activity.finish();
     }
@@ -63,33 +67,10 @@ public class AddBookBySearchContract
     @NonNull
     @Override
     public Intent createIntent(@NonNull final Context context,
-                               @NonNull final By by) {
-        final Intent intent = new Intent(context, FragmentHostActivity.class);
-
-        switch (by) {
-            case Isbn:
-                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                SearchBookByIsbnFragment.TAG);
-                break;
-
-            case Scan:
-                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                SearchBookByIsbnFragment.TAG)
-                      .putExtra(SearchBookByIsbnViewModel.BKEY_SCAN_MODE,
-                                SearchBookByIsbnViewModel.SCANNER_MODE_SINGLE);
-                break;
-
-            case ExternalId:
-                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                SearchBookByExternalIdFragment.TAG);
-                break;
-
-            case Text:
-                intent.putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG,
-                                SearchBookByTextFragment.TAG);
-                break;
-        }
-
+                               @NonNull final SearchCriteria criteria) {
+        final Intent intent = new Intent(context, FragmentHostActivity.class)
+                .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchFtsFragment.TAG);
+        criteria.to(intent);
         return intent;
     }
 
@@ -98,17 +79,13 @@ public class AddBookBySearchContract
     public Bundle parseResult(final int resultCode,
                               @Nullable final Intent intent) {
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-            Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
+            Logger.d(SearchFtsFragment.TAG, "parseResult",
+                     "|resultCode=" + resultCode + "|intent=" + intent);
         }
 
         if (intent == null || resultCode != Activity.RESULT_OK) {
             return null;
         }
-
         return intent.getExtras();
-    }
-
-    public enum By {
-        Isbn, Scan, Text, ExternalId
     }
 }

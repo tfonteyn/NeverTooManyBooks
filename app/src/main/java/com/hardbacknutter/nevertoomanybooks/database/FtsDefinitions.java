@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * FTS definitions and helpers.
  * reminder: no need for a type nor constraints: https://sqlite.org/fts3.html
  */
-public class FtsDefinition {
+public class FtsDefinitions {
 
     public static final TableDefinition TBL_FTS_BOOKS;
     /** FTS Primary key. */

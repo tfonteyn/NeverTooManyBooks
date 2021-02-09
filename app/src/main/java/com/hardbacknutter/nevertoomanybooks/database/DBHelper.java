@@ -35,10 +35,7 @@ import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -59,33 +56,20 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_BL_TOP_OFFSET;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOKSHELF_BL_TOP_POS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION_DUST_COVER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_CALIBRE_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_ESID_LAST_DODO_NL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_IS_PREFERRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_STYLE_MENU_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_CALIBRE_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME_OB;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_PREFERRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_MENU_POSITION;
@@ -100,7 +84,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
@@ -109,8 +92,8 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinition.KEY_FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinition.TBL_FTS_BOOKS;
+import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinitions.KEY_FTS_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinitions.TBL_FTS_BOOKS;
 
 /**
  * Singleton {@link SQLiteOpenHelper} for the main database.
@@ -655,125 +638,15 @@ public final class DBHelper
 
         final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
-        if (oldVersion < 2) {
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_BOOK_COLOR);
-        }
-        if (oldVersion < 3) {
-            TBL_BOOKS.alterTableAddColumns(syncedDb,
-                                           DOM_BOOK_CONDITION,
-                                           DOM_BOOK_CONDITION_DUST_COVER);
-        }
-        if (oldVersion < 4) {
-            // bug fix: this was modifying the books last update-date each time a bookshelf
-            // changed its current style.
-            syncedDb.execSQL("DROP TRIGGER IF EXISTS after_update_onbookshelf");
-        }
-        if (oldVersion < 5) {
-            // changed column names; just scrap the old data
-            syncedDb.drop(TBL_BOOK_LIST_NODE_STATE.getName());
-            TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
-        }
-        if (oldVersion < 6) {
-            TBL_BOOKSHELF.alterTableAddColumns(syncedDb,
-                                               DOM_BOOKSHELF_BL_TOP_POS,
-                                               DOM_BOOKSHELF_BL_TOP_OFFSET);
-
-            PreferenceManager.getDefaultSharedPreferences(context)
-                             .edit()
-                             .remove("booklist.top.row")
-                             .remove("booklist.top.rowId")
-                             .remove("booklist.top.offset")
-                             .remove("fields.visibility.bookshelf")
-                             .remove("tmp.edit.book.tab.authSer")
-                             .remove("edit.book.tab.authSer")
-                             .remove("compat.booklist.mode")
-                             .apply();
-        }
-        if (oldVersion < 7) {
-            TBL_PUBLISHERS.create(syncedDb, true);
-            TBL_BOOK_PUBLISHER.create(syncedDb, true);
-
-            final ContentValues cv = new ContentValues();
-            final Map<String, Long> pubs = new HashMap<>();
-            try (Cursor cursor = syncedDb.rawQuery(
-                    "SELECT _id,publisher,language FROM books", null)) {
-                while (cursor.moveToNext()) {
-                    final long bookId = cursor.getLong(0);
-                    final String publisherName = cursor.getString(1).trim();
-                    final String lang = cursor.getString(2);
-                    final long pubId;
-                    if (!pubs.containsKey(publisherName)) {
-                        Locale locale = AppLocale.getInstance().getLocale(context, lang);
-                        if (locale == null) {
-                            locale = AppLocale.getInstance().getUserLocale(context);
-                        }
-                        cv.clear();
-                        cv.put(KEY_PUBLISHER_NAME, publisherName);
-                        cv.put(KEY_PUBLISHER_NAME_OB,
-                               DAO.encodeOrderByColumn(publisherName, locale));
-                        pubId = syncedDb.insert(TBL_PUBLISHERS.getName(), null, cv);
-                        pubs.put(publisherName, pubId);
-                    } else {
-                        //noinspection ConstantConditions
-                        pubId = pubs.get(publisherName);
-                    }
-
-                    cv.clear();
-                    cv.put(KEY_FK_BOOK, bookId);
-                    cv.put(KEY_FK_PUBLISHER, pubId);
-                    cv.put(KEY_BOOK_PUBLISHER_POSITION, 1);
-                    syncedDb.insert(TBL_BOOK_PUBLISHER.getName(), null, cv);
-                }
-            }
-
-            // we'll remove the column at a later version.
-            syncedDb.execSQL("UPDATE books SET publisher=''");
-
-            StartupViewModel.scheduleFtsRebuild(context, true);
-        }
-        if (oldVersion < 8) {
-            // pref key name changes
-            final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
-            final Set<String> all = global.getAll().keySet();
-            final SharedPreferences.Editor editor = global.edit();
-            for (final String key : all) {
-                if (key.startsWith("search.site")) {
-                    editor.remove(key);
-                }
-            }
-            editor.remove("edit.book.tab.nativeId")
-                  .remove("startup.lastVersion")
-                  .apply();
-
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_ESID_LAST_DODO_NL);
-        }
-        if (oldVersion < 9) {
-            TBL_BOOKS.alterTableAddColumns(syncedDb, DOM_CALIBRE_BOOK_UUID);
-        }
-        if (oldVersion < 10) {
-            // moved to FTS4
-            StartupViewModel.scheduleFtsRebuild(context, true);
-        }
         if (oldVersion < 12) {
-            final Collection<String> toRemove = new ArrayList<>();
-            toRemove.add("bl_top_row");
-            final Map<String, String> toRename = new HashMap<>();
-            toRename.put("bookshelf", KEY_BOOKSHELF_NAME);
-            TBL_BOOKSHELF.recreateAndReload(syncedDb, toRename, toRemove);
-
-            toRename.clear();
-            toRename.put("bookshelf", KEY_FK_BOOKSHELF);
-            TBL_BOOK_BOOKSHELF.recreateAndReload(syncedDb, toRename, null);
-
-            // added visibility column in v10; just scrap the old data
-            syncedDb.drop(TBL_BOOK_LIST_NODE_STATE.getName());
-            TBL_BOOK_LIST_NODE_STATE.create(syncedDb, true);
-
-            StartupViewModel.scheduleMaintenance(context, true);
+            // This version should be the current public available APK on github.
+            // i.e. 1.2.1 is available which can upgrade older versions.
+            throw new UnsupportedOperationException(
+                    context.getString(R.string.error_upgrade_not_supported, "1.2.1"));
         }
         if (oldVersion < 13) {
             //
-            // This is the v1.2.0 / 1.3.0 release.
+            // This is the v1.2.0 / 1.2.1 / 1.3.0 release.
             //
             TBL_BOOKLIST_STYLES.alterTableAddColumns(syncedDb,
                                                      DOM_STYLE_MENU_POSITION,
@@ -789,10 +662,10 @@ public final class DBHelper
                         final String uuid = entries[i];
                         if (uuid != null && !uuid.isEmpty()) {
                             cv.clear();
-                            cv.put(KEY_STYLE_MENU_POSITION, i);
-                            cv.put(KEY_STYLE_IS_PREFERRED, 1);
-                            syncedDb.update(TBL_BOOKLIST_STYLES.getName(),
-                                            cv, KEY_STYLE_UUID + "=?", new String[]{uuid});
+                            cv.put("menu_order", i);
+                            cv.put("preferred", 1);
+                            syncedDb.update("book_list_styles", cv,
+                                            "uuid=?", new String[]{uuid});
                         }
                     }
                 }
@@ -803,13 +676,10 @@ public final class DBHelper
             TBL_CALIBRE_BOOKS.create(syncedDb, true);
             TBL_CALIBRE_LIBRARIES.create(syncedDb, true);
 
-            syncedDb.execSQL("INSERT INTO " + TBL_CALIBRE_BOOKS.getName()
-                             + '(' + KEY_FK_BOOK + ',' + KEY_CALIBRE_BOOK_UUID + ')'
-                             + " SELECT " + KEY_PK_ID + ',' + KEY_CALIBRE_BOOK_UUID
-                             + " FROM " + TBL_BOOKS.getName()
-                             + " WHERE " + KEY_CALIBRE_BOOK_UUID + " IS NOT NULL");
-            syncedDb.execSQL("UPDATE " + TBL_BOOKS.getName()
-                             + " SET " + KEY_CALIBRE_BOOK_UUID + "=NULL");
+            syncedDb.execSQL("INSERT INTO calibre_books (book,clb_book_uuid)"
+                             + " SELECT _id, clb_book_uuid FROM books"
+                             + " WHERE clb_book_uuid IS NOT NULL");
+            syncedDb.execSQL("UPDATE books SET clb_book_uuid=NULL");
 
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
@@ -904,7 +774,6 @@ public final class DBHelper
         }
 
         //URGENT: the use of recreateAndReload is dangerous right now and can break updates.
-        // It's fine in the db12 update but should no longer be used & must be replaced
         // More specifically: the recreateAndReload routine can only be used ONCE per table.
         // We'll need to keep previous table definitions as BC used to do.
 
@@ -989,6 +858,9 @@ public final class DBHelper
             syncLock = db.beginTransaction(true);
 
             db.delete(TBL_CALIBRE_BOOKS.getName(), null, null);
+            db.delete(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), null, null);
+            db.delete(TBL_CALIBRE_LIBRARIES.getName(), null, null);
+
             db.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
             db.delete(TBL_FTS_BOOKS.getName(), null, null);
 

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -20,9 +20,6 @@
 package com.hardbacknutter.nevertoomanybooks;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,7 +29,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -42,11 +38,10 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
  * Search based on the SQLite FTS engine. Due to the speed of FTS it updates the
@@ -193,23 +188,15 @@ public class SearchFtsFragment
         mVb.publisher.addTextChangedListener(mTextWatcher);
         mVb.keywords.addTextChangedListener(mTextWatcher);
 
-        // When the show results buttons is tapped, go show the resulting booklist.
+        // When the show results buttons is tapped, return and show the resulting booklist.
         mVb.btnSearch.setOnClickListener(v -> {
-            final Intent resultIntent = new Intent()
-                    // pass these for displaying to the user
-                    .putExtra(DBDefinitions.KEY_TITLE, mTitleSearchText)
-                    .putExtra(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText)
-
-                    .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR,
-                              mAuthorSearchText)
-                    .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER,
-                              mPublisherNameSearchText)
-                    .putExtra(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS,
-                              mKeywordsSearchText)
-                    // pass the book ID's for the list
-                    .putExtra(Book.BKEY_BOOK_ID_LIST, mBookIdList);
-            getActivity().setResult(Activity.RESULT_OK, resultIntent);
-            getActivity().finish();
+            SearchFtsContract.setResultAndFinish(getActivity(),
+                                                 mBookIdList,
+                                                 mTitleSearchText,
+                                                 mSeriesTitleSearchText,
+                                                 mAuthorSearchText,
+                                                 mPublisherNameSearchText,
+                                                 mKeywordsSearchText);
         });
 
         // Timer will be started in OnResume().
@@ -325,34 +312,6 @@ public class SearchFtsFragment
         }
         if (timer != null) {
             timer.cancel();
-        }
-    }
-
-    public static class ResultContract
-            extends ActivityResultContract<SearchCriteria, Bundle> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @NonNull final SearchCriteria criteria) {
-            final Intent intent = new Intent(context, FragmentHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, SearchFtsFragment.TAG);
-            criteria.to(intent);
-            return intent;
-        }
-
-        @Override
-        @Nullable
-        public Bundle parseResult(final int resultCode,
-                                  @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            if (intent == null || resultCode != Activity.RESULT_OK) {
-                return null;
-            }
-            return intent.getExtras();
         }
     }
 

@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
@@ -94,7 +94,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -121,10 +120,12 @@ public class ShowBookFragment
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
+
     /** Calibre preferences screen. */
-    private final ActivityResultLauncher<Bundle> mCalibrePreferencesLauncher =
-            registerForActivityResult(new SettingsHostActivity.ResultContract(
-                    CalibrePreferencesFragment.TAG), data -> { });
+    private final ActivityResultLauncher<Void> mCalibrePreferencesLauncher =
+            registerForActivityResult(new CalibrePreferencesFragment.ResultContract(),
+                                      aVoid -> { });
+
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
@@ -145,12 +146,15 @@ public class ShowBookFragment
     /** ViewPager2 adapter. */
     private ShowBookPagerAdapter mPagerAdapter;
     private Toolbar mToolbar;
+
     /** User edits a book. */
     private final ActivityResultLauncher<Long> mEditBookLauncher =
             registerForActivityResult(new EditBookByIdContract(), this::onBookEditingDone);
+
     /** User updates a book with internet data. */
-    private final ActivityResultLauncher<Book> mUpdateBookLauncher =
-            registerForActivityResult(new UpdateBookContract(), this::onBookEditingDone);
+    private final ActivityResultLauncher<Book> mUpdateBookLauncher = registerForActivityResult(
+            new UpdateSingleBookContract(), this::onBookEditingDone);
+
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
             new EditLenderDialogFragment.Launcher() {
@@ -224,7 +228,7 @@ public class ShowBookFragment
 
             mCoverHandler[0] = new CoverHandler(this, mVm.getDb(), 0, maxWidth, maxHeight);
             mCoverHandler[0].onViewCreated(this);
-            mCoverHandler[0].setProgressBar(mVb.coverOperationProgressBar);
+            mCoverHandler[0].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[0].setBookSupplier(
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }
@@ -235,7 +239,7 @@ public class ShowBookFragment
 
             mCoverHandler[1] = new CoverHandler(this, mVm.getDb(), 1, maxWidth, maxHeight);
             mCoverHandler[1].onViewCreated(this);
-            mCoverHandler[1].setProgressBar(mVb.coverOperationProgressBar);
+            mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(
                     () -> mVm.getBookAtPosition(mVb.pager.getCurrentItem()));
         }
@@ -436,7 +440,7 @@ public class ShowBookFragment
     private void onBookEditingDone(@Nullable final Bundle data) {
         if (data != null) {
             // pass the data up
-            mVm.putResultData(data);
+            mVm.getResultIntent().putExtras(data);
         }
         refreshCurrentBook();
     }

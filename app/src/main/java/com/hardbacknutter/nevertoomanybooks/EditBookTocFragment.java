@@ -677,8 +677,8 @@ public class EditBookTocFragment
 
             if (hasToc) {
                 dialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(android.R.string.ok),
-                                 (d, which) -> Launcher.sendResult(this, mRequestKey,
-                                                                   mTocBitMask, mTocEntries));
+                                 (d, which) -> Launcher.setResult(this, mRequestKey,
+                                                                  mTocBitMask, mTocEntries));
             }
 
             // if we found multiple editions, allow a re-try with the next edition
@@ -697,10 +697,10 @@ public class EditBookTocFragment
             private static final String TOC_BIT_MASK = "tocBitMask";
             private static final String TOC_LIST = "tocEntries";
 
-            static void sendResult(@NonNull final Fragment fragment,
-                                   @NonNull final String requestKey,
-                                   @Book.TocBits final long tocBitMask,
-                                   @NonNull final ArrayList<TocEntry> tocEntries) {
+            static void setResult(@NonNull final Fragment fragment,
+                                  @NonNull final String requestKey,
+                                  @Book.TocBits final long tocBitMask,
+                                  @NonNull final ArrayList<TocEntry> tocEntries) {
                 final Bundle result = new Bundle(2);
                 result.putLong(TOC_BIT_MASK, tocBitMask);
                 result.putParcelableArrayList(TOC_LIST, tocEntries);

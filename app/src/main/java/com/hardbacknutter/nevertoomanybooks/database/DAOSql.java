@@ -1190,7 +1190,7 @@ public class DAOSql {
     /**
      * Sql INSERT.
      */
-    public static final class SqlInsert {
+    static final class SqlInsert {
 
         static final String INSERT_INTO_ = "INSERT INTO ";
 
@@ -1278,7 +1278,7 @@ public class DAOSql {
                 + ") VALUES(?,?)";
 
 
-        public static final String CALIBRE_LIBRARY =
+        static final String CALIBRE_LIBRARY =
                 INSERT_INTO_ + TBL_CALIBRE_LIBRARIES.getName()
                 + '(' + KEY_CALIBRE_LIBRARY_UUID
                 + ',' + KEY_CALIBRE_LIBRARY_STRING_ID
@@ -1409,7 +1409,7 @@ public class DAOSql {
      * All 'link' tables will be updated due to their FOREIGN KEY constraints.
      * The 'other-side' of a link table is cleaned by triggers.
      */
-    public static final class SqlDelete {
+    static final class SqlDelete {
 
         static final String _NOT_IN_ = " NOT IN ";
         private static final String DELETE_FROM_ = "DELETE FROM ";

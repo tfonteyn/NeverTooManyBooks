@@ -64,10 +64,16 @@ import java.util.Objects;
 import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
-import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBookContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
@@ -111,9 +117,6 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsHostActivity;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
-import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
@@ -168,8 +171,9 @@ public class BooksOnBookshelf
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
 
     /** Bring up the Goodreads synchronization options. */
-    private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
-            new GoodreadsAdminFragment.ResultContract(), data -> updateNavigationMenuVisibility());
+    private final ActivityResultLauncher<Bundle> mGoodreadsLauncher = registerForActivityResult(
+            new FragmentHostActivity.ResultContract(GoodreadsAdminFragment.TAG),
+            data -> updateNavigationMenuVisibility());
 
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
@@ -178,6 +182,10 @@ public class BooksOnBookshelf
 
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
+    /** Calibre preferences screen. */
+    private final ActivityResultLauncher<Void> mCalibrePreferencesLauncher =
+            registerForActivityResult(new CalibrePreferencesFragment.ResultContract(),
+                                      aVoid -> updateNavigationMenuVisibility());
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
@@ -186,49 +194,59 @@ public class BooksOnBookshelf
     /** The Activity ViewModel. */
     private BooksOnBookshelfViewModel mVm;
 
-
     /** Display a Book. */
-    private final ActivityResultLauncher<ShowBookActivity.ResultContract.Input>
+    private final ActivityResultLauncher<ShowBookContract.Input>
             mDisplayBookLauncher = registerForActivityResult(
-            new ShowBookActivity.ResultContract(), this::onBookEditFinished);
+            new ShowBookContract(), this::onBookEditFinished);
+
     /** Edit a Book. */
     private final ActivityResultLauncher<Long> mEditByIdLauncher = registerForActivityResult(
             new EditBookByIdContract(), this::onBookEditFinished);
+
     /** Duplicate and edit a Book. */
     private final ActivityResultLauncher<Bundle> mDuplicateLauncher = registerForActivityResult(
             new EditBookFromBundleContract(), this::onBookEditFinished);
+
     /** Add a Book by doing a search on the internet. */
     private final ActivityResultLauncher<AddBookBySearchContract.By> mAddBookBySearchLauncher =
             registerForActivityResult(new AddBookBySearchContract(), this::onBookEditFinished);
+
     /** Update an individual Book with information from the internet. */
     private final ActivityResultLauncher<Book> mUpdateBookLauncher =
-            registerForActivityResult(new UpdateBookContract(), this::onBookEditFinished);
+            registerForActivityResult(new UpdateSingleBookContract(),
+                                      this::onBookEditFinished);
+
     /** Update a list of Books with information from the internet. */
-    private final ActivityResultLauncher<UpdateBooklistContract.Input> mUpdateBookListLauncher =
-            registerForActivityResult(new UpdateBooklistContract(), this::onBookEditFinished);
+    private final ActivityResultLauncher<UpdateBooklistContract.Input>
+            mUpdateBookListLauncher = registerForActivityResult(
+            new UpdateBooklistContract(), this::onBookEditFinished);
+
     /** View all works of an Author. */
-    private final ActivityResultLauncher<AuthorWorksFragment.ResultContract.Input>
+    private final ActivityResultLauncher<AuthorWorksContract.Input>
             mAuthorWorksLauncher = registerForActivityResult(
-            new AuthorWorksFragment.ResultContract(), this::onBookEditFinished);
+            new AuthorWorksContract(), this::onBookEditFinished);
+
     /** The local FTS based search. */
     private final ActivityResultLauncher<SearchCriteria> mFtsSearchLauncher =
-            registerForActivityResult(new SearchFtsFragment.ResultContract(), data -> {
+            registerForActivityResult(new SearchFtsContract(), data -> {
                 if (mVm.setSearchCriteria(data, true)) {
                     //URGENT: switch bookshelf? all-books?
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
+
     /** Manage the book shelves. */
     private final ActivityResultLauncher<Long> mManageBookshelvesLauncher =
-            registerForActivityResult(new EditBookshelvesFragment.ResultContract(), id -> {
-                if (id != 0 && id != mVm.getCurrentBookshelf().getId()) {
-                    mVm.setCurrentBookshelf(this, id);
+            registerForActivityResult(new EditBookshelvesContract(), bookshelfId -> {
+                if (bookshelfId != 0 && bookshelfId != mVm.getCurrentBookshelf().getId()) {
+                    mVm.setCurrentBookshelf(this, bookshelfId);
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
+
     /** Manage the list of (preferred) styles. */
     private final ActivityResultLauncher<String> mEditStylesLauncher = registerForActivityResult(
-            new PreferredStylesFragment.ResultContract(), data -> {
+            new PreferredStylesContract(), data -> {
                 if (data != null) {
                     // we get the UUID for the selected style back.
                     final String uuid = data.getString(ListStyle.BKEY_STYLE_UUID);
@@ -237,15 +255,16 @@ public class BooksOnBookshelf
                     }
 
                     // This is independent from the above style having been modified ot not.
-                    if (data.getBoolean(StyleViewModel.BKEY_STYLE_MODIFIED, false)) {
+                    if (data.getBoolean(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
                         mVm.setForceRebuildInOnResume(true);
                     }
                 }
             });
+
     /** Edit an individual style. */
-    private final ActivityResultLauncher<StyleFragment.ResultContract.Input>
+    private final ActivityResultLauncher<EditStyleContract.Input>
             mEditStyleLauncher = registerForActivityResult(
-            new StyleFragment.ResultContract(), data -> {
+            new EditStyleContract(), data -> {
                 if (data != null) {
                     // We get here from the StylePickerDialogFragment (i.e. the style menu)
                     // when the user choose to EDIT a style.
@@ -260,29 +279,21 @@ public class BooksOnBookshelf
                     }
                 }
             });
+
     /** Do an import. */
     private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
             new ImportFragment.ResultsContract(), this::onImportFinished);
+
     /** Calibre synchronization options. */
-    private final ActivityResultLauncher<Void> mCalibreAdminLauncher =
-            registerForActivityResult(new CalibreAdminFragment.ResultContract(), data -> {
-                updateNavigationMenuVisibility();
-                if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
-                    mVm.setForceRebuildInOnResume(true);
-                }
-            });
-    /** Calibre preferences screen. */
-    private final ActivityResultLauncher<Bundle> mCalibrePreferencesLauncher =
-            registerForActivityResult(new SettingsHostActivity.ResultContract(
-                    CalibrePreferencesFragment.TAG), data -> {
+    private final ActivityResultLauncher<Bundle> mCalibreAdminLauncher =
+            registerForActivityResult(new FragmentHostActivity.ResultContract(
+                    CalibreAdminFragment.TAG), data -> {
 
                 updateNavigationMenuVisibility();
                 if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
                     mVm.setForceRebuildInOnResume(true);
                 }
             });
-
-
     /** Encapsulates the FAB button/menu. */
     private FabMenu mFabMenu;
     /** View Binding. */
@@ -363,7 +374,6 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
-
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -388,7 +398,7 @@ public class BooksOnBookshelf
 
                     // If it's a book, open the details screen.
                     if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-                        mDisplayBookLauncher.launch(new ShowBookActivity.ResultContract.Input(
+                        mDisplayBookLauncher.launch(new ShowBookContract.Input(
                                 rowData.getLong(DBDefinitions.KEY_FK_BOOK),
                                 mVm.getBookNavigationTableName(),
                                 rowData.getLong(DBDefinitions.KEY_PK_ID),
@@ -432,7 +442,6 @@ public class BooksOnBookshelf
                     return true;
                 }
             };
-
     /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
             new MenuPickerDialogFragment.Launcher() {
@@ -442,7 +451,6 @@ public class BooksOnBookshelf
                     return onContextItemSelected(itemId, position);
                 }
             };
-
     /** The adapter used to fill the Bookshelf selector. */
     private ExtArrayAdapter<Bookshelf> mBookshelfAdapter;
 
@@ -975,7 +983,7 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_AUTHOR_WORKS) {
-            mAuthorWorksLauncher.launch(new AuthorWorksFragment.ResultContract.Input(
+            mAuthorWorksLauncher.launch(new AuthorWorksContract.Input(
                     rowData.getLong(DBDefinitions.KEY_FK_AUTHOR),
                     mVm.getCurrentBookshelf().getId()));
             return true;
@@ -1243,7 +1251,7 @@ public class BooksOnBookshelf
 
     public void editStyle(@NonNull final ListStyle style,
                           final boolean setAsPreferred) {
-        mEditStyleLauncher.launch(new StyleFragment.ResultContract.Input(
+        mEditStyleLauncher.launch(new EditStyleContract.Input(
                 StyleViewModel.BKEY_ACTION_EDIT, style.getUuid(), setAsPreferred));
     }
 
@@ -1394,7 +1402,7 @@ public class BooksOnBookshelf
         }
 
         if (!mVm.isRunning()) {
-            mVb.progressBar.setVisibility(View.VISIBLE);
+            mVb.progressBar.show();
             // Invisible... theoretically this means the page should not re-layout
             mVb.listHeader.getRoot().setVisibility(View.INVISIBLE);
             mVb.list.setVisibility(View.INVISIBLE);
@@ -1418,7 +1426,7 @@ public class BooksOnBookshelf
      * @param message from the task; contains the (optional) target rows.
      */
     private void onBuildFinished(@NonNull final FinishedMessage<List<BooklistNode>> message) {
-        mVb.progressBar.setVisibility(View.GONE);
+        mVb.progressBar.hide();
         if (message.isNewEvent()) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
                 Debug.stopMethodTracing();
@@ -1433,7 +1441,7 @@ public class BooksOnBookshelf
      * @param message from the task
      */
     public void onBuildFailed(@NonNull final LiveDataEvent message) {
-        mVb.progressBar.setVisibility(View.GONE);
+        mVb.progressBar.hide();
         if (message.isNewEvent()) {
             if (mVm.isListLoaded()) {
                 displayList(null);
@@ -1707,10 +1715,10 @@ public class BooksOnBookshelf
          * @param id         the item being modified,
          *                   or {@code 0} for a global change or for an books-table inline item
          */
-        static void sendResult(@NonNull final Fragment fragment,
-                               @NonNull final String requestKey,
-                               @Change final int change,
-                               final long id) {
+        static void setResult(@NonNull final Fragment fragment,
+                              @NonNull final String requestKey,
+                              @Change final int change,
+                              final long id) {
             final Bundle result = new Bundle(2);
             result.putInt(CHANGE, change);
             result.putLong(ITEM_ID, id);

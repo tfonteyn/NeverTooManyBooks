@@ -38,11 +38,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 
 public class ImportViewModel
         extends ViewModel
-        implements ResultIntent {
+        implements ResultIntentOwner {
 
     private static final String TAG = "ImportViewModel";
     public static final String BKEY_URL = TAG + ":url";

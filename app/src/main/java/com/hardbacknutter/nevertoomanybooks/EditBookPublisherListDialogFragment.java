@@ -436,7 +436,7 @@ public class EditBookPublisherListDialogFragment
             final Publisher tmpPublisher = Publisher.from(mName);
 
             EditBookBaseFragment.EditItemLauncher
-                    .sendResult(this, mRequestKey, mPublisher, tmpPublisher);
+                    .setResult(this, mRequestKey, mPublisher, tmpPublisher);
             return true;
         }
 

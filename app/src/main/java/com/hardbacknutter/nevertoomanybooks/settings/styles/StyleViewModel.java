@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -35,6 +35,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
@@ -42,31 +43,18 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntent;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 
 public class StyleViewModel
         extends ViewModel
-        implements ResultIntent {
+        implements ResultIntentOwner {
 
     public static final int BKEY_ACTION_CLONE = 0;
     public static final int BKEY_ACTION_EDIT = 1;
 
     /** Log tag. */
     private static final String TAG = "StyleViewModel";
-    /**
-     * Styles related data was modified (or not).
-     * This includes a ListStyle being modified or deleted,
-     * or the order of the preferred styles modified,
-     * or the selected ListStyle changed,
-     * or ...
-     * ENHANCE: make this fine grained and reduce unneeded BoB rebuilds
-     * <p>
-     * <br>type: {@code boolean}
-     */
-    public static final String BKEY_STYLE_MODIFIED = TAG + ":modified";
-    static final String BKEY_ACTION = TAG + ":action";
-    static final String BKEY_SET_AS_PREFERRED = TAG + ":setAsPreferred";
-    static final String BKEY_TEMPLATE_UUID = TAG + ":templateUuid";
+
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
@@ -102,13 +90,13 @@ public class StyleViewModel
 
             if (!uuid.isEmpty()) {
                 // ALWAYS pass the original style uuid back.
-                mResultIntent.putExtra(BKEY_TEMPLATE_UUID, uuid);
+                mResultIntent.putExtra(EditStyleContract.BKEY_TEMPLATE_UUID, uuid);
 
                 final ListStyle style = StyleDAO.getStyle(context, mDb, uuid);
                 Objects.requireNonNull(style, "uuid not found: " + uuid);
 
                 @EditAction
-                final int action = args.getInt(BKEY_ACTION, BKEY_ACTION_EDIT);
+                final int action = args.getInt(EditStyleContract.BKEY_ACTION, BKEY_ACTION_EDIT);
 
                 if (action == BKEY_ACTION_CLONE || style instanceof BuiltinStyle) {
                     mStyle = style.clone(context);
@@ -116,7 +104,7 @@ public class StyleViewModel
                     mStyle = (UserStyle) style;
                 }
 
-                if (args.getBoolean(BKEY_SET_AS_PREFERRED)) {
+                if (args.getBoolean(EditStyleContract.BKEY_SET_AS_PREFERRED)) {
                     mStyle.setPreferred(true);
                 }
 
@@ -138,7 +126,7 @@ public class StyleViewModel
     }
 
     void setModified() {
-        mResultIntent.putExtra(BKEY_STYLE_MODIFIED, true);
+        mResultIntent.putExtra(EditStyleContract.BKEY_STYLE_MODIFIED, true);
     }
 
     @NonNull
@@ -191,14 +179,14 @@ public class StyleViewModel
      * Called when leaving the fragment. Save any updates needed.
      */
     void updateOrInsertStyle() {
-        if (mResultIntent.getBooleanExtra(BKEY_STYLE_MODIFIED, false)) {
+        if (mResultIntent.getBooleanExtra(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
             StyleDAO.updateOrInsert(mDb, mStyle);
         }
     }
 
     @IntDef({BKEY_ACTION_CLONE, BKEY_ACTION_EDIT})
     @Retention(RetentionPolicy.SOURCE)
-    @interface EditAction {
+    public @interface EditAction {
 
     }
 

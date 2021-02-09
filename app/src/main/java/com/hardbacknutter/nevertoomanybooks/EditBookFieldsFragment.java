@@ -29,7 +29,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -40,6 +39,8 @@ import androidx.annotation.Nullable;
 import androidx.core.view.MenuCompat;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
+
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -203,10 +204,10 @@ public class EditBookFieldsFragment
     private void createCoverHandler(final int maxWidth,
                                     final int maxHeight,
                                     final int cIdx,
-                                    @NonNull final ProgressBar progressBar) {
+                                    @NonNull final CircularProgressIndicator progressIndicator) {
         mCoverHandler[cIdx] = new CoverHandler(this, mVm.getDb(), cIdx, maxWidth, maxHeight);
         mCoverHandler[cIdx].onViewCreated(this);
-        mCoverHandler[cIdx].setProgressBar(progressBar);
+        mCoverHandler[cIdx].setProgressView(progressIndicator);
         mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());
 
         //noinspection ConstantConditions
