@@ -119,6 +119,15 @@
         <item name="android:layout_marginEnd">@dimen/field_margin_start</item>
     </style>
 
+    <!-- EDIT or DISPLAY a rating bar. -->
+    <style name="Field.RatingBar.Edit" parent="Widget.AppCompat.RatingBar">
+        <item name="android:numStars">5</item>
+        <!-- serves as it's own label. -->
+        <item name="android:layout_marginTop">@dimen/field_label_margin_top</item>
+        <item name="android:layout_marginStart">@dimen/field_margin_start</item>
+    </style>
+
+    <!-- DISPLAY a rating bar. -->
     <style name="Field.RatingBar" parent="Widget.AppCompat.RatingBar.Small">
         <item name="android:numStars">5</item>
         <!-- serves as it's own label. -->
