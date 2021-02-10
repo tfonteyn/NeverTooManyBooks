@@ -230,7 +230,7 @@ public final class DBDefinitions {
     /** {@link #TBL_BOOKS}  {@link #TBL_TOC_ENTRIES}. */
     public static final Domain DOM_DATE_FIRST_PUBLICATION;
     /** {@link #TBL_BOOKS}. */
-    public static final Domain DOM_DATE_PUBLISHED;
+    public static final Domain DOM_BOOK_DATE_PUBLISHED;
     /** {@link #TBL_BOOKS}. */
     public static final Domain DOM_BOOK_PRINT_RUN;
     /** {@link #TBL_BOOKS}. */
@@ -538,7 +538,7 @@ public final class DBDefinitions {
     public static final String KEY_TITLE_OB = KEY_TITLE + SUFFIX_KEY_ORDER_BY;
     public static final String KEY_ISBN = "isbn";
     public static final String KEY_DATE_FIRST_PUBLICATION = "first_publication";
-    public static final String KEY_DATE_PUBLISHED = "date_published";
+    public static final String KEY_BOOK_DATE_PUBLISHED = "date_published";
     public static final String KEY_PRINT_RUN = "print_run";
     public static final String KEY_PRICE_LISTED = "list_price";
     public static final String KEY_PRICE_LISTED_CURRENCY = KEY_PRICE_LISTED + SUFFIX_KEY_CURRENCY;
@@ -730,17 +730,17 @@ public final class DBDefinitions {
                         .prePreparedOrderBy()
                         .build();
 
-        DOM_DATE_PUBLISHED =
-                new Domain.Builder(KEY_DATE_PUBLISHED, ColumnInfo.TYPE_DATE)
-                        .notNull().withDefaultEmptyString().build();
-
         DOM_DATE_FIRST_PUBLICATION =
                 new Domain.Builder(KEY_DATE_FIRST_PUBLICATION, ColumnInfo.TYPE_DATE)
-                        .notNull().withDefaultEmptyString().build();
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_UTC_LAST_UPDATED =
                 new Domain.Builder(KEY_UTC_LAST_UPDATED, ColumnInfo.TYPE_DATETIME)
-                        .notNull().withDefaultCurrentTimeStamp().build();
+                        .notNull()
+                        .withDefaultCurrentTimeStamp()
+                        .build();
 
         /* ======================================================================================
          *  Bookshelf domains
@@ -861,6 +861,12 @@ public final class DBDefinitions {
 
         DOM_BOOK_ISBN =
                 new Domain.Builder(KEY_ISBN, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
+
+        DOM_BOOK_DATE_PUBLISHED =
+                new Domain.Builder(KEY_BOOK_DATE_PUBLISHED, ColumnInfo.TYPE_DATE)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
@@ -1211,7 +1217,7 @@ public final class DBDefinitions {
                              DOM_TITLE,
                              DOM_TITLE_OB,
                              DOM_BOOK_ISBN,
-                             DOM_DATE_PUBLISHED,
+                             DOM_BOOK_DATE_PUBLISHED,
                              DOM_DATE_FIRST_PUBLICATION,
                              DOM_BOOK_PRINT_RUN,
 
@@ -1479,7 +1485,7 @@ public final class DBDefinitions {
                 KEY_BOOK_AUTHOR_TYPE_BITMASK,
                 KEY_TOC_BITMASK,
                 KEY_DESCRIPTION,
-                KEY_DATE_PUBLISHED,
+                KEY_BOOK_DATE_PUBLISHED,
                 KEY_DATE_FIRST_PUBLICATION,
                 KEY_FORMAT,
                 KEY_COLOR,

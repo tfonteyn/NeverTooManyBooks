@@ -92,7 +92,7 @@ class OpenLibrarySearchEngineTest
         assertEquals("Includes bibliographical references and index.",
                      mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
         assertEquals("92", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("2009-03-01", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("2009-03-01", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
 
 
         final ArrayList<Publisher> allPublishers = mRawData

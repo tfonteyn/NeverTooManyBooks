@@ -860,7 +860,7 @@ public class SearchCoordinator
                                     @NonNull final Locale locale) {
 
         for (final String key : siteData.keySet()) {
-            if (DBDefinitions.KEY_DATE_PUBLISHED.equals(key)
+            if (DBDefinitions.KEY_BOOK_DATE_PUBLISHED.equals(key)
                 || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
                 accumulateDates(context, locale, key, siteData);
 

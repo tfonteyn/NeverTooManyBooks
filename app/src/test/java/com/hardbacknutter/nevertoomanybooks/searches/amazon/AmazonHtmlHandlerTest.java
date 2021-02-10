@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,7 +60,7 @@ class AmazonHtmlHandlerTest
 
         assertEquals("Bone Silence", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("978-0575090675", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("30 Jan. 2020", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("30 Jan. 2020", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("608", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("eng", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
@@ -92,7 +92,7 @@ class AmazonHtmlHandlerTest
 
         assertEquals("The Medusa Chronicles", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("978-1473210202", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("12 Jan. 2017", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("12 Jan. 2017", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("336", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Paperback", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("eng", mRawData.getString(DBDefinitions.KEY_LANGUAGE));

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ class StripInfoTest
 
         assertEquals("De 37ste parallel", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("9789463064385", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2018", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("2018", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
@@ -146,7 +146,7 @@ class StripInfoTest
 
         assertEquals("De boom van de twee lentes", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("905581315X", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2000", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("2000", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("64", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Softcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
@@ -212,7 +212,7 @@ class StripInfoTest
         assertEquals("Het huis van verboden geneugten",
                      mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("9789085522072", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2012", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("2012", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("64", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
@@ -271,7 +271,7 @@ class StripInfoTest
 
         assertEquals("De integrale 5", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("9789055819485", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2017", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("2017", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("224", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
@@ -329,7 +329,7 @@ class StripInfoTest
                  new boolean[]{false, false});
 
         assertEquals("Red Dust", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("1972", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("1972", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Softcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
@@ -385,7 +385,7 @@ class StripInfoTest
                  new boolean[]{false, false});
 
         assertEquals("Spoken in de grot", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("1977", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("1977", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("Softcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
         assertEquals("Kleur", mRawData.getString(DBDefinitions.KEY_COLOR));
@@ -458,7 +458,7 @@ class StripInfoTest
 
         assertEquals("9782756010830", mRawData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("Le chant du pluvier", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("2009", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("2009", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("172", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("fra", mRawData.getString(DBDefinitions.KEY_LANGUAGE));

@@ -720,4 +720,6 @@
     <string name="lbl_certificates">Sertifikalar</string>
     <string name="lbl_delete_removed_books">Artık sunucuda bulunmayan kitapları silin</string>
     <string name="lbl_virtual_libraries">Bu kitaplıktaki sanal kitaplıklar</string>
+    <string name="menu_set_download_folder">İndirme klasörünü ayarlayın</string>
+    <string name="error_upgrade_not_supported">%1$s\'ten daha eski sürümlerden yükseltme desteklenmez.</string>
 </resources>

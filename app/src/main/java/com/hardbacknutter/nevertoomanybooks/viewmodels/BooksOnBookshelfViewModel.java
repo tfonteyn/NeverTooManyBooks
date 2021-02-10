@@ -709,8 +709,8 @@ public class BooksOnBookshelfViewModel
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
                 builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_DATE_PUBLISHED,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_DATE_PUBLISHED)));
+                        DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
+                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_DATE_PUBLISHED)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {

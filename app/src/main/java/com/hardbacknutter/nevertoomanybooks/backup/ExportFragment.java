@@ -256,11 +256,12 @@ public class ExportFragment
             mVb.lblRemoteServer.setVisibility(View.VISIBLE);
             mVb.lblRemoteServer.setText(mPresetEncoding.getRemoteServerDescriptionResId());
             mVb.cbxDeleteRemovedBooks.setVisibility(View.VISIBLE);
-            mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                mVm.getExportHelper()
-                   .getExtraArgs()
-                   .putBoolean(CalibreContentServerWriter.BKEY_DELETE_LOCAL_BOOKS, isChecked);
-            });
+            mVb.cbxDeleteRemovedBooks.setOnCheckedChangeListener(
+                    (v, isChecked) ->
+                            mVm.getExportHelper()
+                               .getExtraArgs()
+                               .putBoolean(CalibreContentServerWriter.BKEY_DELETE_LOCAL_BOOKS,
+                                           isChecked));
 
         } else {
             mVb.cbxBooks.setChecked(exportEntities.contains(RecordType.Books));

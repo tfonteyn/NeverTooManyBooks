@@ -62,6 +62,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_ACQUIRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_DATE_READ_END;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_GENRE;
@@ -71,7 +72,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_RATING;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BOOK_READ;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_PUBLISHER;
@@ -84,11 +84,11 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_UT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
@@ -525,7 +525,7 @@ public class BooklistGroup {
         // Date based groups have to sort on the full date for cases
         // where we don't have all separate year,month,day fields.
         private static final DomainExpression DATE_PUBLISHED =
-                new DomainExpression(DOM_DATE_PUBLISHED, null, DomainExpression.SORT_DESC);
+                new DomainExpression(DOM_BOOK_DATE_PUBLISHED, null, DomainExpression.SORT_DESC);
         private static final DomainExpression DATE_FIRST_PUBLICATION =
                 new DomainExpression(DOM_DATE_FIRST_PUBLICATION, null, DomainExpression.SORT_DESC);
         private static final DomainExpression BOOK_IS_READ =
@@ -786,8 +786,8 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_publication_year, "yrp",
                                         new Domain.Builder("blg_pub_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .year(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
+                                        DAOSql.SqlColumns.year(
+                                                TBL_BOOKS.dot(KEY_BOOK_DATE_PUBLISHED), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
                 }
@@ -796,8 +796,8 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_publication_month, "mp",
                                         new Domain.Builder("blg_pub_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .month(TBL_BOOKS.dot(KEY_DATE_PUBLISHED), false),
+                                        DAOSql.SqlColumns.month(
+                                                TBL_BOOKS.dot(KEY_BOOK_DATE_PUBLISHED), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
                 }

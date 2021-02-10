@@ -848,7 +848,7 @@ public class BooklistAdapter
             location = location && rowData.contains(DBDefinitions.KEY_LOCATION);
             rating = rating && rowData.contains(DBDefinitions.KEY_RATING);
             publisher = publisher && rowData.contains(DBDefinitions.KEY_PUBLISHER_NAME);
-            pubDate = pubDate && rowData.contains(DBDefinitions.KEY_DATE_PUBLISHED);
+            pubDate = pubDate && rowData.contains(DBDefinitions.KEY_BOOK_DATE_PUBLISHED);
         }
     }
 
@@ -1168,7 +1168,7 @@ public class BooklistAdapter
 
             final String date;
             if (mInUse.pubDate) {
-                final String dateStr = rowData.getString(DBDefinitions.KEY_DATE_PUBLISHED);
+                final String dateStr = rowData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED);
                 date = new PartialDate(dateStr).toPrettyDate(mAdapter.getUserLocale(), dateStr);
             } else {
                 date = null;

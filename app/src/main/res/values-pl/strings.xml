@@ -695,13 +695,13 @@
     <string name="menu_import_all">Importuj wszystkie książki</string>
     <string name="progress_end_export_successful">Eksport powiódł się</string>
     <string name="error_export_failed">Eksport nie powiódł się</string>
-    <string name="action_go">"OK"</string>
-    <string name="action_search">"Szukaj"</string>
-    <string name="action_send">"Wyślij"</string>
-    <string name="action_next">"Dalej"</string>
-    <string name="action_done">"Gotowe"</string>
-    <string name="action_previous">"Wstecz"</string>
-    <string name="action_execute">"Wykonaj"</string>
+    <string name="action_go">OK</string>
+    <string name="action_search">Szukaj</string>
+    <string name="action_send">Wyślij</string>
+    <string name="action_next">Dalej</string>
+    <string name="action_done">Gotowe</string>
+    <string name="action_previous">Wstecz</string>
+    <string name="action_execute">Wykonaj</string>
     <string name="lbl_virtual_library">Wirtualna biblioteka</string>
     <string name="lbl_library">Biblioteka</string>
     <string name="action_create">Stwórz</string>
@@ -718,4 +718,6 @@
     <string name="lbl_certificates">Certyfikaty</string>
     <string name="lbl_delete_removed_books">Usuń książki, których nie ma już na serwerze</string>
     <string name="lbl_virtual_libraries">Biblioteki wirtualne w tej bibliotece</string>
+    <string name="menu_set_download_folder">Ustaw folder pobierania</string>
+    <string name="error_upgrade_not_supported">Aktualizacja z wersji starszych niż %1$s nie jest obsługiwana.</string>
 </resources>

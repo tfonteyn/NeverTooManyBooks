@@ -457,8 +457,8 @@ public class XmlRecordWriter
 
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRINT_RUN,
                                            book.getString(DBDefinitions.KEY_PRINT_RUN)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_PUBLISHED,
-                                           book.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
+                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
+                                           book.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED,
                                            book.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
                 writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,

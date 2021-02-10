@@ -119,7 +119,7 @@ public class EditBookPublicationFragment
               .setRelatedFields(R.id.lbl_print_run);
 
         fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
-                   DBDefinitions.KEY_DATE_PUBLISHED)
+                   DBDefinitions.KEY_BOOK_DATE_PUBLISHED)
               .setTextInputLayout(R.id.lbl_date_published);
 
         fields.add(R.id.first_publication, new TextViewAccessor<>(dateFormatter),

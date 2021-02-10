@@ -507,7 +507,7 @@ public class OpenLibrarySearchEngine
         if (!s.isEmpty()) {
             final LocalDateTime date = DateParser.getInstance(mAppContext).parse(s, getLocale());
             if (date != null) {
-                bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
+                bookData.putString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
         }

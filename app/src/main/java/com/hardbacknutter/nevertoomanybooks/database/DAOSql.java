@@ -51,6 +51,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION_COVER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
@@ -67,7 +68,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CA
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_PUBLISHED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ESID_GOODREADS_BOOK;
@@ -835,7 +835,7 @@ public class DAOSql {
                     // publication data
                     + ',' + TBL_BOOKS.dotAs(KEY_ISBN)
                     + ',' + TBL_BOOKS.dotAs(KEY_TOC_BITMASK)
-                    + ',' + TBL_BOOKS.dotAs(KEY_DATE_PUBLISHED)
+                    + ',' + TBL_BOOKS.dotAs(KEY_BOOK_DATE_PUBLISHED)
                     + ',' + TBL_BOOKS.dotAs(KEY_PRINT_RUN)
                     + ',' + TBL_BOOKS.dotAs(KEY_PRICE_LISTED)
                     + ',' + TBL_BOOKS.dotAs(KEY_PRICE_LISTED_CURRENCY)

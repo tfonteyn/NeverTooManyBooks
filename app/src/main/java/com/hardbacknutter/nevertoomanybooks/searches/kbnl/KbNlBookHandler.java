@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -423,10 +423,10 @@ class KbNlBookHandler
      * }</pre>
      */
     private void processDatePublished(@NonNull final List<String> currentData) {
-        if (!mBookData.containsKey(DBDefinitions.KEY_DATE_PUBLISHED)) {
+        if (!mBookData.containsKey(DBDefinitions.KEY_BOOK_DATE_PUBLISHED)) {
             final String year = digits(currentData.get(0), false);
             if (year != null && !year.isEmpty()) {
-                mBookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, year);
+                mBookData.putString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED, year);
             }
         }
     }

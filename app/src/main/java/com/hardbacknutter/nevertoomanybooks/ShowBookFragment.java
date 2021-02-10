@@ -597,7 +597,7 @@ public class ShowBookFragment
                        Book.BKEY_PUBLISHER_LIST, DBDefinitions.KEY_PUBLISHER_NAME);
 
             fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
-                       DBDefinitions.KEY_DATE_PUBLISHED)
+                       DBDefinitions.KEY_BOOK_DATE_PUBLISHED)
                   .setRelatedFields(R.id.lbl_date_published);
 
             fields.add(R.id.first_publication, new TextViewAccessor<>(dateFormatter),

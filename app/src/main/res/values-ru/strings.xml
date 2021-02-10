@@ -718,4 +718,6 @@
     <string name="lbl_certificates">Cертификаты</string>
     <string name="lbl_delete_removed_books">Удалите книги, которых больше нет на сервере</string>
     <string name="lbl_virtual_libraries">Виртуальные библиотеки в этой библиотеке</string>
+    <string name="menu_set_download_folder">Установите папку загрузки</string>
+    <string name="error_upgrade_not_supported">Обновление с версий старше %1$s не поддерживается.</string>
 </resources>

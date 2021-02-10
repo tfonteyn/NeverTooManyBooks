@@ -698,13 +698,13 @@
     <string name="menu_import_all">Importujte všechny knihy</string>
     <string name="progress_end_export_successful">Export byl úspěšný</string>
     <string name="error_export_failed">Export se nezdařil</string>
-    <string name="action_go">"Přejít"</string>
-    <string name="action_search">"Hledat"</string>
-    <string name="action_send">"Odeslat"</string>
-    <string name="action_next">"Další"</string>
-    <string name="action_done">"Hotovo"</string>
-    <string name="action_previous">"Předch."</string>
-    <string name="action_execute">"Spustit"</string>
+    <string name="action_go">Přejít</string>
+    <string name="action_search">Hledat</string>
+    <string name="action_send">Odeslat</string>
+    <string name="action_next">Další</string>
+    <string name="action_done">Hotovo</string>
+    <string name="action_previous">Předch.</string>
+    <string name="action_execute">Spustit</string>
     <string name="lbl_virtual_library">Virtuální knihovna</string>
     <string name="lbl_library">Knihovny</string>
     <string name="action_create">Vytvořit</string>
@@ -721,4 +721,6 @@
     <string name="lbl_certificates">Certifikáty</string>
     <string name="lbl_delete_removed_books">Odstraňte knihy, které již na serveru nejsou</string>
     <string name="lbl_virtual_libraries">Virtuální knihovny v této knihovně</string>
+    <string name="menu_set_download_folder">Nastavte složku pro stahování</string>
+    <string name="error_upgrade_not_supported">Upgrade z verzí starších než %1$s není podporován.</string>
 </resources>

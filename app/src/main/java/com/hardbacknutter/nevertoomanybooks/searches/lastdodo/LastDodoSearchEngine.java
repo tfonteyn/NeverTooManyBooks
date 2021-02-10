@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -224,7 +224,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Jaar:":
-                    processText(td, DBDefinitions.KEY_DATE_PUBLISHED, bookData);
+                    processText(td, DBDefinitions.KEY_BOOK_DATE_PUBLISHED, bookData);
                     break;
 
                 case "Cover:":

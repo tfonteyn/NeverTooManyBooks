@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -516,7 +516,8 @@ public class AmazonSearchEngine
 
                         final String pubDate = matcher.group(2);
                         if (pubDate != null) {
-                            bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED, pubDate.trim());
+                            bookData.putString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
+                                               pubDate.trim());
                         }
                     }
 

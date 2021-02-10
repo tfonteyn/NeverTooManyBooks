@@ -247,7 +247,8 @@ public class EditBookFieldsFragment
               .setRelatedFields(R.id.lbl_isbn);
 
         fields.add(R.id.language, new AutoCompleteTextAccessor(
-                           () -> mVm.getAllLanguagesCodes(), new LanguageFormatter(userLocale), true),
+                           () -> mVm.getAllLanguagesCodes(),
+                           new LanguageFormatter(userLocale), true),
                    DBDefinitions.KEY_LANGUAGE)
               .setErrorViewId(R.id.lbl_language)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));

@@ -355,7 +355,7 @@ public abstract class ShowBookApiHandler
                            SiteField.PUBLICATION_YEAR,
                            SiteField.PUBLICATION_MONTH,
                            SiteField.PUBLICATION_DAY,
-                           DBDefinitions.KEY_DATE_PUBLISHED);
+                           DBDefinitions.KEY_BOOK_DATE_PUBLISHED);
 
         // is it an eBook ? Overwrite the format key
         if (mBookData.containsKey(SiteField.IS_EBOOK)

@@ -95,7 +95,7 @@ public class BookCoder {
             + COMMA + '"' + DBDefinitions.KEY_ISBN + '"'
             + COMMA + '"' + CSV_COLUMN_PUBLISHERS + '"'
             + COMMA + '"' + DBDefinitions.KEY_PRINT_RUN + '"'
-            + COMMA + '"' + DBDefinitions.KEY_DATE_PUBLISHED + '"'
+            + COMMA + '"' + DBDefinitions.KEY_BOOK_DATE_PUBLISHED + '"'
             + COMMA + '"' + DBDefinitions.KEY_DATE_FIRST_PUBLICATION + '"'
             + COMMA + '"' + DBDefinitions.KEY_EDITION_BITMASK + '"'
             + COMMA + '"' + DBDefinitions.KEY_RATING + '"'
@@ -192,7 +192,7 @@ public class BookCoder {
         line.add(encode(mPublisherCoder.encodeList(
                 book.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST))));
         line.add(encode(book.getString(DBDefinitions.KEY_PRINT_RUN)));
-        line.add(encode(book.getString(DBDefinitions.KEY_DATE_PUBLISHED)));
+        line.add(encode(book.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED)));
         line.add(encode(book.getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
         line.add(encode(book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
         line.add(encode(book.getDouble(DBDefinitions.KEY_RATING)));

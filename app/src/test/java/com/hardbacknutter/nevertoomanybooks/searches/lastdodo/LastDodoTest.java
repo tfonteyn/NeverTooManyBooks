@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,7 @@ class LastDodoTest
 
         assertEquals("De 37ste parallel", mRawData.getString(DBDefinitions.KEY_TITLE));
         assertEquals("9789463064385", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2018", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("2018", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
         assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -79,7 +79,7 @@ class KbNlBookHandlerTest
 
         assertEquals("De buitengewone reis", mRawData.getString(DBDefinitions.KEY_TITLE));
 
-        assertEquals("2019", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("2019", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("9789463731454", mRawData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("paperback", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
@@ -127,7 +127,7 @@ class KbNlBookHandlerTest
 
         assertEquals("De Foundation", mRawData.getString(DBDefinitions.KEY_TITLE));
 
-        assertEquals("1983", mRawData.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        assertEquals("1983", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         assertEquals("9022953351", mRawData.getString(DBDefinitions.KEY_ISBN));
         assertEquals("geb.", mRawData.getString(DBDefinitions.KEY_FORMAT));
         assertEquals("156", mRawData.getString(DBDefinitions.KEY_PAGES));

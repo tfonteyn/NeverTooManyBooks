@@ -497,7 +497,7 @@ public class ImportGrTask
                            Review.PUBLICATION_YEAR,
                            Review.PUBLICATION_MONTH,
                            Review.PUBLICATION_DAY,
-                           DBDefinitions.KEY_DATE_PUBLISHED);
+                           DBDefinitions.KEY_BOOK_DATE_PUBLISHED);
 
         final ArrayList<Bundle> grAuthors = goodreadsData.getParcelableArrayList(Review.AUTHORS);
         if (grAuthors != null) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -56,7 +56,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_READ_START}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_READ_END}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_DATE_ACQUIRED}
- * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_DATE_PUBLISHED}
+ * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_BOOK_DATE_PUBLISHED}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_DATE_FIRST_PUBLICATION}
  */
 package com.hardbacknutter.nevertoomanybooks.utils.dates;

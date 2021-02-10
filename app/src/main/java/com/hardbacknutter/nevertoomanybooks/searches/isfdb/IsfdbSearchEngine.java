@@ -627,7 +627,7 @@ public class IsfdbSearchEngine
                         // Note that partial dates, e.g. "1987", "1978-03"
                         // will get 'completed' to "1987-01-01", "1978-03-01"
                         // This should be acceptable IMHO.
-                        bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
+                        bookData.putString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
                                            date.format(DateTimeFormatter.ISO_LOCAL_DATE));
                     }
 

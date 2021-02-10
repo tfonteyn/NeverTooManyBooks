@@ -240,7 +240,7 @@ public class CalibreContentServerWriter
                     localBook.getString(DBDefinitions.KEY_DESCRIPTION));
         // we don't read this field, but we DO write it.
         changes.put(CalibreBook.DATE_PUBLISHED,
-                    localBook.getString(DBDefinitions.KEY_DATE_PUBLISHED));
+                    localBook.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         changes.put(CalibreBook.LAST_MODIFIED,
                     localBook.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
 

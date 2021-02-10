@@ -385,8 +385,8 @@ public class Book
                            getString(DBDefinitions.KEY_PRINT_RUN));
         bookData.putLong(DBDefinitions.KEY_TOC_BITMASK,
                          getLong(DBDefinitions.KEY_TOC_BITMASK));
-        bookData.putString(DBDefinitions.KEY_DATE_PUBLISHED,
-                           getString(DBDefinitions.KEY_DATE_PUBLISHED));
+        bookData.putString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
+                           getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
         bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED,
                            getDouble(DBDefinitions.KEY_PRICE_LISTED));
         bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,

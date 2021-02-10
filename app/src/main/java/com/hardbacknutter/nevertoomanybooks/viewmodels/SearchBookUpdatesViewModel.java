@@ -177,7 +177,7 @@ public class SearchBookUpdatesViewModel
                      DBDefinitions.KEY_PUBLISHER_NAME);
         addField(global, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run,
                  CopyIfBlank);
-        addField(global, DBDefinitions.KEY_DATE_PUBLISHED, R.string.lbl_date_published,
+        addField(global, DBDefinitions.KEY_BOOK_DATE_PUBLISHED, R.string.lbl_date_published,
                  CopyIfBlank);
         addField(global, DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
                  R.string.lbl_first_publication,

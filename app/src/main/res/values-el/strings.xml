@@ -702,13 +702,13 @@
     <string name="menu_import_all">Εισαγωγή όλων των βιβλίων</string>
     <string name="progress_end_export_successful">Η εξαγωγή ήταν επιτυχής</string>
     <string name="error_export_failed">Η εξαγωγή απέτυχε</string>
-    <string name="action_go">"Μετάβαση"</string>
-    <string name="action_search">"Αναζήτηση"</string>
-    <string name="action_send">"Αποστολή"</string>
-    <string name="action_next">"Επόμενο"</string>
-    <string name="action_done">"Τέλος"</string>
-    <string name="action_previous">"Προηγ."</string>
-    <string name="action_execute">"Εκτέλεση"</string>
+    <string name="action_go">Μετάβαση</string>
+    <string name="action_search">Αναζήτηση</string>
+    <string name="action_send">Αποστολή</string>
+    <string name="action_next">Επόμενο</string>
+    <string name="action_done">Τέλος</string>
+    <string name="action_previous">Προηγ.</string>
+    <string name="action_execute">Εκτέλεση</string>
     <string name="lbl_virtual_library">Εικονική βιβλιοθήκη</string>
     <string name="lbl_library">βιβλιοθήκης</string>
     <string name="action_create">Δημιουργώ</string>
@@ -725,4 +725,6 @@
     <string name="lbl_certificates">πιστοποιητικών</string>
     <string name="lbl_delete_removed_books">Διαγράψτε βιβλία που δεν υπάρχουν πλέον στο διακομιστή</string>
     <string name="lbl_virtual_libraries">Εικονικές βιβλιοθήκες σε αυτήν τη βιβλιοθήκη</string>
+    <string name="menu_set_download_folder">Ορίστε το φάκελο λήψης</string>
+    <string name="error_upgrade_not_supported">Δεν υποστηρίζεται η αναβάθμιση από εκδόσεις παλαιότερες από %1$s.</string>
 </resources>

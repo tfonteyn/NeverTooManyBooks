@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -391,7 +391,7 @@ class GoogleBooksEntryHandler
                 break;
 
             case XML_DATE_PUBLISHED:
-                addIfNotPresent(DBDefinitions.KEY_DATE_PUBLISHED, mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_BOOK_DATE_PUBLISHED, mBuilder.toString());
                 break;
 
             case XML_FORMAT:

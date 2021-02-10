@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -447,7 +447,7 @@ class AmazonXmlHandler
                 mPublishers.add(Publisher.from(mBuilder.toString()));
 
             } else if (localName.equalsIgnoreCase(XML_DATE_PUBLISHED)) {
-                addIfNotPresent(DBDefinitions.KEY_DATE_PUBLISHED, mBuilder.toString());
+                addIfNotPresent(DBDefinitions.KEY_BOOK_DATE_PUBLISHED, mBuilder.toString());
 
             } else if (localName.equalsIgnoreCase(XML_PAGES)) {
                 addIfNotPresent(DBDefinitions.KEY_PAGES, mBuilder.toString());

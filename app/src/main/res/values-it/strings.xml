@@ -700,13 +700,13 @@
     <string name="menu_import_all">Importa tutti i libri</string>
     <string name="progress_end_export_successful">Esportazione riuscita</string>
     <string name="error_export_failed">Esportazione non riuscita</string>
-    <string name="action_go">"Pradėti"</string>
-    <string name="action_search">"Ieškoti"</string>
-    <string name="action_send">"Siųsti"</string>
-    <string name="action_next">"Kitas"</string>
-    <string name="action_done">"Atlikta"</string>
-    <string name="action_previous">"Perž."</string>
-    <string name="action_execute">"Vykdyti"</string>
+    <string name="action_go">Pradėti</string>
+    <string name="action_search">Ieškoti</string>
+    <string name="action_send">Siųsti</string>
+    <string name="action_next">Kitas</string>
+    <string name="action_done">Atlikta</string>
+    <string name="action_previous">Perž.</string>
+    <string name="action_execute">Vykdyti</string>
     <string name="lbl_virtual_library">Biblioteca Virtuale</string>
     <string name="lbl_library">Biblioteca</string>
     <string name="action_create">Creare</string>
@@ -723,4 +723,6 @@
     <string name="lbl_certificates">Certificati</string>
     <string name="lbl_delete_removed_books">Elimina i libri che non sono più presenti sul server</string>
     <string name="lbl_virtual_libraries">Biblioteche virtuali in questa libreria</string>
+    <string name="menu_set_download_folder">Imposta la cartella di download</string>
+    <string name="error_upgrade_not_supported">L\'aggiornamento da versioni precedenti alla %1$s non è supportato.</string>
 </resources>
