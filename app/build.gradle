@@ -294,7 +294,7 @@ dependencies {
     // local tests use JUnit5
     testImplementation 'org.mockito:mockito-core:3.7.7'
     testImplementation 'org.mockito:mockito-junit-jupiter:3.7.7'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
     // Used in local test cases with JUnit5
     testImplementation 'org.json:json:20201115'
 
