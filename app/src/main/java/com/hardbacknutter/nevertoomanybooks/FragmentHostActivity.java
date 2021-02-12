@@ -19,12 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.result.contract.ActivityResultContract;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
@@ -35,7 +31,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreAdminFragment;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -100,43 +95,5 @@ public class FragmentHostActivity
         // Out of precaution we only trash jpg files
         AppDir.Cache.purge(App.getTaskContext(), true, file -> file.getName().endsWith(".jpg"));
         super.onDestroy();
-    }
-
-    public static class ResultContract
-            extends ActivityResultContract<Bundle, Bundle> {
-
-        @NonNull
-        private final String mFragmentTag;
-
-        public ResultContract(@NonNull final String fragmentTag) {
-            mFragmentTag = fragmentTag;
-        }
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @Nullable final Bundle args) {
-            final Intent intent = new Intent(context, FragmentHostActivity.class)
-                    .putExtra(BKEY_FRAGMENT_TAG, mFragmentTag);
-            if (args != null && !args.isEmpty()) {
-                intent.putExtras(args);
-            }
-            return intent;
-        }
-
-        @Override
-        @Nullable
-        public Bundle parseResult(final int resultCode,
-                                  @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(mFragmentTag, "parseResult",
-                         "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            if (intent == null || resultCode != RESULT_OK) {
-                return null;
-            }
-            return intent.getExtras();
-        }
     }
 }

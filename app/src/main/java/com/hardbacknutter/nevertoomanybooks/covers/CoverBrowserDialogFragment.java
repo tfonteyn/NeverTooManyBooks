@@ -47,11 +47,11 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
+import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogCoverBrowserBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEditionsTask;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineRegistry;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
@@ -335,9 +335,13 @@ public class CoverBrowserDialogFragment
     }
 
     public abstract static class Launcher
-            extends DialogFragmentLauncherBase {
+            extends FragmentLauncherBase {
 
         private static final String COVER_FILE_SPEC = "fileSpec";
+
+        public Launcher(@NonNull final String requestKey) {
+            super(requestKey);
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,

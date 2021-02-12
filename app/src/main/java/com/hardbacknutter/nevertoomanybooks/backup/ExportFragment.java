@@ -19,12 +19,9 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,7 +31,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -57,9 +53,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
@@ -661,30 +654,4 @@ public class ExportFragment
         }
     }
 
-    public static class ResultContract
-            extends ActivityResultContract<ArchiveEncoding, Boolean> {
-
-        @NonNull
-        @Override
-        public Intent createIntent(@NonNull final Context context,
-                                   @Nullable final ArchiveEncoding encoding) {
-            final Intent intent = new Intent(context, FragmentHostActivity.class)
-                    .putExtra(FragmentHostActivity.BKEY_FRAGMENT_TAG, TAG);
-            if (encoding != null) {
-                intent.putExtra(ExportFragment.BKEY_ENCODING, (Parcelable) encoding);
-            }
-            return intent;
-        }
-
-        @Override
-        @NonNull
-        public Boolean parseResult(final int resultCode,
-                                   @Nullable final Intent intent) {
-            if (BuildConfig.DEBUG && DEBUG_SWITCHES.ON_ACTIVITY_RESULT) {
-                Logger.d(TAG, "parseResult", "|resultCode=" + resultCode + "|intent=" + intent);
-            }
-
-            return intent != null && resultCode == Activity.RESULT_OK;
-        }
-    }
 }

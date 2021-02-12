@@ -56,6 +56,7 @@ import java.util.stream.Collectors;
 
 import javax.net.ssl.SSLException;
 
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibrePreferencesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
@@ -93,7 +94,6 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.StringArrayResForm
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
 import com.hardbacknutter.nevertoomanybooks.utils.ViewFocusOrder;
@@ -123,8 +123,7 @@ public class ShowBookFragment
 
     /** Calibre preferences screen. */
     private final ActivityResultLauncher<Void> mCalibrePreferencesLauncher =
-            registerForActivityResult(new CalibrePreferencesFragment.ResultContract(),
-                                      aVoid -> { });
+            registerForActivityResult(new CalibrePreferencesContract(), aVoid -> { });
 
     /** Delegate for Calibre. */
     @Nullable
@@ -157,7 +156,7 @@ public class ShowBookFragment
 
     /** Handle the edit-lender dialog. */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
-            new EditLenderDialogFragment.Launcher() {
+            new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
@@ -196,7 +195,7 @@ public class ShowBookFragment
         getActivity().getOnBackPressedDispatcher()
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
-        mEditLenderLauncher.register(getChildFragmentManager(), this, RK_EDIT_LENDER);
+        mEditLenderLauncher.registerForFragmentResult(getChildFragmentManager(), this);
 
         mVm = new ViewModelProvider(this).get(ShowBookViewModel.class);
         //noinspection ConstantConditions

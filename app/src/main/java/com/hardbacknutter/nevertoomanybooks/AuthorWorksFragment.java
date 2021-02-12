@@ -104,7 +104,7 @@ public class AuthorWorksFragment
     /** The Adapter. */
     private TocAdapter mAdapter;
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
+            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
                 @Override
                 public boolean onResult(@IdRes final int menuItemId,
                                         final int position) {
@@ -122,7 +122,7 @@ public class AuthorWorksFragment
         setHasOptionsMenu(true);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(getChildFragmentManager(), this, RK_MENU_PICKER);
+            mMenuLauncher.registerForFragmentResult(getChildFragmentManager(), this);
         }
     }
 

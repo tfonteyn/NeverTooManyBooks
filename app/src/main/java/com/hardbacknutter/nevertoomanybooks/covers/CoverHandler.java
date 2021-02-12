@@ -124,6 +124,9 @@ public class CoverHandler {
     private final DAO mDb;
     @NonNull
     private final CoverHandlerHost mCoverHandlerHost;
+    @NonNull
+    private final CoverBrowserDialogFragment.Launcher mCoverBrowserLauncher;
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher;
     /** The host view; used for context, resources, Snackbar. */
     private View mView;
     private TransFormTaskViewModel mTransFormTaskViewModel;
@@ -133,14 +136,6 @@ public class CoverHandler {
     private ActivityResultLauncher<String> mGetFromFileLauncher;
     private ActivityResultLauncher<Intent> mEditPictureLauncher;
     private Supplier<Book> mBookSupplier;
-    @NonNull
-    private final CoverBrowserDialogFragment.Launcher mCoverBrowserLauncher =
-            new CoverBrowserDialogFragment.Launcher() {
-                @Override
-                public void onResult(@NonNull final String fileSpec) {
-                    onFileSelected(fileSpec);
-                }
-            };
     /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
     private Supplier<String> mCoverBrowserIsbnSupplier;
     /** Using a Supplier so we can get the <strong>current</strong> value (e.g. when editing). */
@@ -150,14 +145,6 @@ public class CoverHandler {
     private CircularProgressIndicator mProgressIndicator;
     /** Used to display a hint if user rotates a camera image. */
     private boolean mShowHintAboutRotating;
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
-                @Override
-                public boolean onResult(@IdRes final int menuItemId,
-                                        final int position) {
-                    return onContextItemSelected(menuItemId, position);
-                }
-            };
 
     /**
      * Constructor.
@@ -178,6 +165,21 @@ public class CoverHandler {
         mCIdx = cIdx;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
+
+        mCoverBrowserLauncher = new CoverBrowserDialogFragment.Launcher(RK_COVER_BROWSER + mCIdx) {
+            @Override
+            public void onResult(@NonNull final String fileSpec) {
+                onFileSelected(fileSpec);
+            }
+        };
+
+        mMenuLauncher = new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER + mCIdx) {
+            @Override
+            public boolean onResult(@IdRes final int menuItemId,
+                                    final int position) {
+                return onContextItemSelected(menuItemId, position);
+            }
+        };
     }
 
     public void onViewCreated(@NonNull final Fragment fragment) {
@@ -217,10 +219,10 @@ public class CoverHandler {
         mCropPictureLauncher = caller.registerForActivityResult(
                 new CropImageActivity.ResultContract(), this::onGetContentResult);
 
-        mCoverBrowserLauncher.register(fm, lifecycleOwner, RK_COVER_BROWSER + mCIdx);
+        mCoverBrowserLauncher.registerForFragmentResult(fm, lifecycleOwner);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(fm, lifecycleOwner, RK_MENU_PICKER + mCIdx);
+            mMenuLauncher.registerForFragmentResult(fm, lifecycleOwner);
         }
 
         mTransFormTaskViewModel = new ViewModelProvider(viewModelStoreOwner)

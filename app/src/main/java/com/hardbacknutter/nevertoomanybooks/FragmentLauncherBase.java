@@ -17,25 +17,29 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.dialogs;
+package com.hardbacknutter.nevertoomanybooks;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.LifecycleOwner;
 
-public abstract class DialogFragmentLauncherBase
+/**
+ * This class and the implementations TRY to mimic a ActivityResultContract.
+ */
+public abstract class FragmentLauncherBase
         implements FragmentResultListener {
 
+    protected final String mRequestKey;
     protected FragmentManager mFragmentManager;
-    protected String mRequestKey;
 
-    public void register(@NonNull final FragmentManager fragmentManager,
-                         @NonNull final LifecycleOwner lifecycleOwner,
-                         @NonNull final String requestKey) {
-        mFragmentManager = fragmentManager;
+    public FragmentLauncherBase(@NonNull final String requestKey) {
         mRequestKey = requestKey;
+    }
 
-        mFragmentManager.setFragmentResultListener(requestKey, lifecycleOwner, this);
+    public void registerForFragmentResult(@NonNull final FragmentManager fragmentManager,
+                                          @NonNull final LifecycleOwner lifecycleOwner) {
+        mFragmentManager = fragmentManager;
+        mFragmentManager.setFragmentResultListener(mRequestKey, lifecycleOwner, this);
     }
 }

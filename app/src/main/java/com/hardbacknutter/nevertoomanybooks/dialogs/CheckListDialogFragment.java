@@ -39,6 +39,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 
@@ -134,10 +135,14 @@ public class CheckListDialogFragment
     }
 
     public abstract static class Launcher
-            extends DialogFragmentLauncherBase {
+            extends FragmentLauncherBase {
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTED_ITEMS = "selectedItems";
+
+        public Launcher(@NonNull final String requestKey) {
+            super(requestKey);
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,

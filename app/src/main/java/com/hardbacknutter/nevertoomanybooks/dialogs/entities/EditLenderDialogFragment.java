@@ -46,13 +46,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
@@ -256,7 +256,11 @@ public class EditLenderDialogFragment
     }
 
     public abstract static class Launcher
-            extends DialogFragmentLauncherBase {
+            extends FragmentLauncherBase {
+
+        public Launcher(@NonNull final String requestKey) {
+            super(requestKey);
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,

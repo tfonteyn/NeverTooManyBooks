@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 
 /**
@@ -122,10 +123,14 @@ public class MenuPickerDialogFragment
     }
 
     public abstract static class Launcher
-            extends DialogFragmentLauncherBase {
+            extends FragmentLauncherBase {
 
         private static final String MENU_ITEM = "menuItem";
         private static final String POSITION = "position";
+
+        public Launcher(@NonNull final String requestKey) {
+            super(requestKey);
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,

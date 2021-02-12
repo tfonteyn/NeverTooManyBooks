@@ -35,7 +35,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.lang.ref.WeakReference;
 
-import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityStartupBinding;
@@ -61,7 +61,7 @@ public class StartupActivity
     private StartupViewModel mVm;
     /** Make a backup; when done, move to the next startup stage. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
-            registerForActivityResult(new ExportFragment.ResultContract(), success -> nextStage());
+            registerForActivityResult(new ExportContract(), success -> nextStage());
 
     /** View Binding. */
     private ActivityStartupBinding mVb;

@@ -50,9 +50,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SettingsContract;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
-import com.hardbacknutter.nevertoomanybooks.settings.SettingsFragment;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.NightMode;
 
@@ -117,7 +117,7 @@ public abstract class BaseActivity
     private NavigationView mNavigationView;
 
     private final ActivityResultLauncher<String> mSettingsLauncher =
-            registerForActivityResult(new SettingsFragment.ResultContract(), recreateActivity -> {
+            registerForActivityResult(new SettingsContract(), recreateActivity -> {
                 updateNavigationMenuVisibility();
                 if (recreateActivity) {
                     sActivityRecreateStatus = ACTIVITY_REQUIRES_RECREATE;

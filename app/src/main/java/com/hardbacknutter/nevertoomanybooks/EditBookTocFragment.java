@@ -56,7 +56,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogTocConfirmBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookTocBinding;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -133,7 +132,7 @@ public class EditBookTocFragment
 
     /** Listen for the results of the entry edit-dialog. */
     private final EditTocEntryDialogFragment.Launcher mEditTocEntryLauncher =
-            new EditTocEntryDialogFragment.Launcher() {
+            new EditTocEntryDialogFragment.Launcher(RK_EDIT_TOC) {
                 @Override
                 public void onResult(@NonNull final TocEntry tocEntry,
                                      final boolean hasMultipleAuthors) {
@@ -142,7 +141,7 @@ public class EditBookTocFragment
             };
 
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
+            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
                 @Override
                 public boolean onResult(@IdRes final int menuItemId,
                                         final int position) {
@@ -154,7 +153,7 @@ public class EditBookTocFragment
     private IsfdbGetBookTask mIsfdbGetBookTask;
 
     private final ConfirmTocDialogFragment.Launcher mConfirmTocResultsLauncher =
-            new ConfirmTocDialogFragment.Launcher() {
+            new ConfirmTocDialogFragment.Launcher(RK_CONFIRM_TOC) {
                 @Override
                 public void onResult(@Book.TocBits final long tocBitMask,
                                      @NonNull final List<TocEntry> tocEntries) {
@@ -179,11 +178,11 @@ public class EditBookTocFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        mEditTocEntryLauncher.register(fm, this, RK_EDIT_TOC);
-        mConfirmTocResultsLauncher.register(fm, this, RK_CONFIRM_TOC);
+        mEditTocEntryLauncher.registerForFragmentResult(fm, this);
+        mConfirmTocResultsLauncher.registerForFragmentResult(fm, this);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(fm, this, RK_MENU_PICKER);
+            mMenuLauncher.registerForFragmentResult(fm, this);
         }
     }
 
@@ -691,11 +690,15 @@ public class EditBookTocFragment
         }
 
         public abstract static class Launcher
-                extends DialogFragmentLauncherBase {
+                extends FragmentLauncherBase {
 
             private static final String SEARCH_NEXT_EDITION = "searchNextEdition";
             private static final String TOC_BIT_MASK = "tocBitMask";
             private static final String TOC_LIST = "tocEntries";
+
+            public Launcher(@NonNull final String requestKey) {
+                super(requestKey);
+            }
 
             static void setResult(@NonNull final Fragment fragment,
                                   @NonNull final String requestKey,

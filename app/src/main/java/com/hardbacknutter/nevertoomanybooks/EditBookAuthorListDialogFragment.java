@@ -92,7 +92,7 @@ public class EditBookAuthorListDialogFragment
     private AuthorListAdapter mListAdapter;
 
     private final EditBookBaseFragment.EditItemLauncher<Author> mOnEditAuthorLauncher =
-            new EditBookBaseFragment.EditItemLauncher<Author>() {
+            new EditBookBaseFragment.EditItemLauncher<Author>(RK_EDIT_AUTHOR) {
                 @Override
                 public void onResult(@NonNull final Author original,
                                      @NonNull final Author modified) {
@@ -125,7 +125,7 @@ public class EditBookAuthorListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mOnEditAuthorLauncher.register(getChildFragmentManager(), this, RK_EDIT_AUTHOR);
+        mOnEditAuthorLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override

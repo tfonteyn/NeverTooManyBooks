@@ -84,7 +84,7 @@ public class EditBookSeriesListDialogFragment
     private SeriesListAdapter mListAdapter;
 
     private final EditBookBaseFragment.EditItemLauncher<Series> mOnEditSeriesLauncher =
-            new EditBookBaseFragment.EditItemLauncher<Series>() {
+            new EditBookBaseFragment.EditItemLauncher<Series>(RK_EDIT_SERIES) {
                 @Override
                 public void onResult(@NonNull final Series original,
                                      @NonNull final Series modified) {
@@ -117,7 +117,7 @@ public class EditBookSeriesListDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mOnEditSeriesLauncher.register(getChildFragmentManager(), this, RK_EDIT_SERIES);
+        mOnEditSeriesLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override

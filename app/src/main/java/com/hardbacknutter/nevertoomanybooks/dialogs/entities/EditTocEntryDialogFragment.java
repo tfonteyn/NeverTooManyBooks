@@ -30,12 +30,12 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -228,7 +228,11 @@ public class EditTocEntryDialogFragment
     }
 
     public abstract static class Launcher
-            extends DialogFragmentLauncherBase {
+            extends FragmentLauncherBase {
+
+        public Launcher(@NonNull final String requestKey) {
+            super(requestKey);
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,

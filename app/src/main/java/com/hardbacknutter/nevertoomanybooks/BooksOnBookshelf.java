@@ -65,20 +65,22 @@ import javax.net.ssl.SSLException;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AddBookBySearchContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibreAdminContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.CalibrePreferencesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookByIdContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookFromBundleContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookshelvesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ExportContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.GoodreadsAdminContract;
+import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ImportContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.PreferredStylesContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ShowBookContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateBooklistContract;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
-import com.hardbacknutter.nevertoomanybooks.backup.ExportFragment;
-import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
@@ -112,11 +114,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Entity;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsHandler;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.amazon.AmazonSearchEngine;
-import com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.StyleViewModel;
 import com.hardbacknutter.nevertoomanybooks.tasks.messages.FinishedMessage;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
@@ -171,20 +171,19 @@ public class BooksOnBookshelf
     private static final String RK_EDIT_BOOKSHELF = TAG + ":rk:" + EditBookshelfDialogFragment.TAG;
 
     /** Bring up the Goodreads synchronization options. */
-    private final ActivityResultLauncher<Bundle> mGoodreadsLauncher = registerForActivityResult(
-            new FragmentHostActivity.ResultContract(GoodreadsAdminFragment.TAG),
-            data -> updateNavigationMenuVisibility());
+    private final ActivityResultLauncher<Void> mGoodreadsLauncher = registerForActivityResult(
+            new GoodreadsAdminContract(), aVoid -> updateNavigationMenuVisibility());
 
     /** Make a backup. */
     private final ActivityResultLauncher<ArchiveEncoding> mExportLauncher =
-            registerForActivityResult(new ExportFragment.ResultContract(), success -> {});
+            registerForActivityResult(new ExportContract(), success -> {});
 
 
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
     /** Calibre preferences screen. */
     private final ActivityResultLauncher<Void> mCalibrePreferencesLauncher =
-            registerForActivityResult(new CalibrePreferencesFragment.ResultContract(),
+            registerForActivityResult(new CalibrePreferencesContract(),
                                       aVoid -> updateNavigationMenuVisibility());
     /** Delegate for Calibre. */
     @Nullable
@@ -282,12 +281,11 @@ public class BooksOnBookshelf
 
     /** Do an import. */
     private final ActivityResultLauncher<String> mImportLauncher = registerForActivityResult(
-            new ImportFragment.ResultsContract(), this::onImportFinished);
+            new ImportContract(), this::onImportFinished);
 
     /** Calibre synchronization options. */
-    private final ActivityResultLauncher<Bundle> mCalibreAdminLauncher =
-            registerForActivityResult(new FragmentHostActivity.ResultContract(
-                    CalibreAdminFragment.TAG), data -> {
+    private final ActivityResultLauncher<Void> mCalibreAdminLauncher =
+            registerForActivityResult(new CalibreAdminContract(), data -> {
 
                 updateNavigationMenuVisibility();
                 if (data != null && data.containsKey(ImportResults.BKEY_IMPORT_RESULTS)) {
@@ -345,7 +343,7 @@ public class BooksOnBookshelf
      * which is handled {@link #mEditStyleLauncher}.
      */
     private final StylePickerDialogFragment.Launcher mOnStylePickerLauncher =
-            new StylePickerDialogFragment.Launcher() {
+            new StylePickerDialogFragment.Launcher(RK_STYLE_PICKER) {
                 @Override
                 public void onResult(@NonNull final String uuid) {
                     saveListPosition();
@@ -357,7 +355,7 @@ public class BooksOnBookshelf
             };
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.Launcher mEditBookshelfLauncher =
-            new EditBookshelfDialogFragment.Launcher() {
+            new EditBookshelfDialogFragment.Launcher(RK_EDIT_BOOKSHELF) {
                 @Override
                 public void onResult(final long bookshelfId) {
                     if (bookshelfId != mVm.getCurrentBookshelf().getId()) {
@@ -367,7 +365,7 @@ public class BooksOnBookshelf
             };
     /** Accept the result from the dialog. */
     private final EditLenderDialogFragment.Launcher mEditLenderLauncher =
-            new EditLenderDialogFragment.Launcher() {
+            new EditLenderDialogFragment.Launcher(RK_EDIT_LENDER) {
                 @Override
                 public void onResult(@IntRange(from = 1) final long bookId,
                                      @NonNull final String loanee) {
@@ -444,7 +442,7 @@ public class BooksOnBookshelf
             };
     /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
+            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
                 @Override
                 public boolean onResult(@IdRes final int itemId,
                                         final int position) {
@@ -480,11 +478,11 @@ public class BooksOnBookshelf
 
         fm.setFragmentResultListener(RowChangeListener.REQUEST_KEY, this, mRowChangeListener);
 
-        mEditBookshelfLauncher.register(fm, this, RK_EDIT_BOOKSHELF);
-        mEditLenderLauncher.register(fm, this, RK_EDIT_LENDER);
-        mOnStylePickerLauncher.register(fm, this, RK_STYLE_PICKER);
+        mEditBookshelfLauncher.registerForFragmentResult(fm, this);
+        mEditLenderLauncher.registerForFragmentResult(fm, this);
+        mOnStylePickerLauncher.registerForFragmentResult(fm, this);
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(fm, this, RK_MENU_PICKER);
+            mMenuLauncher.registerForFragmentResult(fm, this);
         }
 
         // Does not use the full progress dialog. Instead uses the overlay progress bar.

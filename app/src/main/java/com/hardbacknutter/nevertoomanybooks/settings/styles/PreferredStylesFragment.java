@@ -177,7 +177,7 @@ public class PreferredStylesFragment
             });
 
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
+            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
                 @Override
                 public boolean onResult(@IdRes final int menuItemId,
                                         final int position) {
@@ -206,7 +206,7 @@ public class PreferredStylesFragment
         super.onViewCreated(view, savedInstanceState);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(getChildFragmentManager(), this, RK_MENU_PICKER);
+            mMenuLauncher.registerForFragmentResult(getChildFragmentManager(), this);
         }
 
         //noinspection ConstantConditions

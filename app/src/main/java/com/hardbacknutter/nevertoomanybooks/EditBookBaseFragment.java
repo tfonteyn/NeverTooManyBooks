@@ -52,7 +52,6 @@ import java.util.function.Supplier;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -86,17 +85,28 @@ public abstract class EditBookBaseFragment
     private static final String RK_DATE_PICKER_RANGE = TAG + ":rk:datePickerRange";
 
     private final WrappedMaterialDatePicker.Launcher mDatePickerLauncher =
-            new WrappedMaterialDatePicker.Launcher() {
+            new WrappedMaterialDatePicker.Launcher(RK_DATE_PICKER_SINGLE) {
                 @Override
                 public void onResult(@NonNull final int[] fieldIds,
                                      @NonNull final long[] selections) {
                     onDateSet(fieldIds, selections);
                 }
             };
+
+    private final WrappedMaterialDatePicker.Launcher mDateRangePickerLauncher =
+            new WrappedMaterialDatePicker.Launcher(RK_DATE_PICKER_RANGE) {
+                @Override
+                public void onResult(@NonNull final int[] fieldIds,
+                                     @NonNull final long[] selections) {
+                    onDateSet(fieldIds, selections);
+                }
+            };
+
     /** The view model. */
     EditBookFragmentViewModel mVm;
+
     private final PartialDatePickerDialogFragment.Launcher mPartialDatePickerLauncher =
-            new PartialDatePickerDialogFragment.Launcher() {
+            new PartialDatePickerDialogFragment.Launcher(RK_DATE_PICKER_PARTIAL) {
                 @Override
                 public void onResult(@IdRes final int fieldId,
                                      @NonNull final PartialDate date) {
@@ -148,9 +158,9 @@ public abstract class EditBookBaseFragment
 
         final FragmentManager fm = getChildFragmentManager();
 
-        mPartialDatePickerLauncher.register(fm, this, RK_DATE_PICKER_PARTIAL);
-        mDatePickerLauncher.register(fm, this, RK_DATE_PICKER_SINGLE);
-        mDatePickerLauncher.register(fm, this, RK_DATE_PICKER_RANGE);
+        mPartialDatePickerLauncher.registerForFragmentResult(fm, this);
+        mDatePickerLauncher.registerForFragmentResult(fm, this);
+        mDateRangePickerLauncher.registerForFragmentResult(fm, this);
     }
 
     @Override
@@ -403,7 +413,7 @@ public abstract class EditBookBaseFragment
             if (startUsed) {
                 // date-span picker for the end-date
                 //noinspection ConstantConditions
-                view.setOnClickListener(v -> mDatePickerLauncher
+                view.setOnClickListener(v -> mDateRangePickerLauncher
                         .launch(dateSpanTitleId,
                                 fieldStartDate.getId(), getInstant(fieldStartDate, todayIfNone),
                                 fieldEndDate.getId(), getInstant(fieldEndDate, todayIfNone)));
@@ -508,10 +518,14 @@ public abstract class EditBookBaseFragment
     }
 
     public abstract static class EditItemLauncher<T extends Parcelable>
-            extends DialogFragmentLauncherBase {
+            extends FragmentLauncherBase {
 
         private static final String ORIGINAL = "original";
         private static final String MODIFIED = "modified";
+
+        EditItemLauncher(@NonNull final String requestKey) {
+            super(requestKey);
+        }
 
         static <T extends Parcelable> void setResult(@NonNull final Fragment fragment,
                                                      @NonNull final String requestKey,

@@ -70,14 +70,16 @@ public class EditBookshelvesFragment
     /** The adapter for the list. */
     private BookshelfAdapter mAdapter;
     private EditBookshelvesViewModel mVm;
+
     /** Accept the result from the dialog. */
     private final EditBookshelfDialogFragment.Launcher mOnEditBookshelfLauncher =
-            new EditBookshelfDialogFragment.Launcher() {
+            new EditBookshelfDialogFragment.Launcher(RK_EDIT_BOOKSHELF) {
                 @Override
                 public void onResult(final long bookshelfId) {
                     mVm.reloadListAndSetSelectedPosition(bookshelfId);
                 }
             };
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -88,10 +90,12 @@ public class EditBookshelvesFragment
                             .setResultAndFinish(getActivity(), mVm.getSelectedBookshelfId());
                 }
             };
+
     /** View Binding. */
     private FragmentEditBookshelvesBinding mVb;
+
     private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher() {
+            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
                 @Override
                 public boolean onResult(@IdRes final int menuItemId,
                                         final int position) {
@@ -105,10 +109,10 @@ public class EditBookshelvesFragment
         setHasOptionsMenu(true);
 
         final FragmentManager fm = getChildFragmentManager();
-        mOnEditBookshelfLauncher.register(fm, this, RK_EDIT_BOOKSHELF);
+        mOnEditBookshelfLauncher.registerForFragmentResult(fm, this);
 
         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
-            mMenuLauncher.register(fm, this, RK_MENU_PICKER);
+            mMenuLauncher.registerForFragmentResult(fm, this);
         }
     }
 

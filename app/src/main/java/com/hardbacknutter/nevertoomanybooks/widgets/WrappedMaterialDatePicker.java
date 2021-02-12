@@ -37,7 +37,7 @@ import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClic
 import java.time.Instant;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.dialogs.DialogFragmentLauncherBase;
+import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 
 /**
  * Crazy wrapper around a {@link MaterialDatePicker}
@@ -137,10 +137,14 @@ public final class WrappedMaterialDatePicker<S>
     }
 
     public abstract static class Launcher
-            extends DialogFragmentLauncherBase {
+            extends FragmentLauncherBase {
 
         private static final String FIELD_ID = "fieldId";
         private static final String SELECTIONS = "selections";
+
+        public Launcher(@NonNull final String requestKey) {
+            super(requestKey);
+        }
 
         static void setResult(@NonNull final Fragment fragment,
                               @NonNull final String requestKey,

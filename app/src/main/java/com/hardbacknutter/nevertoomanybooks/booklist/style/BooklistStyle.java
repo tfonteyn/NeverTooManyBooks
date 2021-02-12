@@ -153,6 +153,7 @@ public abstract class BooklistStyle
     ListScreenBookFields mListScreenBookFields;
     /** Configuration for the fields shown on the Book details screen. */
     DetailScreenBookFields mDetailScreenBookFields;
+    private int mListPreferredItemHeightSmall;
 
     /**
      * Base constructor.
@@ -224,6 +225,7 @@ public abstract class BooklistStyle
                                        PK_LEVELS_EXPANSION, 1);
         mShowHeaderInfo = new PBitmask(isPersistent, mPersistenceLayer,
                                        PK_LIST_HEADER, HEADER_BITMASK_ALL, HEADER_BITMASK_ALL);
+
         mGroupRowPreferredHeight = new PBoolean(isPersistent, mPersistenceLayer,
                                                 PK_SCALE_GROUP_ROW, true);
 
@@ -255,8 +257,11 @@ public abstract class BooklistStyle
     @Override
     public int getGroupRowHeight(@NonNull final Context context) {
         if (mGroupRowPreferredHeight.getValue()) {
-            return AttrUtils
-                    .getDimensionPixelSize(context, R.attr.listPreferredItemHeightSmall);
+            if (mListPreferredItemHeightSmall == 0) {
+                mListPreferredItemHeightSmall = AttrUtils
+                        .getDimensionPixelSize(context, R.attr.listPreferredItemHeightSmall);
+            }
+            return mListPreferredItemHeightSmall;
         } else {
             return ViewGroup.LayoutParams.WRAP_CONTENT;
         }
@@ -523,6 +528,7 @@ public abstract class BooklistStyle
 
                + ", mExpansionLevel=" + mExpansionLevel
                + ", mGroupsUseListPreferredHeight=" + mGroupRowPreferredHeight
+               + ", mListPreferredItemHeightSmall=" + mListPreferredItemHeightSmall
                + ", mShowHeaderInfo=" + mShowHeaderInfo
 
                + ", mTextScale=" + mTextScale

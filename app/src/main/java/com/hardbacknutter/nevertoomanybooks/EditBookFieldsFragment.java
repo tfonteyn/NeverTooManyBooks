@@ -78,7 +78,7 @@ public class EditBookFieldsFragment
     private static final String RK_EDIT_BOOKSHELVES = TAG + ":rk:" + CheckListDialogFragment.TAG;
 
     private final CheckListDialogFragment.Launcher mEditBookshelvesLauncher =
-            new CheckListDialogFragment.Launcher() {
+            new CheckListDialogFragment.Launcher(RK_EDIT_BOOKSHELVES) {
                 @Override
                 public void onResult(@IdRes final int fieldId,
                                      @NonNull final ArrayList<Entity> selectedItems) {
@@ -118,7 +118,7 @@ public class EditBookFieldsFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mEditBookshelvesLauncher.register(getChildFragmentManager(), this, RK_EDIT_BOOKSHELVES);
+        mEditBookshelvesLauncher.registerForFragmentResult(getChildFragmentManager(), this);
     }
 
     @Override
