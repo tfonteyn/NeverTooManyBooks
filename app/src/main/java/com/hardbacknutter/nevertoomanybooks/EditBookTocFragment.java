@@ -825,12 +825,12 @@ public class EditBookTocFragment
                                      final int position) {
             super.onBindViewHolder(holder, position);
 
-            final TocEntry item = getItem(position);
+            final TocEntry tocEntry = getItem(position);
 
-            holder.titleView.setText(item.getTitle());
-            holder.authorView.setText(item.getPrimaryAuthor().getLabel(getContext()));
+            holder.titleView.setText(tocEntry.getTitle());
+            holder.authorView.setText(tocEntry.getPrimaryAuthor().getLabel(getContext()));
 
-            final PartialDate date = item.getFirstPublicationDate();
+            final PartialDate date = tocEntry.getFirstPublicationDate();
             if (date.isEmpty()) {
                 holder.firstPublicationView.setVisibility(View.GONE);
             } else {
