@@ -429,8 +429,7 @@ public class ImportFragment
         } else {
             //noinspection ConstantConditions
             final ExtArrayAdapter<CalibreLibrary> adapter =
-                    new EntityArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
-                                             ExtArrayAdapter.FilterType.Passthrough, libraries);
+                    new EntityArrayAdapter<>(getContext(), libraries);
 
             mVb.calibreLibrary.setAdapter(adapter);
             mVb.calibreLibrary.setOnItemClickListener(

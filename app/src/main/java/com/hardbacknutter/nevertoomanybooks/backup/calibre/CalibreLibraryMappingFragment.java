@@ -90,19 +90,13 @@ public class CalibreLibraryMappingFragment
         readMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
 
         //noinspection ConstantConditions
-        mLibraryArrayAdapter =
-                new EntityArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
-                                         ExtArrayAdapter.FilterType.Passthrough,
-                                         mVm.getLibraries());
+        mLibraryArrayAdapter = new EntityArrayAdapter<>(getContext(), mVm.getLibraries());
         mVb.libraryName.setAdapter(mLibraryArrayAdapter);
         mVb.libraryName.setOnItemClickListener(
                 (av, v, position, id) -> onLibrarySelected(position));
 
         mBookshelfList = mVm.getBookshelfList();
-        mBookshelfAdapter =
-                new EntityArrayAdapter<>(getContext(), R.layout.dropdown_menu_popup_item,
-                                         ExtArrayAdapter.FilterType.Passthrough,
-                                         mBookshelfList);
+        mBookshelfAdapter = new EntityArrayAdapter<>(getContext(), mBookshelfList);
         mVb.bookshelf.setAdapter(mBookshelfAdapter);
         mVb.bookshelf.setOnItemClickListener((av, v, position, id) -> {
             final Bookshelf bookshelf = mBookshelfAdapter.getItem(position);

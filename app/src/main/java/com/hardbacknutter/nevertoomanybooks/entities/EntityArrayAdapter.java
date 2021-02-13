@@ -27,6 +27,7 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
 
 /**
@@ -36,6 +37,18 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
  */
 public class EntityArrayAdapter<T extends Entity>
         extends ExtArrayAdapter<T> {
+
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     * @param list    of entities
+     */
+    public EntityArrayAdapter(@NonNull final Context context,
+                              @NonNull final List<T> list) {
+        super(context, R.layout.dropdown_menu_popup_item,
+              ExtArrayAdapter.FilterType.Passthrough, list);
+    }
 
     /**
      * Constructor.

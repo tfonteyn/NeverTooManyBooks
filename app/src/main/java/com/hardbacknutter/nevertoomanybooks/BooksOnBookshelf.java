@@ -524,10 +524,7 @@ public class BooksOnBookshelf
         // Setup the Bookshelf spinner;
         // The list is initially empty here; loading the list and
         // setting/selecting the current shelf are both done in onResume
-        mBookshelfAdapter = new EntityArrayAdapter<>(this,
-                                                     R.layout.dropdown_menu_popup_item,
-                                                     ExtArrayAdapter.FilterType.Passthrough,
-                                                     mVm.getBookshelfList());
+        mBookshelfAdapter = new EntityArrayAdapter<>(this, mVm.getBookshelfList());
 
         mVb.bookshelfSpinner.setAdapter(mBookshelfAdapter);
         mVb.bookshelfSpinner.setOnTouchListener(mOnBookshelfSelectionChanged);
