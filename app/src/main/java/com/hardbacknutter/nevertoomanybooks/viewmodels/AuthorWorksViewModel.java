@@ -47,6 +47,7 @@ public class AuthorWorksViewModel
 
     /** Log tag. */
     private static final String TAG = "AuthorWorksViewModel";
+    /** The list of TOC/Books we're displaying. */
     private final ArrayList<AuthorWork> mWorkList = new ArrayList<>();
     /** Database Access. */
     private DAO mDb;

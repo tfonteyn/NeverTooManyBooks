@@ -35,6 +35,9 @@ import java.security.cert.X509Certificate;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Handles a <strong>single</strong> certificate.
+ */
 public class CertificateCoder
         implements JsonCoder<X509Certificate> {
 
