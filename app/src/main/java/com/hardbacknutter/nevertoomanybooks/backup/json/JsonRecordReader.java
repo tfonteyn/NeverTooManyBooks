@@ -296,14 +296,12 @@ public class JsonRecordReader
                             context.getString(R.string.error_import_csv_line, row));
                     mResults.failedLinesNr.add(row);
 
-                    if (BuildConfig.DEBUG /* always */) {
-                        if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                            Logger.warn(context, TAG, "e=" + e.getMessage(),
-                                        ERROR_IMPORT_FAILED_AT_ROW + row);
-                        } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
-                            // logging with the full exception is VERY HEAVY
-                            Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
-                        }
+                    Logger.warn(context, TAG, "e=" + e.getMessage(),
+                                ERROR_IMPORT_FAILED_AT_ROW + row);
+
+                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
+                        // logging with the full exception is VERY HEAVY
+                        Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
                     }
                 }
 

@@ -23,13 +23,11 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -37,7 +35,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
-import java.io.Closeable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
@@ -60,7 +57,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreVirtualLibrary
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -176,7 +172,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * There is an explicit warning that {@link SQLiteStatement} is not thread safe!
  */
 public class DAO
-        implements AutoCloseable {
+        extends BaseDao {
 
     /**
      * Book Insert/update flag.
@@ -198,22 +194,8 @@ public class DAO
      */
     public static final int BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT = 1 << 2;
 
-    /**
-     * Static Synchronizer to coordinate access to <strong>this</strong> database.
-     */
-    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
-
-
     /** Log tag. */
     private static final String TAG = "DAO";
-
-    /** Static Factory object to create a {@link SynchronizedCursor} cursor. */
-    private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
-            (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
-
-    /** Static Factory object to create an {@link TypedCursor} cursor. */
-    private static final SQLiteDatabase.CursorFactory EXT_CURSOR_FACTORY =
-            (db, d, et, q) -> new TypedCursor(d, et, q, SYNCHRONIZER);
 
     /** statement names; keys into the cache map. */
     private static final String STMT_CHECK_BOOK_EXISTS = "CheckBookExists";
@@ -231,6 +213,7 @@ public class DAO
     private static final String STMT_GET_BOOKSHELF_ID_BY_NAME = "gBookshelfIdByName";
     private static final String STMT_GET_LOANEE_BY_BOOK_ID = "gLoaneeByBookId";
     private static final String STMT_GET_BOOKLIST_STYLE = "gListStyle";
+    private static final String STMT_GET_CALIBRE_LIBRARY_ID = "gCalLibId";
 
     private static final String STMT_INSERT_AUTHOR = "iAuthor";
     private static final String STMT_INSERT_SERIES = "iSeries";
@@ -277,17 +260,6 @@ public class DAO
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
-    /** Reference to the singleton. */
-    private final DBHelper mDBHelper;
-    /** Reference to the singleton. */
-    private final SynchronizedDb mSyncedDb;
-    /** Collection of statements pre-compiled for this object. */
-    private final SqlStatementManager mSqlStatementManager;
-    @NonNull
-    private final String mInstanceName;
-    /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
-    private boolean mCloseWasCalled;
-
     /**
      * Constructor.
      * <p>
@@ -297,33 +269,13 @@ public class DAO
      * @param name of this DAO for logging.
      */
     public DAO(@NonNull final String name) {
-        mInstanceName = name;
-
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, mInstanceName + "|Constructor");
-        }
-
-        mDBHelper = DBHelper.getInstance(App.getAppContext(), CURSOR_FACTORY, SYNCHRONIZER);
-        mSyncedDb = SynchronizedDb.getInstance(SYNCHRONIZER, mDBHelper);
-
-        // statements are instance based/managed
-        mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + mInstanceName);
+        super(name);
     }
 
     @VisibleForTesting
     public DAO(@NonNull final Context context,
                @NonNull final String name) {
-        mInstanceName = name;
-
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, mInstanceName + "|Constructor");
-        }
-
-        mDBHelper = DBHelper.getInstance(context, CURSOR_FACTORY, SYNCHRONIZER);
-        mSyncedDb = SynchronizedDb.getInstance(SYNCHRONIZER, mDBHelper);
-
-        // statements are instance based/managed
-        mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + mInstanceName);
+        super(context, name);
     }
 
     /**
@@ -376,107 +328,8 @@ public class DAO
      * Purge <strong>all</strong> Booklist node state data.
      */
     public static void clearNodeStateData() {
-        SynchronizedDb.getInstance(SYNCHRONIZER)
+        SynchronizedDb.getInstance(DBHelper.getSynchronizer())
                       .execSQL(DAOSql.SqlDelete.PURGE_BOOK_LIST_NODE_STATE);
-    }
-
-    public DBHelper getDBHelper() {
-        return mDBHelper;
-    }
-
-    /**
-     * Get the local database.
-     *
-     * @return Underlying database connection
-     */
-    @NonNull
-    public SynchronizedDb getSyncDb() {
-        return mSyncedDb;
-    }
-
-    /**
-     * DEBUG only. Return the instance name of this DAO.
-     *
-     * @return name
-     */
-    @NonNull
-    public String getName() {
-        return mInstanceName;
-    }
-
-    /**
-     * Generic function to close the database.
-     * It does not 'close' the database in the literal sense, but
-     * performs a cleanup by closing all open statements
-     * <p>
-     * So it should really be called cleanup()
-     * But it allows us to use try-with-resources.
-     * <p>
-     * Consequently, there is no need to 'open' anything before running further operations.
-     */
-    @Override
-    public void close() {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, mInstanceName + "|close");
-        }
-        if (mSqlStatementManager != null) {
-            // the close() will perform a clear, ready to be re-used.
-            mSqlStatementManager.close();
-        }
-        mCloseWasCalled = true;
-    }
-
-    /**
-     * DEBUG: if we see the warn in the logs, we know we have an issue to fix.
-     */
-    @SuppressWarnings("FinalizeDeclaration")
-    @Override
-    @CallSuper
-    protected void finalize()
-            throws Throwable {
-        if (!mCloseWasCalled) {
-            if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|" + mInstanceName);
-            }
-            close();
-        }
-        super.finalize();
-    }
-
-    /**
-     * Wrapper to {@link SynchronizedDb#beginTransaction(boolean)}.
-     *
-     * @param isUpdate Indicates if updates will be done in TX
-     *
-     * @return the lock
-     */
-    @NonNull
-    public Synchronizer.SyncLock beginTransaction(final boolean isUpdate) {
-        return mSyncedDb.beginTransaction(isUpdate);
-    }
-
-    /**
-     * Wrapper to {@link SynchronizedDb#endTransaction}.
-     *
-     * @param txLock Lock returned from BeginTransaction().
-     */
-    public void endTransaction(@Nullable final Synchronizer.SyncLock txLock) {
-        // it's cleaner to have the null detection here
-        mSyncedDb.endTransaction(Objects.requireNonNull(txLock));
-    }
-
-    /**
-     * Wrapper to {@link SynchronizedDb#inTransaction}.
-     */
-    public boolean inTransaction() {
-        return mSyncedDb.inTransaction();
-    }
-
-    /**
-     * Wrapper to {@link SynchronizedDb#setTransactionSuccessful}.
-     */
-    public void setTransactionSuccessful() {
-        mSyncedDb.setTransactionSuccessful();
     }
 
     /**
@@ -560,7 +413,7 @@ public class DAO
             if (!book.storeCovers(context)) {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
-                throw new DAO.DaoWriteException(ERROR_STORING_COVERS + book);
+                throw new DaoWriteException(ERROR_STORING_COVERS + book);
             }
 
             // all done
@@ -639,7 +492,7 @@ public class DAO
                 ftsUpdate(context, book.getId());
 
                 if (!book.storeCovers(context)) {
-                    throw new DAO.DaoWriteException(ERROR_STORING_COVERS + book);
+                    throw new DaoWriteException(ERROR_STORING_COVERS + book);
                 }
 
                 if (txLock != null) {
@@ -981,8 +834,8 @@ public class DAO
         }
 
         if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
-            // The Calibre library referenced from the book <strong>must exist</strong>.
-            insertBookCalibreData(book);
+            // Calibre library will be inserted if new, but not updated
+            insertBookCalibreData(context, book);
         }
     }
 
@@ -1319,14 +1172,16 @@ public class DAO
     }
 
     /**
-     * Insert the Calibre bridging data.
-     * The Calibre library referenced from the book <strong>must exist</strong>.
+     * Create the link between {@link Book} and {@link CalibreLibrary}.
+     * New libraries are added, existing ones are NOT updated.
      *
-     * @param book A collection with the columns to be set. May contain extra data.
+     * @param context Current context
+     * @param book    A collection with the columns to be set. May contain extra data.
      *
      * @throws DaoWriteException on failure
      */
-    private void insertBookCalibreData(@NonNull final Book book)
+    private void insertBookCalibreData(@NonNull final Context context,
+                                       @NonNull final Book book)
             throws DaoWriteException {
 
         if (!mSyncedDb.inTransaction()) {
@@ -1336,17 +1191,46 @@ public class DAO
         // Just delete all current links; we'll insert them from scratch.
         deleteBookCalibreData(book);
 
-        // Insert the (new) data
+        final CalibreLibrary library;
+        if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
+            library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
+            //noinspection ConstantConditions
+            fixId(library);
+            if (library.getId() == 0) {
+                if (insert(library) == -1) {
+                    throw new DaoWriteException("insert Calibre library");
+                }
+            }
+        } else if (book.contains(KEY_FK_CALIBRE_LIBRARY)) {
+            library = getCalibreLibrary(book.getLong(KEY_FK_CALIBRE_LIBRARY));
+            if (library == null) {
+                // The book did not have a full library object;
+                // It did have a library id, but that library does not exist.
+                // Theoretically this should never happen... flw
+                // log and bail out.
+                Logger.warn(context, TAG, "calibre library invalid for book="
+                                          + book.getId());
+                return;
+            }
+        } else {
+            // should never be the case... flw
+            // log and bail out.
+            Logger.warn(context, TAG, "calibre library invalid for book="
+                                      + book.getId());
+            return;
+        }
+
         final ContentValues cv = new ContentValues();
         cv.put(KEY_FK_BOOK, book.getId());
         cv.put(KEY_CALIBRE_BOOK_ID, book.getInt(KEY_CALIBRE_BOOK_ID));
         cv.put(KEY_CALIBRE_BOOK_UUID, book.getString(KEY_CALIBRE_BOOK_UUID));
         cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, book.getString(KEY_CALIBRE_BOOK_MAIN_FORMAT));
-        cv.put(KEY_FK_CALIBRE_LIBRARY, book.getLong(KEY_FK_CALIBRE_LIBRARY));
+
+        cv.put(KEY_FK_CALIBRE_LIBRARY, library.getId());
 
         final long rowId = mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
-        if (rowId <= 0) {
-            throw new DaoWriteException(ERROR_CREATING_BOOK_FROM + book);
+        if (rowId == -1) {
+            throw new DaoWriteException("insert book-calibre");
         }
     }
 
@@ -1376,6 +1260,20 @@ public class DAO
             stmt.bindLong(1, bookId);
             stmt.executeUpdateDelete();
         }
+    }
+
+    /**
+     * Tries to find the item in the database using all or some of its fields (except the id).
+     * If found, sets the item's id with the id found in the database.
+     *
+     * @param bookshelf to update
+     *
+     * @return the item id (also set on the item).
+     */
+    public long fixId(@NonNull final Bookshelf bookshelf) {
+        final long id = getBookshelfId(bookshelf);
+        bookshelf.setId(id);
+        return id;
     }
 
     /**
@@ -1473,6 +1371,28 @@ public class DAO
     }
 
     /**
+     * Try to find the Author. If found, update the id with the id as found in the database.
+     *
+     * @param context      Current context
+     * @param author       to update
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return the item id (also set on the item).
+     */
+    public long fixId(@NonNull final Context context,
+                      @NonNull final Author author,
+                      final boolean lookupLocale,
+                      @NonNull final Locale bookLocale) {
+        final long id = getAuthorId(context, author, lookupLocale, bookLocale);
+        author.setId(id);
+        return id;
+    }
+
+    /**
      * Update an Author.
      *
      * @param context Current context
@@ -1548,7 +1468,7 @@ public class DAO
 
         if (author.getId() == 0) {
             // It wasn't saved before; see if it is now. If so, update ID.
-            author.fixId(context, this, true, bookLocale);
+            fixId(context, author, true, bookLocale);
 
         } else {
             // It was saved, see if it still is and fetch possibly updated fields.
@@ -1561,6 +1481,28 @@ public class DAO
                 author.setId(0);
             }
         }
+    }
+
+    /**
+     * Try to find the Series. If found, update the id with the id as found in the database.
+     *
+     * @param context      Current context
+     * @param series       to update
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return the item id (also set on the item).
+     */
+    public long fixId(@NonNull final Context context,
+                      @NonNull final Series series,
+                      final boolean lookupLocale,
+                      @NonNull final Locale bookLocale) {
+        final long id = getSeriesId(context, series, lookupLocale, bookLocale);
+        series.setId(id);
+        return id;
     }
 
     /**
@@ -1639,7 +1581,7 @@ public class DAO
 
         if (series.getId() == 0) {
             // It wasn't saved before; see if it is now. If so, update ID.
-            series.fixId(context, this, true, bookLocale);
+            fixId(context, series, true, bookLocale);
 
         } else {
             // It was saved, see if it still is and fetch possibly updated fields.
@@ -1680,6 +1622,28 @@ public class DAO
             new DBCleaner(this).bookSeries(context);
         }
         return rowsAffected == 1;
+    }
+
+    /**
+     * Try to find the Publisher. If found, update the id with the id as found in the database.
+     *
+     * @param context      Current context
+     * @param publisher    to update
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return the item id (also set on the item).
+     */
+    public long fixId(@NonNull final Context context,
+                      @NonNull final Publisher publisher,
+                      final boolean lookupLocale,
+                      @NonNull final Locale bookLocale) {
+        final long id = getPublisherId(context, publisher, lookupLocale, bookLocale);
+        publisher.setId(id);
+        return id;
     }
 
     /**
@@ -1756,7 +1720,7 @@ public class DAO
 
         if (publisher.getId() == 0) {
             // It wasn't saved before; see if it is now. If so, update ID.
-            publisher.fixId(context, this, true, bookLocale);
+            fixId(context, publisher, true, bookLocale);
 
         } else {
             // It was saved, see if it still is and fetch possibly updated fields.
@@ -1933,6 +1897,34 @@ public class DAO
                 }
             }
         }
+    }
+
+    /**
+     * Tries to find the item in the database using all or some of its fields (except the id).
+     * If found, sets the item's id with the id found in the database.
+     * <p>
+     * If the item has 'sub' items, then it should call those as well.
+     *
+     * @param context      Current context
+     * @param tocEntry     to update
+     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
+     *                     This can be (relatively) slow, and hence should be {@code false}
+     *                     during for example an import.
+     * @param bookLocale   Locale to use if the item has none set,
+     *                     or if lookupLocale was {@code false}
+     *
+     * @return the item id (also set on the item).
+     */
+    public long fixId(@NonNull final Context context,
+                      @NonNull final TocEntry tocEntry,
+                      final boolean lookupLocale,
+                      @NonNull final Locale bookLocale) {
+
+        fixId(context, tocEntry.getPrimaryAuthor(), lookupLocale, bookLocale);
+
+        final long id = getTocEntryId(context, tocEntry, lookupLocale, bookLocale);
+        tocEntry.setId(id);
+        return id;
     }
 
     /**
@@ -2177,6 +2169,12 @@ public class DAO
         }
     }
 
+    public long fixId(@NonNull final CalibreLibrary /* in/out */ library) {
+        final long id = getCalibreLibrary(library);
+        library.setId(id);
+        return id;
+    }
+
     private void insertCalibreVirtualLibraries(@NonNull final CalibreLibrary library) {
         final ArrayList<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
         if (!vlibs.isEmpty()) {
@@ -2269,6 +2267,18 @@ public class DAO
             return library;
         }
         return null;
+    }
+
+    private long getCalibreLibrary(@NonNull final CalibreLibrary library) {
+
+        final SynchronizedStatement stmt = mSqlStatementManager.get(
+                STMT_GET_CALIBRE_LIBRARY_ID, () -> DAOSql.SqlGetId.CALIBRE_LIBRARY_ID_BY_NAME);
+
+        //noinspection SynchronizationOnLocalVariableOrMethodParameter
+        synchronized (stmt) {
+            stmt.bindString(1, library.getName());
+            return stmt.simpleQueryForLongOrZero();
+        }
     }
 
     /**
@@ -2589,7 +2599,7 @@ public class DAO
     public long countBooksByAuthor(@NonNull final Context context,
                                    @NonNull final Author author,
                                    @NonNull final Locale bookLocale) {
-        if (author.getId() == 0 && author.fixId(context, this, true, bookLocale) == 0) {
+        if (author.getId() == 0 && fixId(context, author, true, bookLocale) == 0) {
             return 0;
         }
 
@@ -2612,7 +2622,7 @@ public class DAO
     public long countBooksBySeries(@NonNull final Context context,
                                    @NonNull final Series series,
                                    @NonNull final Locale bookLocale) {
-        if (series.getId() == 0 && series.fixId(context, this, true, bookLocale) == 0) {
+        if (series.getId() == 0 && fixId(context, series, true, bookLocale) == 0) {
             return 0;
         }
 
@@ -2635,7 +2645,7 @@ public class DAO
     public long countBooksByPublisher(@NonNull final Context context,
                                       @NonNull final Publisher publisher,
                                       @NonNull final Locale bookLocale) {
-        if (publisher.getId() == 0 && publisher.fixId(context, this, true, bookLocale) == 0) {
+        if (publisher.getId() == 0 && fixId(context, publisher, true, bookLocale) == 0) {
             return 0;
         }
 
@@ -2658,7 +2668,7 @@ public class DAO
     public long countTocEntryByAuthor(@NonNull final Context context,
                                       @NonNull final Author author,
                                       @NonNull final Locale bookLocale) {
-        if (author.getId() == 0 && author.fixId(context, this, true, bookLocale) == 0) {
+        if (author.getId() == 0 && fixId(context, author, true, bookLocale) == 0) {
             return 0;
         }
 
@@ -2693,7 +2703,7 @@ public class DAO
                            + DAOSql._COLLATION;
 
         final TypedCursor cursor = (TypedCursor) mSyncedDb.rawQueryWithFactory(
-                EXT_CURSOR_FACTORY, sql, selectionArgs, null);
+                DBHelper.getTypedCursorFactory(), sql, selectionArgs, null);
         // force the TypedCursor to retrieve the real column types.
         cursor.setDb(mSyncedDb, TBL_BOOKS);
         return cursor;
@@ -4969,18 +4979,4 @@ public class DAO
 
     }
 
-    public static class DaoWriteException
-            extends Exception {
-
-        private static final long serialVersionUID = -2857466683799399619L;
-
-        public DaoWriteException(@NonNull final String message) {
-            super(message);
-        }
-
-        DaoWriteException(@NonNull final String message,
-                          @NonNull final Throwable cause) {
-            super(message, cause);
-        }
-    }
 }

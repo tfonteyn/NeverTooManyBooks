@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -417,7 +417,7 @@ public class Series
             }
 
             // Don't lookup the locale a 2nd time.
-            current.fixId(context, db, false, locale);
+            db.fixId(context, current, false, locale);
             entityMerger.merge(current);
         }
 
@@ -576,28 +576,6 @@ public class Series
             }
         }
         return bookLocale;
-    }
-
-    /**
-     * Try to find the Author. If found, update the id with the id as found in the database.
-     *
-     * @param context      Current context
-     * @param db           Database Access
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @return the item id (also set on the item).
-     */
-    public long fixId(@NonNull final Context context,
-                      @NonNull final DAO db,
-                      final boolean lookupLocale,
-                      @NonNull final Locale bookLocale) {
-
-        mId = db.getSeriesId(context, this, lookupLocale, bookLocale);
-        return mId;
     }
 
     @Override

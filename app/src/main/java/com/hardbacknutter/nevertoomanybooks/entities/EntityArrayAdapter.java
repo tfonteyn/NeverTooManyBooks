@@ -39,10 +39,10 @@ public class EntityArrayAdapter<T extends Entity>
         extends ExtArrayAdapter<T> {
 
     /**
-     * Constructor.
+     * Constructor for creating a Material Exposed dropdown menu.
      *
      * @param context Current context
-     * @param list    of entities
+     * @param list    of entities to choose from
      */
     public EntityArrayAdapter(@NonNull final Context context,
                               @NonNull final List<T> list) {
@@ -51,7 +51,7 @@ public class EntityArrayAdapter<T extends Entity>
     }
 
     /**
-     * Constructor.
+     * Generic constructor.
      *
      * @param context    Current context
      * @param resource   The resource ID for a layout file containing a TextView to use when

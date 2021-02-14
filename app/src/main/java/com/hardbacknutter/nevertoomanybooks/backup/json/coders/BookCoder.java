@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -85,7 +86,18 @@ public class BookCoder
 
         final Object element = book.get(key);
 
-        if (element instanceof String) {
+        // Special keys first.
+
+        // The presence of KEY_FK_CALIBRE_LIBRARY indicates there IS a calibre library for
+        // this book. We need to explicitly load and encode it using Book.BKEY_CALIBRE_LIBRARY
+        // so we can easily find/decode it in the #decode
+        if (DBDefinitions.KEY_FK_CALIBRE_LIBRARY.equals(key)) {
+            final CalibreLibrary library = book.getCalibreLibrary(mDb);
+            if (library != null) {
+                out.put(Book.BKEY_CALIBRE_LIBRARY, mCalibreLibraryCoder.encode(library));
+            }
+
+        } else if (element instanceof String) {
             if (!((String) element).isEmpty()) {
                 out.put(key, element);
             }
@@ -107,15 +119,6 @@ public class BookCoder
             // always write regardless of being 'false'
             out.put(key, element);
 
-        } else if (element instanceof Parcelable) {
-            if (Book.BKEY_CALIBRE_LIBRARY.equals(key)) {
-                final CalibreLibrary library = book.getCalibreLibrary(mDb);
-                if (library != null) {
-                    out.put(key, mCalibreLibraryCoder.encode(library));
-                }
-            } else {
-                throw new IllegalArgumentException("Parcelable not implemented for: " + element);
-            }
         } else if (element instanceof ArrayList) {
             switch (key) {
                 case Book.BKEY_AUTHOR_LIST: {
@@ -157,6 +160,10 @@ public class BookCoder
                 default:
                     throw new IllegalArgumentException("key=" + key + "|: " + element);
             }
+
+        } else if (element instanceof Parcelable) {
+            // skip, 2021-02-13: the only one in use for now is the Calibre Library,
+            // which is already handled - see above.
 
         } else if (element instanceof Serializable) {
             throw new IllegalArgumentException("Serializable not implemented for: " + element);

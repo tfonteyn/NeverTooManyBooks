@@ -614,6 +614,7 @@ public class DAOSql {
         /**
          * Get the id of a {@link Publisher} by name.
          * The lookup is by EQUALITY and CASE-SENSITIVE.
+         * Searches KEY_PUBLISHER_NAME_OB on both "The Publisher" and "Publisher, The"
          */
         static final String PUBLISHER_ID_BY_NAME =
                 SELECT_ + KEY_PK_ID + _FROM_ + TBL_PUBLISHERS.getName()
@@ -630,6 +631,14 @@ public class DAOSql {
                 + _WHERE_ + KEY_FK_AUTHOR + "=?"
                 + " AND (" + KEY_TITLE_OB + "=? " + _COLLATION
                 + " OR " + KEY_TITLE_OB + "=?" + _COLLATION + ')';
+
+        /**
+         * Get the id of a {@link CalibreLibrary} by name.
+         * The lookup is by EQUALITY and CASE-SENSITIVE.
+         */
+        static final String CALIBRE_LIBRARY_ID_BY_NAME =
+                SELECT_ + KEY_PK_ID + _FROM_ + TBL_CALIBRE_LIBRARIES.getName()
+                + _WHERE_ + KEY_CALIBRE_LIBRARY_NAME + "=?" + _COLLATION;
     }
 
     /**

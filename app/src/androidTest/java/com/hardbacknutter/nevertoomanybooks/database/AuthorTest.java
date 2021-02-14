@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -112,7 +112,7 @@ public class AuthorTest
             updateOk = db.update(context, author[0]);
             assertTrue(updateOk);
             assertEquals(author[0].getId(), idBefore);
-            author[0].fixId(context, db, false, Locale.getDefault());
+            db.fixId(context, author[0], false, Locale.getDefault());
             assertEquals(author[0].getId(), idBefore);
 
             // rename an Author to another EXISTING name
@@ -122,7 +122,7 @@ public class AuthorTest
             author[1].setName(RENAMED_FAMILY_NAME + "_a", RENAMED_GIVEN_NAMES + "_a");
 
             idBefore = author[1].getId();
-            author[1].fixId(context, db, false, Locale.getDefault());
+            db.fixId(context, author[1], false, Locale.getDefault());
             // should have become author[0]
             assertEquals(author[0].getId(), author[1].getId());
             // original should still be there with original name
@@ -176,7 +176,7 @@ public class AuthorTest
             updateOk = db.update(context, author[1]);
             assertTrue(updateOk);
             assertEquals(author[1].getId(), idBefore);
-            author[1].fixId(context, db, false, Locale.getDefault());
+            db.fixId(context, author[1], false, Locale.getDefault());
             assertEquals(author[1].getId(), idBefore);
 
             // rename an Author to another EXISTING name and MERGE books

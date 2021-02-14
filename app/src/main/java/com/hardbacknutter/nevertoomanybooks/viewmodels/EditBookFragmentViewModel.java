@@ -258,6 +258,38 @@ public class EditBookFragmentViewModel
     }
 
     /**
+     * Insert/update the book into the database, store cover files, and prepare activity results.
+     *
+     * @param context Current context
+     *
+     * @throws DAO.DaoWriteException on failure
+     */
+    public void saveBook(@NonNull final Context context)
+            throws DAO.DaoWriteException {
+
+        if (mBook.isNew()) {
+            mDb.insert(context, mBook, 0);
+        } else {
+            mDb.update(context, mBook, 0);
+        }
+        mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
+        mBook.setStage(EntityStage.Stage.Clean);
+    }
+
+    /**
+     * Delete an individual TocEntry.
+     *
+     * @param context  Current context
+     * @param tocEntry to delete.
+     *
+     * @return {@code true} if a row was deleted
+     */
+    public boolean deleteTocEntry(@NonNull final Context context,
+                                  @NonNull final TocEntry tocEntry) {
+        return mDb.delete(context, tocEntry);
+    }
+
+    /**
      * Get the primary book Author.
      *
      * @param context Current context
@@ -343,6 +375,7 @@ public class EditBookFragmentViewModel
             return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
         }
     }
+
 
     @NonNull
     public List<Bookshelf> getAllBookshelves() {
@@ -510,44 +543,6 @@ public class EditBookFragmentViewModel
         return mPricePaidCurrencies;
     }
 
-    /**
-     * Delete an individual TocEntry.
-     *
-     * @param context  Current context
-     * @param tocEntry to delete.
-     *
-     * @return {@code true} if a row was deleted
-     */
-    public boolean deleteTocEntry(@NonNull final Context context,
-                                  @NonNull final TocEntry tocEntry) {
-        return mDb.delete(context, tocEntry);
-    }
-
-
-    /**
-     * Insert/update the book into the database, store cover files, and prepare activity results.
-     *
-     * @param context Current context
-     *
-     * @throws DAO.DaoWriteException on failure
-     */
-    public void saveBook(@NonNull final Context context)
-            throws DAO.DaoWriteException {
-
-        if (mBook.isNew()) {
-            mDb.insert(context, mBook, 0);
-        } else {
-            mDb.update(context, mBook, 0);
-        }
-        mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
-        mBook.setStage(EntityStage.Stage.Clean);
-    }
-
-    public void fixTocEntryId(@NonNull final Context context,
-                              @NonNull final TocEntry tocEntry) {
-        tocEntry.fixId(context, mDb, true, mBook.getLocale(context));
-    }
-
 
     /**
      * Check if the passed Author is only used by this book.
@@ -595,6 +590,7 @@ public class EditBookFragmentViewModel
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
+
     public void pruneAuthors(@NonNull final Context context) {
         mBook.pruneAuthors(context, mDb, true);
     }
@@ -606,6 +602,7 @@ public class EditBookFragmentViewModel
     public void prunePublishers(@NonNull final Context context) {
         mBook.prunePublishers(context, mDb, true);
     }
+
 
     @NonNull
     public MutableLiveData<ArrayList<Author>> onAuthorList() {
@@ -637,6 +634,7 @@ public class EditBookFragmentViewModel
         mBook.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
         mPublisherList.setValue(list);
     }
+
 
     public void changeForThisBook(@NonNull final Context context,
                                   @NonNull final Author original,
@@ -713,18 +711,24 @@ public class EditBookFragmentViewModel
         return false;
     }
 
+
     public void fixId(@NonNull final Context context,
                       @NonNull final Author author) {
-        author.fixId(context, mDb, true, mBook.getLocale(context));
+        mDb.fixId(context, author, true, mBook.getLocale(context));
     }
 
     public void fixId(@NonNull final Context context,
                       @NonNull final Series series) {
-        series.fixId(context, mDb, true, mBook.getLocale(context));
+        mDb.fixId(context, series, true, mBook.getLocale(context));
     }
 
     public void fixId(@NonNull final Context context,
                       @NonNull final Publisher publisher) {
-        publisher.fixId(context, mDb, true, mBook.getLocale(context));
+        mDb.fixId(context, publisher, true, mBook.getLocale(context));
+    }
+
+    public void fixId(@NonNull final Context context,
+                      @NonNull final TocEntry tocEntry) {
+        mDb.fixId(context, tocEntry, true, mBook.getLocale(context));
     }
 }

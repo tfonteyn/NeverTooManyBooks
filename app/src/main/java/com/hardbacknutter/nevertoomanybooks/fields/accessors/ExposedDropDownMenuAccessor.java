@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
  *             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
  *             >
  *
- *             <AutoCompleteTextView
+ *             <com.google.android.material.textfield.MaterialAutoCompleteTextView
  *                 android:id="@+id/condition"
  *                 android:layout_width="match_parent"
  *                 android:layout_height="wrap_content"
@@ -75,7 +75,9 @@ public class ExposedDropDownMenuAccessor
                                        final boolean isEditable) {
 
         mAdapter = ExtArrayAdapter.createFromResource(
-                context, arrayResId, R.layout.dropdown_menu_popup_item);
+                context, R.layout.dropdown_menu_popup_item,
+                ExtArrayAdapter.FilterType.Passthrough, arrayResId);
+
         mIsEditable = isEditable;
 
         SanityCheck.requirePositiveValue(mAdapter.getCount(), "mAdapter.getCount()");

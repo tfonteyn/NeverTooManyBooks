@@ -231,7 +231,15 @@ public class CalibrePreferencesFragment
         } else {
             final DocumentFile df = DocumentFile.fromTreeUri(getContext(), uri);
             if (df != null) {
-                preference.setSummary(df.getName());
+                // Normally this will always return a name
+                String name = df.getName();
+                // This was seen on API 26 running in the emulator when selecting the 'download'
+                //TEST: could this be due to having TWO download folders ? (device+sdcard)
+                if (name == null) {
+                    // not nice, but better then nothing...
+                    name = uri.getLastPathSegment();
+                }
+                preference.setSummary(name);
             } else {
                 // should never happen... flw
                 preference.setSummary(R.string.info_not_set);

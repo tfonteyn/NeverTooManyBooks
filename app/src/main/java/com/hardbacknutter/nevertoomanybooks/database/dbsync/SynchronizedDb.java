@@ -42,12 +42,14 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
  * Database wrapper class that performs thread synchronization on all operations.
- *
+ * <p>
  * After getting a question "why?":
- *
+ * <p>
  * We use syncing to allow simultaneous access by multiple threads
  * (including e.g. goodreads sync task).
  * This is possibly overkill since transactions where added everywhere.
+ * <p>
+ * See {@link Synchronizer} for more details.
  *
  * <p>
  * About the SQLite version:

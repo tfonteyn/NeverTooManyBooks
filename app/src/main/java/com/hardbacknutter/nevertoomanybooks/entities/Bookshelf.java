@@ -234,7 +234,7 @@ public class Bookshelf
         final EntityMerger<Bookshelf> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
             final Bookshelf current = entityMerger.next();
-            current.fixId(db);
+            db.fixId(current);
             entityMerger.merge(current);
         }
 
@@ -409,19 +409,6 @@ public class Bookshelf
      */
     public void setStyleUuid(@NonNull final String styleUuid) {
         mStyleUuid = styleUuid;
-    }
-
-    /**
-     * Tries to find the item in the database using all or some of its fields (except the id).
-     * If found, sets the item's id with the id found in the database.
-     *
-     * @param db Database Access
-     *
-     * @return the item id (also set on the item).
-     */
-    public long fixId(@NonNull final DAO db) {
-        mId = db.getBookshelfId(this);
-        return mId;
     }
 
     /**

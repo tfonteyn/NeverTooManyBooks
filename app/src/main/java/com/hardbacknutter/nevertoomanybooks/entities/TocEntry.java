@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -192,7 +192,7 @@ public class TocEntry
                 locale = bookLocale;
             }
             // Don't lookup the locale a 2nd time.
-            current.fixId(context, db, false, locale);
+            db.fixId(context, current, false, locale);
             entityMerger.merge(current);
         }
 
@@ -280,28 +280,15 @@ public class TocEntry
         mAuthor = author;
     }
 
-
-    /**
-     * Lazy load the book id/title pair list this TOC entry is published in.
-     *
-     * @param db Database Access
-     *
-     * @return list of id/titles of books.
-     */
-    @NonNull
-    public List<Pair<Long, String>> getBookTitles(@NonNull final DAO db) {
-        if (mBookTitles == null) {
-            mBookTitles = db.getBookTitlesForToc(mId);
-        }
-        return mBookTitles;
-    }
-
     @NonNull
     public List<Pair<Long, String>> getBookTitles() {
         Objects.requireNonNull(mBookTitles, "mBookTitles");
         return mBookTitles;
     }
 
+    /**
+     * Preload the book id/title pair list this TOC entry is published in.
+     */
     public void loadBookTitles(@NonNull final DAO db) {
         mBookTitles = db.getBookTitlesForToc(mId);
     }
@@ -334,32 +321,6 @@ public class TocEntry
         //ENHANCE: The TocEntry Locale should be based on either a specific language
         // setting for the TocEntry itself, or on the Locale of the primary book.
         return bookLocale;
-    }
-
-    /**
-     * Tries to find the item in the database using all or some of its fields (except the id).
-     * If found, sets the item's id with the id found in the database.
-     * <p>
-     * If the item has 'sub' items, then it should call those as well.
-     *
-     * @param context      Current context
-     * @param db           Database Access
-     * @param lookupLocale set to {@code true} to force a database lookup of the locale.
-     *                     This can be (relatively) slow, and hence should be {@code false}
-     *                     during for example an import.
-     * @param bookLocale   Locale to use if the item has none set,
-     *                     or if lookupLocale was {@code false}
-     *
-     * @return the item id (also set on the item).
-     */
-    public long fixId(@NonNull final Context context,
-                      @NonNull final DAO db,
-                      final boolean lookupLocale,
-                      @NonNull final Locale bookLocale) {
-
-        mAuthor.fixId(context, db, lookupLocale, bookLocale);
-        mId = db.getTocEntryId(context, this, lookupLocale, bookLocale);
-        return mId;
     }
 
     @Override

@@ -511,7 +511,7 @@ public class EditBookTocFragment
     private void addNewEntry(@NonNull final TocEntry tocEntry) {
         // see if it already exists
         //noinspection ConstantConditions
-        mVm.fixTocEntryId(getContext(), tocEntry);
+        mVm.fixId(getContext(), tocEntry);
         // and check it's not already in the list.
         if (mList.contains(tocEntry)) {
             mVb.lblTitle.setError(getString(R.string.warning_already_in_list));

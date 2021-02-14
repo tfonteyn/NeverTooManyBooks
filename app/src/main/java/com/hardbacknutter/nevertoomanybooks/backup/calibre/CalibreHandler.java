@@ -321,8 +321,11 @@ public class CalibreHandler {
                 // don't show
                 menu.findItem(R.id.MENU_CALIBRE_SETTING)
                     .setVisible(false);
+
             } else {
                 // Calibre is enabled, but the folder is not set
+                menu.findItem(R.id.MENU_CALIBRE_READ).setVisible(false);
+                menu.findItem(R.id.MENU_CALIBRE_DOWNLOAD).setVisible(false);
                 menu.findItem(R.id.MENU_CALIBRE_SETTING)
                     .setTitle(R.string.menu_set_download_folder)
                     .setVisible(true);

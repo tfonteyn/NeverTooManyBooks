@@ -261,14 +261,12 @@ public class ExtArrayAdapter<T>
      * obtained through {@link android.content.res.Resources#getTextArray(int)}.
      * <p>
      * The method name should really be "createFromTextArray".
-     * <p>
-     * The Filter is set to {@link FilterType#Passthrough} as this is what usually is needed.
-     * Override by calling {@link #setFilterType(FilterType)}.
      *
      * @param context        The current context.
-     * @param textArrayResId The identifier of the array to use as the data source.
      * @param resource       The resource ID for a layout file containing a layout to use when
      *                       instantiating views.
+     * @param filterType     to use
+     * @param textArrayResId The identifier of the array to use as the data source.
      *
      * @return An ExtArrayAdapter<CharSequence>.
      */
@@ -276,12 +274,15 @@ public class ExtArrayAdapter<T>
     @NonNull
     public static ExtArrayAdapter<CharSequence> createFromResource(
             @NonNull final Context context,
-            @ArrayRes final int textArrayResId,
-            @LayoutRes final int resource) {
+            @LayoutRes final int resource,
+            @NonNull final FilterType filterType,
+            @ArrayRes final int textArrayResId) {
+
         final CharSequence[] strings = context.getResources().getTextArray(textArrayResId);
+
         final ExtArrayAdapter<CharSequence> adapter = new ExtArrayAdapter<>(
                 context, resource, 0, Arrays.asList(strings), true);
-        adapter.setFilterType(FilterType.Passthrough);
+        adapter.setFilterType(filterType);
         return adapter;
     }
 
@@ -655,7 +656,8 @@ public class ExtArrayAdapter<T>
     /**
      * {@inheritDoc}
      *
-     * @return values from the string array used by {@link #createFromResource(Context, int, int)},
+     * @return values from the string array used by
+     * {@link #createFromResource(Context, int, FilterType, int)},
      * or {@code null} if object was created otherwise or if contents were dynamically changed after
      * creation.
      */

@@ -53,10 +53,10 @@ public class CalibreVirtualLibrary
     /**
      * Constructor without ID.
      */
-    CalibreVirtualLibrary(final long libraryId,
-                          @NonNull final String name,
-                          @NonNull final String expr,
-                          final long mappedBookshelfId) {
+    public CalibreVirtualLibrary(final long libraryId,
+                                 @NonNull final String name,
+                                 @NonNull final String expr,
+                                 final long mappedBookshelfId) {
         super(name, mappedBookshelfId);
 
         mLibraryId = libraryId;

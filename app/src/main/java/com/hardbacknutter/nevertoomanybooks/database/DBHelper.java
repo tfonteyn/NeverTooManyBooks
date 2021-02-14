@@ -45,6 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -118,8 +119,19 @@ public final class DBHelper
     /** SQL to get the names of all indexes. */
     private static final String SQL_GET_INDEX_NAMES =
             "SELECT name FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL";
-    /** Readers/Writer lock for this database. */
-    private static Synchronizer sSynchronizer;
+
+    /** Readers/Writer lock for <strong>this</strong> database. */
+    private static final Synchronizer sSynchronizer = new Synchronizer();
+
+    /** Static Factory object to create a {@link SynchronizedCursor} cursor. */
+    private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
+            (db, d, et, q) -> new SynchronizedCursor(d, et, q, sSynchronizer);
+
+    /** Static Factory object to create an {@link TypedCursor} cursor. */
+    private static final SQLiteDatabase.CursorFactory EXT_CURSOR_FACTORY =
+            (db, d, et, q) -> new TypedCursor(d, et, q, sSynchronizer);
+
+
     /** Singleton. */
     private static DBHelper sInstance;
 
@@ -129,38 +141,32 @@ public final class DBHelper
     /**
      * Singleton Constructor.
      *
-     * @param context      Current context
-     * @param factory      the cursor factor
-     * @param synchronizer needed in onCreate/onUpgrade
+     * @param context Current context
      */
-    private DBHelper(@NonNull final Context context,
-                     @SuppressWarnings("SameParameterValue")
-                     @NonNull final SQLiteDatabase.CursorFactory factory,
-                     @SuppressWarnings("SameParameterValue")
-                     @NonNull final Synchronizer synchronizer) {
+    private DBHelper(@NonNull final Context context) {
+        super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
+    }
 
-        super(context.getApplicationContext(), DATABASE_NAME, factory, DATABASE_VERSION);
-        sSynchronizer = synchronizer;
+    static Synchronizer getSynchronizer() {
+        return sSynchronizer;
+    }
+
+    static SQLiteDatabase.CursorFactory getTypedCursorFactory() {
+        return EXT_CURSOR_FACTORY;
     }
 
     /**
      * Get the singleton instance.
      *
-     * @param context      Current context
-     * @param factory      the cursor factor
-     * @param synchronizer needed in onCreate/onUpgrade
+     * @param context Current context
      *
      * @return the instance
      */
     @NonNull
-    public static DBHelper getInstance(@NonNull final Context context,
-                                       @SuppressWarnings("SameParameterValue")
-                                       @NonNull final SQLiteDatabase.CursorFactory factory,
-                                       @SuppressWarnings("SameParameterValue")
-                                       @NonNull final Synchronizer synchronizer) {
+    public static DBHelper getInstance(@NonNull final Context context) {
         synchronized (DBHelper.class) {
             if (sInstance == null) {
-                sInstance = new DBHelper(context, factory, synchronizer);
+                sInstance = new DBHelper(context);
             }
             return sInstance;
         }
