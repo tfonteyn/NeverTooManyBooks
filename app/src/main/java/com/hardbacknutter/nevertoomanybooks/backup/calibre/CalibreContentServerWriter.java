@@ -96,7 +96,7 @@ public class CalibreContentServerWriter
                                       @NonNull final ExportHelper helper)
             throws CertificateException, SSLException {
 
-        mDb = new DAO(TAG);
+        mDb = new DAO(context, TAG);
 
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());

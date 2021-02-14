@@ -1070,7 +1070,7 @@ public class BooklistGroup {
         @Override
         public String toString() {
             return "GroupKey{"
-                   + "mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
+                   + "mLabelId=`" + App.getLogString(mLabelId) + '`'
                    + ", mKeyPrefix=`" + mKeyPrefix + '`'
                    + ", mKeyDomain=" + mKeyDomain
                    + ", mSecondaryDomains=" + mGroupDomains

@@ -40,7 +40,6 @@ import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.zip.CRC32;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -118,7 +117,7 @@ public final class FileUtils {
         //sanity check
         if (source.getAbsolutePath().equals(destination.getAbsolutePath())) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.error(App.getAppContext(), TAG, new Throwable(),
+                Logger.error(TAG, new Throwable(),
                              "renameOrThrow"
                              + "|source==destination==" + source.getAbsolutePath());
             }

@@ -154,7 +154,7 @@ public class ImportGrTask
     @Override
     public boolean run(@NonNull final Context context,
                        @NonNull final QueueManager queueManager) {
-        try (DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(context, TAG)) {
             // Import part of the sync
             final boolean ok = importReviews(context, db, queueManager);
 

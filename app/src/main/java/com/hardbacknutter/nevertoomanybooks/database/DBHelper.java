@@ -138,6 +138,9 @@ public final class DBHelper
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
 
+    @NonNull
+    private final SynchronizedDb mSyncedDb;
+
     /**
      * Singleton Constructor.
      *
@@ -145,14 +148,17 @@ public final class DBHelper
      */
     private DBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
+        mSyncedDb = new SynchronizedDb(sSynchronizer, this);
     }
 
-    static Synchronizer getSynchronizer() {
-        return sSynchronizer;
-    }
-
+    @NonNull
     static SQLiteDatabase.CursorFactory getTypedCursorFactory() {
         return EXT_CURSOR_FACTORY;
+    }
+
+    @NonNull
+    public SynchronizedDb getSyncDb() {
+        return mSyncedDb;
     }
 
     /**
@@ -233,13 +239,13 @@ public final class DBHelper
 
         } catch (@NonNull final SQLException e) {
             // bad sql is a developer issue... die!
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             throw e;
         } finally {
             try {
                 db.execSQL(dropTable);
             } catch (@NonNull final SQLException e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(TAG, e);
             }
         }
     }
@@ -248,34 +254,32 @@ public final class DBHelper
      * This method should only be called at the *END* of onCreate/onUpdate.
      * <p>
      * (re)Creates the indexes as defined on the tables.
-     *
-     * @param db Database Access
      */
-    public void recreateIndices(@NonNull final SynchronizedDb db) {
+    public void recreateIndices() {
         // Delete all indices.
         // We read the index names from the database, so we can delete
         // indexes which were removed from the TableDefinition objects.
-        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+        try (Cursor current = mSyncedDb.rawQuery(SQL_GET_INDEX_NAMES, null)) {
             while (current.moveToNext()) {
                 final String indexName = current.getString(0);
                 try {
-                    db.execSQL("DROP INDEX " + indexName);
+                    mSyncedDb.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
                     // bad sql is a developer issue... die!
-                    Logger.error(App.getAppContext(), TAG, e);
+                    Logger.error(TAG, e);
                     throw e;
                 } catch (@NonNull final RuntimeException e) {
-                    Logger.error(App.getAppContext(), TAG, e, "DROP INDEX failed: " + indexName);
+                    Logger.error(TAG, e, "DROP INDEX failed: " + indexName);
                 }
             }
         }
 
         // now recreate
         for (final TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
-            table.createIndices(db);
+            table.createIndices(mSyncedDb);
         }
 
-        db.analyze();
+        mSyncedDb.analyze();
     }
 
     /**
@@ -371,10 +375,8 @@ public final class DBHelper
      * - insert/delete/update TocEntry only done when a book is inserted/updated.
      * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
      * this will need to be added.
-     *
-     * @param db Database Access
      */
-    public void createTriggers(@NonNull final SynchronizedDb db) {
+    public void createTriggers() {
 
         String name;
         String body;
@@ -392,8 +394,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
 //        /*
 //         * Deleting an {@link Author). Currently not possible to delete an Author directly.
@@ -438,8 +440,8 @@ public final class DBHelper
                + " WHERE " + KEY_FK_AUTHOR + "=OLD." + KEY_PK_ID + ");\n"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Deleting a {@link Series).
@@ -454,8 +456,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Update a {@link Series}
@@ -472,8 +474,8 @@ public final class DBHelper
                + " WHERE " + KEY_FK_SERIES + "=OLD." + KEY_PK_ID + ");\n"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Deleting a Loan.
@@ -488,8 +490,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Updating a Loan.
@@ -504,8 +506,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Inserting a Loan.
@@ -520,8 +522,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
 
         /*
@@ -536,8 +538,8 @@ public final class DBHelper
                + " WHERE " + KEY_FTS_BOOK_ID + "=OLD." + KEY_PK_ID + ";\n"
                + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
 
 
         /*
@@ -561,8 +563,8 @@ public final class DBHelper
         body += " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"
                 + " END";
 
-        db.execSQL("DROP TRIGGER IF EXISTS " + name);
-        db.execSQL("\nCREATE TRIGGER " + name + body);
+        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
+        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
     }
 
     @Override
@@ -583,10 +585,7 @@ public final class DBHelper
     @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
 
-
         final Context context = AppLocale.getInstance().apply(App.getAppContext());
-
-        final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
 
         // Create all the app & user data tables in the correct dependency order
         TableDefinition.onCreate(db, DBDefinitions.ALL_TABLES.values());
@@ -597,9 +596,9 @@ public final class DBHelper
         prepareBookshelfTable(context, db);
 
         //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
-        TBL_FTS_BOOKS.create(syncedDb, false);
+        TBL_FTS_BOOKS.create(mSyncedDb, false);
 
-        createTriggers(syncedDb);
+        createTriggers();
     }
 
     /**
@@ -612,7 +611,7 @@ public final class DBHelper
                           final int oldVersion,
                           final int newVersion) {
 
-        final Context context = App.getAppContext();
+        final Context context = AppLocale.getInstance().apply(App.getAppContext());
 
         final StartupActivity startup = StartupActivity.getActiveActivity();
         if (startup != null) {
@@ -642,8 +641,6 @@ public final class DBHelper
             }
         }
 
-        final SynchronizedDb syncedDb = new SynchronizedDb(sSynchronizer, db);
-
         if (oldVersion < 12) {
             // This version should be the current public available APK on github.
             // i.e. 1.2.1 is available which can upgrade older versions.
@@ -654,7 +651,7 @@ public final class DBHelper
             //
             // This is the v1.2.0 / 1.2.1 / 1.3.0 release.
             //
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(syncedDb,
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(mSyncedDb,
                                                      DOM_STYLE_MENU_POSITION,
                                                      DOM_STYLE_IS_PREFERRED);
 
@@ -670,8 +667,8 @@ public final class DBHelper
                             cv.clear();
                             cv.put("menu_order", i);
                             cv.put("preferred", 1);
-                            syncedDb.update("book_list_styles", cv,
-                                            "uuid=?", new String[]{uuid});
+                            mSyncedDb.update("book_list_styles", cv,
+                                             "uuid=?", new String[]{uuid});
                         }
                     }
                 }
@@ -679,13 +676,13 @@ public final class DBHelper
             global.edit().remove("bookList.style.preferred.order").apply();
         }
         if (oldVersion < 14) {
-            TBL_CALIBRE_BOOKS.create(syncedDb, true);
-            TBL_CALIBRE_LIBRARIES.create(syncedDb, true);
+            TBL_CALIBRE_BOOKS.create(mSyncedDb, true);
+            TBL_CALIBRE_LIBRARIES.create(mSyncedDb, true);
 
-            syncedDb.execSQL("INSERT INTO calibre_books (book,clb_book_uuid)"
-                             + " SELECT _id, clb_book_uuid FROM books"
-                             + " WHERE clb_book_uuid IS NOT NULL");
-            syncedDb.execSQL("UPDATE books SET clb_book_uuid=NULL");
+            mSyncedDb.execSQL("INSERT INTO calibre_books (book,clb_book_uuid)"
+                              + " SELECT _id, clb_book_uuid FROM books"
+                              + " WHERE clb_book_uuid IS NOT NULL");
+            mSyncedDb.execSQL("UPDATE books SET clb_book_uuid=NULL");
 
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
@@ -698,9 +695,9 @@ public final class DBHelper
             db.execSQL("ALTER TABLE calibre_books RENAME TO tmp_cb");
             db.execSQL("ALTER TABLE calibre_vlib RENAME TO tmp_vl");
 
-            TBL_CALIBRE_BOOKS.create(syncedDb, true);
-            TBL_CALIBRE_LIBRARIES.create(syncedDb, true);
-            TBL_CALIBRE_VIRTUAL_LIBRARIES.create(syncedDb, true);
+            TBL_CALIBRE_BOOKS.create(mSyncedDb, true);
+            TBL_CALIBRE_LIBRARIES.create(mSyncedDb, true);
+            TBL_CALIBRE_VIRTUAL_LIBRARIES.create(mSyncedDb, true);
 
             final Map<String, Long> libString2Id = new HashMap<>();
             try (Cursor cursor = db.rawQuery(
@@ -711,7 +708,7 @@ public final class DBHelper
                     final String name = cursor.getString(1);
                     final long bookshelfId = cursor.getLong(2);
 
-                    try (SynchronizedStatement stmt = syncedDb
+                    try (SynchronizedStatement stmt = mSyncedDb
                             .compileStatement(DAOSql.SqlInsert.CALIBRE_LIBRARY)) {
                         stmt.bindString(1, "");
                         stmt.bindString(2, libraryId);
@@ -735,7 +732,7 @@ public final class DBHelper
                     final Long libId = libString2Id.get(libraryId);
                     // db14 dev had a cleanup-bug, skip if not there.
                     if (libId != null) {
-                        try (SynchronizedStatement stmt = syncedDb
+                        try (SynchronizedStatement stmt = mSyncedDb
                                 .compileStatement(DAOSql.SqlInsert.CALIBRE_VIRTUAL_LIBRARY)) {
                             stmt.bindLong(1, libId);
                             stmt.bindString(2, name);
@@ -765,7 +762,7 @@ public final class DBHelper
                         cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
                         cv.put(KEY_FK_CALIBRE_LIBRARY, libId);
 
-                        syncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
+                        mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
                     }
                 }
             }
@@ -791,10 +788,10 @@ public final class DBHelper
         //TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_your_engine_external_id);
 
         // Rebuild all indices
-        recreateIndices(syncedDb);
+        recreateIndices();
 
         // Rebuild all triggers
-        createTriggers(syncedDb);
+        createTriggers();
     }
 
     @Override
@@ -851,37 +848,34 @@ public final class DBHelper
      * Tables will get their initial default data re-added (e.g. styles, shelves...)
      *
      * @param context Current context
-     * @param db      Database Access
-     *
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
-    public boolean deleteAllContent(@NonNull final Context context,
-                                    @NonNull final SynchronizedDb db) {
+    public boolean deleteAllContent(@NonNull final Context context) {
 
         Synchronizer.SyncLock syncLock = null;
         try {
-            syncLock = db.beginTransaction(true);
+            syncLock = mSyncedDb.beginTransaction(true);
 
-            db.delete(TBL_CALIBRE_BOOKS.getName(), null, null);
-            db.delete(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), null, null);
-            db.delete(TBL_CALIBRE_LIBRARIES.getName(), null, null);
+            mSyncedDb.delete(TBL_CALIBRE_BOOKS.getName(), null, null);
+            mSyncedDb.delete(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), null, null);
+            mSyncedDb.delete(TBL_CALIBRE_LIBRARIES.getName(), null, null);
 
-            db.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
-            db.delete(TBL_FTS_BOOKS.getName(), null, null);
+            mSyncedDb.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
+            mSyncedDb.delete(TBL_FTS_BOOKS.getName(), null, null);
 
-            db.delete(TBL_BOOKS.getName(), null, null);
-            db.delete(TBL_PUBLISHERS.getName(), null, null);
-            db.delete(TBL_SERIES.getName(), null, null);
-            db.delete(TBL_AUTHORS.getName(), null, null);
+            mSyncedDb.delete(TBL_BOOKS.getName(), null, null);
+            mSyncedDb.delete(TBL_PUBLISHERS.getName(), null, null);
+            mSyncedDb.delete(TBL_SERIES.getName(), null, null);
+            mSyncedDb.delete(TBL_AUTHORS.getName(), null, null);
 
-            db.delete(TBL_BOOKSHELF.getName(), null, null);
-            db.delete(TBL_BOOKLIST_STYLES.getName(), null, null);
+            mSyncedDb.delete(TBL_BOOKSHELF.getName(), null, null);
+            mSyncedDb.delete(TBL_BOOKLIST_STYLES.getName(), null, null);
 
-            prepareStylesTable(db.getSQLiteDatabase());
-            prepareBookshelfTable(context, db.getSQLiteDatabase());
+            prepareStylesTable(mSyncedDb.getSQLiteDatabase());
+            prepareBookshelfTable(context, mSyncedDb.getSQLiteDatabase());
 
-            db.setTransactionSuccessful();
+            mSyncedDb.setTransactionSuccessful();
             return true;
 
         } catch (@NonNull final Exception e) {
@@ -890,7 +884,7 @@ public final class DBHelper
 
         } finally {
             if (syncLock != null) {
-                db.endTransaction(syncLock);
+                mSyncedDb.endTransaction(syncLock);
             }
         }
     }

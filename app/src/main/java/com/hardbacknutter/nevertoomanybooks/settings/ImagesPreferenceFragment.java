@@ -22,8 +22,10 @@ package com.hardbacknutter.nevertoomanybooks.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Keep;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
@@ -45,23 +47,6 @@ public class ImagesPreferenceFragment
         super.onCreatePreferences(savedInstanceState, rootKey);
         setPreferencesFromResource(R.xml.preferences_images, rootKey);
 
-        // Purge image cache database table.
-        //noinspection ConstantConditions
-        findPreference(PSK_PURGE_IMAGE_CACHE)
-                .setOnPreferenceClickListener(p -> {
-                    //noinspection ConstantConditions
-                    new MaterialAlertDialogBuilder(getContext())
-                            .setIcon(R.drawable.ic_warning)
-                            .setTitle(R.string.lbl_purge_image_cache)
-                            .setMessage(R.string.lbl_purge_image_cache)
-                            .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                            .setPositiveButton(android.R.string.ok, (d, w) ->
-                                    CoversDAO.deleteAll(getContext()))
-                            .create()
-                            .show();
-                    return true;
-                });
-
         //noinspection ConstantConditions
         findPreference(Prefs.pk_camera_image_autorotate)
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
@@ -69,6 +54,44 @@ public class ImagesPreferenceFragment
         //noinspection ConstantConditions
         findPreference(Prefs.pk_camera_image_action)
                 .setSummaryProvider(ListPreference.SimpleSummaryProvider.getInstance());
+
+        // Purge image cache database table.
+        final Preference purgeCache = findPreference(PSK_PURGE_IMAGE_CACHE);
+        //noinspection ConstantConditions
+        setPurgeCacheSummary(purgeCache);
+
+        purgeCache.setOnPreferenceClickListener(p -> {
+            //noinspection ConstantConditions
+            new MaterialAlertDialogBuilder(getContext())
+                    .setIcon(R.drawable.ic_warning)
+                    .setTitle(R.string.lbl_purge_image_cache)
+                    .setMessage(R.string.lbl_purge_image_cache)
+                    .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
+                    .setPositiveButton(android.R.string.ok, (d, w) -> {
+                        CoversDAO.getInstance(getContext()).deleteAll(getContext());
+                        setPurgeCacheSummary(p);
+                    })
+                    .create()
+                    .show();
+            return true;
+        });
+    }
+
+    private void setPurgeCacheSummary(@NonNull final Preference preference) {
+        if (preference.isEnabled()) {
+            //noinspection ConstantConditions
+            final int count = CoversDAO.getInstance(getContext()).count(getContext());
+            final String number;
+            if (count > 0) {
+                number = String.valueOf(count);
+            } else {
+                number = getString(R.string.none);
+            }
+            preference.setSummary(getString(R.string.name_colon_value,
+                                            getString(R.string.lbl_covers), number));
+        } else {
+            preference.setSummary("");
+        }
     }
 
     @Override

@@ -23,7 +23,6 @@ import androidx.annotation.NonNull;
 
 import java.util.Optional;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
@@ -127,7 +126,7 @@ public enum RecordType {
             }
         }
 
-        Logger.warn(App.getAppContext(), TAG, "getType|Unknown entry=" + entryName);
+        Logger.warn(TAG, "getType|Unknown entry=" + entryName);
         return Optional.empty();
     }
 

@@ -88,7 +88,7 @@ public class CsvArchiveWriter
         }
 
         final int booksToExport;
-        try (DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(context, TAG)) {
             booksToExport = db.countBooksForExport(dateSince);
         }
 
@@ -100,7 +100,7 @@ public class CsvArchiveWriter
             try (OutputStream os = mHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new CsvRecordWriter(dateSince)) {
+                 RecordWriter recordWriter = new CsvRecordWriter(context, dateSince)) {
 
                 results = recordWriter
                         .write(context, bw, EnumSet.of(RecordType.Books), progressListener);

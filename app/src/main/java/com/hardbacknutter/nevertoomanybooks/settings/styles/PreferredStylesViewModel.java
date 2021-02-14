@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -67,7 +67,7 @@ public class PreferredStylesViewModel
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
         if (mDb == null) {
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
             mStyleList = StyleDAO.getStyles(context, mDb, true);
 
             mInitialStyleUuid = Objects.requireNonNull(

@@ -105,9 +105,10 @@ public class XmlRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public XmlRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
+    public XmlRecordWriter(@NonNull final Context context,
+                           @Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new DAO(TAG);
+        mDb = new DAO(context, TAG);
     }
 
     @Override

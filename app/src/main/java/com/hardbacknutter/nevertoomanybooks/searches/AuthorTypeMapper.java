@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 import static com.hardbacknutter.nevertoomanybooks.entities.Author.TYPE_AFTERWORD;
@@ -146,7 +145,7 @@ public class AuthorTypeMapper {
         }
 
         // unknown, log it for future enhancement.
-        Logger.warn(App.getAppContext(), TAG, "map|typeName=`" + typeName + "`");
+        Logger.warn(TAG, "map|typeName=`" + typeName + "`");
         return TYPE_UNKNOWN;
     }
 }

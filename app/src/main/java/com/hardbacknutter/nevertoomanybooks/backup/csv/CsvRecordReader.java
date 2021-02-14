@@ -257,12 +257,12 @@ public class CsvRecordReader
                 } catch (@NonNull final DAO.DaoWriteException
                         | SQLiteDoneException e) {
                     //TODO: use a meaningful user-displaying string.
-                    handleRowException(context, row, e,
+                    handleRowException(row, e,
                                        context.getString(R.string.error_import_csv_line, row));
 
                 } catch (@NonNull final ImportException e) {
                     // an ImportException has a user-displayable message.
-                    handleRowException(context, row, e,
+                    handleRowException(row, e,
                                        Objects.requireNonNull(e.getLocalizedMessage()));
                 }
 
@@ -293,8 +293,7 @@ public class CsvRecordReader
         mResults.booksProcessed = row - 1;
     }
 
-    private void handleRowException(@NonNull final Context context,
-                                    final int row,
+    private void handleRowException(final int row,
                                     @NonNull final Exception e,
                                     @NonNull final String msg) {
         mResults.booksSkipped++;
@@ -303,11 +302,10 @@ public class CsvRecordReader
 
         if (BuildConfig.DEBUG /* always */) {
             if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
-                Logger.warn(context, TAG, "e=" + e.getMessage(),
-                            ERROR_IMPORT_FAILED_AT_ROW + row);
+                Logger.warn(TAG, "e=" + e.getMessage(), ERROR_IMPORT_FAILED_AT_ROW + row);
             } else if (DEBUG_SWITCHES.IMPORT_CSV_BOOKS_EXT) {
                 // logging with the full exception is VERY HEAVY
-                Logger.error(context, TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
+                Logger.error(TAG, e, ERROR_IMPORT_FAILED_AT_ROW + row);
             }
         }
     }

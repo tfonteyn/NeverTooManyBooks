@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -69,6 +69,7 @@
             android:title="@string/pt_thumbnails_cache_resized" />
 
         <Preference
+            android:dependency="image.cache.resized"
             android:icon="@drawable/ic_close"
             android:key="psk_purge_image_cache"
             android:title="@string/lbl_purge_image_cache"

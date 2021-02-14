@@ -169,7 +169,7 @@ public abstract class VMTask<Result>
                     mFinished.postValue(message);
                 }
             } catch (@NonNull final Exception e) {
-                Logger.error(App.getAppContext(), TAG, e);
+                Logger.error(TAG, e);
                 mFailure.postValue(new FinishedMessage<>(mTaskId, e));
             }
             mTaskId = 0;

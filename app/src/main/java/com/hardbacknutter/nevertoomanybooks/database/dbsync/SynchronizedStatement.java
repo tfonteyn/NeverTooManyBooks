@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,6 @@ import androidx.annotation.Nullable;
 
 import java.io.Closeable;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -355,8 +354,7 @@ public class SynchronizedStatement
                 Log.d(TAG, "executeInsert|" + mStatement + "|id=" + id);
 
                 if (id == -1) {
-                    Logger.error(App.getAppContext(), TAG, new Throwable(),
-                                 "Insert failed|mStatement=" + mStatement);
+                    Logger.error(TAG, new Throwable(), "Insert failed|mStatement=" + mStatement);
                 }
             }
             return id;

@@ -82,7 +82,8 @@ public class CalibreLibraryMappingFragment
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
-        mVm.init(getArguments());
+        //noinspection ConstantConditions
+        mVm.init(getContext(), getArguments());
 
         final ArchiveReadMetaDataTask readMetaDataTask = new ViewModelProvider(this)
                 .get(ArchiveReadMetaDataTask.class);

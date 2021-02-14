@@ -89,7 +89,8 @@ public abstract class EditStringBaseDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DAO(TAG);
+        //noinspection ConstantConditions
+        mDb = new DAO(getContext(), TAG);
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");

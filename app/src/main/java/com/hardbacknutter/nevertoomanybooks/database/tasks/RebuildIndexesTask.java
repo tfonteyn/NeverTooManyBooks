@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -60,8 +60,8 @@ public class RebuildIndexesTask
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
-        try (DAO db = new DAO(TAG)) {
-            db.getDBHelper().recreateIndices(db.getSyncDb());
+        try (DAO db = new DAO(context, TAG)) {
+            db.getDBHelper().recreateIndices();
             return true;
 
         } catch (@NonNull final RuntimeException e) {

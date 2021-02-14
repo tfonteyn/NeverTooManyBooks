@@ -93,7 +93,7 @@ public class FragmentHostActivity
     protected void onDestroy() {
         // This is a good time to cleanup the cache.
         // Out of precaution we only trash jpg files
-        AppDir.Cache.purge(App.getTaskContext(), true, file -> file.getName().endsWith(".jpg"));
+        AppDir.Cache.purge(App.getAppContext(), true, file -> file.getName().endsWith(".jpg"));
         super.onDestroy();
     }
 }

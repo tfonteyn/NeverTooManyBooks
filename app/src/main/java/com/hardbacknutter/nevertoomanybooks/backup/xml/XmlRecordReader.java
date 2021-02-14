@@ -56,7 +56,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
@@ -298,7 +297,7 @@ public class XmlRecordReader
                         break;
 
                     default:
-                        Logger.warn(App.getAppContext(), TAG, "mTag.type=" + mTag.type);
+                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
                 mTag = mTagStack.pop();
@@ -337,7 +336,7 @@ public class XmlRecordReader
                         break;
 
                     default:
-                        Logger.warn(App.getAppContext(), TAG, "mTag.type=" + mTag.type);
+                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -403,7 +402,7 @@ public class XmlRecordReader
                         break;
 
                     default:
-                        Logger.warn(App.getAppContext(), TAG, "mTag.type=" + mTag.type);
+                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -433,7 +432,7 @@ public class XmlRecordReader
                         break;
 
                     default:
-                        Logger.warn(App.getAppContext(), TAG, "mTag.type=" + mTag.type);
+                        Logger.warn(TAG, "mTag.type=" + mTag.type);
                         break;
                 }
 
@@ -600,7 +599,7 @@ public class XmlRecordReader
                 try {
                     tmpId = Integer.parseInt(idStr);
                 } catch (@NonNull final NumberFormatException e) {
-                    Logger.error(App.getAppContext(), TAG, e, "attr=" + name, "idStr=" + idStr);
+                    Logger.error(TAG, e, "attr=" + name, "idStr=" + idStr);
                 }
             }
             id = tmpId;

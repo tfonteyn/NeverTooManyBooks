@@ -28,14 +28,8 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.SearchSuggestionProvider;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -43,14 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 /**
  * Database wrapper class that performs thread synchronization on all operations.
  * <p>
- * After getting a question "why?":
- * <p>
- * We use syncing to allow simultaneous access by multiple threads
- * (including e.g. goodreads sync task).
- * This is possibly overkill since transactions where added everywhere.
- * <p>
- * See {@link Synchronizer} for more details.
- *
+ * After getting a question "why?": See {@link Synchronizer} for details.
  * <p>
  * About the SQLite version:
  * <a href="https://developer.android.com/reference/android/database/sqlite/package-summary">
@@ -69,9 +56,6 @@ public class SynchronizedDb {
     /** Log tag. */
     private static final String TAG = "SynchronizedDb";
 
-    /** Instance map. */
-    private static final Map<Synchronizer, SynchronizedDb> DB_MAP = new HashMap<>(2);
-
     /** Underlying (and open for writing) database. */
     @NonNull
     private final SQLiteDatabase mSqlDb;
@@ -89,63 +73,15 @@ public class SynchronizedDb {
     private Synchronizer.SyncLock mTxLock;
 
     /**
-     * Constructor. ONLY to be used by {@link DBHelper#onCreate} and {@link DBHelper#onUpgrade}
-     * where we have an already open database we need to wrap.
+     * Constructor.
      *
-     * @param synchronizer Synchronizer to use
-     * @param db           Underlying database
+     * @param synchronizer     Synchronizer to use
+     * @param sqLiteOpenHelper SQLiteOpenHelper to open the underlying database
      */
     public SynchronizedDb(@NonNull final Synchronizer synchronizer,
-                          @NonNull final SQLiteDatabase db) {
-        mSynchronizer = synchronizer;
-        mSqlDb = db;
-    }
-
-    /**
-     * Private Constructor. Use {@link #getInstance(Synchronizer, SQLiteOpenHelper)} instead.
-     *
-     * @param synchronizer     Synchronizer to use
-     * @param sqLiteOpenHelper SQLiteOpenHelper to open the underlying database
-     */
-    private SynchronizedDb(@NonNull final Synchronizer synchronizer,
-                           @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
+                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
         mSynchronizer = synchronizer;
         mSqlDb = open(sqLiteOpenHelper);
-    }
-
-    /**
-     * Use from DAO constructors.
-     *
-     * @param synchronizer     Synchronizer to use
-     * @param sqLiteOpenHelper SQLiteOpenHelper to open the underlying database
-     *
-     * @return instance matching the passed synchronizer
-     */
-    @NonNull
-    public static SynchronizedDb getInstance(@NonNull final Synchronizer synchronizer,
-                                             @NonNull final SQLiteOpenHelper sqLiteOpenHelper) {
-        synchronized (DB_MAP) {
-            SynchronizedDb db = DB_MAP.get(synchronizer);
-            if (db == null) {
-                db = new SynchronizedDb(synchronizer, sqLiteOpenHelper);
-                DB_MAP.put(synchronizer, db);
-            }
-            return db;
-        }
-    }
-
-    /**
-     * Use when it's 100% certain that we've been created before.
-     *
-     * @param synchronizer Synchronizer to use
-     *
-     * @return instance matching the passed synchronizer
-     */
-    @NonNull
-    public static SynchronizedDb getInstance(@NonNull final Synchronizer synchronizer) {
-        synchronized (DB_MAP) {
-            return Objects.requireNonNull(DB_MAP.get(synchronizer));
-        }
     }
 
 //    /**
@@ -211,9 +147,9 @@ public class SynchronizedDb {
         try {
             final long id = mSqlDb.insert(table, nullColumnHack, cv);
             if (id == -1) {
-                Logger.error(App.getAppContext(), TAG, new Throwable(), "Insert failed"
-                                                                        + "|table=" + table
-                                                                        + "|cv=" + cv);
+                Logger.error(TAG, new Throwable(), "Insert failed"
+                                                   + "|table=" + table
+                                                   + "|cv=" + cv);
             }
             return id;
         } finally {

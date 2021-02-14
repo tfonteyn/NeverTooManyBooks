@@ -43,7 +43,6 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -138,7 +137,7 @@ public class SearchBookUpdatesViewModel
         super.init(context, args);
 
         if (mDb == null) {
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
 
             if (args != null) {
                 //noinspection unchecked
@@ -675,7 +674,7 @@ public class SearchBookUpdatesViewModel
         }
 
         if (e != null) {
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
             final FinishedMessage<Exception> message =
                     new FinishedMessage<>(R.id.TASK_ID_UPDATE_FIELDS, e);
             mListFailed.setValue(message);

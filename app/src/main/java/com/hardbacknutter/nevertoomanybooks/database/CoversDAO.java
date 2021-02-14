@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntRange;
@@ -46,7 +45,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
+import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
@@ -58,8 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
- * DB Helper for Covers DB. It uses the Application Context.
+ * DB Helper for Covers DB.
  * This class is used as singleton, as it's needed for multiple concurrent threads.
+ * All access is via static method that don't throw any exceptions.
  * <p>
  * Images are stored as JPEG, at 80% quality. This does not affect the file itself.
  * <p>
@@ -68,14 +68,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
  * <p>
  * 2018-11-26: database location back to internal storage.
  * The bulk of space is used by the actual image file, not by the database.
- * To be reviewed when the location of the images can be user-configured.
+ * To be reviewed when/if the location of the images can be user-configured.
  * TODO: performance tests: cache enabled/disabled; do we actually need this db ?
- * <p>
- * note that {@link #DOM_WIDTH} and {@link #DOM_HEIGHT} are redundant/information only.
- * Lookup is done via the {@link #DOM_CACHE_ID} instead.
  */
-public final class CoversDAO
-        implements AutoCloseable {
+public final class CoversDAO {
 
     /** Log tag. */
     private static final String TAG = "CoversDAO";
@@ -83,32 +79,11 @@ public final class CoversDAO
     /** Compresses images to 80% to store in the cache. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;
 
-    /** DB name. */
-    private static final String COVERS_DATABASE_NAME = "covers.db";
-    /**
-     * DB Version.
-     */
-    private static final int COVERS_DATABASE_VERSION = 1;
-
-    /**
-     * Static Synchronizer to coordinate access to <strong>this</strong> database.
-     */
-    private static final Synchronizer SYNCHRONIZER = new Synchronizer();
-
-    /** Static Factory object to create the custom cursor. */
-    private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
-            (db, d, et, q) -> new SynchronizedCursor(d, et, q, SYNCHRONIZER);
-
-    /** Statement names. */
-    private static final String STMT_EXISTS = "mExistsStmt";
-
     /* Domain definitions. */
     private static final String CKEY_PK_ID = "_id";
-    private static final String CKEY_CACHE_ID = "filename";
+    private static final String CKEY_CACHE_ID = "key";
     private static final String CKEY_IMAGE = "image";
     private static final String CKEY_UTC_DATETIME = "last_update_date";
-    private static final String CKEY_WIDTH = "width";
-    private static final String CKEY_HEIGHT = "height";
 
     /** TBL_IMAGE. */
     private static final Domain DOM_PK_ID =
@@ -124,18 +99,9 @@ public final class CoversDAO
             new Domain.Builder(CKEY_UTC_DATETIME, ColumnInfo.TYPE_DATETIME)
                     .notNull().withDefaultCurrentTimeStamp().build();
 
-    /** The actual stored bitmap width. */
-    private static final Domain DOM_WIDTH =
-            new Domain.Builder(CKEY_WIDTH, ColumnInfo.TYPE_INTEGER).notNull().build();
-
-    /** The actual stored bitmap height. */
-    private static final Domain DOM_HEIGHT =
-            new Domain.Builder(CKEY_HEIGHT, ColumnInfo.TYPE_INTEGER).notNull().build();
-
     /** table definitions. */
     private static final TableDefinition TBL_IMAGE = new TableDefinition("image")
-            .addDomains(DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME,
-                        DOM_WIDTH, DOM_HEIGHT, DOM_CACHE_ID)
+            .addDomains(DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME, DOM_CACHE_ID)
             .setPrimaryKey(DOM_PK_ID);
 
     /** Get a cached image. */
@@ -148,20 +114,10 @@ public final class CoversDAO
             "SELECT COUNT(" + CKEY_PK_ID + ") FROM " + TBL_IMAGE.getName()
             + " WHERE " + CKEY_CACHE_ID + "=?";
 
-    /**
-     * NOT DEBUG: close() will only really close all statements if INSTANCE_COUNTER == 0 is reached.
-     */
-    @NonNull
-    private static final AtomicInteger INSTANCE_COUNTER = new AtomicInteger();
+    private static final String SQL_COUNT = "SELECT COUNT(*) FROM " + TBL_IMAGE.getName();
 
-    /**
-     * We *try* to connect in the Constructor. But this can fail.
-     * This is ok, as this class/db is for caching only.
-     * So before using it, every method in this class MUST test on != {@code null}
-     */
-    private static SynchronizedDb sSyncedDb;
     /** singleton. */
-    private static CoversDAO sCoversDAO;
+    private static CoversDAO sInstance;
 
     /* table indexes. */
     static {
@@ -171,11 +127,16 @@ public final class CoversDAO
                            true, DOM_CACHE_ID, DOM_UTC_DATETIME);
     }
 
-    /** Collection of statements pre-compiled for this object. */
-    private SqlStatementManager mStatementManager;
+    @SuppressWarnings("FieldCanBeLocal")
+    @NonNull
+    private final CoversDbHelper mDbHelper;
+    @NonNull
+    private final SynchronizedDb mSyncedDb;
 
     /** singleton. */
-    private CoversDAO() {
+    private CoversDAO(@NonNull final Context context) {
+        mDbHelper = CoversDbHelper.getInstance(context);
+        mSyncedDb = mDbHelper.getSyncDb();
     }
 
     /**
@@ -185,24 +146,12 @@ public final class CoversDAO
      *
      * @return instance
      */
-    private static CoversDAO getInstance(@NonNull final Context context) {
+    public static CoversDAO getInstance(@NonNull final Context context) {
         synchronized (CoversDAO.class) {
-            if (sCoversDAO == null) {
-                sCoversDAO = new CoversDAO();
+            if (sInstance == null) {
+                sInstance = new CoversDAO(context);
             }
-            // check each time, as it might have failed last time but might work now.
-            if (sSyncedDb == null) {
-                sCoversDAO.open(context);
-                if (sSyncedDb != null) {
-                    sCoversDAO.mStatementManager = new SqlStatementManager(sSyncedDb, TAG);
-                }
-            }
-
-            final int noi = INSTANCE_COUNTER.incrementAndGet();
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "getInstance|instances in use=" + noi);
-            }
-            return sCoversDAO;
+            return sInstance;
         }
     }
 
@@ -221,11 +170,58 @@ public final class CoversDAO
      * @return cache id string
      */
     @NonNull
-    private static String constructCacheId(@NonNull final String uuid,
-                                           @IntRange(from = 0, to = 1) final int cIdx,
-                                           final int maxWidth,
-                                           final int maxHeight) {
+    private String constructCacheId(@NonNull final String uuid,
+                                    @IntRange(from = 0, to = 1) final int cIdx,
+                                    final int maxWidth,
+                                    final int maxHeight) {
         return uuid + '.' + cIdx + '.' + maxWidth + 'x' + maxHeight;
+    }
+
+    public int count(@NonNull final Context context) {
+        try {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SQL_COUNT)) {
+                return (int) stmt.simpleQueryForLongOrZero();
+            }
+        } catch (@NonNull final RuntimeException e) {
+            Logger.error(context, TAG, e);
+        }
+        return 0;
+    }
+
+    /**
+     * Delete the cached covers associated with the passed book uuid.
+     * <p>
+     * The original code also had a 2nd 'delete' method with a different where clause:
+     * // We use encodeString here because it's possible a user screws up the data and imports
+     * // bad UUID's... this has happened.
+     * // String whereClause = CKEY_CACHE_ID + " GLOB '" + DAO.encodeString(uuid) + ".*'";
+     * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
+     *
+     * @param context Current context
+     * @param uuid    to delete
+     */
+    public void delete(@NonNull final Context context,
+                       @NonNull final String uuid) {
+        try {
+            // starts with the uuid, remove all sizes and indexes
+            mSyncedDb.delete(TBL_IMAGE.getName(), CKEY_CACHE_ID + " LIKE ?",
+                             new String[]{uuid + '%'});
+        } catch (@NonNull final SQLiteException e) {
+            Logger.error(context, TAG, e);
+        }
+    }
+
+    /**
+     * delete all rows.
+     *
+     * @param context Current context
+     */
+    public void deleteAll(@NonNull final Context context) {
+        try {
+            mSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE.getName());
+        } catch (@NonNull final SQLiteException e) {
+            Logger.error(context, TAG, e);
+        }
     }
 
     /**
@@ -241,17 +237,12 @@ public final class CoversDAO
      */
     @Nullable
     @AnyThread
-    public static Bitmap getImage(@NonNull final Context context,
-                                  @NonNull final String uuid,
-                                  @IntRange(from = 0, to = 1) final int cIdx,
-                                  final int maxWidth,
-                                  final int maxHeight) {
-        // safely initialise if needed
-        try (@SuppressWarnings("unused") final CoversDAO dao = CoversDAO.getInstance(context)) {
-            if (sSyncedDb == null) {
-                return null;
-            }
-
+    public Bitmap getImage(@NonNull final Context context,
+                           @NonNull final String uuid,
+                           @IntRange(from = 0, to = 1) final int cIdx,
+                           final int maxWidth,
+                           final int maxHeight) {
+        try {
             final File file = Book.getUuidCoverFile(context, uuid, cIdx);
             if (file != null) {
                 final long lm = file.lastModified();
@@ -260,10 +251,11 @@ public final class CoversDAO
                             Instant.ofEpochMilli(lm)
                                    .atZone(ZoneOffset.UTC)
                                    .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
                     final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
 
-                    try (Cursor cursor = sSyncedDb.rawQuery(SQL_GET_IMAGE, new String[]{
-                            cacheId, fileLastModified})) {
+                    try (Cursor cursor = mSyncedDb.rawQuery(
+                            SQL_GET_IMAGE, new String[]{cacheId, fileLastModified})) {
                         if (cursor.moveToFirst()) {
                             final byte[] bytes = cursor.getBlob(0);
                             if (bytes != null) {
@@ -280,229 +272,68 @@ public final class CoversDAO
     }
 
     /**
-     * Delete the cached covers associated with the passed book uuid.
-     * <p>
-     * The original code also had a 2nd 'delete' method with a different where clause:
-     * // We use encodeString here because it's possible a user screws up the data and imports
-     * // bad UUID's... this has happened.
-     * // String whereClause = CKEY_CACHE_ID + " GLOB '" + DAO.encodeString(uuid) + ".*'";
-     * In short: ENHANCE: bad data -> add covers.db 'filename' and book.uuid to {@link DBCleaner}
-     *
-     * @param context Current context
-     * @param uuid    to delete
-     */
-    public static void delete(@NonNull final Context context,
-                              @NonNull final String uuid) {
-        // safely initialise if needed
-        try (@SuppressWarnings("unused") final CoversDAO dao = CoversDAO.getInstance(context)) {
-            if (sSyncedDb == null) {
-                return;
-            }
-            sSyncedDb.delete(TBL_IMAGE.getName(),
-                             // starts with the uuid, remove all sizes and indexes
-                             CKEY_CACHE_ID + " LIKE ?", new String[]{uuid + '%'});
-        } catch (@NonNull final SQLiteException e) {
-            Logger.error(context, TAG, e);
-        }
-    }
-
-    /**
-     * delete all rows.
-     *
-     * @param context Current context
-     */
-    public static void deleteAll(@NonNull final Context context) {
-        // safely initialise if needed
-        try (@SuppressWarnings("unused") final CoversDAO dao = CoversDAO.getInstance(context)) {
-            if (sSyncedDb == null) {
-                return;
-            }
-            sSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE.getName());
-        } catch (@NonNull final SQLiteException e) {
-            Logger.error(context, TAG, e);
-        }
-    }
-
-    /**
-     * Optimize the database.
-     *
-     * @param context Current context
-     */
-    public static void optimize(@NonNull final Context context) {
-        // safely initialise if needed
-        try (@SuppressWarnings("unused") final CoversDAO dao = CoversDAO.getInstance(context)) {
-            if (sSyncedDb == null) {
-                return;
-            }
-            sSyncedDb.optimize();
-        } catch (@NonNull final RuntimeException e) {
-            Logger.error(context, TAG, e);
-        }
-    }
-
-    /**
-     * Open the database.
-     *
-     * @param context Current context
-     */
-    private void open(@NonNull final Context context) {
-        final SQLiteOpenHelper coversHelper = CoversDbHelper.getInstance(context);
-        // Try to connect.
-        try {
-            sSyncedDb = SynchronizedDb.getInstance(SYNCHRONIZER, coversHelper);
-        } catch (@NonNull final RuntimeException e) {
-            // Assume exception means DB corrupt. Don't care, it's only a cache.
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "Failed to open covers db", e);
-            }
-            // recreate a new one.
-            try {
-                context.deleteDatabase(COVERS_DATABASE_NAME);
-                sSyncedDb = SynchronizedDb.getInstance(SYNCHRONIZER, coversHelper);
-
-            } catch (@NonNull final RuntimeException e2) {
-                // If we fail after trying to create a new DB, log and give up.
-                Logger.error(context, TAG, e2, "Covers database unavailable");
-            }
-        }
-    }
-
-    /**
-     * Generic function to close the database.
-     * It does not 'close' the database in the literal sense, but
-     * performs a cleanup by closing all open statements when there are no instances left.
-     * (So it should really be called cleanup(); But it allows us to use try-with-resources.)
-     */
-    @Override
-    public void close() {
-        // must be in a synchronized, as we use noi twice.
-        synchronized (INSTANCE_COUNTER) {
-            final int noi = INSTANCE_COUNTER.decrementAndGet();
-            if (BuildConfig.DEBUG /* always */) {
-                Log.d(TAG, "close|instances left: " + INSTANCE_COUNTER);
-            }
-
-            if (noi == 0) {
-                if (sSyncedDb != null) {
-                    mStatementManager.close();
-                }
-            }
-        }
-    }
-
-    /**
      * Save the passed bitmap to a 'file' in the covers database.
      * Compresses to {@link #IMAGE_QUALITY_PERCENTAGE} first.
      * <p>
      * This will either insert or update a row in the database.
      * Failures are ignored; this is just a cache.
      *
-     * @param uuid   UUID of the book
-     * @param cIdx   0..n image index
-     * @param bitmap to save
-     * @param width  used to construct the cacheId
-     * @param height used to construct the cacheId
+     * @param context Current context
+     * @param uuid    UUID of the book
+     * @param cIdx    0..n image index
+     * @param bitmap  to save
+     * @param width   used to construct the cacheId
+     * @param height  used to construct the cacheId
      */
     @WorkerThread
-    private void saveFile(@NonNull final String uuid,
+    private void saveFile(@NonNull final Context context,
+                          @NonNull final String uuid,
                           @IntRange(from = 0, to = 1) final int cIdx,
                           @NonNull final Bitmap bitmap,
                           final int width,
                           final int height) {
-        if (sSyncedDb == null) {
-            return;
-        }
-
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        // Rapid scrolling of view could already have recycled the bitmap.
-        if (bitmap.isRecycled()) {
-            return;
-        }
         try {
-            bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
-        } catch (@NonNull final IllegalStateException e) {
-            // Again: Rapid scrolling of view could already have recycled the bitmap.
-            // java.lang.IllegalStateException: Can't compress a recycled bitmap
-            // don't care at this point; this is just a cache; don't even log.
-            return;
-        }
-
-        final byte[] image = out.toByteArray();
-
-        final String cacheId = constructCacheId(uuid, cIdx, width, height);
-        final ContentValues cv = new ContentValues();
-        cv.put(CKEY_CACHE_ID, cacheId);
-        cv.put(CKEY_IMAGE, image);
-        cv.put(CKEY_WIDTH, bitmap.getHeight());
-        cv.put(CKEY_HEIGHT, bitmap.getWidth());
-
-        final SynchronizedStatement existsStmt = mStatementManager.get(
-                STMT_EXISTS, () -> SQL_COUNT_ID);
-
-        existsStmt.bindString(1, cacheId);
-        if (existsStmt.simpleQueryForLongOrZero() == 0) {
-            sSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
-        } else {
-            cv.put(CKEY_UTC_DATETIME, LocalDateTime
-                    .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-            sSyncedDb.update(TBL_IMAGE.getName(), cv,
-                             CKEY_CACHE_ID + "=?", new String[]{cacheId});
-        }
-    }
-
-    /**
-     * Singleton SQLiteOpenHelper for the covers database.
-     */
-    public static final class CoversDbHelper
-            extends SQLiteOpenHelper {
-
-        private static CoversDbHelper sCoversDbHelper;
-
-        /**
-         * Constructor.
-         *
-         * @param context Current context
-         */
-        private CoversDbHelper(@NonNull final Context context) {
-            super(context.getApplicationContext(),
-                  COVERS_DATABASE_NAME, CURSOR_FACTORY, COVERS_DATABASE_VERSION);
-        }
-
-        /**
-         * Singleton Constructor.
-         *
-         * @param context Current context
-         *
-         * @return the instance
-         */
-        static CoversDbHelper getInstance(@NonNull final Context context) {
-            synchronized (CoversDbHelper.class) {
-                if (sCoversDbHelper == null) {
-                    sCoversDbHelper = new CoversDbHelper(context);
-                }
-                return sCoversDbHelper;
+            final ByteArrayOutputStream out = new ByteArrayOutputStream();
+            // Rapid scrolling of view could already have recycled the bitmap.
+            if (bitmap.isRecycled()) {
+                return;
             }
-        }
+            try {
+                bitmap.compress(Bitmap.CompressFormat.JPEG, IMAGE_QUALITY_PERCENTAGE, out);
+            } catch (@NonNull final IllegalStateException e) {
+                // Again: Rapid scrolling of view could already have recycled the bitmap.
+                // java.lang.IllegalStateException: Can't compress a recycled bitmap
+                // don't care at this point; this is just a cache; don't even log.
+                return;
+            }
 
-        @Override
-        public void onConfigure(@NonNull final SQLiteDatabase db) {
-            // Turn ON foreign key support so that CASCADE etc. works.
-            // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
-            db.setForeignKeyConstraintsEnabled(true);
-        }
+            final byte[] image = out.toByteArray();
 
-        @Override
-        public void onCreate(@NonNull final SQLiteDatabase db) {
-            TableDefinition.onCreate(db, TBL_IMAGE);
-        }
+            final String cacheId = constructCacheId(uuid, cIdx, width, height);
+            final ContentValues cv = new ContentValues();
+            cv.put(CKEY_CACHE_ID, cacheId);
+            cv.put(CKEY_IMAGE, image);
 
-        @Override
-        public void onUpgrade(@NonNull final SQLiteDatabase db,
-                              final int oldVersion,
-                              final int newVersion) {
-            // This is a cache, so no data needs preserving. Drop & recreate.
-            db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE.getName());
-            onCreate(db);
+            final boolean exists;
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SQL_COUNT_ID)) {
+                stmt.bindString(1, cacheId);
+                exists = stmt.simpleQueryForLongOrZero() == 0;
+            }
+
+            if (exists) {
+                mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+            } else {
+                cv.put(CKEY_UTC_DATETIME, LocalDateTime
+                        .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+                mSyncedDb.update(TBL_IMAGE.getName(), cv,
+                                 CKEY_CACHE_ID + "=?", new String[]{cacheId});
+            }
+        } catch (@NonNull final RuntimeException e) {
+            // do not crash... ever! This is just a cache!
+            Logger.error(context, TAG, e);
+            // and disable the cache
+            ImageUtils.setImageCachingEnabled(context, false);
+            //FIXME: we should let the user know....
         }
     }
 
@@ -572,12 +403,111 @@ public final class CoversDAO
 
             RUNNING_TASKS.incrementAndGet();
 
-            try (CoversDAO coversDBAdapter = getInstance(context)) {
-                coversDBAdapter.saveFile(mUuid, mIndex, mBitmap, mWidth, mHeight);
-            }
+            getInstance(context).saveFile(context, mUuid, mIndex, mBitmap, mWidth, mHeight);
 
             RUNNING_TASKS.decrementAndGet();
             return null;
+        }
+    }
+
+    /**
+     * Singleton SQLiteOpenHelper for the covers database.
+     */
+    public static final class CoversDbHelper
+            extends SQLiteOpenHelper {
+
+        /**
+         * DB Version.
+         * v2: current
+         * v1: had a redundant width/height column.
+         */
+        private static final int DATABASE_VERSION = 2;
+
+        /** DB name. */
+        private static final String DATABASE_NAME = "covers.db";
+
+        /** Readers/Writer lock for <strong>this</strong> database. */
+        private static final Synchronizer sSynchronizer = new Synchronizer();
+
+        /** Static Factory object to create the custom cursor. */
+        private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
+                (db, d, et, q) -> new SynchronizedCursor(d, et, q, sSynchronizer);
+
+        /** Singleton. */
+        @SuppressWarnings("InnerClassFieldHidesOuterClassField")
+        private static CoversDbHelper sInstance;
+
+        @NonNull
+        private final SynchronizedDb mSyncedDb;
+
+        /**
+         * Constructor.
+         *
+         * @param context Current context
+         */
+        private CoversDbHelper(@NonNull final Context context) {
+            super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
+            mSyncedDb = new SynchronizedDb(sSynchronizer, this);
+        }
+
+        /**
+         * Singleton Constructor.
+         *
+         * @param context Current context
+         *
+         * @return the instance
+         */
+        public static CoversDbHelper getInstance(@NonNull final Context context) {
+            synchronized (CoversDbHelper.class) {
+                if (sInstance == null) {
+                    sInstance = new CoversDbHelper(context);
+                }
+                return sInstance;
+            }
+        }
+
+        /**
+         * Get the Underlying database.
+         *
+         * @return database connection
+         */
+        @NonNull
+        public SynchronizedDb getSyncDb() {
+            return mSyncedDb;
+        }
+
+        /**
+         * Optimize the database.
+         *
+         * @param context Current context
+         */
+        public void optimize(@NonNull final Context context) {
+            try {
+                mSyncedDb.optimize();
+            } catch (@NonNull final RuntimeException e) {
+                Logger.error(context, TAG, e);
+            }
+        }
+
+        @Override
+        public void onConfigure(@NonNull final SQLiteDatabase db) {
+            // Turn ON foreign key support so that CASCADE etc. works.
+            // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
+            db.setForeignKeyConstraintsEnabled(true);
+        }
+
+        @Override
+        public void onCreate(@NonNull final SQLiteDatabase db) {
+            TableDefinition.onCreate(db, TBL_IMAGE);
+        }
+
+        @Override
+        public void onUpgrade(@NonNull final SQLiteDatabase db,
+                              final int oldVersion,
+                              final int newVersion) {
+            // This is a cache, so no data needs preserving. Drop & recreate.
+            db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE.getName());
+            onCreate(db);
         }
     }
 }

@@ -76,9 +76,10 @@ public class EditBookshelvesViewModel
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@Nullable final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args) {
         if (mDb == null) {
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
             mList = mDb.getBookshelves();
             if (args != null) {
                 // set as the initial result

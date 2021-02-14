@@ -25,11 +25,10 @@ import android.util.Log;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
+import java.io.File;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -40,10 +39,11 @@ public abstract class BaseDao
 
     /** Log tag. */
     private static final String TAG = "BaseDao";
-    /** Reference to the singleton. */
-    final SynchronizedDb mSyncedDb;
+
     /** Collection of statements pre-compiled for this object. */
     final SqlStatementManager mSqlStatementManager;
+    /** Reference to the singleton. */
+    final SynchronizedDb mSyncedDb;
     @NonNull
     private final String mInstanceName;
     /** Reference to the singleton. */
@@ -53,27 +53,10 @@ public abstract class BaseDao
 
     /**
      * Constructor.
-     * <p>
-     * <strong>Note:</strong> don't be tempted to turn this into a singleton...
-     * this class is not fully thread safe (in contrast to the covers dao which is).
      *
-     * @param name of this DAO for logging.
+     * @param context Current context
+     * @param name    of this DAO for logging.
      */
-    BaseDao(@NonNull final String name) {
-        mInstanceName = name;
-
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, mInstanceName + "|Constructor");
-        }
-
-        mDBHelper = DBHelper.getInstance(App.getAppContext());
-        mSyncedDb = SynchronizedDb.getInstance(DBHelper.getSynchronizer(), mDBHelper);
-
-        // statements are instance based/managed
-        mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + mInstanceName);
-    }
-
-    @VisibleForTesting
     BaseDao(@NonNull final Context context,
             @NonNull final String name) {
         mInstanceName = name;
@@ -83,23 +66,32 @@ public abstract class BaseDao
         }
 
         mDBHelper = DBHelper.getInstance(context);
-        mSyncedDb = SynchronizedDb.getInstance(DBHelper.getSynchronizer(), mDBHelper);
+        mSyncedDb = mDBHelper.getSyncDb();
 
         // statements are instance based/managed
         mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + mInstanceName);
     }
 
+    @NonNull
     public DBHelper getDBHelper() {
         return mDBHelper;
     }
 
+    @NonNull
+    public File getDatabaseFile() {
+        return new File(mSyncedDb.getSQLiteDatabase().getPath());
+    }
+
     /**
      * Get the local database.
+     * This should only be called in test classes, and from the {@link DBCleaner}.
+     * <p>
+     * Other code should use {@link DBHelper#getSyncDb()} directly to get a lighter weight object.
      *
      * @return Underlying database connection
      */
     @NonNull
-    public SynchronizedDb getSyncDb() {
+    SynchronizedDb getSyncDb() {
         return mSyncedDb;
     }
 

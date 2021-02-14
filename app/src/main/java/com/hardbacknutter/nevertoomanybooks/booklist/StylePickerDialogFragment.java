@@ -175,8 +175,8 @@ public class StylePickerDialogFragment
     private void loadStyles() {
         final Context context = getContext();
 
-        try (DAO db = new DAO(TAG)) {
-            //noinspection ConstantConditions
+        //noinspection ConstantConditions
+        try (DAO db = new DAO(context, TAG)) {
             mStyleList = StyleDAO.getStyles(context, db, mShowAllStyles);
             if (!mShowAllStyles && mCurrentStyleUuid != null) {
                 // make sure the currently selected style is in the list

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -25,6 +25,7 @@ import android.os.StrictMode;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 
 import org.acra.ACRA;
 import org.acra.ReportField;
@@ -68,6 +69,10 @@ public class App
     @NonNull
     public static Context getTaskContext() {
         return sInstance.getApplicationContext();
+    }
+
+    public static String getLogString(@StringRes final int stringId) {
+        return sInstance.getString(stringId);
     }
 
     @Override

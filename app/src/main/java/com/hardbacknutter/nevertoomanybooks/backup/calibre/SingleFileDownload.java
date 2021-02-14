@@ -76,7 +76,7 @@ public class SingleFileDownload
         publishProgressStep(0, context.getString(R.string.progress_msg_please_wait));
 
         if (!mServer.isMetaDataRead()) {
-            try (DAO db = new DAO(TAG)) {
+            try (DAO db = new DAO(context, TAG)) {
                 mServer.readMetaData(context, db);
             }
         }

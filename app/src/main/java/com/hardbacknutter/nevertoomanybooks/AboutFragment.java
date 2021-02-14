@@ -75,7 +75,8 @@ public class AboutFragment
                 new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.sourcecode_url)))));
 
         // just running this on the UI thread...
-        try (DAO db = new DAO(TAG)) {
+        //noinspection ConstantConditions
+        try (DAO db = new DAO(getContext(), TAG)) {
             mVb.bookCount.setText(String.valueOf(db.countBooks()));
             mVb.seriesCount.setText(String.valueOf(db.countSeries()));
             mVb.authorCount.setText(String.valueOf(db.countAuthors()));

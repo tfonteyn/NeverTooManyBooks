@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -69,16 +69,17 @@ public class OptimizeDbTask
         // Out of precaution we only trash jpg files
         AppDir.Cache.purge(context, true, file -> file.getName().endsWith(".jpg"));
 
-        try (DAO db = new DAO(TAG)) {
+        final DBHelper dbHelper = DBHelper.getInstance(context);
+        try {
             // small hack to make sure we always update the triggers.
             // Makes creating/modifying triggers MUCH easier.
             if (BuildConfig.DEBUG /* always */) {
-                db.getDBHelper().createTriggers(db.getSyncDb());
+                dbHelper.createTriggers();
             }
 
-            db.getSyncDb().optimize();
+            dbHelper.getSyncDb().optimize();
             if (ImageUtils.isImageCachingEnabled(context)) {
-                CoversDAO.optimize(context);
+                CoversDAO.CoversDbHelper.getInstance(context).optimize(context);
             }
             return true;
 

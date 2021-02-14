@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -62,7 +62,7 @@ public class SendOneBookGrTask
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final GoodreadsManager grManager) {
 
-        try (DAO db = new DAO(TAG);
+        try (DAO db = new DAO(grManager.getAppContext(), TAG);
              Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
             final DataHolder bookData = new CursorRow(cursor);
             while (cursor.moveToNext()) {

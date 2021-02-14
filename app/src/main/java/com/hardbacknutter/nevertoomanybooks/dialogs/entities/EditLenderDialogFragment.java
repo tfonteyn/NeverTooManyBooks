@@ -122,7 +122,8 @@ public class EditLenderDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDb = new DAO(TAG);
+        //noinspection ConstantConditions
+        mDb = new DAO(getContext(), TAG);
         // get previously used lender names
         mPeople = mDb.getLoanees();
 

@@ -53,11 +53,11 @@ public class CalibreLibraryMappingViewModel
         super.onCleared();
     }
 
-    @Override
-    public void init(@Nullable final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args) {
         super.init(args);
         if (mDb == null) {
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
         }
     }
 

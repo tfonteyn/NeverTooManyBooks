@@ -40,6 +40,7 @@ import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -110,6 +111,12 @@ public final class Logger {
         }
     }
 
+    public static void error(@NonNull final String tag,
+                             @NonNull final Throwable e,
+                             @Nullable final Object... params) {
+        error(App.getAppContext(), tag, e, params);
+    }
+
     /**
      * WARN message. Send to the logfile (always) and the console (when in DEBUG mode).
      * <p>
@@ -131,6 +138,11 @@ public final class Logger {
         if (BuildConfig.DEBUG /* always */) {
             w(tag, msg);
         }
+    }
+
+    public static void warn(@NonNull final String tag,
+                            @NonNull final Object... params) {
+        warn(App.getAppContext(), tag, params);
     }
 
     /**

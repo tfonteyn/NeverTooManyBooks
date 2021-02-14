@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ public class UserStyleTest {
     public void clone01() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final BuiltinStyle s1;
-        try (DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(context, TAG)) {
             s1 = (BuiltinStyle) StyleDAO.getStyle(context, db, StyleDAO.BuiltinStyles
                     // This style has:
                     // BooklistGroup.AUTHOR

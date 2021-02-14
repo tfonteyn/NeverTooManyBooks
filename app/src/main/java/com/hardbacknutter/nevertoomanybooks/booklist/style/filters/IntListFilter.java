@@ -255,7 +255,7 @@ public class IntListFilter
                + ", mDefaultValue=" + mDefaultValue
                + ", mPersisted=" + mPersisted
 
-               + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
+               + ", mLabelId=`" + App.getLogString(mLabelId) + '`'
                + ", mDomainExpression=" + mDomainExpression
                + '}';
     }

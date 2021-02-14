@@ -83,7 +83,7 @@ public class SearchBookByTextViewModel
      */
     public void init(@NonNull final Context context) {
         if (mDb == null) {
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
 
             mUsePublisher = usePublisher(context);
         }

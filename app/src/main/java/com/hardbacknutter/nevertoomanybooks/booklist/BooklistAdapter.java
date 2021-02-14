@@ -1220,8 +1220,10 @@ public class BooklistAdapter
             // 1. If caching is used, and we don't have cache building happening, check it.
             if (mAdapter.isImageCachingEnabled()
                 && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
-                final Bitmap bitmap = CoversDAO.getImage(context, uuid, 0,
-                                                         mCoverLongestSide, mCoverLongestSide);
+                final Bitmap bitmap = CoversDAO
+                        .getInstance(context)
+                        .getImage(context, uuid, 0, mCoverLongestSide, mCoverLongestSide);
+
                 if (bitmap != null) {
                     ImageUtils.setImageView(mCoverView, mCoverLongestSide, mCoverLongestSide,
                                             bitmap, 0);

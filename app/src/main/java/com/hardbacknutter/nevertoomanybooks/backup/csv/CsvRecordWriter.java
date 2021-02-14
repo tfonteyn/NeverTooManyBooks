@@ -69,10 +69,11 @@ public class CsvRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public CsvRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
+    public CsvRecordWriter(@NonNull final Context context,
+                           @Nullable final LocalDateTime utcSinceDateTime) {
 
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new DAO(TAG);
+        mDb = new DAO(context, TAG);
     }
 
     @Override

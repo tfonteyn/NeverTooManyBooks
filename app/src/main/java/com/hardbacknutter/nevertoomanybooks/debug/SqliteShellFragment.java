@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,8 @@ import androidx.fragment.app.Fragment;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentSqliteShellBinding;
 
@@ -69,7 +70,7 @@ public class SqliteShellFragment
     /** View Binding. */
     private FragmentSqliteShellBinding mVb;
 
-    private DAO mDb;
+    private SynchronizedDb mSyncDb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -81,7 +82,8 @@ public class SqliteShellFragment
             mAllowUpdates = args.getBoolean(BKEY_ALLOW_UPDATES);
         }
 
-        mDb = new DAO(TAG);
+        //noinspection ConstantConditions
+        mSyncDb = DBHelper.getInstance(getContext()).getSyncDb();
     }
 
     @Override
@@ -150,7 +152,7 @@ public class SqliteShellFragment
                 getActivity().setTitle("");
 
                 if (mAllowUpdates) {
-                    try (SynchronizedStatement stmt = mDb.getSyncDb().compileStatement(sql)) {
+                    try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
                         final int rowsAffected = stmt.executeUpdateDelete();
                         final String result = STR_ROWS_AFFECTED + rowsAffected;
                         mVb.output.loadDataWithBaseURL(null, result,
@@ -161,7 +163,7 @@ public class SqliteShellFragment
                                                    TEXT_HTML, UTF_8, null);
                 }
             } else {
-                try (Cursor cursor = mDb.getSyncDb().rawQuery(sql, null)) {
+                try (Cursor cursor = mSyncDb.rawQuery(sql, null)) {
                     final String title = STR_LAST_COUNT + cursor.getCount();
                     //noinspection ConstantConditions
                     getActivity().setTitle(title);
@@ -195,13 +197,5 @@ public class SqliteShellFragment
             mVb.output.loadDataWithBaseURL(null, e.getLocalizedMessage(),
                                            TEXT_HTML, UTF_8, null);
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 }

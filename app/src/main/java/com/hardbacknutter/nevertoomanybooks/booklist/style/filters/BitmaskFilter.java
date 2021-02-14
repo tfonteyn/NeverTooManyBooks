@@ -274,7 +274,7 @@ public class BitmaskFilter
                + ", mDefaultValue=" + mDefaultValue + "=" + Integer.toBinaryString(mDefaultValue)
                + ", mPersisted=" + mPersisted
 
-               + ", mLabelId=`" + App.getAppContext().getString(mLabelId) + '`'
+               + ", mLabelId=`" + App.getLogString(mLabelId) + '`'
                + ", mDomainExpression=" + mDomainExpression
 
                + ", mMask=" + mMask + "=" + Integer.toBinaryString(mMask)

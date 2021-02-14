@@ -81,7 +81,7 @@ public class AuthorWorksViewModel
                      @NonNull final Bundle args) {
 
         if (mDb == null) {
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
 
             final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");

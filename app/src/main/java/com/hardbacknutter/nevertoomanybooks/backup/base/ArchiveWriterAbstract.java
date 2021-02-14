@@ -94,11 +94,13 @@ public abstract class ArchiveWriterAbstract
     /**
      * Constructor.
      *
-     * @param helper export configuration
+     * @param context Current context
+     * @param helper  export configuration
      */
-    protected ArchiveWriterAbstract(@NonNull final ExportHelper helper) {
+    protected ArchiveWriterAbstract(@NonNull final Context context,
+                                    @NonNull final ExportHelper helper) {
         mHelper = helper;
-        mDb = new DAO(TAG);
+        mDb = new DAO(context, TAG);
     }
 
     /**
@@ -261,7 +263,7 @@ public abstract class ArchiveWriterAbstract
         try (OutputStream os = new FileOutputStream(file);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = encoding.createWriter(dateSince)) {
+             RecordWriter recordWriter = encoding.createWriter(context, dateSince)) {
             mResults.add(recordWriter.write(context, bw, recordTypes, progressListener));
         }
 
@@ -287,7 +289,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, 1024);
-             RecordWriter recordWriter = encoding.createWriter(null)) {
+             RecordWriter recordWriter = encoding.createWriter(context, null)) {
             recordWriter.writeMetaData(bw, metaData);
         }
 
@@ -318,7 +320,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = encoding.createWriter(null)) {
+             RecordWriter recordWriter = encoding.createWriter(context, null)) {
             mResults.add(recordWriter.write(context, bw, EnumSet.of(recordType), progressListener));
         }
         putByteArray(recordType.getName() + encoding.getFileExt(), os.toByteArray(), true);

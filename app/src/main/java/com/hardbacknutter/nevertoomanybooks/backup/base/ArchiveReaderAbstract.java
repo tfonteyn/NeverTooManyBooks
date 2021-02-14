@@ -117,7 +117,7 @@ public abstract class ArchiveReaderAbstract
     protected ArchiveReaderAbstract(@NonNull final Context context,
                                     @NonNull final ImportHelper helper) {
         mHelper = helper;
-        mDb = new DAO(TAG);
+        mDb = new DAO(context, TAG);
         mContentResolver = context.getContentResolver();
 
         mCoversText = context.getString(R.string.lbl_covers);

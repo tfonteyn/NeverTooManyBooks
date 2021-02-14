@@ -56,8 +56,17 @@
             android:layout_height="wrap_content"
             android:text="@string/lbl_read"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/rating"
+            app:layout_constraintTop_toTopOf="parent"
             tools:checked="true"
+            />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_rating_read_bottom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="rating,cbx_read"
+
             />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -66,7 +75,7 @@
             android:hint="@string/lbl_read_start"
             app:layout_constraintEnd_toStartOf="@id/lbl_read_end"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cbx_read"
+            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read_bottom"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -84,7 +93,7 @@
             android:hint="@string/lbl_read_end"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_read_start"
-            app:layout_constraintTop_toBottomOf="@id/cbx_read"
+            app:layout_constraintTop_toBottomOf="@id/barrier_rating_read_bottom"
             >
 
             <com.google.android.material.textfield.TextInputEditText

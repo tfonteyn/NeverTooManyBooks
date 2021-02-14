@@ -259,4 +259,10 @@ public final class ImageUtils {
         return PreferenceManager.getDefaultSharedPreferences(context)
                                 .getBoolean(Prefs.pk_image_cache_resized, false);
     }
+
+    public static void setImageCachingEnabled(@NonNull final Context context,
+                                              final boolean enable) {
+        PreferenceManager.getDefaultSharedPreferences(context)
+                         .edit().putBoolean(Prefs.pk_image_cache_resized, enable).apply();
+    }
 }

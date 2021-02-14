@@ -83,7 +83,7 @@ public class StyleViewModel
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
         if (mDb == null) {
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
 
 
             final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_STYLE_UUID));

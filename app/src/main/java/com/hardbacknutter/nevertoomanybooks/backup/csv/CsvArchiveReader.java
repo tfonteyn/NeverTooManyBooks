@@ -26,7 +26,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,9 +70,10 @@ public class CsvArchiveReader
      *
      * @param helper import configuration
      */
-    public CsvArchiveReader(@NonNull final ImportHelper helper) {
+    public CsvArchiveReader(@NonNull final Context context,
+                            @NonNull final ImportHelper helper) {
         mHelper = helper;
-        mDb = new DAO(TAG);
+        mDb = new DAO(context, TAG);
     }
 
     @NonNull
@@ -87,7 +87,7 @@ public class CsvArchiveReader
         // Importing CSV which we didn't create can be dangerous.
         // Backup the database, keeping up to CSV_BACKUP_COPIES copies.
         // ENHANCE: For now we don't inform the user of this nor offer a restore.
-        FileUtils.copyWithBackup(new File(mDb.getSyncDb().getSQLiteDatabase().getPath()),
+        FileUtils.copyWithBackup(mDb.getDatabaseFile(),
                                  AppDir.Upgrades.getFile(context, DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 

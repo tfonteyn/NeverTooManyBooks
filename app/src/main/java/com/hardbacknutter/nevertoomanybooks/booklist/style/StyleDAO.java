@@ -178,7 +178,7 @@ public final class StyleDAO {
      * @param context Current context
      */
     public static void updateMenuOrder(@NonNull final Context context) {
-        try (DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(context, TAG)) {
             updateMenuOrder(db, getStyles(context, db, true));
         }
     }

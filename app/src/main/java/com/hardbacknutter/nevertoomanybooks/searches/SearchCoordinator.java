@@ -178,6 +178,8 @@ public class SearchCoordinator
     /** DEBUG timer. */
     private SparseLongArray mSearchTasksEndTime;
     private SearchEngineRegistry mSearchEngineRegistry;
+    /** Cached string resource. */
+    private String mListElementPrefixString;
     /** Listener for <strong>individual</strong> search tasks. */
     private final TaskListener<Bundle> mSearchTaskListener = new TaskListener<Bundle>() {
 
@@ -186,9 +188,8 @@ public class SearchCoordinator
             synchronized (mSearchProgressMessages) {
                 mSearchProgressMessages.put(message.taskId, message);
             }
-            final Context context = AppLocale.getInstance().apply(App.getAppContext());
             // forward the accumulated progress
-            mSearchCoordinatorProgress.setValue(accumulateProgress(context));
+            mSearchCoordinatorProgress.setValue(accumulateProgress());
         }
 
         @Override
@@ -291,6 +292,8 @@ public class SearchCoordinator
 
             mSearchEngineRegistry = SearchEngineRegistry.getInstance();
             mAllSites = Site.Type.Data.getSites();
+
+            mListElementPrefixString = context.getString(R.string.list_element);
 
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
             if (FormatMapper.isMappingAllowed(global)) {
@@ -1003,14 +1006,14 @@ public class SearchCoordinator
             mSearchTasksEndTime.put(taskId, System.nanoTime());
         }
 
-        final Context appContext = AppLocale.getInstance().apply(App.getAppContext());
+        final Context context = AppLocale.getInstance().apply(App.getTaskContext());
 
         // clear obsolete progress status
         synchronized (mSearchProgressMessages) {
             mSearchProgressMessages.remove(taskId);
         }
         // and update our listener.
-        mSearchCoordinatorProgress.setValue(accumulateProgress(appContext));
+        mSearchCoordinatorProgress.setValue(accumulateProgress());
 
         if (mWaitingForExactCode) {
             if (result != null && hasIsbn(result)) {
@@ -1024,10 +1027,10 @@ public class SearchCoordinator
 
                 // Start the others...even if they have run before.
                 // They will redo the search WITH the ISBN.
-                startSearch(appContext);
+                startSearch(context);
             } else {
                 // Start next one that has not run yet.
-                startNextSearch(appContext);
+                startNextSearch(context);
             }
         }
 
@@ -1044,12 +1047,12 @@ public class SearchCoordinator
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                 SearchEngineRegistry.Config config = mSearchEngineRegistry.getByEngineId(taskId);
                 Log.d(TAG, "mSearchTaskListener.onFinished"
-                           + "|finished=" + appContext.getString(config.getNameResId()));
+                           + "|finished=" + context.getString(config.getNameResId()));
 
                 for (final SearchTask searchTask : mActiveTasks) {
                     config = mSearchEngineRegistry.getByEngineId(searchTask.getTaskId());
                     Log.d(TAG, "mSearchTaskListener.onFinished"
-                               + "|running=" + appContext.getString(config.getNameResId()));
+                               + "|running=" + context.getString(config.getNameResId()));
                 }
             }
 
@@ -1062,8 +1065,8 @@ public class SearchCoordinator
             final long processTime = System.nanoTime();
 
             mIsSearchActive = false;
-            accumulateResults(appContext);
-            final String searchErrors = accumulateErrors(appContext);
+            accumulateResults(context);
+            final String searchErrors = accumulateErrors(context);
 
             if (searchErrors != null && !searchErrors.isEmpty()) {
                 mBookData.putString(BKEY_SEARCH_ERROR, searchErrors);
@@ -1089,7 +1092,7 @@ public class SearchCoordinator
                         final int key = mSearchTasksStartTime.keyAt(i);
                         final long end = mSearchTasksEndTime.get(key);
 
-                        final String engineName = appContext.getString(
+                        final String engineName = context.getString(
                                 mSearchEngineRegistry.getByEngineId(key).getNameResId());
 
                         if (end != 0) {
@@ -1193,12 +1196,10 @@ public class SearchCoordinator
     /**
      * Creates {@link ProgressMessage} with the global/total progress of all tasks.
      *
-     * @param context Current context
-     *
      * @return instance
      */
     @NonNull
-    private ProgressMessage accumulateProgress(@NonNull final Context context) {
+    private ProgressMessage accumulateProgress() {
 
         // Sum the current & max values for each active task.
         int progressMax = 0;
@@ -1221,7 +1222,7 @@ public class SearchCoordinator
                 // Append each task message
                 sb.append(mSearchProgressMessages
                                   .values().stream()
-                                  .map(msg -> context.getString(R.string.list_element, msg.text))
+                                  .map(msg -> String.format(mListElementPrefixString, msg.text))
                                   .collect(Collectors.joining("\n")));
 
                 for (final ProgressMessage progressMessage : mSearchProgressMessages.values()) {

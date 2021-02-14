@@ -104,7 +104,7 @@ public class JsonArchiveWriter
         }
 
         final int booksToExport;
-        try (DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(context, TAG)) {
             booksToExport = db.countBooksForExport(dateSince);
         }
 
@@ -116,7 +116,7 @@ public class JsonArchiveWriter
             try (OutputStream os = mHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new JsonRecordWriter(dateSince)) {
+                 RecordWriter recordWriter = new JsonRecordWriter(context, dateSince)) {
 
                 // manually concat
                 // 1. archive envelope

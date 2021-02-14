@@ -1338,7 +1338,7 @@ public class Book
                 FileUtils.delete(getUuidCoverFile(context, cIdx));
                 if (ImageUtils.isImageCachingEnabled(context)) {
                     // We delete *all* files related to this book from the cache.
-                    CoversDAO.delete(context, uuid);
+                    CoversDAO.getInstance(context).delete(context, uuid);
                 }
             }
 
@@ -1381,7 +1381,7 @@ public class Book
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
                     if (ImageUtils.isImageCachingEnabled(context)) {
-                        CoversDAO.delete(context, uuid);
+                        CoversDAO.getInstance(context).delete(context, uuid);
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name

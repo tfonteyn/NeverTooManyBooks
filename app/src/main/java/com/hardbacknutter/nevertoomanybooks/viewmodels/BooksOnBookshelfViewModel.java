@@ -180,7 +180,7 @@ public class BooksOnBookshelfViewModel
         if (mDb == null) {
             initFixedDomainList();
 
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
 
             // first start of the activity, read from user preference
             mRebuildState = getPreferredListRebuildState(context);
@@ -618,7 +618,7 @@ public class BooksOnBookshelfViewModel
         Booklist builder = null;
         try {
             // get a new builder and add the required domains
-            builder = new Booklist(mDb.getSyncDb(), style, mBookshelf, mRebuildState);
+            builder = new Booklist(context, style, mBookshelf, mRebuildState);
 
             // Add the fixed list of domains we always need.
             for (final DomainExpression domainDetails : mFixedDomainList) {

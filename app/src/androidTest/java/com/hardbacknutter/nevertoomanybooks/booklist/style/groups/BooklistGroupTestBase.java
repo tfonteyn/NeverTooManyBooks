@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,7 +36,7 @@ class BooklistGroupTestBase {
     @NonNull
     BuiltinStyle getStyle(final Context context) {
         final BuiltinStyle s1;
-        try (DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(context, TAG)) {
             s1 = (BuiltinStyle) StyleDAO.getStyle(context, db, StyleDAO.BuiltinStyles
                     // This style has a filter by default.
                     .UNREAD_AUTHOR_THEN_SERIES_UUID);

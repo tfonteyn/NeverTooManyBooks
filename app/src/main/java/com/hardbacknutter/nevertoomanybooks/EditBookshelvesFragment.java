@@ -137,7 +137,8 @@ public class EditBookshelvesFragment
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mVm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
-        mVm.init(getArguments());
+        //noinspection ConstantConditions
+        mVm.init(getContext(), getArguments());
         mVm.onSelectedPositionChanged().observe(getViewLifecycleOwner(),
                                                 aVoid -> mAdapter.notifyDataSetChanged());
 

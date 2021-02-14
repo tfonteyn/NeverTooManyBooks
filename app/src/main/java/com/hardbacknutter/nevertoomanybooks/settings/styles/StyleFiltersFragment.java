@@ -100,7 +100,7 @@ public class StyleFiltersFragment
             //noinspection ConstantConditions
             bookshelves.setVisible(true);
 
-            try (DAO db = new DAO(TAG)) {
+            try (DAO db = new DAO(getContext(), TAG)) {
                 final ArrayList<Bookshelf> list = db.getBookshelves();
                 bookshelves.setEntryValues(
                         list.stream()

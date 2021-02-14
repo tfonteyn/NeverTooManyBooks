@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -324,10 +324,9 @@ class BooklistNodeDAO {
         } catch (@NonNull final SQLiteConstraintException e) {
             if (BuildConfig.DEBUG /* always */) {
                 // DEBUG ONLY!
-                // This protects the developer when changing the structure
-                // somewhat irresponsibly...
-                DAO.clearNodeStateData();
-                Logger.error(App.getAppContext(), TAG, e);
+                // This protects the developer when changing the structure irresponsibly...
+                DAO.clearNodeStateData(App.getAppContext());
+                Logger.error(TAG, e);
             }
         } finally {
             if (txLock != null) {

@@ -90,9 +90,10 @@ public class JsonRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
+    public JsonRecordWriter(@NonNull final Context context,
+                            @Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new DAO(TAG);
+        mDb = new DAO(context, TAG);
     }
 
     @Override

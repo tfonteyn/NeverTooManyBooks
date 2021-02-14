@@ -68,7 +68,8 @@ public class CsvArchiveWriterTest {
 
     @Before
     public void count() {
-        try (DAO db = new DAO(TAG)) {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        try (DAO db = new DAO(context, TAG)) {
             mBookInDb = db.countBooks();
         }
         if (mBookInDb < 10) {
@@ -125,7 +126,7 @@ public class CsvArchiveWriterTest {
         final long deletedBookId = ids.get(3);
         final long modifiedBookId = ids.get(5);
 
-        try (DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(context, TAG)) {
             db.deleteBook(context, deletedBookId);
 
             final Book book = Book.from(modifiedBookId, db);

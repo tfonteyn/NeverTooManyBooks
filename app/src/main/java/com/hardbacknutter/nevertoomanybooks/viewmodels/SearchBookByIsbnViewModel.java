@@ -96,9 +96,10 @@ public class SearchBookByIsbnViewModel
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@Nullable final Bundle args) {
+    public void init(@NonNull final Context context,
+                     @Nullable final Bundle args) {
         if (mDb == null) {
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
 
             if (args != null) {
                 mScannerMode = args.getInt(BKEY_SCAN_MODE, SCANNER_OFF);

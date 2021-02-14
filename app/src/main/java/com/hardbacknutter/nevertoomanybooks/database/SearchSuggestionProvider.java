@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -76,9 +76,12 @@ public class SearchSuggestionProvider
 
             if (mDb == null) {
                 // lazy init
-                mDb = new DAO(TAG);
+
+                //noinspection ConstantConditions
+                mDb = new DAO(getContext(), TAG);
             }
 
+            //noinspection UnnecessaryLocalVariable
             final Cursor cursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
             //  if (cursor != null) {
             //      //noinspection ConstantConditions

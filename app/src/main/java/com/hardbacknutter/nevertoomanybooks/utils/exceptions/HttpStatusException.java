@@ -105,7 +105,7 @@ public class HttpStatusException
                + ", mStatusCode=" + mStatusCode
                + ", mStatusMessage=" + mStatusMessage
                + ", mUrl=" + mUrl
-               + ", mSiteResId=" + App.getAppContext().getString(mSiteResId)
+               + ", mSiteResId=" + App.getLogString(mSiteResId)
                + '}';
     }
 }

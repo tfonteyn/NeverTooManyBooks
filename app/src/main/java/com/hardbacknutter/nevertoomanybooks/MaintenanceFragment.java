@@ -124,7 +124,7 @@ public class MaintenanceFragment
         mVb.btnPurgeFiles.setOnClickListener(v -> {
             final Context context = v.getContext();
             final ArrayList<String> bookUuidList;
-            try (DAO db = new DAO(TAG)) {
+            try (DAO db = new DAO(v.getContext(), TAG)) {
                 bookUuidList = db.getBookUuidList();
             }
 
@@ -149,7 +149,8 @@ public class MaintenanceFragment
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
-                .setPositiveButton(android.R.string.ok, (d, w) -> DAO.clearNodeStateData())
+                .setPositiveButton(android.R.string.ok, (d, w) ->
+                        DAO.clearNodeStateData(v.getContext()))
                 .create()
                 .show());
 
@@ -250,7 +251,8 @@ public class MaintenanceFragment
     }
 
     private void onDeleteAll() {
-        try (DAO db = new DAO(TAG)) {
+        //noinspection ConstantConditions
+        try (DAO db = new DAO(getContext(), TAG)) {
             //FIXME: we should stop any active tasks + the qm itself
             final QueueManager qm = QueueManager.getInstance();
             qm.deleteTasksOlderThan(0);
@@ -258,8 +260,7 @@ public class MaintenanceFragment
 
             StyleDAO.clearCache();
 
-            //noinspection ConstantConditions
-            if (db.getDBHelper().deleteAllContent(getContext(), db.getSyncDb())) {
+            if (db.getDBHelper().deleteAllContent(getContext())) {
                 AppDir.deleteAllContent(getContext());
                 //FIXME: restore all preferences.
 

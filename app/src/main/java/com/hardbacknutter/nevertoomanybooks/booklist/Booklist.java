@@ -53,6 +53,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.FtsDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
@@ -219,13 +220,13 @@ public class Booklist
     /**
      * Constructor.
      *
-     * @param db           Database Access
+     * @param context      Current context
      * @param style        Style reference.
      *                     This is the resolved style as used by the passed bookshelf
      * @param bookshelf    the current bookshelf
      * @param rebuildState booklist state to use in next rebuild.
      */
-    public Booklist(@NonNull final SynchronizedDb db,
+    public Booklist(@NonNull final Context context,
                     @NonNull final ListStyle style,
                     @NonNull final Bookshelf bookshelf,
                     @ListRebuildMode final int rebuildState) {
@@ -239,7 +240,7 @@ public class Booklist
 
         mInstanceId = ID_COUNTER.incrementAndGet();
 
-        mSyncedDb = db;
+        mSyncedDb = DBHelper.getInstance(context).getSyncDb();
         mStyle = style;
         mBookshelves.add(bookshelf);
         mRebuildState = rebuildState;

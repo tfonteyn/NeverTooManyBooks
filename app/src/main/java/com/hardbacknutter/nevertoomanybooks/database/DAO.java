@@ -32,7 +32,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
 import java.lang.annotation.Retention;
@@ -57,7 +56,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreVirtualLibrary
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
@@ -155,6 +153,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * This class is 'context-free'. KEEP IT THAT WAY. Passing in a context is fine, but NO caching.
  * We need to use this in background tasks and ViewModel classes.
  * Using {@link App#getAppContext} is however allowed.
+ *
+ * <strong>Note:</strong> don't be tempted to turn this into a singleton...
+ * this class is not fully thread safe (in contrast to the covers dao which is).
+ *
  * <p>
  * insert/update of a Book failures are handled with {@link DaoWriteException}
  * which makes the deep nesting of calls easier to handle.
@@ -262,20 +264,13 @@ public class DAO
 
     /**
      * Constructor.
-     * <p>
-     * <strong>Note:</strong> don't be tempted to turn this into a singleton...
-     * this class is not fully thread safe (in contrast to the covers dao which is).
      *
-     * @param name of this DAO for logging.
+     * @param context Current context
+     * @param logTag  of this DAO for logging.
      */
-    public DAO(@NonNull final String name) {
-        super(name);
-    }
-
-    @VisibleForTesting
     public DAO(@NonNull final Context context,
-               @NonNull final String name) {
-        super(context, name);
+               @NonNull final String logTag) {
+        super(context, logTag);
     }
 
     /**
@@ -327,9 +322,9 @@ public class DAO
     /**
      * Purge <strong>all</strong> Booklist node state data.
      */
-    public static void clearNodeStateData() {
-        SynchronizedDb.getInstance(DBHelper.getSynchronizer())
-                      .execSQL(DAOSql.SqlDelete.PURGE_BOOK_LIST_NODE_STATE);
+    public static void clearNodeStateData(@NonNull final Context context) {
+        DBHelper.getInstance(context)
+                .getSyncDb().execSQL(DAOSql.SqlDelete.PURGE_BOOK_LIST_NODE_STATE);
     }
 
     /**
@@ -743,7 +738,7 @@ public class DAO
                     }
                     // and from the cache.
                     if (ImageUtils.isImageCachingEnabled(context)) {
-                        CoversDAO.delete(context, uuid);
+                        CoversDAO.getInstance(context).delete(context, uuid);
                     }
                 }
             }
@@ -2526,7 +2521,7 @@ public class DAO
 
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad.
-            Logger.error(App.getAppContext(), TAG, e);
+            Logger.error(TAG, e);
         }
     }
 

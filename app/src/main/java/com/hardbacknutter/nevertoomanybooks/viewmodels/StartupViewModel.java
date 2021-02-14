@@ -266,7 +266,7 @@ public class StartupViewModel
         try {
             // this can trigger a database upgrade (or the initial creation)
             // which is why we catch ALL exceptions here.
-            mDb = new DAO(TAG);
+            mDb = new DAO(context, TAG);
 
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e, "startTasks");

@@ -87,7 +87,7 @@ public class XmlArchiveWriter
             throws GeneralParsingException, IOException {
 
         final int booksToExport;
-        try (DAO db = new DAO(TAG)) {
+        try (DAO db = new DAO(context, TAG)) {
             booksToExport = db.countBooksForExport(null);
         }
 
@@ -99,7 +99,7 @@ public class XmlArchiveWriter
             try (OutputStream os = mHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new XmlRecordWriter(null)) {
+                 RecordWriter recordWriter = new XmlRecordWriter(context, null)) {
 
                 // manually concat
                 // 1. archive envelope

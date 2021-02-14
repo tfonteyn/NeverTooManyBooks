@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
@@ -95,7 +94,7 @@ public enum RecordEncoding {
             }
         }
 
-        Logger.warn(App.getAppContext(), TAG, "getEncoding|Unknown entry=" + entryName);
+        Logger.warn(TAG, "getEncoding|Unknown entry=" + entryName);
         return Optional.empty();
     }
 
@@ -110,14 +109,15 @@ public enum RecordEncoding {
     }
 
     @NonNull
-    public RecordWriter createWriter(@Nullable final LocalDateTime utcSinceDateTime) {
+    public RecordWriter createWriter(@NonNull final Context context,
+                                     @Nullable final LocalDateTime utcSinceDateTime) {
         switch (this) {
             case Json:
-                return new JsonRecordWriter(utcSinceDateTime);
+                return new JsonRecordWriter(context, utcSinceDateTime);
             case Csv:
-                return new CsvRecordWriter(utcSinceDateTime);
+                return new CsvRecordWriter(context, utcSinceDateTime);
             case Xml:
-                return new XmlRecordWriter(utcSinceDateTime);
+                return new XmlRecordWriter(context, utcSinceDateTime);
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
                 throw new IllegalStateException(ArchiveWriter.ERROR_NO_WRITER_AVAILABLE);

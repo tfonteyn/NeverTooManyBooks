@@ -193,7 +193,8 @@ public class StartupActivity
         // Note this is not a startup-task; it just needs to be started at startup.
         // (it does not even need to be a background thread, as we only want
         // to create the QM, but this way we should get the UI up faster)
-        final Thread qmt = new Thread(() -> QueueManager.create(App.getTaskContext()).start());
+        // MUST
+        final Thread qmt = new Thread(() -> QueueManager.create(this).start());
         qmt.setName("QueueManager-create");
         qmt.start();
 
