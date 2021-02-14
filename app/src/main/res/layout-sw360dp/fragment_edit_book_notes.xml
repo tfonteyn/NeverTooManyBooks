@@ -136,9 +136,8 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_date_acquired"
-            style="@style/TIL.EditText"
+            style="@style/TIL.EditText.Date"
             android:hint="@string/lbl_date_acquired"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_location"
             >
@@ -148,6 +147,7 @@
                 style="@style/EditText.ReadOnly"
                 android:layout_width="match_parent"
                 tools:ignore="Autofill"
+                tools:text="@sample/data.json/date/long"
                 />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -157,9 +157,8 @@
             style="@style/TIL.AutoCompleteTextView"
             android:layout_width="wrap_content"
             android:hint="@string/lbl_currency"
-            app:layout_constraintBaseline_toBaselineOf="@id/lbl_price_paid"
-            app:layout_constraintEnd_toStartOf="@id/lbl_price_paid"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/lbl_date_acquired"
+            app:layout_constraintTop_toBottomOf="@id/lbl_location"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -178,7 +177,7 @@
             android:hint="@string/lbl_price_paid"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_price_paid_currency"
-            app:layout_constraintTop_toBottomOf="@id/lbl_date_acquired"
+            app:layout_constraintTop_toBottomOf="@id/lbl_location"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -196,7 +195,7 @@
             android:id="@+id/lbl_condition"
             style="@style/ExposedDropdownMenu.Dense"
             android:hint="@string/lbl_condition"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/lbl_condition_cover"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
             >
@@ -217,8 +216,8 @@
             style="@style/ExposedDropdownMenu.Dense"
             android:hint="@string/lbl_dust_cover"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_condition"
+            app:layout_constraintStart_toEndOf="@id/lbl_condition"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
             >
 
             <com.google.android.material.textfield.MaterialAutoCompleteTextView

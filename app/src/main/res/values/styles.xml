@@ -234,6 +234,16 @@
         <item name="android:layout_width">280dp</item>
     </style>
 
+    <!-- a fixed width box for a date price field. -->
+    <style name="TIL.EditText.Price">
+        <item name="android:layout_width">130dp</item>
+    </style>
+
+    <!-- a fixed width box for a date "DD-MMM-YYYY". -->
+    <style name="TIL.EditText.Date">
+        <item name="android:layout_width">140dp</item>
+    </style>
+
     <!-- a fixed width box for a 4-digit year. -->
     <style name="TIL.EditText.Year">
         <item name="android:hint">@string/lbl_year</item>
