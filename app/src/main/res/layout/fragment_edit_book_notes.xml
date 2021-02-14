@@ -113,7 +113,7 @@
             app:layout_constraintTop_toBottomOf="@id/barrier_date_read_bottom"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/location"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
@@ -151,7 +151,7 @@
             app:layout_constraintStart_toStartOf="parent"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/price_paid_currency"
                 style="@style/EditText.Currency"
                 android:imeOptions="actionNext"
@@ -190,7 +190,7 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/condition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -210,7 +210,7 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_price_paid_currency"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/condition_cover"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

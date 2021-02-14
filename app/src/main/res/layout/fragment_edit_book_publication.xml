@@ -41,7 +41,7 @@
             app:layout_constraintTop_toTopOf="parent"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/format"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
@@ -61,7 +61,7 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_format"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/color"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
@@ -187,7 +187,7 @@
             app:layout_constraintStart_toStartOf="parent"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/price_listed_currency"
                 style="@style/EditText.Currency"
                 android:imeOptions="actionNext"

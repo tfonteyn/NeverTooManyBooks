@@ -64,7 +64,7 @@
                     app:layout_constraintTop_toTopOf="parent"
                     >
 
-                    <AutoCompleteTextView
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
                         android:id="@+id/edit_string"
                         style="@style/autoCompleteTextEntry"
                         android:layout_width="match_parent"

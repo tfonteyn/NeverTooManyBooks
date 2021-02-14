@@ -51,7 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.fields.formatters.FieldFormatter;
  *             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
  *             >
  *
- *             <AutoCompleteTextView
+ *             <com.google.android.material.textfield.MaterialAutoCompleteTextView
  *                 android:id="@+id/genre"
  *                 style="@style/autoCompleteTextEntry"
  *                 android:layout_width="match_parent"

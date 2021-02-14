@@ -73,7 +73,7 @@
         app:layout_constraintTop_toBottomOf="@id/lbl_title"
         >
 
-        <AutoCompleteTextView
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
             android:id="@+id/author"
             style="@style/personalNameTextEntry"
             android:layout_width="match_parent"

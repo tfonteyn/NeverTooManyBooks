@@ -158,7 +158,7 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/language"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
@@ -216,7 +216,7 @@
             app:layout_constraintTop_toBottomOf="@id/lbl_bookshelves"
             >
 
-            <AutoCompleteTextView
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
                 android:id="@+id/genre"
                 style="@style/autoCompleteTextEntry"
                 android:layout_width="match_parent"
