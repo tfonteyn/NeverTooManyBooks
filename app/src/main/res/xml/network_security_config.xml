@@ -26,6 +26,8 @@
         <!-- but these domains don't yet support https. 2020-01-04. -->
         <domain includeSubdomains="true">isfdb.org</domain>
         <domain includeSubdomains="true">kb.nl</domain>
+        <!-- RELEASE: remove this.
+            The developers home network unprotected Calibre Content Server for testing... -->
         <domain includeSubdomains="true">192.168.0.202</domain>
 
         <!-- Added 2020-07-08.
