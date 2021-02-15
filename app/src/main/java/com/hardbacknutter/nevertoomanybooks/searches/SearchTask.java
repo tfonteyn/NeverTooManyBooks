@@ -30,7 +30,6 @@ import androidx.annotation.WorkerThread;
 import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -173,12 +172,6 @@ public class SearchTask
         } else {
             mFetchThumbnail = fetchThumbnail;
         }
-    }
-
-    @Override
-    protected void onPreExecute() {
-        // sanity check
-        Objects.requireNonNull(mBy, "mBy");
     }
 
     @NonNull

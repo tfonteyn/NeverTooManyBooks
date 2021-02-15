@@ -90,7 +90,6 @@ public class CalibreLibraryMappingFragment
         readMetaDataTask.onFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         readMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
 
-        //noinspection ConstantConditions
         mLibraryArrayAdapter = new EntityArrayAdapter<>(getContext(), mVm.getLibraries());
         mVb.libraryName.setAdapter(mLibraryArrayAdapter);
         mVb.libraryName.setOnItemClickListener(

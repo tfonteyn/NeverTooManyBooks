@@ -654,7 +654,8 @@ public class ExtArrayAdapter<T>
     }
 
     /**
-     * {@inheritDoc}
+     * Gets a string representation of the adapter data that can help
+     * {@link android.service.autofill.AutofillService} autofill the view backed by the adapter.
      *
      * @return values from the string array used by
      * {@link #createFromResource(Context, int, FilterType, int)},

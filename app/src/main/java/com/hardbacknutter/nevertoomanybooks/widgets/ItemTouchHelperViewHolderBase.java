@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -101,8 +101,8 @@ public abstract class ItemTouchHelperViewHolderBase
      */
     @ColorInt
     private static int getColorInt(@NonNull final Context context,
-                                   @SuppressWarnings("SameParameterValue") @AttrRes
-                                   final int attr) {
+                                   @SuppressWarnings("SameParameterValue") @AttrRes final int attr)
+            throws Resources.NotFoundException {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);

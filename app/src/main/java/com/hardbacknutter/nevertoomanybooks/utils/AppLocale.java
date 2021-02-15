@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -225,6 +225,7 @@ public final class AppLocale {
      */
     @NonNull
     public String getPersistedLocaleSpec(@NonNull final SharedPreferences global) {
+        //noinspection ConstantConditions
         return global.getString(Prefs.pk_ui_locale, SYSTEM_LANGUAGE);
     }
 

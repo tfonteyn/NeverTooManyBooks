@@ -326,6 +326,7 @@ public final class StyleDAO {
                                                         BuiltinStyles.DEFAULT_STYLE_UUID);
 
         // Try to get user or builtin style
+        //noinspection ConstantConditions
         final ListStyle style = getStyle(context, db, uuid);
         if (style != null) {
             return style;

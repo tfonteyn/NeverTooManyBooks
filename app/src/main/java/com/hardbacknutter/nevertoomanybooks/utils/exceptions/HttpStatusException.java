@@ -49,7 +49,6 @@ public class HttpStatusException
     private final URL mUrl;
 
     /** The site that caused the issue. */
-    @SuppressWarnings("FieldNotUsedInToString")
     @StringRes
     private final int mSiteResId;
 

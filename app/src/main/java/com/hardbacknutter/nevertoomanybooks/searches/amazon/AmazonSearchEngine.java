@@ -189,6 +189,7 @@ public class AmazonSearchEngine
 
     @NonNull
     public static String getSiteUrl(@NonNull final Context context) {
+        //noinspection ConstantConditions
         return PreferenceManager
                 .getDefaultSharedPreferences(context)
                 .getString(PK_HOST_URL, SearchEngineRegistry

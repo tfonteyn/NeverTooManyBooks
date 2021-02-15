@@ -146,7 +146,6 @@ public class EditBookshelvesFragment
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_add);
         fab.setVisibility(View.VISIBLE);
-        //noinspection ConstantConditions
         fab.setOnClickListener(v -> editItem(mVm.createNewBookshelf(getContext())));
 
         //noinspection ConstantConditions

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,6 +121,7 @@ public final class Languages {
         if (source.isEmpty()) {
             return "";
         }
+        //noinspection ConstantConditions
         return getCacheFile(context).getString(source, source);
     }
 

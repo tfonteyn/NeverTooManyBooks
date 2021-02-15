@@ -71,7 +71,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 public class StripInfoSearchEngine
         extends JsoupSearchEngineBase
         implements SearchEngine.ByExternalId,
-                   SearchEngine.ByIsbn,
                    SearchEngine.ByBarcode {
 
     /** Log tag. */
@@ -542,59 +541,6 @@ public class StripInfoSearchEngine
             }
         }
 
-        return imageList;
-    }
-
-    @NonNull
-    private ArrayList<String> parseCovers_old(@NonNull final Document document,
-                                              @Nullable final String isbn,
-                                              @IntRange(from = 0, to = 1) final int cIdx) {
-        final Element coverElement;
-        switch (cIdx) {
-            case 0:
-                coverElement = document.selectFirst("a.stripThumb");
-                break;
-            case 1:
-                coverElement = document.selectFirst("a.belowImage");
-                break;
-            default:
-                throw new IllegalArgumentException(String.valueOf(cIdx));
-        }
-
-        final ArrayList<String> imageList = new ArrayList<>();
-
-        if (coverElement != null) {
-            final String url = coverElement.attr("data-ajax-url");
-            // if the site has no image: https://www.stripinfo.be/image.php?i=0
-            // if the cover is an 18+ image: https://www.stripinfo.be/images/mature.png
-            if (url != null && !url.isEmpty()
-                && !url.endsWith("i=0")
-                && !url.endsWith("mature.png")) {
-
-                final String fileSpec = saveImage(url, isbn, cIdx, null);
-                if (fileSpec != null) {
-                    // Some back covers will return the "no cover available" image regardless.
-                    // Sadly, we need to check explicitly after the download.
-                    // But we need to check on "mature content" as well anyhow.
-                    final File file = new File(fileSpec);
-                    final long fileLen = file.length();
-                    // check the length as a quick check first
-                    if (fileLen == NO_COVER_FILE_LEN
-                        || fileLen == MATURE_FILE_LEN) {
-                        // do the thorough check with md5 calculation as a second defence
-                        final byte[] digest = md5(file);
-                        if (Arrays.equals(digest, NO_COVER_MD5)
-                            || Arrays.equals(digest, MATURE_COVER_MD5)) {
-                            //noinspection ResultOfMethodCallIgnored
-                            file.delete();
-                            return imageList;
-                        }
-                    }
-
-                    imageList.add(fileSpec);
-                }
-            }
-        }
         return imageList;
     }
 
