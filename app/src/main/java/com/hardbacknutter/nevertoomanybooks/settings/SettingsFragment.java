@@ -188,6 +188,7 @@ public class SettingsFragment
             case Prefs.pk_ui_theme:
             case Prefs.pk_sort_title_reordered:
             case Prefs.pk_show_title_reordered:
+            case Prefs.pk_booklist_fastscroller_overlay:
                 mVm.setRequiresActivityRecreation();
                 break;
 
