@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,9 +19,11 @@
  */
 package com.hardbacknutter.nevertoomanybooks.utils;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.WindowManager;
@@ -50,6 +52,7 @@ public final class AttrUtils {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
+
         return tv.resourceId;
     }
 
@@ -60,16 +63,20 @@ public final class AttrUtils {
      * @param attr    attribute id to resolve
      *
      * @return A single color value in the form 0xAARRGGBB.
+     *
+     * @throws Resources.NotFoundException if the requested Color does not exist.
      */
     @ColorInt
     public static int getColorInt(@NonNull final Context context,
-                                  @AttrRes final int attr) {
+                                  @AttrRes final int attr)
+            throws Resources.NotFoundException {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
+
         return context.getResources().getColor(tv.resourceId, theme);
 
-        // Why not use MaterialColors.getColor(context, attr, "") :
+        // Why not use MaterialColors.getColor(context, attr) :
         // If the resource is a plain color, then this is the same as the code used above.
         // However, if the resource is a reference (using a string) then
         // - MaterialColors.getColor  DOES NOT RESOLVE THIS
@@ -77,8 +84,29 @@ public final class AttrUtils {
         //
         // example, for "R.attr.colorControlNormal" we get:
         //   TypedValue{t=0x3/d=0x9f3 "res/color/text_color_secondary.xml" a=1 r=0x1060233}
-        // - MaterialColors.getColor returns the data part: 0x9f3
+        // - MaterialColors.getColor returns the data part: 0x9f3  (tv.data)
         // - getResources().getColor resolves it and return the correct color int.
+    }
+
+    /**
+     * Get a Drawable for the given attribute.
+     *
+     * @param context Current context
+     * @param attr    attribute id to resolve
+     *
+     * @return A Drawable
+     *
+     * @throws Resources.NotFoundException if the requested Drawable does not exist.
+     */
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public static Drawable getDrawable(@NonNull final Context context,
+                                       @AttrRes final int attr)
+            throws Resources.NotFoundException {
+        final Resources.Theme theme = context.getTheme();
+        final TypedValue tv = new TypedValue();
+        theme.resolveAttribute(attr, tv, true);
+
+        return context.getResources().getDrawable(tv.resourceId, theme);
     }
 
     /**
@@ -90,10 +118,13 @@ public final class AttrUtils {
      *                Must be a type that has a {@code android.R.attr.textSize} value.
      *
      * @return size in integer pixels, or {@code -1} if not defined.
+     *
+     * @throws Resources.NotFoundException if the requested text size does not exist.
      */
     @SuppressWarnings("unused")
     public static int getTextSize(@NonNull final Context context,
-                                  @AttrRes final int attr) {
+                                  @AttrRes final int attr)
+            throws Resources.NotFoundException {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);

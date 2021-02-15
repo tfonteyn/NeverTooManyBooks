@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -61,7 +61,6 @@ public final class FastScroller {
      *
      * @param recyclerView the View to hook up
      */
-    @SuppressLint("UseCompatLoadingForDrawables")
     public static void attach(@NonNull final RecyclerView recyclerView) {
 
         if (!(recyclerView.getLayoutManager() instanceof LinearLayoutManager)) {
@@ -71,21 +70,18 @@ public final class FastScroller {
         // it can still be null.
 
         final Context context = recyclerView.getContext();
-        final StateListDrawable verticalThumbDrawable = (StateListDrawable)
-                context.getDrawable(R.drawable.fastscroll_thumb);
-        final Drawable verticalTrackDrawable =
-                context.getDrawable(R.drawable.fastscroll_track);
-        final StateListDrawable horizontalThumbDrawable = (StateListDrawable)
-                context.getDrawable(R.drawable.fastscroll_thumb);
-        final Drawable horizontalTrackDrawable =
-                context.getDrawable(R.drawable.fastscroll_track);
+
+        final Drawable track = getDrawable(context, android.R.attr.fastScrollTrackDrawable);
+        final Drawable thumb = getDrawable(context, android.R.attr.fastScrollThumbDrawable);
+
+        final StateListDrawable verticalThumbDrawable = (StateListDrawable) thumb;
+        final StateListDrawable horizontalThumbDrawable = (StateListDrawable) thumb;
 
         final Resources resources = context.getResources();
-        //noinspection ConstantConditions
         final FastScrollerImpl fastScroller = new FastScrollerImpl(
                 recyclerView,
-                verticalThumbDrawable, verticalTrackDrawable,
-                horizontalThumbDrawable, horizontalTrackDrawable,
+                verticalThumbDrawable, track,
+                horizontalThumbDrawable, track,
                 resources.getDimensionPixelSize(R.dimen.cfs_default_thickness),
                 resources.getDimensionPixelSize(R.dimen.cfs_minimum_range),
                 resources.getDimensionPixelOffset(R.dimen.cfs_margin));
@@ -129,11 +125,34 @@ public final class FastScroller {
      */
     @ColorInt
     static int getColorInt(@NonNull final Context context,
-                           @SuppressWarnings("SameParameterValue") @AttrRes final int attr) {
+                           @SuppressWarnings("SameParameterValue") @AttrRes final int attr)
+            throws Resources.NotFoundException {
         final Resources.Theme theme = context.getTheme();
         final TypedValue tv = new TypedValue();
         theme.resolveAttribute(attr, tv, true);
+
         return context.getResources().getColor(tv.resourceId, theme);
+    }
+
+    /**
+     * Get a Drawable for the given attribute.
+     *
+     * @param context Current context
+     * @param attr    attribute id to resolve
+     *
+     * @return A Drawable
+     *
+     * @throws Resources.NotFoundException if the given ID does not exist.
+     */
+    @SuppressLint("UseCompatLoadingForDrawables")
+    private static Drawable getDrawable(@NonNull final Context context,
+                                        @AttrRes final int attr)
+            throws Resources.NotFoundException {
+        final Resources.Theme theme = context.getTheme();
+        final TypedValue tv = new TypedValue();
+        theme.resolveAttribute(attr, tv, true);
+
+        return context.getResources().getDrawable(tv.resourceId, theme);
     }
 
     /**
