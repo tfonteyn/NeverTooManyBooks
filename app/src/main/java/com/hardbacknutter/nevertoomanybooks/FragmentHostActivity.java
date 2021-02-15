@@ -33,7 +33,6 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportFragment;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAdminFragment;
 import com.hardbacknutter.nevertoomanybooks.settings.styles.PreferredStylesFragment;
-import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 
 /**
  * Hosting activity for generic fragments <strong>without</strong>
@@ -87,13 +86,5 @@ public class FragmentHostActivity
         } else {
             throw new IllegalArgumentException(tag);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        // This is a good time to cleanup the cache.
-        // Out of precaution we only trash jpg files
-        AppDir.Cache.purge(App.getAppContext(), true, file -> file.getName().endsWith(".jpg"));
-        super.onDestroy();
     }
 }
