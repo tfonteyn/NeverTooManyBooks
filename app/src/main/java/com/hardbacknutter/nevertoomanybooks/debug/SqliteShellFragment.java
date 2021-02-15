@@ -83,7 +83,7 @@ public class SqliteShellFragment
         }
 
         //noinspection ConstantConditions
-        mSyncDb = DBHelper.getInstance(getContext()).getSyncDb();
+        mSyncDb = DBHelper.getSyncDb(getContext());
     }
 
     @Override

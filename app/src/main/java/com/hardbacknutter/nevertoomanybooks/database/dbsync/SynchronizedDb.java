@@ -28,10 +28,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.File;
+
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.SearchSuggestionProvider;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 
 /**
@@ -51,7 +53,8 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
  * <p>
  * But some device manufacturers include different versions of SQLite on their devices.
  */
-public class SynchronizedDb {
+public class SynchronizedDb
+        implements AutoCloseable {
 
     /** Log tag. */
     private static final String TAG = "SynchronizedDb";
@@ -84,28 +87,48 @@ public class SynchronizedDb {
         mSqlDb = open(sqLiteOpenHelper);
     }
 
-//    /**
-//     * Constructor.
-//     *
-//     * @param synchronizer      Synchronizer to use
-//     * @param sqLiteOpenHelper  SQLiteOpenHelper to open the underlying database
-//     * @param preparedStmtCache the number or prepared statements to cache.
-//     *                          The javadoc for setMaxSqlCacheSize says the default is 10,
-//     *                          but if you follow the source code, you end up in
-//     *                          android.database.sqlite.SQLiteDatabaseConfiguration
-//     *                          where the default is in fact 25!
-//     */
-//    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
-//                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
-//                          final int preparedStmtCache) {
-//        this(synchronizer, sqLiteOpenHelper);
-//
-//        // only set when bigger than default
-//        if ((preparedStmtCache > 25)
-//            && (preparedStmtCache < SQLiteDatabase.MAX_SQL_CACHE_SIZE)) {
-//            mSqlDb.setMaxSqlCacheSize(preparedStmtCache);
-//        }
-//    }
+    //    /**
+    //     * Constructor.
+    //     *
+    //     * @param synchronizer      Synchronizer to use
+    //     * @param sqLiteOpenHelper  SQLiteOpenHelper to open the underlying database
+    //     * @param preparedStmtCache the number or prepared statements to cache.
+    //     *                          The javadoc for setMaxSqlCacheSize says the default is 10,
+    //     *                          but if you follow the source code, you end up in
+    //     *                          android.database.sqlite.SQLiteDatabaseConfiguration
+    //     *                          where the default is in fact 25!
+    //     */
+    //    public SynchronizedDb(@NonNull final Synchronizer synchronizer,
+    //                          @NonNull final SQLiteOpenHelper sqLiteOpenHelper,
+    //                          final int preparedStmtCache) {
+    //        this(synchronizer, sqLiteOpenHelper);
+    //
+    //        // only set when bigger than default
+    //        if ((preparedStmtCache > 25)
+    //            && (preparedStmtCache < SQLiteDatabase.MAX_SQL_CACHE_SIZE)) {
+    //            mSqlDb.setMaxSqlCacheSize(preparedStmtCache);
+    //        }
+    //    }
+
+    /**
+     * DEBUG only.
+     */
+    @SuppressWarnings("unused")
+    private static void debugDumpInfo(@NonNull final SQLiteDatabase db) {
+        final String[] sql = {"SELECT sqlite_version() AS sqlite_version",
+                              "PRAGMA encoding",
+                              "PRAGMA collation_list",
+                              "PRAGMA foreign_keys",
+                              "PRAGMA recursive_triggers",
+                              };
+        for (final String s : sql) {
+            try (Cursor cursor = db.rawQuery(s, null)) {
+                if (cursor.moveToNext()) {
+                    Log.d(TAG, "debugDumpInfo|" + s + " = " + cursor.getString(0));
+                }
+            }
+        }
+    }
 
     /**
      * Open the actual database.
@@ -124,15 +147,71 @@ public class SynchronizedDb {
         }
     }
 
+    @Override
+    public void close() {
+        mSqlDb.close();
+    }
+
+    /**
+     * Locking-aware recreating {@link TableDefinition.TableType#Temporary} tables.
+     * <p>
+     * If the table has no references to it, this method can also
+     * be used on {@link TableDefinition.TableType#Standard}.
+     * <p>
+     * Drop this table (if it exists) and (re)create it including its indexes.
+     *
+     * @param table                 to recreate
+     * @param withDomainConstraints Indicates if fields should have constraints applied
+     */
+    public void recreate(@NonNull final TableDefinition table,
+                         final boolean withDomainConstraints) {
+
+        // We're being paranoid here... we should always be called in a transaction,
+        // which means we should not bother with LOCK_EXCLUSIVE.
+        // But having the logic in place because: 1) future proof + 2) developer boo-boo,
+
+        if (BuildConfig.DEBUG /* always */) {
+            if (!mSqlDb.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
+        }
+
+        Synchronizer.SyncLock txLock = null;
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+            }
+        } else {
+            txLock = mSynchronizer.getExclusiveLock();
+        }
+
+        try {
+            // Drop the table in case there is an orphaned instance with the same name.
+            if (table.exists(mSqlDb)) {
+                mSqlDb.execSQL("DROP TABLE IF EXISTS " + table.getName());
+            }
+            table.create(mSqlDb, withDomainConstraints);
+            table.createIndices(mSqlDb);
+        } finally {
+            if (txLock != null) {
+                txLock.unlock();
+            }
+        }
+    }
+
     /**
      * Locking-aware wrapper for underlying database method.
+     *
+     * @param table  the table to insert the row into
+     * @param values this map contains the initial column values for the
+     *               row. The keys should be the column names and the values the
+     *               column values
      *
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long insert(@NonNull final String table,
-                       @SuppressWarnings("SameParameterValue")
-                       @Nullable final String nullColumnHack,
-                       @NonNull final ContentValues cv) {
+                       @NonNull final ContentValues values) {
+
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
@@ -145,13 +224,14 @@ public class SynchronizedDb {
         // reminder: insert does not throw exceptions for the actual insert.
         // but it can throw other exceptions.
         try {
-            final long id = mSqlDb.insert(table, nullColumnHack, cv);
+            final long id = mSqlDb.insert(table, null, values);
             if (id == -1) {
                 Logger.error(TAG, new Throwable(), "Insert failed"
                                                    + "|table=" + table
-                                                   + "|cv=" + cv);
+                                                   + "|cv=" + values);
             }
             return id;
+
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -168,9 +248,10 @@ public class SynchronizedDb {
      * @return the number of rows affected
      */
     public int update(@NonNull final String table,
-                      @NonNull final ContentValues cv,
+                      @NonNull final ContentValues values,
                       @NonNull final String whereClause,
                       @Nullable final String[] whereArgs) {
+
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
@@ -183,7 +264,7 @@ public class SynchronizedDb {
         // reminder: update does not throw exceptions for the actual update.
         // but it can throw other exceptions.
         try {
-            return mSqlDb.update(table, cv, whereClause, whereArgs);
+            return mSqlDb.update(table, values, whereClause, whereArgs);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -205,6 +286,7 @@ public class SynchronizedDb {
     public int delete(@NonNull final String table,
                       @Nullable final String whereClause,
                       @Nullable final String[] whereArgs) {
+
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
@@ -227,11 +309,56 @@ public class SynchronizedDb {
 
     /**
      * Locking-aware wrapper for underlying database method.
-     * <p>
-     * lint says this cursor is not always closed.
-     * 2019-01-14: the only place it's not closed is in
-     * {@link SearchSuggestionProvider}
-     * where it seems not possible to close it ourselves.
+     */
+    @NonNull
+    public SynchronizedStatement compileStatement(@NonNull final String sql) {
+        Synchronizer.SyncLock txLock = null;
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+            }
+        } else {
+            txLock = mSynchronizer.getExclusiveLock();
+        }
+
+        try {
+            return new SynchronizedStatement(mSynchronizer, mSqlDb, sql);
+        } finally {
+            if (txLock != null) {
+                txLock.unlock();
+            }
+        }
+    }
+
+    /**
+     * Locking-aware wrapper for underlying database method.
+     */
+    public void execSQL(@NonNull final String sql) {
+        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
+            Log.d(TAG, "ENTER|execSQL|sql=" + sql);
+        }
+
+        Synchronizer.SyncLock txLock = null;
+        if (mTxLock != null) {
+            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
+                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+            }
+        } else {
+            txLock = mSynchronizer.getExclusiveLock();
+        }
+
+        try {
+            mSqlDb.execSQL(sql);
+        } finally {
+            if (txLock != null) {
+                txLock.unlock();
+            }
+        }
+    }
+
+
+    /**
+     * Locking-aware wrapper for underlying database method.
      *
      * @return the cursor
      */
@@ -244,8 +371,12 @@ public class SynchronizedDb {
         }
 
         try {
-            return (SynchronizedCursor) mSqlDb.rawQueryWithFactory(mCursorFactory, sql,
-                                                                   selectionArgs, null);
+            /* lint says this cursor is not always closed.
+             * 2019-01-14: the only place it's not closed is in {@link SearchSuggestionProvider}
+             * where it seems not possible to close it ourselves.
+             */
+            return (SynchronizedCursor)
+                    mSqlDb.rawQueryWithFactory(mCursorFactory, sql, selectionArgs, null);
         } finally {
             if (txLock != null) {
                 txLock.unlock();
@@ -287,47 +418,16 @@ public class SynchronizedDb {
         }
     }
 
-    /**
-     * Locking-aware wrapper for underlying database method.
-     */
-    @NonNull
-    public SynchronizedStatement compileStatement(@NonNull final String sql) {
-        Synchronizer.SyncLock txLock = null;
-        if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
-            }
-        } else {
-            txLock = mSynchronizer.getExclusiveLock();
-        }
 
+    public TableInfo getTableInfo(@NonNull final TableDefinition tableDefinition) {
+        Synchronizer.SyncLock txLock = null;
+        if (mTxLock == null) {
+            txLock = mSynchronizer.getSharedLock();
+        }
         try {
-            return new SynchronizedStatement(this, sql);
+            return tableDefinition.getTableInfo(mSqlDb);
         } finally {
             if (txLock != null) {
-                txLock.unlock();
-            }
-        }
-    }
-
-    /**
-     * Locking-aware wrapper for underlying database method.
-     */
-    public void execSQL(@NonNull final String sql) {
-        if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-            Log.d(TAG, "ENTER|execSQL|sql=" + sql);
-        }
-
-        if (mTxLock != null) {
-            if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
-            }
-            mSqlDb.execSQL(sql);
-        } else {
-            final Synchronizer.SyncLock txLock = mSynchronizer.getExclusiveLock();
-            try {
-                mSqlDb.execSQL(sql);
-            } finally {
                 txLock.unlock();
             }
         }
@@ -412,7 +512,24 @@ public class SynchronizedDb {
     }
 
     /**
+     * Wrapper for underlying database method.
+     */
+    public void setTransactionSuccessful() {
+        // We could pass in the lock and do these checks...
+        //        if (mTxLock == null) {
+        //            throw new TransactionException(TransactionException.NOT_STARTED);
+        //        }
+        //        if (!mTxLock.equals(txLock)) {
+        //            throw new TransactionException(TransactionException.WRONG_LOCK);
+        //        }
+
+        mSqlDb.setTransactionSuccessful();
+    }
+
+    /**
      * Locking-aware wrapper for underlying database method.
+     *
+     * <strong>MUST</strong> be called from a 'finally' block.
      *
      * @param txLock Lock returned from BeginTransaction().
      */
@@ -435,13 +552,6 @@ public class SynchronizedDb {
     }
 
     /**
-     * Wrapper for underlying database method.
-     */
-    public void setTransactionSuccessful() {
-        mSqlDb.setTransactionSuccessful();
-    }
-
-    /**
      * DO NOT CALL THIS UNLESS YOU REALLY NEED TO. DATABASE ACCESS SHOULD GO THROUGH THIS CLASS.
      *
      * @return the underlying SQLiteDatabase object.
@@ -451,32 +561,57 @@ public class SynchronizedDb {
         return mSqlDb;
     }
 
+    @NonNull
+    public File getDatabaseFile() {
+        return new File(mSqlDb.getPath());
+    }
+
     /**
+     * For use by the cursor factory only.
+     *
      * @return the underlying Synchronizer object.
      */
     @NonNull
-    Synchronizer getSynchronizer() {
+    private Synchronizer getSynchronizer() {
         return mSynchronizer;
     }
 
     /**
-     * DEBUG only.
+     * DEBUG. Dumps the content of this table to the debug output.
+     *
+     * @param tableDefinition to dump
+     * @param limit           LIMIT limit
+     * @param orderBy         ORDER BY orderBy
+     * @param tag             log tag to use
+     * @param header          a header which will be logged first
      */
-    @SuppressWarnings("unused")
-    private void debugDumpInfo(@NonNull final SQLiteDatabase db) {
-        final String[] sql = {"SELECT sqlite_version() AS sqlite_version",
-                              "PRAGMA encoding",
-                              "PRAGMA collation_list",
-                              "PRAGMA foreign_keys",
-                              "PRAGMA recursive_triggers",
-                              };
-        for (final String s : sql) {
-            try (Cursor cursor = db.rawQuery(s, null)) {
-                if (cursor.moveToNext()) {
-                    Log.d(TAG, "debugDumpInfo|" + s + " = " + cursor.getString(0));
+    public void dumpTable(@NonNull final TableDefinition tableDefinition,
+                          final int limit,
+                          @NonNull final String orderBy,
+                          @NonNull final String tag,
+                          @NonNull final String header) {
+        if (BuildConfig.DEBUG /* always */) {
+            Log.d(tag, "Table: " + tableDefinition.getName() + ": " + header);
+
+            final String sql =
+                    "SELECT * FROM " + tableDefinition.getName()
+                    + " ORDER BY " + orderBy + " LIMIT " + limit;
+            try (Cursor cursor = rawQuery(sql, null)) {
+                final StringBuilder columnHeading = new StringBuilder("\n");
+                final String[] columnNames = cursor.getColumnNames();
+                for (final String column : columnNames) {
+                    columnHeading.append(String.format("%-12s  ", column));
+                }
+                Log.d(tag, columnHeading.toString());
+
+                while (cursor.moveToNext()) {
+                    final StringBuilder line = new StringBuilder();
+                    for (int c = 0; c < cursor.getColumnCount(); c++) {
+                        line.append(String.format("%-12s  ", cursor.getString(c)));
+                    }
+                    Log.d(tag, line.toString());
                 }
             }
         }
     }
-
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 /**
  * Standard Android class to handle database open/creation/upgrade.
  */
-class QueueDBHelper
+public class QueueDBHelper
         extends SQLiteOpenHelper {
 
     public static final String KEY_PK_ID = "_id";
@@ -61,7 +61,7 @@ class QueueDBHelper
     static final String TBL_EVENT = "event";
 
     /** File name for the database. */
-    private static final String DATABASE_NAME = "taskqueue.db";
+    public static final String DATABASE_NAME = "taskqueue.db";
     /** Current version of the database. */
     private static final int DATABASE_VERSION = 1;
 
@@ -121,13 +121,6 @@ class QueueDBHelper
     }
 
     @Override
-    public void onConfigure(@NonNull final SQLiteDatabase db) {
-        // Turn ON foreign key support so that CASCADE etc. works.
-        // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
-        db.setForeignKeyConstraintsEnabled(true);
-    }
-
-    @Override
     public void onCreate(@NonNull final SQLiteDatabase db) {
 
         for (final String table : TABLES) {
@@ -150,5 +143,12 @@ class QueueDBHelper
 //            currVersion++;
 //
 //        }
+    }
+
+    @Override
+    public void onOpen(@NonNull final SQLiteDatabase db) {
+        // Turn ON foreign key support so that CASCADE etc. works.
+        // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
+        db.setForeignKeyConstraintsEnabled(true);
     }
 }

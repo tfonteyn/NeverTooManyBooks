@@ -26,7 +26,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
 import com.hardbacknutter.nevertoomanybooks.tasks.TaskListener;
@@ -60,8 +60,8 @@ public class RebuildIndexesTask
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_rebuilding_search_index)));
-        try (DAO db = new DAO(context, TAG)) {
-            db.getDBHelper().recreateIndices();
+        try {
+            DBHelper.recreateIndices(context);
             return true;
 
         } catch (@NonNull final RuntimeException e) {

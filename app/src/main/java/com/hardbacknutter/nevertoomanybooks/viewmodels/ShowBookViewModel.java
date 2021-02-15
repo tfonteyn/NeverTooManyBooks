@@ -339,7 +339,7 @@ public class ShowBookViewModel
         private ShowBookNavigator(@NonNull final Context context,
                                   @NonNull final String listTableName) {
 
-            mSyncDb = DBHelper.getInstance(context).getSyncDb();
+            mSyncDb = DBHelper.getSyncDb(context);
             mListTableName = listTableName;
 
             try (SynchronizedStatement stmt = mSyncDb.compileStatement(

@@ -127,16 +127,12 @@ public final class CoversDAO {
                            true, DOM_CACHE_ID, DOM_UTC_DATETIME);
     }
 
-    @SuppressWarnings("FieldCanBeLocal")
-    @NonNull
-    private final CoversDbHelper mDbHelper;
     @NonNull
     private final SynchronizedDb mSyncedDb;
 
     /** singleton. */
     private CoversDAO(@NonNull final Context context) {
-        mDbHelper = CoversDbHelper.getInstance(context);
-        mSyncedDb = mDbHelper.getSyncDb();
+        mSyncedDb = CoversDbHelper.getSyncDb(context);
     }
 
     /**
@@ -321,7 +317,7 @@ public final class CoversDAO {
             }
 
             if (exists) {
-                mSyncedDb.insert(TBL_IMAGE.getName(), null, cv);
+                mSyncedDb.insert(TBL_IMAGE.getName(), cv);
             } else {
                 cv.put(CKEY_UTC_DATETIME, LocalDateTime
                         .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
@@ -424,7 +420,7 @@ public final class CoversDAO {
         private static final int DATABASE_VERSION = 2;
 
         /** DB name. */
-        private static final String DATABASE_NAME = "covers.db";
+        public static final String DATABASE_NAME = "covers.db";
 
         /** Readers/Writer lock for <strong>this</strong> database. */
         private static final Synchronizer sSynchronizer = new Synchronizer();
@@ -437,8 +433,9 @@ public final class CoversDAO {
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static CoversDbHelper sInstance;
 
-        @NonNull
-        private final SynchronizedDb mSyncedDb;
+        /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getSyncDb()}. */
+        @Nullable
+        private SynchronizedDb mSynchronizedDb;
 
         /**
          * Constructor.
@@ -447,17 +444,29 @@ public final class CoversDAO {
          */
         private CoversDbHelper(@NonNull final Context context) {
             super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
-            mSyncedDb = new SynchronizedDb(sSynchronizer, this);
         }
 
         /**
-         * Singleton Constructor.
+         * Main entry point for clients to get the database.
+         *
+         * @param context Current context
+         *
+         * @return the database instance
+         */
+        public static SynchronizedDb getSyncDb(@NonNull final Context context) {
+            return CoversDbHelper.getInstance(context).getSyncDb();
+        }
+
+        /**
+         * Get/create the singleton instance. This should be kept private and wrapped as needed,
+         * as it allows access to underlying 'things' which clients of DBHelper should not have.
          *
          * @param context Current context
          *
          * @return the instance
          */
-        public static CoversDbHelper getInstance(@NonNull final Context context) {
+        @NonNull
+        private static CoversDbHelper getInstance(@NonNull final Context context) {
             synchronized (CoversDbHelper.class) {
                 if (sInstance == null) {
                     sInstance = new CoversDbHelper(context);
@@ -467,33 +476,26 @@ public final class CoversDAO {
         }
 
         /**
-         * Get the Underlying database.
+         * Get/create the Synchronized database.
          *
          * @return database connection
          */
         @NonNull
-        public SynchronizedDb getSyncDb() {
-            return mSyncedDb;
-        }
-
-        /**
-         * Optimize the database.
-         *
-         * @param context Current context
-         */
-        public void optimize(@NonNull final Context context) {
-            try {
-                mSyncedDb.optimize();
-            } catch (@NonNull final RuntimeException e) {
-                Logger.error(context, TAG, e);
+        private SynchronizedDb getSyncDb() {
+            synchronized (this) {
+                if (mSynchronizedDb == null) {
+                    mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);
+                }
+                return mSynchronizedDb;
             }
         }
 
         @Override
-        public void onConfigure(@NonNull final SQLiteDatabase db) {
-            // Turn ON foreign key support so that CASCADE etc. works.
-            // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
-            db.setForeignKeyConstraintsEnabled(true);
+        public void close() {
+            if (mSynchronizedDb != null) {
+                mSynchronizedDb.close();
+            }
+            super.close();
         }
 
         @Override
@@ -508,6 +510,13 @@ public final class CoversDAO {
             // This is a cache, so no data needs preserving. Drop & recreate.
             db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE.getName());
             onCreate(db);
+        }
+
+        @Override
+        public void onOpen(@NonNull final SQLiteDatabase db) {
+            // Turn ON foreign key support so that CASCADE etc. works.
+            // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
+            db.setForeignKeyConstraintsEnabled(true);
         }
     }
 }

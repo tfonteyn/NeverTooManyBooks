@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 
 /**
  * Class to store an index using a table name and a list of domain definitions.
@@ -108,7 +107,7 @@ class IndexDefinition {
      *
      * @param db Database Access
      */
-    public void create(@NonNull final SynchronizedDb db) {
+    public void create(@NonNull final SQLiteDatabase db) {
         db.execSQL(def());
     }
 

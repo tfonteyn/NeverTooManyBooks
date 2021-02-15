@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database.dbsync;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.util.Log;
@@ -49,7 +50,7 @@ public class SynchronizedStatement
     /** Synchronizer from database. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
-    private final Synchronizer mSync;
+    private final Synchronizer mSynchronizer;
     /** Underlying statement. This class is final, so we cannot extend it. */
     private final SQLiteStatement mStatement;
     /** Indicates this is a 'read-only' statement. */
@@ -63,13 +64,15 @@ public class SynchronizedStatement
      * Always use {@link SynchronizedDb#compileStatement(String)} to get a new instance.
      * (why? -> compileStatement uses locks)
      *
-     * @param db  Database Access
-     * @param sql the sql for this statement
+     * @param synchronizer to use
+     * @param db           Database Access
+     * @param sql          the sql for this statement
      */
-    public SynchronizedStatement(@NonNull final SynchronizedDb db,
+    public SynchronizedStatement(@NonNull final Synchronizer synchronizer,
+                                 @NonNull final SQLiteDatabase db,
                                  @NonNull final String sql) {
-        mSync = db.getSynchronizer();
-        mStatement = db.getSQLiteDatabase().compileStatement(sql);
+        mSynchronizer = synchronizer;
+        mStatement = db.compileStatement(sql);
 
         // mIsReadOnly is not a debug flag, but used to get a shared versus exclusive lock.
         // The toUpper was VERY slow (profiler test)... there are only "select" and "savepoint"
@@ -204,7 +207,7 @@ public class SynchronizedStatement
      */
     public long simpleQueryForLong()
             throws SQLiteDoneException {
-        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSynchronizer.getSharedLock();
         try {
             final long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
@@ -226,7 +229,7 @@ public class SynchronizedStatement
      * @return The result of the query, or 0 when no rows found
      */
     public long simpleQueryForLongOrZero() {
-        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSynchronizer.getSharedLock();
         try {
             final long result = mStatement.simpleQueryForLong();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
@@ -253,7 +256,7 @@ public class SynchronizedStatement
     @NonNull
     public String simpleQueryForString()
             throws SQLiteDoneException {
-        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSynchronizer.getSharedLock();
         try {
             final String result = mStatement.simpleQueryForString();
 
@@ -278,7 +281,7 @@ public class SynchronizedStatement
      */
     @Nullable
     public String simpleQueryForStringOrNull() {
-        final Synchronizer.SyncLock sharedLock = mSync.getSharedLock();
+        final Synchronizer.SyncLock sharedLock = mSynchronizer.getSharedLock();
         try {
             return mStatement.simpleQueryForString();
 
@@ -301,9 +304,9 @@ public class SynchronizedStatement
     public void execute() {
         final Synchronizer.SyncLock txLock;
         if (mIsReadOnly) {
-            txLock = mSync.getSharedLock();
+            txLock = mSynchronizer.getSharedLock();
         } else {
-            txLock = mSync.getExclusiveLock();
+            txLock = mSynchronizer.getExclusiveLock();
         }
         try {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
@@ -325,7 +328,7 @@ public class SynchronizedStatement
      */
     @SuppressWarnings("UnusedReturnValue")
     public int executeUpdateDelete() {
-        final Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
+        final Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
         try {
             final int rowsAffected = mStatement.executeUpdateDelete();
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
@@ -346,7 +349,7 @@ public class SynchronizedStatement
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long executeInsert() {
-        final Synchronizer.SyncLock exclusiveLock = mSync.getExclusiveLock();
+        final Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
         try {
             final long id = mStatement.executeInsert();
 

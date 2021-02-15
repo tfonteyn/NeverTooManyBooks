@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
@@ -83,14 +82,12 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LIST_NODE_STATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_VIRTUAL_LIBRARIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinitions.KEY_FTS_BOOK_ID;
@@ -111,11 +108,10 @@ public final class DBHelper
      * Stored in {@link AppDir#Upgrades}.
      */
     public static final String DB_UPGRADE_FILE_PREFIX = "DbUpgrade";
-
+    /** NEVER change this name. */
+    public static final String DATABASE_NAME = "nevertoomanybooks.db";
     /** Log tag. */
     private static final String TAG = "DBHelper";
-    /** NEVER change this name. */
-    private static final String DATABASE_NAME = "nevertoomanybooks.db";
     /** SQL to get the names of all indexes. */
     private static final String SQL_GET_INDEX_NAMES =
             "SELECT name FROM sqlite_master WHERE type = 'index' AND sql IS NOT NULL";
@@ -138,8 +134,9 @@ public final class DBHelper
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
 
-    @NonNull
-    private final SynchronizedDb mSyncedDb;
+    /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getSyncDb(Context)}. */
+    @Nullable
+    private SynchronizedDb mSynchronizedDb;
 
     /**
      * Singleton Constructor.
@@ -148,7 +145,17 @@ public final class DBHelper
      */
     private DBHelper(@NonNull final Context context) {
         super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
-        mSyncedDb = new SynchronizedDb(sSynchronizer, this);
+    }
+
+    /**
+     * Main entry point for clients to get the database.
+     *
+     * @param context Current context
+     *
+     * @return the database instance
+     */
+    public static SynchronizedDb getSyncDb(@NonNull final Context context) {
+        return DBHelper.getInstance(context).getSyncDb();
     }
 
     @NonNull
@@ -156,27 +163,6 @@ public final class DBHelper
         return EXT_CURSOR_FACTORY;
     }
 
-    @NonNull
-    public SynchronizedDb getSyncDb() {
-        return mSyncedDb;
-    }
-
-    /**
-     * Get the singleton instance.
-     *
-     * @param context Current context
-     *
-     * @return the instance
-     */
-    @NonNull
-    public static DBHelper getInstance(@NonNull final Context context) {
-        synchronized (DBHelper.class) {
-            if (sInstance == null) {
-                sInstance = new DBHelper(context);
-            }
-            return sInstance;
-        }
-    }
 
     /**
      * Get the physical path of the database file.
@@ -198,6 +184,68 @@ public final class DBHelper
     public static boolean isCollationCaseSensitive() {
         //noinspection ConstantConditions
         return sIsCollationCaseSensitive;
+    }
+
+    /**
+     * Wrapper to allow
+     * {@link com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildIndexesTask}.
+     * safe access to the database.
+     *
+     * @param context Current context
+     */
+    public static void recreateIndices(@NonNull final Context context) {
+        final DBHelper dbHelper = DBHelper.getInstance(context);
+        final SynchronizedDb syncDb = dbHelper.getSyncDb();
+
+        final Synchronizer.SyncLock txLock = syncDb.beginTransaction(true);
+        try {
+            // It IS safe here to get the underlying database, as we're in a SyncLock.
+            dbHelper.recreateIndices(syncDb.getSQLiteDatabase());
+            syncDb.setTransactionSuccessful();
+        } finally {
+            syncDb.endTransaction(txLock);
+        }
+    }
+
+    /**
+     * Get/create the singleton instance. This should be kept private and wrapped as needed,
+     * as it allows access to underlying 'things' which clients of DBHelper should not have.
+     *
+     * @param context Current context
+     *
+     * @return the instance
+     */
+    @NonNull
+    private static DBHelper getInstance(@NonNull final Context context) {
+        synchronized (DBHelper.class) {
+            if (sInstance == null) {
+                sInstance = new DBHelper(context);
+            }
+            return sInstance;
+        }
+    }
+
+    /**
+     * Get/create the Synchronized database.
+     *
+     * @return database connection
+     */
+    @NonNull
+    private SynchronizedDb getSyncDb() {
+        synchronized (this) {
+            if (mSynchronizedDb == null) {
+                mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);
+            }
+            return mSynchronizedDb;
+        }
+    }
+
+    @Override
+    public void close() {
+        if (mSynchronizedDb != null) {
+            mSynchronizedDb.close();
+        }
+        super.close();
     }
 
     /**
@@ -251,19 +299,19 @@ public final class DBHelper
     }
 
     /**
-     * This method should only be called at the *END* of onCreate/onUpdate.
+     * This method should only be called at the *END* of {@link #onUpgrade}.
      * <p>
      * (re)Creates the indexes as defined on the tables.
      */
-    public void recreateIndices() {
+    private void recreateIndices(@NonNull final SQLiteDatabase db) {
         // Delete all indices.
         // We read the index names from the database, so we can delete
         // indexes which were removed from the TableDefinition objects.
-        try (Cursor current = mSyncedDb.rawQuery(SQL_GET_INDEX_NAMES, null)) {
+        try (Cursor current = db.rawQuery(SQL_GET_INDEX_NAMES, null)) {
             while (current.moveToNext()) {
                 final String indexName = current.getString(0);
                 try {
-                    mSyncedDb.execSQL("DROP INDEX " + indexName);
+                    db.execSQL("DROP INDEX " + indexName);
                 } catch (@NonNull final SQLException e) {
                     // bad sql is a developer issue... die!
                     Logger.error(TAG, e);
@@ -276,10 +324,10 @@ public final class DBHelper
 
         // now recreate
         for (final TableDefinition table : DBDefinitions.ALL_TABLES.values()) {
-            table.createIndices(mSyncedDb);
+            table.createIndices(db);
         }
 
-        mSyncedDb.analyze();
+        db.execSQL("analyze");
     }
 
     /**
@@ -376,7 +424,7 @@ public final class DBHelper
      * ENHANCE: once we allow editing of TocEntry's through the 'author detail' screen
      * this will need to be added.
      */
-    public void createTriggers() {
+    private void createTriggers(@NonNull final SQLiteDatabase db) {
 
         String name;
         String body;
@@ -394,8 +442,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
 //        /*
 //         * Deleting an {@link Author). Currently not possible to delete an Author directly.
@@ -410,8 +458,8 @@ public final class DBHelper
 //                + " WHERE " + KEY_PK_ID + "=Old." + KEY_FK_BOOK + ";\n"
 //                + " END";
 //
-//        syncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-//        syncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+//        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+//        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Updating an {@link Author).
@@ -440,8 +488,8 @@ public final class DBHelper
                + " WHERE " + KEY_FK_AUTHOR + "=OLD." + KEY_PK_ID + ");\n"
                + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Deleting a {@link Series).
@@ -456,8 +504,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Update a {@link Series}
@@ -474,8 +522,8 @@ public final class DBHelper
                + " WHERE " + KEY_FK_SERIES + "=OLD." + KEY_PK_ID + ");\n"
                + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Deleting a Loan.
@@ -490,8 +538,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=OLD." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Updating a Loan.
@@ -506,8 +554,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
         /*
          * Inserting a Loan.
@@ -522,8 +570,8 @@ public final class DBHelper
                + " WHERE " + KEY_PK_ID + "=NEW." + KEY_FK_BOOK + ";\n"
                + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
 
         /*
@@ -538,8 +586,8 @@ public final class DBHelper
                + " WHERE " + KEY_FTS_BOOK_ID + "=OLD." + KEY_PK_ID + ";\n"
                + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
 
 
         /*
@@ -563,8 +611,8 @@ public final class DBHelper
         body += " WHERE " + KEY_PK_ID + "=NEW." + KEY_PK_ID + ";\n"
                 + " END";
 
-        mSyncedDb.execSQL("DROP TRIGGER IF EXISTS " + name);
-        mSyncedDb.execSQL("\nCREATE TRIGGER " + name + body);
+        db.execSQL("DROP TRIGGER IF EXISTS " + name);
+        db.execSQL("\nCREATE TRIGGER " + name + body);
     }
 
     @Override
@@ -579,6 +627,7 @@ public final class DBHelper
 
     /**
      * <strong>REMINDER: foreign key constraints are DISABLED here</strong>
+     * <strong>WARNING: do NOT use SynchronizedDb here!</strong>
      * <p>
      * {@inheritDoc}
      */
@@ -596,9 +645,9 @@ public final class DBHelper
         prepareBookshelfTable(context, db);
 
         //IMPORTANT: withDomainConstraints MUST BE false (FTS columns don't use a type/constraints)
-        TBL_FTS_BOOKS.create(mSyncedDb, false);
+        TBL_FTS_BOOKS.create(db, false);
 
-        createTriggers();
+        createTriggers(db);
     }
 
     /**
@@ -651,7 +700,7 @@ public final class DBHelper
             //
             // This is the v1.2.0 / 1.2.1 / 1.3.0 release.
             //
-            TBL_BOOKLIST_STYLES.alterTableAddColumns(mSyncedDb,
+            TBL_BOOKLIST_STYLES.alterTableAddColumns(db,
                                                      DOM_STYLE_MENU_POSITION,
                                                      DOM_STYLE_IS_PREFERRED);
 
@@ -667,8 +716,8 @@ public final class DBHelper
                             cv.clear();
                             cv.put("menu_order", i);
                             cv.put("preferred", 1);
-                            mSyncedDb.update("book_list_styles", cv,
-                                             "uuid=?", new String[]{uuid});
+                            db.update("book_list_styles", cv,
+                                      "uuid=?", new String[]{uuid});
                         }
                     }
                 }
@@ -676,13 +725,13 @@ public final class DBHelper
             global.edit().remove("bookList.style.preferred.order").apply();
         }
         if (oldVersion < 14) {
-            TBL_CALIBRE_BOOKS.create(mSyncedDb, true);
-            TBL_CALIBRE_LIBRARIES.create(mSyncedDb, true);
+            TBL_CALIBRE_BOOKS.create(db, true);
+            TBL_CALIBRE_LIBRARIES.create(db, true);
 
-            mSyncedDb.execSQL("INSERT INTO calibre_books (book,clb_book_uuid)"
-                              + " SELECT _id, clb_book_uuid FROM books"
-                              + " WHERE clb_book_uuid IS NOT NULL");
-            mSyncedDb.execSQL("UPDATE books SET clb_book_uuid=NULL");
+            db.execSQL("INSERT INTO calibre_books (book,clb_book_uuid)"
+                       + " SELECT _id, clb_book_uuid FROM books"
+                       + " WHERE clb_book_uuid IS NOT NULL");
+            db.execSQL("UPDATE books SET clb_book_uuid=NULL");
 
             PreferenceManager.getDefaultSharedPreferences(context)
                              .edit()
@@ -695,9 +744,9 @@ public final class DBHelper
             db.execSQL("ALTER TABLE calibre_books RENAME TO tmp_cb");
             db.execSQL("ALTER TABLE calibre_vlib RENAME TO tmp_vl");
 
-            TBL_CALIBRE_BOOKS.create(mSyncedDb, true);
-            TBL_CALIBRE_LIBRARIES.create(mSyncedDb, true);
-            TBL_CALIBRE_VIRTUAL_LIBRARIES.create(mSyncedDb, true);
+            TBL_CALIBRE_BOOKS.create(db, true);
+            TBL_CALIBRE_LIBRARIES.create(db, true);
+            TBL_CALIBRE_VIRTUAL_LIBRARIES.create(db, true);
 
             final Map<String, Long> libString2Id = new HashMap<>();
             try (Cursor cursor = db.rawQuery(
@@ -708,7 +757,7 @@ public final class DBHelper
                     final String name = cursor.getString(1);
                     final long bookshelfId = cursor.getLong(2);
 
-                    try (SynchronizedStatement stmt = mSyncedDb
+                    try (SQLiteStatement stmt = db
                             .compileStatement(DAOSql.SqlInsert.CALIBRE_LIBRARY)) {
                         stmt.bindString(1, "");
                         stmt.bindString(2, libraryId);
@@ -732,7 +781,7 @@ public final class DBHelper
                     final Long libId = libString2Id.get(libraryId);
                     // db14 dev had a cleanup-bug, skip if not there.
                     if (libId != null) {
-                        try (SynchronizedStatement stmt = mSyncedDb
+                        try (SQLiteStatement stmt = db
                                 .compileStatement(DAOSql.SqlInsert.CALIBRE_VIRTUAL_LIBRARY)) {
                             stmt.bindLong(1, libId);
                             stmt.bindString(2, name);
@@ -762,7 +811,7 @@ public final class DBHelper
                         cv.put(KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
                         cv.put(KEY_FK_CALIBRE_LIBRARY, libId);
 
-                        mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
+                        db.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
                     }
                 }
             }
@@ -785,13 +834,13 @@ public final class DBHelper
         // 2. remove the column "clb_uuid"
 
         //NEWTHINGS: adding a new search engine: optional: add external id DOM
-        //TBL_BOOKS.alterTableAddColumn(syncedDb, DBDefinitions.DOM_your_engine_external_id);
+        //TBL_BOOKS.alterTableAddColumn(db, DBDefinitions.DOM_your_engine_external_id);
 
         // Rebuild all indices
-        recreateIndices();
+        recreateIndices(db);
 
         // Rebuild all triggers
-        createTriggers();
+        createTriggers(db);
     }
 
     @Override
@@ -840,52 +889,5 @@ public final class DBHelper
           .remove("scanner.preferred")
           .remove("calibre.last.sync.date")
           .apply();
-    }
-
-
-    /**
-     * Delete al user data from the database.
-     * Tables will get their initial default data re-added (e.g. styles, shelves...)
-     *
-     * @param context Current context
-     * @return {@code true} on success
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    public boolean deleteAllContent(@NonNull final Context context) {
-
-        Synchronizer.SyncLock syncLock = null;
-        try {
-            syncLock = mSyncedDb.beginTransaction(true);
-
-            mSyncedDb.delete(TBL_CALIBRE_BOOKS.getName(), null, null);
-            mSyncedDb.delete(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), null, null);
-            mSyncedDb.delete(TBL_CALIBRE_LIBRARIES.getName(), null, null);
-
-            mSyncedDb.delete(TBL_BOOK_LIST_NODE_STATE.getName(), null, null);
-            mSyncedDb.delete(TBL_FTS_BOOKS.getName(), null, null);
-
-            mSyncedDb.delete(TBL_BOOKS.getName(), null, null);
-            mSyncedDb.delete(TBL_PUBLISHERS.getName(), null, null);
-            mSyncedDb.delete(TBL_SERIES.getName(), null, null);
-            mSyncedDb.delete(TBL_AUTHORS.getName(), null, null);
-
-            mSyncedDb.delete(TBL_BOOKSHELF.getName(), null, null);
-            mSyncedDb.delete(TBL_BOOKLIST_STYLES.getName(), null, null);
-
-            prepareStylesTable(mSyncedDb.getSQLiteDatabase());
-            prepareBookshelfTable(context, mSyncedDb.getSQLiteDatabase());
-
-            mSyncedDb.setTransactionSuccessful();
-            return true;
-
-        } catch (@NonNull final Exception e) {
-            Logger.error(context, TAG, e);
-            return false;
-
-        } finally {
-            if (syncLock != null) {
-                mSyncedDb.endTransaction(syncLock);
-            }
-        }
     }
 }

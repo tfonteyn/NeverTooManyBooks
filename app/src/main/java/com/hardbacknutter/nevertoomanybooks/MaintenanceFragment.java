@@ -42,13 +42,16 @@ import java.util.List;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SqliteShellFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
+import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueDBHelper;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -251,25 +254,33 @@ public class MaintenanceFragment
     }
 
     private void onDeleteAll() {
-        //noinspection ConstantConditions
-        try (DAO db = new DAO(getContext(), TAG)) {
+        final Context context = getContext();
+        try {
             //FIXME: we should stop any active tasks + the qm itself
             final QueueManager qm = QueueManager.getInstance();
             qm.deleteTasksOlderThan(0);
             qm.deleteEventsOlderThan(0);
+            //FIXME: stop the qm
+            //qm.stop();
 
+            //FIXME: delete all style xml files
             StyleDAO.clearCache();
 
-            if (db.getDBHelper().deleteAllContent(getContext())) {
-                AppDir.deleteAllContent(getContext());
-                //FIXME: restore all preferences.
+            //noinspection ConstantConditions
+            PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
 
-                // Exit the app
-                //noinspection ConstantConditions
-                getActivity().finishAndRemoveTask();
-            }
+            context.deleteDatabase(DBHelper.DATABASE_NAME);
+            context.deleteDatabase(CoversDAO.CoversDbHelper.DATABASE_NAME);
+            context.deleteDatabase(QueueDBHelper.DATABASE_NAME);
+
+            AppDir.deleteAllContent(context);
+
+            // Exit the app
+            //noinspection ConstantConditions
+            getActivity().finishAndRemoveTask();
+
         } catch (@NonNull final ExternalStorageException e) {
-            StandardDialogs.showError(getContext(), e);
+            StandardDialogs.showError(context, e);
         }
 
         //noinspection ConstantConditions

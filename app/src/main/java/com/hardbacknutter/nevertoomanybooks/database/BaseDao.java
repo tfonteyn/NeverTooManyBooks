@@ -46,8 +46,6 @@ public abstract class BaseDao
     final SynchronizedDb mSyncedDb;
     @NonNull
     private final String mInstanceName;
-    /** Reference to the singleton. */
-    private final DBHelper mDBHelper;
     /** DEBUG: Indicates close() has been called. Also see {@link AutoCloseable#close()}. */
     private boolean mCloseWasCalled;
 
@@ -65,28 +63,23 @@ public abstract class BaseDao
             Log.d(TAG, mInstanceName + "|Constructor");
         }
 
-        mDBHelper = DBHelper.getInstance(context);
-        mSyncedDb = mDBHelper.getSyncDb();
+        mSyncedDb = DBHelper.getSyncDb(context);
 
         // statements are instance based/managed
         mSqlStatementManager = new SqlStatementManager(mSyncedDb, TAG + "|" + mInstanceName);
     }
 
     @NonNull
-    public DBHelper getDBHelper() {
-        return mDBHelper;
-    }
-
-    @NonNull
     public File getDatabaseFile() {
-        return new File(mSyncedDb.getSQLiteDatabase().getPath());
+        return mSyncedDb.getDatabaseFile();
     }
 
     /**
      * Get the local database.
      * This should only be called in test classes, and from the {@link DBCleaner}.
      * <p>
-     * Other code should use {@link DBHelper#getSyncDb()} directly to get a lighter weight object.
+     * Other code should use {@link DBHelper#getSyncDb(Context)} directly to get
+     * a lighter weight object.
      *
      * @return Underlying database connection
      */

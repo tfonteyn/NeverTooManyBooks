@@ -37,6 +37,7 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -110,10 +111,11 @@ public class BookTest {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (DAO db = new DAO(context, "setup")) {
 
-            Constants.deleteTocs(db);
-            Constants.deleteBooks(db);
-            Constants.deleteAuthors(db);
-            Constants.deletePublishers(db);
+            final SynchronizedDb syncDb = db.getSyncDb();
+            Constants.deleteTocs(syncDb);
+            Constants.deleteBooks(syncDb);
+            Constants.deleteAuthors(syncDb);
+            Constants.deletePublishers(syncDb);
 
             mBookshelf[0] = Bookshelf.getBookshelf(context, db, Bookshelf.DEFAULT);
             mBookshelfList.clear();

@@ -344,7 +344,7 @@ final class BooklistBuilder {
         }
 
         //IMPORTANT: withDomainConstraints MUST BE false
-        mListTable.recreate(syncedDb, false);
+        syncedDb.recreate(mListTable, false);
 
         // get the triggers in place, ready to act on our upcoming initial insert.
         createTriggers(syncedDb);
@@ -382,7 +382,7 @@ final class BooklistBuilder {
         // This is a mapping table between row-id + book-id and a plain sequential id.
         // The latter is needed for a RecyclerView adapter.
         // Don't apply constraints (no need)
-        mNavTable.recreate(syncedDb, false);
+        syncedDb.recreate(mNavTable, false);
         syncedDb.execSQL(INSERT_INTO_ + mNavTable.getName()
                          + " (" + DBDefinitions.KEY_FK_BOOK
                          + ',' + DBDefinitions.KEY_FK_BL_ROW_ID + ") "
@@ -402,9 +402,9 @@ final class BooklistBuilder {
      * Build a collection of triggers on the list table designed to fill in the summary/header
      * records as the data records are added in sorted order.
      *
-     * @param db Database Access
+     * @param syncedDb Database Access
      */
-    private void createTriggers(@NonNull final SynchronizedDb db) {
+    private void createTriggers(@NonNull final SynchronizedDb syncedDb) {
 
         mTriggerHelperTable = new TableDefinition(mListTable + "_th")
                 .setAlias("tht")
@@ -436,7 +436,7 @@ final class BooklistBuilder {
          * This is just a simple technique to provide persistent context to the trigger.
          */
         //IMPORTANT: withDomainConstraints MUST BE false
-        mTriggerHelperTable.recreate(db, false);
+        syncedDb.recreate(mTriggerHelperTable, false);
 
         final int groupCount = mStyle.getGroups().size();
 
@@ -497,7 +497,7 @@ final class BooklistBuilder {
 
             // (re)Create the trigger
             mTriggerHelperLevelTriggerName = mListTable.getName() + "_TG_LEVEL_" + level;
-            db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName);
+            syncedDb.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName);
             final String levelTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
                     + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
@@ -510,12 +510,12 @@ final class BooklistBuilder {
                     + /*             */ " VALUES(" + listValues + ");"
                     + "\n END";
 
-            db.execSQL(levelTgSql);
+            syncedDb.execSQL(levelTgSql);
         }
 
         // Create a trigger to maintain the 'current' value
         mTriggerHelperCurrentValueTriggerName = mListTable.getName() + "_TG_CURRENT";
-        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
+        syncedDb.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
         // This is a single row only, so delete the previous value, and insert the current one
         final String currentValueTgSql =
                 "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
@@ -527,7 +527,7 @@ final class BooklistBuilder {
                 + /*              */ " VALUES (" + valuesColumns + ");"
                 + "\n END";
 
-        db.execSQL(currentValueTgSql);
+        syncedDb.execSQL(currentValueTgSql);
     }
 
     /**

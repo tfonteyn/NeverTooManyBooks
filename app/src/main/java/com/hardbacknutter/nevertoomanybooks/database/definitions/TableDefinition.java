@@ -22,13 +22,12 @@ package com.hardbacknutter.nevertoomanybooks.database.definitions;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteDoneException;
 import android.database.sqlite.SQLiteStatement;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,8 +45,6 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -177,25 +174,21 @@ public class TableDefinition {
     public static void onCreate(@NonNull final SQLiteDatabase db,
                                 @NonNull final TableDefinition... tables) {
         for (final TableDefinition table : tables) {
-            db.execSQL(table.def(table.getName(), true));
-            for (final IndexDefinition index : table.mIndexes) {
-                index.onCreate(db);
-            }
+            table.create(db, true);
+            table.createIndices(db);
         }
     }
 
     public static void onCreate(@NonNull final SQLiteDatabase db,
                                 @NonNull final Collection<TableDefinition> tables) {
         for (final TableDefinition table : tables) {
-            db.execSQL(table.def(table.getName(), true));
-            for (final IndexDefinition index : table.mIndexes) {
-                index.onCreate(db);
-            }
+            table.create(db, true);
+            table.createIndices(db);
         }
     }
 
     /**
-     * Create this table. Don't forget to call {@link #createIndices(SynchronizedDb)} if needed.
+     * Create this table. Don't forget to call {@link #createIndices(SQLiteDatabase)} if needed.
      *
      * @param db                    Database Access
      * @param withDomainConstraints Indicates if fields should have constraints applied
@@ -203,7 +196,7 @@ public class TableDefinition {
      * @return TableDefinition (for chaining)
      */
     @NonNull
-    public TableDefinition create(@NonNull final SynchronizedDb db,
+    public TableDefinition create(@NonNull final SQLiteDatabase db,
                                   final boolean withDomainConstraints) {
         db.execSQL(def(mName, withDomainConstraints));
         return this;
@@ -214,30 +207,7 @@ public class TableDefinition {
      *
      * @param db Database Access
      */
-    public void createIndices(@NonNull final SynchronizedDb db) {
-        for (final IndexDefinition index : mIndexes) {
-            index.create(db);
-        }
-    }
-
-    /**
-     * Syntax sugar; meant for recreating {@link TableType#Temporary} tables.
-     * <p>
-     * If the table has no references to it, this method can also
-     * be used on {@link TableType#Standard}.
-     * <p>
-     * Drop this table (if it exists) and (re)create it including its indexes.
-     *
-     * @param db                    Database Access
-     * @param withDomainConstraints Indicates if fields should have constraints applied
-     */
-    public void recreate(@NonNull final SynchronizedDb db,
-                         final boolean withDomainConstraints) {
-        // Drop the table in case there is an orphaned instance with the same name.
-        if (exists(db)) {
-            db.drop(mName);
-        }
-        db.execSQL(def(mName, withDomainConstraints));
+    public void createIndices(@NonNull final SQLiteDatabase db) {
         for (final IndexDefinition index : mIndexes) {
             index.create(db);
         }
@@ -725,54 +695,18 @@ public class TableDefinition {
      *
      * @return {@code true} if this table exists
      */
-    public boolean exists(@NonNull final SynchronizedDb db) {
+    public boolean exists(@NonNull final SQLiteDatabase db) {
         final String sql;
         if (mType == TableType.Standard) {
             sql = TABLE_EXISTS_SQL_STANDARD;
         } else {
             sql = TABLE_EXISTS_SQL_TEMP;
         }
-        try (SynchronizedStatement stmt = db.compileStatement(sql)) {
+        try (SQLiteStatement stmt = db.compileStatement(sql)) {
             stmt.bindString(1, mName);
-            return stmt.simpleQueryForLongOrZero() > 0;
-        }
-    }
-
-    /**
-     * DEBUG. Dumps the content of this table to the debug output.
-     *
-     * @param db      Database Access
-     * @param tag     log tag to use
-     * @param header  a header which will be logged first
-     * @param limit   LIMIT limit
-     * @param orderBy ORDER BY orderBy
-     */
-    public void dumpTable(@NonNull final SynchronizedDb db,
-                          @NonNull final String tag,
-                          @NonNull final String header,
-                          final int limit,
-                          @NonNull final String orderBy) {
-        if (BuildConfig.DEBUG /* always */) {
-            Log.d(tag, "Table: " + mName + ": " + header);
-
-            final String sql =
-                    "SELECT * FROM " + mName + " ORDER BY " + orderBy + " LIMIT " + limit;
-            try (Cursor cursor = db.rawQuery(sql, null)) {
-                final StringBuilder columnHeading = new StringBuilder("\n");
-                final String[] columnNames = cursor.getColumnNames();
-                for (final String column : columnNames) {
-                    columnHeading.append(String.format("%-12s  ", column));
-                }
-                Log.d(tag, columnHeading.toString());
-
-                while (cursor.moveToNext()) {
-                    final StringBuilder line = new StringBuilder();
-                    for (int c = 0; c < cursor.getColumnCount(); c++) {
-                        line.append(String.format("%-12s  ", cursor.getString(c)));
-                    }
-                    Log.d(tag, line.toString());
-                }
-            }
+            return stmt.simpleQueryForLong() > 0;
+        } catch (@NonNull final SQLiteDoneException ignore) {
+            return false;
         }
     }
 
@@ -784,7 +718,7 @@ public class TableDefinition {
      * @return info object
      */
     @NonNull
-    public TableInfo getTableInfo(@NonNull final SynchronizedDb db) {
+    public TableInfo getTableInfo(@NonNull final SQLiteDatabase db) {
         synchronized (this) {
             if (mTableInfo == null) {
                 mTableInfo = new TableInfo(db, mName);
@@ -799,7 +733,7 @@ public class TableDefinition {
      * @param db      Database Access
      * @param domains to add
      */
-    public void alterTableAddColumns(@NonNull final SynchronizedDb db,
+    public void alterTableAddColumns(@NonNull final SQLiteDatabase db,
                                      @NonNull final Domain... domains) {
         for (final Domain domain : domains) {
             db.execSQL("ALTER TABLE " + getName() + " ADD " + domain.def(true));
@@ -830,7 +764,7 @@ public class TableDefinition {
      * @param toRename (optional) Map of fields to be renamed
      * @param toRemove (optional) List of fields to be removed
      */
-    public void recreateAndReload(@NonNull final SynchronizedDb db,
+    public void recreateAndReload(@NonNull final SQLiteDatabase db,
                                   @SuppressWarnings("SameParameterValue")
                                   @Nullable final Map<String, String> toRename,
                                   @Nullable final Collection<String> toRemove) {
@@ -864,7 +798,7 @@ public class TableDefinition {
      * @param toRemove    (optional) List of fields to be removed
      * @param toRename    (optional) Map of fields to be renamed
      */
-    private void copyTableSafely(@NonNull final SynchronizedDb db,
+    private void copyTableSafely(@NonNull final SQLiteDatabase db,
                                  @SuppressWarnings("SameParameterValue")
                                  @NonNull final String destination,
                                  @Nullable final Collection<String> toRemove,
@@ -904,9 +838,8 @@ public class TableDefinition {
      * @return SQL to create table
      */
     @NonNull
-    @VisibleForTesting
-    public String def(@NonNull final String tableName,
-                      final boolean withDomainConstraints) {
+    private String def(@NonNull final String tableName,
+                       final boolean withDomainConstraints) {
 
         final StringBuilder sql = new StringBuilder("CREATE")
                 .append(mType.getCreateModifier())

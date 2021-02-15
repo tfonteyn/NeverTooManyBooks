@@ -323,8 +323,7 @@ public class DAO
      * Purge <strong>all</strong> Booklist node state data.
      */
     public static void clearNodeStateData(@NonNull final Context context) {
-        DBHelper.getInstance(context)
-                .getSyncDb().execSQL(DAOSql.SqlDelete.PURGE_BOOK_LIST_NODE_STATE);
+        DBHelper.getSyncDb(context).execSQL(DAOSql.SqlDelete.PURGE_BOOK_LIST_NODE_STATE);
     }
 
     /**
@@ -384,7 +383,7 @@ public class DAO
             }
 
             // go!
-            final long newBookId = mSyncedDb.insert(TBL_BOOKS.getName(), null, cv);
+            final long newBookId = mSyncedDb.insert(TBL_BOOKS.getName(), cv);
             if (newBookId <= 0) {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
@@ -566,7 +565,7 @@ public class DAO
                                        @NonNull final DataManager dataManager,
                                        @NonNull final Locale bookLocale) {
 
-        final TableInfo tableInfo = tableDefinition.getTableInfo(mSyncedDb);
+        final TableInfo tableInfo = mSyncedDb.getTableInfo(tableDefinition);
 
         final ContentValues cv = new ContentValues();
         // Create the arguments
@@ -1223,7 +1222,7 @@ public class DAO
 
         cv.put(KEY_FK_CALIBRE_LIBRARY, library.getId());
 
-        final long rowId = mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), null, cv);
+        final long rowId = mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), cv);
         if (rowId == -1) {
             throw new DaoWriteException("insert book-calibre");
         }
@@ -4819,7 +4818,7 @@ public class DAO
             }
 
             //IMPORTANT: withDomainConstraints MUST BE false
-            ftsTemp.recreate(mSyncedDb, false);
+            mSyncedDb.recreate(ftsTemp, false);
 
             try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                     "INSERT INTO " + tmpTableName + FtsDefinitions.Sql.INSERT_BODY);

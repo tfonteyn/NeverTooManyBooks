@@ -240,7 +240,7 @@ public class Booklist
 
         mInstanceId = ID_COUNTER.incrementAndGet();
 
-        mSyncedDb = DBHelper.getInstance(context).getSyncDb();
+        mSyncedDb = DBHelper.getSyncDb(context);
         mStyle = style;
         mBookshelves.add(bookshelf);
         mRebuildState = rebuildState;

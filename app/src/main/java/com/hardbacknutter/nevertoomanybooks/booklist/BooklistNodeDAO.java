@@ -620,8 +620,8 @@ class BooklistNodeDAO {
                        + "|fromLevel=" + nodeLevel
                        + "|endRowExcl=" + endRowExcl);
 
-            TBL_BOOK_LIST_NODE_STATE.dumpTable(
-                    mSyncedDb, "saveNodesBetween", "before delete", 10, KEY_PK_ID);
+            mSyncedDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
+                                "saveNodesBetween", "before delete");
         }
 
         SynchronizedStatement stmt;
@@ -655,8 +655,8 @@ class BooklistNodeDAO {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "saveNodesBetween|rowsDeleted=" + rowsUpdated);
-            TBL_BOOK_LIST_NODE_STATE.dumpTable(
-                    mSyncedDb, "saveNodesBetween", "delete done", 10, KEY_PK_ID);
+            mSyncedDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
+                                "saveNodesBetween", "delete done");
         }
 
         stmt = mStmtManager.get(STMT_SAVE_NODES_BETWEEN, () -> mSqlSaveNodesBetween);
@@ -676,8 +676,8 @@ class BooklistNodeDAO {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "saveNodesBetween|rowsInserted=" + rowsUpdated);
-            TBL_BOOK_LIST_NODE_STATE.dumpTable(
-                    mSyncedDb, "saveNodesBetween", "insert done", 10, KEY_PK_ID);
+            mSyncedDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
+                                "saveNodesBetween", "insert done");
         }
     }
 

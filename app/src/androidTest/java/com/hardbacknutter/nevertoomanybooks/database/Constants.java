@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,6 +21,8 @@ package com.hardbacknutter.nevertoomanybooks.database;
 
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
@@ -41,11 +43,10 @@ public class Constants {
     static final String BOOK_TITLE = PREFIX + "Title";
     static final String TOC_TITLE = PREFIX + "TocTitle";
     static final String[] COVER = {"0.jpg", "1.jpg"};
-    private static final String BOOKSHELF = PREFIX + "BookshelfName";
-
     // sample external id values
     static final int BOOK_ISFDB_123 = 123;
     static final String BOOK_LCCN_0 = "unused0";
+    private static final String BOOKSHELF = PREFIX + "BookshelfName";
 
     static String AuthorFullName(final int index) {
         return AUTHOR_GIVEN_NAME + index
@@ -53,33 +54,33 @@ public class Constants {
                + AUTHOR_FAMILY_NAME + index;
     }
 
-    public static void deleteBookshelves(@NonNull final DAO db) {
-        db.getSyncDb().delete(TBL_BOOKSHELF.getName(),
-                              KEY_BOOKSHELF_NAME
-                              + " LIKE '" + BOOKSHELF + "%'", null);
+    public static void deleteBookshelves(@NonNull final SynchronizedDb db) {
+        db.delete(TBL_BOOKSHELF.getName(),
+                  KEY_BOOKSHELF_NAME
+                  + " LIKE '" + BOOKSHELF + "%'", null);
     }
 
-    static void deleteAuthors(@NonNull final DAO db) {
-        db.getSyncDb().delete(TBL_AUTHORS.getName(),
-                              KEY_AUTHOR_FAMILY_NAME
-                              + " LIKE '" + AUTHOR_FAMILY_NAME + "%'", null);
+    static void deleteAuthors(@NonNull final SynchronizedDb db) {
+        db.delete(TBL_AUTHORS.getName(),
+                  KEY_AUTHOR_FAMILY_NAME
+                  + " LIKE '" + AUTHOR_FAMILY_NAME + "%'", null);
     }
 
-    static void deletePublishers(@NonNull final DAO db) {
-        db.getSyncDb().delete(TBL_PUBLISHERS.getName(),
-                              KEY_PUBLISHER_NAME
-                              + " LIKE '" + PUBLISHER + "%'", null);
+    static void deletePublishers(@NonNull final SynchronizedDb db) {
+        db.delete(TBL_PUBLISHERS.getName(),
+                  KEY_PUBLISHER_NAME
+                  + " LIKE '" + PUBLISHER + "%'", null);
     }
 
-    static void deleteTocs(@NonNull final DAO db) {
-        db.getSyncDb().delete(TBL_TOC_ENTRIES.getName(),
-                              KEY_TITLE
-                              + " LIKE '" + TOC_TITLE + "%'", null);
+    static void deleteTocs(@NonNull final SynchronizedDb db) {
+        db.delete(TBL_TOC_ENTRIES.getName(),
+                  KEY_TITLE
+                  + " LIKE '" + TOC_TITLE + "%'", null);
     }
 
-    static void deleteBooks(@NonNull final DAO db) {
-        db.getSyncDb().delete(TBL_BOOKS.getName(),
-                              KEY_TITLE
-                              + " LIKE '" + BOOK_TITLE + "%'", null);
+    static void deleteBooks(@NonNull final SynchronizedDb db) {
+        db.delete(TBL_BOOKS.getName(),
+                  KEY_TITLE
+                  + " LIKE '" + BOOK_TITLE + "%'", null);
     }
 }

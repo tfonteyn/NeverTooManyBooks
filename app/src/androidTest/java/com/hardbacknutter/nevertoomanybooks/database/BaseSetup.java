@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -90,10 +91,11 @@ public abstract class BaseSetup {
 
         try (DAO db = new DAO(context, "setup")) {
 
-            Constants.deleteTocs(db);
-            Constants.deleteBooks(db);
-            Constants.deleteAuthors(db);
-            Constants.deletePublishers(db);
+            final SynchronizedDb syncDb = db.getSyncDb();
+            Constants.deleteTocs(syncDb);
+            Constants.deleteBooks(syncDb);
+            Constants.deleteAuthors(syncDb);
+            Constants.deletePublishers(syncDb);
 
             // all books will sit on the same shelf for now
             //Constants.deleteBookshelves(db);

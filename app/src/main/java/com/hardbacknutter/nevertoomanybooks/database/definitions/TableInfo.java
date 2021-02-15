@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -17,10 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertoomanybooks.database.definitions;
 
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -55,7 +54,7 @@ public class TableInfo {
      * @param db        Database Access
      * @param tableName name of table
      */
-    TableInfo(@NonNull final SynchronizedDb db,
+    TableInfo(@NonNull final SQLiteDatabase db,
               @NonNull final String tableName) {
 
         mTableName = tableName;
@@ -94,7 +93,7 @@ public class TableInfo {
      * @return A collection of ColumnInfo objects.
      */
     @NonNull
-    private Map<String, ColumnInfo> describeTable(@NonNull final SynchronizedDb db,
+    private Map<String, ColumnInfo> describeTable(@NonNull final SQLiteDatabase db,
                                                   @NonNull final String tableName) {
         final Locale systemLocale = AppLocale.getInstance().getSystemLocale();
 

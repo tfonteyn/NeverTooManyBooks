@@ -25,7 +25,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
-import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
@@ -65,21 +64,14 @@ public class OptimizeDbTask
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));
 
-        // This is a 'better' time to cleanup the cache.
-        // Out of precaution we only trash jpg files
+        // Cleanup the cache. Out of precaution we only trash jpg files
         AppDir.Cache.purge(context, true, file -> file.getName().endsWith(".jpg"));
 
-        final DBHelper dbHelper = DBHelper.getInstance(context);
         try {
-            // small hack to make sure we always update the triggers.
-            // Makes creating/modifying triggers MUCH easier.
-            if (BuildConfig.DEBUG /* always */) {
-                dbHelper.createTriggers();
-            }
+            DBHelper.getSyncDb(context).optimize();
 
-            dbHelper.getSyncDb().optimize();
             if (ImageUtils.isImageCachingEnabled(context)) {
-                CoversDAO.CoversDbHelper.getInstance(context).optimize(context);
+                CoversDAO.CoversDbHelper.getSyncDb(context).optimize();
             }
             return true;
 
