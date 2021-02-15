@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -49,6 +49,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.view.View;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -72,14 +73,16 @@ class Md2PopupBackground
     @NonNull
     private final Matrix mTempMatrix = new Matrix();
 
-    Md2PopupBackground(@NonNull final Context context) {
+    Md2PopupBackground(@NonNull final Context context,
+                       @AttrRes final int bgColorAttr) {
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setColor(FastScroller.getColorInt(context, R.attr.colorPrimary));
+        mPaint.setColor(FastScroller.getColorInt(context, bgColorAttr));
         mPaint.setStyle(Paint.Style.FILL);
-        final Resources resources = context.getResources();
-        mPaddingStart = resources.getDimensionPixelOffset(R.dimen.afs_md2_popup_padding_start);
-        mPaddingEnd = resources.getDimensionPixelOffset(R.dimen.afs_md2_popup_padding_end);
+
+        final Resources res = context.getResources();
+        mPaddingStart = res.getDimensionPixelOffset(R.dimen.fs_md2_popup_bg_padding_start);
+        mPaddingEnd = res.getDimensionPixelOffset(R.dimen.fs_md2_popup_bg_padding_end);
     }
 
     private static void pathArcTo(@NonNull final Path path,

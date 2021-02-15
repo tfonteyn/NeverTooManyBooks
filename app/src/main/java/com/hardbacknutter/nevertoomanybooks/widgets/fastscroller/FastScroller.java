@@ -58,6 +58,9 @@ public final class FastScroller {
 
     /**
      * Constructor.
+     * <p>
+     * ENHANCE: move the drawable and dimen settings to a declarable style,
+     * and read them from the xml definition of a RecyclerView
      *
      * @param recyclerView the View to hook up
      */
@@ -71,20 +74,22 @@ public final class FastScroller {
 
         final Context context = recyclerView.getContext();
 
+        // These will resolve to the Material style default drawables.
         final Drawable track = getDrawable(context, android.R.attr.fastScrollTrackDrawable);
         final Drawable thumb = getDrawable(context, android.R.attr.fastScrollThumbDrawable);
 
-        final StateListDrawable verticalThumbDrawable = (StateListDrawable) thumb;
-        final StateListDrawable horizontalThumbDrawable = (StateListDrawable) thumb;
+        final StateListDrawable thumbDrawable = (StateListDrawable) thumb;
 
         final Resources resources = context.getResources();
         final FastScrollerImpl fastScroller = new FastScrollerImpl(
                 recyclerView,
-                verticalThumbDrawable, track,
-                horizontalThumbDrawable, track,
-                resources.getDimensionPixelSize(R.dimen.cfs_default_thickness),
-                resources.getDimensionPixelSize(R.dimen.cfs_minimum_range),
-                resources.getDimensionPixelOffset(R.dimen.cfs_margin));
+                thumbDrawable, track,
+                thumbDrawable, track,
+                resources.getDimensionPixelSize(R.dimen.fs_default_thickness),
+                resources.getDimensionPixelSize(R.dimen.fs_minimum_range),
+                resources.getDimensionPixelOffset(R.dimen.fs_margin),
+                resources.getDimensionPixelSize(R.dimen.fs_minimal_thumb_size)
+        );
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // Optional overlay
@@ -95,18 +100,17 @@ public final class FastScroller {
         switch (overlayType) {
             case OverlayProvider.STYLE_DYNAMIC:
                 fastScroller.setOverlayProvider(new FastScrollerOverlay(
-                        recyclerView, verticalThumbDrawable.getIntrinsicWidth(),
-                        PopupStyles.MD));
+                        recyclerView, thumbDrawable, PopupStyles.MD));
                 break;
+
             case OverlayProvider.STYLE_MD2:
                 fastScroller.setOverlayProvider(new FastScrollerOverlay(
-                        recyclerView, verticalThumbDrawable.getIntrinsicWidth(),
-                        PopupStyles.MD2));
+                        recyclerView, thumbDrawable, PopupStyles.MD2));
                 break;
 
             case OverlayProvider.STYLE_STATIC:
                 fastScroller.setOverlayProvider(new ClassicOverlay(
-                        recyclerView, verticalThumbDrawable.getIntrinsicWidth()));
+                        recyclerView, thumbDrawable));
                 break;
 
             case OverlayProvider.STYLE_NONE:

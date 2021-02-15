@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,67 +55,45 @@ import com.hardbacknutter.nevertoomanybooks.R;
  */
 final class PopupStyles {
 
+    //ENHANCE: make the text color configurable
     @AttrRes
     private static final int TEXT_COLOR = R.attr.colorOnPrimary;
-
     @SuppressLint("UseCompatLoadingForDrawables")
     static final Consumer<TextView> MD = popupView -> {
         final Resources res = popupView.getResources();
-        final int minimumSize = res.getDimensionPixelSize(R.dimen.afs_popup_min_size);
+        final int minimumSize = res.getDimensionPixelSize(R.dimen.fs_md_popup_min_size);
         popupView.setMinimumWidth(minimumSize);
         popupView.setMinimumHeight(minimumSize);
 
         final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
         layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
-        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.afs_popup_margin_end));
+        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_md_popup_margin_end));
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
         popupView.setBackground(context.getDrawable(R.drawable.fastscroll_overlay_default));
+
         popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         popupView.setGravity(Gravity.CENTER);
         popupView.setIncludeFontPadding(false);
         popupView.setSingleLine(false);
+
         popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
         popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                              res.getDimensionPixelSize(R.dimen.afs_popup_text_size));
+                              res.getDimensionPixelSize(R.dimen.fs_md_popup_text_size));
     };
-
-    static final Consumer<TextView> MD2 = popupView -> {
-        final Resources res = popupView.getResources();
-        popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.afs_md2_popup_min_width));
-        popupView.setMinimumHeight(res.getDimensionPixelSize(R.dimen.afs_md2_popup_min_height));
-
-        final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
-                popupView.getLayoutParams();
-        layoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
-        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.afs_md2_popup_margin_end));
-        popupView.setLayoutParams(layoutParams);
-
-        final Context context = popupView.getContext();
-        popupView.setBackground(new Md2PopupBackground(context));
-        popupView.setElevation(res.getDimensionPixelOffset(R.dimen.afs_md2_popup_elevation));
-        popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-        popupView.setGravity(Gravity.CENTER);
-        popupView.setIncludeFontPadding(false);
-        popupView.setSingleLine(false);
-        popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
-        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                              res.getDimensionPixelSize(R.dimen.afs_md2_popup_text_size));
-    };
-
     @SuppressLint("UseCompatLoadingForDrawables")
     static final Consumer<TextView> CLASSIC = popupView -> {
         final Resources res = popupView.getResources();
-        final int minimumSize = res.getDimensionPixelSize(R.dimen.afs_popup_min_size);
+        final int minimumSize = res.getDimensionPixelSize(R.dimen.fs_classic_popup_min_size);
         popupView.setMinimumWidth(minimumSize);
         popupView.setMinimumHeight(minimumSize);
 
         final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
         layoutParams.gravity = Gravity.END | Gravity.CENTER_VERTICAL;
-        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.afs_popup_margin_end));
+        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_classic_popup_margin_end));
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
@@ -128,7 +106,35 @@ final class PopupStyles {
 
         popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
         popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
-                              res.getDimensionPixelSize(R.dimen.afs_popup_text_size));
+                              res.getDimensionPixelSize(R.dimen.fs_classic_popup_text_size));
+    };
+    //ENHANCE: make the background color configurable
+    // (only used by MD2, must be set in xml for MD1 and CLASSIC)
+    @AttrRes
+    private static final int BG_COLOR = R.attr.colorPrimary;
+    static final Consumer<TextView> MD2 = popupView -> {
+        final Resources res = popupView.getResources();
+        popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.fs_md2_popup_min_width));
+        popupView.setMinimumHeight(res.getDimensionPixelSize(R.dimen.fs_md2_popup_min_height));
+
+        final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
+                popupView.getLayoutParams();
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL | Gravity.TOP;
+        layoutParams.setMarginEnd(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_margin_end));
+        popupView.setLayoutParams(layoutParams);
+
+        final Context context = popupView.getContext();
+        popupView.setBackground(new Md2PopupBackground(context, BG_COLOR));
+        popupView.setElevation(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_elevation));
+
+        popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+        popupView.setGravity(Gravity.CENTER);
+        popupView.setIncludeFontPadding(false);
+        popupView.setSingleLine(false);
+
+        popupView.setTextColor(FastScroller.getColorInt(context, TEXT_COLOR));
+        popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                              res.getDimensionPixelSize(R.dimen.fs_md2_popup_text_size));
     };
 
     private PopupStyles() {

@@ -167,7 +167,7 @@
             android:title="@string/pt_bob_list_rebuild_state" />
 
         <ListPreference
-            android:defaultValue="2"
+            android:defaultValue="3"
             android:entries="@array/pe_fastscroller_overlay"
             android:entryValues="@array/pv_fastscroller_overlay"
             android:icon="@drawable/ic_chat_bubble_outline"

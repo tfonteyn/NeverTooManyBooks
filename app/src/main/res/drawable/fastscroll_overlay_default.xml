@@ -35,10 +35,14 @@
   ~ limitations under the License.
   -->
 
+<!-- The base shape with 22/44 dimensions comes from
+     API 29: src\main\res\drawable\fastscroll_overlay_default.xml
+     but the inset is removed and handled from code.
+     The tint is replaced with the colorPrimary. -->
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle"
     android:autoMirrored="true"
+    android:shape="rectangle"
     android:tint="?attr/colorPrimary">
 
     <corners
@@ -49,8 +53,5 @@
     <padding
         android:left="22dp"
         android:right="22dp" />
-
-    <size
-        android:width="44dp"
-        android:height="44dp" />
 </shape>
+

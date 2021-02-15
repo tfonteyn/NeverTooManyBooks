@@ -67,21 +67,38 @@
     <dimen name="fab_menu_translationY_delta">-60dp</dimen>
 
 
-    <!-- fast scroller. -->
-    <dimen name="cfs_default_thickness">8dp</dimen>
-    <dimen name="cfs_margin">0dp</dimen>
-    <dimen name="cfs_minimum_range">50dp</dimen>
-    <!-- fast scroller popup text -->
-    <dimen name="afs_popup_min_size">88dp</dimen>
-    <dimen name="afs_popup_margin_end">16dp</dimen>
-    <dimen name="afs_popup_text_size">18sp</dimen>
-    <dimen name="afs_md2_popup_min_width">78dp</dimen>
-    <dimen name="afs_md2_popup_min_height">64dp</dimen>
-    <dimen name="afs_md2_popup_margin_end">14dp</dimen>
-    <dimen name="afs_md2_popup_padding_start">16dp</dimen>
-    <dimen name="afs_md2_popup_padding_end">29dp</dimen>
-    <dimen name="afs_md2_popup_elevation">3dp</dimen>
-    <dimen name="afs_md2_popup_text_size">18sp</dimen>
+    <!-- fast scroller - Minimal Thumb and Track width/height.
+         Original Android: R.dimen.fastscroll_default_thickness=8dp -->
+    <dimen name="fs_default_thickness">8dp</dimen>
+    <!-- Minimal Thumb size; i.e. big enough to grab with a finger. -->
+    <dimen name="fs_minimal_thumb_size">40dp</dimen>
+
+    <!-- fast scroller - When to show a scrollbar.
+         Original Android: R.dimen.fastscroll_minimum_range=50dp-->
+    <dimen name="fs_minimum_range">50dp</dimen>
+    <!-- fast scroller - Margin (begin+margin; end-margin) for the scrollbar range.
+         Original Android: R.dimen.fastscroll_margin=0dp -->
+    <dimen name="fs_margin">0dp</dimen>
+
+    <!-- fast scroller - PopupStyles.CLASSIC styling -->
+    <dimen name="fs_classic_popup_min_size">88dp</dimen>
+    <dimen name="fs_classic_popup_margin_end">16dp</dimen>
+    <dimen name="fs_classic_popup_text_size">18sp</dimen>
+
+    <!-- fast scroller - PopupStyles.MD styling -->
+    <dimen name="fs_md_popup_min_size">60dp</dimen>
+    <dimen name="fs_md_popup_margin_end">16dp</dimen>
+    <dimen name="fs_md_popup_text_size">18sp</dimen>
+
+    <!-- fast scroller - PopupStyles.MD2 styling -->
+    <dimen name="fs_md2_popup_min_width">78dp</dimen>
+    <dimen name="fs_md2_popup_min_height">64dp</dimen>
+    <dimen name="fs_md2_popup_margin_end">14dp</dimen>
+    <dimen name="fs_md2_popup_elevation">4dp</dimen>
+    <dimen name="fs_md2_popup_text_size">18sp</dimen>
+    <!-- fast scroller - PopupStyles.MD2 background styling -->
+    <dimen name="fs_md2_popup_bg_padding_start">16dp</dimen>
+    <dimen name="fs_md2_popup_bg_padding_end">29dp</dimen>
 
 
     <!-- the margin around the CardView. -->

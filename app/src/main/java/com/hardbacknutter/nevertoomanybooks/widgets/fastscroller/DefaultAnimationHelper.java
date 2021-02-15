@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -47,7 +47,7 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
  * https://github.com/zhanghai/AndroidFastScroll</a>.
  */
 public class DefaultAnimationHelper
-        implements AnimationHelper {
+        implements FastScrollerOverlay.AnimationHelper {
 
     private static final int SHOW_DURATION_MILLIS = 150;
     private static final int HIDE_DURATION_MILLIS = 200;
@@ -67,10 +67,6 @@ public class DefaultAnimationHelper
 
     DefaultAnimationHelper(@NonNull final View view) {
         mView = view;
-    }
-
-    private boolean isLayoutRTL() {
-        return mView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
     }
 
     @Override
@@ -105,9 +101,10 @@ public class DefaultAnimationHelper
         }
         mShowingScrollbar = false;
 
+        final boolean isLayoutRtl = mView.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
         final int width = Math.max(trackView.getWidth(), thumbView.getWidth());
         final float translationX;
-        if (isLayoutRTL()) {
+        if (isLayoutRtl) {
             translationX = trackView.getLeft() == 0 ? -width : 0;
         } else {
             translationX = trackView.getRight() == mView.getWidth() ? width : 0;

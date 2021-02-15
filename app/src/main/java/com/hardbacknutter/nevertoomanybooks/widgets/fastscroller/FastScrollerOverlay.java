@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -22,6 +22,7 @@ package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,20 +62,22 @@ public class FastScrollerOverlay
     /**
      * Constructor.
      *
-     * @param view       to hook up
-     * @param thumbWidth the width of the thumb/drag-handle
-     * @param popupStyle for the TextView
+     * @param view          to hook up
+     * @param thumbDrawable the thumb/drag-handle
+     * @param popupStyle    for the TextView
      */
     FastScrollerOverlay(@NonNull final RecyclerView view,
-                        final int thumbWidth,
+                        @NonNull final Drawable thumbDrawable,
                         @NonNull final Consumer<TextView> popupStyle) {
+
         final Context context = view.getContext();
 
         mView = view;
-        mThumbWidth = thumbWidth;
+        mAnimationHelper = new DefaultAnimationHelper(mView);
+
+        mThumbWidth = thumbDrawable.getIntrinsicWidth();
 
         mPopupView = new TextView(context);
-        mPopupView.setAlpha(0);
         mPopupView.setLayoutParams(new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         popupStyle.accept(mPopupView);
@@ -82,7 +85,7 @@ public class FastScrollerOverlay
         final ViewGroupOverlay overlay = mView.getOverlay();
         overlay.add(mPopupView);
 
-        mAnimationHelper = new DefaultAnimationHelper(mView);
+        mPopupView.setAlpha(0);
     }
 
     @SuppressLint("RtlHardcoded")
@@ -225,5 +228,22 @@ public class FastScrollerOverlay
         final int scrollX = parent.getScrollX() + popupLeft;
         final int scrollY = parent.getScrollY() + popupTop;
         popupView.layout(scrollX, scrollY, scrollX + popupWidth, scrollY + popupHeight);
+    }
+
+    static interface AnimationHelper {
+
+        void showScrollbar(@NonNull View trackView,
+                           @NonNull View thumbView);
+
+        void hideScrollbar(@NonNull View trackView,
+                           @NonNull View thumbView);
+
+        boolean isScrollbarAutoHideEnabled();
+
+        int getScrollbarAutoHideDelayMillis();
+
+        void showPopup(@NonNull View popupView);
+
+        void hidePopup(@NonNull View popupView);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -41,9 +41,14 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Copied 2020-01-27 (180adcc54a6fde799c17f6ce3bc035cae3db4f53) from
  * <a href="https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/recyclerview/recyclerview/src/main/java/androidx/recyclerview/widget/FastScroller.java">
- *     google source</a>
- *
+ * google source</a>
+ * <p>
+ * Current link:
+ * <a href="https://android.googlesource.com/platform/frameworks/support/+/refs/heads/androidx-main/recyclerview/recyclerview/src/main/java/androidx/recyclerview/widget/FastScroller.java">
+ * HEAD</a>
  * Class responsible to animate and provide a fast scroller.
+ * <p>
+ * Search for 'RVFastScroller' to see modifications done.
  */
 @SuppressWarnings("ALL")
 public class FastScrollerImpl
@@ -149,14 +154,16 @@ public class FastScrollerImpl
                             Drawable horizontalTrackDrawable,
                             int defaultWidth,
                             int scrollbarMinimumRange,
-                            int margin) {
+                            int margin,
+                            // RVFastScroller - ADDED
+                            int minimalThumbSize) {
+
         mVerticalThumbDrawable = verticalThumbDrawable;
         mVerticalTrackDrawable = verticalTrackDrawable;
         mHorizontalThumbDrawable = horizontalThumbDrawable;
         mHorizontalTrackDrawable = horizontalTrackDrawable;
-
         // RVFastScroller - ADDED
-        mMinimalThumbSize = defaultWidth * 5;
+        mMinimalThumbSize = minimalThumbSize;
 
         mVerticalThumbWidth = Math.max(defaultWidth, verticalThumbDrawable.getIntrinsicWidth());
         mVerticalTrackWidth = Math.max(defaultWidth, verticalTrackDrawable.getIntrinsicWidth());

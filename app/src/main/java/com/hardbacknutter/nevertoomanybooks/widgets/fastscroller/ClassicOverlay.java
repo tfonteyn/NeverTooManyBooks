@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
 
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -33,12 +34,12 @@ public class ClassicOverlay
     /**
      * Constructor.
      *
-     * @param view       to hook up
-     * @param thumbWidth the width of the thumb/drag-handle
+     * @param view          to hook up
+     * @param thumbDrawable the thumb/drag-handle
      */
     ClassicOverlay(@NonNull final RecyclerView view,
-                   final int thumbWidth) {
-        super(view, thumbWidth, PopupStyles.CLASSIC);
+                   @NonNull final Drawable thumbDrawable) {
+        super(view, thumbDrawable, PopupStyles.CLASSIC);
     }
 
     @Override
