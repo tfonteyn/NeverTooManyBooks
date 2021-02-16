@@ -181,7 +181,7 @@ public class FastScrollerImpl
     }
 
     // RVFastScroller - ADDED
-    void setOverlayProvider(@NonNull final FastScroller.OverlayProvider overlayProvider) {
+    void setOverlayProvider(@Nullable final FastScroller.OverlayProvider overlayProvider) {
         mOverlayProvider = overlayProvider;
     }
 
