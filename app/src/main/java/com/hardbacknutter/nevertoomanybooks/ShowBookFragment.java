@@ -558,7 +558,7 @@ public class ShowBookFragment
             final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
             // These FieldFormatter's can be shared between multiple fields.
             final FieldFormatter<String> dateFormatter = new DateFieldFormatter(userLocale);
-            final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true);
+            final FieldFormatter<String> htmlFormatter = new HtmlFormatter<>(true, true);
             final FieldFormatter<Money> moneyFormatter = new MoneyFormatter(userLocale);
             final FieldFormatter<String> languageFormatter = new LanguageFormatter(userLocale);
 

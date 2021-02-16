@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,6 +32,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * FieldFormatter for HTML fields.
  * <ul>
@@ -44,8 +47,12 @@ import androidx.annotation.Nullable;
 public class HtmlFormatter<T>
         implements FieldFormatter<T> {
 
+    private static final Pattern LINEFEED_PATTERN = Pattern.compile("\n", Pattern.LITERAL);
+
     /** Whether to make links clickable. */
     private final boolean mEnableLinks;
+
+    private final boolean mConvertLineFeeds;
 
     /**
      * Constructor.
@@ -53,8 +60,23 @@ public class HtmlFormatter<T>
      * @param enableLinks {@code true} to enable links.
      *                    Ignored if the View has an onClickListener
      */
+    @SuppressWarnings("WeakerAccess")
     public HtmlFormatter(final boolean enableLinks) {
         mEnableLinks = enableLinks;
+        mConvertLineFeeds = false;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param enableLinks      {@code true} to enable links.
+     *                         Ignored if the View has an onClickListener
+     * @param convertLineFeeds set to {@code true} to convert '\n' characters to '<br>'
+     */
+    public HtmlFormatter(final boolean enableLinks,
+                         final boolean convertLineFeeds) {
+        mEnableLinks = enableLinks;
+        mConvertLineFeeds = convertLineFeeds;
     }
 
     /**
@@ -100,7 +122,15 @@ public class HtmlFormatter<T>
     @Override
     public String format(@NonNull final Context context,
                          @Nullable final T rawValue) {
-        return rawValue != null ? String.valueOf(rawValue) : "";
+        if (rawValue != null) {
+            if (mConvertLineFeeds) {
+                return LINEFEED_PATTERN.matcher(String.valueOf(rawValue))
+                                       .replaceAll(Matcher.quoteReplacement("<br>"));
+            } else {
+                return String.valueOf(rawValue);
+            }
+        }
+        return "";
     }
 
     @Override
