@@ -45,6 +45,9 @@ import androidx.interpolator.view.animation.LinearOutSlowInInterpolator;
 /**
  * Original code from <a href="https://github.com/zhanghai/AndroidFastScroll">
  * https://github.com/zhanghai/AndroidFastScroll</a>.
+ * <p>
+ * Not all methods here as used, but for now keeping this class as-is allowing future
+ * use of all features.
  */
 public class DefaultAnimationHelper
         implements FastScrollerOverlay.AnimationHelper {
