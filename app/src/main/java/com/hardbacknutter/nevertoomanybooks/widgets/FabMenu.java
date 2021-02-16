@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -126,13 +126,13 @@ public class FabMenu {
      */
     public void show(final boolean show) {
         if (show) {
-            mFab.setImageResource(R.drawable.ic_close);
+            mFab.setImageResource(R.drawable.ic_baseline_close_24);
             // mFabOverlay overlaps the whole screen and intercepts clicks.
             // This does not include the ToolBar.
             mFabOverlay.setVisibility(View.VISIBLE);
             mFabOverlay.setOnClickListener(v -> hideMenu());
         } else {
-            mFab.setImageResource(R.drawable.ic_add);
+            mFab.setImageResource(R.drawable.ic_baseline_add_24);
             mFabOverlay.setVisibility(View.GONE);
             mFabOverlay.setOnClickListener(null);
         }

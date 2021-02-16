@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -569,8 +569,8 @@ public class CropImageView
             final Resources res = context.getResources();
             final Resources.Theme theme = context.getTheme();
 
-            mResizeHorizontal = res.getDrawable(R.drawable.ic_adjust, theme);
-            mResizeVertical = res.getDrawable(R.drawable.ic_adjust, theme);
+            mResizeHorizontal = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
+            mResizeVertical = res.getDrawable(R.drawable.ic_baseline_adjust_24, theme);
 
             mFocusPaint.setColor(res.getColor(R.color.cropper_focus, theme));
 

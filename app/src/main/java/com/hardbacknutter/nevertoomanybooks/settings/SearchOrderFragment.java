@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -142,7 +142,7 @@ public class SearchOrderFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-            .setIcon(R.drawable.ic_undo)
+            .setIcon(R.drawable.ic_baseline_undo_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);

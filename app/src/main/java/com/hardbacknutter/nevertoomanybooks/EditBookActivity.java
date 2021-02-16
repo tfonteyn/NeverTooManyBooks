@@ -195,7 +195,7 @@ public class EditBookActivity
         // Now validate the book data
         if (!book.validate(this)) {
             new MaterialAlertDialogBuilder(this)
-                    .setIcon(R.drawable.ic_error)
+                    .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.vldt_failure)
                     .setMessage(book.getValidationExceptionMessage())
                     .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())
@@ -207,7 +207,7 @@ public class EditBookActivity
         // Check if the book already exists
         if (mVm.bookExists()) {
             new MaterialAlertDialogBuilder(this)
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.lbl_duplicate_book)
                     .setMessage(R.string.confirm_duplicate_book_message)
                     // this dialog is important. Make sure the user pays some attention

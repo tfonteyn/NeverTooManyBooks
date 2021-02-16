@@ -1435,7 +1435,7 @@ public class BooklistAdapter
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(adapter, itemView, group,
-                  DBDefinitions.KEY_AUTHOR_IS_COMPLETE, R.drawable.ic_lock);
+                  DBDefinitions.KEY_AUTHOR_IS_COMPLETE, R.drawable.ic_baseline_done_all_24);
         }
     }
 
@@ -1459,7 +1459,7 @@ public class BooklistAdapter
                      @NonNull final View itemView,
                      @NonNull final BooklistGroup group) {
             super(adapter, itemView, group,
-                  DBDefinitions.KEY_SERIES_IS_COMPLETE, R.drawable.ic_lock);
+                  DBDefinitions.KEY_SERIES_IS_COMPLETE, R.drawable.ic_baseline_done_all_24);
         }
 
         @Override

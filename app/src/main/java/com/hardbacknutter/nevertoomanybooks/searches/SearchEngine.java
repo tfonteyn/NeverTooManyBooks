@@ -229,7 +229,7 @@ public interface SearchEngine {
             final String siteName = context.getString(config.getNameResId());
 
             final AlertDialog.Builder dialogBuilder = new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(context.getString(R.string.lbl_registration, siteName))
                     .setNegativeButton(R.string.action_not_now, (d, w) ->
                             onResult.accept(RegistrationAction.NotNow))

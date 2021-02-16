@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -43,7 +43,7 @@
     <ImageView
         android:id="@+id/coverImage0"
         style="@style/CoverImage.Gallery"
-        android:src="@drawable/ic_image"
+        android:src="@drawable/ic_baseline_image_24"
         tools:ignore="ContentDescription"
         tools:src="@sample/covers"
         />

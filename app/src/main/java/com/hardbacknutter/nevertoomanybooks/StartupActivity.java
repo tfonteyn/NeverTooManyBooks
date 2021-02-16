@@ -165,7 +165,7 @@ public class StartupActivity
     private void backupRequired() {
         if (mVm.isProposeBackup()) {
             new MaterialAlertDialogBuilder(this)
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.app_name)
                     .setMessage(R.string.warning_backup_request)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

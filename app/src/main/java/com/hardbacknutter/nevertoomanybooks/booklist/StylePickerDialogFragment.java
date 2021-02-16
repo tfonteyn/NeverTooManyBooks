@@ -120,10 +120,10 @@ public class StylePickerDialogFragment
             mShowAllStyles = !mShowAllStyles;
             if (mShowAllStyles) {
                 item.setTitle(R.string.btn_less_ellipsis);
-                item.setIcon(R.drawable.ic_unfold_less);
+                item.setIcon(R.drawable.ic_baseline_unfold_less_24);
             } else {
                 item.setTitle(R.string.btn_more_ellipsis);
-                item.setIcon(R.drawable.ic_unfold_more);
+                item.setIcon(R.drawable.ic_baseline_unfold_more_24);
             }
             loadStyles();
             mAdapter.notifyDataSetChanged();

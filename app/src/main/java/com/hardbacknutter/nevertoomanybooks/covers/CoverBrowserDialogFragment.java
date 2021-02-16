@@ -459,7 +459,7 @@ public class CoverBrowserDialogFragment
             if (imageFileInfo == null) {
                 // not in the cache,; use a placeholder but preserve the available space
                 ImageUtils.setPlaceholder(holder.imageView, mMaxWidth, mMaxHeight,
-                                          R.drawable.ic_image, 0);
+                                          R.drawable.ic_baseline_image_24, 0);
                 // and queue a request for it.
                 mModel.fetchGalleryImage(isbn);
                 holder.siteView.setText("");
@@ -485,7 +485,7 @@ public class CoverBrowserDialogFragment
                     // as a failed search should have removed the isbn from the edition list,
                     // but race-conditions + paranoia...
                     ImageUtils.setPlaceholder(holder.imageView, mMaxWidth, mMaxHeight,
-                                              R.drawable.ic_broken_image, 0);
+                                              R.drawable.ic_baseline_broken_image_24, 0);
                     holder.siteView.setText("");
                 }
             }

@@ -77,7 +77,7 @@ public class StyleGroupsFragment
                     } else {
                         //noinspection ConstantConditions
                         new MaterialAlertDialogBuilder(getContext())
-                                .setIcon(R.drawable.ic_warning)
+                                .setIcon(R.drawable.ic_baseline_warning_24)
                                 .setTitle(R.string.pg_style_groups)
                                 .setMessage(R.string.warning_select_at_least_1_group)
                                 .setNegativeButton(R.string.action_discard, (d, w) ->

@@ -151,7 +151,7 @@ public class SearchBookUpdatesFragment
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_cloud_download);
+        fab.setImageResource(R.drawable.ic_baseline_cloud_download_24);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> prepareUpdate());
 
@@ -210,11 +210,11 @@ public class SearchBookUpdatesFragment
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
                  r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
                  R.string.lbl_websites)
-            .setIcon(R.drawable.ic_find_in_page)
+            .setIcon(R.drawable.ic_baseline_find_in_page_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.action_reset_to_default)
-            .setIcon(R.drawable.ic_undo)
+            .setIcon(R.drawable.ic_baseline_undo_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -283,7 +283,7 @@ public class SearchBookUpdatesFragment
         if (mVm.isShowWarningAboutCovers()) {
             // check if the user really wants to overwrite all covers
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.menu_update_fields)
                     .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -354,7 +354,7 @@ public class SearchBookUpdatesFragment
         msg = StandardDialogs.createBadError(getContext(), msg);
 
         new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_error)
+                .setIcon(R.drawable.ic_baseline_error_24)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, (d, w) -> {
                     d.dismiss();

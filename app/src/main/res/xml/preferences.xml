@@ -40,7 +40,7 @@
             android:defaultValue="system"
             android:entries="@array/pe_ui_language"
             android:entryValues="@array/pv_ui_language"
-            android:icon="@drawable/ic_language"
+            android:icon="@drawable/ic_baseline_language_24"
             android:key="ui.locale"
             android:title="@string/pt_ui_language" />
 
@@ -48,7 +48,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_ui_theme"
             android:entryValues="@array/pv_ui_theme"
-            android:icon="@drawable/ic_settings_brightness"
+            android:icon="@drawable/ic_baseline_settings_brightness_24"
             android:key="ui.theme"
             android:title="@string/pt_ui_theme" />
 
@@ -58,7 +58,7 @@
         android:title="@android:string/search_go">
 
         <Preference
-            android:icon="@drawable/ic_sort"
+            android:icon="@drawable/ic_baseline_sort_24"
             android:key="psk_search_site_order"
             android:summary="@string/pt_website_order_and_enable"
             android:title="@string/lbl_websites">
@@ -66,7 +66,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.SearchInternetPreferenceFragment"
-            android:icon="@drawable/ic_search"
+            android:icon="@drawable/ic_baseline_search_24"
             android:key="psk_web_searches"
             android:title="@string/btn_more_ellipsis"
             />
@@ -78,7 +78,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_reorder"
+            android:icon="@drawable/ic_baseline_reorder_24"
             android:key="show.author.name.given_first"
             android:summaryOff="@string/pv_author_name_family_first"
             android:summaryOn="@string/pv_author_name_given_first"
@@ -87,7 +87,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_reorder"
+            android:icon="@drawable/ic_baseline_reorder_24"
             android:key="show.title.reordered"
             android:summaryOff="@string/pt_show_titles_reordered_off"
             android:summaryOn="@string/pt_show_titles_reordered_on"
@@ -100,7 +100,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_sort_by_alpha"
+            android:icon="@drawable/ic_baseline_sort_by_alpha_24"
             android:key="sort.author.name.given_first"
             android:summaryOff="@string/pv_author_name_family_first"
             android:summaryOn="@string/pv_author_name_given_first"
@@ -108,7 +108,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_sort_by_alpha"
+            android:icon="@drawable/ic_baseline_sort_by_alpha_24"
             android:key="sort.title.reordered"
             android:summaryOff="@string/pt_show_titles_reordered_off"
             android:summaryOn="@string/pt_show_titles_reordered_on"
@@ -121,7 +121,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.ImagesPreferenceFragment"
-            android:icon="@drawable/ic_image"
+            android:icon="@drawable/ic_baseline_image_24"
             android:key="psk_thumbnails"
             android:title="@string/lbl_covers_long"
             />
@@ -162,7 +162,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_bob_list_state"
             android:entryValues="@array/pv_bob_list_state"
-            android:icon="@drawable/ic_view_list"
+            android:icon="@drawable/ic_baseline_view_list_24"
             android:key="booklist.rebuild.state"
             android:title="@string/pt_bob_list_rebuild_state" />
 
@@ -170,7 +170,7 @@
             android:defaultValue="3"
             android:entries="@array/pe_fastscroller_overlay"
             android:entryValues="@array/pv_fastscroller_overlay"
-            android:icon="@drawable/ic_chat_bubble_outline"
+            android:icon="@drawable/ic_baseline_chat_bubble_outline_24"
             android:key="booklist.fastscroller.overlay"
             android:title="@string/pt_enable_fast_scroller_overlay" />
     </PreferenceCategory>
@@ -180,14 +180,14 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.FieldVisibilityPreferenceFragment"
-            android:icon="@drawable/ic_visibility"
+            android:icon="@drawable/ic_baseline_visibility_24"
             android:key="psk_fields_visibility"
             android:title="@string/pg_ui_field_visibility"
             />
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_tab"
+            android:icon="@drawable/ic_baseline_tab_24"
             android:key="edit.book.tab.externalId"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -196,14 +196,14 @@
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.CalibrePreferencesFragment"
             android:key="psk_calibre"
-            android:icon="@drawable/ic_cloud"
+            android:icon="@drawable/ic_baseline_cloud_24"
             android:summary="@string/lbl_calibre_content_server"
             android:title="@string/site_calibre">
         </Preference>
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.MaintenanceFragment"
-            android:icon="@drawable/ic_settings"
+            android:icon="@drawable/ic_baseline_settings_24"
             android:key="psk_advanced_options"
             android:title="@string/pt_maintenance"
             />

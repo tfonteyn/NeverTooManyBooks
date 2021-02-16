@@ -216,7 +216,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@android:color/transparent"
         android:contentDescription="@string/btn_clear_queue"
-        android:src="@drawable/ic_chip_close_circle"
+        android:src="@drawable/ic_mtrl_chip_close_circle_18"
         app:layout_constraintStart_toEndOf="@id/lbl_queue"
         app:layout_constraintTop_toBottomOf="@id/btn_search"
         />

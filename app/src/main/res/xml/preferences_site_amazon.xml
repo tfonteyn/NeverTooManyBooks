@@ -26,7 +26,7 @@
 
         <EditTextPreference
             android:defaultValue="https://www.amazon.com"
-            android:icon="@drawable/ic_link"
+            android:icon="@drawable/ic_baseline_link_24"
             android:key="amazon.host.url"
             android:summary="@string/info_not_set"
             android:title="@string/site_amazon" />

@@ -363,11 +363,11 @@ public class EditBookTocFragment
             menu.add(new MenuPickerDialogFragment.Pick(
                     R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                     getString(R.string.action_edit_ellipsis),
-                    R.drawable.ic_edit));
+                    R.drawable.ic_baseline_edit_24));
             menu.add(new MenuPickerDialogFragment.Pick(
                     R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                     getString(R.string.action_delete),
-                    R.drawable.ic_delete));
+                    R.drawable.ic_baseline_delete_24));
 
             mMenuLauncher.launch(title, null, menu, position);
 
@@ -376,11 +376,11 @@ public class EditBookTocFragment
             menu.add(Menu.NONE, R.id.MENU_EDIT,
                      res.getInteger(R.integer.MENU_ORDER_EDIT),
                      R.string.action_edit_ellipsis)
-                .setIcon(R.drawable.ic_edit);
+                .setIcon(R.drawable.ic_baseline_edit_24);
             menu.add(Menu.NONE, R.id.MENU_DELETE,
                      res.getInteger(R.integer.MENU_ORDER_DELETE),
                      R.string.action_delete)
-                .setIcon(R.drawable.ic_delete);
+                .setIcon(R.drawable.ic_baseline_delete_24);
 
             new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                     .show();
@@ -669,7 +669,7 @@ public class EditBookTocFragment
             //noinspection ConstantConditions
             final AlertDialog dialog =
                     new MaterialAlertDialogBuilder(getContext())
-                            .setIcon(R.drawable.ic_warning)
+                            .setIcon(R.drawable.ic_baseline_warning_24)
                             .setView(vb.getRoot())
                             .setNegativeButton(android.R.string.cancel, (d, which) -> dismiss())
                             .create();

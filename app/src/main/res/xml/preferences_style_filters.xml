@@ -29,7 +29,7 @@
             android:defaultValue="-1"
             android:entries="@array/pe_bob_filter_read"
             android:entryValues="@array/pv_bob_filter_values"
-            android:icon="@drawable/ic_filter_list"
+            android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.read"
             android:title="@string/lbl_read"
             />
@@ -38,7 +38,7 @@
             android:defaultValue="-1"
             android:entries="@array/pe_bob_filter_signed"
             android:entryValues="@array/pv_bob_filter_values"
-            android:icon="@drawable/ic_filter_list"
+            android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.signed"
             android:title="@string/lbl_signed"
             />
@@ -47,7 +47,7 @@
             android:defaultValue="-1"
             android:entries="@array/pe_bob_filter_anthology"
             android:entryValues="@array/pv_bob_filter_values"
-            android:icon="@drawable/ic_filter_list"
+            android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.anthology"
             android:title="@string/lbl_anthology"
             />
@@ -56,7 +56,7 @@
             android:defaultValue="-1"
             android:entries="@array/pe_bob_filter_lending"
             android:entryValues="@array/pv_bob_filter_values"
-            android:icon="@drawable/ic_filter_list"
+            android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.lending"
             android:title="@string/lbl_lend_out"
             />
@@ -67,7 +67,7 @@
             android:dialogMessage="@string/info_filter_edition"
             android:entries="@array/pe_bob_filter_edition"
             android:entryValues="@array/pv_bob_filter_edition"
-            android:icon="@drawable/ic_filter_list"
+            android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.editions"
             android:title="@string/lbl_edition"
             app:disregardButtonText="@string/bookshelf_all_books" />
@@ -76,7 +76,7 @@
             android:defaultValue="-1"
             android:entries="@array/pe_bob_filter_isbn"
             android:entryValues="@array/pv_bob_filter_values"
-            android:icon="@drawable/ic_filter_list"
+            android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.isbn"
             android:title="@string/lbl_isbn"
             />
@@ -84,7 +84,7 @@
         <com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference
             android:defaultValue="@array/empty_array"
             android:dialogMessage="@string/info_filter_edition"
-            android:icon="@drawable/ic_filter_list"
+            android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="style.booklist.filter.bookshelves"
             android:title="@string/lbl_bookshelves"
             app:disregardButtonText="@string/bookshelf_all_books" />

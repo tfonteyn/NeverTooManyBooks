@@ -181,7 +181,7 @@ public class EditPublisherDialogFragment
         } else {
             // Merge the 2
             new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(mPublisher.getLabel(context))
                     .setMessage(R.string.confirm_merge_publishers)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

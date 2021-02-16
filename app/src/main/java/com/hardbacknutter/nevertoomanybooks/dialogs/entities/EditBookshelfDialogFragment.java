@@ -163,7 +163,7 @@ public class EditBookshelfDialogFragment
             // Merge the 2
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(mBookshelf.getLabel(getContext()))
                     .setMessage(R.string.confirm_merge_bookshelves)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

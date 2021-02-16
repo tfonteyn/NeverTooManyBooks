@@ -252,7 +252,7 @@
 
     <style name="TIL.EditText.Isbn">
         <item name="android:hint">@string/lbl_isbn</item>
-        <item name="startIconDrawable">@drawable/ic_check</item>
+        <item name="startIconDrawable">@drawable/ic_baseline_check_24</item>
         <item name="startIconTint">?attr/colorSecondaryVariant</item>
     </style>
 
@@ -361,7 +361,7 @@
         <item name="android:layout_height">wrap_content</item>
         <!-- yes, LEFT! - this is to offset the icon so its centered -->
         <item name="android:paddingLeft">@dimen/isbn_keypad_backspace_key_icon_padding</item>
-        <item name="icon">@drawable/ic_backspace</item>
+        <item name="icon">@drawable/ic_baseline_backspace_24</item>
         <item name="android:contentDescription">@string/action_delete</item>
     </style>
 
@@ -394,13 +394,13 @@
         <item name="android:focusable">true</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:clickable">true</item>
-        <item name="android:src">@drawable/ic_delete</item>
+        <item name="android:src">@drawable/ic_baseline_delete_24</item>
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
     <!-- ImageView - handle to let the user drag & drop rows to re-order them -->
     <style name="RowButton.DragHandle">
-        <item name="android:src">@drawable/ic_drag_handle</item>
+        <item name="android:src">@drawable/ic_baseline_drag_handle_24</item>
     </style>
 
     <!-- LinearLayout/ConstraintLayout - the details part of the row in a list row. -->
@@ -468,26 +468,26 @@
     <!-- ImageView. Indicator a book has been read. -->
     <style name="Flag.Read">
         <item name="android:contentDescription">@string/lbl_read</item>
-        <item name="android:src">@drawable/ic_assignment_turned_in</item>
+        <item name="android:src">@drawable/ic_baseline_library_add_check_24</item>
         <item name="android:tint">?attr/colorSecondaryVariant</item>
     </style>
 
     <!-- ImageView. Indicator a book is a first edition. -->
     <style name="Flag.FirstEdition">
         <item name="android:contentDescription">@string/lbl_edition_first_edition</item>
-        <item name="android:src">@drawable/ic_filter_1</item>
+        <item name="android:src">@drawable/ic_baseline_filter_1_24</item>
     </style>
 
     <!-- ImageView. Indicator a book is signed. -->
     <style name="Flag.Signed">
         <item name="android:contentDescription">@string/lbl_signed</item>
-        <item name="android:src">@drawable/ic_gesture</item>
+        <item name="android:src">@drawable/ic_baseline_gesture_24</item>
     </style>
 
     <!-- ImageView. Indicator a book has been lend out. -->
     <style name="Flag.LendOut">
         <item name="android:contentDescription">@string/lbl_lend_out</item>
-        <item name="android:src">@drawable/ic_do_not_disturb</item>
+        <item name="android:src">@drawable/ic_lend_out</item>
         <item name="android:tint">?attr/colorError</item>
     </style>
 
@@ -535,7 +535,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:backgroundTint">?attr/colorOnBackground</item>
-        <item name="android:src">@drawable/ic_lens</item>
+        <item name="android:src">@drawable/ic_baseline_lens_24</item>
     </style>
 
     <style name="BoB.Group.Bullet.Level2">
@@ -714,7 +714,7 @@
         <item name="android:layout_marginStart">@dimen/field_margin_start</item>
         <item name="android:textColor">?attr/colorOnBackground</item>
         <item name="android:textAllCaps">false</item>
-        <item name="icon">@drawable/ic_link</item>
+        <item name="icon">@drawable/ic_baseline_link_24</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -742,7 +742,7 @@
         <item name="android:layout_marginStart">4dp</item>
         <item name="android:padding">4dp</item>
         <item name="android:background">@android:color/transparent</item>
-        <item name="android:src">@drawable/ic_info_outline</item>
+        <item name="android:src">@drawable/ic_outline_info_24</item>
     </style>
 
     <!-- Goodreads task/event error message. -->
@@ -784,7 +784,7 @@
     <style name="Toolbar.Dialog" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="navigationIcon">@drawable/ic_close</item>
+        <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
     </style>
 
     <style name="TabBar" parent="Widget.MaterialComponents.TabLayout.Colored">

@@ -130,7 +130,7 @@ public abstract class SearchBookBaseFragment
         menu.add(Menu.NONE, R.id.MENU_PREFS_SEARCH_SITES,
                  r.getInteger(R.integer.MENU_ORDER_SEARCH_SITES),
                  R.string.lbl_websites)
-            .setIcon(R.drawable.ic_find_in_page)
+            .setIcon(R.drawable.ic_baseline_find_in_page_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -159,7 +159,7 @@ public abstract class SearchBookBaseFragment
             if (searchErrors != null) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_warning)
+                        .setIcon(R.drawable.ic_baseline_warning_24)
                         .setTitle(R.string.warning_search_failed)
                         .setMessage(searchErrors)
                         .setPositiveButton(android.R.string.ok, (d, w) -> d.dismiss())

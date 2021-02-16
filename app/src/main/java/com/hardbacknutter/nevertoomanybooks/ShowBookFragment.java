@@ -212,7 +212,7 @@ public class ShowBookFragment
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_edit);
+        fab.setImageResource(R.drawable.ic_baseline_edit_24);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> mEditBookLauncher.launch(
                 mVm.getBookAtPosition(mVb.pager.getCurrentItem()).getId()));

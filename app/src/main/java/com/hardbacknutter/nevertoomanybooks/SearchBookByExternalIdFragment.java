@@ -162,7 +162,7 @@ public class SearchBookByExternalIdFragment
         //noinspection ConstantConditions
         if (config.getExternalIdDomain().isText()) {
             // display an alphanumeric keyboard icon
-            keyboardIcon = R.drawable.ic_keyboard;
+            keyboardIcon = R.drawable.ic_baseline_keyboard_24;
             inputType = InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
 
         } else {
@@ -175,7 +175,7 @@ public class SearchBookByExternalIdFragment
                 }
             }
             // display a (sort of) numeric keyboard icon
-            keyboardIcon = R.drawable.ic_apps;
+            keyboardIcon = R.drawable.ic_baseline_apps_24;
             inputType = InputType.TYPE_CLASS_NUMBER;
         }
 

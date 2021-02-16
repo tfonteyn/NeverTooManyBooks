@@ -70,7 +70,7 @@
             app:layout_constraintStart_toEndOf="@id/coverImage0"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@drawable/outline_rounded"
-            tools:src="@drawable/ic_image"
+            tools:src="@drawable/ic_baseline_image_24"
             />
 
         <androidx.constraintlayout.widget.Barrier

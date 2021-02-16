@@ -38,7 +38,7 @@
     <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
         android:id="@+id/fab"
         style="@style/FAB"
-        android:src="@drawable/ic_crop"
+        android:src="@drawable/ic_baseline_crop_24"
         />
 
 </FrameLayout>

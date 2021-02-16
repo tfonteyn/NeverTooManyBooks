@@ -360,7 +360,7 @@ public class SearchBookByIsbnFragment
 
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.lbl_duplicate_book)
                     .setMessage(msg)
                     // this dialog is important. Make sure the user pays some attention

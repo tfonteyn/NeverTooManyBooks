@@ -258,7 +258,8 @@ public class CoverHandler {
             view.setBackground(null);
         } else {
             ImageUtils.setPlaceholder(view, mMaxWidth, mMaxHeight,
-                                      R.drawable.ic_add_a_photo, R.drawable.outline_rounded);
+                                      R.drawable.ic_baseline_add_a_photo_24,
+                                      R.drawable.outline_rounded);
         }
     }
 

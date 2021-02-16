@@ -445,7 +445,7 @@ public class MenuPickerDialogFragment
             setMenu(menu);
 
             //noinspection ConstantConditions
-            mSubMenuPointer = context.getDrawable(R.drawable.ic_submenu);
+            mSubMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
         }
 
         /**

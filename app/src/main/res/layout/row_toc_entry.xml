@@ -31,7 +31,7 @@
     <TextView
         android:id="@+id/title"
         style="@style/Field.BookTitle"
-        android:drawableStart="@drawable/ic_library_books"
+        android:drawableStart="@drawable/ic_baseline_library_books_24"
         android:drawablePadding="@dimen/drawable_padding_start"
         android:textIsSelectable="false"
         app:layout_constraintBottom_toBottomOf="parent"

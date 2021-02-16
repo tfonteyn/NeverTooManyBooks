@@ -253,7 +253,7 @@ public class PreferredStylesFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
-            .setIcon(R.drawable.ic_delete)
+            .setIcon(R.drawable.ic_baseline_delete_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -299,17 +299,17 @@ public class PreferredStylesFragment
                 menu.add(new MenuPickerDialogFragment.Pick(
                         R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                         getString(R.string.action_edit_ellipsis),
-                        R.drawable.ic_edit));
+                        R.drawable.ic_baseline_edit_24));
                 menu.add(new MenuPickerDialogFragment.Pick(
                         R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                         getString(R.string.action_delete),
-                        R.drawable.ic_delete));
+                        R.drawable.ic_baseline_delete_24));
             }
 
             menu.add(new MenuPickerDialogFragment.Pick(
                     R.id.MENU_DUPLICATE, res.getInteger(R.integer.MENU_ORDER_DUPLICATE),
                     getString(R.string.action_duplicate),
-                    R.drawable.ic_content_copy));
+                    R.drawable.ic_baseline_content_copy_24));
 
             mMenuLauncher.launch(title, null, menu, position);
 
@@ -319,17 +319,17 @@ public class PreferredStylesFragment
                 menu.add(Menu.NONE, R.id.MENU_EDIT,
                          res.getInteger(R.integer.MENU_ORDER_EDIT),
                          R.string.action_edit_ellipsis)
-                    .setIcon(R.drawable.ic_edit);
+                    .setIcon(R.drawable.ic_baseline_edit_24);
                 menu.add(Menu.NONE, R.id.MENU_DELETE,
                          res.getInteger(R.integer.MENU_ORDER_DELETE),
                          R.string.action_delete)
-                    .setIcon(R.drawable.ic_delete);
+                    .setIcon(R.drawable.ic_baseline_delete_24);
             }
 
             menu.add(Menu.NONE, R.id.MENU_DUPLICATE,
                      res.getInteger(R.integer.MENU_ORDER_DUPLICATE),
                      R.string.action_duplicate)
-                .setIcon(R.drawable.ic_content_copy);
+                .setIcon(R.drawable.ic_baseline_content_copy_24);
 
             new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                     .show();

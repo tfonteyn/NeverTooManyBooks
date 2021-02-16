@@ -235,7 +235,7 @@ public class ImportFragment
                     // CsvArchiveReader will make a database backup before importing.
                     //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
-                            .setIcon(R.drawable.ic_warning)
+                            .setIcon(R.drawable.ic_baseline_warning_24)
                             .setTitle(R.string.lbl_import_books)
                             .setMessage(R.string.warning_import_csv)
                             .setNegativeButton(android.R.string.cancel,
@@ -464,7 +464,7 @@ public class ImportFragment
     private void onImportNotSupported(@StringRes final int stringResId) {
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_error)
+                .setIcon(R.drawable.ic_baseline_error_24)
                 .setMessage(stringResId)
                 .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                 .create()
@@ -478,7 +478,7 @@ public class ImportFragment
             Objects.requireNonNull(message.result, FinishedMessage.MISSING_TASK_RESULTS);
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_error)
+                    .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(R.string.error_import_failed)
                     .setMessage(Backup.createErrorReport(getContext(), message.result))
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
@@ -534,7 +534,7 @@ public class ImportFragment
 
         //noinspection ConstantConditions
         new MaterialAlertDialogBuilder(getContext())
-                .setIcon(R.drawable.ic_info)
+                .setIcon(R.drawable.ic_baseline_info_24)
                 .setTitle(titleId)
                 .setMessage(createReport(result))
                 .setPositiveButton(R.string.action_done, (d, w) -> {

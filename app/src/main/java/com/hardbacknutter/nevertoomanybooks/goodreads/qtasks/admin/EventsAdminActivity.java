@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -68,7 +68,7 @@ public class EventsAdminActivity
     @Override
     public boolean onCreateOptionsMenu(@NonNull final Menu menu) {
         menu.add(Menu.NONE, R.id.MENU_RESET, 0, R.string.gr_tq_btn_cleanup_old_events)
-            .setIcon(R.drawable.ic_delete)
+            .setIcon(R.drawable.ic_baseline_delete_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         return super.onCreateOptionsMenu(menu);
@@ -80,7 +80,7 @@ public class EventsAdminActivity
 
         if (itemId == R.id.MENU_RESET) {
             new MaterialAlertDialogBuilder(this)
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setMessage(R.string.gr_tq_btn_cleanup_old_events)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {

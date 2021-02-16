@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -28,12 +28,12 @@
         app:showAsAction="always" />
     <item
         android:id="@id/MENU_EDIT"
-        android:icon="@drawable/ic_edit"
+        android:icon="@drawable/ic_baseline_edit_24"
         android:title="@string/action_edit"
         app:showAsAction="ifRoom" />
     <item
         android:id="@id/MENU_LEVEL_TOGGLE"
-        android:icon="@drawable/ic_unfold_more"
+        android:icon="@drawable/ic_baseline_unfold_more_24"
         android:title="@string/btn_more_ellipsis"
         app:showAsAction="ifRoom" />
 </menu>

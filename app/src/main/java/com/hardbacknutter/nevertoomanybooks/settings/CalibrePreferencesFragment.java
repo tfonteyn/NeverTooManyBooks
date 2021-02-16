@@ -79,7 +79,7 @@ public class CalibrePreferencesFragment
                     if (sp.isChecked()) {
                         //noinspection ConstantConditions
                         new MaterialAlertDialogBuilder(getContext())
-                                .setIcon(R.drawable.ic_info_outline)
+                                .setIcon(R.drawable.ic_baseline_info_24)
                                 .setTitle(R.string.lbl_test_connection)
                                 .setMessage(R.string.confirm_test_connection)
                                 .setNegativeButton(R.string.action_not_now, (d, w) ->

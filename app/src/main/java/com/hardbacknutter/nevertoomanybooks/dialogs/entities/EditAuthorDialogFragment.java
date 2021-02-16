@@ -204,7 +204,7 @@ public class EditAuthorDialogFragment
         } else {
             // Merge the 2
             new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(mAuthor.getLabel(context))
                     .setMessage(R.string.confirm_merge_authors)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

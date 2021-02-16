@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -33,7 +33,7 @@
 
         <Preference
             android:dependency="goodreads.showMenu"
-            android:icon="@drawable/ic_security"
+            android:icon="@drawable/ic_baseline_security_24"
             android:key="pa_credentials"
             android:title="@string/lbl_credentials">
         </Preference>
@@ -41,7 +41,7 @@
         <SwitchPreference
             android:defaultValue="true"
             android:dependency="goodreads.showMenu"
-            android:icon="@drawable/ic_library_books"
+            android:icon="@drawable/ic_baseline_library_books_24"
             android:key="goodreads.search.collect.genre"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

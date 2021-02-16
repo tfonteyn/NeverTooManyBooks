@@ -96,7 +96,7 @@ public class ImageViewLoader
                 // We only get here if we THOUGHT we had an image, but we failed to
                 // load/decode it. So use 'broken-image' icon and preserve the space
                 ImageUtils.setPlaceholder(imageView, mMaxWidth, mMaxHeight,
-                                          R.drawable.ic_broken_image, 0);
+                                          R.drawable.ic_baseline_broken_image_24, 0);
             }
         }
     }

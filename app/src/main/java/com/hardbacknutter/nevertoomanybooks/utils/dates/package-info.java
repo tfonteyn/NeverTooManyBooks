@@ -51,7 +51,8 @@
  * and
  * {@link com.hardbacknutter.nevertoomanybooks.database.CoversDAO}#CKEY_UTC_DATETIME
  * <p>
- * Columns of type {@link  com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo#TYPE_DATE}
+ * Columns of type
+ * {@link  com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo#TYPE_DATE}
  * Status on 2020-09-26:
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_READ_START}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_READ_END}

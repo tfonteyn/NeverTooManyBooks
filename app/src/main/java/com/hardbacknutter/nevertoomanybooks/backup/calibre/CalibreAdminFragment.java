@@ -132,7 +132,7 @@ public class CalibreAdminFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_CALIBRE_SETTING, 0, R.string.lbl_settings)
-            .setIcon(R.drawable.ic_settings)
+            .setIcon(R.drawable.ic_baseline_settings_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);

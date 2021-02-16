@@ -135,7 +135,7 @@ public class SettingsFragment
             final SwitchPreference p = (SwitchPreference) pref;
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setMessage(R.string.confirm_rebuild_orderby_columns)
                     // this dialog is important. Make sure the user pays some attention
                     .setCancelable(false)

@@ -36,7 +36,7 @@
     android:text=""
     android:textAppearance="?attr/textAppearanceListItem"
     android:textColor="?attr/textColorAlertDialogListItem"
-    tools:drawableStart="@drawable/ic_image"
+    tools:drawableStart="@drawable/ic_baseline_image_24"
     tools:text="@sample/data.json/context_menu/name"
     />
 

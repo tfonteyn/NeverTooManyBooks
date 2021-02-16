@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,14 +25,14 @@
 
         <ListPreference
             android:defaultValue="-1"
-            android:icon="@drawable/ic_photo_camera"
+            android:icon="@drawable/ic_baseline_photo_camera_24"
             android:key="camera.id.scan.barcode"
             android:title="@string/camera"
             />
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_surround_sound"
+            android:icon="@drawable/ic_baseline_surround_sound_24"
             android:key="sounds.scan.barcode.found"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -40,7 +40,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_surround_sound"
+            android:icon="@drawable/ic_baseline_surround_sound_24"
             android:key="sounds.scan.isbn.valid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -48,7 +48,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_surround_sound"
+            android:icon="@drawable/ic_baseline_surround_sound_24"
             android:key="sounds.scan.isbn.invalid"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"

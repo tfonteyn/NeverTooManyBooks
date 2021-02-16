@@ -186,7 +186,7 @@ public class CalibreLibraryMappingFragment
                                                   CalibreContentServer.getHostUrl(context)));
         }
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_error)
+                .setIcon(R.drawable.ic_baseline_error_24)
                 .setTitle(R.string.lbl_calibre_content_server)
                 .setMessage(msg)
                 .setPositiveButton(android.R.string.ok, (d, w) -> {

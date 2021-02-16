@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -191,7 +191,7 @@ public class MenuPicker {
             setMenu(menu);
 
             //noinspection ConstantConditions
-            mSubMenuPointer = context.getDrawable(R.drawable.ic_submenu);
+            mSubMenuPointer = context.getDrawable(R.drawable.ic_baseline_arrow_right_24);
         }
 
         /**

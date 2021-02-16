@@ -163,11 +163,11 @@ public class GoodreadsAdminFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_GOODREADS_TASKS, 0, R.string.gr_tq_menu_background_tasks)
-            .setIcon(R.drawable.ic_format_list_bulleted)
+            .setIcon(R.drawable.ic_baseline_format_list_bulleted_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         menu.add(Menu.NONE, R.id.MENU_SETTINGS, 0, R.string.lbl_settings)
-            .setIcon(R.drawable.ic_settings)
+            .setIcon(R.drawable.ic_baseline_settings_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -160,7 +160,7 @@ public final class Notifier
                          @NonNull final CharSequence message) {
         final Notification notification = new NotificationCompat.Builder(context, CHANNEL_INFO)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
-                .setSmallIcon(R.drawable.ic_info)
+                .setSmallIcon(R.drawable.ic_baseline_info_24)
                 .setContentTitle(context.getString(titleId))
                 .setContentText(message)
                 .setAutoCancel(true)
@@ -189,7 +189,7 @@ public final class Notifier
                          @NonNull final CharSequence message) {
         final Notification notification = new NotificationCompat.Builder(context, CHANNEL_WARN)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setSmallIcon(R.drawable.ic_warning)
+                .setSmallIcon(R.drawable.ic_baseline_warning_24)
                 .setContentTitle(context.getString(titleId))
                 .setContentText(message)
                 .setAutoCancel(true)
@@ -218,7 +218,7 @@ public final class Notifier
                           @NonNull final CharSequence message) {
         final Notification notification = new NotificationCompat.Builder(context, CHANNEL_ERROR)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setSmallIcon(R.drawable.ic_error)
+                .setSmallIcon(R.drawable.ic_baseline_error_24)
                 .setContentTitle(context.getString(titleId))
                 .setContentText(message)
                 .setAutoCancel(true)

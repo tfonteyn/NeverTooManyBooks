@@ -107,7 +107,7 @@ public class MaintenanceFragment
 
             if (mDebugClicks >= DEBUG_CLICKS_ALLOW_SQL_UPDATES) {
                 mVb.btnDebugSqShell.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                        R.drawable.ic_warning, 0, 0, 0);
+                        R.drawable.ic_baseline_warning_24, 0, 0, 0);
                 mDebugSqLiteAllowsUpdates = true;
             }
 
@@ -137,7 +137,7 @@ public class MaintenanceFragment
                                          getString(R.string.lbl_send_debug));
 
             new MaterialAlertDialogBuilder(context)
-                    .setIcon(R.drawable.ic_warning)
+                    .setIcon(R.drawable.ic_baseline_warning_24)
                     .setTitle(R.string.lbl_purge_files)
                     .setMessage(msg)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -148,7 +148,7 @@ public class MaintenanceFragment
         });
 
         mVb.btnPurgeBlns.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_warning)
+                .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.lbl_purge_blns)
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -158,7 +158,7 @@ public class MaintenanceFragment
                 .show());
 
         mVb.btnRebuildFts.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_warning)
+                .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.menu_rebuild_fts)
                 .setMessage(R.string.confirm_rebuild_fts)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
@@ -173,7 +173,7 @@ public class MaintenanceFragment
                 .show());
 
         mVb.btnRebuildIndex.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_warning)
+                .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.menu_rebuild_index)
                 .setMessage(R.string.confirm_rebuild_index)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> {
@@ -188,7 +188,7 @@ public class MaintenanceFragment
                 .show());
 
         mVb.btnDebugSendMail.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
-                .setIcon(R.drawable.ic_warning)
+                .setIcon(R.drawable.ic_baseline_warning_24)
                 .setTitle(R.string.debug)
                 .setMessage(R.string.debug_send_info_text)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
@@ -219,7 +219,7 @@ public class MaintenanceFragment
 
         mVb.btnDebugClearDb.setOnClickListener(v -> new MaterialAlertDialogBuilder(v.getContext())
                 .setTitle(R.string.action_clear_all_data)
-                .setIcon(R.drawable.ic_delete)
+                .setIcon(R.drawable.ic_baseline_delete_24)
                 .setMessage(R.string.confirm_clear_all_data)
                 .setNegativeButton(R.string.no, (d, w) -> d.dismiss())
                 .setPositiveButton(R.string.action_delete, (d, w) -> onDeleteAll())

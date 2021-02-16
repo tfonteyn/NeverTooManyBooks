@@ -752,7 +752,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_edit);
+                        .setIcon(R.drawable.ic_baseline_edit_24);
                 }
                 break;
             }
@@ -761,7 +761,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_edit);
+                        .setIcon(R.drawable.ic_baseline_edit_24);
                 }
                 break;
             }
@@ -770,7 +770,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_edit);
+                        .setIcon(R.drawable.ic_baseline_edit_24);
                 }
                 break;
             }
@@ -779,7 +779,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_edit);
+                        .setIcon(R.drawable.ic_baseline_edit_24);
                 }
                 break;
             }
@@ -788,7 +788,7 @@ public class BooksOnBookshelf
                     menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
-                        .setIcon(R.drawable.ic_edit);
+                        .setIcon(R.drawable.ic_baseline_edit_24);
                 }
                 break;
             }
@@ -804,7 +804,7 @@ public class BooksOnBookshelf
         }
         menu.add(Menu.NONE, R.id.MENU_NEXT_MISSING_COVER, menuOrder++,
                  R.string.lbl_next_book_without_cover)
-            .setIcon(R.drawable.ic_broken_image);
+            .setIcon(R.drawable.ic_baseline_broken_image_24);
 
         // if it's a level, add the expand option
         if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
@@ -812,7 +812,7 @@ public class BooksOnBookshelf
                 .setEnabled(false);
             //noinspection UnusedAssignment
             menu.add(Menu.NONE, R.id.MENU_LEVEL_EXPAND, menuOrder++, R.string.lbl_level_expand)
-                .setIcon(R.drawable.ic_unfold_more);
+                .setIcon(R.drawable.ic_baseline_unfold_more_24);
         }
 
         return menu.size() > 0;

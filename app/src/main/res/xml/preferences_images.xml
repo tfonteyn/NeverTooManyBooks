@@ -29,7 +29,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_thumbnails_rotate_auto"
             android:entryValues="@array/pv_thumbnails_rotate_auto"
-            android:icon="@drawable/ic_rotate_right"
+            android:icon="@drawable/ic_baseline_rotate_right_24"
             android:key="camera.image.autorotate"
             android:title="@string/pt_thumbnails_rotate_auto" />
 
@@ -38,7 +38,7 @@
             android:defaultValue="0"
             android:entries="@array/pe_camera_next_action"
             android:entryValues="@array/pv_camera_next_action"
-            android:icon="@drawable/ic_tune"
+            android:icon="@drawable/ic_baseline_tune_24"
             android:key="camera.image.action"
             android:title="@string/camera_next_action" />
 
@@ -49,7 +49,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_crop_original"
+            android:icon="@drawable/ic_baseline_crop_original_24"
             android:key="image.cropper.frame.whole"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -62,7 +62,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_cached"
+            android:icon="@drawable/ic_baseline_cached_24"
             android:key="image.cache.resized"
             android:summaryOff="@string/pe_thumbnails_cache_resized_each_time"
             android:summaryOn="@string/pe_thumbnails_cache_resized_stored"
@@ -70,7 +70,7 @@
 
         <Preference
             android:dependency="image.cache.resized"
-            android:icon="@drawable/ic_close"
+            android:icon="@drawable/ic_baseline_remove_24"
             android:key="psk_purge_image_cache"
             android:title="@string/lbl_purge_image_cache"
             />

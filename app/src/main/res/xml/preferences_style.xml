@@ -25,7 +25,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     >
     <EditTextPreference
-        android:icon="@drawable/ic_edit"
+        android:icon="@drawable/ic_baseline_edit_24"
         android:key="style.booklist.name"
         android:summary="@string/info_not_set"
         android:title="@string/lbl_name"
@@ -37,7 +37,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleGroupsFragment"
-            android:icon="@drawable/ic_format_list_bulleted"
+            android:icon="@drawable/ic_baseline_format_list_bulleted_24"
             android:key="style.booklist.groups"
             android:title="@string/pg_style_groups"
             />
@@ -47,7 +47,7 @@
      -->
         <SeekBarPreference
             android:defaultValue="1"
-            android:icon="@drawable/ic_format_indent_increase"
+            android:icon="@drawable/ic_baseline_format_indent_increase_24"
             android:key="style.booklist.levels.default"
             android:max="4"
             android:title="@string/pt_bob_list_state_expansion_level"
@@ -58,21 +58,21 @@
             android:defaultValue="@array/empty_array"
             android:entries="@array/pe_bob_header"
             android:entryValues="@array/pv_bob_header"
-            android:icon="@drawable/ic_view_headline"
+            android:icon="@drawable/ic_baseline_view_headline_24"
             android:key="style.booklist.header"
             android:title="@string/pt_bob_header"
             />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleFiltersFragment"
-            android:icon="@drawable/ic_filter_list"
+            android:icon="@drawable/ic_baseline_filter_list_24"
             android:key="psk_style_filters"
             android:title="@string/pg_filters"
             />
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.styles.StyleBookDetailsFragment"
-            android:icon="@drawable/ic_details"
+            android:icon="@drawable/ic_baseline_details_24"
             android:key="psk_style_show_details"
             android:title="@string/pg_bob_show_details"
             />
@@ -81,7 +81,7 @@
         <!-- Showing thumbnails fall under 'Extra Book Details', but this is more user-friendly. -->
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_image"
+            android:icon="@drawable/ic_baseline_image_24"
             android:key="style.booklist.show.thumbnails"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -92,7 +92,7 @@
         <SeekBarPreference
             android:defaultValue="3"
             android:dependency="style.booklist.show.thumbnails"
-            android:icon="@drawable/ic_photo_size_select_large"
+            android:icon="@drawable/ic_baseline_photo_size_select_large_24"
             android:key="style.booklist.scale.thumbnails"
             android:max="6"
             android:title="@string/pt_bob_cover_scale"
@@ -102,7 +102,7 @@
         <!-- default BooklistStyle.FONT_SCALE_2_MEDIUM == 2 -->
         <SeekBarPreference
             android:defaultValue="2"
-            android:icon="@drawable/ic_format_size"
+            android:icon="@drawable/ic_baseline_format_size_24"
             android:key="style.booklist.scale.font"
             android:max="4"
             android:title="@string/pt_bob_font_size"
@@ -114,7 +114,7 @@
              false: "wrap_content" -->
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_format_line_spacing"
+            android:icon="@drawable/ic_baseline_format_line_spacing_24"
             android:key="style.booklist.group.height"
             android:summaryOff="@string/size_small"
             android:summaryOn="@string/size_large"
@@ -128,7 +128,7 @@
         >
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_image"
+            android:icon="@drawable/ic_baseline_image_24"
             android:key="style.details.show.thumbnail.0"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -138,7 +138,7 @@
         <SwitchPreference
             android:defaultValue="true"
             android:dependency="style.details.show.thumbnail.0"
-            android:icon="@drawable/ic_image"
+            android:icon="@drawable/ic_baseline_image_24"
             android:key="style.details.show.thumbnail.1"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -154,7 +154,7 @@
 
         <SwitchPreference
             android:defaultValue="true"
-            android:icon="@drawable/ic_reorder"
+            android:icon="@drawable/ic_baseline_reorder_24"
             android:key="show.author.name.given_first"
             android:summaryOff="@string/pv_author_name_family_first"
             android:summaryOn="@string/pv_author_name_given_first"
@@ -163,7 +163,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_sort_by_alpha"
+            android:icon="@drawable/ic_baseline_sort_by_alpha_24"
             android:key="sort.author.name.given_first"
             android:summaryOff="@string/pv_author_name_family_first"
             android:summaryOn="@string/pv_author_name_given_first"
@@ -177,7 +177,7 @@
             android:defaultValue="@array/empty_array"
             android:entries="@array/pe_author_type"
             android:entryValues="@array/pv_author_type"
-            android:icon="@drawable/ic_sort_by_alpha"
+            android:icon="@drawable/ic_baseline_sort_by_alpha_24"
             android:key="style.booklist.group.authors.primary.type"
             android:title="@string/pt_primary_author_type"
             app:isPreferenceVisible="false"
@@ -187,7 +187,7 @@
         <!-- Enabled if Group 'Author' is present in this style. -->
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_functions"
+            android:icon="@drawable/ic_baseline_functions_24"
             android:key="style.booklist.group.authors.show.all"
             android:summaryOff="@string/pv_bob_books_under_multiple_primary_author_only"
             android:summaryOn="@string/pv_bob_books_under_multiple_each_author"
@@ -206,7 +206,7 @@
         <!-- Enabled if Group 'Series' is present in this style. -->
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_functions"
+            android:icon="@drawable/ic_baseline_functions_24"
             android:key="style.booklist.group.series.show.all"
             android:summaryOff="@string/pv_bob_books_under_multiple_primary_series_only"
             android:summaryOn="@string/pv_bob_books_under_multiple_each_series"
@@ -225,7 +225,7 @@
         <!-- Enabled if Group 'Publisher' is present in this style. -->
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_functions"
+            android:icon="@drawable/ic_baseline_functions_24"
             android:key="style.booklist.group.publisher.show.all"
             android:summaryOff="@string/pv_bob_books_under_multiple_primary_publisher_only"
             android:summaryOn="@string/pv_bob_books_under_multiple_each_publisher"

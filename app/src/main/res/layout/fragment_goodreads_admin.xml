@@ -39,7 +39,7 @@
         android:id="@+id/btn_sync"
         style="@style/Button.Menu"
         android:text="@string/action_synchronize"
-        app:icon="@drawable/ic_sync"
+        app:icon="@drawable/ic_baseline_sync_alt_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
         />
@@ -48,7 +48,7 @@
         android:id="@+id/btn_import"
         style="@style/Button.Menu"
         android:text="@string/menu_import_all"
-        app:icon="@drawable/ic_file_download"
+        app:icon="@drawable/ic_baseline_file_download_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_sync"
         />
@@ -57,7 +57,7 @@
         android:id="@+id/btn_send_updated_books"
         style="@style/Button.Menu"
         android:text="@string/menu_send_updated"
-        app:icon="@drawable/ic_send"
+        app:icon="@drawable/ic_baseline_send_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_import"
         />
@@ -66,7 +66,7 @@
         android:id="@+id/btn_send_all_books"
         style="@style/Button.Menu"
         android:text="@string/menu_send_all"
-        app:icon="@drawable/ic_file_upload"
+        app:icon="@drawable/ic_baseline_file_upload_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_send_updated_books"
         />

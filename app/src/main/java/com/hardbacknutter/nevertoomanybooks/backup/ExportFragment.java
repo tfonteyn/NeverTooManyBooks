@@ -491,7 +491,7 @@ public class ExportFragment
 
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_error)
+                    .setIcon(R.drawable.ic_baseline_error_24)
                     .setTitle(title)
                     .setMessage(Backup.createErrorReport(getContext(), message.result))
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
@@ -515,7 +515,7 @@ public class ExportFragment
             if (items.isEmpty()) {
                 //noinspection ConstantConditions
                 new MaterialAlertDialogBuilder(getContext())
-                        .setIcon(R.drawable.ic_info)
+                        .setIcon(R.drawable.ic_baseline_info_24)
                         .setTitle(R.string.menu_backup_and_export)
                         .setMessage(R.string.warning_no_matching_book_found)
                         .setPositiveButton(R.string.action_done, (d, w)
@@ -534,7 +534,7 @@ public class ExportFragment
                 if (helper.getEncoding().isRemoteServer()) {
                     //noinspection ConstantConditions
                     new MaterialAlertDialogBuilder(getContext())
-                            .setIcon(R.drawable.ic_info)
+                            .setIcon(R.drawable.ic_baseline_info_24)
                             .setTitle(R.string.progress_end_export_successful)
                             .setMessage(itemList)
                             .setPositiveButton(R.string.action_done, (d, w)
@@ -550,7 +550,7 @@ public class ExportFragment
                     //noinspection ConstantConditions
                     final MaterialAlertDialogBuilder dialogBuilder =
                             new MaterialAlertDialogBuilder(getContext())
-                                    .setIcon(R.drawable.ic_info)
+                                    .setIcon(R.drawable.ic_baseline_info_24)
                                     .setTitle(title)
                                     .setPositiveButton(R.string.action_done, (d, w)
                                             -> getActivity().finish());
@@ -646,7 +646,7 @@ public class ExportFragment
             Logger.error(getContext(), TAG, e);
             //noinspection ConstantConditions
             new MaterialAlertDialogBuilder(getContext())
-                    .setIcon(R.drawable.ic_error)
+                    .setIcon(R.drawable.ic_baseline_error_24)
                     .setMessage(R.string.error_email_failed)
                     .setPositiveButton(android.R.string.ok, (d, w) -> getActivity().finish())
                     .create()

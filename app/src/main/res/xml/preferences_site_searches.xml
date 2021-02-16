@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -25,7 +25,7 @@
         android:title="@string/lbl_format">
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_edit"
+            android:icon="@drawable/ic_baseline_edit_24"
             android:key="search.reformat.format"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -33,7 +33,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_edit"
+            android:icon="@drawable/ic_baseline_edit_24"
             android:key="search.reformat.color"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -53,7 +53,7 @@
 
         <SwitchPreference
             android:defaultValue="false"
-            android:icon="@drawable/ic_perm_data_setting"
+            android:icon="@drawable/ic_baseline_data_usage_24"
             android:key="network.allow.metered"
             android:summaryOff="@string/no"
             android:summaryOn="@string/yes"
@@ -66,7 +66,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.AmazonPreferencesFragment"
-            android:icon="@drawable/ic_find_in_page"
+            android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_amazon"
             android:summary="@string/pt_site_settings"
             android:title="@string/site_amazon">
@@ -82,7 +82,7 @@
 
         <Preference
             android:fragment="com.hardbacknutter.nevertoomanybooks.settings.sites.IsfdbPreferencesFragment"
-            android:icon="@drawable/ic_find_in_page"
+            android:icon="@drawable/ic_baseline_find_in_page_24"
             android:key="psk_search_site_isfdb"
             android:summary="@string/pt_site_settings"
             android:title="@string/site_isfdb">

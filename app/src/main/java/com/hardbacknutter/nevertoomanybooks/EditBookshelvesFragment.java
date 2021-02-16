@@ -144,7 +144,7 @@ public class EditBookshelvesFragment
 
         // The FAB lives in the activity.
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_add);
+        fab.setImageResource(R.drawable.ic_baseline_add_24);
         fab.setVisibility(View.VISIBLE);
         fab.setOnClickListener(v -> editItem(mVm.createNewBookshelf(getContext())));
 
@@ -160,7 +160,7 @@ public class EditBookshelvesFragment
                                     @NonNull final MenuInflater inflater) {
 
         menu.add(Menu.NONE, R.id.MENU_PURGE_BLNS, 0, R.string.lbl_purge_blns)
-            .setIcon(R.drawable.ic_delete)
+            .setIcon(R.drawable.ic_baseline_delete_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         super.onCreateOptionsMenu(menu, inflater);
@@ -203,11 +203,11 @@ public class EditBookshelvesFragment
             menu.add(new MenuPickerDialogFragment.Pick(
                     R.id.MENU_EDIT, res.getInteger(R.integer.MENU_ORDER_EDIT),
                     getString(R.string.action_edit_ellipsis),
-                    R.drawable.ic_edit));
+                    R.drawable.ic_baseline_edit_24));
             menu.add(new MenuPickerDialogFragment.Pick(
                     R.id.MENU_DELETE, res.getInteger(R.integer.MENU_ORDER_DELETE),
                     getString(R.string.action_delete),
-                    R.drawable.ic_delete));
+                    R.drawable.ic_baseline_delete_24));
 
             mMenuLauncher.launch(title, null, menu, position);
         } else {
@@ -216,11 +216,11 @@ public class EditBookshelvesFragment
             menu.add(Menu.NONE, R.id.MENU_EDIT,
                      res.getInteger(R.integer.MENU_ORDER_EDIT),
                      R.string.action_edit_ellipsis)
-                .setIcon(R.drawable.ic_edit);
+                .setIcon(R.drawable.ic_baseline_edit_24);
             menu.add(Menu.NONE, R.id.MENU_DELETE,
                      res.getInteger(R.integer.MENU_ORDER_DELETE),
                      R.string.action_delete)
-                .setIcon(R.drawable.ic_delete);
+                .setIcon(R.drawable.ic_baseline_delete_24);
 
             new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                     .show();

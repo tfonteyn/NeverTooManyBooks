@@ -55,7 +55,7 @@ public class GrAuthTask
      */
     public void prompt(@NonNull final Context context) {
         new MaterialAlertDialogBuilder(context)
-                .setIcon(R.drawable.ic_security)
+                .setIcon(R.drawable.ic_baseline_security_24)
                 .setTitle(R.string.info_authorized_needed)
                 .setMessage(R.string.gr_authorization_needed)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())

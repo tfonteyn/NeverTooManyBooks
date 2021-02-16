@@ -112,7 +112,7 @@
             android:id="@+id/fab4_search_external_id"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_external_id"
-            app:icon="@drawable/ic_find_in_page"
+            app:icon="@drawable/ic_baseline_find_in_page_24"
             tools:translationX="@dimen/fab_menu_translationX"
             tools:translationY="-310dp"
             tools:visibility="visible"
@@ -122,7 +122,7 @@
             android:id="@+id/fab3_add_manually"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_manually"
-            app:icon="@drawable/ic_keyboard"
+            app:icon="@drawable/ic_baseline_keyboard_24"
             tools:translationX="@dimen/fab_menu_translationX"
             tools:translationY="-250dp"
             tools:visibility="visible"
@@ -132,7 +132,7 @@
             android:id="@+id/fab2_search_text"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_internet_search"
-            app:icon="@drawable/ic_search"
+            app:icon="@drawable/ic_baseline_search_24"
             tools:translationX="@dimen/fab_menu_translationX"
             tools:translationY="-190dp"
             tools:visibility="visible"
@@ -142,7 +142,7 @@
             android:id="@+id/fab1_search_isbn"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_isbn"
-            app:icon="@drawable/ic_apps"
+            app:icon="@drawable/ic_baseline_apps_24"
             tools:translationX="@dimen/fab_menu_translationX"
             tools:translationY="-130dp"
             tools:visibility="visible"
@@ -153,7 +153,7 @@
             android:id="@+id/fab0_scan_barcode"
             style="@style/FABMenu"
             android:text="@string/fab_add_book_by_barcode_scan"
-            app:icon="@drawable/ic_photo_camera"
+            app:icon="@drawable/ic_baseline_photo_camera_24"
             tools:translationX="@dimen/fab_menu_translationX"
             tools:translationY="-70dp"
             tools:visibility="visible"
@@ -162,7 +162,7 @@
         <com.hardbacknutter.nevertoomanybooks.widgets.MovableFloatingActionButton
             android:id="@+id/fab"
             style="@style/FAB"
-            android:src="@drawable/ic_add"
+            android:src="@drawable/ic_baseline_add_24"
             />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

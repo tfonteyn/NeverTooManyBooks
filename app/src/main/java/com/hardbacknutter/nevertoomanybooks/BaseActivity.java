@@ -222,7 +222,7 @@ public abstract class BaseActivity
             actionBar.setDisplayHomeAsUpEnabled(true);
 
             if (mHomeIsRootMenu) {
-                actionBar.setHomeAsUpIndicator(R.drawable.ic_toolbar_home);
+                actionBar.setHomeAsUpIndicator(R.drawable.ic_baseline_menu_24);
             } else {
                 actionBar.setHomeAsUpIndicator(null);
             }

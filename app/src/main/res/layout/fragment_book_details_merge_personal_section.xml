@@ -45,7 +45,7 @@
         style="@style/Flag"
         android:layout_marginStart="@dimen/drawable_padding_end"
         android:contentDescription="@string/lbl_signed"
-        android:src="@drawable/ic_check"
+        android:src="@drawable/ic_baseline_check_24"
         app:tint="?attr/colorSecondaryVariant"
         app:layout_constraintStart_toEndOf="@id/lbl_signed"
         app:layout_constraintTop_toTopOf="parent"

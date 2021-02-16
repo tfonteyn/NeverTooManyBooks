@@ -150,7 +150,7 @@
                 android:id="@+id/external_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_apps"
+                android:drawableStart="@drawable/ic_baseline_apps_24"
                 android:enabled="false"
                 android:imeOptions="actionSearch"
                 android:inputType="number"
@@ -163,7 +163,7 @@
             android:id="@+id/btn_search"
             style="@style/Button.Action.Submit"
             android:text="@android:string/search_go"
-            app:icon="@drawable/ic_search"
+            app:icon="@drawable/ic_baseline_search_24"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/lbl_external_id"
             />

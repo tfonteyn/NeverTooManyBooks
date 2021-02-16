@@ -244,7 +244,7 @@ public class AuthorWorksFragment
             menu.add(new MenuPickerDialogFragment.Pick(R.id.MENU_DELETE,
                                                        res.getInteger(R.integer.MENU_ORDER_DELETE),
                                                        getString(R.string.action_delete),
-                                                       R.drawable.ic_delete));
+                                                       R.drawable.ic_baseline_delete_24));
             mMenuLauncher.launch(title, null, menu, position);
 
         } else {
@@ -252,7 +252,7 @@ public class AuthorWorksFragment
             menu.add(Menu.NONE, R.id.MENU_DELETE,
                      res.getInteger(R.integer.MENU_ORDER_DELETE),
                      R.string.action_delete)
-                .setIcon(R.drawable.ic_delete);
+                .setIcon(R.drawable.ic_baseline_delete_24);
 
             new MenuPicker(getContext(), title, null, menu, position, this::onContextItemSelected)
                     .show();

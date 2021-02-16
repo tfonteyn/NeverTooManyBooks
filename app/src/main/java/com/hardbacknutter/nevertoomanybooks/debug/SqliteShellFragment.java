@@ -117,12 +117,13 @@ public class SqliteShellFragment
     public void onCreateOptionsMenu(@NonNull final Menu menu,
                                     @NonNull final MenuInflater inflater) {
         menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_RUN, 0, R.string.debug_sq_shell_run)
-            .setIcon(mAllowUpdates ? R.drawable.ic_warning : R.drawable.ic_directions_run)
+            .setIcon(mAllowUpdates ? R.drawable.ic_baseline_warning_24
+                                   : R.drawable.ic_baseline_directions_run_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
 
         menu.add(Menu.NONE, R.id.MENU_DEBUG_SQ_SHELL_LIST_TABLES, 0,
                  R.string.debug_sq_shell_list_tables)
-            .setIcon(R.drawable.ic_format_list_bulleted)
+            .setIcon(R.drawable.ic_baseline_format_list_bulleted_24)
             .setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM);
 
         super.onCreateOptionsMenu(menu, inflater);

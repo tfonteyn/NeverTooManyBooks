@@ -64,7 +64,8 @@
  * and finally passes the result back to the task... back to the user UI.
  * <p>
  * In short:
- * Uri -> Helper -> ArchiveEncoding -> ArchiveReader -> LOOP(ArchiveReaderRecord -> RecordReader) -> Results
+ * Uri -> Helper -> ArchiveEncoding -> ArchiveReader
+ * -> LOOP(ArchiveReaderRecord -> RecordReader) -> Results
  * <p>
  * <p>
  * <p>

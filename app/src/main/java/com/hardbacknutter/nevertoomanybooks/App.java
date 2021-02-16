@@ -163,7 +163,7 @@ public class App
                .setResText(R.string.acra_resDialogText)
                .setResTitle(R.string.app_name)
                .setResTheme(R.style.Theme_App)
-               .setResIcon(R.drawable.ic_warning)
+               .setResIcon(R.drawable.ic_baseline_warning_24)
                .setResCommentPrompt(R.string.acra_resDialogCommentPrompt);
 
 

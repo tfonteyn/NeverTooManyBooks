@@ -31,6 +31,7 @@
     tools:visibility="visible"
     >
 
+    <!--suppress LongLine -->
     <com.hardbacknutter.nevertoomanybooks.widgets.ConstraintRadioGroup
         android:id="@+id/rb_books_group"
         android:layout_width="0dp"

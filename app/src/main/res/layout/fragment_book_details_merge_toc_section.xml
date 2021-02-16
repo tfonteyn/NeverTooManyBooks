@@ -50,7 +50,7 @@
         style="@style/Field.Label"
         android:drawablePadding="@dimen/drawable_padding_end"
         android:text="@string/lbl_anthology"
-        app:drawableEndCompat="@drawable/ic_check"
+        app:drawableEndCompat="@drawable/ic_baseline_check_24"
         app:drawableTint="?attr/colorSecondaryVariant"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/lbl_toc"
