@@ -58,6 +58,7 @@ final class PopupStyles {
     //ENHANCE: make the text color configurable
     @AttrRes
     private static final int TEXT_COLOR = R.attr.colorOnPrimary;
+
     @SuppressLint("UseCompatLoadingForDrawables")
     static final Consumer<TextView> MD = popupView -> {
         final Resources res = popupView.getResources();
@@ -83,12 +84,12 @@ final class PopupStyles {
         popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                               res.getDimensionPixelSize(R.dimen.fs_md_popup_text_size));
     };
+
     @SuppressLint("UseCompatLoadingForDrawables")
     static final Consumer<TextView> CLASSIC = popupView -> {
         final Resources res = popupView.getResources();
-        final int minimumSize = res.getDimensionPixelSize(R.dimen.fs_classic_popup_min_size);
-        popupView.setMinimumWidth(minimumSize);
-        popupView.setMinimumHeight(minimumSize);
+        popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.fs_classic_popup_min_width));
+        popupView.setMinimumHeight(res.getDimensionPixelSize(R.dimen.fs_classic_popup_min_height));
 
         final FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams)
                 popupView.getLayoutParams();
@@ -108,10 +109,7 @@ final class PopupStyles {
         popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                               res.getDimensionPixelSize(R.dimen.fs_classic_popup_text_size));
     };
-    //ENHANCE: make the background color configurable
-    // (only used by MD2, must be set in xml for MD1 and CLASSIC)
-    @AttrRes
-    private static final int BG_COLOR = R.attr.colorPrimary;
+
     static final Consumer<TextView> MD2 = popupView -> {
         final Resources res = popupView.getResources();
         popupView.setMinimumWidth(res.getDimensionPixelSize(R.dimen.fs_md2_popup_min_width));
@@ -124,7 +122,9 @@ final class PopupStyles {
         popupView.setLayoutParams(layoutParams);
 
         final Context context = popupView.getContext();
-        popupView.setBackground(new Md2PopupBackground(context, BG_COLOR));
+        // MD and CLASSIC use colorPrimaryVariant with a border of colorPrimary.
+        // MD2 just uses a single filled colorPrimary shape.
+        popupView.setBackground(new Md2PopupBackground(context, R.attr.colorPrimary));
         popupView.setElevation(res.getDimensionPixelOffset(R.dimen.fs_md2_popup_elevation));
 
         popupView.setEllipsize(TextUtils.TruncateAt.MIDDLE);
@@ -136,6 +136,7 @@ final class PopupStyles {
         popupView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
                               res.getDimensionPixelSize(R.dimen.fs_md2_popup_text_size));
     };
+
 
     private PopupStyles() {
     }
