@@ -19,16 +19,18 @@
  */
 package com.hardbacknutter.nevertoomanybooks.widgets.fastscroller;
 
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Display a label-style overlay, always at the same place near the top of the screen.
  */
-public class ClassicOverlay
+class ClassicOverlay
         extends FastScrollerOverlay {
 
     /**
@@ -38,17 +40,18 @@ public class ClassicOverlay
      * @param thumbDrawable the thumb/drag-handle
      */
     ClassicOverlay(@NonNull final RecyclerView view,
+                   @Nullable final Rect padding,
                    @NonNull final Drawable thumbDrawable) {
-        super(view, thumbDrawable, PopupStyles.CLASSIC);
+        super(view, padding, thumbDrawable, PopupStyles.CLASSIC);
     }
 
     @Override
-    public void layout(@NonNull final View parent,
-                       @NonNull final View popupView,
-                       final int popupWidth,
-                       final int popupHeight,
-                       final int popupLeft,
-                       final int popupTop) {
+    void layoutView(@NonNull final View parent,
+                    @NonNull final View popupView,
+                    final int popupWidth,
+                    final int popupHeight,
+                    final int popupLeft,
+                    final int popupTop) {
 
         final int width = parent.getWidth();
 

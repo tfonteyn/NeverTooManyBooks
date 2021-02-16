@@ -31,6 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.math.MathUtils;
 import androidx.core.util.Consumer;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,22 +41,26 @@ import java.util.Objects;
 
 /**
  * Display a balloon-style overlay, following the scroll bar drag handle.
+ * <p>
+ * zhanghai: FastScroller; but removed thumb/track handling.
  */
-public class FastScrollerOverlay
+class FastScrollerOverlay
         implements FastScroller.OverlayProvider {
 
     @NonNull
     private final RecyclerView mView;
     @NonNull
     private final TextView mPopupView;
-
     @NonNull
     private final AnimationHelper mAnimationHelper;
     /** Width of the drag handle; used for positioning. */
     private final int mThumbWidth;
+
     /** Helper. */
     @NonNull
     private final Rect mTempRect = new Rect();
+    @Nullable
+    private Rect mUserPadding;
     /** Current status. */
     private boolean mIsDragging;
 
@@ -67,12 +72,14 @@ public class FastScrollerOverlay
      * @param popupStyle    for the TextView
      */
     FastScrollerOverlay(@NonNull final RecyclerView view,
+                        @Nullable final Rect padding,
                         @NonNull final Drawable thumbDrawable,
                         @NonNull final Consumer<TextView> popupStyle) {
 
         final Context context = view.getContext();
 
         mView = view;
+        mUserPadding = padding;
         mAnimationHelper = new DefaultAnimationHelper(mView);
 
         mThumbWidth = thumbDrawable.getIntrinsicWidth();
@@ -88,6 +95,36 @@ public class FastScrollerOverlay
         mPopupView.setAlpha(0);
     }
 
+    @Override
+    public void setPadding(final int left,
+                           @SuppressWarnings("SameParameterValue") final int top,
+                           final int right,
+                           final int bottom) {
+        if (mUserPadding != null && mUserPadding.left == left && mUserPadding.top == top
+            && mUserPadding.right == right && mUserPadding.bottom == bottom) {
+            return;
+        }
+        if (mUserPadding == null) {
+            mUserPadding = new Rect();
+        }
+        mUserPadding.set(left, top, right, bottom);
+        mView.invalidate();
+    }
+
+    @NonNull
+    private Rect getPadding() {
+        if (mUserPadding != null) {
+            mTempRect.set(mUserPadding);
+        } else {
+            mTempRect.set(mView.getPaddingLeft(),
+                          mView.getPaddingTop(),
+                          mView.getPaddingRight(),
+                          mView.getPaddingBottom());
+        }
+        return mTempRect;
+    }
+
+    // zhanghai: FastScroller#onPreDraw()
     @SuppressLint("RtlHardcoded")
     @Override
     public void showOverlay(final boolean isDragging,
@@ -129,14 +166,13 @@ public class FastScrollerOverlay
             final int layoutDirection = mView.getLayoutDirection();
             mPopupView.setLayoutDirection(layoutDirection);
 
+            final boolean isLayoutRtl = layoutDirection == View.LAYOUT_DIRECTION_RTL;
             final int viewWidth = mView.getWidth();
             final int viewHeight = mView.getHeight();
 
-            mTempRect.set(mView.getPaddingLeft(), mView.getPaddingTop(),
-                          mView.getPaddingRight(), mView.getPaddingBottom());
-            final Rect padding = mTempRect;
+            final Rect padding = getPadding();
 
-            final FrameLayout.LayoutParams popupLPs = (FrameLayout.LayoutParams)
+            final FrameLayout.LayoutParams popupLayoutParams = (FrameLayout.LayoutParams)
                     mPopupView.getLayoutParams();
 
             // Only need to (re)measure if the text is different.
@@ -146,14 +182,14 @@ public class FastScrollerOverlay
                 final int widthMeasureSpec = ViewGroup.getChildMeasureSpec(
                         View.MeasureSpec.makeMeasureSpec(viewWidth, View.MeasureSpec.EXACTLY),
                         padding.left + padding.right + mThumbWidth
-                        + popupLPs.leftMargin + popupLPs.rightMargin,
-                        popupLPs.width);
+                        + popupLayoutParams.leftMargin + popupLayoutParams.rightMargin,
+                        popupLayoutParams.width);
 
                 final int heightMeasureSpec = ViewGroup.getChildMeasureSpec(
                         View.MeasureSpec.makeMeasureSpec(viewHeight, View.MeasureSpec.EXACTLY),
                         padding.top + padding.bottom
-                        + popupLPs.topMargin + popupLPs.bottomMargin,
-                        popupLPs.height);
+                        + popupLayoutParams.topMargin + popupLayoutParams.bottomMargin,
+                        popupLayoutParams.height);
 
                 mPopupView.measure(widthMeasureSpec, heightMeasureSpec);
             }
@@ -161,15 +197,15 @@ public class FastScrollerOverlay
             final int popupWidth = mPopupView.getMeasuredWidth();
             final int popupHeight = mPopupView.getMeasuredHeight();
             final int popupLeft;
-            if (layoutDirection == View.LAYOUT_DIRECTION_RTL) {
-                popupLeft = padding.left + mThumbWidth + popupLPs.leftMargin;
+            if (isLayoutRtl) {
+                popupLeft = padding.left + mThumbWidth + popupLayoutParams.leftMargin;
             } else {
-                popupLeft = viewWidth - popupWidth
-                            - padding.right - mThumbWidth - popupLPs.rightMargin;
+                popupLeft = viewWidth - padding.right - mThumbWidth - popupLayoutParams.rightMargin
+                            - popupWidth;
             }
 
             final int popupAnchorY;
-            switch (popupLPs.gravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
+            switch (popupLayoutParams.gravity & Gravity.HORIZONTAL_GRAVITY_MASK) {
                 case Gravity.CENTER_HORIZONTAL:
                     popupAnchorY = popupHeight / 2;
                     break;
@@ -186,12 +222,13 @@ public class FastScrollerOverlay
                     break;
             }
 
+            // zhanghai: thumbCenter = thumbTop + thumbAnchorY
             final int popupTop = MathUtils.clamp(thumbCenter - popupAnchorY,
-                                                 padding.top + popupLPs.topMargin,
+                                                 padding.top + popupLayoutParams.topMargin,
                                                  viewHeight - padding.bottom
-                                                 - popupLPs.bottomMargin - popupHeight);
+                                                 - popupLayoutParams.bottomMargin - popupHeight);
 
-            layout(mView, mPopupView, popupWidth, popupHeight, popupLeft, popupTop);
+            layoutView(mView, mPopupView, popupWidth, popupHeight, popupLeft, popupTop);
         }
 
         if (mIsDragging != isDragging) {
@@ -219,18 +256,18 @@ public class FastScrollerOverlay
      * @param popupLeft   the popup
      * @param popupTop    the popup
      */
-    public void layout(@NonNull final View parent,
-                       @NonNull final View popupView,
-                       final int popupWidth,
-                       final int popupHeight,
-                       final int popupLeft,
-                       final int popupTop) {
+    void layoutView(@NonNull final View parent,
+                    @NonNull final View popupView,
+                    final int popupWidth,
+                    final int popupHeight,
+                    final int popupLeft,
+                    final int popupTop) {
         final int scrollX = parent.getScrollX() + popupLeft;
         final int scrollY = parent.getScrollY() + popupTop;
         popupView.layout(scrollX, scrollY, scrollX + popupWidth, scrollY + popupHeight);
     }
 
-    static interface AnimationHelper {
+    interface AnimationHelper {
 
         void showScrollbar(@NonNull View trackView,
                            @NonNull View thumbView);

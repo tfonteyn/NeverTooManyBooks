@@ -44,6 +44,9 @@ import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
 /**
+ * This is the glue class which hooks up the RecyclerView with the actual
+ * FastScroller implementation and an optional Overlay provider.
+ * <p>
  * Fast scroll drag bar height too short when there are lots of items in the recyclerview.
  * <a href="https://issuetracker.google.com/issues/64729576">64729576</a>
  * <a href="https://github.com/caarmen/RecyclerViewBug/">HackFastScroller.java</a>
@@ -82,40 +85,49 @@ public final class FastScroller {
 
         final Resources resources = context.getResources();
         final FastScrollerImpl fastScroller = new FastScrollerImpl(
-                recyclerView,
-                thumbDrawable, track,
-                thumbDrawable, track,
+                recyclerView, thumbDrawable, track, thumbDrawable, track,
                 resources.getDimensionPixelSize(R.dimen.fs_default_thickness),
                 resources.getDimensionPixelSize(R.dimen.fs_minimum_range),
                 resources.getDimensionPixelOffset(R.dimen.fs_margin),
                 resources.getDimensionPixelSize(R.dimen.fs_minimal_thumb_size)
         );
 
-        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        final OverlayProvider overlay = createOverlayProvider(recyclerView, thumbDrawable);
+        fastScroller.setOverlayProvider(overlay);
+
+        recyclerView.setOnApplyWindowInsetsListener(
+                new ScrollingViewOnApplyWindowInsetsListener(recyclerView, overlay));
+
+    }
+
+    @Nullable
+    private static OverlayProvider createOverlayProvider(
+            @NonNull final RecyclerView recyclerView,
+            @NonNull final StateListDrawable thumbDrawable) {
+
+        final SharedPreferences global = PreferenceManager
+                .getDefaultSharedPreferences(recyclerView.getContext());
+
         // Optional overlay
         @OverlayProvider.Style
         final int overlayType = ParseUtils.getIntListPref(global,
                                                           Prefs.pk_booklist_fastscroller_overlay,
-                                                          OverlayProvider.STYLE_DYNAMIC);
+                                                          OverlayProvider.STYLE_MD2);
         switch (overlayType) {
-            case OverlayProvider.STYLE_DYNAMIC:
-                fastScroller.setOverlayProvider(new FastScrollerOverlay(
-                        recyclerView, thumbDrawable, PopupStyles.MD));
-                break;
-
             case OverlayProvider.STYLE_MD2:
-                fastScroller.setOverlayProvider(new FastScrollerOverlay(
-                        recyclerView, thumbDrawable, PopupStyles.MD2));
-                break;
+                return new FastScrollerOverlay(recyclerView, null, thumbDrawable,
+                                               PopupStyles.MD2);
+
+            case OverlayProvider.STYLE_MD1:
+                return new FastScrollerOverlay(recyclerView, null, thumbDrawable,
+                                               PopupStyles.MD);
 
             case OverlayProvider.STYLE_STATIC:
-                fastScroller.setOverlayProvider(new ClassicOverlay(
-                        recyclerView, thumbDrawable));
-                break;
+                return new ClassicOverlay(recyclerView, null, thumbDrawable);
 
             case OverlayProvider.STYLE_NONE:
             default:
-                break;
+                return null;
         }
     }
 
@@ -185,7 +197,7 @@ public final class FastScroller {
         /** Show a static (non-moving) overlay. Classic BC. */
         int STYLE_STATIC = 1;
         /** Dynamic Material Design. */
-        int STYLE_DYNAMIC = 2;
+        int STYLE_MD1 = 2;
         /** Dynamic Material Design 2. */
         int STYLE_MD2 = 3;
 
@@ -198,7 +210,20 @@ public final class FastScroller {
         void showOverlay(boolean isDragging,
                          int thumbCenter);
 
-        @IntDef({STYLE_NONE, STYLE_STATIC, STYLE_DYNAMIC, STYLE_MD2})
+        /**
+         * Set the padding.
+         *
+         * @param left   padding
+         * @param top    padding
+         * @param right  padding
+         * @param bottom padding
+         */
+        void setPadding(int left,
+                        int top,
+                        int right,
+                        int bottom);
+
+        @IntDef({STYLE_NONE, STYLE_STATIC, STYLE_MD1, STYLE_MD2})
         @Retention(RetentionPolicy.SOURCE)
         @interface Style {
 
