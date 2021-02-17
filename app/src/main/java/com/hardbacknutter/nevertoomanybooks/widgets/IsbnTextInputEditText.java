@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -54,7 +54,7 @@ import com.google.android.material.textfield.TextInputEditText;
  * <pre>
  * {@code
  *      InputMethodManager imm = getContext().getSystemService(InputMethodManager.class);
- *      if (imm != null && imm.isActive(this)) {
+ *      if (imm.isActive(this)) {
  *          imm.hideSoftInputFromWindow(getWindowToken(), 0);
  *      }
  * }

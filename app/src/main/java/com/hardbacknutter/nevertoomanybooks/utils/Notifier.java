@@ -67,7 +67,6 @@ public final class Notifier
             final NotificationManager notificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-            //noinspection ConstantConditions
             notificationManager.createNotificationChannel(
                     new NotificationChannel(CHANNEL_ERROR,
                                             context.getString(R.string.notification_channel_error),
@@ -169,7 +168,6 @@ public final class Notifier
 
         final NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        //noinspection ConstantConditions
         notificationManager.notify(id, notification);
     }
 
@@ -198,7 +196,6 @@ public final class Notifier
 
         final NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        //noinspection ConstantConditions
         notificationManager.notify(id, notification);
     }
 
@@ -227,7 +224,6 @@ public final class Notifier
 
         final NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        //noinspection ConstantConditions
         notificationManager.notify(id, notification);
     }
 
@@ -238,7 +234,6 @@ public final class Notifier
         if (Build.VERSION.SDK_INT >= 26) {
             final NotificationManager notificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            //noinspection ConstantConditions
             notificationManager.getNotificationChannel(CHANNEL_ERROR)
                                .setName(context.getString(R.string.notification_channel_error));
             notificationManager.getNotificationChannel(CHANNEL_WARN)

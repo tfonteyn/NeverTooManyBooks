@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -121,7 +121,6 @@ final class MenuHelper {
             final SearchView searchView = (SearchView) searchItem.getActionView();
             final SearchManager searchManager = (SearchManager)
                     activity.getSystemService(Context.SEARCH_SERVICE);
-            //noinspection ConstantConditions
             final SearchableInfo si = searchManager.getSearchableInfo(
                     new ComponentName(activity, BooksOnBookshelf.class.getName()));
             searchView.setSearchableInfo(si);

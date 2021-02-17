@@ -98,6 +98,7 @@ public final class AttrUtils {
      *
      * @throws Resources.NotFoundException if the requested Drawable does not exist.
      */
+    @SuppressWarnings("unused")
     @SuppressLint("UseCompatLoadingForDrawables")
     public static Drawable getDrawable(@NonNull final Context context,
                                        @AttrRes final int attr)
@@ -156,7 +157,6 @@ public final class AttrUtils {
 
         final DisplayMetrics metrics = new DisplayMetrics();
         final WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        //noinspection ConstantConditions
         wm.getDefaultDisplay().getMetrics(metrics);
 
         return (int) tv.getDimension(metrics);

@@ -601,7 +601,6 @@ public class CoverHandler {
 
                 final WindowManager wm = (WindowManager)
                         context.getSystemService(Context.WINDOW_SERVICE);
-                //noinspection ConstantConditions
                 final int surfaceRotation = wm.getDefaultDisplay().getRotation();
 
                 // What action (if any) should we take after we're done?

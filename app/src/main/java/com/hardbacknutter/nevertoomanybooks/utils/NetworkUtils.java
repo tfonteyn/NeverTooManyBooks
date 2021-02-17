@@ -77,32 +77,30 @@ public final class NetworkUtils {
 
         final ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (connMgr != null) {
-            final Network network = connMgr.getActiveNetwork();
-            if (network != null) {
-                final NetworkCapabilities nc = connMgr.getNetworkCapabilities(network);
-                if (nc != null) {
-                    // we need internet access.
-                    final boolean hasInternet =
-                            nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-                    // and we need internet access actually working!
-                    final boolean isValidated =
-                            nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
+        final Network network = connMgr.getActiveNetwork();
+        if (network != null) {
+            final NetworkCapabilities nc = connMgr.getNetworkCapabilities(network);
+            if (nc != null) {
+                // we need internet access.
+                final boolean hasInternet =
+                        nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+                // and we need internet access actually working!
+                final boolean isValidated =
+                        nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED);
 
-                    if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
-                        final boolean notMetered =
-                                nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+                if (BuildConfig.DEBUG && DEBUG_SWITCHES.NETWORK) {
+                    final boolean notMetered =
+                            nc.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
 
-                        Log.d(TAG, "getNetworkConnectivity"
-                                   + "|notMetered=" + notMetered
-                                   + "|hasInternet=" + hasInternet
-                                   + "|isConnected=" + isValidated);
-                    }
-
-                    return hasInternet && isValidated
-                           && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork(context));
-
+                    Log.d(TAG, "getNetworkConnectivity"
+                               + "|notMetered=" + notMetered
+                               + "|hasInternet=" + hasInternet
+                               + "|isConnected=" + isValidated);
                 }
+
+                return hasInternet && isValidated
+                       && (!connMgr.isActiveNetworkMetered() || allowMeteredNetwork(context));
+
             }
         }
 

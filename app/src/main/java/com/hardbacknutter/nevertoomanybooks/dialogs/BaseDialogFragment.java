@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -350,8 +350,6 @@ public abstract class BaseDialogFragment
     public void hideKeyboard(@NonNull final View view) {
         final InputMethodManager imm = (InputMethodManager)
                 view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-        if (imm != null) {
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

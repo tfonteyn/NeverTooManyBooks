@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -63,7 +63,6 @@ public final class CameraDetection {
         final CameraManager cm = (CameraManager) context.getSystemService(Context.CAMERA_SERVICE);
 
         try {
-            //noinspection ConstantConditions
             final String[] cameraIdList = cm.getCameraIdList();
             for (final String cameraId : cameraIdList) {
                 final CameraCharacteristics cc = cm.getCameraCharacteristics(cameraId);
