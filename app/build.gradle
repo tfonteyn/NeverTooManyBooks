@@ -112,13 +112,13 @@ android {
     compileSdkVersion 29
 
     // https://gs.statcounter.com/os-version-market-share/android/mobile-tablet/worldwide
-    // 2020-12-11 world wide:
-    // 10.0     40.35
-    // 9.0      62.94
-    // 8.1      72.49
-    // 8.0      78.46
-    // 7.1      81.87
-    // 7.0      86.72
+    // 2021-02-16 world wide:
+    // 10.0     44.47
+    // 9.0      65.76
+    // 8.1      75.65
+    // 8.0      80.82
+    // 7.1      83.9
+    // 7.0      88.16
 
     // Android Studio 'new project' page (has not been updated since at least 2020-04-11)
     //  A       API     %
