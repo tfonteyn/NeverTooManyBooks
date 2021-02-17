@@ -481,7 +481,7 @@
     <!-- ImageView. Indicator a book is signed. -->
     <style name="Flag.Signed">
         <item name="android:contentDescription">@string/lbl_signed</item>
-        <item name="android:src">@drawable/ic_baseline_gesture_24</item>
+        <item name="android:src">@drawable/ic_signed</item>
     </style>
 
     <!-- ImageView. Indicator a book has been lend out. -->
