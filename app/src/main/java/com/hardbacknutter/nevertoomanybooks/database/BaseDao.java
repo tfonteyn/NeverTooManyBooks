@@ -53,11 +53,11 @@ public abstract class BaseDao
      * Constructor.
      *
      * @param context Current context
-     * @param name    of this DAO for logging.
+     * @param logTag  of this DAO for logging.
      */
     BaseDao(@NonNull final Context context,
-            @NonNull final String name) {
-        mInstanceName = name;
+            @NonNull final String logTag) {
+        mInstanceName = logTag;
 
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, mInstanceName + "|Constructor");
