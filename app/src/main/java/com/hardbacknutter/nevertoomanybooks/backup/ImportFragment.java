@@ -63,7 +63,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderTask;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentImportBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.EntityArrayAdapter;
@@ -529,7 +529,7 @@ public class ImportFragment
 
         if (result.styles > 0) {
             //noinspection ConstantConditions
-            StyleDAO.updateMenuOrder(getContext());
+            StyleUtils.updateMenuOrder(getContext());
         }
 
         //noinspection ConstantConditions

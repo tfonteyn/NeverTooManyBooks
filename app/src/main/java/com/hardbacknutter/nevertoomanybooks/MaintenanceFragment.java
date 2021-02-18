@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -264,7 +264,7 @@ public class MaintenanceFragment
             //qm.stop();
 
             //FIXME: delete all style xml files
-            StyleDAO.clearCache();
+            StyleUtils.clearCache();
 
             //noinspection ConstantConditions
             PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();

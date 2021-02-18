@@ -56,7 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.CertificateCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -182,7 +182,7 @@ public class JsonRecordReader
                                 new ListStyleCoder(context, mDb)
                                         .decode(jsonRoot)
                                         .stream()
-                                        .forEach(listStyle -> StyleDAO
+                                        .forEach(listStyle -> StyleUtils
                                                 .updateOrInsert(mDb, listStyle));
                                 mResults.styles = jsonRoot.length();
                             }

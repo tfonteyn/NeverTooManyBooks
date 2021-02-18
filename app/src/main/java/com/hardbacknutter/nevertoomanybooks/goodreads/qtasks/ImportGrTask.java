@@ -46,7 +46,7 @@ import java.util.regex.Matcher;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -542,7 +542,7 @@ public class ImportGrTask
             for (final Bundle shelfData : grShelves) {
                 final String name = mapShelf(userLocale, db, shelfData.getString(Review.SHELF));
                 if (name != null && !name.isEmpty()) {
-                    bookshelfList.add(new Bookshelf(name, StyleDAO.getDefault(context, db)));
+                    bookshelfList.add(new Bookshelf(name, StyleUtils.getDefault(context, db)));
                 }
             }
             Bookshelf.pruneList(bookshelfList, db);

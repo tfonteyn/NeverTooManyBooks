@@ -43,7 +43,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -65,7 +65,7 @@ public class ZipArchiveWriterTest {
         try (DAO db = new DAO(context, TAG)) {
             mBookInDb = db.countBooks();
 
-            mNrOfStyles = StyleDAO.getStyles(context, db, true).size();
+            mNrOfStyles = StyleUtils.getStyles(context, db, true).size();
         }
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");

@@ -39,7 +39,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -194,13 +194,13 @@ public class Bookshelf
                                          final long id) {
         if (id == ALL_BOOKS) {
             final Bookshelf bookshelf = new Bookshelf(context.getString(
-                    R.string.bookshelf_all_books), StyleDAO.getDefault(context, db));
+                    R.string.bookshelf_all_books), StyleUtils.getDefault(context, db));
             bookshelf.setId(ALL_BOOKS);
             return bookshelf;
 
         } else if (id == DEFAULT) {
             final Bookshelf bookshelf = new Bookshelf(context.getString(
-                    R.string.bookshelf_my_books), StyleDAO.getDefault(context, db));
+                    R.string.bookshelf_my_books), StyleUtils.getDefault(context, db));
             bookshelf.setId(DEFAULT);
             return bookshelf;
 
@@ -306,7 +306,7 @@ public class Bookshelf
                               @NonNull final DAO db) {
 
         // Always validate first
-        final ListStyle style = StyleDAO.getStyleOrDefault(context, db, mStyleUuid);
+        final ListStyle style = StyleUtils.getStyleOrDefault(context, db, mStyleUuid);
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;

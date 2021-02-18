@@ -32,7 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
@@ -117,8 +117,9 @@ public class ListStyleCoder
 
         final String uuid = data.getString(DBDefinitions.KEY_STYLE_UUID);
 
-        if (StyleDAO.BuiltinStyles.isBuiltin(uuid)) {
-            final ListStyle style = Objects.requireNonNull(StyleDAO.getStyle(mContext, mDb, uuid));
+        if (StyleUtils.BuiltinStyles.isBuiltin(uuid)) {
+            final ListStyle style = Objects
+                    .requireNonNull(StyleUtils.getStyle(mContext, mDb, uuid));
             style.setPreferred(data.getBoolean(DBDefinitions.KEY_STYLE_IS_PREFERRED));
             style.setMenuPosition(data.getInt(DBDefinitions.KEY_STYLE_MENU_POSITION));
             return style;

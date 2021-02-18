@@ -27,7 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -43,7 +43,7 @@ public class BookshelfCoder
      */
     BookshelfCoder(@NonNull final Context context,
                    @NonNull final DAO db) {
-        mDefaultStyle = StyleDAO.getDefault(context, db);
+        mDefaultStyle = StyleUtils.getDefault(context, db);
     }
 
     @Override

@@ -33,7 +33,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
@@ -68,7 +68,7 @@ public class PreferredStylesViewModel
               @NonNull final Bundle args) {
         if (mDb == null) {
             mDb = new DAO(context, TAG);
-            mStyleList = StyleDAO.getStyles(context, mDb, true);
+            mStyleList = StyleUtils.getStyles(context, mDb, true);
 
             mInitialStyleUuid = Objects.requireNonNull(
                     args.getString(ListStyle.BKEY_STYLE_UUID), "mInitialStyleUuid");
@@ -135,7 +135,7 @@ public class PreferredStylesViewModel
             mStyleList.add(0, style);
             style.setPreferred(true);
             // save the preferred state
-            StyleDAO.update(mDb, style);
+            StyleUtils.update(mDb, style);
             editedRow = 0;
 
         } else {
@@ -162,11 +162,11 @@ public class PreferredStylesViewModel
 
                         // Make the new one preferred and update it
                         style.setPreferred(true);
-                        StyleDAO.update(mDb, style);
+                        StyleUtils.update(mDb, style);
 
                         // And demote the original and update it
                         origStyle.setPreferred(false);
-                        StyleDAO.update(mDb, origStyle);
+                        StyleUtils.update(mDb, origStyle);
 
                         mStyleList.add(origStyle);
 
@@ -182,7 +182,7 @@ public class PreferredStylesViewModel
 
         // Not sure if this check is really needed... or already covered above
         // if the style was cloned from a builtin style,
-        if (StyleDAO.BuiltinStyles.isBuiltin(templateUuid)) {
+        if (StyleUtils.BuiltinStyles.isBuiltin(templateUuid)) {
             // then we're assuming the user wanted to 'replace' the builtin style,
             // so remove the builtin style from the preferred styles.
             mStyleList.stream()
@@ -191,7 +191,7 @@ public class PreferredStylesViewModel
                       .ifPresent(s -> {
                           // demote the preferred state and update it
                           s.setPreferred(false);
-                          StyleDAO.update(mDb, s);
+                          StyleUtils.update(mDb, s);
                       });
         }
 
@@ -201,7 +201,7 @@ public class PreferredStylesViewModel
     @Nullable
     ListStyle getStyle(@NonNull final Context context,
                        @NonNull final String uuid) {
-        return StyleDAO.getStyle(context, mDb, uuid);
+        return StyleUtils.getStyle(context, mDb, uuid);
     }
 
     /**
@@ -210,7 +210,7 @@ public class PreferredStylesViewModel
      * @param style to update
      */
     void updateStyle(@NonNull final ListStyle style) {
-        StyleDAO.update(mDb, style);
+        StyleUtils.update(mDb, style);
     }
 
     /**
@@ -221,7 +221,7 @@ public class PreferredStylesViewModel
      */
     void deleteStyle(@NonNull final Context context,
                      @NonNull final ListStyle style) {
-        StyleDAO.delete(context, mDb, style);
+        StyleUtils.delete(context, mDb, style);
         mStyleList.remove(style);
     }
 
@@ -229,7 +229,7 @@ public class PreferredStylesViewModel
      * Save the preferred style menu list.
      */
     void updateMenuOrder() {
-        StyleDAO.updateMenuOrder(mDb, mStyleList);
+        StyleUtils.updateMenuOrder(mDb, mStyleList);
     }
 
     /**

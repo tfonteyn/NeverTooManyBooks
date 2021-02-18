@@ -54,7 +54,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
@@ -125,13 +125,13 @@ public class JsonRecordWriter
             if (entries.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgressStep(1, context.getString(R.string.lbl_styles));
-                final List<ListStyle> styles = StyleDAO.getStyles(context, mDb, true);
+                final List<ListStyle> styles = StyleUtils.getStyles(context, mDb, true);
                 if (!styles.isEmpty()) {
                     final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
                     jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
                 }
                 // deduct the number of built-in styles (remember: MAX_ID is negative)
-                results.styles = styles.size() + StyleDAO.BuiltinStyles.MAX_ID;
+                results.styles = styles.size() + StyleUtils.BuiltinStyles.MAX_ID;
             }
 
             if (entries.contains(RecordType.Preferences)

@@ -39,7 +39,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
@@ -134,7 +134,7 @@ public class ShowBookViewModel
 
             final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
             if (styleUuid != null) {
-                mStyle = StyleDAO.getStyleOrDefault(context, mDb, styleUuid);
+                mStyle = StyleUtils.getStyleOrDefault(context, mDb, styleUuid);
             }
 
             // the list is optional

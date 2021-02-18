@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -53,7 +53,7 @@ public class BuiltinStyle
      * @param groupIds     a list of groups to attach to this style
      */
     BuiltinStyle(@NonNull final Context context,
-                 @IntRange(from = StyleDAO.BuiltinStyles.MAX_ID, to = -1) final long id,
+                 @IntRange(from = StyleUtils.BuiltinStyles.MAX_ID, to = -1) final long id,
                  @NonNull final String uuid,
                  @StringRes final int nameId,
                  final boolean isPreferred,

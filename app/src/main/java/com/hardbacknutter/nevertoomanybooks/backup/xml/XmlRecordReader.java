@@ -65,7 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
@@ -863,9 +863,9 @@ public class XmlRecordReader
 
             SanityCheck.requireValue(uuid, "uuid");
 
-            if (StyleDAO.BuiltinStyles.isBuiltin(uuid)) {
+            if (StyleUtils.BuiltinStyles.isBuiltin(uuid)) {
                 //noinspection ConstantConditions
-                mStyle = StyleDAO.getStyle(mContext, mDb, uuid);
+                mStyle = StyleUtils.getStyle(mContext, mDb, uuid);
                 // We do NOT read preferences for known builtin styles
                 mStylePrefs = null;
 
@@ -935,7 +935,7 @@ public class XmlRecordReader
                 }
             }
 
-            StyleDAO.updateOrInsert(mDb, mStyle);
+            StyleUtils.updateOrInsert(mDb, mStyle);
 
             mStylesRead++;
         }

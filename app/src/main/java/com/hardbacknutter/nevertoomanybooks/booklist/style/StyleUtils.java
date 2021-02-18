@@ -48,10 +48,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 /** Utility class encapsulating database access and internal in-memory caches. */
-public final class StyleDAO {
+public final class StyleUtils {
 
     /** Log tag. */
-    private static final String TAG = "StyleDAO";
+    private static final String TAG = "StyleUtils";
 
     /**
      * Preference for the current default style UUID to use.
@@ -61,7 +61,7 @@ public final class StyleDAO {
 
     private static final String ERROR_MISSING_UUID = "style.getUuid()";
 
-    private StyleDAO() {
+    private StyleUtils() {
     }
 
     /**
@@ -211,7 +211,7 @@ public final class StyleDAO {
         }
 
         // keep it safe and easy, just clear the caches; almost certainly overkill
-        StyleDAO.clearCache();
+        StyleUtils.clearCache();
     }
 
 

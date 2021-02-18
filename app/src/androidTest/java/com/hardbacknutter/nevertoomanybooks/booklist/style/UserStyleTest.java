@@ -43,7 +43,7 @@ public class UserStyleTest {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final BuiltinStyle s1;
         try (DAO db = new DAO(context, TAG)) {
-            s1 = (BuiltinStyle) StyleDAO.getStyle(context, db, StyleDAO.BuiltinStyles
+            s1 = (BuiltinStyle) StyleUtils.getStyle(context, db, StyleUtils.BuiltinStyles
                     // This style has:
                     // BooklistGroup.AUTHOR
                     // BooklistGroup.SERIES

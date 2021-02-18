@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
@@ -361,7 +361,7 @@ public class BooksOnBookshelfViewModel
                               @NonNull final String uuid) {
 
         @Nullable
-        final ListStyle style = StyleDAO.getStyle(context, mDb, uuid);
+        final ListStyle style = StyleUtils.getStyle(context, mDb, uuid);
         // Sanity check. The uuid SHOULD be valid, and hence the style SHOULD be found
         if (style != null) {
             onStyleChanged(context, style.getUuid());
@@ -380,11 +380,11 @@ public class BooksOnBookshelfViewModel
         Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
 
         // Always validate first
-        final ListStyle style = StyleDAO.getStyleOrDefault(context, mDb, uuid);
+        final ListStyle style = StyleUtils.getStyleOrDefault(context, mDb, uuid);
 
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         // set as the global default.
-        StyleDAO.setDefault(global, style.getUuid());
+        StyleUtils.setDefault(global, style.getUuid());
         // save the new bookshelf/style combination
         mBookshelf.setAsPreferred(global);
         mBookshelf.setStyle(context, mDb, style);

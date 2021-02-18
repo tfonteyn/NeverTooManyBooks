@@ -38,7 +38,7 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditStyleContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
@@ -92,7 +92,7 @@ public class StyleViewModel
                 // ALWAYS pass the original style uuid back.
                 mResultIntent.putExtra(EditStyleContract.BKEY_TEMPLATE_UUID, uuid);
 
-                final ListStyle style = StyleDAO.getStyle(context, mDb, uuid);
+                final ListStyle style = StyleUtils.getStyle(context, mDb, uuid);
                 Objects.requireNonNull(style, "uuid not found: " + uuid);
 
                 @EditAction
@@ -180,7 +180,7 @@ public class StyleViewModel
      */
     void updateOrInsertStyle() {
         if (mResultIntent.getBooleanExtra(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
-            StyleDAO.updateOrInsert(mDb, mStyle);
+            StyleUtils.updateOrInsert(mDb, mStyle);
         }
     }
 

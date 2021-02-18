@@ -42,7 +42,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -165,7 +165,7 @@ public class EditBookFragmentViewModel
             if (args != null) {
                 final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
                 if (styleUuid != null) {
-                    mStyle = StyleDAO.getStyleOrDefault(context, mDb, styleUuid);
+                    mStyle = StyleUtils.getStyleOrDefault(context, mDb, styleUuid);
                 }
 
                 // 1. Do we have a bundle? e.g. after an internet search

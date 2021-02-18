@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -75,7 +75,7 @@ public interface ListStyle {
     int MENU_POSITION_NOT_PREFERRED = 1000;
 
     /** default style when none is set yet. */
-    int DEFAULT_STYLE_ID = StyleDAO.BuiltinStyles.AUTHOR_THEN_SERIES_ID;
+    int DEFAULT_STYLE_ID = StyleUtils.BuiltinStyles.AUTHOR_THEN_SERIES_ID;
 
     /**
      * A ListStyle <strong>UUID</strong>.

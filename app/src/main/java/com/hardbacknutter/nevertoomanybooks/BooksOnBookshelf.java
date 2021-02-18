@@ -87,7 +87,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.StylePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.booklist.TopLevelItemDecoration;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -1312,7 +1312,7 @@ public class BooksOnBookshelf
         if (importResults != null) {
             if (importResults.styles > 0) {
                 // Force a refresh of the cached styles
-                StyleDAO.clearCache();
+                StyleUtils.clearCache();
             }
             if (importResults.preferences > 0) {
                 // Refresh the preferred bookshelf. This also refreshes its style.
@@ -1448,7 +1448,7 @@ public class BooksOnBookshelf
                 // was changed...
                 final ListStyle style = mVm.getCurrentStyle(this);
                 // so we reset the style to recover.. and restarting the app will work.
-                mVm.onStyleChanged(this, StyleDAO.BuiltinStyles.DEFAULT_STYLE_UUID);
+                mVm.onStyleChanged(this, StyleUtils.BuiltinStyles.DEFAULT_STYLE_UUID);
                 // but we STILL FORCE A CRASH, SO WE CAN COLLECT DEBUG INFORMATION!
                 throw new IllegalStateException("Style=" + style);
             }

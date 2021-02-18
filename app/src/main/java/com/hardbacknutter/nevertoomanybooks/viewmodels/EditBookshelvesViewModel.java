@@ -33,7 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -134,7 +134,7 @@ public class EditBookshelvesViewModel
 
     @NonNull
     public Bookshelf createNewBookshelf(@NonNull final Context context) {
-        return new Bookshelf("", StyleDAO.getDefault(context, mDb));
+        return new Bookshelf("", StyleUtils.getDefault(context, mDb));
     }
 
     public void deleteBookshelf(final int position) {

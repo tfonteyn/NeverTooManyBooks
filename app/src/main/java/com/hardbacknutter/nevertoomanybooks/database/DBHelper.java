@@ -44,7 +44,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.StartupActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -348,12 +348,12 @@ public final class DBHelper
                 + ',' + KEY_STYLE_UUID
                 + ") VALUES(?,1,0,?,?)";
         try (SQLiteStatement stmt = db.compileStatement(sqlInsertStyles)) {
-            for (int id = StyleDAO.BuiltinStyles.MAX_ID; id < 0; id++) {
+            for (int id = StyleUtils.BuiltinStyles.MAX_ID; id < 0; id++) {
                 // remember, the id is negative -1..
                 stmt.bindLong(1, id);
                 // menu position, initially just as defined but with a positive number
                 stmt.bindLong(2, -id);
-                stmt.bindString(3, StyleDAO.BuiltinStyles.getUuidById(-id));
+                stmt.bindString(3, StyleUtils.BuiltinStyles.getUuidById(-id));
 
                 // after inserting '-1' our debug logging will claim that the insert failed.
                 if (BuildConfig.DEBUG /* always */) {
