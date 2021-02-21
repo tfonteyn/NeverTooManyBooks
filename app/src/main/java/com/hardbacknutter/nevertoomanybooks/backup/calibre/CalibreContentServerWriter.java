@@ -75,7 +75,7 @@ public class CalibreContentServerWriter
     @NonNull
     private final CalibreContentServer mServer;
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
 
     /** Export configuration. */
     @NonNull
@@ -98,7 +98,7 @@ public class CalibreContentServerWriter
                                       @NonNull final ExportHelper helper)
             throws CertificateException, SSLException {
 
-        mDb = new BookDao(context, TAG);
+        mBookDao = new BookDao(context, TAG);
 
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
@@ -158,24 +158,24 @@ public class CalibreContentServerWriter
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (Cursor cursor = mDb.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
+        try (Cursor cursor = mBookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
 
             int delta = 0;
             long lastUpdate = 0;
             progressListener.setMaxPos(cursor.getCount());
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                final Book book = Book.from(cursor, mDb);
+                final Book book = Book.from(cursor, mBookDao);
                 try {
                     syncBook(context, library, book);
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
                     if (mDeleteLocalBook) {
-                        mDb.delete(context, book);
+                        mBookDao.delete(context, book);
                     } else {
                         // keep the book but remove the calibre data for it
-                        mDb.deleteBookCalibreData(book);
+                        mBookDao.deleteBookCalibreData(book);
                         book.setCalibreLibrary(null);
                     }
                 } catch (@NonNull final JSONException e) {
@@ -368,7 +368,7 @@ public class CalibreContentServerWriter
 
     @Override
     public void close() {
-        mDb.close();
+        mBookDao.close();
         MaintenanceDao.getInstance().purge();
     }
 }

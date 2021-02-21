@@ -56,7 +56,7 @@ public class JsonArchiveReader
     private final ImportHelper mHelper;
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
 
     /**
      * Constructor.
@@ -67,7 +67,7 @@ public class JsonArchiveReader
     public JsonArchiveReader(@NonNull final Context context,
                              @NonNull final ImportHelper helper) {
         mHelper = helper;
-        mDb = new BookDao(context, TAG);
+        mBookDao = new BookDao(context, TAG);
     }
 
     @NonNull
@@ -85,7 +85,7 @@ public class JsonArchiveReader
         }
 
         try (RecordReader recordReader = new JsonRecordReader(
-                context, mDb, mHelper.getImportEntries())) {
+                context, mBookDao, mHelper.getImportEntries())) {
 
             // wrap the entire input into a single record.
             final ArchiveReaderRecord record = new JsonArchiveRecord(
@@ -99,7 +99,7 @@ public class JsonArchiveReader
 
     @Override
     public void close() {
-        mDb.close();
+        mBookDao.close();
         MaintenanceDao.getInstance().purge();
     }
 

@@ -90,13 +90,13 @@ public abstract class BaseSetup {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        try (BookDao db = new BookDao(context, "setup")) {
+        try (BookDao bookDao = new BookDao(context, "setup")) {
 
-            final SynchronizedDb syncDb = db.getSyncDb();
-            Constants.deleteTocs(syncDb);
-            Constants.deleteBooks(syncDb);
-            Constants.deleteAuthors(syncDb);
-            Constants.deletePublishers(syncDb);
+            final SynchronizedDb db = bookDao.getDb();
+            Constants.deleteTocs(db);
+            Constants.deleteBooks(db);
+            Constants.deleteAuthors(db);
+            Constants.deletePublishers(db);
 
             // all books will sit on the same shelf for now
             //Constants.deleteBookshelves(db);
@@ -133,7 +133,7 @@ public abstract class BaseSetup {
             publisherList.clear();
             publisherList.add(publisher[0]);
             book[0].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
-            bookId[0] = db.insert(context, book[0], 0);
+            bookId[0] = bookDao.insert(context, book[0], 0);
             book[0].setStage(EntityStage.Stage.Clean);
 
             book[1] = new Book();
@@ -150,7 +150,7 @@ public abstract class BaseSetup {
             publisherList.clear();
             publisherList.add(publisher[1]);
             book[1].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
-            bookId[1] = db.insert(context, book[1], 0);
+            bookId[1] = bookDao.insert(context, book[1], 0);
             book[1].setStage(EntityStage.Stage.Clean);
 
             book[2] = new Book();
@@ -167,7 +167,7 @@ public abstract class BaseSetup {
             publisherList.clear();
             publisherList.add(publisher[2]);
             book[2].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
-            bookId[2] = db.insert(context, book[2], 0);
+            bookId[2] = bookDao.insert(context, book[2], 0);
             book[2].setStage(EntityStage.Stage.Clean);
 
             book[3] = new Book();
@@ -185,7 +185,7 @@ public abstract class BaseSetup {
             publisherList.clear();
             publisherList.add(publisher[1]);
             book[3].putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
-            bookId[3] = db.insert(context, book[3], 0);
+            bookId[3] = bookDao.insert(context, book[3], 0);
             book[3].setStage(EntityStage.Stage.Clean);
 
             book[4] = new Book();
@@ -214,7 +214,7 @@ public abstract class BaseSetup {
             tocEntry[3] = new TocEntry(author[2], TOC_TITLE + "3", null);
             tocList.add(tocEntry[3]);
             book[4].putParcelableArrayList(Book.BKEY_TOC_LIST, tocList);
-            bookId[4] = db.insert(context, book[4], 0);
+            bookId[4] = bookDao.insert(context, book[4], 0);
             book[4].setStage(EntityStage.Stage.Clean);
         }
     }

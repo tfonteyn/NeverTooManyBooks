@@ -69,7 +69,7 @@ public class ShowBookViewModel
     private final Intent mResultIntent = new Intent();
 
     /** Database Access. */
-    private BookDao mDb;
+    private BookDao mBookDao;
 
     /** <strong>Optionally</strong> passed. */
     @Nullable
@@ -98,8 +98,8 @@ public class ShowBookViewModel
         if (mNavHelper != null) {
             mNavHelper.close();
         }
-        if (mDb != null) {
-            mDb.close();
+        if (mBookDao != null) {
+            mBookDao.close();
         }
     }
 
@@ -127,12 +127,12 @@ public class ShowBookViewModel
      */
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
-        if (mDb == null) {
-            mDb = new BookDao(context, TAG);
+        if (mBookDao == null) {
+            mBookDao = new BookDao(context, TAG);
 
             final long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(bookId, "KEY_PK_ID");
-            mCurrentBook = Book.from(bookId, mDb);
+            mCurrentBook = Book.from(bookId, mBookDao);
 
             final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
             if (styleUuid != null) {
@@ -183,9 +183,9 @@ public class ShowBookViewModel
     @NonNull
     public Book reloadBookAtPosition(@IntRange(from = 0) final int position) {
         if (mNavHelper != null) {
-            mCurrentBook = Book.from(mNavHelper.getBookIdAtRow(position + 1), mDb);
+            mCurrentBook = Book.from(mNavHelper.getBookIdAtRow(position + 1), mBookDao);
         } else {
-            mCurrentBook = Book.from(mCurrentBook.getId(), mDb);
+            mCurrentBook = Book.from(mCurrentBook.getId(), mBookDao);
         }
         return mCurrentBook;
     }
@@ -200,7 +200,7 @@ public class ShowBookViewModel
     @NonNull
     public Book getBookAtPosition(@IntRange(from = 0) final int position) {
         if (mNavHelper != null) {
-            mCurrentBook = Book.from(mNavHelper.getBookIdAtRow(position + 1), mDb);
+            mCurrentBook = Book.from(mNavHelper.getBookIdAtRow(position + 1), mBookDao);
         }
         return mCurrentBook;
     }
@@ -236,7 +236,7 @@ public class ShowBookViewModel
      */
     @SuppressWarnings("UnusedReturnValue")
     public boolean toggleRead(@IntRange(from = 0) final int position) {
-        if (getBookAtPosition(position).toggleRead(mDb)) {
+        if (getBookAtPosition(position).toggleRead(mBookDao)) {
             mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
             return true;
         } else {
@@ -257,7 +257,7 @@ public class ShowBookViewModel
                               @IntRange(from = 1) final int position) {
         final Book book = getBookAtPosition(position);
 
-        if (mDb.delete(context, book)) {
+        if (mBookDao.delete(context, book)) {
             //noinspection ConstantConditions
             mCurrentBook = null;
             mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
@@ -268,8 +268,8 @@ public class ShowBookViewModel
     }
 
     @NonNull
-    public BookDao getDb() {
-        return mDb;
+    public BookDao getBookDao() {
+        return mBookDao;
     }
 
     @NonNull
@@ -326,7 +326,7 @@ public class ShowBookViewModel
         private final int mRowCount;
         /** Database Access. */
         @NonNull
-        private final SynchronizedDb mSyncDb;
+        private final SynchronizedDb mDb;
         @NonNull
         private final String mListTableName;
         /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
@@ -341,15 +341,15 @@ public class ShowBookViewModel
         private ShowBookNavigator(@NonNull final Context context,
                                   @NonNull final String listTableName) {
 
-            mSyncDb = DBHelper.getSyncDb(context);
+            mDb = DBHelper.getDb(context);
             mListTableName = listTableName;
 
-            try (SynchronizedStatement stmt = mSyncDb.compileStatement(
+            try (SynchronizedStatement stmt = mDb.compileStatement(
                     "SELECT COUNT(*) FROM " + mListTableName)) {
                 mRowCount = (int) stmt.simpleQueryForLongOrZero();
             }
 
-            mGetBookStmt = mSyncDb.compileStatement(
+            mGetBookStmt = mDb.compileStatement(
                     SELECT_ + DBDefinitions.KEY_FK_BOOK
                     + _FROM_ + mListTableName + _WHERE_ + DBDefinitions.KEY_PK_ID + "=?");
         }
@@ -375,7 +375,7 @@ public class ShowBookViewModel
         @IntRange(from = 1)
         private int getRowNumber(final long listTableRowId) {
             // This method is only called once to get the initial row number
-            try (SynchronizedStatement stmt = mSyncDb.compileStatement(
+            try (SynchronizedStatement stmt = mDb.compileStatement(
                     SELECT_ + DBDefinitions.KEY_PK_ID + _FROM_ + mListTableName
                     + _WHERE_ + DBDefinitions.KEY_FK_BL_ROW_ID + "=?")) {
                 stmt.bindLong(1, listTableRowId);

@@ -135,8 +135,8 @@ public final class BookshelfDao
      */
     @Nullable
     public Bookshelf getById(final long id) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_BY_ID,
-                                                new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_BY_ID,
+                                          new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Bookshelf(id, new CursorRow(cursor));
             } else {
@@ -155,7 +155,7 @@ public final class BookshelfDao
     @Nullable
     public Bookshelf findByName(@NonNull final String name) {
 
-        try (Cursor cursor = mSyncedDb.rawQuery(FIND, new String[]{name})) {
+        try (Cursor cursor = mDb.rawQuery(FIND, new String[]{name})) {
             if (cursor.moveToFirst()) {
                 final DataHolder rowData = new CursorRow(cursor);
                 return new Bookshelf(rowData.getLong(KEY_PK_ID), rowData);
@@ -175,7 +175,7 @@ public final class BookshelfDao
      */
     public long find(@NonNull final Bookshelf bookshelf) {
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindString(1, bookshelf.getName());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -208,7 +208,7 @@ public final class BookshelfDao
      */
     @NonNull
     public Cursor fetchAllUserShelves() {
-        return mSyncedDb.rawQuery(SELECT_ALL_USER_SHELVES, null);
+        return mDb.rawQuery(SELECT_ALL_USER_SHELVES, null);
     }
 
     /**
@@ -239,7 +239,7 @@ public final class BookshelfDao
         // validate the style first
         final long styleId = bookshelf.getStyle(context).getId();
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, bookshelf.getName());
             stmt.bindLong(2, styleId);
             stmt.bindLong(3, bookshelf.getTopItemPosition());
@@ -273,8 +273,8 @@ public final class BookshelfDao
 
         cv.put(KEY_FK_STYLE, styleId);
 
-        return 0 < mSyncedDb.update(TBL_BOOKSHELF.getName(), cv, KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(bookshelf.getId())});
+        return 0 < mDb.update(TBL_BOOKSHELF.getName(), cv, KEY_PK_ID + "=?",
+                              new String[]{String.valueOf(bookshelf.getId())});
     }
 
     /**
@@ -292,22 +292,22 @@ public final class BookshelfDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             purgeNodeStates(bookshelf.getId());
 
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DELETE_BY_ID)) {
+            try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
                 stmt.bindLong(1, bookshelf.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
 
@@ -337,24 +337,24 @@ public final class BookshelfDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             // we don't hold 'position' for shelves... so just do a mass update
-            rowsAffected = mSyncedDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
-                                            KEY_FK_BOOKSHELF + "=?",
-                                            new String[]{String.valueOf(source.getId())});
+            rowsAffected = mDb.update(TBL_BOOK_BOOKSHELF.getName(), cv,
+                                      KEY_FK_BOOKSHELF + "=?",
+                                      new String[]{String.valueOf(source.getId())});
 
             // delete the obsolete source.
             delete(source);
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
 
@@ -368,7 +368,7 @@ public final class BookshelfDao
      * @param bookshelfId to purge
      */
     public void purgeNodeStates(final long bookshelfId) {
-        try (SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mDb
                 .compileStatement(BOOK_LIST_NODE_STATE_BY_BOOKSHELF)) {
             stmt.bindLong(1, bookshelfId);
             stmt.executeUpdateDelete();

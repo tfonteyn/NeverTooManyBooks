@@ -79,8 +79,8 @@ public class AboutFragment
 
         // just running this on the UI thread...
         //noinspection ConstantConditions
-        try (BookDao db = new BookDao(getContext(), TAG)) {
-            mVb.bookCount.setText(String.valueOf(db.countBooks()));
+        try (BookDao bookDao = new BookDao(getContext(), TAG)) {
+            mVb.bookCount.setText(String.valueOf(bookDao.countBooks()));
         }
 
         mVb.seriesCount.setText(String.valueOf(SeriesDao.getInstance().count()));

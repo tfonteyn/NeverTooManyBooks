@@ -97,7 +97,7 @@ public class SendBooksGrTask
         final Context appContext = grManager.getAppContext();
         final GoodreadsDao grDao = grManager.getGoodreadsDao();
 
-        try (BookDao db = new BookDao(appContext, TAG);
+        try (BookDao bookDao = new BookDao(appContext, TAG);
              Cursor cursor = grDao.fetchBooksForExport(lastBookSend, mUpdatesOnly)) {
 
             final DataHolder bookData = new CursorRow(cursor);
@@ -105,7 +105,7 @@ public class SendBooksGrTask
 
             boolean needsRetryReset = true;
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, grManager, grDao, db, bookData)) {
+                if (!sendOneBook(queueManager, grManager, grDao, bookDao, bookData)) {
                     // quit on error
                     return false;
                 }

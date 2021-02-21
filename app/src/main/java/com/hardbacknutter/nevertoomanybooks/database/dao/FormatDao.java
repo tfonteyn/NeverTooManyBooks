@@ -83,7 +83,7 @@ public final class FormatDao
      */
     @NonNull
     public ArrayList<String> getList() {
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_ALL, null)) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_ALL, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -94,7 +94,7 @@ public final class FormatDao
             return;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(UPDATE)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(UPDATE)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();

@@ -22,7 +22,6 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -40,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 public class ListStyleCoder
@@ -51,33 +49,16 @@ public class ListStyleCoder
 
     private static final String STYLE_NAME = "name";
 
-
     @NonNull
     private final Context mContext;
-    /** Database Access. */
-    @Nullable
-    private final BookDao mDb;
 
     /**
-     * Constructor. The {@link #encode} method does not need a database.
+     * Constructor.
      *
      * @param context Current context
      */
     public ListStyleCoder(@NonNull final Context context) {
         mContext = context;
-        mDb = null;
-    }
-
-    /**
-     * Constructor. The {@link #decode} method <strong>does</strong> need a database.
-     *
-     * @param context Current context
-     * @param db      Database access
-     */
-    public ListStyleCoder(@NonNull final Context context,
-                          @NonNull final BookDao db) {
-        mContext = context;
-        mDb = db;
     }
 
     @NonNull
@@ -113,7 +94,6 @@ public class ListStyleCoder
     @Override
     public ListStyle decode(@NonNull final JSONObject data)
             throws JSONException {
-        Objects.requireNonNull(mDb);
 
         final String uuid = data.getString(DBDefinitions.KEY_STYLE_UUID);
 

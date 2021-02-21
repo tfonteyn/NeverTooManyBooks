@@ -25,11 +25,9 @@ import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
@@ -55,9 +53,6 @@ class PruneListTest
 
     private static final long PHILIP_DICK_ID = 300;
     private static final String PHILIP_DICK = "Philip K. Dick";
-
-    @Mock
-    BookDao mDb;
 
     @BeforeEach
     public void setUp() {
@@ -167,7 +162,7 @@ class PruneListTest
         list.add(author);
 
         final boolean modified = Author
-                .pruneList(list, mContext, mDb, false, Locale.getDefault());
+                .pruneList(list, mContext, false, Locale.getDefault());
 
         assertTrue(modified, list.toString());
         assertEquals(3, list.size(), list.toString());
@@ -217,7 +212,7 @@ class PruneListTest
         authorList.add(author);
 
         final boolean modified = Author
-                .pruneList(authorList, mContext, mDb, false, Locale.getDefault());
+                .pruneList(authorList, mContext, false, Locale.getDefault());
 
         assertTrue(modified);
         assertEquals(1, authorList.size());

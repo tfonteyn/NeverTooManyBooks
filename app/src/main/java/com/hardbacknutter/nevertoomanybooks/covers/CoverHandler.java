@@ -121,7 +121,7 @@ public class CoverHandler {
     private final int mMaxHeight;
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
     @NonNull
     private final CoverHandlerHost mCoverHandlerHost;
     @NonNull
@@ -150,18 +150,18 @@ public class CoverHandler {
      * Constructor.
      *
      * @param coverHandlerHost the hosting component
-     * @param db               Database access
+     * @param bookDao          Database access
      * @param cIdx             0..n image index
      * @param maxWidth         the maximum width for the cover
      * @param maxHeight        the maximum height for the cover
      */
     public CoverHandler(@NonNull final CoverHandlerHost coverHandlerHost,
-                        @NonNull final BookDao db,
+                        @NonNull final BookDao bookDao,
                         @IntRange(from = 0, to = 1) final int cIdx,
                         final int maxWidth,
                         final int maxHeight) {
         mCoverHandlerHost = coverHandlerHost;
-        mDb = db;
+        mBookDao = bookDao;
         mCIdx = cIdx;
         mMaxWidth = maxWidth;
         mMaxHeight = maxHeight;
@@ -337,7 +337,7 @@ public class CoverHandler {
         final Context context = mView.getContext();
 
         if (itemId == R.id.MENU_DELETE) {
-            book.setCover(context, mDb, mCIdx, null);
+            book.setCover(context, mBookDao, mCIdx, null);
             mCoverHandlerHost.refresh(mCIdx);
             return true;
 
@@ -454,9 +454,9 @@ public class CoverHandler {
 
         final File srcFile = new File(fileSpec);
         if (srcFile.exists()) {
-            mBookSupplier.get().setCover(mView.getContext(), mDb, mCIdx, srcFile);
+            mBookSupplier.get().setCover(mView.getContext(), mBookDao, mCIdx, srcFile);
         } else {
-            mBookSupplier.get().setCover(mView.getContext(), mDb, mCIdx, null);
+            mBookSupplier.get().setCover(mView.getContext(), mBookDao, mCIdx, null);
         }
 
         mCoverHandlerHost.refresh(mCIdx);
@@ -667,7 +667,7 @@ public class CoverHandler {
 
                     case ACTION_DONE:
                     default:
-                        mBookSupplier.get().setCover(context, mDb, mCIdx, result.getFile());
+                        mBookSupplier.get().setCover(context, mBookDao, mCIdx, result.getFile());
                         // must use a post to force the View to update.
                         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
                         return;
@@ -678,7 +678,7 @@ public class CoverHandler {
         }
 
         // transformation failed
-        mBookSupplier.get().setCover(context, mDb, mCIdx, null);
+        mBookSupplier.get().setCover(context, mBookDao, mCIdx, null);
         // must use a post to force the View to update.
         mView.post(() -> mCoverHandlerHost.refresh(mCIdx));
     }

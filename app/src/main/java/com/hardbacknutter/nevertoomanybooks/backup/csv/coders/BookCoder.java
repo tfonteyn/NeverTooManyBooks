@@ -313,7 +313,7 @@ public class BookCoder {
 
 
     public Book decode(@NonNull final Context context,
-                       @NonNull final BookDao db,
+                       @NonNull final BookDao bookDao,
                        @NonNull final String[] csvColumnNames,
                        @NonNull final String[] csvDataRow) {
         final Book book = new Book();
@@ -333,15 +333,15 @@ public class BookCoder {
         final Locale bookLocale = book.getLocale(context);
 
         // Database access is strictly limited to fetching ID's for the list elements.
-        decodeAuthors(context, db, book, bookLocale);
-        decodeSeries(context, db, book, bookLocale);
+        decodeAuthors(context, book, bookLocale);
+        decodeSeries(context, bookDao, book, bookLocale);
         decodePublishers(context, book, bookLocale);
         decodeToc(context, book, bookLocale);
         decodeBookshelves(book);
         decodeCalibreData(book);
 
         //URGENT: implement full parsing/formatting of incoming dates for validity
-        //verifyDates(context, mDb, book);
+        //verifyDates(context, bookDao, book);
 
         return book;
     }
@@ -407,12 +407,10 @@ public class BookCoder {
      * If none found, a generic "[Unknown author]" will be used.
      *
      * @param context    Current context
-     * @param db         Database Access
      * @param book       the book
      * @param bookLocale of the book, already resolved
      */
     private void decodeAuthors(@NonNull final Context context,
-                               @NonNull final BookDao db,
                                @NonNull final Book /* in/out */ book,
                                @NonNull final Locale bookLocale) {
 
@@ -424,7 +422,7 @@ public class BookCoder {
             list = mAuthorCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                Author.pruneList(list, context, db, false, bookLocale);
+                Author.pruneList(list, context, false, bookLocale);
             }
         } else {
             // check for individual author (full/family/given) fields in the input
@@ -468,12 +466,12 @@ public class BookCoder {
      * Database access is strictly limited to fetching ID's.
      *
      * @param context    Current context
-     * @param db         Database Access
+     * @param bookDao    Database Access
      * @param book       the book
      * @param bookLocale of the book, already resolved
      */
     private void decodeSeries(@NonNull final Context context,
-                              @NonNull final BookDao db,
+                              @NonNull final BookDao bookDao,
                               @NonNull final Book /* in/out */ book,
                               @NonNull final Locale bookLocale) {
 

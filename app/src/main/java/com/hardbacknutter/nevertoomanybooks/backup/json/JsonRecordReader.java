@@ -101,7 +101,7 @@ public class JsonRecordReader
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
     /** cached localized "Books" string. */
     @NonNull
     private final String mBooksString;
@@ -119,17 +119,17 @@ public class JsonRecordReader
      * Only supports {@link RecordType#Books}.
      *
      * @param context              Current context
-     * @param db                   Database Access;
+     * @param bookDao              Database Access;
      * @param importEntriesAllowed the record types we're allowed to read
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
-                            @NonNull final BookDao db,
+                            @NonNull final BookDao bookDao,
                             @NonNull final Set<RecordType> importEntriesAllowed) {
-        mDb = db;
+        mBookDao = bookDao;
         mImportEntriesAllowed = importEntriesAllowed;
 
-        mBookCoder = new BookCoder(context, mDb);
+        mBookCoder = new BookCoder(context);
 
         mBooksString = context.getString(R.string.lbl_books);
         mProgressMessage = context.getString(R.string.progress_msg_x_created_y_updated_z_skipped);
@@ -180,7 +180,7 @@ public class JsonRecordReader
                                     .optJSONArray(RecordType.Styles.getName());
                             if (jsonRoot != null) {
                                 //noinspection SimplifyStreamApiCallChains
-                                new ListStyleCoder(context, mDb)
+                                new ListStyleCoder(context)
                                         .decode(jsonRoot)
                                         .stream()
                                         .forEach(StyleUtils::updateOrInsert);
@@ -269,12 +269,12 @@ public class JsonRecordReader
             // Iterate through each imported row
             for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
                 // every 10 inserted, we commit the transaction
-                if (mDb.inTransaction() && txRowCount > 10) {
-                    mDb.setTransactionSuccessful();
-                    mDb.endTransaction(txLock);
+                if (mBookDao.inTransaction() && txRowCount > 10) {
+                    mBookDao.setTransactionSuccessful();
+                    mBookDao.endTransaction(txLock);
                 }
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
+                if (!mBookDao.inTransaction()) {
+                    txLock = mBookDao.beginTransaction(true);
                     txRowCount = 0;
                 }
                 txRowCount++;
@@ -322,9 +322,9 @@ public class JsonRecordReader
                 }
             }
         } finally {
-            if (mDb.inTransaction()) {
-                mDb.setTransactionSuccessful();
-                mDb.endTransaction(txLock);
+            if (mBookDao.inTransaction()) {
+                mBookDao.setTransactionSuccessful();
+                mBookDao.endTransaction(txLock);
             }
         }
         // minus 1 to compensate for the last increment
@@ -349,7 +349,7 @@ public class JsonRecordReader
         final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
-        final long databaseBookId = mDb.getBookIdFromUuid(uuid);
+        final long databaseBookId = mBookDao.getBookIdFromUuid(uuid);
         if (databaseBookId > 0) {
             // The book exists in our database (matching UUID).
 
@@ -362,8 +362,8 @@ public class JsonRecordReader
                  && isImportNewer(context, databaseBookId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
 
-                mDb.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                          | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                               | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + uuid
@@ -384,7 +384,7 @@ public class JsonRecordReader
             // The book does NOT exist in our database (no match for the UUID), insert it.
 
             // If we have an importBookId, and it does not already exist, we reuse it.
-            if (importNumericId > 0 && !mDb.bookExistsById(importNumericId)) {
+            if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
                 book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
             }
 
@@ -392,8 +392,8 @@ public class JsonRecordReader
             // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
             // - NO id, OR an id which does not exist in the database yet.
             // INSERT, explicitly allowing the id to be reused if present
-            final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                         | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                              | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "UUID=" + uuid
@@ -420,7 +420,7 @@ public class JsonRecordReader
             return false;
         }
 
-        final LocalDateTime utcLastUpdated = mDb.getBookLastUpdateUtcDate(context, bookId);
+        final LocalDateTime utcLastUpdated = mBookDao.getBookLastUpdateUtcDate(context, bookId);
         return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
     }
 }

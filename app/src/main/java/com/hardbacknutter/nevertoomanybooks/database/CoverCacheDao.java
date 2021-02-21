@@ -128,11 +128,11 @@ public final class CoverCacheDao {
     }
 
     @NonNull
-    private final SynchronizedDb mSyncedDb;
+    private final SynchronizedDb mDb;
 
     /** singleton. */
     private CoverCacheDao(@NonNull final Context context) {
-        mSyncedDb = CoversDbHelper.getSyncDb(context);
+        mDb = CoversDbHelper.getDb(context);
     }
 
     /**
@@ -175,7 +175,7 @@ public final class CoverCacheDao {
 
     public int count(@NonNull final Context context) {
         try {
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SQL_COUNT)) {
+            try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } catch (@NonNull final RuntimeException e) {
@@ -200,8 +200,8 @@ public final class CoverCacheDao {
                        @NonNull final String uuid) {
         try {
             // starts with the uuid, remove all sizes and indexes
-            mSyncedDb.delete(TBL_IMAGE.getName(), CKEY_CACHE_ID + " LIKE ?",
-                             new String[]{uuid + '%'});
+            mDb.delete(TBL_IMAGE.getName(), CKEY_CACHE_ID + " LIKE ?",
+                       new String[]{uuid + '%'});
         } catch (@NonNull final SQLiteException e) {
             Logger.error(context, TAG, e);
         }
@@ -214,7 +214,7 @@ public final class CoverCacheDao {
      */
     public void deleteAll(@NonNull final Context context) {
         try {
-            mSyncedDb.execSQL("DELETE FROM " + TBL_IMAGE.getName());
+            mDb.execSQL("DELETE FROM " + TBL_IMAGE.getName());
         } catch (@NonNull final SQLiteException e) {
             Logger.error(context, TAG, e);
         }
@@ -250,7 +250,7 @@ public final class CoverCacheDao {
 
                     final String cacheId = constructCacheId(uuid, cIdx, maxWidth, maxHeight);
 
-                    try (Cursor cursor = mSyncedDb.rawQuery(
+                    try (Cursor cursor = mDb.rawQuery(
                             SQL_GET_IMAGE, new String[]{cacheId, fileLastModified})) {
                         if (cursor.moveToFirst()) {
                             final byte[] bytes = cursor.getBlob(0);
@@ -311,18 +311,18 @@ public final class CoverCacheDao {
             cv.put(CKEY_IMAGE, image);
 
             final boolean exists;
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SQL_COUNT_ID)) {
+            try (SynchronizedStatement stmt = mDb.compileStatement(SQL_COUNT_ID)) {
                 stmt.bindString(1, cacheId);
                 exists = stmt.simpleQueryForLongOrZero() == 0;
             }
 
             if (exists) {
-                mSyncedDb.insert(TBL_IMAGE.getName(), cv);
+                mDb.insert(TBL_IMAGE.getName(), cv);
             } else {
                 cv.put(CKEY_UTC_DATETIME, LocalDateTime
                         .now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
-                mSyncedDb.update(TBL_IMAGE.getName(), cv,
-                                 CKEY_CACHE_ID + "=?", new String[]{cacheId});
+                mDb.update(TBL_IMAGE.getName(), cv,
+                           CKEY_CACHE_ID + "=?", new String[]{cacheId});
             }
         } catch (@NonNull final RuntimeException e) {
             // do not crash... ever! This is just a cache!
@@ -433,7 +433,7 @@ public final class CoverCacheDao {
         @SuppressWarnings("InnerClassFieldHidesOuterClassField")
         private static CoversDbHelper sInstance;
 
-        /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getSyncDb()}. */
+        /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb()}. */
         @Nullable
         private SynchronizedDb mSynchronizedDb;
 
@@ -453,8 +453,8 @@ public final class CoverCacheDao {
          *
          * @return the database instance
          */
-        public static SynchronizedDb getSyncDb(@NonNull final Context context) {
-            return CoversDbHelper.getInstance(context).getSyncDb();
+        public static SynchronizedDb getDb(@NonNull final Context context) {
+            return CoversDbHelper.getInstance(context).getDb();
         }
 
         /**
@@ -481,7 +481,7 @@ public final class CoverCacheDao {
          * @return database connection
          */
         @NonNull
-        private SynchronizedDb getSyncDb() {
+        private SynchronizedDb getDb() {
             synchronized (this) {
                 if (mSynchronizedDb == null) {
                     mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);

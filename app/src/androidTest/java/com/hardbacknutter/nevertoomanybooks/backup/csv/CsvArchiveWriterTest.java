@@ -70,8 +70,8 @@ public class CsvArchiveWriterTest {
     @Before
     public void count() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao db = new BookDao(context, TAG)) {
-            mBookInDb = db.countBooks();
+        try (BookDao bookDao = new BookDao(context, TAG)) {
+            mBookInDb = bookDao.countBooks();
         }
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
@@ -127,13 +127,13 @@ public class CsvArchiveWriterTest {
         final long deletedBookId = ids.get(3);
         final long modifiedBookId = ids.get(5);
 
-        try (BookDao db = new BookDao(context, TAG)) {
-            db.deleteBook(context, deletedBookId);
+        try (BookDao bookDao = new BookDao(context, TAG)) {
+            bookDao.deleteBook(context, deletedBookId);
 
-            final Book book = Book.from(modifiedBookId, db);
+            final Book book = Book.from(modifiedBookId, bookDao);
             book.putString(DBDefinitions.KEY_PRIVATE_NOTES,
                            "MODIFIED" + book.getString(DBDefinitions.KEY_PRIVATE_NOTES));
-            db.update(context, book, 0);
+            bookDao.update(context, book, 0);
         }
 
         final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));

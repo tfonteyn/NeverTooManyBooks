@@ -41,7 +41,7 @@ public class EventCursorAdapter
 
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
 
     @NonNull
     private final LayoutInflater mLayoutInflater;
@@ -51,14 +51,14 @@ public class EventCursorAdapter
      *
      * @param context Current context
      * @param cursor  Cursor to use as source
-     * @param db      Database Access
+     * @param bookDao Database Access
      */
     EventCursorAdapter(@NonNull final Context context,
                        @NonNull final Cursor cursor,
-                       @NonNull final BookDao db) {
+                       @NonNull final BookDao bookDao) {
         super(context, cursor);
         mLayoutInflater = LayoutInflater.from(context);
-        mDb = db;
+        mBookDao = bookDao;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class EventCursorAdapter
         final Object event = row.getEvent(context);
         if (event instanceof SendBookEvent) {
             final BookEventViewHolder holder = new BookEventViewHolder(view);
-            holder.bind(row, (SendBookEvent) event, mDb);
+            holder.bind(row, (SendBookEvent) event, mBookDao);
         } else {
             final LegacyViewHolder holder = new LegacyViewHolder(view);
             holder.bind((LegacyEvent) event);

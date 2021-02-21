@@ -164,7 +164,7 @@ public final class SeriesDao
      */
     @Nullable
     public Series getById(final long id) {
-        try (Cursor cursor = mSyncedDb.rawQuery(GET_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mDb.rawQuery(GET_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Series(id, new CursorRow(cursor));
             } else {
@@ -200,7 +200,7 @@ public final class SeriesDao
 
         final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindString(1, encodeOrderByColumn(series.getTitle(), seriesLocale));
             stmt.bindString(2, encodeOrderByColumn(obTitle, seriesLocale));
             return stmt.simpleQueryForLongOrZero();
@@ -227,7 +227,7 @@ public final class SeriesDao
      */
     @NonNull
     public String getLanguage(final long id) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(GET_LANGUAGE)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(GET_LANGUAGE)) {
             stmt.bindLong(1, id);
             final String code = stmt.simpleQueryForStringOrNull();
             return code != null ? code : "";
@@ -244,8 +244,8 @@ public final class SeriesDao
     @NonNull
     public ArrayList<Long> getBookIds(final long seriesId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_BOOK_IDS_BY_SERIES_ID,
-                                                new String[]{String.valueOf(seriesId)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_IDS_BY_SERIES_ID,
+                                          new String[]{String.valueOf(seriesId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -265,7 +265,7 @@ public final class SeriesDao
     public ArrayList<Long> getBookIds(final long seriesId,
                                       final long bookshelfId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(
+        try (Cursor cursor = mDb.rawQuery(
                 SELECT_BOOK_IDS_BY_SERIES_ID_AND_BOOKSHELF_ID,
                 new String[]{String.valueOf(seriesId), String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
@@ -282,11 +282,11 @@ public final class SeriesDao
      */
     @NonNull
     public Cursor fetchAll() {
-        return mSyncedDb.rawQuery(SELECT_ALL, null);
+        return mDb.rawQuery(SELECT_ALL, null);
     }
 
     public long count() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(COUNT_ALL)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(COUNT_ALL)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -307,7 +307,7 @@ public final class SeriesDao
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(COUNT_BOOKS)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(COUNT_BOOKS)) {
             stmt.bindLong(1, series.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -326,8 +326,8 @@ public final class SeriesDao
         final ContentValues cv = new ContentValues();
         cv.put(KEY_SERIES_IS_COMPLETE, isComplete);
 
-        return 0 < mSyncedDb.update(TBL_SERIES.getName(), cv, KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(seriesId)});
+        return 0 < mDb.update(TBL_SERIES.getName(), cv, KEY_PK_ID + "=?",
+                              new String[]{String.valueOf(seriesId)});
     }
 
     /**
@@ -401,7 +401,7 @@ public final class SeriesDao
 
         final String obTitle = series.reorderTitleForSorting(context, seriesLocale);
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, series.getTitle());
             stmt.bindString(2, encodeOrderByColumn(obTitle, seriesLocale));
             stmt.bindBoolean(3, series.isComplete());
@@ -434,8 +434,8 @@ public final class SeriesDao
         cv.put(KEY_SERIES_TITLE_OB, encodeOrderByColumn(obTitle, seriesLocale));
         cv.put(KEY_SERIES_IS_COMPLETE, series.isComplete());
 
-        return 0 < mSyncedDb.update(TBL_SERIES.getName(), cv, KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(series.getId())});
+        return 0 < mDb.update(TBL_SERIES.getName(), cv, KEY_PK_ID + "=?",
+                              new String[]{String.valueOf(series.getId())});
     }
 
     /**
@@ -451,7 +451,7 @@ public final class SeriesDao
                           @NonNull final Series series) {
 
         final int rowsAffected;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DELETE_BY_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, series.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -485,15 +485,15 @@ public final class SeriesDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             final Series destination = getById(destId);
 
-            try (BookDao db = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(context, TAG)) {
                 for (final long bookId : getBookIds(source.getId())) {
-                    final Book book = Book.from(bookId, db);
+                    final Book book = Book.from(bookId, bookDao);
 
                     final Collection<Series> fromBook =
                             book.getParcelableArrayList(Book.BKEY_SERIES_LIST);
@@ -506,7 +506,8 @@ public final class SeriesDao
                             destList.add(item);
                         }
                     }
-                    db.insertBookSeries(context, bookId, destList, true, book.getLocale(context));
+                    bookDao.insertBookSeries(context, bookId, destList, true,
+                                             book.getLocale(context));
                 }
             }
 
@@ -514,17 +515,17 @@ public final class SeriesDao
             delete(context, source);
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
     }
 
     public void purge() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(PURGE)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(PURGE)) {
             stmt.executeUpdateDelete();
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad.

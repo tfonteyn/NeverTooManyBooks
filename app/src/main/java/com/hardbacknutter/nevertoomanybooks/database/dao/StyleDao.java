@@ -95,7 +95,7 @@ public final class StyleDao
      */
     public long getStyleIdByUuid(@NonNull final String uuid) {
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SELECT_STYLE_ID_BY_UUID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_STYLE_ID_BY_UUID)) {
             stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
         }
@@ -117,7 +117,7 @@ public final class StyleDao
         final String sql =
                 SELECT_STYLES + _WHERE_ + KEY_STYLE_IS_BUILTIN + "=?" + _ORDER_BY_ + KEY_PK_ID;
 
-        return mSyncedDb.rawQuery(sql, new String[]{String.valueOf(userDefined ? 0 : 1)});
+        return mDb.rawQuery(sql, new String[]{String.valueOf(userDefined ? 0 : 1)});
     }
 
     /**
@@ -128,7 +128,7 @@ public final class StyleDao
      * @return the row id of the newly inserted row, or {@code -1} if an error occurred
      */
     public long insert(@NonNull final ListStyle style) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(INSERT_STYLE)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_STYLE)) {
             stmt.bindString(1, style.getUuid());
             stmt.bindBoolean(2, style instanceof BuiltinStyle);
             stmt.bindBoolean(3, style.isPreferred());
@@ -154,8 +154,8 @@ public final class StyleDao
         cv.put(KEY_STYLE_IS_PREFERRED, style.isPreferred());
         cv.put(KEY_STYLE_MENU_POSITION, style.getMenuPosition());
 
-        return 0 < mSyncedDb.update(TBL_BOOKLIST_STYLES.getName(), cv, KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(style.getId())});
+        return 0 < mDb.update(TBL_BOOKLIST_STYLES.getName(), cv, KEY_PK_ID + "=?",
+                              new String[]{String.valueOf(style.getId())});
     }
 
     /**
@@ -173,22 +173,22 @@ public final class StyleDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             purgeNodeStatesByStyle(style.getId());
 
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DELETE_STYLE_BY_ID)) {
+            try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_STYLE_BY_ID)) {
                 stmt.bindLong(1, style.getId());
                 rowsAffected = stmt.executeUpdateDelete();
             }
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
 
@@ -205,7 +205,7 @@ public final class StyleDao
      * @param styleId to purge
      */
     public void purgeNodeStatesByStyle(final long styleId) {
-        try (SynchronizedStatement stmt = mSyncedDb
+        try (SynchronizedStatement stmt = mDb
                 .compileStatement(DELETE_BOOK_LIST_NODE_STATE_BY_STYLE)) {
             stmt.bindLong(1, styleId);
             stmt.executeUpdateDelete();

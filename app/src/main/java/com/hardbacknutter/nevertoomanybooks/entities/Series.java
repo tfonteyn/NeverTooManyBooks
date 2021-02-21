@@ -478,9 +478,7 @@ public class Series
 
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         // overkill...  see the getLocale method for more comments
-        // try (DAO db = new DAO(TAG)) {
-        //     locale = getLocale(context, db, AppLocale.getUserLocale(context));
-        // }
+        //   locale = getLocale(context, AppLocale.getUserLocale(context));
         final String title = reorderTitleForDisplaying(context, userLocale);
 
         if (!mNumber.isEmpty()) {

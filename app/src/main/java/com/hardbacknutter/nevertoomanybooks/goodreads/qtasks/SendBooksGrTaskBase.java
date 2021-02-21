@@ -118,7 +118,7 @@ public abstract class SendBooksGrTaskBase
      * Try to export one book.
      *
      * @param grManager the Goodreads Manager
-     * @param db        Database Access
+     * @param bookDao   Database Access
      * @param bookData  the book data to send
      *
      * @return {@code false} on failure, {@code true} on success
@@ -127,14 +127,14 @@ public abstract class SendBooksGrTaskBase
     boolean sendOneBook(@NonNull final QueueManager queueManager,
                         @NonNull final GoodreadsManager grManager,
                         @NonNull final GoodreadsDao grDao,
-                        @NonNull final BookDao db,
+                        @NonNull final BookDao bookDao,
                         @NonNull final DataHolder bookData) {
 
         final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
 
         try {
             @GrStatus.Status
-            final int status = grManager.sendOneBook(db, grDao, bookData);
+            final int status = grManager.sendOneBook(bookDao, grDao, bookData);
             setLastExtStatus(status);
             if (status == GrStatus.SUCCESS) {
                 mSent++;

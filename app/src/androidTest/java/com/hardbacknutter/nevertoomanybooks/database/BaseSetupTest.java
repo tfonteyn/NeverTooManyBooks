@@ -48,7 +48,7 @@ public class BaseSetupTest
         ArrayList<AuthorWork> works;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao db = new BookDao(context, "basic")) {
+        try (BookDao bookDao = new BookDao(context, "basic")) {
 
             // The objects should have been updated with their id
             assertTrue(author[0].getId() > 0);
@@ -113,19 +113,19 @@ public class BaseSetupTest
 
 
 
-            works = db.getAuthorWorks(author[1], bookshelf[0].getId(), true, false);
+            works = bookDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, false);
             assertEquals(2, works.size());
-            works = db.getAuthorWorks(author[2], bookshelf[0].getId(), true, false);
+            works = bookDao.getAuthorWorks(author[2], bookshelf[0].getId(), true, false);
             assertEquals(2, works.size());
 
-            works = db.getAuthorWorks(author[1], bookshelf[0].getId(), true, true);
+            works = bookDao.getAuthorWorks(author[1], bookshelf[0].getId(), true, true);
             assertEquals(5, works.size());
-            works = db.getAuthorWorks(author[2], bookshelf[0].getId(), true, true);
+            works = bookDao.getAuthorWorks(author[2], bookshelf[0].getId(), true, true);
             assertEquals(5, works.size());
 
-            works = db.getAuthorWorks(author[1], bookshelf[0].getId(), false, true);
+            works = bookDao.getAuthorWorks(author[1], bookshelf[0].getId(), false, true);
             assertEquals(3, works.size());
-            works = db.getAuthorWorks(author[2], bookshelf[0].getId(), false, true);
+            works = bookDao.getAuthorWorks(author[2], bookshelf[0].getId(), false, true);
             assertEquals(3, works.size());
         }
     }

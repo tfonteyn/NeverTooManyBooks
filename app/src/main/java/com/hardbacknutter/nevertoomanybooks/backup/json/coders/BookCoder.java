@@ -32,7 +32,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -58,11 +57,7 @@ public class BookCoder
     private final JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
     private final JsonCoder<Bookshelf> mBookshelfCoder;
 
-    private final BookDao mDb;
-
-    public BookCoder(@NonNull final Context context,
-                     @NonNull final BookDao db) {
-        mDb = db;
+    public BookCoder(@NonNull final Context context) {
 
         mBookshelfCoder = new BookshelfCoder(context);
         mCalibreLibraryCoder = new CalibreLibraryCoder();

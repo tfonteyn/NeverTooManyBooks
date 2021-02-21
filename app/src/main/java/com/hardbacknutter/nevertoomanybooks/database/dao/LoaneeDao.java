@@ -142,7 +142,7 @@ public final class LoaneeDao
         boolean success = false;
 
         if (loanee == null || loanee.isEmpty()) {
-            try (SynchronizedStatement stmt = mSyncedDb
+            try (SynchronizedStatement stmt = mDb
                     .compileStatement(DELETE_BY_BOOK_ID)) {
                 stmt.bindLong(1, bookId);
                 success = stmt.executeUpdateDelete() == 1;
@@ -151,7 +151,7 @@ public final class LoaneeDao
 
             final String current = getLoaneeByBookId(bookId);
             if (current == null || current.isEmpty()) {
-                try (SynchronizedStatement stmt = mSyncedDb
+                try (SynchronizedStatement stmt = mDb
                         .compileStatement(INSERT)) {
                     stmt.bindLong(1, bookId);
                     stmt.bindString(2, loanee);
@@ -161,9 +161,9 @@ public final class LoaneeDao
             } else if (!loanee.equals(current)) {
                 final ContentValues cv = new ContentValues();
                 cv.put(KEY_LOANEE, loanee);
-                success = 0 < mSyncedDb.update(TBL_BOOK_LOANEE.getName(), cv,
-                                               KEY_FK_BOOK + "=?",
-                                               new String[]{String.valueOf(bookId)});
+                success = 0 < mDb.update(TBL_BOOK_LOANEE.getName(), cv,
+                                         KEY_FK_BOOK + "=?",
+                                         new String[]{String.valueOf(bookId)});
             }
         }
         return success;
@@ -179,7 +179,7 @@ public final class LoaneeDao
     @Nullable
     public String getLoaneeByBookId(@IntRange(from = 1) final long bookId) {
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SELECT_BY_BOOK_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
         }
@@ -192,7 +192,7 @@ public final class LoaneeDao
      */
     @NonNull
     public ArrayList<String> getList() {
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_ALL, null)) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_ALL, null)) {
             return getFirstColumnAsList(cursor);
         }
     }

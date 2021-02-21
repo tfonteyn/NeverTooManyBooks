@@ -62,8 +62,8 @@ public class ZipArchiveWriterTest {
     @Before
     public void count() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao db = new BookDao(context, TAG)) {
-            mBookInDb = db.countBooks();
+        try (BookDao bookDao = new BookDao(context, TAG)) {
+            mBookInDb = bookDao.countBooks();
 
             mNrOfStyles = StyleUtils.getStyles(context, true).size();
         }

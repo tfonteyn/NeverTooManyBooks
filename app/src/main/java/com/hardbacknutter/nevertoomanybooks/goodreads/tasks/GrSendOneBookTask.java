@@ -93,7 +93,7 @@ public class GrSendOneBookTask
             final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
             final GoodreadsDao grDao = grManager.getGoodreadsDao();
 
-            try (BookDao db = new BookDao(context, TAG);
+            try (BookDao bookDao = new BookDao(context, TAG);
                  Cursor cursor = grDao.fetchBookForExport(mBookId)) {
 
                 if (cursor.moveToFirst()) {
@@ -105,7 +105,7 @@ public class GrSendOneBookTask
 
                     final DataHolder bookData = new CursorRow(cursor);
                     @GrStatus.Status
-                    final int status = grManager.sendOneBook(db, grDao, bookData);
+                    final int status = grManager.sendOneBook(bookDao, grDao, bookData);
                     if (status == GrStatus.SUCCESS) {
                         // Record the update
                         grDao.setSyncDate(mBookId);

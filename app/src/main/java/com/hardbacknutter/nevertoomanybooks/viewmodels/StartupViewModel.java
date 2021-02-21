@@ -255,7 +255,7 @@ public class StartupViewModel
 
         // Explicitly open the database to trigger any database upgrade or the initial creation.
         try {
-            DBHelper.getSyncDb(context);
+            DBHelper.getDb(context);
 
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e, "startTasks");

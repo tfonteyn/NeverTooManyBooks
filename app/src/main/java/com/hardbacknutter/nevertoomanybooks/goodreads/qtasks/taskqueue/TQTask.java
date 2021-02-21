@@ -169,7 +169,7 @@ public abstract class TQTask
     @CallSuper
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final BookDao db) {
+                                    @NonNull final BookDao bookDao) {
         menuItems.add(new ContextDialogItem(
                 context.getString(R.string.gr_tq_menu_delete_task),
                 () -> QueueManager.getInstance().deleteTask(getId())));

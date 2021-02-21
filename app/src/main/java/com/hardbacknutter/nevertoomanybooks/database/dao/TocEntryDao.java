@@ -166,7 +166,7 @@ public final class TocEntryDao
 
         final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
             stmt.bindString(2, encodeOrderByColumn(tocEntry.getTitle(), tocLocale));
             stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
@@ -181,7 +181,7 @@ public final class TocEntryDao
      */
     @NonNull
     public Cursor fetchAll() {
-        return mSyncedDb.rawQuery(SELECT_ALL, null);
+        return mDb.rawQuery(SELECT_ALL, null);
     }
 
     /**
@@ -194,8 +194,8 @@ public final class TocEntryDao
     @NonNull
     public List<Pair<Long, String>> getBookTitles(@IntRange(from = 1) final long id) {
         final List<Pair<Long, String>> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
-                                                new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
+                                          new String[]{String.valueOf(id)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Pair<>(rowData.getLong(KEY_PK_ID),
@@ -215,8 +215,8 @@ public final class TocEntryDao
     @NonNull
     public ArrayList<Long> getBookIds(final long tocId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_BOOK_IDS_BY_TOC_ENTRY_ID,
-                                                new String[]{String.valueOf(tocId)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_IDS_BY_TOC_ENTRY_ID,
+                                          new String[]{String.valueOf(tocId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -236,7 +236,7 @@ public final class TocEntryDao
                           @NonNull final TocEntry tocEntry) {
 
         final int rowsAffected;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DELETE_BY_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, tocEntry.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }

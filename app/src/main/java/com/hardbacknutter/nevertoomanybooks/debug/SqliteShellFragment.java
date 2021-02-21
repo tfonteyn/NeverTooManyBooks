@@ -70,7 +70,7 @@ public class SqliteShellFragment
     /** View Binding. */
     private FragmentSqliteShellBinding mVb;
 
-    private SynchronizedDb mSyncDb;
+    private SynchronizedDb mDb;
 
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
@@ -83,7 +83,7 @@ public class SqliteShellFragment
         }
 
         //noinspection ConstantConditions
-        mSyncDb = DBHelper.getSyncDb(getContext());
+        mDb = DBHelper.getDb(getContext());
     }
 
     @Override
@@ -153,7 +153,7 @@ public class SqliteShellFragment
                 getActivity().setTitle("");
 
                 if (mAllowUpdates) {
-                    try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
+                    try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
                         final int rowsAffected = stmt.executeUpdateDelete();
                         final String result = STR_ROWS_AFFECTED + rowsAffected;
                         mVb.output.loadDataWithBaseURL(null, result,
@@ -164,7 +164,7 @@ public class SqliteShellFragment
                                                    TEXT_HTML, UTF_8, null);
                 }
             } else {
-                try (Cursor cursor = mSyncDb.rawQuery(sql, null)) {
+                try (Cursor cursor = mDb.rawQuery(sql, null)) {
                     final String title = STR_LAST_COUNT + cursor.getCount();
                     //noinspection ConstantConditions
                     getActivity().setTitle(title);

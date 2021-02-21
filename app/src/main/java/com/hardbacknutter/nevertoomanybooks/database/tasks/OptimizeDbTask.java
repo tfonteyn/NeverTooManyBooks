@@ -67,10 +67,10 @@ public class OptimizeDbTask
         AppDir.Cache.purge(context, true, file -> file.getName().endsWith(".jpg"));
 
         try {
-            DBHelper.getSyncDb(context).optimize();
+            DBHelper.getDb(context).optimize();
 
             if (ImageUtils.isImageCachingEnabled(context)) {
-                CoverCacheDao.CoversDbHelper.getSyncDb(context).optimize();
+                CoverCacheDao.CoversDbHelper.getDb(context).optimize();
             }
             return true;
 

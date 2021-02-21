@@ -88,8 +88,8 @@ public class CsvArchiveWriter
         }
 
         final int booksToExport;
-        try (BookDao db = new BookDao(context, TAG)) {
-            booksToExport = db.countBooksForExport(dateSince);
+        try (BookDao bookDao = new BookDao(context, TAG)) {
+            booksToExport = bookDao.countBooksForExport(dateSince);
         }
 
         if (booksToExport > 0) {

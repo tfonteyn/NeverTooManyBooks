@@ -274,7 +274,7 @@ public class BookDao
     public BookDao(@NonNull final Context context,
                    @NonNull final String logTag) {
         super(context, logTag);
-        mSqlStatementManager = new SqlStatementManager(mSyncedDb);
+        mSqlStatementManager = new SqlStatementManager(mDb);
     }
 
 
@@ -300,8 +300,8 @@ public class BookDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             book.preprocessForStoring(context, true);
@@ -335,7 +335,7 @@ public class BookDao
             }
 
             // go!
-            final long newBookId = mSyncedDb.insert(TBL_BOOKS.getName(), cv);
+            final long newBookId = mDb.insert(TBL_BOOKS.getName(), cv);
             if (newBookId <= 0) {
                 book.putLong(KEY_PK_ID, 0);
                 book.remove(KEY_BOOK_UUID);
@@ -364,7 +364,7 @@ public class BookDao
 
             // all done
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
             return newBookId;
 
@@ -373,7 +373,7 @@ public class BookDao
 
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
     }
@@ -399,8 +399,8 @@ public class BookDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             book.preprocessForStoring(context, false);
@@ -424,8 +424,8 @@ public class BookDao
             // Other fields in the database row are not affected.
             // go !
             final boolean success =
-                    0 < mSyncedDb.update(TBL_BOOKS.getName(), cv, KEY_PK_ID + "=?",
-                                         new String[]{String.valueOf(book.getId())});
+                    0 < mDb.update(TBL_BOOKS.getName(), cv, KEY_PK_ID + "=?",
+                                   new String[]{String.valueOf(book.getId())});
 
             if (success) {
                 // always lookup the UUID
@@ -442,7 +442,7 @@ public class BookDao
                 }
 
                 if (txLock != null) {
-                    mSyncedDb.setTransactionSuccessful();
+                    mDb.setTransactionSuccessful();
                 }
             } else {
                 throw new DaoWriteException(ERROR_UPDATING_BOOK_FROM + book);
@@ -452,7 +452,7 @@ public class BookDao
 
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
     }
@@ -479,7 +479,7 @@ public class BookDao
                                        @NonNull final DataManager dataManager,
                                        @NonNull final Locale bookLocale) {
 
-        final TableInfo tableInfo = mSyncedDb.getTableInfo(tableDefinition);
+        final TableInfo tableInfo = mDb.getTableInfo(tableDefinition);
 
         final ContentValues cv = new ContentValues();
         // Create the arguments
@@ -629,8 +629,8 @@ public class BookDao
         int rowsAffected = 0;
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             final SynchronizedStatement stmt = mSqlStatementManager.get(
@@ -656,14 +656,14 @@ public class BookDao
                 }
             }
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
             Logger.error(context, TAG, e, "Failed to delete book");
 
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
 
@@ -769,7 +769,7 @@ public class BookDao
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -854,13 +854,13 @@ public class BookDao
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
         // fix id's and remove duplicates
-        Author.pruneList(list, context, this, lookupLocale, bookLocale);
+        Author.pruneList(list, context, lookupLocale, bookLocale);
 
         // Just delete all current links; we'll insert them from scratch (easier positioning)
         deleteBookAuthorByBookId(bookId);
@@ -942,7 +942,7 @@ public class BookDao
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -1032,7 +1032,7 @@ public class BookDao
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -1106,7 +1106,7 @@ public class BookDao
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -1152,7 +1152,7 @@ public class BookDao
 
         cv.put(KEY_FK_CALIBRE_LIBRARY, library.getId());
 
-        final long rowId = mSyncedDb.insert(TBL_CALIBRE_BOOKS.getName(), cv);
+        final long rowId = mDb.insert(TBL_CALIBRE_BOOKS.getName(), cv);
         if (rowId == -1) {
             throw new DaoWriteException("insert book-calibre");
         }
@@ -1164,8 +1164,8 @@ public class BookDao
      * @param book to process
      */
     public void deleteBookCalibreData(@NonNull final Book book) {
-        mSyncedDb.delete(TBL_CALIBRE_BOOKS.getName(), KEY_FK_BOOK + "=?",
-                         new String[]{String.valueOf(book.getId())});
+        mDb.delete(TBL_CALIBRE_BOOKS.getName(), KEY_FK_BOOK + "=?",
+                   new String[]{String.valueOf(book.getId())});
     }
 
     /**
@@ -1217,7 +1217,7 @@ public class BookDao
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -1233,9 +1233,9 @@ public class BookDao
             return;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(Sql.Insert.BOOK_TOC_ENTRY);
-             SynchronizedStatement stmtInsToc = mSyncedDb.compileStatement(Sql.Insert.TOC_ENTRY);
-             SynchronizedStatement stmtUpdToc = mSyncedDb.compileStatement(Sql.Update.TOCENTRY)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Insert.BOOK_TOC_ENTRY);
+             SynchronizedStatement stmtInsToc = mDb.compileStatement(Sql.Insert.TOC_ENTRY);
+             SynchronizedStatement stmtUpdToc = mDb.compileStatement(Sql.Update.TOCENTRY)) {
 
             long position = 0;
             for (final TocEntry tocEntry : list) {
@@ -1325,7 +1325,7 @@ public class BookDao
      * @return number of books
      */
     public long countBooks() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(Sql.Count.BOOKS)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Count.BOOKS)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -1353,10 +1353,10 @@ public class BookDao
 
                            + _COLLATION;
 
-        final TypedCursor cursor = (TypedCursor) mSyncedDb.rawQueryWithFactory(
+        final TypedCursor cursor = (TypedCursor) mDb.rawQueryWithFactory(
                 DBHelper.getTypedCursorFactory(), sql, selectionArgs, null);
         // force the TypedCursor to retrieve the real column types.
-        cursor.setDb(mSyncedDb, TBL_BOOKS);
+        cursor.setDb(mDb, TBL_BOOKS);
         return cursor;
     }
 
@@ -1434,11 +1434,11 @@ public class BookDao
 
     public int countBooksForExport(@Nullable final LocalDateTime since) {
         if (since == null) {
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(Sql.Count.BOOKS)) {
+            try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Count.BOOKS)) {
                 return (int) stmt.simpleQueryForLongOrZero();
             }
         } else {
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+            try (SynchronizedStatement stmt = mDb.compileStatement(
                     Sql.Count.BOOKS + _WHERE_ + KEY_UTC_LAST_UPDATED + ">=?")) {
                 stmt.bindString(1, encodeDate(since));
                 return (int) stmt.simpleQueryForLongOrZero();
@@ -1517,7 +1517,7 @@ public class BookDao
      */
     @NonNull
     public ArrayList<String> getBookUuidList() {
-        try (Cursor cursor = mSyncedDb.rawQuery(Sql.Select.ALL_BOOK_UUID, null)) {
+        try (Cursor cursor = mDb.rawQuery(Sql.Select.ALL_BOOK_UUID, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -1542,7 +1542,7 @@ public class BookDao
         final String sql = "SELECT DISTINCT upper(" + column + ") FROM " + TBL_BOOKS.getName()
                            + _ORDER_BY_ + column + _COLLATION;
 
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = mDb.rawQuery(sql, null)) {
             final ArrayList<String> list = getFirstColumnAsList(cursor);
             if (list.isEmpty()) {
                 // sure, this is very crude and discriminating.
@@ -1565,8 +1565,8 @@ public class BookDao
     @NonNull
     public ArrayList<Bookshelf> getBookshelvesByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Bookshelf> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(Sql.Select.BOOKSHELVES_BY_BOOK_ID,
-                                                new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mDb.rawQuery(Sql.Select.BOOKSHELVES_BY_BOOK_ID,
+                                          new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Bookshelf(rowData.getLong(KEY_PK_ID), rowData));
@@ -1588,10 +1588,10 @@ public class BookDao
         // if the string is ISBN-10 compatible, i.e. an actual ISBN-10,
         // or an ISBN-13 in the 978 range, we search on both formats
         if (isbn.isIsbn10Compat()) {
-            try (Cursor cursor = mSyncedDb.rawQuery(Sql.Select.BY_VALID_ISBN,
-                                                    new String[]{isbn.asText(
-                                                            ISBN.TYPE_ISBN10), isbn.asText(
-                                                            ISBN.TYPE_ISBN13)})) {
+            try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_VALID_ISBN,
+                                              new String[]{isbn.asText(
+                                                      ISBN.TYPE_ISBN10), isbn.asText(
+                                                      ISBN.TYPE_ISBN13)})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
@@ -1600,8 +1600,8 @@ public class BookDao
         } else {
             // otherwise just search on the string as-is; regardless of validity
             // (this would actually include valid ISBN-13 in the 979 range).
-            try (Cursor cursor = mSyncedDb.rawQuery(Sql.Select.BY_ISBN,
-                                                    new String[]{isbn.asText()})) {
+            try (Cursor cursor = mDb.rawQuery(Sql.Select.BY_ISBN,
+                                              new String[]{isbn.asText()})) {
                 while (cursor.moveToNext()) {
                     list.add(new Pair<>(cursor.getLong(0),
                                         cursor.getString(1)));
@@ -1661,7 +1661,7 @@ public class BookDao
      */
     @Nullable
     public String getBookTitle(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 Sql.Get.BOOK_TITLE_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
@@ -1677,7 +1677,7 @@ public class BookDao
      */
     @Nullable
     public String getBookIsbn(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 Sql.Get.BOOK_ISBN_BY_BOOK_ID)) {
             stmt.bindLong(1, bookId);
             return stmt.simpleQueryForStringOrNull();
@@ -1694,8 +1694,8 @@ public class BookDao
     @NonNull
     public ArrayList<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Author> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(Sql.Select.AUTHORS_BY_BOOK_ID,
-                                                new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mDb.rawQuery(Sql.Select.AUTHORS_BY_BOOK_ID,
+                                          new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Author(rowData.getLong(KEY_PK_ID), rowData));
@@ -1737,8 +1737,8 @@ public class BookDao
 
             Synchronizer.SyncLock txLock = null;
             try {
-                if (!mSyncedDb.inTransaction()) {
-                    txLock = mSyncedDb.beginTransaction(true);
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
                 }
 
                 for (final long bookId : bookIds) {
@@ -1746,14 +1746,14 @@ public class BookDao
                     insertBookAuthors(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
-                    mSyncedDb.setTransactionSuccessful();
+                    mDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
                 Logger.error(context, TAG, e);
 
             } finally {
                 if (txLock != null) {
-                    mSyncedDb.endTransaction(txLock);
+                    mDb.endTransaction(txLock);
                 }
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "repositionAuthor|done");
@@ -1773,8 +1773,8 @@ public class BookDao
     @NonNull
     public ArrayList<Series> getSeriesByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Series> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(Sql.Select.SERIES_BY_BOOK_ID,
-                                                new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mDb.rawQuery(Sql.Select.SERIES_BY_BOOK_ID,
+                                          new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Series(rowData.getLong(KEY_PK_ID), rowData));
@@ -1811,8 +1811,8 @@ public class BookDao
 
             Synchronizer.SyncLock txLock = null;
             try {
-                if (!mSyncedDb.inTransaction()) {
-                    txLock = mSyncedDb.beginTransaction(true);
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
                 }
 
                 for (final long bookId : bookIds) {
@@ -1820,13 +1820,13 @@ public class BookDao
                     insertBookSeries(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
-                    mSyncedDb.setTransactionSuccessful();
+                    mDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
                 Logger.error(context, TAG, e);
             } finally {
                 if (txLock != null) {
-                    mSyncedDb.endTransaction(txLock);
+                    mDb.endTransaction(txLock);
                 }
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "repositionSeries|done");
@@ -1846,8 +1846,8 @@ public class BookDao
     @NonNull
     public ArrayList<Publisher> getPublishersByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<Publisher> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(Sql.Select.PUBLISHER_BY_BOOK_ID,
-                                                new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mDb.rawQuery(Sql.Select.PUBLISHER_BY_BOOK_ID,
+                                          new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new Publisher(rowData.getLong(KEY_PK_ID), rowData));
@@ -1884,8 +1884,8 @@ public class BookDao
 
             Synchronizer.SyncLock txLock = null;
             try {
-                if (!mSyncedDb.inTransaction()) {
-                    txLock = mSyncedDb.beginTransaction(true);
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
                 }
 
                 for (final long bookId : bookIds) {
@@ -1893,14 +1893,14 @@ public class BookDao
                     insertBookPublishers(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
-                    mSyncedDb.setTransactionSuccessful();
+                    mDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
                 Logger.error(context, TAG, e);
 
             } finally {
                 if (txLock != null) {
-                    mSyncedDb.endTransaction(txLock);
+                    mDb.endTransaction(txLock);
                 }
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "repositionPublishers|done");
@@ -1920,8 +1920,8 @@ public class BookDao
     @NonNull
     public ArrayList<TocEntry> getTocEntryByBookId(@IntRange(from = 1) final long bookId) {
         final ArrayList<TocEntry> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(Sql.Select.TOC_ENTRIES_BY_BOOK_ID,
-                                                new String[]{String.valueOf(bookId)})) {
+        try (Cursor cursor = mDb.rawQuery(Sql.Select.TOC_ENTRIES_BY_BOOK_ID,
+                                          new String[]{String.valueOf(bookId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new TocEntry(rowData.getLong(KEY_PK_ID),
@@ -1962,8 +1962,8 @@ public class BookDao
 
             Synchronizer.SyncLock txLock = null;
             try {
-                if (!mSyncedDb.inTransaction()) {
-                    txLock = mSyncedDb.beginTransaction(true);
+                if (!mDb.inTransaction()) {
+                    txLock = mDb.beginTransaction(true);
                 }
 
                 for (final long bookId : bookIds) {
@@ -1971,14 +1971,14 @@ public class BookDao
                     saveTocList(context, bookId, list, false, bookLocale);
                 }
                 if (txLock != null) {
-                    mSyncedDb.setTransactionSuccessful();
+                    mDb.setTransactionSuccessful();
                 }
             } catch (@NonNull final RuntimeException | DaoWriteException e) {
                 Logger.error(context, TAG, e);
 
             } finally {
                 if (txLock != null) {
-                    mSyncedDb.endTransaction(txLock);
+                    mDb.endTransaction(txLock);
                 }
                 if (BuildConfig.DEBUG /* always */) {
                     Log.w(TAG, "repositionTocEntries|done");
@@ -2054,7 +2054,7 @@ public class BookDao
 
         final ArrayList<AuthorWork> list = new ArrayList<>();
         //noinspection ZeroLengthArrayAllocation
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, paramList.toArray(new String[0]))) {
+        try (Cursor cursor = mDb.rawQuery(sql, paramList.toArray(new String[0]))) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final char type = rowData.getString(KEY_TOC_TYPE).charAt(0);
@@ -2150,7 +2150,7 @@ public class BookDao
                                final boolean isRead) {
         final String now = isRead ? encodeDate(LocalDateTime.now()) : "";
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(Sql.Update.READ)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Update.READ)) {
             stmt.bindBoolean(1, isRead);
             stmt.bindString(2, now);
             stmt.bindLong(3, bookId);
@@ -2173,7 +2173,7 @@ public class BookDao
 
         final boolean success;
         // don't call standalone method, we want to use the same 'now' to update the book
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(Sql.Update.READ)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(Sql.Update.READ)) {
             stmt.bindBoolean(1, isRead);
             stmt.bindString(2, now);
             stmt.bindLong(3, book.getId());
@@ -2216,7 +2216,7 @@ public class BookDao
         if (query.isEmpty()) {
             return null;
         }
-        return mSyncedDb.rawQuery(FtsSql.SEARCH, new String[]{query, String.valueOf(limit)});
+        return mDb.rawQuery(FtsSql.SEARCH, new String[]{query, String.valueOf(limit)});
     }
 
     /**
@@ -2233,7 +2233,7 @@ public class BookDao
                            @IntRange(from = 1) final long bookId) {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -2242,8 +2242,8 @@ public class BookDao
             final SynchronizedStatement stmt = mSqlStatementManager.get(
                     STMT_INSERT_FTS, () -> FtsSql.INSERT);
 
-            try (Cursor cursor = mSyncedDb.rawQuery(FtsSql.BOOK_BY_ID,
-                                                    new String[]{String.valueOf(bookId)})) {
+            try (Cursor cursor = mDb.rawQuery(FtsSql.BOOK_BY_ID,
+                                              new String[]{String.valueOf(bookId)})) {
                 processBooks(cursor, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
@@ -2266,7 +2266,7 @@ public class BookDao
                            @IntRange(from = 1) final long bookId) {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -2275,8 +2275,8 @@ public class BookDao
             final SynchronizedStatement stmt = mSqlStatementManager.get(
                     STMT_UPDATE_FTS, () -> FtsSql.UPDATE);
 
-            try (Cursor cursor = mSyncedDb.rawQuery(FtsSql.BOOK_BY_ID,
-                                                    new String[]{String.valueOf(bookId)})) {
+            try (Cursor cursor = mDb.rawQuery(FtsSql.BOOK_BY_ID,
+                                              new String[]{String.valueOf(bookId)})) {
                 processBooks(cursor, stmt);
             }
         } catch (@NonNull final RuntimeException e) {
@@ -2303,7 +2303,7 @@ public class BookDao
                               @NonNull final SynchronizedStatement stmt) {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -2337,7 +2337,7 @@ public class BookDao
             final String[] qpBookId = new String[]{String.valueOf(bookId)};
 
             // Get list of authors
-            try (Cursor authors = mSyncedDb.rawQuery(FtsSql.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
+            try (Cursor authors = mDb.rawQuery(FtsSql.GET_AUTHORS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colGivenNames < 0) {
                     colGivenNames = authors.getColumnIndex(KEY_AUTHOR_GIVEN_NAMES);
@@ -2355,7 +2355,7 @@ public class BookDao
             }
 
             // Get list of series
-            try (Cursor series = mSyncedDb.rawQuery(FtsSql.GET_SERIES_BY_BOOK_ID, qpBookId)) {
+            try (Cursor series = mDb.rawQuery(FtsSql.GET_SERIES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colSeriesTitle < 0) {
                     colSeriesTitle = series.getColumnIndexOrThrow(KEY_SERIES_TITLE);
@@ -2367,7 +2367,7 @@ public class BookDao
             }
 
             // Get list of publishers
-            try (Cursor publishers = mSyncedDb
+            try (Cursor publishers = mDb
                     .rawQuery(FtsSql.GET_PUBLISHERS_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colPublisherName < 0) {
@@ -2380,7 +2380,7 @@ public class BookDao
             }
 
             // Get list of TOC titles
-            try (Cursor toc = mSyncedDb.rawQuery(FtsSql.GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
+            try (Cursor toc = mDb.rawQuery(FtsSql.GET_TOC_TITLES_BY_BOOK_ID, qpBookId)) {
                 // Get column indexes, if not already got
                 if (colTOCEntryTitle < 0) {
                     colTOCEntryTitle = toc.getColumnIndexOrThrow(KEY_TITLE);
@@ -2450,31 +2450,31 @@ public class BookDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             //IMPORTANT: withDomainConstraints MUST BE false
-            mSyncedDb.recreate(ftsTemp, false);
+            mDb.recreate(ftsTemp, false);
 
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+            try (SynchronizedStatement stmt = mDb.compileStatement(
                     INSERT_INTO_ + tmpTableName + FtsSql.INSERT_BODY);
-                 Cursor cursor = mSyncedDb.rawQuery(FtsSql.ALL_BOOKS, null)) {
+                 Cursor cursor = mDb.rawQuery(FtsSql.ALL_BOOKS, null)) {
                 processBooks(cursor, stmt);
             }
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } catch (@NonNull final RuntimeException e) {
             // updating FTS should not be fatal.
             Logger.error(context, TAG, e);
             gotError = true;
-            mSyncedDb.drop(tmpTableName);
+            mDb.drop(tmpTableName);
 
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
 
             /*
@@ -2484,9 +2484,9 @@ public class BookDao
             //  Delete old table and rename the new table
             if (!gotError) {
                 // Drop old table, ready for rename
-                mSyncedDb.drop(TBL_FTS_BOOKS.getName());
-                mSyncedDb.execSQL("ALTER TABLE " + tmpTableName
-                                  + " RENAME TO " + TBL_FTS_BOOKS.getName());
+                mDb.drop(TBL_FTS_BOOKS.getName());
+                mDb.execSQL("ALTER TABLE " + tmpTableName
+                            + " RENAME TO " + TBL_FTS_BOOKS.getName());
             }
         }
 
@@ -3171,7 +3171,7 @@ public class BookDao
 
         /** The underlying database. */
         @NonNull
-        private final SynchronizedDb mSyncedDb;
+        private final SynchronizedDb mDb;
 
         /**
          * Constructor.
@@ -3179,7 +3179,7 @@ public class BookDao
          * @param db Database Access
          */
         SqlStatementManager(@NonNull final SynchronizedDb db) {
-            mSyncedDb = db;
+            mDb = db;
         }
 
         /**
@@ -3195,7 +3195,7 @@ public class BookDao
                                          @NonNull final Supplier<String> sqlSupplier) {
             SynchronizedStatement stmt = mStatements.get(name);
             if (stmt == null) {
-                stmt = mSyncedDb.compileStatement(sqlSupplier.get());
+                stmt = mDb.compileStatement(sqlSupplier.get());
                 mStatements.put(name, stmt);
             }
             return stmt;

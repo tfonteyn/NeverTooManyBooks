@@ -43,7 +43,7 @@ public abstract class BaseAdminActivity
     private static final String TAG = "BaseAdminActivity";
 
     /** Database Access. */
-    private BookDao mDb;
+    private BookDao mBookDao;
 
     /** The adapter for the list. */
     private TQCursorAdapter mListAdapter;
@@ -54,12 +54,12 @@ public abstract class BaseAdminActivity
     /**
      * Get a CursorAdapter returning the items we are interested in.
      *
-     * @param db Database Access
+     * @param bookDao Database Access
      *
      * @return CursorAdapter to use
      */
     @NonNull
-    protected abstract TQCursorAdapter getListAdapter(@NonNull BookDao db);
+    protected abstract TQCursorAdapter getListAdapter(@NonNull BookDao bookDao);
 
     protected ActivityTaskQueueListBinding mVb;
 
@@ -71,10 +71,11 @@ public abstract class BaseAdminActivity
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        mDb = new BookDao(this, TAG);
+        mBookDao = new BookDao(this, TAG);
+
         super.onCreate(savedInstanceState);
 
-        mListAdapter = getListAdapter(mDb);
+        mListAdapter = getListAdapter(mBookDao);
 
         mVb.itemList.setAdapter(mListAdapter);
         mVb.itemList.setOnItemClickListener((parent, v, position, id) -> onItemClick(
@@ -101,7 +102,7 @@ public abstract class BaseAdminActivity
         // allow the parent Activity to add menu options
         addContextMenuItems(menuItems, item);
         // allow the selected item to add menu options
-        item.addContextMenuItems(this, menuItems, mDb);
+        item.addContextMenuItems(this, menuItems, mBookDao);
         ContextDialogItem.showContextDialog(this, menuItems);
     }
 
@@ -132,8 +133,8 @@ public abstract class BaseAdminActivity
         if (mListAdapter.getCursor() != null) {
             mListAdapter.getCursor().close();
         }
-        if (mDb != null) {
-            mDb.close();
+        if (mBookDao != null) {
+            mBookDao.close();
         }
         super.onDestroy();
     }

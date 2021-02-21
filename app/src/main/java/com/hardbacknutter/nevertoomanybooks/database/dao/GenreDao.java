@@ -83,7 +83,7 @@ public final class GenreDao
      */
     @NonNull
     public ArrayList<String> getList() {
-        try (Cursor cursor = mSyncedDb.rawQuery(GENRES, null)) {
+        try (Cursor cursor = mDb.rawQuery(GENRES, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -93,7 +93,7 @@ public final class GenreDao
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(GENRE)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(GENRE)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();

@@ -99,13 +99,13 @@ public class EventsAdminActivity
      * Get a CursorAdapter returning all events we are interested in,
      * either specific to our task or all events.
      *
-     * @param db Database Access
+     * @param bookDao Database Access
      *
      * @return CursorAdapter to use
      */
     @NonNull
     @Override
-    protected EventCursorAdapter getListAdapter(@NonNull final BookDao db) {
+    protected EventCursorAdapter getListAdapter(@NonNull final BookDao bookDao) {
         final Cursor cursor;
         if (mTaskId == 0) {
             cursor = QueueManager.getInstance().getEvents();
@@ -113,7 +113,7 @@ public class EventsAdminActivity
             cursor = QueueManager.getInstance().getEvents(mTaskId);
         }
 
-        return new EventCursorAdapter(this, cursor, db);
+        return new EventCursorAdapter(this, cursor, bookDao);
     }
 
     @Override

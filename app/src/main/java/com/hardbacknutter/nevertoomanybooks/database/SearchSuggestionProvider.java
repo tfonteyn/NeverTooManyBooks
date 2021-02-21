@@ -71,7 +71,7 @@ public class SearchSuggestionProvider
             // do we have anything to search for?
             if (!query.isEmpty()) {
                 //noinspection ConstantConditions,UnnecessaryLocalVariable
-                final Cursor cursor = DBHelper.getSyncDb(getContext())
+                final Cursor cursor = DBHelper.getDb(getContext())
                                               .rawQuery(BookDao.FtsSql.SEARCH_SUGGESTIONS,
                                                         new String[]{query});
 

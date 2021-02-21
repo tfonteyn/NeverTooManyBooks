@@ -145,7 +145,7 @@ public class GoodreadsDao
      */
     @NonNull
     public Cursor fetchBookColumnsForSearch(@IntRange(from = 1) final long bookId) {
-        return mSyncedDb.rawQuery(BOOK_COLUMNS_FOR_SEARCH, new String[]{String.valueOf(bookId)});
+        return mDb.rawQuery(BOOK_COLUMNS_FOR_SEARCH, new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -157,7 +157,7 @@ public class GoodreadsDao
      */
     @NonNull
     public Cursor fetchBookForExport(@IntRange(from = 1) final long bookId) {
-        return mSyncedDb.rawQuery(SINGLE_BOOK, new String[]{String.valueOf(bookId)});
+        return mDb.rawQuery(SINGLE_BOOK, new String[]{String.valueOf(bookId)});
     }
 
     /**
@@ -174,9 +174,9 @@ public class GoodreadsDao
     public Cursor fetchBooksForExport(final long startId,
                                       final boolean updatesOnly) {
         if (updatesOnly) {
-            return mSyncedDb.rawQuery(UPDATED_BOOKS, new String[]{String.valueOf(startId)});
+            return mDb.rawQuery(UPDATED_BOOKS, new String[]{String.valueOf(startId)});
         } else {
-            return mSyncedDb.rawQuery(ALL_BOOKS, new String[]{String.valueOf(startId)});
+            return mDb.rawQuery(ALL_BOOKS, new String[]{String.valueOf(startId)});
         }
     }
 
@@ -189,7 +189,7 @@ public class GoodreadsDao
     public void setGoodreadsBookId(@IntRange(from = 1) final long bookId,
                                    final long goodreadsBookId) {
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(UPDATE_GR_BOOK_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(UPDATE_GR_BOOK_ID)) {
             stmt.bindLong(1, goodreadsBookId);
             stmt.bindLong(2, bookId);
             stmt.executeUpdateDelete();
@@ -202,7 +202,7 @@ public class GoodreadsDao
      * @param bookId the book
      */
     public void setSyncDate(@IntRange(from = 1) final long bookId) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(UPDATE_GR_LAST_SYNC_DATE)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(UPDATE_GR_LAST_SYNC_DATE)) {
             stmt.bindLong(1, bookId);
             stmt.executeUpdateDelete();
         }

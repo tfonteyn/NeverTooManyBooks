@@ -203,15 +203,15 @@ public class Book
     /**
      * Constructor. Load the book details from the database.
      *
-     * @param bookId of book
-     * @param db     Database Access
+     * @param bookId  of book
+     * @param bookDao Database Access
      *
      * @return new instance
      */
     public static Book from(@IntRange(from = 1) final long bookId,
-                            @NonNull final BookDao db) {
+                            @NonNull final BookDao bookDao) {
         final Book book = new Book();
-        book.load(bookId, db);
+        book.load(bookId, bookDao);
         return book;
     }
 
@@ -219,16 +219,16 @@ public class Book
      * Constructor. Load the book details from the cursor.
      *
      * @param bookCursor an already positioned Cursor to read from
-     * @param db         to load linked array data from
+     * @param bookDao         to load linked array data from
      *
      * @return new instance
      */
     public static Book from(@NonNull final Cursor bookCursor,
-                            @NonNull final BookDao db) {
+                            @NonNull final BookDao bookDao) {
         final Book book = new Book();
         final int idCol = bookCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
         final long bookId = bookCursor.getLong(idCol);
-        book.load(bookId, bookCursor, db);
+        book.load(bookId, bookCursor, bookDao);
         return book;
     }
 
@@ -294,15 +294,15 @@ public class Book
      * Load the book details from the database.
      *
      * @param bookId of book must be != 0
-     * @param db     Database Access
+     * @param bookDao     Database Access
      */
     public void load(@IntRange(from = 1) final long bookId,
-                     @NonNull final BookDao db) {
+                     @NonNull final BookDao bookDao) {
         SanityCheck.requirePositiveValue(bookId, "bookId");
 
-        try (Cursor bookCursor = db.fetchBookById(bookId)) {
+        try (Cursor bookCursor = bookDao.fetchBookById(bookId)) {
             if (bookCursor.moveToFirst()) {
-                load(bookId, bookCursor, db);
+                load(bookId, bookCursor, bookDao);
             }
         }
     }
@@ -313,21 +313,21 @@ public class Book
      *
      * @param bookId     of book must be != 0
      * @param bookCursor an already positioned Cursor to read from
-     * @param db         to load linked array data from
+     * @param bookDao         to load linked array data from
      */
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final Cursor bookCursor,
-                     @NonNull final BookDao db) {
+                     @NonNull final BookDao bookDao) {
         SanityCheck.requirePositiveValue(bookId, "bookId");
 
         clearData();
         putAll(bookCursor);
         // load lists (or init with empty lists)
-        putParcelableArrayList(BKEY_BOOKSHELF_LIST, db.getBookshelvesByBookId(bookId));
-        putParcelableArrayList(BKEY_AUTHOR_LIST, db.getAuthorsByBookId(bookId));
-        putParcelableArrayList(BKEY_SERIES_LIST, db.getSeriesByBookId(bookId));
-        putParcelableArrayList(BKEY_PUBLISHER_LIST, db.getPublishersByBookId(bookId));
-        putParcelableArrayList(BKEY_TOC_LIST, db.getTocEntryByBookId(bookId));
+        putParcelableArrayList(BKEY_BOOKSHELF_LIST, bookDao.getBookshelvesByBookId(bookId));
+        putParcelableArrayList(BKEY_AUTHOR_LIST, bookDao.getAuthorsByBookId(bookId));
+        putParcelableArrayList(BKEY_SERIES_LIST, bookDao.getSeriesByBookId(bookId));
+        putParcelableArrayList(BKEY_PUBLISHER_LIST, bookDao.getPublishersByBookId(bookId));
+        putParcelableArrayList(BKEY_TOC_LIST, bookDao.getTocEntryByBookId(bookId));
 
         // do NOT preload the full library object. We hardly ever need it as such.
         // see #getCalibreLibrary
@@ -659,10 +659,8 @@ public class Book
      * Update author details from DB.
      *
      * @param context Current context
-     * @param db      Database Access
      */
-    public void refreshAuthorList(@NonNull final Context context,
-                                  @NonNull final BookDao db) {
+    public void refreshAuthorList(@NonNull final Context context) {
 
         final AuthorDao authorDao = AuthorDao.getInstance();
         final Locale bookLocale = getLocale(context);
@@ -787,28 +785,28 @@ public class Book
     /**
      * Toggle the read-status for this book.
      *
-     * @param db Database Access
+     * @param bookDao Database Access
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    public boolean toggleRead(@NonNull final BookDao db) {
-        return setRead(db, !getBoolean(DBDefinitions.KEY_READ));
+    public boolean toggleRead(@NonNull final BookDao bookDao) {
+        return setRead(bookDao, !getBoolean(DBDefinitions.KEY_READ));
     }
 
     /**
      * Update the 'read' status of a book in the database + sets the 'read end' to today.
      * The book will have its 'read' status updated ONLY if the update went through.
      *
-     * @param db     Database Access
+     * @param bookDao     Database Access
      * @param isRead Flag for the 'read' status
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    private boolean setRead(@NonNull final BookDao db,
+    private boolean setRead(@NonNull final BookDao bookDao,
                             final boolean isRead) {
         final boolean old = getBoolean(DBDefinitions.KEY_READ);
 
-        if (db.setBookRead(this, isRead)) {
+        if (bookDao.setBookRead(this, isRead)) {
             return isRead;
         }
 
@@ -1234,7 +1232,7 @@ public class Book
      * Update the book cover with the given file.
      *
      * @param context Current context
-     * @param db      Database Access
+     * @param bookDao      Database Access
      * @param cIdx    0..n image index
      * @param file    cover file or {@code null} to delete the cover
      *
@@ -1243,7 +1241,7 @@ public class Book
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public File setCover(@NonNull final Context context,
-                         @NonNull final BookDao db,
+                         @NonNull final BookDao bookDao,
                          @IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file) {
 
@@ -1338,7 +1336,7 @@ public class Book
                 }
             }
 
-            db.touchBook(this);
+            bookDao.touchBook(this);
 
             return destination;
         }
@@ -1474,11 +1472,10 @@ public class Book
     }
 
     public void pruneAuthors(@NonNull final Context context,
-                             @NonNull final BookDao db,
                              final boolean lookupLocale) {
         final ArrayList<Author> authors = getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         if (!authors.isEmpty()) {
-            if (Author.pruneList(authors, context, db, lookupLocale, getLocale(context))) {
+            if (Author.pruneList(authors, context, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
@@ -1497,7 +1494,6 @@ public class Book
     }
 
     public void pruneSeries(@NonNull final Context context,
-                            @NonNull final BookDao db,
                             final boolean lookupLocale) {
         final ArrayList<Series> series = getParcelableArrayList(Book.BKEY_SERIES_LIST);
         if (!series.isEmpty()) {

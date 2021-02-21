@@ -83,7 +83,7 @@ public final class LocationDao
      */
     @NonNull
     public ArrayList<String> getList() {
-        try (Cursor cursor = mSyncedDb.rawQuery(LOCATIONS, null)) {
+        try (Cursor cursor = mDb.rawQuery(LOCATIONS, null)) {
             return getFirstColumnAsList(cursor);
         }
     }
@@ -93,7 +93,7 @@ public final class LocationDao
         if (Objects.equals(from, to)) {
             return;
         }
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(LOCATION)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(LOCATION)) {
             stmt.bindString(1, to);
             stmt.bindString(2, from);
             stmt.executeUpdateDelete();

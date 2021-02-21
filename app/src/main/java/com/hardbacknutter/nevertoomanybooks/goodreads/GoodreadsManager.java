@@ -205,7 +205,7 @@ public class GoodreadsManager {
      * <p>
      * See {@link GoodreadsDao#fetchBookForExport}
      *
-     * @param db       Database Access
+     * @param bookDao       Database Access
      * @param bookData with book data to send
      *
      * @return Disposition of book
@@ -214,7 +214,7 @@ public class GoodreadsManager {
      */
     @WorkerThread
     @GrStatus.Status
-    public int sendOneBook(@NonNull final BookDao db,
+    public int sendOneBook(@NonNull final BookDao bookDao,
                            @NonNull final GoodreadsDao goodreadsDao,
                            @NonNull final DataHolder bookData)
             throws GeneralParsingException, IOException {
@@ -282,7 +282,7 @@ public class GoodreadsManager {
 
         // Build the list of shelves for the book that we have in the local database
         int exclusiveCount = 0;
-        for (final Bookshelf bookshelf : db.getBookshelvesByBookId(bookId)) {
+        for (final Bookshelf bookshelf : bookDao.getBookshelvesByBookId(bookId)) {
             final String bookshelfName = bookshelf.getName();
             shelves.add(bookshelfName);
 

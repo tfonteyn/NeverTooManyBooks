@@ -84,7 +84,7 @@ public abstract class ArchiveWriterAbstract
     private static final int EXTRA_STEPS = 10;
     /** Database Access. */
     @NonNull
-    protected final BookDao mDb;
+    protected final BookDao mBookDao;
     /** Export configuration. */
     @NonNull
     private final ExportHelper mHelper;
@@ -101,7 +101,7 @@ public abstract class ArchiveWriterAbstract
     protected ArchiveWriterAbstract(@NonNull final Context context,
                                     @NonNull final ExportHelper helper) {
         mHelper = helper;
-        mDb = new BookDao(context, TAG);
+        mBookDao = new BookDao(context, TAG);
     }
 
     /**
@@ -144,7 +144,7 @@ public abstract class ArchiveWriterAbstract
         }
 
         try {
-            int steps = mDb.countBooksForExport(dateSince);
+            int steps = mBookDao.countBooksForExport(dateSince);
             if (steps == 0) {
                 // nothing to backup.
                 return mResults;
@@ -409,7 +409,7 @@ public abstract class ArchiveWriterAbstract
     @CallSuper
     public void close()
             throws IOException {
-        mDb.close();
+        mBookDao.close();
     }
 
     public interface SupportsCovers {

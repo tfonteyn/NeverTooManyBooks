@@ -58,7 +58,7 @@ public class CsvRecordWriter
 
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -73,7 +73,7 @@ public class CsvRecordWriter
                            @Nullable final LocalDateTime utcSinceDateTime) {
 
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new BookDao(context, TAG);
+        mBookDao = new BookDao(context, TAG);
     }
 
     @Override
@@ -94,14 +94,14 @@ public class CsvRecordWriter
             int delta = 0;
             long lastUpdate = 0;
 
-            try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
+            try (Cursor cursor = mBookDao.fetchBooksForExport(mUtcSinceDateTime)) {
 
                 writer.write(bookCoder.encodeHeader());
                 writer.write("\n");
 
                 while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                    final Book book = Book.from(cursor, mDb);
+                    final Book book = Book.from(cursor, mBookDao);
 
                     writer.write(bookCoder.encode(book));
                     writer.write("\n");
@@ -138,6 +138,6 @@ public class CsvRecordWriter
 
     @Override
     public void close() {
-        mDb.close();
+        mBookDao.close();
     }
 }

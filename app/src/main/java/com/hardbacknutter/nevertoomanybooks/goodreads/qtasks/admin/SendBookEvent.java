@@ -86,9 +86,9 @@ public class SendBookEvent
     @Override
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final BookDao db) {
+                                    @NonNull final BookDao bookDao) {
         // RETRY EVENT
-        final String isbn = db.getBookIsbn(getBookId());
+        final String isbn = bookDao.getBookIsbn(getBookId());
         if (isbn != null && !isbn.isEmpty()) {
             menuItems.add(new ContextDialogItem(context.getString(R.string.action_retry),
                                                 () -> retry(context)));
@@ -102,6 +102,6 @@ public class SendBookEvent
                     context.startActivity(intent);
                 }));
 
-        super.addContextMenuItems(context, menuItems, db);
+        super.addContextMenuItems(context, menuItems, bookDao);
     }
 }

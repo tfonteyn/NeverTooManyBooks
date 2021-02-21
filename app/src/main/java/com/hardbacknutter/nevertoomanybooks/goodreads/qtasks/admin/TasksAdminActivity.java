@@ -96,7 +96,7 @@ public class TasksAdminActivity
      */
     @NonNull
     @Override
-    protected TaskCursorAdapter getListAdapter(@NonNull final BookDao db) {
+    protected TaskCursorAdapter getListAdapter(@NonNull final BookDao bookDao) {
         return new TaskCursorAdapter(this, QueueManager.getInstance().getTasks());
     }
 

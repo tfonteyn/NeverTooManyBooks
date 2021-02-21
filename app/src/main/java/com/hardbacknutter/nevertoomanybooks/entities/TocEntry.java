@@ -263,9 +263,7 @@ public class TocEntry
     public String getLabel(@NonNull final Context context) {
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
         // overkill...  see the getLocale method for more comments
-        // try (DAO db = new DAO(TAG)) {
-        //     locale = getLocale(context, db, AppLocale.getUserLocale(context));
-        // }
+        //   locale = getLocale(context, AppLocale.getUserLocale(context));
         return reorderTitleForDisplaying(context, userLocale);
     }
 

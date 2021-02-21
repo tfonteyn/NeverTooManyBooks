@@ -112,7 +112,7 @@ public class CsvRecordReader
 
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
 
     @NonNull
     private final Locale mUserLocale;
@@ -133,12 +133,12 @@ public class CsvRecordReader
      * Only supports {@link RecordType#Books}.
      *
      * @param context Current context
-     * @param db      Database Access;
+     * @param bookDao Database Access;
      */
     @AnyThread
     public CsvRecordReader(@NonNull final Context context,
-                           @NonNull final BookDao db) {
-        mDb = db;
+                           @NonNull final BookDao bookDao) {
+        mBookDao = bookDao;
         mBookCoder = new BookCoder(context);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
 
@@ -215,12 +215,12 @@ public class CsvRecordReader
             // Iterate through each imported row or until cancelled
             while (row < books.size() && !progressListener.isCancelled()) {
                 // every 10 inserted, we commit the transaction
-                if (mDb.inTransaction() && txRowCount > 10) {
-                    mDb.setTransactionSuccessful();
-                    mDb.endTransaction(txLock);
+                if (mBookDao.inTransaction() && txRowCount > 10) {
+                    mBookDao.setTransactionSuccessful();
+                    mBookDao.endTransaction(txLock);
                 }
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
+                if (!mBookDao.inTransaction()) {
+                    txLock = mBookDao.beginTransaction(true);
                     txRowCount = 0;
                 }
                 txRowCount++;
@@ -233,7 +233,7 @@ public class CsvRecordReader
                                 R.string.error_import_csv_column_count_mismatch, row));
                     }
 
-                    final Book book = mBookCoder.decode(context, mDb,
+                    final Book book = mBookCoder.decode(context, mBookDao,
                                                         csvColumnNames, csvDataRow);
 
                     // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
@@ -284,9 +284,9 @@ public class CsvRecordReader
                 }
             }
         } finally {
-            if (mDb.inTransaction()) {
-                mDb.setTransactionSuccessful();
-                mDb.endTransaction(txLock);
+            if (mBookDao.inTransaction()) {
+                mBookDao.setTransactionSuccessful();
+                mBookDao.endTransaction(txLock);
             }
         }
 
@@ -329,7 +329,7 @@ public class CsvRecordReader
         final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
-        final long bookId = mDb.getBookIdFromUuid(uuid);
+        final long bookId = mBookDao.getBookIdFromUuid(uuid);
         if (bookId > 0) {
             // The book exists in our database (matching UUID).
 
@@ -342,8 +342,8 @@ public class CsvRecordReader
                  && isImportNewer(context, bookId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
 
-                mDb.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                          | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                               | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + uuid
@@ -364,7 +364,7 @@ public class CsvRecordReader
             // The book does NOT exist in our database (no match for the UUID), insert it.
 
             // If we have an importBookId, and it does not already exist, we reuse it.
-            if (importNumericId > 0 && !mDb.bookExistsById(importNumericId)) {
+            if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
                 book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
             }
 
@@ -372,8 +372,8 @@ public class CsvRecordReader
             // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
             // - NO id, OR an id which does not exist in the database yet.
             // INSERT, explicitly allowing the id to be reused if present
-            final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                         | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                              | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "UUID=" + uuid
@@ -402,11 +402,11 @@ public class CsvRecordReader
         book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
 
         // Is that id already in use ?
-        if (!mDb.bookExistsById(importNumericId)) {
+        if (!mBookDao.bookExistsById(importNumericId)) {
             // The id is not in use, simply insert the book using the given importNumericId,
             // explicitly allowing the id to be reused
-            final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                         | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                              | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "importNumericId=" + importNumericId
@@ -425,8 +425,8 @@ public class CsvRecordReader
             if ((updatesMustSync
                  && isImportNewer(context, importNumericId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
-                mDb.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                          | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                               | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "importNumericId=" + importNumericId
@@ -447,7 +447,7 @@ public class CsvRecordReader
             throws DaoWriteException {
         // Always import books which have no UUID/ID, even if the book is a potential duplicate.
         // We don't try and search/match but leave it to the user.
-        final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+        final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
         mResults.booksCreated++;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
             Log.d(TAG, "UUID=''"
@@ -473,7 +473,7 @@ public class CsvRecordReader
             return false;
         }
 
-        final LocalDateTime utcLastUpdated = mDb.getBookLastUpdateUtcDate(context, bookId);
+        final LocalDateTime utcLastUpdated = mBookDao.getBookLastUpdateUtcDate(context, bookId);
         return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
     }
 

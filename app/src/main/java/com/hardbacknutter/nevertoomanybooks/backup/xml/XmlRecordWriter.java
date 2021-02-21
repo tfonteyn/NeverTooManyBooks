@@ -425,8 +425,8 @@ public class XmlRecordWriter
         final List<Domain> externalIdDomains = SearchEngineRegistry
                 .getInstance().getExternalIdDomains();
 
-        try (BookDao db = new BookDao(context, TAG);
-             Cursor cursor = db.fetchBooksForExport(utcSinceDateTime)) {
+        try (BookDao bookDao = new BookDao(context, TAG);
+             Cursor cursor = bookDao.fetchBooksForExport(utcSinceDateTime)) {
 
             writer.write('<' + RecordType.Books.getName());
             writer.write(XmlUtils.versionAttr(VERSION_BOOKS));
@@ -435,7 +435,7 @@ public class XmlRecordWriter
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                final Book book = Book.from(cursor, db);
+                final Book book = Book.from(cursor, bookDao);
                 final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
                 String title = book.getString(DBDefinitions.KEY_TITLE);

@@ -225,7 +225,7 @@ public class ShowBookFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_0_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_0_height);
 
-            mCoverHandler[0] = new CoverHandler(this, mVm.getDb(), 0, maxWidth, maxHeight);
+            mCoverHandler[0] = new CoverHandler(this, mVm.getBookDao(), 0, maxWidth, maxHeight);
             mCoverHandler[0].onViewCreated(this);
             mCoverHandler[0].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[0].setBookSupplier(
@@ -236,7 +236,7 @@ public class ShowBookFragment
             final int maxWidth = res.getDimensionPixelSize(R.dimen.cover_details_1_width);
             final int maxHeight = res.getDimensionPixelSize(R.dimen.cover_details_1_height);
 
-            mCoverHandler[1] = new CoverHandler(this, mVm.getDb(), 1, maxWidth, maxHeight);
+            mCoverHandler[1] = new CoverHandler(this, mVm.getBookDao(), 1, maxWidth, maxHeight);
             mCoverHandler[1].onViewCreated(this);
             mCoverHandler[1].setProgressView(mVb.coverOperationProgressBar);
             mCoverHandler[1].setBookSupplier(
@@ -536,7 +536,7 @@ public class ShowBookFragment
 
             final Book book = mVm.getBookAtPosition(position);
 
-            holder.onBindViewHolder(mFieldsMap, mVm.getDb(), book);
+            holder.onBindViewHolder(mFieldsMap, mVm.getBookDao(), book);
 
             if (mCoverHandler[0] != null) {
                 mCoverHandler[0].onBindView(holder.mVb.coverImage0, book);
@@ -732,12 +732,12 @@ public class ShowBookFragment
             /**
              * At this point we're told to load our local (to the fragment) fields from the Book.
              *
-             * @param fields to populate
-             * @param db     Database Access
-             * @param book   to load
+             * @param fields  to populate
+             * @param bookDao Database Access
+             * @param book    to load
              */
             void onBindViewHolder(@NonNull final Fields fields,
-                                  @NonNull final BookDao db,
+                                  @NonNull final BookDao bookDao,
                                   @NonNull final Book book) {
                 fields.setParentView(mVb.getRoot());
                 fields.setAll(book);

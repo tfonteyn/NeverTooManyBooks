@@ -205,7 +205,7 @@ public class EditBookFieldsFragment
                                     final int maxHeight,
                                     final int cIdx,
                                     @NonNull final CircularProgressIndicator progressIndicator) {
-        mCoverHandler[cIdx] = new CoverHandler(this, mVm.getDb(), cIdx, maxWidth, maxHeight);
+        mCoverHandler[cIdx] = new CoverHandler(this, mVm.getBookDao(), cIdx, maxWidth, maxHeight);
         mCoverHandler[cIdx].onViewCreated(this);
         mCoverHandler[cIdx].setProgressView(progressIndicator);
         mCoverHandler[cIdx].setBookSupplier(() -> mVm.getBook());

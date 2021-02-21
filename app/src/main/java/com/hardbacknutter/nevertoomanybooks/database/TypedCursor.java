@@ -52,7 +52,7 @@ class TypedCursor
 
     /** database reference so we can get table/column info. */
     @Nullable
-    private SynchronizedDb mSyncedDb;
+    private SynchronizedDb mDb;
     /** The primary table. */
     @Nullable
     private TableDefinition mTableDefinition;
@@ -84,7 +84,7 @@ class TypedCursor
     void setDb(@NonNull final SynchronizedDb db,
                @SuppressWarnings("SameParameterValue")
                @NonNull final TableDefinition tableDefinition) {
-        mSyncedDb = db;
+        mDb = db;
         mTableDefinition = tableDefinition;
     }
 
@@ -97,8 +97,8 @@ class TypedCursor
     public int getType(final int columnIndex) {
 
         // initialise once.
-        if (mSyncedDb != null && mTableDefinition != null && mTableInfo == null) {
-            mTableInfo = mSyncedDb.getTableInfo(mTableDefinition);
+        if (mDb != null && mTableDefinition != null && mTableInfo == null) {
+            mTableInfo = mDb.getTableInfo(mTableDefinition);
         }
 
         if (mTableInfo != null) {

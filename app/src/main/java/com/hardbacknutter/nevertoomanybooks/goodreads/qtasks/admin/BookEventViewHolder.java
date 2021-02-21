@@ -64,7 +64,7 @@ public class BookEventViewHolder
 
     public void bind(@NonNull final TQEventCursorRow rowData,
                      @NonNull final SendBookEvent event,
-                     @NonNull final BookDao db) {
+                     @NonNull final BookDao bookDao) {
         final Context context = itemView.getContext();
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
@@ -74,7 +74,7 @@ public class BookEventViewHolder
                 toPrettyDateTime(rowData.getEventDate(context), userLocale)));
 
         final long bookId = event.getBookId();
-        final String title = db.getBookTitle(bookId);
+        final String title = bookDao.getBookTitle(bookId);
 
         if (title == null) {
             titleView.setText(R.string.warning_book_no_longer_exists);
@@ -84,7 +84,7 @@ public class BookEventViewHolder
         } else {
             titleView.setText(title);
 
-            final ArrayList<Author> authors = db.getAuthorsByBookId(bookId);
+            final ArrayList<Author> authors = bookDao.getAuthorsByBookId(bookId);
             final String authorName;
             if (!authors.isEmpty()) {
                 authorName = Author.getCondensedNames(context, authors);
@@ -94,7 +94,7 @@ public class BookEventViewHolder
             authorView.setText(authorName);
             authorView.setVisibility(View.VISIBLE);
 
-            final String isbn = db.getBookIsbn(bookId);
+            final String isbn = bookDao.getBookIsbn(bookId);
             if (isbn != null && !isbn.isEmpty()) {
                 retryButton.setVisibility(View.VISIBLE);
                 retryButton.setOnClickListener(v -> event.retry(v.getContext()));

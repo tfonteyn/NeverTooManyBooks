@@ -183,7 +183,7 @@ public final class CalibreLibraryDao
 
     private long getLibrary(@NonNull final CalibreLibrary library) {
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(SELECT_LIBRARY_ID_BY_NAME)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(SELECT_LIBRARY_ID_BY_NAME)) {
             stmt.bindString(1, library.getName());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -198,8 +198,8 @@ public final class CalibreLibraryDao
      */
     @Nullable
     public CalibreLibrary getLibrary(final long id) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_LIBRARY_BY_ID,
-                                                new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARY_BY_ID,
+                                          new String[]{String.valueOf(id)})) {
             return loadLibrary(cursor);
         }
     }
@@ -213,7 +213,7 @@ public final class CalibreLibraryDao
      */
     @Nullable
     public CalibreLibrary getLibraryByUuid(@NonNull final String uuid) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_LIBRARY_BY_UUID, new String[]{uuid})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARY_BY_UUID, new String[]{uuid})) {
             return loadLibrary(cursor);
         }
     }
@@ -227,8 +227,8 @@ public final class CalibreLibraryDao
      */
     @Nullable
     public CalibreLibrary getLibraryByStringId(@NonNull final String libraryStringId) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_LIBRARY_BY_STRING_ID,
-                                                new String[]{libraryStringId})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARY_BY_STRING_ID,
+                                          new String[]{libraryStringId})) {
             return loadLibrary(cursor);
         }
     }
@@ -236,7 +236,7 @@ public final class CalibreLibraryDao
     public ArrayList<CalibreLibrary> getLibraries() {
 
         final ArrayList<CalibreLibrary> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_LIBRARIES, null)) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_LIBRARIES, null)) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 final CalibreLibrary library = new CalibreLibrary(rowData.getLong(KEY_PK_ID),
@@ -259,8 +259,8 @@ public final class CalibreLibraryDao
     private ArrayList<CalibreVirtualLibrary> getVirtualLibraries(final long libraryId) {
 
         final ArrayList<CalibreVirtualLibrary> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_VLIBS_BY_LIBRARY_ID,
-                                                new String[]{String.valueOf(libraryId)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_VLIBS_BY_LIBRARY_ID,
+                                          new String[]{String.valueOf(libraryId)})) {
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
                 list.add(new CalibreVirtualLibrary(rowData.getLong(KEY_PK_ID), rowData));
@@ -282,8 +282,8 @@ public final class CalibreLibraryDao
     public CalibreVirtualLibrary getVirtualLibrary(final long libraryId,
                                                    @NonNull final String name) {
 
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_VLIB_BY_LIBRARY_ID_AND_NAME,
-                                                new String[]{String.valueOf(libraryId), name})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_VLIB_BY_LIBRARY_ID_AND_NAME,
+                                          new String[]{String.valueOf(libraryId), name})) {
 
             final DataHolder rowData = new CursorRow(cursor);
             if (cursor.moveToFirst()) {
@@ -308,9 +308,9 @@ public final class CalibreLibraryDao
         cv.put(KEY_CALIBRE_VIRT_LIB_EXPR, library.getExpr());
         cv.put(KEY_FK_BOOKSHELF, library.getMappedBookshelfId());
 
-        return 0 < mSyncedDb.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
-                                    KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(library.getId())});
+        return 0 < mDb.update(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), cv,
+                              KEY_PK_ID + "=?",
+                              new String[]{String.valueOf(library.getId())});
     }
 
     /**
@@ -322,7 +322,7 @@ public final class CalibreLibraryDao
      */
     public long insert(@NonNull final CalibreLibrary /* in/out */ library) {
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(INSERT_LIBRARY)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_LIBRARY)) {
             stmt.bindString(1, library.getUuid());
             stmt.bindString(2, library.getLibraryStringId());
             stmt.bindString(3, library.getName());
@@ -346,7 +346,7 @@ public final class CalibreLibraryDao
     private void insertVirtualLibraries(@NonNull final CalibreLibrary library) {
         final ArrayList<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
         if (!vlibs.isEmpty()) {
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(INSERT_VIRTUAL_LIBRARY)) {
+            try (SynchronizedStatement stmt = mDb.compileStatement(INSERT_VIRTUAL_LIBRARY)) {
                 for (final CalibreVirtualLibrary vlib : vlibs) {
                     // always update the foreign key
                     vlib.setLibraryId(library.getId());
@@ -365,7 +365,7 @@ public final class CalibreLibraryDao
     }
 
     private void deleteVirtualLibraries(final long libraryId) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DELETE_VLIBS_BY_LIBRARY_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_VLIBS_BY_LIBRARY_ID)) {
             stmt.bindLong(1, libraryId);
             stmt.executeUpdateDelete();
         }
@@ -387,9 +387,9 @@ public final class CalibreLibraryDao
         cv.put(KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE, library.getLastSyncDateAsString());
         cv.put(KEY_FK_BOOKSHELF, library.getMappedBookshelfId());
 
-        final int rowsAffected = mSyncedDb.update(TBL_CALIBRE_LIBRARIES.getName(), cv,
-                                                  KEY_PK_ID + "=?",
-                                                  new String[]{String.valueOf(library.getId())});
+        final int rowsAffected = mDb.update(TBL_CALIBRE_LIBRARIES.getName(), cv,
+                                            KEY_PK_ID + "=?",
+                                            new String[]{String.valueOf(library.getId())});
         if (0 < rowsAffected) {
             // just delete and recreate...
             deleteVirtualLibraries(library.getId());
@@ -411,7 +411,7 @@ public final class CalibreLibraryDao
 
         final int rowsAffected;
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DELETE_LIBRARY_BY_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_LIBRARY_BY_ID)) {
             stmt.bindLong(1, library.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -431,7 +431,7 @@ public final class CalibreLibraryDao
      */
     @IntRange(from = 0)
     public long getBookIdFromCalibreUuid(@NonNull final String uuid) {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(BY_CALIBRE_UUID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(BY_CALIBRE_UUID)) {
             stmt.bindString(1, uuid);
             return stmt.simpleQueryForLongOrZero();
         }

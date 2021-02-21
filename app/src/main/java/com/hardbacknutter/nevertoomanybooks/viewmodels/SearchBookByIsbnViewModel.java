@@ -67,7 +67,7 @@ public class SearchBookByIsbnViewModel
     /** The batch mode queue. */
     private final List<ISBN> mScanQueue = new ArrayList<>();
     /** Database Access. */
-    private BookDao mDb;
+    private BookDao mBookDao;
     @Mode
     private int mScannerMode;
     /** Only start the scanner automatically upon the very first start of the fragment. */
@@ -84,8 +84,8 @@ public class SearchBookByIsbnViewModel
 
     @Override
     protected void onCleared() {
-        if (mDb != null) {
-            mDb.close();
+        if (mBookDao != null) {
+            mBookDao.close();
         }
 
         super.onCleared();
@@ -98,8 +98,8 @@ public class SearchBookByIsbnViewModel
      */
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
-        if (mDb == null) {
-            mDb = new BookDao(context, TAG);
+        if (mBookDao == null) {
+            mBookDao = new BookDao(context, TAG);
 
             if (args != null) {
                 mScannerMode = args.getInt(BKEY_SCAN_MODE, SCANNER_OFF);
@@ -185,7 +185,7 @@ public class SearchBookByIsbnViewModel
 
     @NonNull
     public ArrayList<Pair<Long, String>> getBookIdAndTitlesByIsbn(@NonNull final ISBN code) {
-        return mDb.getBookIdAndTitlesByIsbn(code);
+        return mBookDao.getBookIdAndTitlesByIsbn(code);
     }
 
     @Retention(RetentionPolicy.SOURCE)

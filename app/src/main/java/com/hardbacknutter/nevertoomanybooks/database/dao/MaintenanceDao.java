@@ -137,7 +137,7 @@ public final class MaintenanceDao
         // and linked with books via a link table.
 
         try {
-            mSyncedDb.analyze();
+            mDb.analyze();
 
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad.
@@ -163,8 +163,8 @@ public final class MaintenanceDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             final AppLocale localeHelper = AppLocale.getInstance();
@@ -172,7 +172,7 @@ public final class MaintenanceDao
             // Books
             String language;
             Locale bookLocale;
-            try (Cursor cursor = mSyncedDb.rawQuery(BOOK_TITLES, null)) {
+            try (Cursor cursor = mDb.rawQuery(BOOK_TITLES, null)) {
                 final int langIdx = cursor.getColumnIndex(KEY_LANGUAGE);
                 while (cursor.moveToNext()) {
                     language = cursor.getString(langIdx);
@@ -190,14 +190,14 @@ public final class MaintenanceDao
 
             // We should use the locale from the 1st book in the series...
             // but that is a huge overhead.
-            try (Cursor cursor = mSyncedDb.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
+            try (Cursor cursor = mDb.rawQuery(SELECT_SERIES_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
                                                TBL_SERIES, KEY_SERIES_TITLE_OB);
                 }
             }
 
-            try (Cursor cursor = mSyncedDb.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
+            try (Cursor cursor = mDb.rawQuery(SELECT_PUBLISHERS_FOR_ORDER_BY_REBUILD, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
                                                TBL_PUBLISHERS, KEY_PUBLISHER_NAME_OB);
@@ -205,7 +205,7 @@ public final class MaintenanceDao
             }
 
             // We should use primary book or Author Locale... but that is a huge overhead.
-            try (Cursor cursor = mSyncedDb.rawQuery(TOC_ENTRY_TITLES, null)) {
+            try (Cursor cursor = mDb.rawQuery(TOC_ENTRY_TITLES, null)) {
                 while (cursor.moveToNext()) {
                     rebuildOrderByTitleColumns(context, userLocale, reorder, cursor,
                                                TBL_TOC_ENTRIES, KEY_TITLE_OB);
@@ -213,11 +213,11 @@ public final class MaintenanceDao
             }
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
     }
@@ -243,7 +243,7 @@ public final class MaintenanceDao
                                                @NonNull final String domainName) {
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -263,8 +263,8 @@ public final class MaintenanceDao
         if (!currentObTitle.equals(rebuildObTitle)) {
             final ContentValues cv = new ContentValues();
             cv.put(domainName, encodeOrderByColumn(rebuildObTitle, locale));
-            return 0 < mSyncedDb.update(table.getName(), cv, KEY_PK_ID + "=?",
-                                        new String[]{String.valueOf(id)});
+            return 0 < mDb.update(table.getName(), cv, KEY_PK_ID + "=?",
+                                  new String[]{String.valueOf(id)});
         }
 
         return true;

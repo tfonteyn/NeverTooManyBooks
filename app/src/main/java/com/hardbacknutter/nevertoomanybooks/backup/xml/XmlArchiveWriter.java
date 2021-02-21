@@ -87,8 +87,8 @@ public class XmlArchiveWriter
             throws GeneralParsingException, IOException {
 
         final int booksToExport;
-        try (BookDao db = new BookDao(context, TAG)) {
-            booksToExport = db.countBooksForExport(null);
+        try (BookDao bookDao = new BookDao(context, TAG)) {
+            booksToExport = bookDao.countBooksForExport(null);
         }
 
         if (booksToExport > 0) {

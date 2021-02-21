@@ -265,7 +265,7 @@ public final class AuthorDao
      */
     @Nullable
     public Author getById(final long id) {
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_BY_ID, new String[]{String.valueOf(id)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_BY_ID, new String[]{String.valueOf(id)})) {
             if (cursor.moveToFirst()) {
                 return new Author(id, new CursorRow(cursor));
             } else {
@@ -303,7 +303,7 @@ public final class AuthorDao
             authorLocale = bookLocale;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(FIND_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
             stmt.bindString(1, encodeOrderByColumn(author.getFamilyName(), authorLocale));
             stmt.bindString(2, encodeOrderByColumn(author.getGivenNames(), authorLocale));
             return stmt.simpleQueryForLongOrZero();
@@ -351,8 +351,8 @@ public final class AuthorDao
     @NonNull
     public ArrayList<Long> getBookIds(final long authorId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(SELECT_BOOK_IDS_BY_AUTHOR_ID,
-                                                new String[]{String.valueOf(authorId)})) {
+        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_IDS_BY_AUTHOR_ID,
+                                          new String[]{String.valueOf(authorId)})) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }
@@ -372,7 +372,7 @@ public final class AuthorDao
     public ArrayList<Long> getBookIds(final long authorId,
                                       final long bookshelfId) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(
+        try (Cursor cursor = mDb.rawQuery(
                 SELECT_BOOK_IDS_BY_AUTHOR_ID_AND_BOOKSHELF_ID,
                 new String[]{String.valueOf(authorId), String.valueOf(bookshelfId)})) {
             while (cursor.moveToNext()) {
@@ -389,11 +389,11 @@ public final class AuthorDao
      */
     @NonNull
     public Cursor fetchAll() {
-        return mSyncedDb.rawQuery(SELECT_ALL, null);
+        return mDb.rawQuery(SELECT_ALL, null);
     }
 
     public long count() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(COUNT_ALL)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(COUNT_ALL)) {
             return stmt.simpleQueryForLongOrZero();
         }
     }
@@ -414,7 +414,7 @@ public final class AuthorDao
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(COUNT_BOOKS)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(COUNT_BOOKS)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();
         }
@@ -436,7 +436,7 @@ public final class AuthorDao
             return 0;
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 COUNT_TOC_ENTRIES)) {
             stmt.bindLong(1, author.getId());
             return stmt.simpleQueryForLongOrZero();
@@ -456,8 +456,8 @@ public final class AuthorDao
         final ContentValues cv = new ContentValues();
         cv.put(KEY_AUTHOR_IS_COMPLETE, isComplete);
 
-        return 0 < mSyncedDb.update(TBL_AUTHORS.getName(), cv, KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(authorId)});
+        return 0 < mDb.update(TBL_AUTHORS.getName(), cv, KEY_PK_ID + "=?",
+                              new String[]{String.valueOf(authorId)});
     }
 
     /**
@@ -528,7 +528,7 @@ public final class AuthorDao
         final Locale authorLocale =
                 author.getLocale(context, AppLocale.getInstance().getUserLocale(context));
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(INSERT)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(INSERT)) {
             stmt.bindString(1, author.getFamilyName());
             stmt.bindString(2, encodeOrderByColumn(author.getFamilyName(), authorLocale));
             stmt.bindString(3, author.getGivenNames());
@@ -565,8 +565,8 @@ public final class AuthorDao
                encodeOrderByColumn(author.getGivenNames(), authorLocale));
         cv.put(KEY_AUTHOR_IS_COMPLETE, author.isComplete());
 
-        return 0 < mSyncedDb.update(TBL_AUTHORS.getName(), cv, KEY_PK_ID + "=?",
-                                    new String[]{String.valueOf(author.getId())});
+        return 0 < mDb.update(TBL_AUTHORS.getName(), cv, KEY_PK_ID + "=?",
+                              new String[]{String.valueOf(author.getId())});
     }
 
     /**
@@ -582,7 +582,7 @@ public final class AuthorDao
                           @NonNull final Author author) {
 
         final int rowsAffected;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(DELETE_BY_ID)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
             stmt.bindLong(1, author.getId());
             rowsAffected = stmt.executeUpdateDelete();
         }
@@ -613,15 +613,15 @@ public final class AuthorDao
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             // TOC is easy: just do a mass update
             final ContentValues cv = new ContentValues();
             cv.put(KEY_FK_AUTHOR, destId);
-            mSyncedDb.update(TBL_TOC_ENTRIES.getName(), cv, KEY_FK_AUTHOR + "=?",
-                             new String[]{String.valueOf(source.getId())});
+            mDb.update(TBL_TOC_ENTRIES.getName(), cv, KEY_FK_AUTHOR + "=?",
+                       new String[]{String.valueOf(source.getId())});
 
             // the books must be done one by one, as we need to prevent duplicate authors
             // e.g. suppose we have a book with author
@@ -630,9 +630,9 @@ public final class AuthorDao
             // and we want to replace a1 with a2, we cannot simply do a mass update.
             final Author destination = getById(destId);
 
-            try (BookDao db = new BookDao(context, TAG)) {
+            try (BookDao bookDao = new BookDao(context, TAG)) {
                 for (final long bookId : getBookIds(source.getId())) {
-                    final Book book = Book.from(bookId, db);
+                    final Book book = Book.from(bookId, bookDao);
 
                     final Collection<Author> fromBook =
                             book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
@@ -650,24 +650,25 @@ public final class AuthorDao
                         }
                     }
                     // delete old links and store all new links
-                    db.insertBookAuthors(context, bookId, destList, true, book.getLocale(context));
+                    bookDao.insertBookAuthors(context, bookId, destList, true,
+                                              book.getLocale(context));
                 }
             }
             // delete the obsolete source.
             delete(context, source);
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
     }
 
     public void purge() {
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(PURGE)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(PURGE)) {
             stmt.executeUpdateDelete();
         } catch (@NonNull final RuntimeException e) {
             // log to file, this is bad.

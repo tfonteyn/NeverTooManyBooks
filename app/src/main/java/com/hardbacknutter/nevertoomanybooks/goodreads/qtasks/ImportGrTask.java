@@ -156,9 +156,9 @@ public class ImportGrTask
     @Override
     public boolean run(@NonNull final Context context,
                        @NonNull final QueueManager queueManager) {
-        try (BookDao db = new BookDao(context, TAG)) {
+        try (BookDao bookDao = new BookDao(context, TAG)) {
             // Import part of the sync
-            final boolean ok = importReviews(context, db, queueManager);
+            final boolean ok = importReviews(context, bookDao, queueManager);
 
             // If it's a sync job, start the export part and save the last syn date
             if (mIsSync) {
@@ -180,16 +180,16 @@ public class ImportGrTask
      * Repeatedly request review pages until we are done.
      *
      * @param context Current context
-     * @param db      Database Access
+     * @param bookDao Database Access
      *
      * @return {@code true} if all went well
      *
      * @throws CredentialsException if there are no valid credentials available
      */
     private boolean importReviews(@NonNull final Context context,
-                                  @NonNull final BookDao db,
+                                  @NonNull final BookDao bookDao,
                                   @NonNull final QueueManager queueManager)
-            throws CredentialsException {
+    throws CredentialsException {
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         final ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
@@ -266,7 +266,7 @@ public class ImportGrTask
                         }
                     }
 
-                    processReview(context, db, review);
+                    processReview(context, bookDao, review);
 
                     // Update after each book, so the UI can reflect the status
                     queueManager.updateTask(this);
@@ -284,10 +284,10 @@ public class ImportGrTask
      * https://www.goodreads.com/book/show/8263282-the-end-of-eternity
      *
      * @param context Current context
-     * @param db      Database Access
+     * @param bookDao      Database Access
      */
     private void processReview(@NonNull final Context context,
-                               @NonNull final BookDao db,
+                               @NonNull final BookDao bookDao,
                                @NonNull final Bundle review) {
 
         final long grBookId = review.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
@@ -301,8 +301,8 @@ public class ImportGrTask
         try {
             // Find the book in our local database - there may be more than one!
             // First look by Goodreads book ID
-            cursor = db.fetchBooksByKey(DBDefinitions.KEY_ESID_GOODREADS_BOOK,
-                                        String.valueOf(grBookId));
+            cursor = bookDao.fetchBooksByKey(DBDefinitions.KEY_ESID_GOODREADS_BOOK,
+                                             String.valueOf(grBookId));
 
             boolean found = cursor.getCount() > 0;
             if (!found) {
@@ -312,7 +312,7 @@ public class ImportGrTask
 
                 final List<String> list = extractIsbnList(review);
                 if (!list.isEmpty()) {
-                    cursor = db.fetchBooksByIsbnList(list);
+                    cursor = bookDao.fetchBooksByIsbnList(list);
                     found = cursor.getCount() > 0;
                 }
             }
@@ -320,7 +320,7 @@ public class ImportGrTask
             if (found) {
                 // Loop over all the books we found
                 while (cursor.moveToNext()) {
-                    final Book localBook = Book.from(cursor, db);
+                    final Book localBook = Book.from(cursor, bookDao);
 
                     if (shouldUpdate(context, localBook, review)) {
                         // Update the book using the Goodreads data.
@@ -329,11 +329,11 @@ public class ImportGrTask
                         // This DELTA-data will be build by combining some essential data
                         // from the 'localBook' (e.g. local id)
                         // and the data we get from the Goodreads review.
-                        final Book delta = buildBook(context, db, localBook, review);
+                        final Book delta = buildBook(context, bookDao, localBook, review);
                         try {
                             // <strong>WARNING:</strong> a failed update is ignored (but logged).
-                            db.update(context, delta, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                      | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                            bookDao.update(context, delta, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                         } catch (@NonNull final DaoWriteException e) {
                             // ignore, but log it.
                             Logger.error(context, TAG, e);
@@ -342,9 +342,9 @@ public class ImportGrTask
                 }
             } else {
                 // Create a new book with the Goodreads data.
-                final Book book = buildBook(context, db, new Book(), review);
+                final Book book = buildBook(context, bookDao, new Book(), review);
                 try {
-                    db.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+                    bookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
 
                 } catch (@NonNull final DaoWriteException e) {
                     // ignore, but log it.
@@ -385,7 +385,7 @@ public class ImportGrTask
      * i.e. for existing books, we copy the id and the language field to the result.
      *
      * @param context       Current context
-     * @param db            Database Access
+     * @param bookDao            Database Access
      * @param localData     the local Book; this can be an existing Book with local data
      *                      when we're updating, or a new Book() when inserting.
      * @param goodreadsData the source data from Goodreads
@@ -394,7 +394,7 @@ public class ImportGrTask
      */
     @NonNull
     private Book buildBook(@NonNull final Context context,
-                           @NonNull final BookDao db,
+                           @NonNull final BookDao bookDao,
                            @NonNull final Book localData,
                            @NonNull final Bundle goodreadsData) {
 
@@ -518,7 +518,7 @@ public class ImportGrTask
                 }
             }
 
-            Author.pruneList(authorList, context, db, false, bookLocale);
+            Author.pruneList(authorList, context, false, bookLocale);
             delta.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, authorList);
         }
 
@@ -562,7 +562,7 @@ public class ImportGrTask
                                                              Review.LARGE_IMAGE_URL,
                                                              Review.SMALL_IMAGE_URL);
             if (fileSpec != null) {
-                delta.setCover(context, db, 0, new File(fileSpec));
+                delta.setCover(context, bookDao, 0, new File(fileSpec));
             }
         }
 

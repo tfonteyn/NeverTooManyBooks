@@ -64,7 +64,7 @@ public class CsvArchiveReader
     private final ImportHelper mHelper;
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
 
     /**
      * Constructor.
@@ -74,7 +74,7 @@ public class CsvArchiveReader
     public CsvArchiveReader(@NonNull final Context context,
                             @NonNull final ImportHelper helper) {
         mHelper = helper;
-        mDb = new BookDao(context, TAG);
+        mBookDao = new BookDao(context, TAG);
     }
 
     @NonNull
@@ -88,7 +88,7 @@ public class CsvArchiveReader
         // Importing CSV which we didn't create can be dangerous.
         // Backup the database, keeping up to CSV_BACKUP_COPIES copies.
         // ENHANCE: For now we don't inform the user of this nor offer a restore.
-        FileUtils.copyWithBackup(mDb.getDatabaseFile(),
+        FileUtils.copyWithBackup(mBookDao.getDatabaseFile(),
                                  AppDir.Upgrades.getFile(context, DB_BACKUP_NAME),
                                  DB_BACKUP_COPIES);
 
@@ -98,7 +98,7 @@ public class CsvArchiveReader
             throw new FileNotFoundException(mHelper.getUri().toString());
         }
 
-        try (RecordReader recordReader = new CsvRecordReader(context, mDb)) {
+        try (RecordReader recordReader = new CsvRecordReader(context, mBookDao)) {
             final ArchiveReaderRecord record = new CsvArchiveRecord(
                     mHelper.getUriInfo(context).getDisplayName(), is);
 
@@ -110,7 +110,7 @@ public class CsvArchiveReader
 
     @Override
     public void close() {
-        mDb.close();
+        mBookDao.close();
         MaintenanceDao.getInstance().purge();
     }
 

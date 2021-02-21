@@ -75,7 +75,7 @@ public class SearchFtsFragment
     /** The results book id list. For sending back to the caller. */
     private final ArrayList<Long> mBookIdList = new ArrayList<>();
     /** Database Access. */
-    private BookDao mDb;
+    private BookDao mBookDao;
     /** User entered search text. */
     @Nullable
     private String mAuthorSearchText;
@@ -129,7 +129,7 @@ public class SearchFtsFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mDb = new BookDao(getContext(), TAG);
+        mBookDao = new BookDao(getContext(), TAG);
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
@@ -278,8 +278,8 @@ public class SearchFtsFragment
     public void onDestroy() {
         stopIdleTimer();
 
-        if (mDb != null) {
-            mDb.close();
+        if (mBookDao != null) {
+            mBookDao.close();
         }
         super.onDestroy();
     }
@@ -344,12 +344,12 @@ public class SearchFtsFragment
                 viewToModel();
 
                 int count = 0;
-                try (Cursor cursor = mDb.search(mAuthorSearchText,
-                                                mTitleSearchText,
-                                                mSeriesTitleSearchText,
-                                                mPublisherNameSearchText,
-                                                mKeywordsSearchText,
-                                                MAX_SUGGESTIONS)) {
+                try (Cursor cursor = mBookDao.search(mAuthorSearchText,
+                                                     mTitleSearchText,
+                                                     mSeriesTitleSearchText,
+                                                     mPublisherNameSearchText,
+                                                     mKeywordsSearchText,
+                                                     MAX_SUGGESTIONS)) {
                     // Null return means FTS thought the parameters were effectively blank.
                     if (cursor != null) {
                         count = cursor.getCount();

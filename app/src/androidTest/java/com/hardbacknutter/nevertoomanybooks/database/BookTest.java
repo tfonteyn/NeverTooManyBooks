@@ -112,13 +112,13 @@ public class BookTest {
         mTocEntryList.clear();
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao db = new BookDao(context, "setup")) {
+        try (BookDao bookDao = new BookDao(context, "setup")) {
 
-            final SynchronizedDb syncDb = db.getSyncDb();
-            Constants.deleteTocs(syncDb);
-            Constants.deleteBooks(syncDb);
-            Constants.deleteAuthors(syncDb);
-            Constants.deletePublishers(syncDb);
+            final SynchronizedDb db = bookDao.getDb();
+            Constants.deleteTocs(db);
+            Constants.deleteBooks(db);
+            Constants.deleteAuthors(db);
+            Constants.deletePublishers(db);
 
             mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
             mBookshelfList.clear();
@@ -219,15 +219,15 @@ public class BookTest {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        try (BookDao db = new BookDao(context, "book")) {
+        try (BookDao bookDao = new BookDao(context, "book")) {
 
-            mBook[0] = prepareAndInsertBook(context, db);
+            mBook[0] = prepareAndInsertBook(context, bookDao);
             mBookId[0] = mBook[0].getId();
 
             /*
              * test the inserted book
              */
-            Book book = Book.from(mBookId[0], db);
+            Book book = Book.from(mBookId[0], bookDao);
             assertEquals(mBookId[0], book.getId());
             checkBookAfterInitialInsert(context, book);
 
@@ -248,20 +248,20 @@ public class BookTest {
             authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             authors.add(mAuthor[1]);
 
-            book.setCover(context, db, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
+            book.setCover(context, bookDao, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
 
             assertEquals(mExternalCacheDir.getAbsolutePath()
                          + File.separatorChar + Constants.COVER[1],
                          book.getString(Book.BKEY_TMP_FILE_SPEC[1]));
 
             assertEquals(EntityStage.Stage.Dirty, book.getStage());
-            db.update(context, book, 0);
+            bookDao.update(context, book, 0);
             book.setStage(EntityStage.Stage.Clean);
 
             /*
              * test the updated book
              */
-            book = Book.from(mBookId[0], db);
+            book = Book.from(mBookId[0], bookDao);
             assertEquals(mBookId[0], book.getId());
 
             uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
@@ -300,7 +300,7 @@ public class BookTest {
             /*
              * Delete the second cover of the read-only book
              */
-            book = Book.from(mBookId[0], db);
+            book = Book.from(mBookId[0], bookDao);
             assertEquals(mBookId[0], book.getId());
 
             uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
@@ -312,7 +312,7 @@ public class BookTest {
             cover = new File(mExternalFilesDir, uuid + "_1" + EXT_JPG);
             assertTrue(cover.exists());
 
-            book.setCover(context, db, 1, null);
+            book.setCover(context, bookDao, 1, null);
 
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -331,7 +331,7 @@ public class BookTest {
             assertNotNull(files);
             prepareCover(files, 1);
 
-            book.setCover(context, db, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
+            book.setCover(context, bookDao, 1, AppDir.Cache.getFile(context, Constants.COVER[1]));
 
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -350,8 +350,8 @@ public class BookTest {
     public void showBookVM()
             throws DaoWriteException, ExternalStorageException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (BookDao db = new BookDao(context, "ShowBookViewModel-prep")) {
-            mBook[0] = prepareAndInsertBook(context, db);
+        try (BookDao bookDao = new BookDao(context, "ShowBookViewModel-prep")) {
+            mBook[0] = prepareAndInsertBook(context, bookDao);
             mBookId[0] = mBook[0].getId();
         }
 

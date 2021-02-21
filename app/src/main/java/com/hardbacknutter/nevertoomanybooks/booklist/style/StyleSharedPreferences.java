@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -46,7 +46,7 @@ public class StyleSharedPreferences
         implements StylePersistenceLayer {
 
     /**
-     * Obsolete preference for this style being a preferred style. Now handled in the db.
+     * Obsolete preference for this style being a preferred style. Now handled in the database.
      *
      * @deprecated will be removed soon.
      */

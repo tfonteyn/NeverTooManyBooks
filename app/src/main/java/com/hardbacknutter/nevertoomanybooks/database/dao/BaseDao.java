@@ -106,7 +106,7 @@ public abstract class BaseDao {
     private static final Pattern SINGLE_QUOTE_LITERAL = Pattern.compile("'", Pattern.LITERAL);
 
     /** Reference to the singleton. */
-    protected final SynchronizedDb mSyncedDb;
+    protected final SynchronizedDb mDb;
     @NonNull
     protected final String mInstanceName;
 
@@ -124,7 +124,7 @@ public abstract class BaseDao {
             Log.d(TAG, mInstanceName + "|Constructor");
         }
 
-        mSyncedDb = DBHelper.getSyncDb(context);
+        mDb = DBHelper.getDb(context);
     }
 
     /**
@@ -175,21 +175,21 @@ public abstract class BaseDao {
 
     @NonNull
     public File getDatabaseFile() {
-        return mSyncedDb.getDatabaseFile();
+        return mDb.getDatabaseFile();
     }
 
     /**
      * Get the local database.
      * This should only be called in test classes, and from the {@link DBCleaner}.
      * <p>
-     * Other code should use {@link DBHelper#getSyncDb(Context)} directly to get
+     * Other code should use {@link DBHelper#getDb(Context)} directly to get
      * a lighter weight object.
      *
      * @return Underlying database connection
      */
     @NonNull
-    public SynchronizedDb getSyncDb() {
-        return mSyncedDb;
+    public SynchronizedDb getDb() {
+        return mDb;
     }
 
     /**
@@ -207,7 +207,7 @@ public abstract class BaseDao {
      * Wrapper to {@link SynchronizedDb#inTransaction}.
      */
     public boolean inTransaction() {
-        return mSyncedDb.inTransaction();
+        return mDb.inTransaction();
     }
 
     /**
@@ -219,14 +219,14 @@ public abstract class BaseDao {
      */
     @NonNull
     public Synchronizer.SyncLock beginTransaction(final boolean isUpdate) {
-        return mSyncedDb.beginTransaction(isUpdate);
+        return mDb.beginTransaction(isUpdate);
     }
 
     /**
      * Wrapper to {@link SynchronizedDb#setTransactionSuccessful}.
      */
     public void setTransactionSuccessful() {
-        mSyncedDb.setTransactionSuccessful();
+        mDb.setTransactionSuccessful();
     }
 
     /**
@@ -235,7 +235,7 @@ public abstract class BaseDao {
      * @param txLock Lock returned from {@link #beginTransaction(boolean)}
      */
     public void endTransaction(@Nullable final Synchronizer.SyncLock txLock) {
-        mSyncedDb.endTransaction(txLock);
+        mDb.endTransaction(txLock);
     }
 
     /**
@@ -250,7 +250,7 @@ public abstract class BaseDao {
      */
     boolean touchBook(@IntRange(from = 1) final long bookId) {
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(TOUCH)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(TOUCH)) {
             stmt.bindLong(1, bookId);
             return 0 < stmt.executeUpdateDelete();
         }
@@ -311,7 +311,7 @@ public abstract class BaseDao {
     ArrayList<String> getColumnAsList(@NonNull final String sql,
                                       @NonNull final String columnName) {
         final ArrayList<String> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = mDb.rawQuery(sql, null)) {
             final int column = cursor.getColumnIndexOrThrow(columnName);
             while (cursor.moveToNext()) {
                 list.add(cursor.getString(column));
@@ -330,7 +330,7 @@ public abstract class BaseDao {
     @NonNull
     protected ArrayList<Long> getIdList(@NonNull final String sql) {
         final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mSyncedDb.rawQuery(sql, null)) {
+        try (Cursor cursor = mDb.rawQuery(sql, null)) {
             while (cursor.moveToNext()) {
                 list.add(cursor.getLong(0));
             }

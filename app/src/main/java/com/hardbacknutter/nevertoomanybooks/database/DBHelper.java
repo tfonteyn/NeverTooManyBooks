@@ -140,7 +140,7 @@ public final class DBHelper
     @Nullable
     private static Boolean sIsCollationCaseSensitive;
 
-    /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getSyncDb(Context)}. */
+    /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb(Context)}. */
     @Nullable
     private SynchronizedDb mSynchronizedDb;
 
@@ -160,8 +160,8 @@ public final class DBHelper
      *
      * @return the database instance
      */
-    public static SynchronizedDb getSyncDb(@NonNull final Context context) {
-        return DBHelper.getInstance(context).getSyncDb();
+    public static SynchronizedDb getDb(@NonNull final Context context) {
+        return DBHelper.getInstance(context).getDb();
     }
 
     @NonNull
@@ -201,15 +201,15 @@ public final class DBHelper
      */
     public static void recreateIndices(@NonNull final Context context) {
         final DBHelper dbHelper = DBHelper.getInstance(context);
-        final SynchronizedDb syncDb = dbHelper.getSyncDb();
+        final SynchronizedDb db = dbHelper.getDb();
 
-        final Synchronizer.SyncLock txLock = syncDb.beginTransaction(true);
+        final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
             // It IS safe here to get the underlying database, as we're in a SyncLock.
-            dbHelper.recreateIndices(syncDb.getSQLiteDatabase());
-            syncDb.setTransactionSuccessful();
+            dbHelper.recreateIndices(db.getSQLiteDatabase());
+            db.setTransactionSuccessful();
         } finally {
-            syncDb.endTransaction(txLock);
+            db.endTransaction(txLock);
         }
     }
 
@@ -237,7 +237,7 @@ public final class DBHelper
      * @return database connection
      */
     @NonNull
-    private SynchronizedDb getSyncDb() {
+    private SynchronizedDb getDb() {
         synchronized (this) {
             if (mSynchronizedDb == null) {
                 mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);

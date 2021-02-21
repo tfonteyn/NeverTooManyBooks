@@ -120,7 +120,7 @@ public class CalibreContentServerReader
     private final String mBooksString;
 
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
 
     @NonNull
     private final CalibreContentServer mServer;
@@ -145,7 +145,7 @@ public class CalibreContentServerReader
                                       @NonNull final ImportHelper helper)
             throws CertificateException, SSLException {
 
-        mDb = new BookDao(context, TAG);
+        mBookDao = new BookDao(context, TAG);
 
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
@@ -315,7 +315,7 @@ public class CalibreContentServerReader
             // check if the book exists in our database, and fetch it's id.
             final long bookId = libraryDao.getBookIdFromCalibreUuid(calibreUuid);
             if (bookId > 0) {
-                final Book book = Book.from(bookId, mDb);
+                final Book book = Book.from(bookId, mBookDao);
                 // UPDATE the existing book (if allowed). Check the sync option FIRST!
                 if ((mDoNewAndUpdatedBooks
                      && isImportNewer(context, bookId, book.getLastUpdateUtcDate(context)))
@@ -324,8 +324,8 @@ public class CalibreContentServerReader
                     book.setStage(EntityStage.Stage.Dirty);
                     copyCalibreData(context, calibreBook, book);
 
-                    mDb.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                              | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    mBookDao.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                   | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
 
                     mResults.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
@@ -349,7 +349,8 @@ public class CalibreContentServerReader
                 book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
                 copyCalibreData(context, calibreBook, book);
 
-                final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
+                final long insId = mBookDao
+                        .insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
                 mResults.booksCreated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                     Log.d(TAG, "calibreUuid=" + calibreUuid
@@ -522,7 +523,7 @@ public class CalibreContentServerReader
                 final String coverUrl = calibreBook.optString(CalibreBook.COVER);
                 if (!coverUrl.isEmpty()) {
                     final File file = mServer.getCover(context, calibreBookId, coverUrl);
-                    localBook.setCover(context, mDb, 0, file);
+                    localBook.setCover(context, mBookDao, 0, file);
                 }
             }
         }
@@ -648,13 +649,13 @@ public class CalibreContentServerReader
             return false;
         }
 
-        final LocalDateTime utcLastUpdated = mDb.getBookLastUpdateUtcDate(context, bookId);
+        final LocalDateTime utcLastUpdated = mBookDao.getBookLastUpdateUtcDate(context, bookId);
         return utcLastUpdated == null || importLastUpdateDate.isAfter(utcLastUpdated);
     }
 
     @Override
     public void close() {
-        mDb.close();
+        mBookDao.close();
         MaintenanceDao.getInstance().purge();
     }
 }

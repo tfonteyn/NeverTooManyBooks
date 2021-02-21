@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
@@ -417,7 +416,6 @@ public class Author
      *
      * @param list         List to clean up
      * @param context      Current context
-     * @param db           Database Access
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.
@@ -428,7 +426,6 @@ public class Author
      */
     public static boolean pruneList(@NonNull final Collection<Author> list,
                                     @NonNull final Context context,
-                                    @NonNull final BookDao db,
                                     final boolean lookupLocale,
                                     @NonNull final Locale bookLocale) {
         if (list.isEmpty()) {

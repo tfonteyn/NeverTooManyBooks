@@ -129,14 +129,14 @@ public enum RecordEncoding {
 
     @NonNull
     public RecordReader createReader(@NonNull final Context context,
-                                     @NonNull final BookDao db,
+                                     @NonNull final BookDao bookDao,
                                      @NonNull final Set<RecordType> importEntriesAllowed)
             throws InvalidArchiveException {
         switch (this) {
             case Json:
-                return new JsonRecordReader(context, db, importEntriesAllowed);
+                return new JsonRecordReader(context, bookDao, importEntriesAllowed);
             case Csv:
-                return new CsvRecordReader(context, db);
+                return new CsvRecordReader(context, bookDao);
             case Xml:
                 //noinspection deprecation
                 return new XmlRecordReader(context, importEntriesAllowed);

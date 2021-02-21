@@ -83,7 +83,7 @@ public class EditBookFragmentViewModel
     private final MutableLiveData<ArrayList<Series>> mSeriesList = new MutableLiveData<>();
     private final MutableLiveData<ArrayList<Publisher>> mPublisherList = new MutableLiveData<>();
     /** Database Access. */
-    private BookDao mDb;
+    private BookDao mBookDao;
     /** <strong>Optionally</strong> passed in via the arguments. */
     @Nullable
     private ListStyle mStyle;
@@ -140,8 +140,8 @@ public class EditBookFragmentViewModel
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Override
     public void onCleared() {
-        if (mDb != null) {
-            mDb.close();
+        if (mBookDao != null) {
+            mBookDao.close();
         }
     }
 
@@ -170,8 +170,8 @@ public class EditBookFragmentViewModel
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
 
-        if (mDb == null) {
-            mDb = new BookDao(context, TAG);
+        if (mBookDao == null) {
+            mBookDao = new BookDao(context, TAG);
 
             if (args != null) {
                 final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
@@ -192,7 +192,7 @@ public class EditBookFragmentViewModel
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
                     final long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
                     if (bookId > 0) {
-                        mBook = Book.from(bookId, mDb);
+                        mBook = Book.from(bookId, mBookDao);
                     } else {
                         mBook = new Book();
                     }
@@ -233,8 +233,8 @@ public class EditBookFragmentViewModel
     }
 
     @NonNull
-    public BookDao getDb() {
-        return mDb;
+    public BookDao getBookDao() {
+        return mBookDao;
     }
 
     /**
@@ -279,9 +279,9 @@ public class EditBookFragmentViewModel
             throws DaoWriteException {
 
         if (mBook.isNew()) {
-            mDb.insert(context, mBook, 0);
+            mBookDao.insert(context, mBook, 0);
         } else {
-            mDb.update(context, mBook, 0);
+            mBookDao.update(context, mBook, 0);
         }
         mResultIntent.putExtra(Entity.BKEY_DATA_MODIFIED, true);
         mBook.setStage(EntityStage.Stage.Clean);
@@ -326,7 +326,7 @@ public class EditBookFragmentViewModel
         if (mBook.isNew()) {
             final String isbnStr = mBook.getString(DBDefinitions.KEY_ISBN);
             if (!isbnStr.isEmpty()) {
-                return mDb.bookExistsByIsbn(isbnStr);
+                return mBookDao.bookExistsByIsbn(isbnStr);
             }
         }
 
@@ -539,7 +539,8 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllListPriceCurrencyCodes() {
         if (mListPriceCurrencies == null) {
-            mListPriceCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+            mListPriceCurrencies = mBookDao
+                    .getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
         }
         return mListPriceCurrencies;
     }
@@ -552,7 +553,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllPricePaidCurrencyCodes() {
         if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = mDb.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+            mPricePaidCurrencies = mBookDao.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
     }
@@ -609,11 +610,11 @@ public class EditBookFragmentViewModel
 
 
     public void pruneAuthors(@NonNull final Context context) {
-        mBook.pruneAuthors(context, mDb, true);
+        mBook.pruneAuthors(context, true);
     }
 
     public void pruneSeries(@NonNull final Context context) {
-        mBook.pruneSeries(context, mDb, true);
+        mBook.pruneSeries(context, true);
     }
 
     public void prunePublishers(@NonNull final Context context) {
@@ -671,7 +672,7 @@ public class EditBookFragmentViewModel
                                      @NonNull final Author author) {
         if (AuthorDao.getInstance().update(context, author)) {
             pruneAuthors(context);
-            mBook.refreshAuthorList(context, mDb);
+            mBook.refreshAuthorList(context);
             return true;
         }
 

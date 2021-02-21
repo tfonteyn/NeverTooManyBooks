@@ -71,7 +71,7 @@ public class BooklistNodeDAO {
 
     /** Reference to singleton. */
     @NonNull
-    private final SynchronizedDb mSyncedDb;
+    private final SynchronizedDb mDb;
 
     /** The current shelf. */
     private final long mBookshelfId;
@@ -94,7 +94,7 @@ public class BooklistNodeDAO {
                     @NonNull final ListStyle style,
                     @NonNull final Bookshelf bookshelf) {
 
-        mSyncedDb = db;
+        mDb = db;
         mListTable = listTable;
         mBookshelfId = bookshelf.getId();
         mStyle = style;
@@ -106,7 +106,7 @@ public class BooklistNodeDAO {
      * @param context Current context
      */
     public static void clearNodeStateData(@NonNull final Context context) {
-        DBHelper.getSyncDb(context).execSQL(Sql.DELETE_ALL);
+        DBHelper.getDb(context).execSQL(Sql.DELETE_ALL);
     }
 
     /**
@@ -122,8 +122,8 @@ public class BooklistNodeDAO {
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             // code could be condensed somewhat, but leaving as-is making it easier to read.
@@ -153,11 +153,11 @@ public class BooklistNodeDAO {
             saveAllNodes();
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
     }
@@ -177,7 +177,7 @@ public class BooklistNodeDAO {
                                         final boolean expand,
                                         final boolean visible) {
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
             // developer sanity check
@@ -192,7 +192,7 @@ public class BooklistNodeDAO {
                            + Sql._WHERE_ + KEY_BL_NODE_LEVEL + levelOperand + "?";
 
         final int rowsUpdated;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
             stmt.bindBoolean(1, expand);
             stmt.bindBoolean(2, visible);
             stmt.bindLong(3, nodeLevel);
@@ -219,13 +219,13 @@ public class BooklistNodeDAO {
     private void saveAllNodes() {
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             int rowsUpdated;
 
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+            try (SynchronizedStatement stmt = mDb.compileStatement(
                     Sql.DELETE_ALL_FOR_CURRENT_SHELF)) {
                 stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
@@ -236,7 +236,7 @@ public class BooklistNodeDAO {
             }
 
             // Read all visible nodes, and send them to the permanent table.
-            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+            try (SynchronizedStatement stmt = mDb.compileStatement(
                     String.format(Sql.SAVE_ALL_NODES, mListTable.getName()))) {
                 stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
@@ -247,7 +247,7 @@ public class BooklistNodeDAO {
             }
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } catch (@NonNull final SQLiteConstraintException e) {
             if (BuildConfig.DEBUG /* always */) {
@@ -258,7 +258,7 @@ public class BooklistNodeDAO {
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
     }
@@ -294,8 +294,8 @@ public class BooklistNodeDAO {
 
         Synchronizer.SyncLock txLock = null;
         try {
-            if (!mSyncedDb.inTransaction()) {
-                txLock = mSyncedDb.beginTransaction(true);
+            if (!mDb.inTransaction()) {
+                txLock = mDb.beginTransaction(true);
             }
 
             // expand/collapse the specified row, but always keep it visible.
@@ -319,11 +319,11 @@ public class BooklistNodeDAO {
             saveNodesBetween(nodeRowId, endRowExcl, nodeLevel);
 
             if (txLock != null) {
-                mSyncedDb.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
             }
         } finally {
             if (txLock != null) {
-                mSyncedDb.endTransaction(txLock);
+                mDb.endTransaction(txLock);
             }
         }
     }
@@ -339,13 +339,13 @@ public class BooklistNodeDAO {
     private void updateNode(final long rowId,
                             final boolean expand) {
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
         final int rowsUpdated;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 String.format(Sql.UPDATE_NODE, mListTable.getName()))) {
             stmt.bindBoolean(1, expand);
             stmt.bindLong(2, rowId);
@@ -372,13 +372,13 @@ public class BooklistNodeDAO {
     private long findNextNode(final long rowId,
                               @IntRange(from = 1) final int nodeLevel) {
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
         final long nextRowId;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 String.format(Sql.FIND_NEXT_NODE, mListTable.getName()))) {
             stmt.bindLong(1, rowId);
             stmt.bindLong(2, nodeLevel);
@@ -407,7 +407,7 @@ public class BooklistNodeDAO {
                                            @IntRange(from = 1) final int nodeLevel,
                                            final int relativeChildLevel) {
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -423,7 +423,7 @@ public class BooklistNodeDAO {
 
         int rowsUpdated;
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 String.format(Sql.UPDATE_NODES_BETWEEN_1, mListTable.getName()))) {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
@@ -438,7 +438,7 @@ public class BooklistNodeDAO {
                        + "|rowsUpdated=" + rowsUpdated);
         }
 
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 String.format(Sql.UPDATE_NODES_BETWEEN_2, mListTable.getName()))) {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
@@ -466,13 +466,13 @@ public class BooklistNodeDAO {
     private void collapseAndHideNodesBetween(final long startRowExcl,
                                              final long endRowExcl) {
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
         final int rowsUpdated;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 String.format(Sql.COLLAPSE_AND_HIDE_NODES_BETWEEN, mListTable.getName()))) {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
@@ -501,7 +501,7 @@ public class BooklistNodeDAO {
                                   final long endRowExcl,
                                   @IntRange(from = 1) final long nodeLevel) {
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -512,15 +512,15 @@ public class BooklistNodeDAO {
                        + "|fromLevel=" + nodeLevel
                        + "|endRowExcl=" + endRowExcl);
 
-            mSyncedDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
-                                "saveNodesBetween", "before delete");
+            mDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
+                          "saveNodesBetween", "before delete");
         }
 
         int rowsUpdated;
 
         // delete the given rows (inc. start, excl. end) and level
         // for the current bookshelf/style
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 String.format(Sql.DELETE_NODES_BETWEEN, mListTable.getName()))) {
             stmt.bindLong(1, mBookshelfId);
             stmt.bindLong(2, mStyle.getId());
@@ -535,13 +535,13 @@ public class BooklistNodeDAO {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "saveNodesBetween|rowsDeleted=" + rowsUpdated);
-            mSyncedDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
-                                "saveNodesBetween", "delete done");
+            mDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
+                          "saveNodesBetween", "delete done");
         }
 
         // Read all nodes below the given node (again inc. start, excl. end),
         // and send them to the permanent table.
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 String.format(Sql.SAVE_NODES_BETWEEN, mListTable.getName()))) {
             stmt.bindLong(1, mBookshelfId);
             stmt.bindLong(2, mStyle.getId());
@@ -554,8 +554,8 @@ public class BooklistNodeDAO {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_NODE_STATE) {
             Log.d(TAG, "saveNodesBetween|rowsInserted=" + rowsUpdated);
-            mSyncedDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
-                                "saveNodesBetween", "insert done");
+            mDb.dumpTable(TBL_BOOK_LIST_NODE_STATE, 10, KEY_PK_ID,
+                          "saveNodesBetween", "insert done");
         }
     }
 
@@ -571,7 +571,7 @@ public class BooklistNodeDAO {
         // don't cache the sql here, only used once for the given table.
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -610,7 +610,7 @@ public class BooklistNodeDAO {
     private void restoreSavedState(@NonNull final String sqlTemplate,
                                    @NonNull final String columnName) {
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -618,7 +618,7 @@ public class BooklistNodeDAO {
         final String sql = String.format(sqlTemplate, columnName, columnName);
 
         final int rowsUpdated;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
+        try (SynchronizedStatement stmt = mDb.compileStatement(sql)) {
             stmt.bindLong(1, mBookshelfId);
             stmt.bindLong(2, mStyle.getId());
             rowsUpdated = stmt.executeUpdateDelete();
@@ -641,7 +641,7 @@ public class BooklistNodeDAO {
         // don't cache the sql here, only used once for the given table.
 
         if (BuildConfig.DEBUG /* always */) {
-            if (!mSyncedDb.inTransaction()) {
+            if (!mDb.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
@@ -650,7 +650,7 @@ public class BooklistNodeDAO {
         final Collection<Pair<Integer, String>> keyPrefixes = new ArrayList<>();
 
         // Find all branches (groups on level 2+) with visible nodes
-        try (Cursor cursor = mSyncedDb.rawQuery(
+        try (Cursor cursor = mDb.rawQuery(
                 String.format(Sql.ADJUST_VISIBILITY_1, mListTable.getName()),
                 new String[]{String.valueOf(mStyle.getGroups().size())})) {
 
@@ -669,7 +669,7 @@ public class BooklistNodeDAO {
 
         // update the branches we found
         int rows = 0;
-        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+        try (SynchronizedStatement stmt = mDb.compileStatement(
                 String.format(Sql.ADJUST_VISIBILITY_2, mListTable.getName()))) {
 
             for (final Pair<Integer, String> entry : keyPrefixes) {

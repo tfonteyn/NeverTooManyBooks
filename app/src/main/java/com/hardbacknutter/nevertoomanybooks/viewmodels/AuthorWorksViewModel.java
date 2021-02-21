@@ -52,7 +52,7 @@ public class AuthorWorksViewModel
     /** The list of TOC/Books we're displaying. */
     private final ArrayList<AuthorWork> mWorkList = new ArrayList<>();
     /** Database Access. */
-    private BookDao mDb;
+    private BookDao mBookDao;
     /** Author is set in {@link #init}. */
     private Author mAuthor;
     /** Initial Bookshelf is set in {@link #init}. */
@@ -68,8 +68,8 @@ public class AuthorWorksViewModel
 
     @Override
     protected void onCleared() {
-        if (mDb != null) {
-            mDb.close();
+        if (mBookDao != null) {
+            mBookDao.close();
         }
     }
 
@@ -82,8 +82,8 @@ public class AuthorWorksViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
 
-        if (mDb == null) {
-            mDb = new BookDao(context, TAG);
+        if (mBookDao == null) {
+            mBookDao = new BookDao(context, TAG);
 
             final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");
@@ -111,7 +111,8 @@ public class AuthorWorksViewModel
     public void reloadWorkList() {
         mWorkList.clear();
         final long bookshelfId = mAllBookshelves ? Bookshelf.ALL_BOOKS : mBookshelf.getId();
-        mWorkList.addAll(mDb.getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks));
+        mWorkList
+                .addAll(mBookDao.getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks));
     }
 
     public long getBookshelfId() {
@@ -151,7 +152,7 @@ public class AuthorWorksViewModel
             success = TocEntryDao.getInstance().delete(context, (TocEntry) work);
 
         } else if (work instanceof BookAsWork) {
-            success = mDb.deleteBook(context, work.getId());
+            success = mBookDao.deleteBook(context, work.getId());
             if (success) {
                 mDataModified = true;
             }

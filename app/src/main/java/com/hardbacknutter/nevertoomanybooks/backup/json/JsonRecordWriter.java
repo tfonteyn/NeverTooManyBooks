@@ -79,7 +79,7 @@ public class JsonRecordWriter
 
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -93,7 +93,7 @@ public class JsonRecordWriter
     public JsonRecordWriter(@NonNull final Context context,
                             @Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new BookDao(context, TAG);
+        mBookDao = new BookDao(context, TAG);
     }
 
     @Override
@@ -169,15 +169,15 @@ public class JsonRecordWriter
                 && !progressListener.isCancelled()) {
                 final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
 
-                final JsonCoder<Book> coder = new BookCoder(context, mDb);
+                final JsonCoder<Book> coder = new BookCoder(context);
 
                 int delta = 0;
                 long lastUpdate = 0;
 
                 final JSONArray bookArray = new JSONArray();
-                try (Cursor cursor = mDb.fetchBooksForExport(mUtcSinceDateTime)) {
+                try (Cursor cursor = mBookDao.fetchBooksForExport(mUtcSinceDateTime)) {
                     while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                        final Book book = Book.from(cursor, mDb);
+                        final Book book = Book.from(cursor, mBookDao);
                         bookArray.put(coder.encode(book));
                         results.addBook(book.getId());
 
@@ -223,6 +223,6 @@ public class JsonRecordWriter
 
     @Override
     public void close() {
-        mDb.close();
+        mBookDao.close();
     }
 }

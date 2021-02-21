@@ -50,9 +50,9 @@ public interface TQItem
      *
      * @param context   that can be used to get String resources for the menus
      * @param menuItems menu collection to fill
-     * @param db        Database Access
+     * @param bookDao   Database Access
      */
     void addContextMenuItems(@NonNull Context context,
                              @NonNull List<ContextDialogItem> menuItems,
-                             @NonNull BookDao db);
+                             @NonNull BookDao bookDao);
 }

@@ -87,7 +87,7 @@ public abstract class ArchiveReaderAbstract
     private static final String TAG = "ArchiveReaderAbstract";
     /** Database Access. */
     @NonNull
-    private final BookDao mDb;
+    private final BookDao mBookDao;
     /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
@@ -118,7 +118,7 @@ public abstract class ArchiveReaderAbstract
     protected ArchiveReaderAbstract(@NonNull final Context context,
                                     @NonNull final ImportHelper helper) {
         mHelper = helper;
-        mDb = new BookDao(context, TAG);
+        mBookDao = new BookDao(context, TAG);
         mContentResolver = context.getContentResolver();
 
         mCoversText = context.getString(R.string.lbl_covers);
@@ -167,7 +167,7 @@ public abstract class ArchiveReaderAbstract
             final Optional<RecordEncoding> encoding = record.getEncoding();
             if (encoding.isPresent()) {
                 try (RecordReader recordReader = encoding
-                        .get().createReader(context, mDb, EnumSet.of(RecordType.MetaData))) {
+                        .get().createReader(context, mBookDao, EnumSet.of(RecordType.MetaData))) {
                     mArchiveMetaData = recordReader.readMetaData(record);
                 }
             }
@@ -346,7 +346,7 @@ public abstract class ArchiveReaderAbstract
             } else {
                 // everything else, keep it clean and create a new reader for each entry.
                 try (RecordReader recordReader = encoding
-                        .get().createReader(context, mDb, mHelper.getImportEntries())) {
+                        .get().createReader(context, mBookDao, mHelper.getImportEntries())) {
 
                     mResults.add(recordReader.read(context, record, mHelper.getOptions(),
                                                    progressListener));
@@ -370,7 +370,7 @@ public abstract class ArchiveReaderAbstract
             mCoverReader.close();
         }
 
-        mDb.close();
+        mBookDao.close();
         MaintenanceDao.getInstance().purge();
     }
 

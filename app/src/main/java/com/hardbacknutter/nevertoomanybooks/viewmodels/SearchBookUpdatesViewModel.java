@@ -85,7 +85,7 @@ public class SearchBookUpdatesViewModel
      */
     private final Book mCurrentBook = new Book();
     /** Database Access. */
-    private BookDao mDb;
+    private BookDao mBookDao;
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
     private ArrayList<Long> mBookIdList;
@@ -121,8 +121,8 @@ public class SearchBookUpdatesViewModel
             mCurrentCursor.close();
         }
 
-        if (mDb != null) {
-            mDb.close();
+        if (mBookDao != null) {
+            mBookDao.close();
         }
     }
 
@@ -137,8 +137,8 @@ public class SearchBookUpdatesViewModel
         // init the SearchCoordinator.
         super.init(context, args);
 
-        if (mDb == null) {
-            mDb = new BookDao(context, TAG);
+        if (mBookDao == null) {
+            mBookDao = new BookDao(context, TAG);
 
             if (args != null) {
                 //noinspection unchecked
@@ -376,9 +376,9 @@ public class SearchBookUpdatesViewModel
 
         try {
             if (mBookIdList == null || mBookIdList.isEmpty()) {
-                mCurrentCursor = mDb.fetchBooks(mFromBookIdOnwards);
+                mCurrentCursor = mBookDao.fetchBooks(mFromBookIdOnwards);
             } else {
-                mCurrentCursor = mDb.fetchBooks(mBookIdList);
+                mCurrentCursor = mBookDao.fetchBooks(mBookIdList);
             }
             mCurrentCursorCount = mCurrentCursor.getCount();
 
@@ -412,7 +412,7 @@ public class SearchBookUpdatesViewModel
                 mCurrentBookId = mCurrentCursor.getLong(idCol);
 
                 // and populate the actual book based on the cursor data
-                mCurrentBook.load(mCurrentBookId, mCurrentCursor, mDb);
+                mCurrentBook.load(mCurrentBookId, mCurrentCursor, mBookDao);
 
                 // Check which fields this book needs.
                 mCurrentFieldsWanted = filter(context, mFields);
@@ -578,7 +578,7 @@ public class SearchBookUpdatesViewModel
                 final Book delta = Book.from(bookData);
                 delta.putLong(DBDefinitions.KEY_PK_ID, mCurrentBookId);
                 try {
-                    mDb.update(context, delta, 0);
+                    mBookDao.update(context, delta, 0);
                 } catch (@NonNull final DaoWriteException e) {
                     // ignore, but log it.
                     Logger.error(context, TAG, e);
@@ -816,7 +816,7 @@ public class SearchBookUpdatesViewModel
                 final ArrayList<Author> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));
-                    Author.pruneList(list, context, mDb, false, bookLocale);
+                    Author.pruneList(list, context, false, bookLocale);
                 }
                 break;
             }

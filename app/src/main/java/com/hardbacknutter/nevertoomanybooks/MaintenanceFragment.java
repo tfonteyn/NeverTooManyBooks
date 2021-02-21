@@ -128,8 +128,8 @@ public class MaintenanceFragment
         mVb.btnPurgeFiles.setOnClickListener(v -> {
             final Context context = v.getContext();
             final ArrayList<String> bookUuidList;
-            try (BookDao db = new BookDao(v.getContext(), TAG)) {
-                bookUuidList = db.getBookUuidList();
+            try (BookDao bookDao = new BookDao(v.getContext(), TAG)) {
+                bookUuidList = bookDao.getBookUuidList();
             }
 
             final long bytes = AppDir.purge(context, bookUuidList, false);
