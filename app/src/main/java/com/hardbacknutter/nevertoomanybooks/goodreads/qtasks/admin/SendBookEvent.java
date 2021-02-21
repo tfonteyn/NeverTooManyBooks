@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.EditBookActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -86,8 +86,7 @@ public class SendBookEvent
     @Override
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final DAO db) {
-
+                                    @NonNull final BookDao db) {
         // RETRY EVENT
         final String isbn = db.getBookIsbn(getBookId());
         if (isbn != null && !isbn.isEmpty()) {

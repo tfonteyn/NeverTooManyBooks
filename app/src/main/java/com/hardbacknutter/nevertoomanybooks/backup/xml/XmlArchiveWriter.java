@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -87,7 +87,7 @@ public class XmlArchiveWriter
             throws GeneralParsingException, IOException {
 
         final int booksToExport;
-        try (DAO db = new DAO(context, TAG)) {
+        try (BookDao db = new BookDao(context, TAG)) {
             booksToExport = db.countBooksForExport(null);
         }
 
@@ -99,7 +99,7 @@ public class XmlArchiveWriter
             try (OutputStream os = mHelper.createOutputStream(context);
                  Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
                  Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-                 RecordWriter recordWriter = new XmlRecordWriter(context, null)) {
+                 RecordWriter recordWriter = new XmlRecordWriter(null)) {
 
                 // manually concat
                 // 1. archive envelope

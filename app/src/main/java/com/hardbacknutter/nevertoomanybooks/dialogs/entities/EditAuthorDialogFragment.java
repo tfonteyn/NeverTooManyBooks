@@ -36,8 +36,9 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -59,8 +60,6 @@ public class EditAuthorDialogFragment
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
 
-    /** Database Access. */
-    private DAO mDb;
     /** View Binding. */
     private DialogEditAuthorBinding mVb;
 
@@ -101,9 +100,6 @@ public class EditAuthorDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mDb = new DAO(getContext(), TAG);
-
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
@@ -132,16 +128,18 @@ public class EditAuthorDialogFragment
 
         final Context context = getContext();
 
+        final AuthorDao authorDao = AuthorDao.getInstance();
+
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
+                authorDao.getNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
+                authorDao.getNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
 
         mVb.familyName.setText(mFamilyName);
         mVb.familyName.setAdapter(familyNameAdapter);
@@ -185,15 +183,16 @@ public class EditAuthorDialogFragment
         //noinspection ConstantConditions
         final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
+        final AuthorDao authorDao = AuthorDao.getInstance();
         // check if it already exists (will be 0 if not)
-        final long existingId = mDb.getAuthorId(context, mAuthor, true, bookLocale);
+        final long existingId = authorDao.find(context, mAuthor, true, bookLocale);
 
         if (existingId == 0) {
             final boolean success;
             if (mAuthor.getId() == 0) {
-                success = mDb.insert(context, mAuthor) > 0;
+                success = authorDao.insert(context, mAuthor) > 0;
             } else {
-                success = mDb.update(context, mAuthor);
+                success = authorDao.update(context, mAuthor);
             }
             if (success) {
                 BooksOnBookshelf.RowChangeListener
@@ -212,12 +211,12 @@ public class EditAuthorDialogFragment
                         dismiss();
                         // move all books from the one being edited to the existing one
                         try {
-                            mDb.merge(context, mAuthor, existingId);
+                            authorDao.merge(context, mAuthor, existingId);
                             BooksOnBookshelf.RowChangeListener.setResult(
                                     this, mRequestKey,
                                     // return the author who 'lost' their books
                                     BooksOnBookshelf.RowChangeListener.AUTHOR, mAuthor.getId());
-                        } catch (@NonNull final DAO.DaoWriteException e) {
+                        } catch (@NonNull final DaoWriteException e) {
                             Logger.error(context, TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
                         }
@@ -246,13 +245,5 @@ public class EditAuthorDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 }

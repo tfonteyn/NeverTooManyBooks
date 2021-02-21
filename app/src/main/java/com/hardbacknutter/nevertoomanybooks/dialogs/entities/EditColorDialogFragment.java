@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Color.
@@ -65,14 +66,12 @@ public class EditColorDialogFragment
     @NonNull
     @Override
     protected List<String> getList() {
-        //noinspection ConstantConditions
-        return mDb.getColors();
+        return ColorDao.getInstance().getList();
     }
 
     @Override
     void onSave(@NonNull final String originalText,
                 @NonNull final String currentText) {
-        //noinspection ConstantConditions
-        mDb.updateColor(originalText, currentText);
+        ColorDao.getInstance().update(originalText, currentText);
     }
 }

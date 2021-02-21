@@ -27,8 +27,6 @@ import java.util.UUID;
 
 import org.junit.Test;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -42,14 +40,13 @@ public class UserStyleTest {
     public void clone01() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         final BuiltinStyle s1;
-        try (DAO db = new DAO(context, TAG)) {
-            s1 = (BuiltinStyle) StyleUtils.getStyle(context, db, StyleUtils.BuiltinStyles
-                    // This style has:
-                    // BooklistGroup.AUTHOR
-                    // BooklistGroup.SERIES
-                    // Filters.PK_FILTER_READ: false
-                    .UNREAD_AUTHOR_THEN_SERIES_UUID);
-        }
+        s1 = (BuiltinStyle) StyleUtils.getStyle(context, StyleUtils.BuiltinStyles
+                // This style has:
+                // BooklistGroup.AUTHOR
+                // BooklistGroup.SERIES
+                // Filters.PK_FILTER_READ: false
+                .UNREAD_AUTHOR_THEN_SERIES_UUID);
+
         assertNotNull(s1);
 
         final UserStyle cloned = s1.clone(context, 0,

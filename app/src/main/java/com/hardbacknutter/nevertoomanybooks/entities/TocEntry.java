@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
@@ -77,8 +77,6 @@ public class TocEntry
     private String mTitle;
     @NonNull
     private PartialDate mFirstPublicationDate;
-    @Nullable
-    private List<Pair<Long, String>> mBookTitles;
 
     /** in-memory use only. Number of books this TocEntry appears in. */
     private int mBookCount;
@@ -163,7 +161,6 @@ public class TocEntry
      *
      * @param list         List to clean up
      * @param context      Current context
-     * @param db           Database Access
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.
@@ -174,12 +171,13 @@ public class TocEntry
      */
     public static boolean pruneList(@NonNull final Collection<TocEntry> list,
                                     @NonNull final Context context,
-                                    @NonNull final DAO db,
                                     final boolean lookupLocale,
                                     @NonNull final Locale bookLocale) {
         if (list.isEmpty()) {
             return false;
         }
+
+        final TocEntryDao tocEntryDao = TocEntryDao.getInstance();
 
         final EntityMerger<TocEntry> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
@@ -187,12 +185,12 @@ public class TocEntry
 
             final Locale locale;
             if (lookupLocale) {
-                locale = current.getLocale(context, db, bookLocale);
+                locale = current.getLocale(context, bookLocale);
             } else {
                 locale = bookLocale;
             }
             // Don't lookup the locale a 2nd time.
-            db.fixId(context, current, false, locale);
+            tocEntryDao.fixId(context, current, false, locale);
             entityMerger.merge(current);
         }
 
@@ -282,15 +280,7 @@ public class TocEntry
 
     @NonNull
     public List<Pair<Long, String>> getBookTitles() {
-        Objects.requireNonNull(mBookTitles, "mBookTitles");
-        return mBookTitles;
-    }
-
-    /**
-     * Preload the book id/title pair list this TOC entry is published in.
-     */
-    public void loadBookTitles(@NonNull final DAO db) {
-        mBookTitles = db.getBookTitlesForToc(mId);
+        return TocEntryDao.getInstance().getBookTitles(mId);
     }
 
     @Override
@@ -309,14 +299,12 @@ public class TocEntry
      * and the device in Danish.
      *
      * @param context    Current context
-     * @param db         Database Access
      * @param bookLocale Locale to use if the item does not have a Locale of its own.
      *
      * @return the item Locale, or the bookLocale.
      */
     @NonNull
     public Locale getLocale(@NonNull final Context context,
-                            @NonNull final DAO db,
                             @NonNull final Locale bookLocale) {
         //ENHANCE: The TocEntry Locale should be based on either a specific language
         // setting for the TocEntry itself, or on the Locale of the primary book.
@@ -396,7 +384,6 @@ public class TocEntry
         }
         return Objects.equals(mAuthor, that.mAuthor)
                && Objects.equals(mTitle, that.mTitle);
-
     }
 
     @Override
@@ -408,7 +395,6 @@ public class TocEntry
                + ", mTitle=`" + mTitle + '`'
                + ", mFirstPublicationDate=`" + mFirstPublicationDate + '`'
                + ", mBookCount=`" + mBookCount + '`'
-               + ", mBookTitles=" + mBookTitles
                + '}';
     }
 }

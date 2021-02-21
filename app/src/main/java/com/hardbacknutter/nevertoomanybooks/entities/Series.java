@@ -32,8 +32,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -387,7 +387,6 @@ public class Series
      *
      * @param list         to prune
      * @param context      Current context
-     * @param db           Database Access;
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.
@@ -398,12 +397,13 @@ public class Series
      */
     public static boolean pruneList(@NonNull final Collection<Series> list,
                                     @NonNull final Context context,
-                                    @NonNull final DAO db,
                                     final boolean lookupLocale,
                                     @NonNull final Locale bookLocale) {
         if (list.isEmpty()) {
             return false;
         }
+
+        final SeriesDao seriesDao = SeriesDao.getInstance();
 
         final EntityMerger<Series> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
@@ -411,13 +411,13 @@ public class Series
 
             final Locale locale;
             if (lookupLocale) {
-                locale = current.getLocale(context, db, bookLocale);
+                locale = current.getLocale(context, bookLocale);
             } else {
                 locale = bookLocale;
             }
 
             // Don't lookup the locale a 2nd time.
-            db.fixId(context, current, false, locale);
+            seriesDao.fixId(context, current, false, locale);
             entityMerger.merge(current);
         }
 
@@ -553,14 +553,12 @@ public class Series
      * This is defined as the Locale for the language from the first book in the Series.
      *
      * @param context    Current context
-     * @param db         Database Access
      * @param bookLocale Locale to use if the Series does not have a Locale of its own.
      *
      * @return the Locale of the Series
      */
     @NonNull
     public Locale getLocale(@NonNull final Context context,
-                            @NonNull final DAO db,
                             @NonNull final Locale bookLocale) {
 
         //TODO: need a reliable way to cache the Locale here. i.e. store the language of a series.
@@ -568,7 +566,7 @@ public class Series
         // were we use batch mode. Also: a french book belonging to a dutch series...
         // the series title OB is wrong. For now this is partially mitigated by making
         // entering the book language mandatory.
-        final String lang = db.getSeriesLanguage(mId);
+        final String lang = SeriesDao.getInstance().getLanguage(mId);
         if (!lang.isEmpty()) {
             final Locale seriesLocale = AppLocale.getInstance().getLocale(context, lang);
             if (seriesLocale != null) {

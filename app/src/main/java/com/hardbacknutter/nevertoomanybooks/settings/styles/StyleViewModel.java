@@ -42,7 +42,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ResultIntentOwner;
 
 public class StyleViewModel
@@ -64,15 +63,6 @@ public class StyleViewModel
     /** The list of groups with a boolean flag for when the user is editing the groups. */
     @Nullable
     private ArrayList<WrappedGroup> mWrappedGroupList;
-    private DAO mDb;
-
-    @Override
-    protected void onCleared() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onCleared();
-    }
 
     /**
      * Pseudo constructor.
@@ -82,9 +72,7 @@ public class StyleViewModel
      */
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
-        if (mDb == null) {
-            mDb = new DAO(context, TAG);
-
+        if (mStyle == null) {
 
             final String uuid = Objects.requireNonNull(args.getString(ListStyle.BKEY_STYLE_UUID));
 
@@ -92,7 +80,7 @@ public class StyleViewModel
                 // ALWAYS pass the original style uuid back.
                 mResultIntent.putExtra(EditStyleContract.BKEY_TEMPLATE_UUID, uuid);
 
-                final ListStyle style = StyleUtils.getStyle(context, mDb, uuid);
+                final ListStyle style = StyleUtils.getStyle(context, uuid);
                 Objects.requireNonNull(style, "uuid not found: " + uuid);
 
                 @EditAction
@@ -180,7 +168,7 @@ public class StyleViewModel
      */
     void updateOrInsertStyle() {
         if (mResultIntent.getBooleanExtra(EditStyleContract.BKEY_STYLE_MODIFIED, false)) {
-            StyleUtils.updateOrInsert(mDb, mStyle);
+            StyleUtils.updateOrInsert(mStyle);
         }
     }
 

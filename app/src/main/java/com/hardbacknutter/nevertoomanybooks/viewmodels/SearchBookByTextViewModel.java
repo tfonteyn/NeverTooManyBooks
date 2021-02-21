@@ -32,16 +32,15 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
 public class SearchBookByTextViewModel
         extends ViewModel
         implements ResultIntentOwner {
-
-    private static final String TAG = "SearchBookByTextViewModel";
 
     /**
      * A list of author names we have already searched for in this session.
@@ -53,27 +52,15 @@ public class SearchBookByTextViewModel
      */
     @NonNull
     private final Collection<String> mRecentPublisherNames = new ArrayList<>();
-    /** Database Access. */
-    private DAO mDb;
-    /** Flag: allow/provide searching by publisher. */
-    private boolean mUsePublisher;
-
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
     @NonNull
     private final Intent mResultIntent = new Intent();
+    /** Flag: allow/provide searching by publisher. */
+    private Boolean mUsePublisher;
 
     @NonNull
     public Intent getResultIntent() {
         return mResultIntent;
-    }
-
-    @Override
-    protected void onCleared() {
-        if (mDb != null) {
-            mDb.close();
-        }
-
-        super.onCleared();
     }
 
     /**
@@ -82,9 +69,7 @@ public class SearchBookByTextViewModel
      * @param context Current context
      */
     public void init(@NonNull final Context context) {
-        if (mDb == null) {
-            mDb = new DAO(context, TAG);
-
+        if (mUsePublisher == null) {
             mUsePublisher = usePublisher(context);
         }
     }
@@ -112,7 +97,8 @@ public class SearchBookByTextViewModel
         // Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
         // search sites can copy with the formatted version.
         final ArrayList<String> authors =
-                mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                AuthorDao.getInstance()
+                         .getNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (final String s : authors) {
@@ -173,7 +159,7 @@ public class SearchBookByTextViewModel
 
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 
-        final ArrayList<String> publishers = mDb.getPublisherNames();
+        final ArrayList<String> publishers = PublisherDao.getInstance().getNames();
 
         final Collection<String> uniqueNames = new HashSet<>(publishers.size());
         for (final String s : publishers) {

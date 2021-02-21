@@ -25,22 +25,17 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 
 import static org.junit.Assert.assertNotNull;
 
 class BooklistGroupTestBase {
 
-    private static final String TAG = "BooklistGroupTestBase";
-
     @NonNull
     BuiltinStyle getStyle(final Context context) {
         final BuiltinStyle s1;
-        try (DAO db = new DAO(context, TAG)) {
-            s1 = (BuiltinStyle) StyleUtils.getStyle(context, db, StyleUtils.BuiltinStyles
-                    // This style has a filter by default.
-                    .UNREAD_AUTHOR_THEN_SERIES_UUID);
-        }
+        s1 = (BuiltinStyle) StyleUtils.getStyle(context, StyleUtils.BuiltinStyles
+                // This style has a filter by default.
+                .UNREAD_AUTHOR_THEN_SERIES_UUID);
         assertNotNull(s1);
         return s1;
     }

@@ -37,7 +37,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.TestProgressListener;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -53,7 +53,7 @@ public class XmlArchiveWriterTest {
     @Before
     public void count() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, TAG)) {
+        try (BookDao db = new BookDao(context, TAG)) {
             mBookInDb = db.countBooks();
         }
         if (mBookInDb < 10) {

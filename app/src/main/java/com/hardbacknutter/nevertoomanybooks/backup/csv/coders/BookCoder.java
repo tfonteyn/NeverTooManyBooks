@@ -32,8 +32,9 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -146,22 +147,21 @@ public class BookCoder {
     private final Map<Long, String> mCalibreLibraryId2StrMap = new HashMap<>();
     private final Map<String, Long> mCalibreLibraryStr2IdMap = new HashMap<>();
 
-    public BookCoder(@NonNull final Context context,
-                     @NonNull final DAO db) {
+    public BookCoder(@NonNull final Context context) {
 
-        mBookshelfCoder = new StringList<>(new BookshelfCoder(context, db));
+        mBookshelfCoder = new StringList<>(new BookshelfCoder(context));
 
         externalIdDomains = SearchEngineRegistry.getInstance().getExternalIdDomains();
 
         //noinspection SimplifyStreamApiCallChains
-        db.getCalibreLibraries()
-          .stream()
-          .forEach(library -> {
-              mCalibreLibraryId2StrMap.put(library.getId(),
-                                           library.getLibraryStringId());
-              mCalibreLibraryStr2IdMap.put(library.getLibraryStringId(),
-                                           library.getId());
-          });
+        CalibreLibraryDao.getInstance().getLibraries()
+                         .stream()
+                         .forEach(library -> {
+                             mCalibreLibraryId2StrMap.put(library.getId(),
+                                                          library.getLibraryStringId());
+                             mCalibreLibraryStr2IdMap.put(library.getLibraryStringId(),
+                                                          library.getId());
+                         });
     }
 
     @NonNull
@@ -313,7 +313,7 @@ public class BookCoder {
 
 
     public Book decode(@NonNull final Context context,
-                       @NonNull final DAO db,
+                       @NonNull final BookDao db,
                        @NonNull final String[] csvColumnNames,
                        @NonNull final String[] csvDataRow) {
         final Book book = new Book();
@@ -335,9 +335,9 @@ public class BookCoder {
         // Database access is strictly limited to fetching ID's for the list elements.
         decodeAuthors(context, db, book, bookLocale);
         decodeSeries(context, db, book, bookLocale);
-        decodePublishers(context, db, book, bookLocale);
-        decodeToc(context, db, book, bookLocale);
-        decodeBookshelves(db, book);
+        decodePublishers(context, book, bookLocale);
+        decodeToc(context, book, bookLocale);
+        decodeBookshelves(book);
         decodeCalibreData(book);
 
         //URGENT: implement full parsing/formatting of incoming dates for validity
@@ -367,11 +367,9 @@ public class BookCoder {
      * Process the bookshelves.
      * Database access is strictly limited to fetching ID's.
      *
-     * @param db   Database Access
      * @param book the book
      */
-    private void decodeBookshelves(@NonNull final DAO db,
-                                   @NonNull final Book /* in/out */ book) {
+    private void decodeBookshelves(@NonNull final Book /* in/out */ book) {
 
         String encodedList = null;
 
@@ -391,7 +389,7 @@ public class BookCoder {
         if (encodedList != null && !encodedList.isEmpty()) {
             final ArrayList<Bookshelf> bookshelves = mBookshelfCoder.decodeList(encodedList);
             if (!bookshelves.isEmpty()) {
-                Bookshelf.pruneList(bookshelves, db);
+                Bookshelf.pruneList(bookshelves);
                 book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelves);
             }
         }
@@ -414,7 +412,7 @@ public class BookCoder {
      * @param bookLocale of the book, already resolved
      */
     private void decodeAuthors(@NonNull final Context context,
-                               @NonNull final DAO db,
+                               @NonNull final BookDao db,
                                @NonNull final Book /* in/out */ book,
                                @NonNull final Locale bookLocale) {
 
@@ -475,7 +473,7 @@ public class BookCoder {
      * @param bookLocale of the book, already resolved
      */
     private void decodeSeries(@NonNull final Context context,
-                              @NonNull final DAO db,
+                              @NonNull final BookDao db,
                               @NonNull final Book /* in/out */ book,
                               @NonNull final Locale bookLocale) {
 
@@ -486,7 +484,7 @@ public class BookCoder {
             final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                Series.pruneList(list, context, db, false, bookLocale);
+                Series.pruneList(list, context, false, bookLocale);
                 book.putParcelableArrayList(Book.BKEY_SERIES_LIST, list);
             }
         } else {
@@ -513,12 +511,10 @@ public class BookCoder {
      * Database access is strictly limited to fetching ID's.
      *
      * @param context    Current context
-     * @param db         Database Access
      * @param book       the book
      * @param bookLocale of the book, already resolved
      */
     private void decodePublishers(@NonNull final Context context,
-                                  @NonNull final DAO db,
                                   @NonNull final Book /* in/out */ book,
                                   @NonNull final Locale bookLocale) {
 
@@ -529,7 +525,7 @@ public class BookCoder {
             final ArrayList<Publisher> list = mPublisherCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                Publisher.pruneList(list, context, db, false, bookLocale);
+                Publisher.pruneList(list, context, false, bookLocale);
                 book.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, list);
             }
         }
@@ -544,12 +540,10 @@ public class BookCoder {
      * It will be computed when storing the book data.
      *
      * @param context    Current context
-     * @param db         Database Access
      * @param book       the book
      * @param bookLocale of the book, already resolved
      */
     private void decodeToc(@NonNull final Context context,
-                           @NonNull final DAO db,
                            @NonNull final Book /* in/out */ book,
                            @NonNull final Locale bookLocale) {
 
@@ -560,7 +554,7 @@ public class BookCoder {
             final ArrayList<TocEntry> list = mTocCoder.decodeList(encodedList);
             if (!list.isEmpty()) {
                 // Force using the Book Locale, otherwise the import is far to slow.
-                TocEntry.pruneList(list, context, db, false, bookLocale);
+                TocEntry.pruneList(list, context, false, bookLocale);
                 book.putParcelableArrayList(Book.BKEY_TOC_LIST, list);
             }
         }

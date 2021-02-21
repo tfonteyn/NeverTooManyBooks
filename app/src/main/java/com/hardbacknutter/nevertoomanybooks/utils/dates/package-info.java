@@ -49,7 +49,7 @@
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_UTC_LAST_UPDATED}
  * {@link com.hardbacknutter.nevertoomanybooks.database.DBDefinitions#KEY_UTC_GOODREADS_LAST_SYNC_DATE}
  * and
- * {@link com.hardbacknutter.nevertoomanybooks.database.CoversDAO}#CKEY_UTC_DATETIME
+ * {@link com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao}#CKEY_UTC_DATETIME
  * <p>
  * Columns of type
  * {@link  com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo#TYPE_DATE}

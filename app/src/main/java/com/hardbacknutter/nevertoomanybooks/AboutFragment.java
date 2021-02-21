@@ -30,8 +30,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
@@ -76,11 +79,12 @@ public class AboutFragment
 
         // just running this on the UI thread...
         //noinspection ConstantConditions
-        try (DAO db = new DAO(getContext(), TAG)) {
+        try (BookDao db = new BookDao(getContext(), TAG)) {
             mVb.bookCount.setText(String.valueOf(db.countBooks()));
-            mVb.seriesCount.setText(String.valueOf(db.countSeries()));
-            mVb.authorCount.setText(String.valueOf(db.countAuthors()));
-            mVb.publisherCount.setText(String.valueOf(db.countPublishers()));
         }
+
+        mVb.seriesCount.setText(String.valueOf(SeriesDao.getInstance().count()));
+        mVb.authorCount.setText(String.valueOf(AuthorDao.getInstance().count()));
+        mVb.publisherCount.setText(String.valueOf(PublisherDao.getInstance().count()));
     }
 }

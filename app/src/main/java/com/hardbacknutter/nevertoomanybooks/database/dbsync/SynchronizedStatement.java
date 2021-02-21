@@ -287,7 +287,7 @@ public class SynchronizedStatement
 
         } catch (@NonNull final SQLiteDoneException e) {
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.DB_EXEC_SQL) {
-                Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|result=NULL");
+                Log.d(TAG, "simpleQueryForStringOrNull|" + mStatement + "|NULL");
             }
             return null;
         } finally {

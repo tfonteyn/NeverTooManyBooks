@@ -36,8 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -56,9 +56,6 @@ public class EditBookshelfDialogFragment
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
 
-
-    /** Database Access. */
-    private DAO mDb;
     /** View Binding. */
     private DialogEditBookshelfBinding mVb;
 
@@ -78,9 +75,6 @@ public class EditBookshelfDialogFragment
     @Override
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        //noinspection ConstantConditions
-        mDb = new DAO(getContext(), TAG);
 
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
@@ -132,8 +126,11 @@ public class EditBookshelfDialogFragment
         // store changes
         mBookshelf.setName(mName);
 
+        final BookshelfDao bookshelfDao = BookshelfDao.getInstance();
+
         // check if it already exists (will be 0 if not)
-        final long existingId = mDb.getBookshelfId(mBookshelf);
+
+        final long existingId = bookshelfDao.find(mBookshelf);
 
         // are we adding a new one but trying to use an existing name?
         if ((mBookshelf.getId() == 0) && (existingId != 0)) {
@@ -150,10 +147,10 @@ public class EditBookshelfDialogFragment
             final boolean success;
             if (mBookshelf.getId() == 0) {
                 //noinspection ConstantConditions
-                success = mDb.insert(getContext(), mBookshelf) > 0;
+                success = bookshelfDao.insert(getContext(), mBookshelf) > 0;
             } else {
                 //noinspection ConstantConditions
-                success = mDb.update(getContext(), mBookshelf);
+                success = bookshelfDao.update(getContext(), mBookshelf);
             }
             if (success) {
                 Launcher.setResult(this, mRequestKey, mBookshelf.getId());
@@ -169,7 +166,7 @@ public class EditBookshelfDialogFragment
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(R.string.action_merge, (d, w) -> {
                         // move all books from the one being edited to the existing one
-                        mDb.merge(mBookshelf, existingId);
+                        bookshelfDao.merge(mBookshelf, existingId);
 
                         Launcher.setResult(this, mRequestKey, existingId);
                         dismiss();
@@ -196,14 +193,6 @@ public class EditBookshelfDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     public abstract static class Launcher

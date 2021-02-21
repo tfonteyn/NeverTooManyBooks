@@ -47,7 +47,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -96,6 +95,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_GENRE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LANGUAGE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOCATION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME_OB;
@@ -113,6 +113,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
@@ -183,16 +184,19 @@ public class BooklistGroup {
     @VisibleForTesting
     public static final int GROUP_KEY_MAX = 31;
 
+    private static final String CASE_WHEN_ = "CASE WHEN ";
+    private static final String _WHEN_ = " WHEN ";
+    private static final String _ELSE_ = " ELSE ";
+    private static final String _END = " END";
+
     /** The {@link StylePersistenceLayer} to use. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     final StylePersistenceLayer mPersistence;
     @NonNull
     final ListStyle mStyle;
-
     /** Flag indicating we should use the persistence store. */
     final boolean mPersisted;
-
     /** The type of row/group we represent, see {@link GroupKey}. */
     @Id
     private final int mId;
@@ -290,6 +294,118 @@ public class BooklistGroup {
             list.add(newInstance(id, style instanceof UserStyle, style));
         }
         return list;
+    }
+
+    /**
+     * If the field has a time part, convert it to local time.
+     * This deals with legacy 'date-only' dates.
+     * The logic being that IF they had a time part it would be UTC.
+     * Without a time part, we assume the zone is local (or irrelevant).
+     *
+     * @param fieldSpec fully qualified field name
+     *
+     * @return expression
+     */
+    @NonNull
+    private static String localDateTimeExpression(@NonNull final String fieldSpec) {
+        return CASE_WHEN_ + fieldSpec + " GLOB '*-*-* *' "
+               + " THEN datetime(" + fieldSpec + ", 'localtime')"
+               + _ELSE_ + fieldSpec
+               + _END;
+    }
+
+    /**
+     * General remark on the use of GLOB instead of 'strftime(format, date)':
+     * strftime() only works on full date(time) strings. i.e. 'YYYY-MM-DD*'
+     * for all other formats, it will fail to extract the fields.
+     * <p>
+     * Create a GLOB expression to get the 'year' from a text date field in a standard way.
+     * <p>
+     * Just look for 4 leading numbers. We don't care about anything else.
+     * <p>
+     * See <a href="https://www.sqlitetutorial.net/sqlite-glob/">sqlite-glob</a>
+     *
+     * @param fieldSpec fully qualified field name
+     * @param toLocal   if set, first convert the fieldSpec to local time from UTC
+     *
+     * @return expression
+     */
+    @NonNull
+    private static String year(@NonNull String fieldSpec,
+                               final boolean toLocal) {
+
+        //TODO: This covers a timezone offset for Dec-31 / Jan-01 only - how important is this?
+        if (toLocal) {
+            fieldSpec = localDateTimeExpression(fieldSpec);
+        }
+        return CASE_WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]*'"
+               + " THEN SUBSTR(" + fieldSpec + ",1,4)"
+               // invalid
+               + " ELSE ''"
+               + _END;
+    }
+
+    /**
+     * Create a GLOB expression to get the 'month' from a text date field in a standard way.
+     * <p>
+     * Just look for 4 leading numbers followed by '-' and by 2 or 1 digit.
+     * We don't care about anything else.
+     *
+     * @param fieldSpec fully qualified field name
+     * @param toLocal   if set, first convert the fieldSpec to local time from UTC
+     *
+     * @return expression
+     */
+    @NonNull
+    private static String month(@NonNull String fieldSpec,
+                                final boolean toLocal) {
+        if (toLocal) {
+            fieldSpec = localDateTimeExpression(fieldSpec);
+        }
+        // YYYY-MM or YYYY-M
+        return CASE_WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]*'"
+               + " THEN SUBSTR(" + fieldSpec + ",6,2)"
+               + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]*'"
+               + " THEN SUBSTR(" + fieldSpec + ",6,1)"
+               // invalid
+               + " ELSE ''"
+               + _END;
+    }
+
+    /**
+     * Create a GLOB expression to get the 'day' from a text date field in a standard way.
+     * <p>
+     * Just look for 4 leading numbers followed by '-' and by 2 or 1 digit,
+     * and then by '-' and 1 or two digits.
+     * We don't care about anything else.
+     *
+     * @param fieldSpec fully qualified field name
+     * @param toLocal   if set, first convert the fieldSpec to local time from UTC
+     *
+     * @return expression
+     */
+    @NonNull
+    private static String day(@NonNull String fieldSpec,
+                              final boolean toLocal) {
+        if (toLocal) {
+            fieldSpec = localDateTimeExpression(fieldSpec);
+        }
+        // Look for 4 leading numbers followed by 2 or 1 digit then another 2 or 1 digit.
+        // YYYY-MM-DD or YYYY-M-DD or YYYY-MM-D or YYYY-M-D
+        return CASE_WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*'"
+               + " THEN SUBSTR(" + fieldSpec + ",9,2)"
+               //
+               + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9][0-9]*'"
+               + " THEN SUBSTR(" + fieldSpec + ",8,2)"
+               //
+               + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9]*'"
+               + " THEN SUBSTR(" + fieldSpec + ",9,1)"
+               //
+               + _WHEN_ + fieldSpec + " GLOB '[0-9][0-9][0-9][0-9]-[0-9]-[0-9]*'"
+               + " THEN SUBSTR(" + fieldSpec + ",8,1)"
+               // invalid
+               + " ELSE ''"
+               + _END;
     }
 
     /**
@@ -469,7 +585,6 @@ public class BooklistGroup {
                + ", mAccumulatedDomains=" + mAccumulatedDomains
                + '}';
     }
-
 
     @IntDef({BOOK,
 
@@ -747,7 +862,8 @@ public class BooklistGroup {
                 // the others here below are custom key domains
                 case LENDING: {
                     return new GroupKey(R.string.lbl_lend_out, "l",
-                                        DOM_LOANEE, DAOSql.SqlColumns.EXP_BOOK_LOANEE_OR_EMPTY,
+                                        DOM_LOANEE,
+                                        "COALESCE(" + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + ",'')",
                                         DomainExpression.SORT_ASC);
                 }
                 case READ_STATUS: {
@@ -786,8 +902,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_publication_year, "yrp",
                                         new Domain.Builder("blg_pub_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns.year(
-                                                TBL_BOOKS.dot(KEY_BOOK_DATE_PUBLISHED), false),
+                                        year(TBL_BOOKS.dot(KEY_BOOK_DATE_PUBLISHED), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
                 }
@@ -796,8 +911,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_publication_month, "mp",
                                         new Domain.Builder("blg_pub_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns.month(
-                                                TBL_BOOKS.dot(KEY_BOOK_DATE_PUBLISHED), false),
+                                        month(TBL_BOOKS.dot(KEY_BOOK_DATE_PUBLISHED), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_PUBLISHED);
                 }
@@ -807,9 +921,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_first_pub_year, "yfp",
                                         new Domain.Builder("blg_1pub_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
-                                                      false),
+                                        year(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_FIRST_PUBLICATION);
                 }
@@ -818,9 +930,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_first_pub_month, "mfp",
                                         new Domain.Builder("blg_1pub_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION),
-                                                       false),
+                                        month(TBL_BOOKS.dot(KEY_DATE_FIRST_PUBLICATION), false),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_FIRST_PUBLICATION);
                 }
@@ -830,8 +940,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_date_acquired_year, "yac",
                                         new Domain.Builder("blg_acq_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        year(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
@@ -840,8 +949,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_date_acquired_month, "mac",
                                         new Domain.Builder("blg_acq_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .month(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        month(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
@@ -850,8 +958,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_date_acquired_day, "dac",
                                         new Domain.Builder("blg_acq_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
+                                        day(TBL_BOOKS.dot(KEY_DATE_ACQUIRED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ACQUIRED);
                 }
@@ -862,7 +969,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_added_year, "ya",
                                         new Domain.Builder("blg_add_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns.year(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        year(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -871,7 +978,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_added_month, "ma",
                                         new Domain.Builder("blg_add_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns.month(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        month(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -880,7 +987,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_added_day, "da",
                                         new Domain.Builder("blg_add_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns.day(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
+                                        day(TBL_BOOKS.dot(KEY_UTC_ADDED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_ADDED);
                 }
@@ -890,8 +997,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_update_year, "yu",
                                         new Domain.Builder("blg_upd_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .year(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
+                                        year(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -900,8 +1006,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_update_month, "mu",
                                         new Domain.Builder("blg_upd_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .month(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
+                                        month(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -910,8 +1015,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_update_day, "du",
                                         new Domain.Builder("blg_upd_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns
-                                                .day(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
+                                        day(TBL_BOOKS.dot(KEY_UTC_LAST_UPDATED), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_LAST_UPDATED);
                 }
@@ -921,7 +1025,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_read_year, "yr",
                                         new Domain.Builder("blg_rd_y", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns.year(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        year(TBL_BOOKS.dot(KEY_READ_END), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
@@ -931,7 +1035,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_read_month, "mr",
                                         new Domain.Builder("blg_rd_m", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns.month(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        month(TBL_BOOKS.dot(KEY_READ_END), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);
@@ -941,7 +1045,7 @@ public class BooklistGroup {
                     return new GroupKey(R.string.lbl_read_day, "dr",
                                         new Domain.Builder("blg_rd_d", ColumnInfo.TYPE_INTEGER)
                                                 .build(),
-                                        DAOSql.SqlColumns.day(TBL_BOOKS.dot(KEY_READ_END), true),
+                                        day(TBL_BOOKS.dot(KEY_READ_END), true),
                                         DomainExpression.SORT_DESC)
                             .addBaseDomain(DATE_READ_END)
                             .addGroupDomain(BOOK_IS_READ);

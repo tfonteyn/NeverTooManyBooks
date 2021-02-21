@@ -533,7 +533,10 @@ public class SynchronizedDb
      *
      * @param txLock Lock returned from BeginTransaction().
      */
-    public void endTransaction(@NonNull final Synchronizer.SyncLock txLock) {
+    public void endTransaction(@Nullable final Synchronizer.SyncLock txLock) {
+        if (txLock == null) {
+            throw new TransactionException(TransactionException.NULL_LOCK);
+        }
         if (mTxLock == null) {
             throw new TransactionException(TransactionException.NOT_STARTED);
         }

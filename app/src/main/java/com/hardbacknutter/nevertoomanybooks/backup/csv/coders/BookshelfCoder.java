@@ -30,7 +30,6 @@ import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
@@ -53,9 +52,8 @@ public class BookshelfCoder
     /**
      * Constructor.
      */
-    BookshelfCoder(@NonNull final Context context,
-                   @NonNull final DAO db) {
-        mDefaultStyle = StyleUtils.getDefault(context, db);
+    BookshelfCoder(@NonNull final Context context) {
+        mDefaultStyle = StyleUtils.getDefault(context);
     }
 
     /**

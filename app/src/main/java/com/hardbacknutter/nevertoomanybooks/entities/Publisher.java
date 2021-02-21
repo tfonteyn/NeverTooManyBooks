@@ -30,8 +30,8 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -108,7 +108,6 @@ public class Publisher
      *
      * @param list         List to clean up
      * @param context      Current context
-     * @param db           Database Access
      * @param lookupLocale set to {@code true} to force a database lookup of the locale.
      *                     This can be (relatively) slow, and hence should be {@code false}
      *                     during for example an import.
@@ -118,17 +117,18 @@ public class Publisher
      */
     public static boolean pruneList(@NonNull final Collection<Publisher> list,
                                     @NonNull final Context context,
-                                    @NonNull final DAO db,
                                     final boolean lookupLocale,
                                     @NonNull final Locale bookLocale) {
         if (list.isEmpty()) {
             return false;
         }
 
+        final PublisherDao publisherDao = PublisherDao.getInstance();
+
         final EntityMerger<Publisher> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
             final Publisher current = entityMerger.next();
-            db.fixId(context, current, lookupLocale, bookLocale);
+            publisherDao.fixId(context, current, lookupLocale, bookLocale);
             entityMerger.merge(current);
         }
 

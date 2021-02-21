@@ -28,9 +28,10 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -93,14 +94,18 @@ public class SendBooksGrTask
             lastBookSend = 0;
         }
 
-        try (DAO db = new DAO(grManager.getAppContext(), TAG);
-             Cursor cursor = db.fetchBooksForExportToGoodreads(lastBookSend, mUpdatesOnly)) {
+        final Context appContext = grManager.getAppContext();
+        final GoodreadsDao grDao = grManager.getGoodreadsDao();
+
+        try (BookDao db = new BookDao(appContext, TAG);
+             Cursor cursor = grDao.fetchBooksForExport(lastBookSend, mUpdatesOnly)) {
+
             final DataHolder bookData = new CursorRow(cursor);
             mTotalBooks = cursor.getCount() + mCount;
 
             boolean needsRetryReset = true;
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, grManager, db, bookData)) {
+                if (!sendOneBook(queueManager, grManager, grDao, db, bookData)) {
                     // quit on error
                     return false;
                 }
@@ -127,17 +132,16 @@ public class SendBooksGrTask
         // store the last book id we updated; used to reduce future (needless) checks.
         grManager.putLastBookIdSend(lastBookSend);
 
-        final PendingIntent pendingIntent = Notifier
-                .createPendingIntent(grManager.getAppContext(), BooksOnBookshelf.class);
-        Notifier.getInstance(grManager.getAppContext())
-                .sendInfo(grManager.getAppContext(), Notifier.ID_GOODREADS, pendingIntent,
+        final PendingIntent pendingIntent =
+                Notifier.createPendingIntent(appContext, BooksOnBookshelf.class);
+        Notifier.getInstance(appContext)
+                .sendInfo(appContext, Notifier.ID_GOODREADS, pendingIntent,
                           R.string.gr_send_to_goodreads,
-                          grManager.getAppContext()
-                                   .getString(R.string.gr_info_send_all_books_results,
-                                              mCount,
-                                              getNumberOfBooksSent(),
-                                              getNumberOfBooksWithoutIsbn(),
-                                              getNumberOfBooksNotFound()));
+                          appContext.getString(R.string.gr_info_send_all_books_results,
+                                               mCount,
+                                               getNumberOfBooksSent(),
+                                               getNumberOfBooksWithoutIsbn(),
+                                               getNumberOfBooksNotFound()));
         return true;
     }
 

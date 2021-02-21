@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQEventCursorRow;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -64,7 +64,7 @@ public class BookEventViewHolder
 
     public void bind(@NonNull final TQEventCursorRow rowData,
                      @NonNull final SendBookEvent event,
-                     @NonNull final DAO db) {
+                     @NonNull final BookDao db) {
         final Context context = itemView.getContext();
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
 

@@ -63,11 +63,18 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_LIBRARY_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_CALIBRE_LIBRARY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_IS_BUILTIN;
@@ -88,10 +95,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_LIBRARIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_CALIBRE_VIRTUAL_LIBRARIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinitions.KEY_FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.FtsDefinitions.TBL_FTS_BOOKS;
 
 /**
  * Singleton {@link SQLiteOpenHelper} for the main database.
@@ -271,7 +277,7 @@ public final class DBHelper
 
             final String s;
             try (Cursor c = db.rawQuery("SELECT t,i FROM collation_cs_check"
-                                        + " ORDER BY t " + DAOSql._COLLATION + ",i",
+                                        + " ORDER BY t COLLATE LOCALIZED" + ",i",
                                         null)) {
                 c.moveToFirst();
                 s = c.getString(0);
@@ -757,8 +763,14 @@ public final class DBHelper
                     final String name = cursor.getString(1);
                     final long bookshelfId = cursor.getLong(2);
 
-                    try (SQLiteStatement stmt = db
-                            .compileStatement(DAOSql.SqlInsert.CALIBRE_LIBRARY)) {
+                    try (SQLiteStatement stmt = db.compileStatement(
+                            "INSERT INTO " + TBL_CALIBRE_LIBRARIES.getName()
+                            + '(' + KEY_CALIBRE_LIBRARY_UUID
+                            + ',' + KEY_CALIBRE_LIBRARY_STRING_ID
+                            + ',' + KEY_CALIBRE_LIBRARY_NAME
+                            + ',' + KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE
+                            + ',' + KEY_FK_BOOKSHELF
+                            + ") VALUES (?,?,?,?,?)")) {
                         stmt.bindString(1, "");
                         stmt.bindString(2, libraryId);
                         stmt.bindString(3, name);
@@ -781,8 +793,13 @@ public final class DBHelper
                     final Long libId = libString2Id.get(libraryId);
                     // db14 dev had a cleanup-bug, skip if not there.
                     if (libId != null) {
-                        try (SQLiteStatement stmt = db
-                                .compileStatement(DAOSql.SqlInsert.CALIBRE_VIRTUAL_LIBRARY)) {
+                        try (SQLiteStatement stmt = db.compileStatement(
+                                "INSERT INTO " + TBL_CALIBRE_VIRTUAL_LIBRARIES.getName()
+                                + '(' + KEY_FK_CALIBRE_LIBRARY
+                                + ',' + KEY_CALIBRE_LIBRARY_NAME
+                                + ',' + KEY_CALIBRE_VIRT_LIB_EXPR
+                                + ',' + KEY_FK_BOOKSHELF
+                                + ") VALUES (?,?,?,?)")) {
                             stmt.bindLong(1, libId);
                             stmt.bindString(2, name);
                             stmt.bindString(3, expression);

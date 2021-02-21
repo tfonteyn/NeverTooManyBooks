@@ -45,8 +45,9 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.StringList;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -427,12 +428,14 @@ public class Author
      */
     public static boolean pruneList(@NonNull final Collection<Author> list,
                                     @NonNull final Context context,
-                                    @NonNull final DAO db,
+                                    @NonNull final BookDao db,
                                     final boolean lookupLocale,
                                     @NonNull final Locale bookLocale) {
         if (list.isEmpty()) {
             return false;
         }
+
+        final AuthorDao authorDao = AuthorDao.getInstance();
 
         final EntityMerger<Author> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
@@ -440,13 +443,13 @@ public class Author
 
             final Locale locale;
             if (lookupLocale) {
-                locale = current.getLocale(context, db, bookLocale);
+                locale = current.getLocale(context, bookLocale);
             } else {
                 locale = bookLocale;
             }
 
             // Don't lookup the locale a 2nd time.
-            db.fixId(context, current, false, locale);
+            authorDao.fixId(context, current, false, locale);
             entityMerger.merge(current);
         }
 
@@ -658,14 +661,12 @@ public class Author
      * An item not using a locale, should just returns the fallbackLocale itself.
      *
      * @param context    Current context
-     * @param db         Database Access
      * @param userLocale Locale to use if the item does not have a Locale of its own.
      *
      * @return the item Locale, or the userLocale.
      */
     @NonNull
     public Locale getLocale(@NonNull final Context context,
-                            @NonNull final DAO db,
                             @NonNull final Locale userLocale) {
         //ENHANCE: The Author Locale should be based on the main language the author writes in.
         return userLocale;

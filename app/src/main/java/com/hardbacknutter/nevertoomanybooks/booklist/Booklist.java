@@ -51,11 +51,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.filters.Filter;
 import com.hardbacknutter.nevertoomanybooks.booklist.filters.NumberListFilter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.database.FtsDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer.SyncLock;
@@ -70,12 +69,17 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 
 /**
  * Build and populate temporary tables with details of "flattened" books.
@@ -99,13 +103,41 @@ public class Booklist
     public static final int PREF_REBUILD_PREFERRED_STATE = 3;
     /** Log tag. */
     public static final String TAG = "Booklist";
-
+    /**
+     * SQL column: return 1 if the book is available, 0 if not.
+     * {@link DBDefinitions#KEY_LOANEE_AS_BOOLEAN}
+     */
+    public static final String EXP_LOANEE_AS_BOOLEAN =
+            "CASE WHEN " + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + " IS NULL THEN 1 ELSE 0 END";
     private static final String SELECT_COUNT = "SELECT COUNT(*)";
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
+     * <p>
+     * The order of the returned names will be arbitrary.
+     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+     */
+    public static final String EXP_BOOKSHELF_NAME_CSV =
+            "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + ",', ')"
+            + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
+            + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
+            + ")";
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
+     * <p>
+     * The order of the returned names will be arbitrary.
+     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+     */
+    public static final String EXP_PUBLISHER_NAME_CSV =
+            "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME) + ",', ')"
+            + _FROM_ + TBL_PUBLISHERS.ref() + TBL_PUBLISHERS.join(TBL_BOOK_PUBLISHER)
+            + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(KEY_FK_BOOK)
+            + ")";
     private static final String _AND_ = " AND ";
     private static final String _ORDER_BY_ = " ORDER BY ";
+
     /**
      * Counter for Booklist ID's. Only increment.
      * Used to create unique table names etc... see {@link #mInstanceId}.
@@ -121,23 +153,11 @@ public class Booklist
     // List of columns for the group-by clause, including COLLATE clauses. Set by build() method.
     //private String mGroupColumnList;
 
-    /** Statement cache name. */
-    private static final String STMT_COUNT_BOOKS = "cntBooks";
-    /** Statement cache name. */
-    private static final String STMT_COUNT_DISTINCT_BOOKS = "cntDistBooks";
-    /** Statement cache name. */
-    private static final String STMT_COUNT_VISIBLE_ROWS = "cntVisRows";
-    /** Statement cache name. */
-    private static final String STMT_COUNT_VIS_ROWS_BEFORE = "cntVisRowsBefore";
-
     /** Database Access. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
     private final SynchronizedDb mSyncedDb;
-    /** Collection of statements pre-compiled for this object. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final SqlStatementManager mStmtManager;
+
     /** Internal ID. Used to create unique names for the temporary tables. */
     private final int mInstanceId;
     /** Collection of 'extra' book level domains requested by caller. */
@@ -244,8 +264,6 @@ public class Booklist
         mStyle = style;
         mBookshelves.add(bookshelf);
         mRebuildState = rebuildState;
-
-        mStmtManager = new SqlStatementManager(mSyncedDb, TAG + "|Booklist");
     }
 
     /**
@@ -304,15 +322,15 @@ public class Booklist
                                     @Nullable final String publisherName,
                                     @Nullable final String keywords) {
 
-        final String query = FtsDefinitions.createMatchString(author, title, seriesTitle,
+        final String query = BookDao.FtsSql.createMatchString(author, title, seriesTitle,
                                                               publisherName, keywords);
         if (!query.isEmpty()) {
             mFilters.add(context ->
                                  '(' + TBL_BOOKS.dot(KEY_PK_ID) + " IN ("
                                  // fetch the ID's only
-                                 + SELECT_ + FtsDefinitions.KEY_FTS_BOOK_ID
-                                 + _FROM_ + FtsDefinitions.TBL_FTS_BOOKS.getName()
-                                 + _WHERE_ + FtsDefinitions.TBL_FTS_BOOKS.getName()
+                                 + SELECT_ + DBDefinitions.KEY_FTS_BOOK_ID
+                                 + _FROM_ + DBDefinitions.TBL_FTS_BOOKS.getName()
+                                 + _WHERE_ + DBDefinitions.TBL_FTS_BOOKS.getName()
                                  + " MATCH '" + query + "')"
                                  + ')');
         }
@@ -330,7 +348,7 @@ public class Booklist
             mFilters.add(context ->
                                  "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
                                  + _WHERE_ + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
-                                 + "=`" + DAO.encodeString(filter) + '`'
+                                 + "=`" + BaseDao.encodeString(filter) + '`'
                                  + _AND_ + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
                                  + ')');
         }
@@ -389,20 +407,19 @@ public class Booklist
         }
 
         // Construct the list table and all needed structures.
-        final BooklistBuilder helper = new BooklistBuilder(mInstanceId,
-                                                           mStyle, isFilteredOnBookshelves,
-                                                           mRebuildState);
-        helper.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
+        final BooklistTableBuilder tableBuilder = new BooklistTableBuilder(
+                mInstanceId, mStyle, isFilteredOnBookshelves, mRebuildState);
+
+        tableBuilder.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
 
         final SyncLock txLock = mSyncedDb.beginTransaction(true);
         try {
             // create the tables and populate them
-            final Pair<TableDefinition, TableDefinition> tables = helper.build(mSyncedDb);
+            final Pair<TableDefinition, TableDefinition> tables = tableBuilder.build(mSyncedDb);
             mListTable = tables.first;
             mNavTable = tables.second;
 
-            mRowStateDAO = new BooklistNodeDAO(mSyncedDb, mStmtManager, mListTable,
-                                               mStyle, mBookshelves.get(0));
+            mRowStateDAO = new BooklistNodeDAO(mSyncedDb, mListTable, mStyle, mBookshelves.get(0));
 
             switch (mRebuildState) {
                 case PREF_REBUILD_SAVED_STATE:
@@ -438,13 +455,11 @@ public class Booklist
      */
     public int countDistinctBooks() {
         if (mDistinctBooks == -1) {
-            final SynchronizedStatement stmt = mStmtManager.get(STMT_COUNT_DISTINCT_BOOKS, () ->
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
                     "SELECT COUNT(DISTINCT " + KEY_FK_BOOK + ")"
                     + _FROM_ + mListTable.getName()
-                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?");
+                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
 
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
                 stmt.bindLong(1, BooklistGroup.BOOK);
                 mDistinctBooks = (int) stmt.simpleQueryForLongOrZero();
             }
@@ -459,13 +474,9 @@ public class Booklist
      */
     public int countBooks() {
         if (mTotalBooks == -1) {
-            final SynchronizedStatement stmt = mStmtManager.get(STMT_COUNT_BOOKS, () ->
-                    SELECT_COUNT
-                    + _FROM_ + mListTable.getName()
-                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?");
-
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    SELECT_COUNT + _FROM_ + mListTable.getName()
+                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
                 stmt.bindLong(1, BooklistGroup.BOOK);
                 mTotalBooks = (int) stmt.simpleQueryForLongOrZero();
             }
@@ -479,12 +490,11 @@ public class Booklist
      * @return count
      */
     int countVisibleRows() {
-        final SynchronizedStatement stmt = mStmtManager.get(STMT_COUNT_VISIBLE_ROWS, () ->
-                SELECT_COUNT
-                + _FROM_ + mListTable.getName()
-                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1");
-
-        return (int) stmt.simpleQueryForLongOrZero();
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                SELECT_COUNT + _FROM_ + mListTable.getName()
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1")) {
+            return (int) stmt.simpleQueryForLongOrZero();
+        }
     }
 
 
@@ -764,17 +774,14 @@ public class Booklist
      * @param node to set
      */
     private void findAndSetListPosition(@NonNull final BooklistNode node) {
-        final SynchronizedStatement stmt = mStmtManager.get(STMT_COUNT_VIS_ROWS_BEFORE, () ->
-                "SELECT COUNT(*) FROM " + mListTable.getName()
-                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
-                + _AND_ + KEY_PK_ID + "<?");
-
         // We need to count the visible rows between the start of the list,
         // and the given row, to determine the ACTUAL row we want.
         // Remember that a position == rowId -1
         final int count;
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                "SELECT COUNT(*) FROM " + mListTable.getName()
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1" + _AND_ + KEY_PK_ID + "<?")) {
+
             stmt.bindLong(1, node.getRowId());
             count = (int) stmt.simpleQueryForLongOrZero();
         }
@@ -851,8 +858,6 @@ public class Booklist
             Log.d(TAG, "|close|mInstanceId=" + mInstanceId);
         }
         mCloseWasCalled = true;
-
-        mStmtManager.close();
 
         if (mCursor != null) {
             mCursor.close();

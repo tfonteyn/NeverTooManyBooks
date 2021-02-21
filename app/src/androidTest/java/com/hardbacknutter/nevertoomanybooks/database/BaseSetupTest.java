@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,6 +28,8 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 
 import static org.junit.Assert.assertEquals;
@@ -46,7 +48,7 @@ public class BaseSetupTest
         ArrayList<AuthorWork> works;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "basic")) {
+        try (BookDao db = new BookDao(context, "basic")) {
 
             // The objects should have been updated with their id
             assertTrue(author[0].getId() > 0);
@@ -68,40 +70,43 @@ public class BaseSetupTest
             assertTrue(tocEntry[2].getId() > 0);
             assertTrue(tocEntry[3].getId() > 0);
 
+            final AuthorDao authorDao = AuthorDao.getInstance();
+            final PublisherDao publisherDao = PublisherDao.getInstance();
+
             // a0 is present in b0, b3
-            bookIdList = db.getBookIdsByAuthor(author[0].getId());
+            bookIdList = authorDao.getBookIds(author[0].getId());
             assertEquals(2, bookIdList.size());
             assertEquals(bookId[0], (long) bookIdList.get(0));
             assertEquals(bookId[3], (long) bookIdList.get(1));
 
             // a1 is present in b0, b1, b4
-            bookIdList = db.getBookIdsByAuthor(author[1].getId());
+            bookIdList = authorDao.getBookIds(author[1].getId());
             assertEquals(3, bookIdList.size());
             assertEquals(bookId[0], (long) bookIdList.get(0));
             assertEquals(bookId[1], (long) bookIdList.get(1));
             assertEquals(bookId[4], (long) bookIdList.get(2));
 
             // a2 is present in b2, b3, b4
-            bookIdList = db.getBookIdsByAuthor(author[2].getId());
+            bookIdList = authorDao.getBookIds(author[2].getId());
             assertEquals(3, bookIdList.size());
             assertEquals(bookId[2], (long) bookIdList.get(0));
             assertEquals(bookId[3], (long) bookIdList.get(1));
             assertEquals(bookId[4], (long) bookIdList.get(2));
 
             // p0 is present in b0
-            bookIdList = db.getBookIdsByPublisher(publisher[0].getId());
+            bookIdList = publisherDao.getBookIds(publisher[0].getId());
             assertEquals(1, bookIdList.size());
             assertEquals(bookId[0], (long) bookIdList.get(0));
 
             // p1 is present in b1, b3, b4
-            bookIdList = db.getBookIdsByPublisher(publisher[1].getId());
+            bookIdList = publisherDao.getBookIds(publisher[1].getId());
             assertEquals(3, bookIdList.size());
             assertEquals(bookId[1], (long) bookIdList.get(0));
             assertEquals(bookId[3], (long) bookIdList.get(1));
             assertEquals(bookId[4], (long) bookIdList.get(2));
 
             // p2 is present in b2, b4
-            bookIdList = db.getBookIdsByPublisher(publisher[2].getId());
+            bookIdList = publisherDao.getBookIds(publisher[2].getId());
             assertEquals(2, bookIdList.size());
             assertEquals(bookId[2], (long) bookIdList.get(0));
             assertEquals(bookId[4], (long) bookIdList.get(1));

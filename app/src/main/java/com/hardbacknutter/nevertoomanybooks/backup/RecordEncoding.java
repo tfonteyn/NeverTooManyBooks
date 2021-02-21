@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordWriter;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -117,7 +117,7 @@ public enum RecordEncoding {
             case Csv:
                 return new CsvRecordWriter(context, utcSinceDateTime);
             case Xml:
-                return new XmlRecordWriter(context, utcSinceDateTime);
+                return new XmlRecordWriter(utcSinceDateTime);
             case Cover:
                 // Not useful, won't implement. It's just a File copy operation
                 throw new IllegalStateException(ArchiveWriter.ERROR_NO_WRITER_AVAILABLE);
@@ -129,7 +129,7 @@ public enum RecordEncoding {
 
     @NonNull
     public RecordReader createReader(@NonNull final Context context,
-                                     @NonNull final DAO db,
+                                     @NonNull final BookDao db,
                                      @NonNull final Set<RecordType> importEntriesAllowed)
             throws InvalidArchiveException {
         switch (this) {
@@ -139,7 +139,7 @@ public enum RecordEncoding {
                 return new CsvRecordReader(context, db);
             case Xml:
                 //noinspection deprecation
-                return new XmlRecordReader(context, db, importEntriesAllowed);
+                return new XmlRecordReader(context, importEntriesAllowed);
             case Cover:
                 // discourage creating a new CoverRecordReader for each cover.
                 throw new IllegalStateException("CoverRecordReader should be re-used");

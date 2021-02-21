@@ -33,25 +33,17 @@ import java.util.regex.Pattern;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
-import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
-import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
-import com.hardbacknutter.nevertoomanybooks.entities.Series;
-import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
-import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
@@ -59,34 +51,32 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_AUTHOR;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
 
 /**
  * Cleanup routines for some columns/tables which can be run at upgrades, import, startup
  * <p>
  * Work in progress.
  */
-public class DBCleaner {
+public class DBCleaner
+        implements AutoCloseable {
 
     /** Log tag. */
     private static final String TAG = "DBCleaner";
 
     /** Database Access. */
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
+    @NonNull
     private final SynchronizedDb mSyncDb;
 
     /**
      * Constructor.
      *
-     * @param db Database Access
+     * @param context Current context
      */
-    public DBCleaner(@NonNull final DAO db) {
-        mDb = db;
+    public DBCleaner(@NonNull final Context context) {
+        mDb = new BookDao(context, TAG);
         mSyncDb = mDb.getSyncDb();
     }
 
@@ -98,16 +88,19 @@ public class DBCleaner {
      */
     public void languages(@NonNull final Context context,
                           @NonNull final Locale userLocale) {
-        for (final String lang : mDb.getLanguageCodes()) {
+        final LanguageDao languageDao = LanguageDao.getInstance();
+        final Languages langHelper = Languages.getInstance();
+
+        for (final String lang : languageDao.getCodeList()) {
             if (lang != null && !lang.isEmpty()) {
                 final String iso;
+
                 if (lang.length() > 3) {
                     // It's likely a 'display' name of a language.
-                    iso = Languages
-                            .getInstance().getISO3FromDisplayName(context, userLocale, lang);
+                    iso = langHelper.getISO3FromDisplayName(context, userLocale, lang);
                 } else {
                     // It's almost certainly a language code
-                    iso = Languages.getInstance().getISO3FromCode(lang);
+                    iso = langHelper.getISO3FromCode(lang);
                 }
 
                 if (BuildConfig.DEBUG /* always */) {
@@ -116,7 +109,7 @@ public class DBCleaner {
                                + "|to=" + iso);
                 }
                 if (!iso.equals(lang)) {
-                    mDb.updateLanguage(lang, iso);
+                    languageDao.update(lang, iso);
                 }
             }
         }
@@ -173,8 +166,8 @@ public class DBCleaner {
      * @param context Current context
      */
     public void bookshelves(@NonNull final Context context) {
-        for (final Bookshelf bookshelf : mDb.getBookshelves()) {
-            bookshelf.validateStyle(context, mDb);
+        for (final Bookshelf bookshelf : BookshelfDao.getInstance().getAll()) {
+            bookshelf.validateStyle(context);
         }
     }
 
@@ -234,232 +227,22 @@ public class DBCleaner {
         }
     }
 
-    /**
-     * Check for books which do not have an {@link Author} at position 1.
-     * For those that don't, read their list, and re-save them.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
-     *
-     * @param context Current context
-     */
-    public void bookAuthor(@NonNull final Context context) {
-        final String sql = "SELECT " + KEY_FK_BOOK + " FROM "
-                           + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_AUTHOR_POSITION
-                           + ") AS mp"
-                           + " FROM " + TBL_BOOK_AUTHOR.getName() + " GROUP BY " + KEY_FK_BOOK
-                           + ") WHERE mp > 1";
-
-        final ArrayList<Long> bookIds = mDb.getIdList(sql);
-        if (!bookIds.isEmpty()) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "bookSeries|" + TBL_BOOK_AUTHOR.getName()
-                           + ", rows=" + bookIds.size());
-            }
-            // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
-
-            Synchronizer.SyncLock txLock = null;
-            try {
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
-                }
-
-                for (final long bookId : bookIds) {
-                    final ArrayList<Author> list = mDb.getAuthorsByBookId(bookId);
-                    mDb.insertBookAuthors(context, bookId, list, false, bookLocale);
-                }
-                if (txLock != null) {
-                    mDb.setTransactionSuccessful();
-                }
-            } catch (@NonNull final RuntimeException | DAO.DaoWriteException e) {
-                Logger.error(context, TAG, e);
-
-            } finally {
-                if (txLock != null) {
-                    mDb.endTransaction(txLock);
-                }
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "bookSeries|done");
-                }
-            }
-        }
-    }
-
-    /**
-     * Check for books which do not have a {@link Series} at position 1.
-     * For those that don't, read their list, and re-save them.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
-     *
-     * @param context Current context
-     */
-    public void bookSeries(@NonNull final Context context) {
-        final String sql = "SELECT " + KEY_FK_BOOK + " FROM "
-                           + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_SERIES_POSITION
-                           + ") AS mp"
-                           + " FROM " + TBL_BOOK_SERIES.getName() + " GROUP BY " + KEY_FK_BOOK
-                           + ") WHERE mp > 1";
-
-        final ArrayList<Long> bookIds = mDb.getIdList(sql);
-        if (!bookIds.isEmpty()) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "bookSeries|" + TBL_BOOK_SERIES.getName()
-                           + ", rows=" + bookIds.size());
-            }
-            // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
-
-            Synchronizer.SyncLock txLock = null;
-            try {
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
-                }
-
-                for (final long bookId : bookIds) {
-                    final ArrayList<Series> list = mDb.getSeriesByBookId(bookId);
-                    mDb.insertBookSeries(context, bookId, list, false, bookLocale);
-                }
-                if (txLock != null) {
-                    mDb.setTransactionSuccessful();
-                }
-            } catch (@NonNull final RuntimeException | DAO.DaoWriteException e) {
-                Logger.error(context, TAG, e);
-            } finally {
-                if (txLock != null) {
-                    mDb.endTransaction(txLock);
-                }
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "bookSeries|done");
-                }
-            }
-        }
-    }
-
-    /**
-     * Check for books which do not have an {@link Publisher} at position 1.
-     * For those that don't, read their list, and re-save them.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
-     *
-     * @param context Current context
-     */
-    public void bookPublisher(@NonNull final Context context) {
-        final String sql = "SELECT " + KEY_FK_BOOK + " FROM "
-                           + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_PUBLISHER_POSITION
-                           + ") AS mp"
-                           + " FROM " + TBL_BOOK_PUBLISHER.getName() + " GROUP BY " + KEY_FK_BOOK
-                           + ") WHERE mp > 1";
-
-        final ArrayList<Long> bookIds = mDb.getIdList(sql);
-        if (!bookIds.isEmpty()) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "bookPublishers|" + TBL_BOOK_PUBLISHER.getName()
-                           + ", rows=" + bookIds.size());
-            }
-            // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
-
-            Synchronizer.SyncLock txLock = null;
-            try {
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
-                }
-
-                for (final long bookId : bookIds) {
-                    final ArrayList<Publisher> list = mDb.getPublishersByBookId(bookId);
-                    mDb.insertBookPublishers(context, bookId, list, false, bookLocale);
-                }
-                if (txLock != null) {
-                    mDb.setTransactionSuccessful();
-                }
-            } catch (@NonNull final RuntimeException | DAO.DaoWriteException e) {
-                Logger.error(context, TAG, e);
-
-            } finally {
-                if (txLock != null) {
-                    mDb.endTransaction(txLock);
-                }
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "bookPublishers|done");
-                }
-            }
-        }
-    }
-
-    /**
-     * Check for books which do not have a {@link TocEntry} at position 1.
-     * For those that don't, read their list, and re-save them.
-     * <p>
-     * <strong>Transaction:</strong> participate, or runs in new.
-     *
-     * @param context Current context
-     */
-    @SuppressWarnings("WeakerAccess")
-    public void bookTocEntry(@NonNull final Context context) {
-        final String sql = "SELECT " + KEY_FK_BOOK + " FROM "
-                           + "(SELECT " + KEY_FK_BOOK + ", MIN(" + KEY_BOOK_TOC_ENTRY_POSITION
-                           + ") AS mp"
-                           + " FROM " + TBL_BOOK_TOC_ENTRIES.getName() + " GROUP BY " + KEY_FK_BOOK
-                           + ") WHERE mp > 1";
-
-        final ArrayList<Long> bookIds = mDb.getIdList(sql);
-        if (!bookIds.isEmpty()) {
-            if (BuildConfig.DEBUG /* always */) {
-                Log.w(TAG, "bookTocEntry|" + TBL_BOOK_TOC_ENTRIES.getName()
-                           + ", rows=" + bookIds.size());
-            }
-            // ENHANCE: we really should fetch each book individually
-            final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
-
-            Synchronizer.SyncLock txLock = null;
-            try {
-                if (!mDb.inTransaction()) {
-                    txLock = mDb.beginTransaction(true);
-                }
-
-                for (final long bookId : bookIds) {
-                    final ArrayList<TocEntry> list = mDb.getTocEntryByBookId(bookId);
-                    mDb.saveTocList(context, bookId, list, false, bookLocale);
-                }
-                if (txLock != null) {
-                    mDb.setTransactionSuccessful();
-                }
-            } catch (@NonNull final RuntimeException | DAO.DaoWriteException e) {
-                Logger.error(context, TAG, e);
-
-            } finally {
-                if (txLock != null) {
-                    mDb.endTransaction(txLock);
-                }
-                if (BuildConfig.DEBUG /* always */) {
-                    Log.w(TAG, "bookTocEntry|done");
-                }
-            }
-        }
-    }
-
     /* ****************************************************************************************** */
-
-    public void maybeUpdate(@NonNull final Context context,
-                            final boolean dryRun) {
-
-        // remove orphan rows
-        bookBookshelf(dryRun);
-    }
 
     /**
      * Remove rows where books are sitting on a {@code null} bookshelf.
      *
      * @param dryRun {@code true} to run the update.
      */
-    private void bookBookshelf(final boolean dryRun) {
+    public void bookBookshelf(final boolean dryRun) {
         final String select = "SELECT DISTINCT " + KEY_FK_BOOK
                               + " FROM " + TBL_BOOK_BOOKSHELF
-                              + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
+                              + " WHERE " + KEY_FK_BOOKSHELF + " IS NULL";
+
         toLog("bookBookshelf|ENTER", select);
         if (!dryRun) {
-            final String sql = "DELETE " + TBL_BOOK_BOOKSHELF
-                               + " WHERE " + KEY_FK_BOOKSHELF + "=NULL";
+            final String sql =
+                    "DELETE " + TBL_BOOK_BOOKSHELF + " WHERE " + KEY_FK_BOOKSHELF + " IS NULL";
             try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
@@ -479,12 +262,12 @@ public class DBCleaner {
     public void nullString2empty(@NonNull final String table,
                                  @NonNull final String column,
                                  final boolean dryRun) {
-        final String select = "SELECT DISTINCT " + column + " FROM " + table
-                              + " WHERE " + column + "=NULL";
+        final String select =
+                "SELECT DISTINCT " + column + " FROM " + table + " WHERE " + column + " IS NULL";
         toLog("nullString2empty|ENTER", select);
         if (!dryRun) {
-            final String sql = "UPDATE " + table + " SET " + column + "=''"
-                               + " WHERE " + column + "=NULL";
+            final String sql =
+                    "UPDATE " + table + " SET " + column + "=''" + " WHERE " + column + " IS NULL";
             try (SynchronizedStatement stmt = mSyncDb.compileStatement(sql)) {
                 stmt.executeUpdateDelete();
             }
@@ -512,5 +295,10 @@ public class DBCleaner {
                 }
             }
         }
+    }
+
+    @Override
+    public void close() {
+        mDb.close();
     }
 }

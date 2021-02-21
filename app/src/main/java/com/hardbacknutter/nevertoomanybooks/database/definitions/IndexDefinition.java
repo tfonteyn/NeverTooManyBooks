@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAOSql;
-
 /**
  * Class to store an index using a table name and a list of domain definitions.
  */
@@ -128,7 +126,7 @@ class IndexDefinition {
            .append(mDomains.stream()
                            .map(domain -> {
                                if (domain.isCollationLocalized()) {
-                                   return domain.getName() + DAOSql._COLLATION;
+                                   return domain.getName() + " COLLATE LOCALIZED";
                                } else {
                                    return domain.getName();
                                }

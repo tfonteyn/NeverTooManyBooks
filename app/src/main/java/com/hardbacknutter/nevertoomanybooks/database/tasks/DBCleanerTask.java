@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -28,7 +28,7 @@ import androidx.annotation.WorkerThread;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBCleaner;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -47,21 +47,14 @@ public class DBCleanerTask
     /** Log tag. */
     private static final String TAG = "DBCleanerTask";
 
-    /** Database Access. */
-    @NonNull
-    private final DAO mDb;
-
     /**
      * Constructor.
      *
-     * @param db           Database Access
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public DBCleanerTask(@NonNull final DAO db,
-                         @NonNull final TaskListener<Boolean> taskListener) {
+    public DBCleanerTask(@NonNull final TaskListener<Boolean> taskListener) {
         super(R.id.TASK_ID_DB_CLEANER, taskListener);
-        mDb = db;
     }
 
     @WorkerThread
@@ -72,8 +65,9 @@ public class DBCleanerTask
 
         publishProgress(new ProgressMessage(getTaskId(), context.getString(
                 R.string.progress_msg_optimizing)));
-        try {
-            final DBCleaner cleaner = new DBCleaner(mDb);
+
+        try (DBCleaner cleaner = new DBCleaner(context);
+             BookDao bookDao = new BookDao(context, TAG)) {
 
             // do a mass update of any languages not yet converted to ISO 639-2 codes
             cleaner.languages(context, userLocale);
@@ -89,14 +83,19 @@ public class DBCleanerTask
             // clean/correct style UUID's on Bookshelves for deleted styles.
             cleaner.bookshelves(context);
 
-            // re-sort positional links
-            cleaner.bookAuthor(context);
-            cleaner.bookSeries(context);
-            cleaner.bookPublisher(context);
-
             //TEST: we only check & log for now, but don't update yet...
             // we need to test with bad data
-            cleaner.maybeUpdate(context, true);
+            cleaner.bookBookshelf(true);
+
+
+            // re-sort positional links - theoretically this should never be needed... flw.
+            int modified = bookDao.repositionAuthor(context);
+            modified += bookDao.repositionSeries(context);
+            modified += bookDao.repositionPublishers(context);
+            modified += bookDao.repositionTocEntries(context);
+            if (modified > 0) {
+                Logger.warn(context, TAG, "bookDao.reposition modified=" + modified);
+            }
             return true;
 
         } catch (@NonNull final RuntimeException e) {

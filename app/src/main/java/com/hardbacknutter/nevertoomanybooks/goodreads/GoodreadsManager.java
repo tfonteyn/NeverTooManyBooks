@@ -39,8 +39,9 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -91,6 +92,8 @@ public class GoodreadsManager {
     @NonNull
     protected final Context mAppContext;
 
+    private final GoodreadsDao mGoodreadsDao;
+
     /** Authentication handler. */
     @NonNull
     private final GoodreadsAuth mGoodreadsAuth;
@@ -127,6 +130,8 @@ public class GoodreadsManager {
                             @NonNull final GoodreadsAuth grAuth) {
         mAppContext = appContext;
         mGoodreadsAuth = grAuth;
+
+        mGoodreadsDao = new GoodreadsDao(appContext, TAG);
     }
 
     /**
@@ -181,6 +186,11 @@ public class GoodreadsManager {
         return mAppContext;
     }
 
+    @NonNull
+    public GoodreadsDao getGoodreadsDao() {
+        return mGoodreadsDao;
+    }
+
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
      * <ul>The bookData bundle has to have:
@@ -193,7 +203,7 @@ public class GoodreadsManager {
      *      <li>{@link DBDefinitions#KEY_RATING}</li>
      * </ul>
      * <p>
-     * See {@link DAO#fetchBookForGoodreadsExport}
+     * See {@link GoodreadsDao#fetchBookForExport}
      *
      * @param db       Database Access
      * @param bookData with book data to send
@@ -204,7 +214,8 @@ public class GoodreadsManager {
      */
     @WorkerThread
     @GrStatus.Status
-    public int sendOneBook(@NonNull final DAO db,
+    public int sendOneBook(@NonNull final BookDao db,
+                           @NonNull final GoodreadsDao goodreadsDao,
                            @NonNull final DataHolder bookData)
             throws GeneralParsingException, IOException {
 
@@ -251,7 +262,7 @@ public class GoodreadsManager {
 
             // If we got an ID, save it against the book
             if (grBookId > 0) {
-                db.setGoodreadsBookId(bookId, grBookId);
+                goodreadsDao.setGoodreadsBookId(bookId, grBookId);
             } else {
                 // Still nothing... Give up.
                 return GrStatus.FAILED_BOOK_NOT_FOUND_ON_GOODREADS;

@@ -43,8 +43,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -913,7 +913,7 @@ public class TableDefinition {
             while (cursor.moveToNext()) {
                 final long id = cursor.getLong(0);
                 final String in = cursor.getString(1);
-                update.bindString(1, DAO.encodeOrderByColumn(in, userLocale));
+                update.bindString(1, BaseDao.encodeOrderByColumn(in, userLocale));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

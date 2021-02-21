@@ -48,7 +48,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -83,7 +84,7 @@ public abstract class ArchiveWriterAbstract
     private static final int EXTRA_STEPS = 10;
     /** Database Access. */
     @NonNull
-    protected final DAO mDb;
+    protected final BookDao mDb;
     /** Export configuration. */
     @NonNull
     private final ExportHelper mHelper;
@@ -100,7 +101,7 @@ public abstract class ArchiveWriterAbstract
     protected ArchiveWriterAbstract(@NonNull final Context context,
                                     @NonNull final ExportHelper helper) {
         mHelper = helper;
-        mDb = new DAO(context, TAG);
+        mDb = new BookDao(context, TAG);
     }
 
     /**
@@ -128,7 +129,7 @@ public abstract class ArchiveWriterAbstract
             throws GeneralParsingException, IOException {
 
         // do a cleanup before we start writing
-        mDb.purge();
+        MaintenanceDao.getInstance().purge();
 
         final Set<RecordType> exportEntities = mHelper.getExporterEntries();
 

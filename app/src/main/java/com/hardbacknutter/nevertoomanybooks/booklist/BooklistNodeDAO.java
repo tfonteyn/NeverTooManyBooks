@@ -19,6 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.util.Log;
@@ -34,8 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
-import com.hardbacknutter.nevertoomanybooks.database.SqlStatementManager;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -64,77 +64,32 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  *      <li>{@link #restoreSavedState()}: restore the tree view for all nodes from storage.</li>
  * </ul>
  */
-class BooklistNodeDAO {
+public class BooklistNodeDAO {
 
     /** Log tag. */
     private static final String TAG = "BooklistNodeDAO";
 
-    /** Statement cache name. */
-    private static final String STMT_DEL_ALL_NODES = "dNS";
-    /** Statement cache name. */
-    private static final String STMT_SAVE_ALL_NODES = "sNS";
-    /** Statement cache name. */
-    private static final String STMT_DEL_NODES_BETWEEN = "dNSBetween";
-    /** Statement cache name. */
-    private static final String STMT_SAVE_NODES_BETWEEN = "sNSBetween";
-
-    /** Statement cache name. */
-    private static final String STMT_UPDATE_NODE = "uNS";
-    /** Statement cache name. */
-    private static final String STMT_UPDATE_NODES_BETWEEN_1 = "uNSBetween1";
-    /** Statement cache name. */
-    private static final String STMT_UPDATE_NODES_BETWEEN_2 = "uNSBetween2";
-    /** Statement cache name. */
-    private static final String STMT_COLLAPSE_NODES_BETWEEN = "cNSBetween";
-
-    /** Statement cache name. */
-    private static final String STMT_GET_NEXT_NODE_AT_SAME_LEVEL = "next";
-
-    private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
-    private static final String SELECT_ = "SELECT ";
-    private static final String _FROM_ = " FROM ";
-    private static final String _WHERE_ = " WHERE ";
-    private static final String _AND_ = " AND ";
-    private static final String _ORDER_BY_ = " ORDER BY ";
-
-    private static final String UPDATE_ = "UPDATE ";
-    private static final String _SET_ = " SET ";
-
-    private static final String DELETE_FROM_ = "DELETE FROM ";
-
-    /** This is a reference only. Cleanup is done by the owner of this object. */
+    /** Reference to singleton. */
     @NonNull
     private final SynchronizedDb mSyncedDb;
-
-    /** Collection of statements pre-compiled for this object. */
-    @NonNull
-    private final SqlStatementManager mStmtManager;
 
     /** The current shelf. */
     private final long mBookshelfId;
     /** The current style. */
     @NonNull
     private final ListStyle mStyle;
-
     /** The current list table. */
     @NonNull
     private final TableDefinition mListTable;
 
-    /** Insert statement for {@link #saveAllNodes}. */
-    private final String mSqlSaveAllNodes;
-    /** Insert statement for {@link #saveNodesBetween}. */
-    private final String mSqlSaveNodesBetween;
-
     /**
      * Constructor.
      *
-     * @param db          Database Access
-     * @param stmtManager to use
-     * @param style       Style reference.
-     * @param bookshelf   to use
+     * @param db        Database Access
+     * @param style     Style reference.
+     * @param bookshelf to use
      */
     BooklistNodeDAO(@NonNull final SynchronizedDb db,
-                    @NonNull final SqlStatementManager stmtManager,
                     @NonNull final TableDefinition listTable,
                     @NonNull final ListStyle style,
                     @NonNull final Bookshelf bookshelf) {
@@ -143,34 +98,15 @@ class BooklistNodeDAO {
         mListTable = listTable;
         mBookshelfId = bookshelf.getId();
         mStyle = style;
+    }
 
-        mStmtManager = stmtManager;
-
-        // We save only nodes which are expanded and/or visible.
-        // This does mean we always store the state of level 1 even when not needed.
-        // but oh well... no big deal.
-        mSqlSaveAllNodes =
-                "INSERT INTO " + TBL_BOOK_LIST_NODE_STATE
-                + " (" + KEY_FK_BOOKSHELF + ',' + KEY_FK_STYLE
-                + ',' + KEY_BL_NODE_KEY
-                + ',' + KEY_BL_NODE_LEVEL
-                + ',' + KEY_BL_NODE_GROUP
-                + ',' + KEY_BL_NODE_EXPANDED
-                + ',' + KEY_BL_NODE_VISIBLE
-                + ") "
-                + SELECT_DISTINCT_ + "?,?"
-                + ',' + KEY_BL_NODE_KEY
-                + ',' + KEY_BL_NODE_LEVEL
-                + ',' + KEY_BL_NODE_GROUP
-                + ',' + KEY_BL_NODE_EXPANDED
-                + ',' + KEY_BL_NODE_VISIBLE
-
-                + _FROM_ + mListTable.getName()
-                + _WHERE_ + "(" + KEY_BL_NODE_EXPANDED + "=1 OR " + KEY_BL_NODE_VISIBLE + "=1)";
-
-        // Same, but limited to a single node (and it's branch)
-        mSqlSaveNodesBetween =
-                mSqlSaveAllNodes + _AND_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<?";
+    /**
+     * Purge <strong>all</strong> Booklist node state data.
+     *
+     * @param context Current context
+     */
+    public static void clearNodeStateData(@NonNull final Context context) {
+        DBHelper.getSyncDb(context).execSQL(Sql.DELETE_ALL);
     }
 
     /**
@@ -250,10 +186,10 @@ class BooklistNodeDAO {
             }
         }
 
-        //Note to self: levelOperand is concatenated, so do not cache this stmt.
-        final String sql = UPDATE_ + mListTable.getName() + _SET_
-                           + KEY_BL_NODE_EXPANDED + "=?," + KEY_BL_NODE_VISIBLE + "=?"
-                           + _WHERE_ + KEY_BL_NODE_LEVEL + levelOperand + "?";
+        // levelOperand is concatenated!!!
+        final String sql = Sql.UPDATE_ + mListTable.getName()
+                           + Sql._SET_ + KEY_BL_NODE_EXPANDED + "=?," + KEY_BL_NODE_VISIBLE + "=?"
+                           + Sql._WHERE_ + KEY_BL_NODE_LEVEL + levelOperand + "?";
 
         final int rowsUpdated;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(sql)) {
@@ -287,16 +223,10 @@ class BooklistNodeDAO {
                 txLock = mSyncedDb.beginTransaction(true);
             }
 
-            SynchronizedStatement stmt;
             int rowsUpdated;
 
-            stmt = mStmtManager.get(STMT_DEL_ALL_NODES, () ->
-                    // delete all rows for the current bookshelf/style
-                    DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
-                    + _WHERE_ + KEY_FK_BOOKSHELF + "=?" + _AND_ + KEY_FK_STYLE + "=?");
-
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    Sql.DELETE_ALL_FOR_CURRENT_SHELF)) {
                 stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
                 rowsUpdated = stmt.executeUpdateDelete();
@@ -305,11 +235,9 @@ class BooklistNodeDAO {
                 Log.d(TAG, "saveAllNodes|rowsDeleted=" + rowsUpdated);
             }
 
-            stmt = mStmtManager.get(STMT_SAVE_ALL_NODES, () -> mSqlSaveAllNodes);
-
             // Read all visible nodes, and send them to the permanent table.
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (stmt) {
+            try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                    String.format(Sql.SAVE_ALL_NODES, mListTable.getName()))) {
                 stmt.bindLong(1, mBookshelfId);
                 stmt.bindLong(2, mStyle.getId());
                 rowsUpdated = stmt.executeUpdateDelete();
@@ -325,7 +253,7 @@ class BooklistNodeDAO {
             if (BuildConfig.DEBUG /* always */) {
                 // DEBUG ONLY!
                 // This protects the developer when changing the structure irresponsibly...
-                DAO.clearNodeStateData(App.getAppContext());
+                clearNodeStateData(App.getDatabaseContext());
                 Logger.error(TAG, e);
             }
         } finally {
@@ -334,7 +262,6 @@ class BooklistNodeDAO {
             }
         }
     }
-
 
     /**
      * Expand/collapse the passed node.
@@ -417,14 +344,9 @@ class BooklistNodeDAO {
             }
         }
 
-        final SynchronizedStatement stmt = mStmtManager.get(STMT_UPDATE_NODE, () ->
-                UPDATE_ + mListTable.getName() + _SET_
-                + KEY_BL_NODE_EXPANDED + "=?" + ',' + KEY_BL_NODE_VISIBLE + "=1"
-                + _WHERE_ + KEY_PK_ID + "=?");
-
         final int rowsUpdated;
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                String.format(Sql.UPDATE_NODE, mListTable.getName()))) {
             stmt.bindBoolean(1, expand);
             stmt.bindLong(2, rowId);
             rowsUpdated = stmt.executeUpdateDelete();
@@ -455,15 +377,9 @@ class BooklistNodeDAO {
             }
         }
 
-        final SynchronizedStatement stmt = mStmtManager.get(
-                STMT_GET_NEXT_NODE_AT_SAME_LEVEL, () ->
-                        SELECT_ + KEY_PK_ID + _FROM_ + mListTable.getName()
-                        + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_BL_NODE_LEVEL + "<=?"
-                        + _ORDER_BY_ + KEY_PK_ID + " LIMIT 1");
-
         final long nextRowId;
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                String.format(Sql.FIND_NEXT_NODE, mListTable.getName()))) {
             stmt.bindLong(1, rowId);
             stmt.bindLong(2, nodeLevel);
             nextRowId = stmt.simpleQueryForLongOrZero();
@@ -505,19 +421,10 @@ class BooklistNodeDAO {
                        + "|level=" + level);
         }
 
-        SynchronizedStatement stmt;
         int rowsUpdated;
 
-        // handle all levels except the lowest level.
-        stmt = mStmtManager.get(STMT_UPDATE_NODES_BETWEEN_1, () ->
-                UPDATE_ + mListTable.getName() + _SET_
-                + KEY_BL_NODE_VISIBLE + "=1,"
-                + KEY_BL_NODE_EXPANDED + "=1"
-                + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?"
-                + _AND_ + KEY_BL_NODE_LEVEL + "<?");
-
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                String.format(Sql.UPDATE_NODES_BETWEEN_1, mListTable.getName()))) {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
             stmt.bindLong(3, level);
@@ -531,16 +438,8 @@ class BooklistNodeDAO {
                        + "|rowsUpdated=" + rowsUpdated);
         }
 
-        // the lowest level we want visible but not expanded.
-        stmt = mStmtManager.get(STMT_UPDATE_NODES_BETWEEN_2, () ->
-                UPDATE_ + mListTable.getName() + _SET_
-                + KEY_BL_NODE_VISIBLE + "=1,"
-                + KEY_BL_NODE_EXPANDED + "=0"
-                + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?"
-                + _AND_ + KEY_BL_NODE_LEVEL + "=?");
-
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                String.format(Sql.UPDATE_NODES_BETWEEN_2, mListTable.getName()))) {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
             stmt.bindLong(3, level);
@@ -572,16 +471,9 @@ class BooklistNodeDAO {
             }
         }
 
-        // simply set all of them to invisible/unexpanded.
-        final SynchronizedStatement stmt = mStmtManager.get(STMT_COLLAPSE_NODES_BETWEEN, () ->
-                UPDATE_ + mListTable.getName() + _SET_
-                + KEY_BL_NODE_VISIBLE + "=0,"
-                + KEY_BL_NODE_EXPANDED + "=0"
-                + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?");
-
         final int rowsUpdated;
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                String.format(Sql.COLLAPSE_AND_HIDE_NODES_BETWEEN, mListTable.getName()))) {
             stmt.bindLong(1, startRowExcl);
             stmt.bindLong(2, endRowExcl);
             rowsUpdated = stmt.executeUpdateDelete();
@@ -624,24 +516,12 @@ class BooklistNodeDAO {
                                 "saveNodesBetween", "before delete");
         }
 
-        SynchronizedStatement stmt;
         int rowsUpdated;
-
-        stmt = mStmtManager.get(STMT_DEL_NODES_BETWEEN, () ->
-                // delete the rows for the current bookshelf/style
-                DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
-                + _WHERE_ + KEY_FK_BOOKSHELF + "=?" + _AND_ + KEY_FK_STYLE + "=?"
-                // but leave the parent levels untouched
-                + _AND_ + KEY_BL_NODE_LEVEL + ">=?"
-                // and only between the given nodes
-                + _AND_ + KEY_BL_NODE_KEY + " IN ("
-                + SELECT_DISTINCT_ + KEY_BL_NODE_KEY + _FROM_ + mListTable.getName()
-                + _WHERE_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<? )");
 
         // delete the given rows (inc. start, excl. end) and level
         // for the current bookshelf/style
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                String.format(Sql.DELETE_NODES_BETWEEN, mListTable.getName()))) {
             stmt.bindLong(1, mBookshelfId);
             stmt.bindLong(2, mStyle.getId());
 
@@ -659,12 +539,10 @@ class BooklistNodeDAO {
                                 "saveNodesBetween", "delete done");
         }
 
-        stmt = mStmtManager.get(STMT_SAVE_NODES_BETWEEN, () -> mSqlSaveNodesBetween);
-
         // Read all nodes below the given node (again inc. start, excl. end),
         // and send them to the permanent table.
-        //noinspection SynchronizationOnLocalVariableOrMethodParameter
-        synchronized (stmt) {
+        try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
+                String.format(Sql.SAVE_NODES_BETWEEN, mListTable.getName()))) {
             stmt.bindLong(1, mBookshelfId);
             stmt.bindLong(2, mStyle.getId());
 
@@ -699,24 +577,24 @@ class BooklistNodeDAO {
         }
 
         final String sqlTemplate =
-                UPDATE_ + mListTable.getName() + _SET_ + "%s=1"
-                + _WHERE_ + KEY_PK_ID + " IN ("
-                + SELECT_ + mListTable.dot(KEY_PK_ID) + _FROM_ + mListTable.ref()
+                Sql.UPDATE_ + mListTable.getName() + Sql._SET_ + "%s=1"
+                + Sql._WHERE_ + KEY_PK_ID + " IN ("
+                + Sql.SELECT_ + mListTable.dot(KEY_PK_ID) + Sql._FROM_ + mListTable.ref()
                 + "," + TBL_BOOK_LIST_NODE_STATE.ref()
-                + _WHERE_
+                + Sql._WHERE_
                 + TBL_BOOK_LIST_NODE_STATE.dot(KEY_FK_BOOKSHELF) + "=?"
-                + _AND_
+                + Sql._AND_
                 + TBL_BOOK_LIST_NODE_STATE.dot(KEY_FK_STYLE) + "=?"
-                + _AND_
+                + Sql._AND_
                 + mListTable.dot(KEY_BL_NODE_KEY) + "="
                 + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_KEY)
-                + _AND_
+                + Sql._AND_
                 + mListTable.dot(KEY_BL_NODE_LEVEL) + "="
                 + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_LEVEL)
-                + _AND_
+                + Sql._AND_
                 + mListTable.dot(KEY_BL_NODE_GROUP) + "="
                 + TBL_BOOK_LIST_NODE_STATE.dot(KEY_BL_NODE_GROUP)
-                + _AND_
+                + Sql._AND_
                 + TBL_BOOK_LIST_NODE_STATE.dot("%s") + "=1"
                 + ")";
 
@@ -771,13 +649,9 @@ class BooklistNodeDAO {
         // level + key
         final Collection<Pair<Integer, String>> keyPrefixes = new ArrayList<>();
 
-        // find all branches (groups on level 2+) with visible nodes
+        // Find all branches (groups on level 2+) with visible nodes
         try (Cursor cursor = mSyncedDb.rawQuery(
-                SELECT_DISTINCT_ + KEY_BL_NODE_KEY + ',' + KEY_BL_NODE_LEVEL
-                + _FROM_ + mListTable.getName()
-                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
-                // Groups only - Don't do books
-                + _AND_ + KEY_BL_NODE_LEVEL + " BETWEEN 2 AND ?",
+                String.format(Sql.ADJUST_VISIBILITY_1, mListTable.getName()),
                 new String[]{String.valueOf(mStyle.getGroups().size())})) {
 
             while (cursor.moveToNext()) {
@@ -796,10 +670,7 @@ class BooklistNodeDAO {
         // update the branches we found
         int rows = 0;
         try (SynchronizedStatement stmt = mSyncedDb.compileStatement(
-                UPDATE_ + mListTable.getName() + _SET_ + KEY_BL_NODE_VISIBLE + "=1"
-                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=0"
-                + _AND_ + KEY_BL_NODE_LEVEL + "=?"
-                + _AND_ + KEY_BL_NODE_KEY + " LIKE ?")) {
+                String.format(Sql.ADJUST_VISIBILITY_2, mListTable.getName()))) {
 
             for (final Pair<Integer, String> entry : keyPrefixes) {
                 stmt.bindLong(1, entry.first);
@@ -811,5 +682,132 @@ class BooklistNodeDAO {
         if (BuildConfig.DEBUG /* always */) {
             Log.d(TAG, "adjustVisibility|rows=" + rows);
         }
+    }
+
+    private static final class Sql {
+
+        private static final String SELECT_DISTINCT_ = "SELECT DISTINCT ";
+        private static final String SELECT_ = "SELECT ";
+        private static final String _FROM_ = " FROM ";
+        private static final String _WHERE_ = " WHERE ";
+        private static final String _AND_ = " AND ";
+        private static final String _ORDER_BY_ = " ORDER BY ";
+
+        private static final String UPDATE_ = "UPDATE ";
+        private static final String _SET_ = " SET ";
+
+        private static final String DELETE_FROM_ = "DELETE FROM ";
+
+        /**
+         * {@link #saveAllNodes}.
+         * Delete all rows for the current bookshelf/style.
+         */
+        private static final String DELETE_ALL_FOR_CURRENT_SHELF =
+                DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
+                + _WHERE_ + KEY_FK_BOOKSHELF + "=?" + _AND_ + KEY_FK_STYLE + "=?";
+
+        /**
+         * Insert statement for {@link #saveAllNodes}.
+         * <p>
+         * We save only nodes which are expanded and/or visible.
+         * This does mean we always store the state of level 1 even when not needed.
+         * but oh well... no big deal.
+         */
+        private static final String SAVE_ALL_NODES =
+                "INSERT INTO " + TBL_BOOK_LIST_NODE_STATE
+                + " (" + KEY_FK_BOOKSHELF + ',' + KEY_FK_STYLE
+                + ',' + KEY_BL_NODE_KEY
+                + ',' + KEY_BL_NODE_LEVEL
+                + ',' + KEY_BL_NODE_GROUP
+                + ',' + KEY_BL_NODE_EXPANDED
+                + ',' + KEY_BL_NODE_VISIBLE
+                + ") "
+                + SELECT_DISTINCT_ + "?,?"
+                + ',' + KEY_BL_NODE_KEY
+                + ',' + KEY_BL_NODE_LEVEL
+                + ',' + KEY_BL_NODE_GROUP
+                + ',' + KEY_BL_NODE_EXPANDED
+                + ',' + KEY_BL_NODE_VISIBLE
+
+                + _FROM_ + /* mListTable.getName() */ "%s"
+                + _WHERE_ + "(" + KEY_BL_NODE_EXPANDED + "=1 OR " + KEY_BL_NODE_VISIBLE + "=1)";
+
+        /** {@link #saveNodesBetween}. */
+        private static final String DELETE_NODES_BETWEEN =
+                // delete the rows for the current bookshelf/style
+                DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE.getName()
+                + _WHERE_ + KEY_FK_BOOKSHELF + "=?" + _AND_ + KEY_FK_STYLE + "=?"
+                // but leave the parent levels untouched
+                + _AND_ + KEY_BL_NODE_LEVEL + ">=?"
+                // and only between the given nodes
+                + _AND_ + KEY_BL_NODE_KEY + " IN ("
+                + SELECT_DISTINCT_ + KEY_BL_NODE_KEY + _FROM_ + /* mListTable.getName() */ "%s"
+                + _WHERE_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<? )";
+
+        /** Insert statement for {@link #saveNodesBetween}. */
+        private static final String SAVE_NODES_BETWEEN =
+                SAVE_ALL_NODES + _AND_ + KEY_PK_ID + ">=? AND " + KEY_PK_ID + "<?";
+
+
+        /** {@link #findNextNode}. */
+        private static final String FIND_NEXT_NODE =
+                SELECT_ + KEY_PK_ID + _FROM_ + /* mListTable.getName() */ "%s"
+                + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_BL_NODE_LEVEL + "<=?"
+                + _ORDER_BY_ + KEY_PK_ID + " LIMIT 1";
+
+        /**
+         * {@link #collapseAndHideNodesBetween}.
+         * Simply set all of them to invisible/unexpanded.
+         */
+        private static final String COLLAPSE_AND_HIDE_NODES_BETWEEN =
+                UPDATE_ + /* mListTable.getName() */ "%s"
+                + _SET_ + KEY_BL_NODE_VISIBLE + "=0," + KEY_BL_NODE_EXPANDED + "=0"
+                + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?";
+
+        /**
+         * {@link #showAndExpandNodesBetween}.
+         * Handle all levels except the lowest level.
+         */
+        private static final String UPDATE_NODES_BETWEEN_1 =
+                UPDATE_ + /* mListTable.getName() */ "%s"
+                + _SET_ + KEY_BL_NODE_VISIBLE + "=1," + KEY_BL_NODE_EXPANDED + "=1"
+                + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?"
+                + _AND_ + KEY_BL_NODE_LEVEL + "<?";
+
+        /**
+         * {@link #showAndExpandNodesBetween}.
+         * The lowest level we want visible but not expanded.
+         */
+        private static final String UPDATE_NODES_BETWEEN_2 =
+                UPDATE_ + /* mListTable.getName() */ "%s"
+                + _SET_ + KEY_BL_NODE_VISIBLE + "=1," + KEY_BL_NODE_EXPANDED + "=0"
+                + _WHERE_ + KEY_PK_ID + ">?" + _AND_ + KEY_PK_ID + "<?"
+                + _AND_ + KEY_BL_NODE_LEVEL + "=?";
+
+
+        /** {@link #updateNode}. */
+        private static final String UPDATE_NODE =
+                UPDATE_ + /* mListTable.getName() */ "%s"
+                + _SET_ + KEY_BL_NODE_EXPANDED + "=?" + ',' + KEY_BL_NODE_VISIBLE + "=1"
+                + _WHERE_ + KEY_PK_ID + "=?";
+
+        /** {@link #adjustVisibility()}. */
+        private static final String ADJUST_VISIBILITY_1 =
+                SELECT_DISTINCT_ + KEY_BL_NODE_KEY + ',' + KEY_BL_NODE_LEVEL
+                + _FROM_ + /* mListTable.getName() */ "%s"
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1"
+                // Groups only - Don't do books
+                + _AND_ + KEY_BL_NODE_LEVEL + " BETWEEN 2 AND ?";
+
+        /** {@link #adjustVisibility()}. */
+        private static final String ADJUST_VISIBILITY_2 =
+                UPDATE_ + /* mListTable.getName() */ "%s"
+                + _SET_ + KEY_BL_NODE_VISIBLE + "=1"
+                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=0"
+                + _AND_ + KEY_BL_NODE_LEVEL + "=?"
+                + _AND_ + KEY_BL_NODE_KEY + " LIKE ?";
+
+        /** Maintenance/debug usage. Simple clear all state data. */
+        private static final String DELETE_ALL = DELETE_FROM_ + TBL_BOOK_LIST_NODE_STATE;
     }
 }

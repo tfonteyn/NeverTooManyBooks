@@ -137,8 +137,7 @@ public class EditBookshelvesFragment
                      .addCallback(getViewLifecycleOwner(), mOnBackPressedCallback);
 
         mVm = new ViewModelProvider(this).get(EditBookshelvesViewModel.class);
-        //noinspection ConstantConditions
-        mVm.init(getContext(), getArguments());
+        mVm.init(getArguments());
         mVm.onSelectedPositionChanged().observe(getViewLifecycleOwner(),
                                                 aVoid -> mAdapter.notifyDataSetChanged());
 
@@ -146,6 +145,7 @@ public class EditBookshelvesFragment
         final FloatingActionButton fab = getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_baseline_add_24);
         fab.setVisibility(View.VISIBLE);
+        //noinspection ConstantConditions
         fab.setOnClickListener(v -> editItem(mVm.createNewBookshelf(getContext())));
 
         //noinspection ConstantConditions

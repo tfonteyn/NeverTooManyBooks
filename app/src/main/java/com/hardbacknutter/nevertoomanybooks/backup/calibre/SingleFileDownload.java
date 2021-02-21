@@ -29,15 +29,12 @@ import java.io.IOException;
 import org.json.JSONException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 
 public class SingleFileDownload
         extends VMTask<Uri> {
-
-    private static final String TAG = "SingleFileDownload";
 
     private Book mBook;
     private Uri mFolder;
@@ -76,9 +73,7 @@ public class SingleFileDownload
         publishProgressStep(0, context.getString(R.string.progress_msg_please_wait));
 
         if (!mServer.isMetaDataRead()) {
-            try (DAO db = new DAO(context, TAG)) {
-                mServer.readMetaData(context, db);
-            }
+            mServer.readMetaData(context);
         }
         return mServer.getFile(context, mFolder, mBook, this);
     }

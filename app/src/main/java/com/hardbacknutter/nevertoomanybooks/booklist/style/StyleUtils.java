@@ -42,16 +42,17 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
-/** Utility class encapsulating database access and internal in-memory caches. */
+/**
+ * Utility class encapsulating database access and internal in-memory caches.
+ * <p>
+ * TODO: merge the two separate caches.
+ */
 public final class StyleUtils {
-
-    /** Log tag. */
-    private static final String TAG = "StyleUtils";
 
     /**
      * Preference for the current default style UUID to use.
@@ -69,14 +70,12 @@ public final class StyleUtils {
      * <p>
      * if an <strong>insert</strong> fails, the style retains id==0.
      *
-     * @param db    Database Access
      * @param style to save
      *
      * @return {@code true} on success
      */
     @SuppressWarnings("UnusedReturnValue")
-    public static boolean updateOrInsert(@NonNull final DAO db,
-                                         @NonNull final ListStyle style) {
+    public static boolean updateOrInsert(@NonNull final ListStyle style) {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
@@ -84,28 +83,26 @@ public final class StyleUtils {
 
         // resolve the id based on the UUID
         // e.g. we're might be importing a style with a known UUID
-        style.setId(db.getStyleIdByUuid(style.getUuid()));
+        style.setId(StyleDao.getInstance().getStyleIdByUuid(style.getUuid()));
 
         if (style.getId() == 0) {
-            return insert(db, style);
+            return insert(style);
 
         } else {
-            return update(db, style);
+            return update(style);
         }
     }
 
     /**
      * Insert the given style.
      *
-     * @param db    Database Access
      * @param style to insert
      *
      * @return {@code true} on success
      */
-    private static boolean insert(@NonNull final DAO db,
-                                  @NonNull final ListStyle style) {
+    private static boolean insert(@NonNull final ListStyle style) {
 
-        if (db.insert(style) > 0) {
+        if (StyleDao.getInstance().insert(style) > 0) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
             }
@@ -117,20 +114,18 @@ public final class StyleUtils {
     /**
      * Update the given style.
      *
-     * @param db    Database Access
      * @param style to update
      *
      * @return {@code true} on success
      */
-    public static boolean update(@NonNull final DAO db,
-                                 @NonNull final ListStyle style) {
+    public static boolean update(@NonNull final ListStyle style) {
 
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
             SanityCheck.requireNonZero(style.getId(), "A new Style cannot be updated");
         }
 
-        if (db.update(style)) {
+        if (StyleDao.getInstance().update(style)) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
             } else if (style instanceof BuiltinStyle) {
@@ -148,13 +143,11 @@ public final class StyleUtils {
      * Delete the given style.
      *
      * @param context Current context
-     * @param db      Database Access
      * @param style   to delete
      *
      * @return {@code true} on success
      */
     public static boolean delete(@NonNull final Context context,
-                                 @NonNull final DAO db,
                                  @NonNull final ListStyle style) {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -162,7 +155,7 @@ public final class StyleUtils {
             SanityCheck.requirePositiveValue(style.getId(), "A new Style cannot be deleted");
         }
 
-        if (db.delete(style)) {
+        if (StyleDao.getInstance().delete(style)) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.remove(style.getUuid());
                 context.deleteSharedPreferences(style.getUuid());
@@ -178,26 +171,24 @@ public final class StyleUtils {
      * @param context Current context
      */
     public static void updateMenuOrder(@NonNull final Context context) {
-        try (DAO db = new DAO(context, TAG)) {
-            updateMenuOrder(db, getStyles(context, db, true));
-        }
+        updateMenuOrder(getStyles(context, true));
     }
 
     /**
      * Sort the incoming list of styles according to their preferred status.
      *
-     * @param db     Database access
      * @param styles list to sort and update
      */
-    public static void updateMenuOrder(@NonNull final DAO db,
-                                       @NonNull final Collection<ListStyle> styles) {
+    public static void updateMenuOrder(@NonNull final Collection<ListStyle> styles) {
         int order = 0;
+
+        final StyleDao styleDao = StyleDao.getInstance();
 
         // sort the preferred styles at the top
         for (final ListStyle style : styles) {
             if (style.isPreferred()) {
                 style.setMenuPosition(order);
-                db.update(style);
+                styleDao.update(style);
                 order++;
             }
         }
@@ -205,7 +196,7 @@ public final class StyleUtils {
         for (final ListStyle style : styles) {
             if (!style.isPreferred()) {
                 style.setMenuPosition(order);
-                db.update(style);
+                styleDao.update(style);
                 order++;
             }
         }
@@ -222,20 +213,18 @@ public final class StyleUtils {
      * If 'all' is {@code false} the list only contains the preferred styles.
      *
      * @param context Current context
-     * @param db      Database Access
      * @param all     if {@code true} then also return the non-preferred styles
      *
      * @return LinkedHashMap, key: uuid, value: style
      */
     @NonNull
     public static ArrayList<ListStyle> getStyles(@NonNull final Context context,
-                                                 @NonNull final DAO db,
                                                  final boolean all) {
 
         // combine all styles in a NEW list; we need to keep the original lists as-is.
         final Collection<ListStyle> list = new ArrayList<>();
-        list.addAll(UserStyles.getStyles(context, db).values());
-        list.addAll(BuiltinStyles.getStyles(context, db).values());
+        list.addAll(UserStyles.getStyles(context).values());
+        list.addAll(BuiltinStyles.getStyles(context).values());
 
         // and sort them in the user preferred order
         // The styles marked as preferred will have a menu-position < 1000,
@@ -267,58 +256,52 @@ public final class StyleUtils {
      * Get the specified style; {@code null} if not found.
      *
      * @param context Current context
-     * @param db      Database Access
      * @param uuid    UUID of the style to get.
      *
      * @return the style, or {@code null} if not found
      */
     @Nullable
     public static ListStyle getStyle(@NonNull final Context context,
-                                     @NonNull final DAO db,
                                      @NonNull final String uuid) {
         // Check Builtin first
-        final ListStyle style = BuiltinStyles.getStyles(context, db).get(uuid);
+        final ListStyle style = BuiltinStyles.getStyles(context).get(uuid);
         if (style != null) {
             return style;
         }
 
         // User defined ? or null if not found
-        return UserStyles.getStyles(context, db).get(uuid);
+        return UserStyles.getStyles(context).get(uuid);
     }
 
     /**
-     * Get the specified style. If not found, {@link #getDefault(Context, DAO)} will be returned.
+     * Get the specified style. If not found, {@link #getDefault(Context)} will be returned.
      *
      * @param context Current context
-     * @param db      Database Access
      * @param uuid    UUID of the style to get.
      *
      * @return the style, or the default style if not found
      */
     @NonNull
     public static ListStyle getStyleOrDefault(@NonNull final Context context,
-                                              @NonNull final DAO db,
                                               @NonNull final String uuid) {
         // Try to get user or builtin style
-        final ListStyle style = getStyle(context, db, uuid);
+        final ListStyle style = getStyle(context, uuid);
         if (style != null) {
             return style;
         }
         // fall back to the user default.
-        return getDefault(context, db);
+        return getDefault(context);
     }
 
     /**
      * Get the user default style, or if none found, the Builtin default.
      *
      * @param context Current context
-     * @param db      Database Access
      *
      * @return the style.
      */
     @NonNull
-    public static ListStyle getDefault(@NonNull final Context context,
-                                       @NonNull final DAO db) {
+    public static ListStyle getDefault(@NonNull final Context context) {
 
         // read the global user default, or if not present the hardcoded default.
         final String uuid = PreferenceManager.getDefaultSharedPreferences(context)
@@ -327,12 +310,12 @@ public final class StyleUtils {
 
         // Try to get user or builtin style
         //noinspection ConstantConditions
-        final ListStyle style = getStyle(context, db, uuid);
+        final ListStyle style = getStyle(context, uuid);
         if (style != null) {
             return style;
         }
         // fall back to the builtin default.
-        return BuiltinStyles.getDefault(context, db);
+        return BuiltinStyles.getDefault(context);
     }
 
     /**
@@ -374,17 +357,15 @@ public final class StyleUtils {
          * Get the user-defined Styles from the database.
          *
          * @param context Current context
-         * @param db      Database Access
          *
          * @return an ordered unmodifiableMap of styles
          */
         @NonNull
-        static Map<String, UserStyle> getStyles(@NonNull final Context context,
-                                                @NonNull final DAO db) {
+        static Map<String, UserStyle> getStyles(@NonNull final Context context) {
             if (S_USER_STYLES.isEmpty()) {
                 final Map<String, UserStyle> map = new LinkedHashMap<>();
 
-                try (Cursor cursor = db.fetchStyles(true)) {
+                try (Cursor cursor = StyleDao.getInstance().fetchStyles(true)) {
                     final DataHolder rowData = new CursorRow(cursor);
                     while (cursor.moveToNext()) {
                         final String uuid = rowData.getString(DBDefinitions.KEY_STYLE_UUID);
@@ -543,15 +524,13 @@ public final class StyleUtils {
          * Get the hardcoded default style.
          *
          * @param context Current context
-         * @param db      Database Access
          *
          * @return style {@link #AUTHOR_THEN_SERIES_ID}
          */
         @NonNull
-        public static BuiltinStyle getDefault(@NonNull final Context context,
-                                              @NonNull final DAO db) {
+        public static BuiltinStyle getDefault(@NonNull final Context context) {
             if (S_BUILTIN_STYLES.isEmpty()) {
-                create(context, db);
+                create(context);
             }
             return Objects.requireNonNull(S_BUILTIN_STYLES.get(AUTHOR_THEN_SERIES_UUID));
         }
@@ -561,16 +540,14 @@ public final class StyleUtils {
          * Get all builtin styles.
          *
          * @param context Current context
-         * @param db      Database Access
          *
          * @return an ordered unmodifiableMap of all builtin styles.
          */
         @NonNull
-        static Map<String, BuiltinStyle> getStyles(@NonNull final Context context,
-                                                   @NonNull final DAO db) {
+        static Map<String, BuiltinStyle> getStyles(@NonNull final Context context) {
 
             if (S_BUILTIN_STYLES.isEmpty()) {
-                create(context, db);
+                create(context);
             }
             return Collections.unmodifiableMap(S_BUILTIN_STYLES);
         }
@@ -599,13 +576,12 @@ public final class StyleUtils {
         }
 
         @SuppressWarnings("ConstantConditions")
-        private static void create(@NonNull final Context context,
-                                   @NonNull final DAO db) {
+        private static void create(@NonNull final Context context) {
 
             final Map<Integer, Boolean> preferred = new HashMap<>();
             final Map<Integer, Integer> menuPos = new HashMap<>();
 
-            try (Cursor cursor = db.fetchStyles(false)) {
+            try (Cursor cursor = StyleDao.getInstance().fetchStyles(false)) {
                 final DataHolder rowData = new CursorRow(cursor);
                 while (cursor.moveToNext()) {
                     preferred.put(rowData.getInt(DBDefinitions.KEY_PK_ID),

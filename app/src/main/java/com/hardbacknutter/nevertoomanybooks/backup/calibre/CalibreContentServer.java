@@ -84,8 +84,8 @@ import org.json.JSONObject;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -392,20 +392,19 @@ public class CalibreContentServer {
      * populates {@link #mDefaultLibrary} + {@link #mLibraries}
      *
      * @param context Current context
-     * @param db      Database access
-     *
      * @throws IOException on failures
      */
     @WorkerThread
-    void readMetaData(@NonNull final Context context,
-                      @NonNull final DAO db)
+    void readMetaData(@NonNull final Context context)
             throws IOException, JSONException {
 
         mLibraries.clear();
         mDefaultLibrary = null;
 
+        final CalibreLibraryDao libraryDao = CalibreLibraryDao.getInstance();
+
         final Bookshelf currentBookshelf = Bookshelf
-                .getBookshelf(context, db, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+                .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
         final String url = "/ajax/library-info";
         final JSONObject source = new JSONObject(fetch(url, BUFFER_SMALL));
@@ -441,10 +440,10 @@ public class CalibreContentServer {
             @Nullable
             CalibreLibrary library = null;
             if (!uuid.isEmpty()) {
-                library = db.getCalibreLibraryByUuid(uuid);
+                library = libraryDao.getLibraryByUuid(uuid);
             }
             if (library == null) {
-                library = db.getCalibreLibraryByStringId(libraryId);
+                library = libraryDao.getLibraryByStringId(libraryId);
             }
             if (library == null) {
                 // must be a new one.
@@ -460,13 +459,13 @@ public class CalibreContentServer {
             // If we have vl info, process it
             // If we don't; the library will keep any vl's defined previously
             if (vlibs != null) {
-                processVirtualLibraries(db, library, vlibs);
+                processVirtualLibraries(libraryDao, library, vlibs);
             }
 
             if (library.getId() > 0) {
-                db.update(library);
+                libraryDao.update(library);
             } else {
-                db.insert(library);
+                libraryDao.insert(library);
             }
 
             // add to cached list
@@ -475,7 +474,6 @@ public class CalibreContentServer {
             if (libraryId.equals(defaultLibraryId)) {
                 mDefaultLibrary = library;
             }
-
 
             // read the first book available to get the customs fields (if any)
             final JSONObject result = getBookIds(library.getLibraryStringId(), 1, 0);
@@ -492,7 +490,7 @@ public class CalibreContentServer {
         Objects.requireNonNull(mDefaultLibrary, "mDefaultLibrary");
     }
 
-    private void processVirtualLibraries(@NonNull final DAO db,
+    private void processVirtualLibraries(@NonNull final CalibreLibraryDao dao,
                                          @NonNull final CalibreLibrary library,
                                          @NonNull final JSONObject virtualLibraries)
             throws JSONException {
@@ -504,7 +502,7 @@ public class CalibreContentServer {
             final String name = it.next();
             final String expr = virtualLibraries.getString(name);
 
-            CalibreVirtualLibrary dbVirtLib = db.getCalibreVirtualLibrary(library.getId(), name);
+            CalibreVirtualLibrary dbVirtLib = dao.getVirtualLibrary(library.getId(), name);
             if (dbVirtLib == null) {
                 dbVirtLib = new CalibreVirtualLibrary(library.getId(), name, expr,
                                                       library.getMappedBookshelfId());

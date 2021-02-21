@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
  *   <li>#KEY_UTC_EVENT_DATETIME</li>
  * </ul>
  * <ul>Covers cache database:
- *   <li>{@link CoversDAO}#DOM_UTC_DATETIME}</li>
+ *   <li>{@link CoverCacheDao}#DOM_UTC_DATETIME}</li>
  * </ul>
  * <p>
  * All others, are considered USER local time zone.
@@ -630,6 +630,22 @@ public final class DBDefinitions {
      * The key is suffixed with the name of the field.
      */
     public static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
+    /**
+     * reminder: no need for a type nor constraints: https://sqlite.org/fts3.html
+     */
+    public static final TableDefinition TBL_FTS_BOOKS;
+    /** FTS Primary key. */
+    public static final String KEY_FTS_BOOK_ID = "docid";
+    /**
+     * {@link #TBL_FTS_BOOKS}
+     * specific formatted list; example: "stephen baxter;arthur c. clarke;"
+     */
+    static final Domain DOM_FTS_AUTHOR_NAME;
+    static final Domain DOM_FTS_TOC_ENTRY_TITLE;
+    /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
+    static final String KEY_FTS_AUTHOR_NAME = "author_name";
+    /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
+    static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
 
     static {
         /* ======================================================================================
@@ -1442,6 +1458,37 @@ public final class DBDefinitions {
                                 .addIndex("BOOKSHELF_STYLE", false,
                                           DOM_FK_BOOKSHELF, DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(), TBL_BOOK_LIST_NODE_STATE);
+    }
+
+    static {
+        DOM_FTS_AUTHOR_NAME =
+                new Domain.Builder(DBDefinitions.KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT)
+                        .build();
+
+        DOM_FTS_TOC_ENTRY_TITLE =
+                new Domain.Builder(DBDefinitions.KEY_FTS_TOC_ENTRY_TITLE, ColumnInfo.TYPE_TEXT)
+                        .build();
+
+        TBL_FTS_BOOKS = createFtsTableDefinition("books_fts");
+    }
+
+    @NonNull
+    static TableDefinition createFtsTableDefinition(@NonNull final String name) {
+        return new TableDefinition(name)
+                .setType(TableDefinition.TableType.FTS4)
+                .addDomains(DOM_TITLE,
+                            DBDefinitions.DOM_FTS_AUTHOR_NAME,
+                            DOM_SERIES_TITLE,
+                            DOM_PUBLISHER_NAME,
+
+                            DOM_BOOK_DESCRIPTION,
+                            DOM_BOOK_PRIVATE_NOTES,
+                            DOM_BOOK_GENRE,
+                            DOM_BOOK_LOCATION,
+                            DOM_BOOK_ISBN,
+
+                            DBDefinitions.DOM_FTS_TOC_ENTRY_TITLE
+                           );
     }
 
     private DBDefinitions() {

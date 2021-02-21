@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,8 +24,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -84,7 +84,8 @@ public class WildcardFilter
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomainKey) + " LIKE '%" + DAO.encodeString(mCriteria) + "%'" + ')';
+        return '(' + mTable.dot(mDomainKey) + " LIKE '%" + BaseDao.encodeString(mCriteria) + "%'"
+               + ')';
     }
 
     @Override

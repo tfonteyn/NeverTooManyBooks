@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,11 @@ import org.mockito.Mock;
 import org.mockito.stubbing.Answer;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,13 +57,19 @@ class PruneListTest
     private static final String PHILIP_DICK = "Philip K. Dick";
 
     @Mock
-    DAO mDb;
+    BookDao mDb;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
 
-        when(mDb.getAuthorId(eq(mContext), any(Author.class), anyBoolean(), any(Locale.class)))
+        final SeriesDao seriesDao = SeriesDao.getInstance();
+        final AuthorDao authorDao = AuthorDao.getInstance();
+        final PublisherDao publisherDao = PublisherDao.getInstance();
+        final TocEntryDao tocEntryDao = TocEntryDao.getInstance();
+
+        when(authorDao.find(eq(mContext), any(Author.class),
+                            anyBoolean(), any(Locale.class)))
                 .thenAnswer((Answer<Long>) invocation -> {
                     final Author author = invocation.getArgument(1, Author.class);
                     final long id = author.getId();
@@ -76,25 +86,28 @@ class PruneListTest
                     }
                     return id;
                 });
-        when(mDb.getSeriesId(eq(mContext), any(Series.class), anyBoolean(), any(Locale.class)))
+        when(seriesDao.find(eq(mContext), any(Series.class),
+                            anyBoolean(), any(Locale.class)))
                 .thenAnswer((Answer<Long>) invocation -> {
                     final Series series = invocation.getArgument(1, Series.class);
                     return series.getId();
                 });
-        when(mDb.getPublisherId(eq(mContext), any(Publisher.class), anyBoolean(),
-                                any(Locale.class)))
+        when(publisherDao.find(eq(mContext), any(Publisher.class),
+                               anyBoolean(), any(Locale.class)))
                 .thenAnswer((Answer<Long>) invocation -> {
                     final Publisher publisher = invocation.getArgument(1, Publisher.class);
                     return publisher.getId();
                 });
-        when(mDb.getTocEntryId(eq(mContext), any(TocEntry.class), anyBoolean(), any(Locale.class)))
+        when(tocEntryDao.find(eq(mContext), any(TocEntry.class),
+                              anyBoolean(), any(Locale.class)))
                 .thenAnswer((Answer<Long>) invocation -> {
                     final TocEntry tocEntry = invocation.getArgument(1, TocEntry.class);
                     return tocEntry.getId();
                 });
+
         // the return value is not used for now but fits the Series title data used.
-        when(mDb.getSeriesLanguage(100L)).thenReturn("eng");
-        when(mDb.getSeriesLanguage(200L)).thenReturn("nld");
+        when(seriesDao.getLanguage(100L)).thenReturn("eng");
+        when(seriesDao.getLanguage(200L)).thenReturn("nld");
     }
 
     @Test
@@ -262,7 +275,7 @@ class PruneListTest
         series.setId(100);
         list.add(series);
 
-        final boolean modified = Series.pruneList(list, mContext, mDb, false, Locale.getDefault());
+        final boolean modified = Series.pruneList(list, mContext, false, Locale.getDefault());
 
         assertTrue(modified, list.toString());
         assertEquals(3, list.size(), list.toString());
@@ -307,7 +320,7 @@ class PruneListTest
         list.add(publisher);
 
         final boolean modified =
-                Publisher.pruneList(list, mContext, mDb, false, Locale.getDefault());
+                Publisher.pruneList(list, mContext, false, Locale.getDefault());
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -344,7 +357,7 @@ class PruneListTest
         list.add(publisher);
 
         final boolean modified =
-                Publisher.pruneList(list, mContext, mDb, false, Locale.getDefault());
+                Publisher.pruneList(list, mContext, false, Locale.getDefault());
 
         assertFalse(modified, list.toString());
     }
@@ -387,7 +400,7 @@ class PruneListTest
         list.add(publisher);
 
         final boolean modified =
-                Publisher.pruneList(list, mContext, mDb, false, Locale.getDefault());
+                Publisher.pruneList(list, mContext, false, Locale.getDefault());
 
         assertTrue(modified, list.toString());
         assertEquals(4, list.size(), list.toString());
@@ -439,7 +452,7 @@ class PruneListTest
         list.add(tocEntry);
 
         final boolean modified =
-                TocEntry.pruneList(list, mContext, mDb, false, Locale.getDefault());
+                TocEntry.pruneList(list, mContext, false, Locale.getDefault());
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -479,7 +492,7 @@ class PruneListTest
         list.add(tocEntry);
 
         final boolean modified =
-                TocEntry.pruneList(list, mContext, mDb, false, Locale.getDefault());
+                TocEntry.pruneList(list, mContext, false, Locale.getDefault());
 
         assertTrue(modified, list.toString());
         assertEquals(2, list.size(), list.toString());
@@ -541,7 +554,7 @@ class PruneListTest
         list.add(tocEntry);
 
         final boolean modified =
-                TocEntry.pruneList(list, mContext, mDb, false, Locale.getDefault());
+                TocEntry.pruneList(list, mContext, false, Locale.getDefault());
 
         assertTrue(modified, list.toString());
         assertEquals(6, list.size(), list.toString());

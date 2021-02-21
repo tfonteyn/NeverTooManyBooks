@@ -69,7 +69,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
@@ -121,7 +121,7 @@ public class CoverHandler {
     private final int mMaxHeight;
     /** Database Access. */
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
     @NonNull
     private final CoverHandlerHost mCoverHandlerHost;
     @NonNull
@@ -156,7 +156,7 @@ public class CoverHandler {
      * @param maxHeight        the maximum height for the cover
      */
     public CoverHandler(@NonNull final CoverHandlerHost coverHandlerHost,
-                        @NonNull final DAO db,
+                        @NonNull final BookDao db,
                         @IntRange(from = 0, to = 1) final int cIdx,
                         final int maxWidth,
                         final int maxHeight) {

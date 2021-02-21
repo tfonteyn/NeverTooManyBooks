@@ -48,8 +48,8 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -72,8 +72,6 @@ public class EditLenderDialogFragment
     private static final String SIS_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
-    /** Database Access. */
-    private DAO mDb;
     /** View Binding. */
     private DialogEditLoanBinding mVb;
     /** The book we're lending. */
@@ -122,10 +120,9 @@ public class EditLenderDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mDb = new DAO(getContext(), TAG);
+        final LoaneeDao loaneeDao = LoaneeDao.getInstance();
         // get previously used lender names
-        mPeople = mDb.getLoanees();
+        mPeople = loaneeDao.getList();
 
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
@@ -134,7 +131,7 @@ public class EditLenderDialogFragment
         mBookTitle = Objects.requireNonNull(args.getString(DBDefinitions.KEY_TITLE), "KEY_TITLE");
 
         if (savedInstanceState == null) {
-            mOriginalLoanee = mDb.getLoaneeByBookId(mBookId);
+            mOriginalLoanee = loaneeDao.getLoaneeByBookId(mBookId);
             mLoanee = mOriginalLoanee;
         } else {
             mOriginalLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
@@ -217,10 +214,10 @@ public class EditLenderDialogFragment
         final boolean success;
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
-            success = mDb.setLoanee(mBookId, mLoanee);
+            success = LoaneeDao.getInstance().setLoanee(mBookId, mLoanee);
         } else {
             // return the book
-            success = mDb.setLoanee(mBookId, null);
+            success = LoaneeDao.getInstance().setLoanee(mBookId, null);
         }
 
         if (success) {
@@ -246,14 +243,6 @@ public class EditLenderDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     public abstract static class Launcher

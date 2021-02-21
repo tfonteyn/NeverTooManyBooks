@@ -73,7 +73,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -112,10 +111,6 @@ public class XmlRecordReader
     private static final String ERROR_UNABLE_TO_PROCESS_XML_RECORD =
             "Unable to process XML record ";
 
-    /** Database Access. */
-    @NonNull
-    private final DAO mDb;
-
     @Nullable
     private final Locale mUserLocale;
 
@@ -134,13 +129,10 @@ public class XmlRecordReader
      * Constructor.
      *
      * @param context              Current context
-     * @param db                   Database Access;
      * @param importEntriesAllowed the record types we're allowed to read
      */
     public XmlRecordReader(@NonNull final Context context,
-                           @NonNull final DAO db,
                            @NonNull final Set<RecordType> importEntriesAllowed) {
-        mDb = db;
         mImportEntriesAllowed = importEntriesAllowed;
 
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
@@ -170,7 +162,7 @@ public class XmlRecordReader
 
             if (mImportEntriesAllowed.contains(recordType)) {
                 if (recordType == RecordType.Styles) {
-                    final StylesReader stylesReader = new StylesReader(context, mDb);
+                    final StylesReader stylesReader = new StylesReader(context);
                     fromXml(record, stylesReader);
                     results.styles += stylesReader.getStylesRead();
 
@@ -799,9 +791,6 @@ public class XmlRecordReader
 
         @NonNull
         private final Context mContext;
-        /** Database Access. */
-        @NonNull
-        private final DAO mDb;
 
         private ListStyle mStyle;
 
@@ -820,12 +809,9 @@ public class XmlRecordReader
          * Constructor.
          *
          * @param context Current context
-         * @param db      Database Access
          */
-        StylesReader(@NonNull final Context context,
-                     @NonNull final DAO db) {
+        StylesReader(@NonNull final Context context) {
             mContext = context;
-            mDb = db;
         }
 
         int getStylesRead() {
@@ -865,7 +851,7 @@ public class XmlRecordReader
 
             if (StyleUtils.BuiltinStyles.isBuiltin(uuid)) {
                 //noinspection ConstantConditions
-                mStyle = StyleUtils.getStyle(mContext, mDb, uuid);
+                mStyle = StyleUtils.getStyle(mContext, uuid);
                 // We do NOT read preferences for known builtin styles
                 mStylePrefs = null;
 
@@ -935,7 +921,7 @@ public class XmlRecordReader
                 }
             }
 
-            StyleUtils.updateOrInsert(mDb, mStyle);
+            StyleUtils.updateOrInsert(mStyle);
 
             mStylesRead++;
         }

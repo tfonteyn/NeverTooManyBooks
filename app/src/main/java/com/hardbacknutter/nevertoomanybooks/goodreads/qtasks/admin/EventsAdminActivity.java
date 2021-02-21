@@ -31,7 +31,7 @@ import androidx.annotation.Nullable;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
 
@@ -105,7 +105,7 @@ public class EventsAdminActivity
      */
     @NonNull
     @Override
-    protected EventCursorAdapter getListAdapter(@NonNull final DAO db) {
+    protected EventCursorAdapter getListAdapter(@NonNull final BookDao db) {
         final Cursor cursor;
         if (mTaskId == 0) {
             cursor = QueueManager.getInstance().getEvents();

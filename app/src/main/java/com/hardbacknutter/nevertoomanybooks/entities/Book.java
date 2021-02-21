@@ -49,9 +49,15 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -203,7 +209,7 @@ public class Book
      * @return new instance
      */
     public static Book from(@IntRange(from = 1) final long bookId,
-                            @NonNull final DAO db) {
+                            @NonNull final BookDao db) {
         final Book book = new Book();
         book.load(bookId, db);
         return book;
@@ -218,7 +224,7 @@ public class Book
      * @return new instance
      */
     public static Book from(@NonNull final Cursor bookCursor,
-                            @NonNull final DAO db) {
+                            @NonNull final BookDao db) {
         final Book book = new Book();
         final int idCol = bookCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
         final long bookId = bookCursor.getLong(idCol);
@@ -291,7 +297,7 @@ public class Book
      * @param db     Database Access
      */
     public void load(@IntRange(from = 1) final long bookId,
-                     @NonNull final DAO db) {
+                     @NonNull final BookDao db) {
         SanityCheck.requirePositiveValue(bookId, "bookId");
 
         try (Cursor bookCursor = db.fetchBookById(bookId)) {
@@ -311,7 +317,7 @@ public class Book
      */
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final Cursor bookCursor,
-                     @NonNull final DAO db) {
+                     @NonNull final BookDao db) {
         SanityCheck.requirePositiveValue(bookId, "bookId");
 
         clearData();
@@ -339,7 +345,7 @@ public class Book
      *
      * @return bundle with book data
      * <p>
-     * <b>Developer:</b> keep in sync with {@link DAO} .SqlAllBooks#BOOK
+     * <b>Developer:</b> keep in sync with {@link BookDao} .SqlAllBooks#BOOK
      */
     @NonNull
     public Bundle duplicate() {
@@ -656,12 +662,13 @@ public class Book
      * @param db      Database Access
      */
     public void refreshAuthorList(@NonNull final Context context,
-                                  @NonNull final DAO db) {
+                                  @NonNull final BookDao db) {
 
+        final AuthorDao authorDao = AuthorDao.getInstance();
         final Locale bookLocale = getLocale(context);
         final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_LIST);
         for (final Author author : list) {
-            db.refresh(context, author, bookLocale);
+            authorDao.refresh(context, author, bookLocale);
         }
     }
 
@@ -680,15 +687,15 @@ public class Book
      * Update Series details from DB.
      *
      * @param context Current context
-     * @param db      Database Access
      */
-    public void refreshSeriesList(@NonNull final Context context,
-                                  @NonNull final DAO db) {
+    public void refreshSeriesList(@NonNull final Context context) {
+
+        final SeriesDao seriesDao = SeriesDao.getInstance();
 
         final Locale bookLocale = getLocale(context);
         final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_LIST);
         for (final Series series : list) {
-            db.refresh(context, series, bookLocale);
+            seriesDao.refresh(context, series, bookLocale);
         }
     }
 
@@ -707,27 +714,26 @@ public class Book
      * Update Publisher details from DB.
      *
      * @param context Current context
-     * @param db      Database Access
      */
-    public void refreshPublishersList(@NonNull final Context context,
-                                      @NonNull final DAO db) {
+    public void refreshPublishersList(@NonNull final Context context) {
 
+        final PublisherDao publisherDao = PublisherDao.getInstance();
         final Locale bookLocale = getLocale(context);
         final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_LIST);
         for (final Publisher publisher : list) {
-            db.refresh(context, publisher, bookLocale);
+            publisherDao.refresh(context, publisher, bookLocale);
         }
     }
 
     @Nullable
-    public CalibreLibrary getCalibreLibrary(@NonNull final DAO db) {
+    public CalibreLibrary getCalibreLibrary() {
         // We MIGHT have it (probably not) ...
         if (contains(BKEY_CALIBRE_LIBRARY)) {
             return getParcelable(BKEY_CALIBRE_LIBRARY);
 
         } else {
             // but if not, go explicitly fetch it.
-            final CalibreLibrary library = db.getCalibreLibrary(
+            final CalibreLibrary library = CalibreLibraryDao.getInstance().getLibrary(
                     getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY));
             if (library != null) {
                 // store for reuse
@@ -754,19 +760,17 @@ public class Book
     /**
      * Get the name of the loanee (if any).
      *
-     * @param db Database Access
-     *
      * @return name, or {@code ""} if none
      */
     @NonNull
-    public String getLoanee(@NonNull final DAO db) {
+    public String getLoanee() {
         // We SHOULD have it...
         if (contains(DBDefinitions.KEY_LOANEE)) {
             return getString(DBDefinitions.KEY_LOANEE);
 
         } else {
             // but if not, go explicitly fetch it.
-            String loanee = db.getLoaneeByBookId(getId());
+            String loanee = LoaneeDao.getInstance().getLoaneeByBookId(getId());
             if (loanee == null) {
                 loanee = "";
             }
@@ -776,14 +780,8 @@ public class Book
         }
     }
 
-    public boolean isAvailable(@NonNull final DAO db) {
-        return getLoanee(db).isEmpty();
-    }
-
-    @SuppressWarnings("unused")
-    public void deleteLoan(@NonNull final DAO db) {
-        remove(DBDefinitions.KEY_LOANEE);
-        db.setLoanee(this, null);
+    public boolean isAvailable() {
+        return getLoanee().isEmpty();
     }
 
     /**
@@ -793,7 +791,7 @@ public class Book
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    public boolean toggleRead(@NonNull final DAO db) {
+    public boolean toggleRead(@NonNull final BookDao db) {
         return setRead(db, !getBoolean(DBDefinitions.KEY_READ));
     }
 
@@ -806,7 +804,7 @@ public class Book
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
-    private boolean setRead(@NonNull final DAO db,
+    private boolean setRead(@NonNull final BookDao db,
                             final boolean isRead) {
         final boolean old = getBoolean(DBDefinitions.KEY_READ);
 
@@ -822,13 +820,11 @@ public class Book
      * If the book is not on any Bookshelf, add the preferred/current bookshelf
      *
      * @param context Current context
-     * @param db      Database Access
      */
-    public void ensureBookshelf(@NonNull final Context context,
-                                @NonNull final DAO db) {
+    public void ensureBookshelf(@NonNull final Context context) {
         final ArrayList<Bookshelf> list = getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
-            list.add(Bookshelf.getBookshelf(context, db, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
+            list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
         }
     }
 
@@ -873,8 +869,8 @@ public class Book
 
     /**
      * Examine the values and make any changes necessary before writing the data.
-     * Called during {@link DAO#insert(Context, Book, int)}
-     * and {@link DAO#update(Context, Book, int)}.
+     * Called during {@link BookDao#insert(Context, Book, int)}
+     * and {@link BookDao#update(Context, Book, int)}.
      *
      * @param context Current context
      * @param isNew   {@code true} if the book is new
@@ -889,7 +885,7 @@ public class Book
         // Handle TITLE
         if (contains(DBDefinitions.KEY_TITLE)) {
             final String obTitle = reorderTitleForSorting(context, bookLocale);
-            putString(DBDefinitions.KEY_TITLE_OB, DAO.encodeOrderByColumn(obTitle, bookLocale));
+            putString(DBDefinitions.KEY_TITLE_OB, BaseDao.encodeOrderByColumn(obTitle, bookLocale));
         }
 
         // Handle TOC_BITMASK only, no handling of actual titles here,
@@ -1247,7 +1243,7 @@ public class Book
     @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public File setCover(@NonNull final Context context,
-                         @NonNull final DAO db,
+                         @NonNull final BookDao db,
                          @IntRange(from = 0, to = 1) final int cIdx,
                          @Nullable final File file) {
 
@@ -1338,7 +1334,7 @@ public class Book
                 FileUtils.delete(getUuidCoverFile(context, cIdx));
                 if (ImageUtils.isImageCachingEnabled(context)) {
                     // We delete *all* files related to this book from the cache.
-                    CoversDAO.getInstance(context).delete(context, uuid);
+                    CoverCacheDao.getInstance(context).delete(context, uuid);
                 }
             }
 
@@ -1349,8 +1345,8 @@ public class Book
     }
 
     /**
-     * Called during {@link DAO#insert(Context, Book, int)}
-     * and {@link DAO#update(Context, Book, int)}.
+     * Called during {@link BookDao#insert(Context, Book, int)}
+     * and {@link BookDao#update(Context, Book, int)}.
      *
      * @param context Current context
      *
@@ -1381,7 +1377,7 @@ public class Book
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
                     if (ImageUtils.isImageCachingEnabled(context)) {
-                        CoversDAO.getInstance(context).delete(context, uuid);
+                        CoverCacheDao.getInstance(context).delete(context, uuid);
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name
@@ -1478,7 +1474,7 @@ public class Book
     }
 
     public void pruneAuthors(@NonNull final Context context,
-                             @NonNull final DAO db,
+                             @NonNull final BookDao db,
                              final boolean lookupLocale) {
         final ArrayList<Author> authors = getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
         if (!authors.isEmpty()) {
@@ -1501,22 +1497,21 @@ public class Book
     }
 
     public void pruneSeries(@NonNull final Context context,
-                            @NonNull final DAO db,
+                            @NonNull final BookDao db,
                             final boolean lookupLocale) {
         final ArrayList<Series> series = getParcelableArrayList(Book.BKEY_SERIES_LIST);
         if (!series.isEmpty()) {
-            if (Series.pruneList(series, context, db, lookupLocale, getLocale(context))) {
+            if (Series.pruneList(series, context, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);
             }
         }
     }
 
     public void prunePublishers(@NonNull final Context context,
-                                @NonNull final DAO db,
                                 final boolean lookupLocale) {
         final ArrayList<Publisher> publishers = getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
         if (!publishers.isEmpty()) {
-            if (Publisher.pruneList(publishers, context, db, lookupLocale, getLocale(context))) {
+            if (Publisher.pruneList(publishers, context, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);
             }
         }

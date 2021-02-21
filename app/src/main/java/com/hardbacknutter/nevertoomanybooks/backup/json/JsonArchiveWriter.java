@@ -41,7 +41,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -104,7 +104,7 @@ public class JsonArchiveWriter
         }
 
         final int booksToExport;
-        try (DAO db = new DAO(context, TAG)) {
+        try (BookDao db = new BookDao(context, TAG)) {
             booksToExport = db.countBooksForExport(dateSince);
         }
 

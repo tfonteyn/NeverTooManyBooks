@@ -39,7 +39,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 
@@ -75,7 +75,7 @@ public class SearchFtsFragment
     /** The results book id list. For sending back to the caller. */
     private final ArrayList<Long> mBookIdList = new ArrayList<>();
     /** Database Access. */
-    private DAO mDb;
+    private BookDao mDb;
     /** User entered search text. */
     @Nullable
     private String mAuthorSearchText;
@@ -129,7 +129,7 @@ public class SearchFtsFragment
         super.onCreate(savedInstanceState);
 
         //noinspection ConstantConditions
-        mDb = new DAO(getContext(), TAG);
+        mDb = new BookDao(getContext(), TAG);
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
@@ -344,13 +344,13 @@ public class SearchFtsFragment
                 viewToModel();
 
                 int count = 0;
-                try (Cursor cursor = mDb.fetchSearchSuggestionsAdv(mAuthorSearchText,
-                                                                   mTitleSearchText,
-                                                                   mSeriesTitleSearchText,
-                                                                   mPublisherNameSearchText,
-                                                                   mKeywordsSearchText,
-                                                                   MAX_SUGGESTIONS)) {
-                    // Null return means searchFts thought the parameters were effectively blank.
+                try (Cursor cursor = mDb.search(mAuthorSearchText,
+                                                mTitleSearchText,
+                                                mSeriesTitleSearchText,
+                                                mPublisherNameSearchText,
+                                                mKeywordsSearchText,
+                                                MAX_SUGGESTIONS)) {
+                    // Null return means FTS thought the parameters were effectively blank.
                     if (cursor != null) {
                         count = cursor.getCount();
 

@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import org.junit.Before;
 
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -85,11 +86,11 @@ public abstract class BaseSetup {
 
     @Before
     public void setup()
-            throws DAO.DaoWriteException {
+            throws DaoWriteException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        try (DAO db = new DAO(context, "setup")) {
+        try (BookDao db = new BookDao(context, "setup")) {
 
             final SynchronizedDb syncDb = db.getSyncDb();
             Constants.deleteTocs(syncDb);
@@ -99,7 +100,7 @@ public abstract class BaseSetup {
 
             // all books will sit on the same shelf for now
             //Constants.deleteBookshelves(db);
-            bookshelf[0] = Bookshelf.getBookshelf(context, db, Bookshelf.DEFAULT);
+            bookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
 
             // Create, don't insert yet
             author[0] = Author.from(AuthorFullName(0));

@@ -44,8 +44,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -84,7 +85,7 @@ public class SearchBookUpdatesViewModel
      */
     private final Book mCurrentBook = new Book();
     /** Database Access. */
-    private DAO mDb;
+    private BookDao mDb;
     /** Book ID's to fetch. {@code null} for all books. */
     @Nullable
     private ArrayList<Long> mBookIdList;
@@ -137,7 +138,7 @@ public class SearchBookUpdatesViewModel
         super.init(context, args);
 
         if (mDb == null) {
-            mDb = new DAO(context, TAG);
+            mDb = new BookDao(context, TAG);
 
             if (args != null) {
                 //noinspection unchecked
@@ -239,7 +240,7 @@ public class SearchBookUpdatesViewModel
     }
 
     /**
-     * Allows to set the 'lowest' Book id to start from. See {@link DAO#fetchBooks(long)}
+     * Allows to set the 'lowest' Book id to start from. See {@link BookDao#fetchBooks(long)}
      *
      * @param fromBookIdOnwards the lowest book id to start from.
      *                          This allows to fetch a subset of the requested set.
@@ -578,7 +579,7 @@ public class SearchBookUpdatesViewModel
                 delta.putLong(DBDefinitions.KEY_PK_ID, mCurrentBookId);
                 try {
                     mDb.update(context, delta, 0);
-                } catch (@NonNull final DAO.DaoWriteException e) {
+                } catch (@NonNull final DaoWriteException e) {
                     // ignore, but log it.
                     Logger.error(context, TAG, e);
                 }
@@ -823,7 +824,7 @@ public class SearchBookUpdatesViewModel
                 final ArrayList<Series> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));
-                    Series.pruneList(list, context, mDb, false, bookLocale);
+                    Series.pruneList(list, context, false, bookLocale);
                 }
                 break;
             }
@@ -831,7 +832,7 @@ public class SearchBookUpdatesViewModel
                 final ArrayList<Publisher> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));
-                    Publisher.pruneList(list, context, mDb, false, bookLocale);
+                    Publisher.pruneList(list, context, false, bookLocale);
                 }
                 break;
             }
@@ -839,7 +840,7 @@ public class SearchBookUpdatesViewModel
                 final ArrayList<TocEntry> list = bookData.getParcelableArrayList(key);
                 if (list != null && !list.isEmpty()) {
                     list.addAll(mCurrentBook.getParcelableArrayList(key));
-                    TocEntry.pruneList(list, context, mDb, false, bookLocale);
+                    TocEntry.pruneList(list, context, false, bookLocale);
                 }
                 break;
             }

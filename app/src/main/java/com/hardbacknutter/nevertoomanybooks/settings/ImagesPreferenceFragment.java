@@ -30,7 +30,7 @@ import androidx.preference.Preference;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
+import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -68,7 +68,7 @@ public class ImagesPreferenceFragment
                     .setMessage(R.string.lbl_purge_image_cache)
                     .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setPositiveButton(android.R.string.ok, (d, w) -> {
-                        CoversDAO.getInstance(getContext()).deleteAll(getContext());
+                        CoverCacheDao.getInstance(getContext()).deleteAll(getContext());
                         setPurgeCacheSummary(p);
                     })
                     .create()
@@ -80,7 +80,7 @@ public class ImagesPreferenceFragment
     private void setPurgeCacheSummary(@NonNull final Preference preference) {
         if (preference.isEnabled()) {
             //noinspection ConstantConditions
-            final int count = CoversDAO.getInstance(getContext()).count(getContext());
+            final int count = CoverCacheDao.getInstance(getContext()).count(getContext());
             final String number;
             if (count > 0) {
                 number = String.valueOf(count);

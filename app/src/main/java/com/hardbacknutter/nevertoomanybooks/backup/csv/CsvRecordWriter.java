@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -58,7 +58,7 @@ public class CsvRecordWriter
 
     /** Database Access. */
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -73,7 +73,7 @@ public class CsvRecordWriter
                            @Nullable final LocalDateTime utcSinceDateTime) {
 
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new DAO(context, TAG);
+        mDb = new BookDao(context, TAG);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class CsvRecordWriter
         if (entries.contains(RecordType.Books)) {
 
             final boolean collectCoverFilenames = entries.contains(RecordType.Cover);
-            final BookCoder bookCoder = new BookCoder(context, mDb);
+            final BookCoder bookCoder = new BookCoder(context);
 
             int delta = 0;
             long lastUpdate = 0;

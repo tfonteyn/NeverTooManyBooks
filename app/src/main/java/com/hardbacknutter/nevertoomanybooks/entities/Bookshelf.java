@@ -40,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -50,7 +50,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
  *
  * <strong>Warning:</strong> the {@link ListStyle} association is LAZY.
  * i.o.w. the stored style UUID will/must always be validated before being used.
- * See {@link #getStyle(Context, DAO)}.
+ * See {@link #getStyle(Context)}.
  */
 public class Bookshelf
         implements Entity, Mergeable {
@@ -158,7 +158,6 @@ public class Bookshelf
      * Get the specified bookshelf.
      *
      * @param context    Current context
-     * @param db         Database Access
      * @param id         of bookshelf to get
      * @param fallbackId to use if the bookshelf does not exist
      *                   should be one of {@link PredefinedBookshelf}
@@ -167,40 +166,37 @@ public class Bookshelf
      */
     @NonNull
     public static Bookshelf getBookshelf(@NonNull final Context context,
-                                         @NonNull final DAO db,
                                          final long id,
                                          @PredefinedBookshelf final long fallbackId) {
 
-        final Bookshelf bookshelf = getBookshelf(context, db, id);
+        final Bookshelf bookshelf = getBookshelf(context, id);
         if (bookshelf != null) {
             return bookshelf;
         }
 
-        return Objects.requireNonNull(getBookshelf(context, db, fallbackId));
+        return Objects.requireNonNull(getBookshelf(context, fallbackId));
     }
 
     /**
      * Get the specified bookshelf.
      *
      * @param context Current context
-     * @param db      Database Access
      * @param id      of bookshelf to get
      *
      * @return the bookshelf, or {@code null} if not found
      */
     @Nullable
     public static Bookshelf getBookshelf(@NonNull final Context context,
-                                         @NonNull final DAO db,
                                          final long id) {
         if (id == ALL_BOOKS) {
             final Bookshelf bookshelf = new Bookshelf(context.getString(
-                    R.string.bookshelf_all_books), StyleUtils.getDefault(context, db));
+                    R.string.bookshelf_all_books), StyleUtils.getDefault(context));
             bookshelf.setId(ALL_BOOKS);
             return bookshelf;
 
         } else if (id == DEFAULT) {
             final Bookshelf bookshelf = new Bookshelf(context.getString(
-                    R.string.bookshelf_my_books), StyleUtils.getDefault(context, db));
+                    R.string.bookshelf_my_books), StyleUtils.getDefault(context));
             bookshelf.setId(DEFAULT);
             return bookshelf;
 
@@ -208,12 +204,12 @@ public class Bookshelf
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
             final String name = global.getString(PREF_BOOKSHELF_CURRENT, null);
             if (name != null && !name.isEmpty()) {
-                return db.getBookshelfByName(name);
+                return BookshelfDao.getInstance().findByName(name);
             }
             return null;
 
         } else {
-            return db.getBookshelf(id);
+            return BookshelfDao.getInstance().getById(id);
         }
     }
 
@@ -221,20 +217,19 @@ public class Bookshelf
      * Passed a list of Objects, remove duplicates. We keep the first occurrence.
      *
      * @param list List to clean up
-     * @param db   Database Access
      *
      * @return {@code true} if the list was modified.
      */
-    public static boolean pruneList(@NonNull final Collection<Bookshelf> list,
-                                    @NonNull final DAO db) {
+    public static boolean pruneList(@NonNull final Collection<Bookshelf> list) {
         if (list.isEmpty()) {
             return false;
         }
 
+        final BookshelfDao bookshelfDao = BookshelfDao.getInstance();
         final EntityMerger<Bookshelf> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
             final Bookshelf current = entityMerger.next();
-            db.fixId(current);
+            bookshelfDao.fixId(current);
             entityMerger.merge(current);
         }
 
@@ -278,18 +273,16 @@ public class Bookshelf
      * Set the style for this bookshelf.
      *
      * @param context Current context
-     * @param db      Database Access
      * @param style   to set; must already exist (id != 0)
      *
      * @throws SanityCheck.MissingValueException if the style is 'new' (id==0)
      */
     public void setStyle(@NonNull final Context context,
-                         @NonNull final DAO db,
                          @NonNull final ListStyle style) {
         SanityCheck.requireNonZero(style.getId(), "style.getId()");
 
         mStyleUuid = style.getUuid();
-        db.update(context, this);
+        BookshelfDao.getInstance().update(context, this);
 
     }
 
@@ -297,16 +290,14 @@ public class Bookshelf
      * Returns a valid style for this bookshelf.
      *
      * @param context Current context
-     * @param db      Database Access
      *
      * @return the style associated with this bookshelf.
      */
     @NonNull
-    public ListStyle getStyle(@NonNull final Context context,
-                              @NonNull final DAO db) {
+    public ListStyle getStyle(@NonNull final Context context) {
 
         // Always validate first
-        final ListStyle style = StyleUtils.getStyleOrDefault(context, db, mStyleUuid);
+        final ListStyle style = StyleUtils.getStyleOrDefault(context, mStyleUuid);
         // the previous uuid might have been overruled so we always refresh it
         mStyleUuid = style.getUuid();
         return style;
@@ -335,32 +326,28 @@ public class Bookshelf
      * Store the current position of the booklist displaying this bookshelf.
      *
      * @param context       Current context
-     * @param db            Database Access
      * @param position      Value of {@link LinearLayoutManager#findFirstVisibleItemPosition}
      * @param topViewOffset Value of {@link RecyclerView#getChildAt(int)} #getTop()
      */
     public void setTopListPosition(@NonNull final Context context,
-                                   @NonNull final DAO db,
                                    final int position,
                                    final int topViewOffset) {
         mTopItemPosition = position;
         mTopViewOffset = topViewOffset;
 
-        db.update(context, this);
+        BookshelfDao.getInstance().update(context, this);
     }
 
     /**
      * Check the current style and if it had to be corrected, update this shelf in the database.
      *
      * @param context Current context
-     * @param db      Database Access
      */
-    public void validateStyle(@NonNull final Context context,
-                              @NonNull final DAO db) {
+    public void validateStyle(@NonNull final Context context) {
         final String uuid = mStyleUuid;
-        final ListStyle style = getStyle(context, db);
+        final ListStyle style = getStyle(context);
         if (!uuid.equals(style.getUuid())) {
-            db.update(context, this);
+            BookshelfDao.getInstance().update(context, this);
         }
     }
 

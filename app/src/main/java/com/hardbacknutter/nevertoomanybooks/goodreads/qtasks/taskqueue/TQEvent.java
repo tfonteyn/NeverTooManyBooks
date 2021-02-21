@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin.ContextDialogItem;
 
 
@@ -73,7 +73,7 @@ public class TQEvent
     @CallSuper
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final DAO db) {
+                                    @NonNull final BookDao db) {
         menuItems.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
                                             () -> QueueManager.getInstance()
                                                               .deleteEvent(getId())));

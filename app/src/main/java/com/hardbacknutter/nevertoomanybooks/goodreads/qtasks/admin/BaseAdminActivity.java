@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BaseActivity;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityTaskQueueListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -43,7 +43,7 @@ public abstract class BaseAdminActivity
     private static final String TAG = "BaseAdminActivity";
 
     /** Database Access. */
-    private DAO mDb;
+    private BookDao mDb;
 
     /** The adapter for the list. */
     private TQCursorAdapter mListAdapter;
@@ -59,7 +59,7 @@ public abstract class BaseAdminActivity
      * @return CursorAdapter to use
      */
     @NonNull
-    protected abstract TQCursorAdapter getListAdapter(@NonNull DAO db);
+    protected abstract TQCursorAdapter getListAdapter(@NonNull BookDao db);
 
     protected ActivityTaskQueueListBinding mVb;
 
@@ -71,7 +71,7 @@ public abstract class BaseAdminActivity
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        mDb = new DAO(this, TAG);
+        mDb = new BookDao(this, TAG);
         super.onCreate(savedInstanceState);
 
         mListAdapter = getListAdapter(mDb);

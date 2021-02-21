@@ -61,7 +61,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookById
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
@@ -737,17 +737,17 @@ public class ShowBookFragment
              * @param book   to load
              */
             void onBindViewHolder(@NonNull final Fields fields,
-                                  @NonNull final DAO db,
+                                  @NonNull final BookDao db,
                                   @NonNull final Book book) {
                 fields.setParentView(mVb.getRoot());
                 fields.setAll(book);
 
                 if (mUseLoanee) {
-                    onBindLoanee(book.getLoanee(db));
+                    onBindLoanee(book.getLoanee());
                 }
 
                 if (mUseToc) {
-                    onBindToc(db, book);
+                    onBindToc(book);
                 }
 
                 fields.setVisibility(mVb.getRoot(), true, false);
@@ -796,10 +796,8 @@ public class ShowBookFragment
              * Show or hide the Table Of Content section.
              *
              * @param book to load from
-             * @param db   Database Access
              */
-            private void onBindToc(@NonNull final DAO db,
-                                   @NonNull final Book book) {
+            private void onBindToc(@NonNull final Book book) {
                 final boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
                                                           Book.TOC_MULTIPLE_WORKS);
                 mVbToc.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
@@ -822,9 +820,6 @@ public class ShowBookFragment
 
                         final boolean isSet = tocEntry.getBookCount() > 1;
                         if (isSet) {
-                            // preload the titles here so we don't need to hang on to the db
-                            tocEntry.loadBookTitles(db);
-
                             rowVb.cbxMultipleBooks.setVisibility(View.VISIBLE);
                             rowVb.cbxMultipleBooks.setOnClickListener(v -> {
                                 final String titles = tocEntry

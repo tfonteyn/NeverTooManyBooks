@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,6 +30,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.Languages;
 
@@ -86,7 +87,7 @@ public class EditLanguageDialogFragment
     @Override
     protected List<String> getList() {
         //noinspection ConstantConditions
-        return mDb.getLanguages(getContext());
+        return LanguageDao.getInstance().getNameList(getContext());
     }
 
     @Override
@@ -96,7 +97,6 @@ public class EditLanguageDialogFragment
         final Locale userLocale = AppLocale.getInstance().getUserLocale(getContext());
         final String iso = Languages.getInstance()
                                     .getISO3FromDisplayName(getContext(), userLocale, currentText);
-        //noinspection ConstantConditions
-        mDb.updateLanguage(originalText, iso);
+        LanguageDao.getInstance().update(originalText, iso);
     }
 }

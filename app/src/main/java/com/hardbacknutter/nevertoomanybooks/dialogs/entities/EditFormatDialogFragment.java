@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,6 +29,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Format.
@@ -66,14 +67,12 @@ public class EditFormatDialogFragment
     @NonNull
     @Override
     protected List<String> getList() {
-        //noinspection ConstantConditions
-        return mDb.getFormats();
+        return FormatDao.getInstance().getList();
     }
 
     @Override
     void onSave(@NonNull final String originalText,
                 @NonNull final String currentText) {
-        //noinspection ConstantConditions
-        mDb.updateFormat(originalText, currentText);
+        FormatDao.getInstance().update(originalText, currentText);
     }
 }

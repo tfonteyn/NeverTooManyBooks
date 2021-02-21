@@ -24,8 +24,9 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -98,23 +99,21 @@ abstract class LibraryBase
      * The style is taken from the current Bookshelf.
      *
      * @param context Current context
-     * @param db      database access
      *
      * @return the new and mapped bookshelf
      *
-     * @throws DAO.DaoWriteException on failure
+     * @throws DaoWriteException on failure
      */
     @NonNull
-    Bookshelf createAsBookshelf(@NonNull final Context context,
-                                @NonNull final DAO db)
-            throws DAO.DaoWriteException {
+    Bookshelf createAsBookshelf(@NonNull final Context context)
+            throws DaoWriteException {
 
         final Bookshelf current = Bookshelf
-                .getBookshelf(context, db, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+                .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
-        final Bookshelf bookshelf = new Bookshelf(mName, current.getStyle(context, db));
-        if (db.insert(context, bookshelf) == -1) {
-            throw new DAO.DaoWriteException("insert Bookshelf");
+        final Bookshelf bookshelf = new Bookshelf(mName, current.getStyle(context));
+        if (BookshelfDao.getInstance().insert(context, bookshelf) == -1) {
+            throw new DaoWriteException("insert Bookshelf");
         }
 
         mMappedBookshelfId = bookshelf.getId();

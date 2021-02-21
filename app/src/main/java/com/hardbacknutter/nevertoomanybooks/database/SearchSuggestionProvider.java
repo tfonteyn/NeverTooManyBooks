@@ -40,17 +40,10 @@ public class SearchSuggestionProvider
      */
     private static final String AUTHORITY = ".SearchSuggestionProvider";
 
-    /** Log tag. */
-    private static final String TAG = "SearchSuggestions";
-
     /** Uri and query support. Arbitrary code to indicate a match. */
     private static final int URI_MATCH_SUGGEST = 1;
     /** Uri and query support. */
     private UriMatcher mUriMatcher;
-
-    /** Database Access. */
-    @Nullable
-    private DAO mDb;
 
     @Override
     public boolean onCreate() {
@@ -74,20 +67,21 @@ public class SearchSuggestionProvider
                 return null;
             }
 
-            if (mDb == null) {
-                // lazy init
+            final String query = BookDao.FtsSql.prepareSearchText(selectionArgs[0], null);
+            // do we have anything to search for?
+            if (!query.isEmpty()) {
+                //noinspection ConstantConditions,UnnecessaryLocalVariable
+                final Cursor cursor = DBHelper.getSyncDb(getContext())
+                                              .rawQuery(BookDao.FtsSql.SEARCH_SUGGESTIONS,
+                                                        new String[]{query});
 
-                //noinspection ConstantConditions
-                mDb = new DAO(getContext(), TAG);
+                //  if (cursor != null) {
+                //      //noinspection ConstantConditions
+                //     cursor.setNotificationUri(getContext().getContentResolver(), uri);
+                //  }
+
+                return cursor;
             }
-
-            //noinspection UnnecessaryLocalVariable
-            final Cursor cursor = mDb.fetchSearchSuggestions(selectionArgs[0]);
-            //  if (cursor != null) {
-            //      //noinspection ConstantConditions
-            //     cursor.setNotificationUri(getContext().getContentResolver(), uri);
-            //  }
-            return cursor;
         }
 
         return null;

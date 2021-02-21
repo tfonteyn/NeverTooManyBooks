@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,12 +24,12 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
 /**
  * Abstracts/shield a {@link Book} / {@link TocEntry} for use in a list
- * of works by an {@link Author}. i.e. {@link DAO#getAuthorWorks}.
+ * of works by an {@link Author}. i.e. {@link BookDao#getAuthorWorks}.
  */
 public interface AuthorWork {
 

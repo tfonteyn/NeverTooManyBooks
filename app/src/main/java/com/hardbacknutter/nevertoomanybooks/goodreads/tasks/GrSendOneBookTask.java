@@ -30,8 +30,9 @@ import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -89,21 +90,25 @@ public class GrSendOneBookTask
                 return new GrStatus(GrStatus.CANCELLED);
             }
 
-            try (DAO db = new DAO(context, TAG);
-                 Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
+            final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
+            final GoodreadsDao grDao = grManager.getGoodreadsDao();
+
+            try (BookDao db = new BookDao(context, TAG);
+                 Cursor cursor = grDao.fetchBookForExport(mBookId)) {
+
                 if (cursor.moveToFirst()) {
                     if (isCancelled()) {
                         return new GrStatus(GrStatus.CANCELLED);
                     }
                     publishProgressStep(0, context.getString(R.string.progress_msg_sending));
 
-                    final GoodreadsManager grManager = new GoodreadsManager(context, grAuth);
+
                     final DataHolder bookData = new CursorRow(cursor);
                     @GrStatus.Status
-                    final int status = grManager.sendOneBook(db, bookData);
+                    final int status = grManager.sendOneBook(db, grDao, bookData);
                     if (status == GrStatus.SUCCESS) {
                         // Record the update
-                        db.setGoodreadsSyncDate(mBookId);
+                        grDao.setSyncDate(mBookId);
                     }
                     return new GrStatus(status);
 

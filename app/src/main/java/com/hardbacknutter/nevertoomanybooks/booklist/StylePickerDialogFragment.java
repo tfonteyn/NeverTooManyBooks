@@ -39,7 +39,6 @@ import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -176,16 +175,14 @@ public class StylePickerDialogFragment
         final Context context = getContext();
 
         //noinspection ConstantConditions
-        try (DAO db = new DAO(context, TAG)) {
-            mStyleList = StyleUtils.getStyles(context, db, mShowAllStyles);
-            if (!mShowAllStyles && mCurrentStyleUuid != null) {
-                // make sure the currently selected style is in the list
-                if (mStyleList.stream().noneMatch(style -> mCurrentStyleUuid
-                        .equalsIgnoreCase(style.getUuid()))) {
-                    final ListStyle style = StyleUtils.getStyle(context, db, mCurrentStyleUuid);
-                    if (style != null) {
-                        mStyleList.add(style);
-                    }
+        mStyleList = StyleUtils.getStyles(context, mShowAllStyles);
+        if (!mShowAllStyles && mCurrentStyleUuid != null) {
+            // make sure the currently selected style is in the list
+            if (mStyleList.stream().noneMatch(style -> mCurrentStyleUuid
+                    .equalsIgnoreCase(style.getUuid()))) {
+                final ListStyle style = StyleUtils.getStyle(context, mCurrentStyleUuid);
+                if (style != null) {
+                    mStyleList.add(style);
                 }
             }
         }

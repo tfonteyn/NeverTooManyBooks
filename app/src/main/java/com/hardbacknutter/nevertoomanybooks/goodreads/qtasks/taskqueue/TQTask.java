@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.admin.ContextDialogItem;
 
 /**
@@ -169,7 +169,7 @@ public abstract class TQTask
     @CallSuper
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final List<ContextDialogItem> menuItems,
-                                    @NonNull final DAO db) {
+                                    @NonNull final BookDao db) {
         menuItems.add(new ContextDialogItem(
                 context.getString(R.string.gr_tq_menu_delete_task),
                 () -> QueueManager.getInstance().deleteTask(getId())));

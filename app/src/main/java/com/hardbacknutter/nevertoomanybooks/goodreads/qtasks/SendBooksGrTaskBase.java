@@ -28,8 +28,9 @@ import androidx.annotation.StringRes;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
@@ -44,6 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundExcepti
 
 public abstract class SendBooksGrTaskBase
         extends BaseTQTask {
+
+    private static final String TAG = "SendBooksGrTaskBase";
 
     /** Timeout before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
@@ -115,26 +118,27 @@ public abstract class SendBooksGrTaskBase
      * Try to export one book.
      *
      * @param grManager the Goodreads Manager
-     * @param db         Database Access
-     * @param bookData   the book data to send
+     * @param db        Database Access
+     * @param bookData  the book data to send
      *
      * @return {@code false} on failure, {@code true} on success
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     boolean sendOneBook(@NonNull final QueueManager queueManager,
                         @NonNull final GoodreadsManager grManager,
-                        @NonNull final DAO db,
+                        @NonNull final GoodreadsDao grDao,
+                        @NonNull final BookDao db,
                         @NonNull final DataHolder bookData) {
 
         final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
 
         try {
             @GrStatus.Status
-            final int status = grManager.sendOneBook(db, bookData);
+            final int status = grManager.sendOneBook(db, grDao, bookData);
             setLastExtStatus(status);
             if (status == GrStatus.SUCCESS) {
                 mSent++;
-                db.setGoodreadsSyncDate(bookId);
+                grDao.setSyncDate(bookId);
                 return true;
 
             } else if (status == GrStatus.FAILED_BOOK_HAS_NO_ISBN) {

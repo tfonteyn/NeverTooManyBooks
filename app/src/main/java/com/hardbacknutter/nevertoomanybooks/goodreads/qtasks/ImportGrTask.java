@@ -47,8 +47,10 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -154,7 +156,7 @@ public class ImportGrTask
     @Override
     public boolean run(@NonNull final Context context,
                        @NonNull final QueueManager queueManager) {
-        try (DAO db = new DAO(context, TAG)) {
+        try (BookDao db = new BookDao(context, TAG)) {
             // Import part of the sync
             final boolean ok = importReviews(context, db, queueManager);
 
@@ -185,7 +187,7 @@ public class ImportGrTask
      * @throws CredentialsException if there are no valid credentials available
      */
     private boolean importReviews(@NonNull final Context context,
-                                  @NonNull final DAO db,
+                                  @NonNull final BookDao db,
                                   @NonNull final QueueManager queueManager)
             throws CredentialsException {
 
@@ -285,7 +287,7 @@ public class ImportGrTask
      * @param db      Database Access
      */
     private void processReview(@NonNull final Context context,
-                               @NonNull final DAO db,
+                               @NonNull final BookDao db,
                                @NonNull final Bundle review) {
 
         final long grBookId = review.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
@@ -330,9 +332,9 @@ public class ImportGrTask
                         final Book delta = buildBook(context, db, localBook, review);
                         try {
                             // <strong>WARNING:</strong> a failed update is ignored (but logged).
-                            db.update(context, delta, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                                      | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
-                        } catch (@NonNull final DAO.DaoWriteException e) {
+                            db.update(context, delta, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                      | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                        } catch (@NonNull final DaoWriteException e) {
                             // ignore, but log it.
                             Logger.error(context, TAG, e);
                         }
@@ -342,9 +344,9 @@ public class ImportGrTask
                 // Create a new book with the Goodreads data.
                 final Book book = buildBook(context, db, new Book(), review);
                 try {
-                    db.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+                    db.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
 
-                } catch (@NonNull final DAO.DaoWriteException e) {
+                } catch (@NonNull final DaoWriteException e) {
                     // ignore, but log it.
                     Logger.error(context, TAG, e);
                 }
@@ -392,7 +394,7 @@ public class ImportGrTask
      */
     @NonNull
     private Book buildBook(@NonNull final Context context,
-                           @NonNull final DAO db,
+                           @NonNull final BookDao db,
                            @NonNull final Book localData,
                            @NonNull final Bundle goodreadsData) {
 
@@ -434,7 +436,7 @@ public class ImportGrTask
                             localData.getParcelableArrayList(Book.BKEY_SERIES_LIST);
                     final Series grSeries = Series.from(seriesTitleWithNumber);
                     seriesList.add(grSeries);
-                    Series.pruneList(seriesList, context, db, false, bookLocale);
+                    Series.pruneList(seriesList, context, false, bookLocale);
                     delta.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
                 }
             } else {
@@ -527,7 +529,7 @@ public class ImportGrTask
                     localData.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
             publisherList.add(Publisher.from(grPublisher));
 
-            Publisher.pruneList(publisherList, context, db, false, bookLocale);
+            Publisher.pruneList(publisherList, context, false, bookLocale);
             delta.putParcelableArrayList(Book.BKEY_PUBLISHER_LIST, publisherList);
         }
 
@@ -540,12 +542,12 @@ public class ImportGrTask
             final ArrayList<Bookshelf> bookshelfList =
                     localData.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
             for (final Bundle shelfData : grShelves) {
-                final String name = mapShelf(userLocale, db, shelfData.getString(Review.SHELF));
+                final String name = mapShelf(userLocale, shelfData.getString(Review.SHELF));
                 if (name != null && !name.isEmpty()) {
-                    bookshelfList.add(new Bookshelf(name, StyleUtils.getDefault(context, db)));
+                    bookshelfList.add(new Bookshelf(name, StyleUtils.getDefault(context)));
                 }
             }
-            Bookshelf.pruneList(bookshelfList, db);
+            Bookshelf.pruneList(bookshelfList);
             delta.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, bookshelfList);
         }
 
@@ -579,21 +581,19 @@ public class ImportGrTask
      * or the original if no match found.
      *
      * @param locale      to use
-     * @param db          Database Access
      * @param grShelfName Goodreads shelf name
      *
      * @return Local name, or Goodreads name if no match
      */
     @Nullable
     private String mapShelf(@NonNull final Locale locale,
-                            @NonNull final DAO db,
                             @Nullable final String grShelfName) {
 
         if (grShelfName == null) {
             return null;
         }
         if (mBookshelfLookup == null) {
-            final List<Bookshelf> bookshelves = db.getBookshelves();
+            final List<Bookshelf> bookshelves = BookshelfDao.getInstance().getAll();
             mBookshelfLookup = new HashMap<>(bookshelves.size());
             for (final Bookshelf bookshelf : bookshelves) {
                 mBookshelfLookup.put(GoodreadsShelf.canonicalizeName(locale, bookshelf.getName()),

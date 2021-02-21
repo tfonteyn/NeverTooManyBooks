@@ -57,8 +57,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -100,7 +101,7 @@ public class JsonRecordReader
     private static final String ERROR_IMPORT_FAILED_AT_ROW = "Import failed at row ";
     /** Database Access. */
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
     /** cached localized "Books" string. */
     @NonNull
     private final String mBooksString;
@@ -123,7 +124,7 @@ public class JsonRecordReader
      */
     @AnyThread
     public JsonRecordReader(@NonNull final Context context,
-                            @NonNull final DAO db,
+                            @NonNull final BookDao db,
                             @NonNull final Set<RecordType> importEntriesAllowed) {
         mDb = db;
         mImportEntriesAllowed = importEntriesAllowed;
@@ -182,8 +183,7 @@ public class JsonRecordReader
                                 new ListStyleCoder(context, mDb)
                                         .decode(jsonRoot)
                                         .stream()
-                                        .forEach(listStyle -> StyleUtils
-                                                .updateOrInsert(mDb, listStyle));
+                                        .forEach(StyleUtils::updateOrInsert);
                                 mResults.styles = jsonRoot.length();
                             }
                         }
@@ -289,7 +289,7 @@ public class JsonRecordReader
                     importBookWithUuid(context, updatesMustSync, updatesMayOverwrite,
                                        book, importNumericId);
 
-                } catch (@NonNull final DAO.DaoWriteException | SQLiteDoneException e) {
+                } catch (@NonNull final DaoWriteException | SQLiteDoneException e) {
                     //TODO: use a meaningful user-displaying string.
                     mResults.booksSkipped++;
                     mResults.failedLinesMessage.add(
@@ -337,14 +337,14 @@ public class JsonRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws DAO.DaoWriteException on failure
+     * @throws DaoWriteException on failure
      */
     private void importBookWithUuid(@NonNull final Context context,
                                     final boolean updatesMustSync,
                                     final boolean updatesMayOverwrite,
                                     @NonNull final Book book,
                                     final long importNumericId)
-            throws DAO.DaoWriteException {
+            throws DaoWriteException {
         // Verified to be valid earlier.
         final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
@@ -362,8 +362,8 @@ public class JsonRecordReader
                  && isImportNewer(context, databaseBookId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
 
-                mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                          | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                mDb.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                          | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + uuid
@@ -392,8 +392,8 @@ public class JsonRecordReader
             // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
             // - NO id, OR an id which does not exist in the database yet.
             // INSERT, explicitly allowing the id to be reused if present
-            final long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                                         | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+            final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                         | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "UUID=" + uuid

@@ -67,7 +67,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageViewLoaderWithCacheWrite;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
+import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -1219,8 +1219,8 @@ public class BooklistAdapter
 
             // 1. If caching is used, and we don't have cache building happening, check it.
             if (mAdapter.isImageCachingEnabled()
-                && !CoversDAO.ImageCacheWriterTask.hasActiveTasks()) {
-                final Bitmap bitmap = CoversDAO
+                && !CoverCacheDao.ImageCacheWriterTask.hasActiveTasks()) {
+                final Bitmap bitmap = CoverCacheDao
                         .getInstance(context)
                         .getImage(context, uuid, 0, mCoverLongestSide, mCoverLongestSide);
 

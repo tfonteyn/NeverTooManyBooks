@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,6 +26,7 @@ public class TransactionException
 
     public static final String REQUIRED = "TX required";
 
+    static final String NULL_LOCK = "Lock passed in was NULL";
     static final String ALREADY_STARTED = "TX already started";
     static final String NOT_STARTED = "No TX started";
     static final String INSIDE_SHARED_TX = "Inside shared TX";

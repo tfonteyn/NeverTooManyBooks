@@ -45,8 +45,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -73,7 +75,7 @@ public class CalibreContentServerWriter
     @NonNull
     private final CalibreContentServer mServer;
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
 
     /** Export configuration. */
     @NonNull
@@ -96,7 +98,7 @@ public class CalibreContentServerWriter
                                       @NonNull final ExportHelper helper)
             throws CertificateException, SSLException {
 
-        mDb = new DAO(context, TAG);
+        mDb = new BookDao(context, TAG);
 
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
@@ -126,8 +128,8 @@ public class CalibreContentServerWriter
         progressListener.setIndeterminate(null);
 
         try {
-            mServer.readMetaData(context, mDb);
-
+            mServer.readMetaData(context);
+            final CalibreLibraryDao libraryDao = CalibreLibraryDao.getInstance();
             for (final CalibreLibrary library : mServer.getLibraries()) {
 
                 final LocalDateTime dateSince;
@@ -143,7 +145,7 @@ public class CalibreContentServerWriter
                 }
                 // always set the sync date!
                 library.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
-                mDb.update(library);
+                libraryDao.update(library);
             }
         } catch (@NonNull final JSONException e) {
             throw new GeneralParsingException(e);
@@ -366,7 +368,7 @@ public class CalibreContentServerWriter
 
     @Override
     public void close() {
-        mDb.purge();
         mDb.close();
+        MaintenanceDao.getInstance().purge();
     }
 }

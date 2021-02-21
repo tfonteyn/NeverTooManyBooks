@@ -40,7 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PInt;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 
 public class ListStyleCoder
@@ -56,7 +56,7 @@ public class ListStyleCoder
     private final Context mContext;
     /** Database Access. */
     @Nullable
-    private final DAO mDb;
+    private final BookDao mDb;
 
     /**
      * Constructor. The {@link #encode} method does not need a database.
@@ -75,7 +75,7 @@ public class ListStyleCoder
      * @param db      Database access
      */
     public ListStyleCoder(@NonNull final Context context,
-                          @NonNull final DAO db) {
+                          @NonNull final BookDao db) {
         mContext = context;
         mDb = db;
     }
@@ -119,7 +119,7 @@ public class ListStyleCoder
 
         if (StyleUtils.BuiltinStyles.isBuiltin(uuid)) {
             final ListStyle style = Objects
-                    .requireNonNull(StyleUtils.getStyle(mContext, mDb, uuid));
+                    .requireNonNull(StyleUtils.getStyle(mContext, uuid));
             style.setPreferred(data.getBoolean(DBDefinitions.KEY_STYLE_IS_PREFERRED));
             style.setMenuPosition(data.getInt(DBDefinitions.KEY_STYLE_MENU_POSITION));
             return style;

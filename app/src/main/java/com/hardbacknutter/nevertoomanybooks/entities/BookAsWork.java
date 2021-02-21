@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import androidx.annotation.Nullable;
 
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
 
@@ -34,7 +34,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.dates.PartialDate;
  * Fakes a Book with just enough information to implement an {@link AuthorWork}.
  * This is a transitive solution.
  * <p>
- * See {@link DAO#getAuthorWorks}.
+ * See {@link BookDao#getAuthorWorks}.
  */
 public class BookAsWork
         implements ItemWithTitle, AuthorWork {

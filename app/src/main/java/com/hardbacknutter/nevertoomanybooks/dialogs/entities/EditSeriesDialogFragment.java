@@ -36,8 +36,9 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -59,8 +60,6 @@ public class EditSeriesDialogFragment
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
 
-    /** Database Access. */
-    private DAO mDb;
     /** View Binding. */
     private DialogEditSeriesBinding mVb;
 
@@ -99,9 +98,6 @@ public class EditSeriesDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mDb = new DAO(getContext(), TAG);
-
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
@@ -128,7 +124,8 @@ public class EditSeriesDialogFragment
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
-                ExtArrayAdapter.FilterType.Diacritic, mDb.getSeriesTitles());
+                ExtArrayAdapter.FilterType.Diacritic,
+                SeriesDao.getInstance().getNames());
 
         mVb.seriesTitle.setText(mTitle);
         mVb.seriesTitle.setAdapter(adapter);
@@ -165,19 +162,21 @@ public class EditSeriesDialogFragment
 
         final Context context = getContext();
 
+        final SeriesDao seriesDao = SeriesDao.getInstance();
+
         // There is no book involved here, so use the users Locale instead
         //noinspection ConstantConditions
         final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
         // check if it already exists (will be 0 if not)
-        final long existingId = mDb.getSeriesId(context, mSeries, true, bookLocale);
+        final long existingId = seriesDao.find(context, mSeries, true, bookLocale);
 
         if (existingId == 0) {
             final boolean success;
             if (mSeries.getId() == 0) {
-                success = mDb.insert(context, mSeries, bookLocale) > 0;
+                success = seriesDao.insert(context, mSeries, bookLocale) > 0;
             } else {
-                success = mDb.update(context, mSeries, bookLocale);
+                success = seriesDao.update(context, mSeries, bookLocale);
             }
             if (success) {
                 BooksOnBookshelf.RowChangeListener
@@ -196,12 +195,12 @@ public class EditSeriesDialogFragment
                         dismiss();
                         // move all books from the one being edited to the existing one
                         try {
-                            mDb.merge(context, mSeries, existingId);
+                            seriesDao.merge(context, mSeries, existingId);
                             BooksOnBookshelf.RowChangeListener.setResult(
                                     this, mRequestKey,
                                     // return the series who 'lost' it's books
                                     BooksOnBookshelf.RowChangeListener.SERIES, mSeries.getId());
-                        } catch (@NonNull final DAO.DaoWriteException e) {
+                        } catch (@NonNull final DaoWriteException e) {
                             Logger.error(context, TAG, e);
                             StandardDialogs.showError(context, R.string.error_storage_not_writable);
                         }
@@ -228,13 +227,5 @@ public class EditSeriesDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 }

@@ -32,7 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -58,13 +58,13 @@ public class BookCoder
     private final JsonCoder<CalibreLibrary> mCalibreLibraryCoder;
     private final JsonCoder<Bookshelf> mBookshelfCoder;
 
-    private final DAO mDb;
+    private final BookDao mDb;
 
     public BookCoder(@NonNull final Context context,
-                     @NonNull final DAO db) {
+                     @NonNull final BookDao db) {
         mDb = db;
 
-        mBookshelfCoder = new BookshelfCoder(context, mDb);
+        mBookshelfCoder = new BookshelfCoder(context);
         mCalibreLibraryCoder = new CalibreLibraryCoder();
     }
 
@@ -92,7 +92,7 @@ public class BookCoder
         // this book. We need to explicitly load and encode it using Book.BKEY_CALIBRE_LIBRARY
         // so we can easily find/decode it in the #decode
         if (DBDefinitions.KEY_FK_CALIBRE_LIBRARY.equals(key)) {
-            final CalibreLibrary library = book.getCalibreLibrary(mDb);
+            final CalibreLibrary library = book.getCalibreLibrary();
             if (library != null) {
                 out.put(Book.BKEY_CALIBRE_LIBRARY, mCalibreLibraryCoder.encode(library));
             }

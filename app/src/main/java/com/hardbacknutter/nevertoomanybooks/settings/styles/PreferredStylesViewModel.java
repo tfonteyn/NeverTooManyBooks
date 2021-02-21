@@ -35,28 +35,20 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 
 public class PreferredStylesViewModel
         extends ViewModel {
 
     /** Log tag. */
     private static final String TAG = "PreferredStylesVM";
-    /** Database Access. */
-    private DAO mDb;
+
     /** the selected style at onCreate time. */
     private String mInitialStyleUuid;
     /** Flag set when anything is changed. Includes moving styles up/down, on/off, ... */
     private boolean mIsDirty;
     /** The *in-memory* list of styles. */
     private ArrayList<ListStyle> mStyleList;
-
-    @Override
-    protected void onCleared() {
-        if (mDb != null) {
-            mDb.close();
-        }
-    }
 
     /**
      * Pseudo constructor.
@@ -66,9 +58,8 @@ public class PreferredStylesViewModel
      */
     void init(@NonNull final Context context,
               @NonNull final Bundle args) {
-        if (mDb == null) {
-            mDb = new DAO(context, TAG);
-            mStyleList = StyleUtils.getStyles(context, mDb, true);
+        if (mStyleList == null) {
+            mStyleList = StyleUtils.getStyles(context, true);
 
             mInitialStyleUuid = Objects.requireNonNull(
                     args.getString(ListStyle.BKEY_STYLE_UUID), "mInitialStyleUuid");
@@ -135,7 +126,7 @@ public class PreferredStylesViewModel
             mStyleList.add(0, style);
             style.setPreferred(true);
             // save the preferred state
-            StyleUtils.update(mDb, style);
+            StyleUtils.update(style);
             editedRow = 0;
 
         } else {
@@ -162,11 +153,11 @@ public class PreferredStylesViewModel
 
                         // Make the new one preferred and update it
                         style.setPreferred(true);
-                        StyleUtils.update(mDb, style);
+                        StyleUtils.update(style);
 
                         // And demote the original and update it
                         origStyle.setPreferred(false);
-                        StyleUtils.update(mDb, origStyle);
+                        StyleUtils.update(origStyle);
 
                         mStyleList.add(origStyle);
 
@@ -191,7 +182,7 @@ public class PreferredStylesViewModel
                       .ifPresent(s -> {
                           // demote the preferred state and update it
                           s.setPreferred(false);
-                          StyleUtils.update(mDb, s);
+                          StyleUtils.update(s);
                       });
         }
 
@@ -201,7 +192,7 @@ public class PreferredStylesViewModel
     @Nullable
     ListStyle getStyle(@NonNull final Context context,
                        @NonNull final String uuid) {
-        return StyleUtils.getStyle(context, mDb, uuid);
+        return StyleUtils.getStyle(context, uuid);
     }
 
     /**
@@ -210,7 +201,7 @@ public class PreferredStylesViewModel
      * @param style to update
      */
     void updateStyle(@NonNull final ListStyle style) {
-        StyleUtils.update(mDb, style);
+        StyleUtils.update(style);
     }
 
     /**
@@ -221,7 +212,7 @@ public class PreferredStylesViewModel
      */
     void deleteStyle(@NonNull final Context context,
                      @NonNull final ListStyle style) {
-        StyleUtils.delete(context, mDb, style);
+        StyleUtils.delete(context, style);
         mStyleList.remove(style);
     }
 
@@ -229,7 +220,7 @@ public class PreferredStylesViewModel
      * Save the preferred style menu list.
      */
     void updateMenuOrder() {
-        StyleUtils.updateMenuOrder(mDb, mStyleList);
+        StyleUtils.updateMenuOrder(mStyleList);
     }
 
     /**
@@ -238,6 +229,6 @@ public class PreferredStylesViewModel
      * @param styleId to purge
      */
     void purgeBLNS(final long styleId) {
-        mDb.purgeNodeStatesByStyle(styleId);
+        StyleDao.getInstance().purgeNodeStatesByStyle(styleId);
     }
 }

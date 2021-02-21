@@ -48,8 +48,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -111,7 +112,7 @@ public class CsvRecordReader
 
     /** Database Access. */
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
 
     @NonNull
     private final Locale mUserLocale;
@@ -136,9 +137,9 @@ public class CsvRecordReader
      */
     @AnyThread
     public CsvRecordReader(@NonNull final Context context,
-                           @NonNull final DAO db) {
+                           @NonNull final BookDao db) {
         mDb = db;
-        mBookCoder = new BookCoder(context, mDb);
+        mBookCoder = new BookCoder(context);
         mUserLocale = AppLocale.getInstance().getUserLocale(context);
 
         mBooksString = context.getString(R.string.lbl_books);
@@ -254,7 +255,7 @@ public class CsvRecordReader
                         importBook(context, book);
                     }
 
-                } catch (@NonNull final DAO.DaoWriteException
+                } catch (@NonNull final DaoWriteException
                         | SQLiteDoneException e) {
                     //TODO: use a meaningful user-displaying string.
                     handleRowException(row, e,
@@ -316,14 +317,14 @@ public class CsvRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws DAO.DaoWriteException on failure
+     * @throws DaoWriteException on failure
      */
     private void importBookWithUuid(@NonNull final Context context,
                                     final boolean updatesMustSync,
                                     final boolean updatesMayOverwrite,
                                     @NonNull final Book book,
                                     final long importNumericId)
-            throws DAO.DaoWriteException {
+            throws DaoWriteException {
         // Verified to be valid earlier.
         final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
@@ -341,8 +342,8 @@ public class CsvRecordReader
                  && isImportNewer(context, bookId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
 
-                mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                          | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                mDb.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                          | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "UUID=" + uuid
@@ -371,8 +372,8 @@ public class CsvRecordReader
             // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
             // - NO id, OR an id which does not exist in the database yet.
             // INSERT, explicitly allowing the id to be reused if present
-            final long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                                         | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+            final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                         | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "UUID=" + uuid
@@ -389,14 +390,14 @@ public class CsvRecordReader
      * @param context Current context
      * @param book    to import
      *
-     * @throws DAO.DaoWriteException on failure
+     * @throws DaoWriteException on failure
      */
     private void importBookWithId(@NonNull final Context context,
                                   final boolean updatesMustSync,
                                   final boolean updatesMayOverwrite,
                                   @NonNull final Book book,
                                   final long importNumericId)
-            throws DAO.DaoWriteException {
+            throws DaoWriteException {
         // Add the importNumericId back to the book.
         book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
 
@@ -404,8 +405,8 @@ public class CsvRecordReader
         if (!mDb.bookExistsById(importNumericId)) {
             // The id is not in use, simply insert the book using the given importNumericId,
             // explicitly allowing the id to be reused
-            final long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                                         | DAO.BOOK_FLAG_USE_ID_IF_PRESENT);
+            final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                                         | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "importNumericId=" + importNumericId
@@ -424,8 +425,8 @@ public class CsvRecordReader
             if ((updatesMustSync
                  && isImportNewer(context, importNumericId, book.getLastUpdateUtcDate(context)))
                 || updatesMayOverwrite) {
-                mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                          | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                mDb.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                          | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                 mResults.booksUpdated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                     Log.d(TAG, "importNumericId=" + importNumericId
@@ -443,10 +444,10 @@ public class CsvRecordReader
 
     private void importBook(@NonNull final Context context,
                             final Book book)
-            throws DAO.DaoWriteException {
+            throws DaoWriteException {
         // Always import books which have no UUID/ID, even if the book is a potential duplicate.
         // We don't try and search/match but leave it to the user.
-        final long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+        final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
         mResults.booksCreated++;
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
             Log.d(TAG, "UUID=''"

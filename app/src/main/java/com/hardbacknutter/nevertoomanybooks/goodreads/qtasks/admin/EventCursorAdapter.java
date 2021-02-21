@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -30,7 +30,7 @@ import androidx.annotation.NonNull;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.LegacyEvent;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQCursorAdapter;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQEventCursorRow;
@@ -38,9 +38,10 @@ import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.TQItem;
 
 public class EventCursorAdapter
         extends TQCursorAdapter {
+
     /** Database Access. */
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
 
     @NonNull
     private final LayoutInflater mLayoutInflater;
@@ -54,7 +55,7 @@ public class EventCursorAdapter
      */
     EventCursorAdapter(@NonNull final Context context,
                        @NonNull final Cursor cursor,
-                       @NonNull final DAO db) {
+                       @NonNull final BookDao db) {
         super(context, cursor);
         mLayoutInflater = LayoutInflater.from(context);
         mDb = db;

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -36,6 +36,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.TransactionException;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -585,9 +586,12 @@ class QueueDAO
      * @param db with a TRANSACTION started.
      */
     private void cleanupOrphans(@NonNull final SQLiteDatabase db) {
-        if (!db.inTransaction()) {
-            throw new TransactionException(TransactionException.REQUIRED);
+        if (BuildConfig.DEBUG /* always */) {
+            if (!db.inTransaction()) {
+                throw new TransactionException(TransactionException.REQUIRED);
+            }
         }
+
         try (SQLiteStatement stmt = db.compileStatement(SQL_DELETE_ORPHANED_EVENTS)) {
             stmt.executeUpdateDelete();
         }

@@ -42,7 +42,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ImportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReadMetaDataTask;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentCalibreLibraryMapperBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowEditCalibreLibraryBinding;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -82,14 +82,14 @@ public class CalibreLibraryMappingFragment
 
         //noinspection ConstantConditions
         mVm = new ViewModelProvider(getActivity()).get(CalibreLibraryMappingViewModel.class);
-        //noinspection ConstantConditions
-        mVm.init(getContext(), getArguments());
+        mVm.init(getArguments());
 
         final ArchiveReadMetaDataTask readMetaDataTask = new ViewModelProvider(this)
                 .get(ArchiveReadMetaDataTask.class);
         readMetaDataTask.onFinished().observe(getViewLifecycleOwner(), this::onMetaDataRead);
         readMetaDataTask.onFailure().observe(getViewLifecycleOwner(), this::onMetaDataFailure);
 
+        //noinspection ConstantConditions
         mLibraryArrayAdapter = new EntityArrayAdapter<>(getContext(), mVm.getLibraries());
         mVb.libraryName.setAdapter(mLibraryArrayAdapter);
         mVb.libraryName.setOnItemClickListener(
@@ -111,7 +111,7 @@ public class CalibreLibraryMappingFragment
                 final Bookshelf bookshelf = mVm.createLibraryAsBookshelf(getContext());
                 addBookshelf(bookshelf, mVb.bookshelf);
 
-            } catch (@NonNull final DAO.DaoWriteException e) {
+            } catch (@NonNull final DaoWriteException e) {
                 //TODO: better error msg
                 Snackbar.make(mVb.getRoot(), R.string.error_unknown,
                               Snackbar.LENGTH_LONG).show();
@@ -249,7 +249,7 @@ public class CalibreLibraryMappingFragment
                             getContext(), holder.getBindingAdapterPosition());
                     addBookshelf(bookshelf, holder.mVb.bookshelf);
 
-                } catch (@NonNull final DAO.DaoWriteException e) {
+                } catch (@NonNull final DaoWriteException e) {
                     //TODO: better error msg
                     Snackbar.make(holder.itemView, R.string.error_unknown,
                                   Snackbar.LENGTH_LONG).show();

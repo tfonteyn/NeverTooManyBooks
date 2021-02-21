@@ -44,7 +44,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.bin.CoverRecordReader;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 
@@ -86,7 +87,7 @@ public abstract class ArchiveReaderAbstract
     private static final String TAG = "ArchiveReaderAbstract";
     /** Database Access. */
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
     /** Import configuration. */
     @NonNull
     private final ImportHelper mHelper;
@@ -117,7 +118,7 @@ public abstract class ArchiveReaderAbstract
     protected ArchiveReaderAbstract(@NonNull final Context context,
                                     @NonNull final ImportHelper helper) {
         mHelper = helper;
-        mDb = new DAO(context, TAG);
+        mDb = new BookDao(context, TAG);
         mContentResolver = context.getContentResolver();
 
         mCoversText = context.getString(R.string.lbl_covers);
@@ -369,8 +370,8 @@ public abstract class ArchiveReaderAbstract
             mCoverReader.close();
         }
 
-        mDb.purge();
         mDb.close();
+        MaintenanceDao.getInstance().purge();
     }
 
     /**

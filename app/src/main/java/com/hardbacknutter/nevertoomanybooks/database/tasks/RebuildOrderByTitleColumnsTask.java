@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -26,7 +26,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -43,21 +43,14 @@ public class RebuildOrderByTitleColumnsTask
     /** Log tag. */
     private static final String TAG = "RebuildOrderByTitle";
 
-    /** Database Access. */
-    @NonNull
-    private final DAO mDb;
-
     /**
      * Constructor.
      *
-     * @param db           Database Access
      * @param taskListener for sending progress and finish messages to.
      */
     @UiThread
-    public RebuildOrderByTitleColumnsTask(@NonNull final DAO db,
-                                          @NonNull final TaskListener<Boolean> taskListener) {
+    public RebuildOrderByTitleColumnsTask(@NonNull final TaskListener<Boolean> taskListener) {
         super(R.id.TASK_ID_DB_REBUILD_REORDER_TITLES, taskListener);
-        mDb = db;
     }
 
     @NonNull
@@ -71,7 +64,7 @@ public class RebuildOrderByTitleColumnsTask
                 R.string.progress_msg_rebuilding_search_index)));
         try {
             final boolean reorder = ItemWithTitle.isReorderTitleForSorting(context);
-            mDb.rebuildOrderByTitleColumns(context, reorder);
+            MaintenanceDao.getInstance().rebuildOrderByTitleColumns(context, reorder);
             return true;
 
         } catch (@NonNull final RuntimeException e) {

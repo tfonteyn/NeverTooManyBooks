@@ -40,9 +40,11 @@ import java.util.List;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -67,7 +69,7 @@ public class ShowBookViewModel
     private final Intent mResultIntent = new Intent();
 
     /** Database Access. */
-    private DAO mDb;
+    private BookDao mDb;
 
     /** <strong>Optionally</strong> passed. */
     @Nullable
@@ -126,7 +128,7 @@ public class ShowBookViewModel
     public void init(@NonNull final Context context,
                      @NonNull final Bundle args) {
         if (mDb == null) {
-            mDb = new DAO(context, TAG);
+            mDb = new BookDao(context, TAG);
 
             final long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(bookId, "KEY_PK_ID");
@@ -134,7 +136,7 @@ public class ShowBookViewModel
 
             final String styleUuid = args.getString(ListStyle.BKEY_STYLE_UUID);
             if (styleUuid != null) {
-                mStyle = StyleUtils.getStyleOrDefault(context, mDb, styleUuid);
+                mStyle = StyleUtils.getStyleOrDefault(context, styleUuid);
             }
 
             // the list is optional
@@ -211,7 +213,7 @@ public class ShowBookViewModel
      * @return {@code true} if the book is available for lending.
      */
     public boolean isAvailable(@IntRange(from = 0) final int position) {
-        return getBookAtPosition(position).getLoanee(mDb).isEmpty();
+        return getBookAtPosition(position).getLoanee().isEmpty();
     }
 
     /**
@@ -222,7 +224,7 @@ public class ShowBookViewModel
     public void deleteLoan(@IntRange(from = 0) final int position) {
         final Book book = getBookAtPosition(position);
         book.remove(DBDefinitions.KEY_LOANEE);
-        mDb.setLoanee(book, null);
+        LoaneeDao.getInstance().setLoanee(book, null);
     }
 
     /**
@@ -266,13 +268,13 @@ public class ShowBookViewModel
     }
 
     @NonNull
-    public DAO getDb() {
+    public BookDao getDb() {
         return mDb;
     }
 
     @NonNull
     public List<Bookshelf> getAllBookshelves() {
-        return mDb.getBookshelves();
+        return BookshelfDao.getInstance().getAll();
     }
 
     /**

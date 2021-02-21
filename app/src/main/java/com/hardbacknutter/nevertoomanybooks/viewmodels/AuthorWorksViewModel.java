@@ -33,8 +33,10 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -50,7 +52,7 @@ public class AuthorWorksViewModel
     /** The list of TOC/Books we're displaying. */
     private final ArrayList<AuthorWork> mWorkList = new ArrayList<>();
     /** Database Access. */
-    private DAO mDb;
+    private BookDao mDb;
     /** Author is set in {@link #init}. */
     private Author mAuthor;
     /** Initial Bookshelf is set in {@link #init}. */
@@ -81,15 +83,16 @@ public class AuthorWorksViewModel
                      @NonNull final Bundle args) {
 
         if (mDb == null) {
-            mDb = new DAO(context, TAG);
+            mDb = new BookDao(context, TAG);
 
             final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");
-            mAuthor = Objects.requireNonNull(mDb.getAuthor(authorId), String.valueOf(authorId));
+            mAuthor = Objects.requireNonNull(AuthorDao.getInstance().getById(authorId),
+                                             String.valueOf(authorId));
 
             final long bookshelfId = args.getLong(DBDefinitions.KEY_FK_BOOKSHELF,
                                                   Bookshelf.ALL_BOOKS);
-            mBookshelf = Bookshelf.getBookshelf(context, mDb, bookshelfId, Bookshelf.ALL_BOOKS);
+            mBookshelf = Bookshelf.getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS);
             mAllBookshelves = mBookshelf.getId() == Bookshelf.ALL_BOOKS;
 
             mWithTocEntries = args.getBoolean(AuthorWorksFragment.BKEY_WITH_TOC, mWithTocEntries);
@@ -130,7 +133,7 @@ public class AuthorWorksViewModel
 
     @NonNull
     public ArrayList<Long> getBookIds(@NonNull final TocEntry tocEntry) {
-        return mDb.getBookIdsByTocEntry(tocEntry.getId());
+        return TocEntryDao.getInstance().getBookIds(tocEntry.getId());
     }
 
     /**
@@ -145,7 +148,7 @@ public class AuthorWorksViewModel
                           @NonNull final AuthorWork work) {
         final boolean success;
         if (work instanceof TocEntry) {
-            success = mDb.deleteTocEntry(context, work.getId());
+            success = TocEntryDao.getInstance().delete(context, (TocEntry) work);
 
         } else if (work instanceof BookAsWork) {
             success = mDb.deleteBook(context, work.getId());

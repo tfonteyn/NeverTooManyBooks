@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPreference;
 
@@ -46,8 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.widgets.TriStateMultiSelectListPrefe
 @Keep
 public class StyleFiltersFragment
         extends StyleBaseFragment {
-
-    private static final String TAG = "StyleFiltersFragment";
 
     @Override
     @CallSuper
@@ -100,17 +98,14 @@ public class StyleFiltersFragment
             //noinspection ConstantConditions
             bookshelves.setVisible(true);
 
-            try (DAO db = new DAO(getContext(), TAG)) {
-                final ArrayList<Bookshelf> list = db.getBookshelves();
-                bookshelves.setEntryValues(
-                        list.stream()
-                            .map(bookshelf -> String.valueOf(bookshelf.getId()))
-                            .toArray(String[]::new));
+            final ArrayList<Bookshelf> list = BookshelfDao.getInstance().getAll();
+            bookshelves.setEntryValues(
+                    list.stream()
+                        .map(bookshelf -> String.valueOf(bookshelf.getId()))
+                        .toArray(String[]::new));
 
-                bookshelves.setEntries(
-                        list.stream().map(Bookshelf::getName)
-                            .toArray(String[]::new));
-            }
+            bookshelves.setEntries(list.stream().map(Bookshelf::getName).toArray(String[]::new));
+
             bookshelves.setSummaryProvider(TriStateMultiSelectListPreference
                                                    .SimpleSummaryProvider.getInstance());
 

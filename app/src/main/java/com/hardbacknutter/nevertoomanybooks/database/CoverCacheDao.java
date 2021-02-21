@@ -71,10 +71,10 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
  * To be reviewed when/if the location of the images can be user-configured.
  * TODO: performance tests: cache enabled/disabled; do we actually need this db ?
  */
-public final class CoversDAO {
+public final class CoverCacheDao {
 
     /** Log tag. */
-    private static final String TAG = "CoversDAO";
+    private static final String TAG = "CoverCacheDao";
 
     /** Compresses images to 80% to store in the cache. */
     private static final int IMAGE_QUALITY_PERCENTAGE = 80;
@@ -117,7 +117,7 @@ public final class CoversDAO {
     private static final String SQL_COUNT = "SELECT COUNT(*) FROM " + TBL_IMAGE.getName();
 
     /** singleton. */
-    private static CoversDAO sInstance;
+    private static CoverCacheDao sInstance;
 
     /* table indexes. */
     static {
@@ -131,7 +131,7 @@ public final class CoversDAO {
     private final SynchronizedDb mSyncedDb;
 
     /** singleton. */
-    private CoversDAO(@NonNull final Context context) {
+    private CoverCacheDao(@NonNull final Context context) {
         mSyncedDb = CoversDbHelper.getSyncDb(context);
     }
 
@@ -142,10 +142,10 @@ public final class CoversDAO {
      *
      * @return instance
      */
-    public static CoversDAO getInstance(@NonNull final Context context) {
-        synchronized (CoversDAO.class) {
+    public static CoverCacheDao getInstance(@NonNull final Context context) {
+        synchronized (CoverCacheDao.class) {
             if (sInstance == null) {
-                sInstance = new CoversDAO(context);
+                sInstance = new CoverCacheDao(context);
             }
             return sInstance;
         }

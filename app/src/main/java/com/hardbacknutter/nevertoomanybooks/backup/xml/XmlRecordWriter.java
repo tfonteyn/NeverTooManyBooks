@@ -43,9 +43,15 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreVirtualLibrary;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -93,8 +99,6 @@ public class XmlRecordWriter
     private static final String TAG_BOOK = "book";
 
     /** Database Access. */
-    @NonNull
-    private final DAO mDb;
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -105,10 +109,8 @@ public class XmlRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public XmlRecordWriter(@NonNull final Context context,
-                           @Nullable final LocalDateTime utcSinceDateTime) {
+    public XmlRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new DAO(context, TAG);
     }
 
     @Override
@@ -176,7 +178,8 @@ public class XmlRecordWriter
     private void writeCalibreLibraries(@NonNull final Writer writer,
                                        @NonNull final ProgressListener progressListener)
             throws IOException {
-        final ArrayList<CalibreLibrary> calibreLibraries = mDb.getCalibreLibraries();
+        final ArrayList<CalibreLibrary> calibreLibraries =
+                CalibreLibraryDao.getInstance().getLibraries();
         if (!calibreLibraries.isEmpty()) {
             writer.write("<CalibreLibraryList");
             writer.write(XmlUtils.versionAttr(1));
@@ -232,7 +235,7 @@ public class XmlRecordWriter
                                   @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = mDb.fetchBookshelves()) {
+        try (Cursor cursor = BookshelfDao.getInstance().fetchAllUserShelves()) {
             writer.write('<' + Book.BKEY_BOOKSHELF_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_BOOKSHELVES));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -264,7 +267,7 @@ public class XmlRecordWriter
                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = mDb.fetchAuthors()) {
+        try (Cursor cursor = AuthorDao.getInstance().fetchAll()) {
             writer.write('<' + Book.BKEY_AUTHOR_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_AUTHORS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -302,7 +305,7 @@ public class XmlRecordWriter
                              @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = mDb.fetchSeries()) {
+        try (Cursor cursor = SeriesDao.getInstance().fetchAll()) {
             writer.write('<' + Book.BKEY_SERIES_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_SERIES));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -335,7 +338,7 @@ public class XmlRecordWriter
                                  @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = mDb.fetchPublishers()) {
+        try (Cursor cursor = PublisherDao.getInstance().fetchAll()) {
             writer.write('<' + Book.BKEY_PUBLISHER_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_PUBLISHERS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -364,7 +367,7 @@ public class XmlRecordWriter
     private void writeToc(@NonNull final Writer writer,
                           @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (Cursor cursor = mDb.fetchTocs()) {
+        try (Cursor cursor = TocEntryDao.getInstance().fetchAll()) {
             writer.write('<' + Book.BKEY_TOC_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_TOC_LIST));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -422,7 +425,9 @@ public class XmlRecordWriter
         final List<Domain> externalIdDomains = SearchEngineRegistry
                 .getInstance().getExternalIdDomains();
 
-        try (Cursor cursor = mDb.fetchBooksForExport(utcSinceDateTime)) {
+        try (BookDao db = new BookDao(context, TAG);
+             Cursor cursor = db.fetchBooksForExport(utcSinceDateTime)) {
+
             writer.write('<' + RecordType.Books.getName());
             writer.write(XmlUtils.versionAttr(VERSION_BOOKS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -430,7 +435,7 @@ public class XmlRecordWriter
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                final Book book = Book.from(cursor, mDb);
+                final Book book = Book.from(cursor, db);
                 final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
 
                 String title = book.getString(DBDefinitions.KEY_TITLE);
@@ -640,10 +645,5 @@ public class XmlRecordWriter
     @Override
     public int getVersion() {
         return VERSION;
-    }
-
-    @Override
-    public void close() {
-        mDb.close();
     }
 }

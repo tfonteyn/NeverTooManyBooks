@@ -32,8 +32,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookTocBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -55,8 +55,7 @@ public class EditTocEntryDialogFragment
     private static final String BKEY_REQUEST_KEY = TAG + ":rk";
 
     private String mRequestKey;
-    /** Database Access. */
-    private DAO mDb;
+
     /** View Binding. */
     private DialogEditBookTocBinding mVb;
 
@@ -89,9 +88,6 @@ public class EditTocEntryDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mDb = new DAO(getContext(), TAG);
-
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
@@ -101,6 +97,7 @@ public class EditTocEntryDialogFragment
         if (savedInstanceState == null) {
             mTitle = mTocEntry.getTitle();
             mFirstPublicationDate = mTocEntry.getFirstPublicationDate();
+            //noinspection ConstantConditions
             mAuthorName = mTocEntry.getPrimaryAuthor().getLabel(getContext());
         } else {
             //noinspection ConstantConditions
@@ -152,7 +149,7 @@ public class EditTocEntryDialogFragment
                 mAuthorAdapter = new ExtArrayAdapter<>(
                         getContext(), R.layout.dropdown_menu_popup_item,
                         ExtArrayAdapter.FilterType.Diacritic,
-                        mDb.getAuthorNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
+                        AuthorDao.getInstance().getNames(DBDefinitions.KEY_AUTHOR_FORMATTED));
                 mVb.author.setAdapter(mAuthorAdapter);
             }
 
@@ -217,14 +214,6 @@ public class EditTocEntryDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 
     public abstract static class Launcher

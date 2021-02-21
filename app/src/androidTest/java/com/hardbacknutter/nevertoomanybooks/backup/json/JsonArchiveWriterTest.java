@@ -45,8 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -65,10 +66,10 @@ public class JsonArchiveWriterTest {
     @Before
     public void count() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, TAG)) {
+        try (BookDao db = new BookDao(context, TAG)) {
             mBookInDb = db.countBooks();
 
-            mNrOfStyles = StyleUtils.getStyles(context, db, true).size();
+            mNrOfStyles = StyleUtils.getStyles(context, true).size();
         }
         if (mBookInDb < 10) {
             throw new IllegalStateException("need at least 10 books for testing");
@@ -120,7 +121,7 @@ public class JsonArchiveWriterTest {
 
     @Test
     public void books()
-            throws ImportException, DAO.DaoWriteException,
+            throws ImportException, DaoWriteException,
                    InvalidArchiveException, GeneralParsingException,
                    IOException, CertificateException {
 
@@ -162,7 +163,7 @@ public class JsonArchiveWriterTest {
         final long deletedBookId = ids.get(3);
         final long modifiedBookId = ids.get(5);
 
-        try (DAO db = new DAO(context, TAG)) {
+        try (BookDao db = new BookDao(context, TAG)) {
             db.deleteBook(context, deletedBookId);
 
             final Book book = Book.from(modifiedBookId, db);

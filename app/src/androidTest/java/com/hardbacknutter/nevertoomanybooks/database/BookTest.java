@@ -37,6 +37,9 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -109,7 +112,7 @@ public class BookTest {
         mTocEntryList.clear();
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "setup")) {
+        try (BookDao db = new BookDao(context, "setup")) {
 
             final SynchronizedDb syncDb = db.getSyncDb();
             Constants.deleteTocs(syncDb);
@@ -117,7 +120,7 @@ public class BookTest {
             Constants.deleteAuthors(syncDb);
             Constants.deletePublishers(syncDb);
 
-            mBookshelf[0] = Bookshelf.getBookshelf(context, db, Bookshelf.DEFAULT);
+            mBookshelf[0] = Bookshelf.getBookshelf(context, Bookshelf.DEFAULT);
             mBookshelfList.clear();
             mBookshelfList.add(mBookshelf[0]);
 
@@ -125,7 +128,7 @@ public class BookTest {
             mAuthor[1] = Author.from(AuthorFullName(1));
 
             // insert author[0] but do NOT insert author[1]
-            mAuthorId[0] = db.insert(context, mAuthor[0]);
+            mAuthorId[0] = AuthorDao.getInstance().insert(context, mAuthor[0]);
             mAuthorList.clear();
             mAuthorList.add(mAuthor[0]);
 
@@ -133,7 +136,8 @@ public class BookTest {
             mPublisher[1] = Publisher.from(Constants.PUBLISHER + "1");
 
             // insert publisher[0] but do NOT publisher author[1]
-            mPublisherId[0] = db.insert(context, mPublisher[0], Locale.getDefault());
+            mPublisherId[0] = PublisherDao.getInstance()
+                                          .insert(context, mPublisher[0], Locale.getDefault());
             mPublisherList.clear();
             mPublisherList.add(mPublisher[0]);
         }
@@ -211,11 +215,11 @@ public class BookTest {
      */
     @Test
     public void book()
-            throws DAO.DaoWriteException, IOException {
+            throws DaoWriteException, IOException {
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        try (DAO db = new DAO(context, "book")) {
+        try (BookDao db = new BookDao(context, "book")) {
 
             mBook[0] = prepareAndInsertBook(context, db);
             mBookId[0] = mBook[0].getId();
@@ -344,9 +348,9 @@ public class BookTest {
 
     @Test
     public void showBookVM()
-            throws DAO.DaoWriteException, ExternalStorageException {
+            throws DaoWriteException, ExternalStorageException {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        try (DAO db = new DAO(context, "ShowBookViewModel-prep")) {
+        try (BookDao db = new BookDao(context, "ShowBookViewModel-prep")) {
             mBook[0] = prepareAndInsertBook(context, db);
             mBookId[0] = mBook[0].getId();
         }
@@ -369,8 +373,8 @@ public class BookTest {
      * Create and insert a book.
      */
     private Book prepareAndInsertBook(@NonNull final Context context,
-                                      @NonNull final DAO db)
-            throws DAO.DaoWriteException, ExternalStorageException {
+                                      @NonNull final BookDao db)
+            throws DaoWriteException, ExternalStorageException {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);

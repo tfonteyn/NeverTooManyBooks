@@ -39,8 +39,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityEditBookBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -233,7 +233,7 @@ public class EditBookActivity
             mVm.saveBook(this);
             setResultsAndFinish();
 
-        } catch (@NonNull final DAO.DaoWriteException e) {
+        } catch (@NonNull final DaoWriteException e) {
             Logger.error(this, TAG, e);
             StandardDialogs.showError(this, R.string.error_storage_not_writable);
         }

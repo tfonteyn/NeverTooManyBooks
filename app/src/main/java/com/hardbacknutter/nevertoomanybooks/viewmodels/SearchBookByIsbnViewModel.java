@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 
 public class SearchBookByIsbnViewModel
@@ -67,7 +67,7 @@ public class SearchBookByIsbnViewModel
     /** The batch mode queue. */
     private final List<ISBN> mScanQueue = new ArrayList<>();
     /** Database Access. */
-    private DAO mDb;
+    private BookDao mDb;
     @Mode
     private int mScannerMode;
     /** Only start the scanner automatically upon the very first start of the fragment. */
@@ -99,7 +99,7 @@ public class SearchBookByIsbnViewModel
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
         if (mDb == null) {
-            mDb = new DAO(context, TAG);
+            mDb = new BookDao(context, TAG);
 
             if (args != null) {
                 mScannerMode = args.getInt(BKEY_SCAN_MODE, SCANNER_OFF);

@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -79,7 +79,7 @@ public class JsonRecordWriter
 
     /** Database Access. */
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -93,7 +93,7 @@ public class JsonRecordWriter
     public JsonRecordWriter(@NonNull final Context context,
                             @Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
-        mDb = new DAO(context, TAG);
+        mDb = new BookDao(context, TAG);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class JsonRecordWriter
             if (entries.contains(RecordType.Styles)
                 && !progressListener.isCancelled()) {
                 progressListener.publishProgressStep(1, context.getString(R.string.lbl_styles));
-                final List<ListStyle> styles = StyleUtils.getStyles(context, mDb, true);
+                final List<ListStyle> styles = StyleUtils.getStyles(context, true);
                 if (!styles.isEmpty()) {
                     final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
                     jsonData.put(RecordType.Styles.getName(), coder.encode(styles));

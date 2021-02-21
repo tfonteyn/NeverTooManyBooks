@@ -41,9 +41,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDAO;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CoversDAO;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentMaintenanceBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.DebugReport;
@@ -127,7 +128,7 @@ public class MaintenanceFragment
         mVb.btnPurgeFiles.setOnClickListener(v -> {
             final Context context = v.getContext();
             final ArrayList<String> bookUuidList;
-            try (DAO db = new DAO(v.getContext(), TAG)) {
+            try (BookDao db = new BookDao(v.getContext(), TAG)) {
                 bookUuidList = db.getBookUuidList();
             }
 
@@ -153,7 +154,7 @@ public class MaintenanceFragment
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) ->
-                        DAO.clearNodeStateData(v.getContext()))
+                        BooklistNodeDAO.clearNodeStateData(v.getContext()))
                 .create()
                 .show());
 
@@ -270,7 +271,7 @@ public class MaintenanceFragment
             PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
 
             context.deleteDatabase(DBHelper.DATABASE_NAME);
-            context.deleteDatabase(CoversDAO.CoversDbHelper.DATABASE_NAME);
+            context.deleteDatabase(CoverCacheDao.CoversDbHelper.DATABASE_NAME);
             context.deleteDatabase(QueueDBHelper.DATABASE_NAME);
 
             AppDir.deleteAllContent(context);

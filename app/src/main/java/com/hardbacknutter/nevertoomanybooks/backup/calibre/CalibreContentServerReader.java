@@ -52,8 +52,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
+import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -117,7 +120,7 @@ public class CalibreContentServerReader
     private final String mBooksString;
 
     @NonNull
-    private final DAO mDb;
+    private final BookDao mDb;
 
     @NonNull
     private final CalibreContentServer mServer;
@@ -142,7 +145,7 @@ public class CalibreContentServerReader
                                       @NonNull final ImportHelper helper)
             throws CertificateException, SSLException {
 
-        mDb = new DAO(context, TAG);
+        mDb = new BookDao(context, TAG);
 
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
@@ -160,7 +163,7 @@ public class CalibreContentServerReader
     private void initServer(@NonNull final Context context)
             throws IOException, JSONException {
 
-        mServer.readMetaData(context, mDb);
+        mServer.readMetaData(context);
 
         mLibrary = mHelper.getExtraArgs().getParcelable(CalibreContentServer.BKEY_LIBRARY);
         if (mLibrary == null) {
@@ -198,6 +201,8 @@ public class CalibreContentServerReader
     public ImportResults read(@NonNull final Context context,
                               @NonNull final ProgressListener progressListener)
             throws GeneralParsingException, IOException {
+
+        final CalibreLibraryDao libraryDao = CalibreLibraryDao.getInstance();
 
         mResults = new ImportResults();
 
@@ -268,7 +273,7 @@ public class CalibreContentServerReader
                                                 bookListVirtualLibs.getJSONArray(key));
                             }
 
-                            handleBook(context, calibreBook);
+                            handleBook(context, libraryDao, calibreBook);
                             mResults.booksProcessed++;
 
                             final String msg = String.format(mProgressMessage,
@@ -290,7 +295,8 @@ public class CalibreContentServerReader
 
         // always set the sync date!
         mLibrary.setLastSyncDate(LocalDateTime.now(ZoneOffset.UTC));
-        mDb.update(mLibrary);
+
+        libraryDao.update(mLibrary);
 
         return mResults;
     }
@@ -302,11 +308,12 @@ public class CalibreContentServerReader
      * @param calibreBook the book data to import
      */
     private void handleBook(@NonNull final Context context,
+                            @NonNull final CalibreLibraryDao libraryDao,
                             @NonNull final JSONObject calibreBook) {
         try {
             final String calibreUuid = calibreBook.getString(CalibreBook.UUID);
             // check if the book exists in our database, and fetch it's id.
-            final long bookId = mDb.getBookIdFromCalibreUuid(calibreUuid);
+            final long bookId = libraryDao.getBookIdFromCalibreUuid(calibreUuid);
             if (bookId > 0) {
                 final Book book = Book.from(bookId, mDb);
                 // UPDATE the existing book (if allowed). Check the sync option FIRST!
@@ -317,8 +324,8 @@ public class CalibreContentServerReader
                     book.setStage(EntityStage.Stage.Dirty);
                     copyCalibreData(context, calibreBook, book);
 
-                    mDb.update(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION
-                                              | DAO.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                    mDb.update(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                              | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
 
                     mResults.booksUpdated++;
                     if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
@@ -342,7 +349,7 @@ public class CalibreContentServerReader
                 book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
                 copyCalibreData(context, calibreBook, book);
 
-                final long insId = mDb.insert(context, book, DAO.BOOK_FLAG_IS_BATCH_OPERATION);
+                final long insId = mDb.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION);
                 mResults.booksCreated++;
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CALIBRE_BOOKS) {
                     Log.d(TAG, "calibreUuid=" + calibreUuid
@@ -351,7 +358,7 @@ public class CalibreContentServerReader
                 }
             }
 
-        } catch (@NonNull final DAO.DaoWriteException | SQLiteDoneException | JSONException e) {
+        } catch (@NonNull final DaoWriteException | SQLiteDoneException | JSONException e) {
             // log, but don't fail
             Logger.error(context, TAG, e);
             mResults.booksSkipped++;
@@ -584,7 +591,7 @@ public class CalibreContentServerReader
         // Add the physical library mapped Bookshelf
         //noinspection ConstantConditions
         final Bookshelf mappedBookshelf = Bookshelf
-                .getBookshelf(context, mDb, mLibrary.getMappedBookshelfId(), Bookshelf.PREFERRED);
+                .getBookshelf(context, mLibrary.getMappedBookshelfId(), Bookshelf.PREFERRED);
         if (bookShelves.isEmpty()) {
             // new book
             bookShelves.add(mappedBookshelf);
@@ -610,7 +617,7 @@ public class CalibreContentServerReader
                         // it will always be present of course.
                         .ifPresent(vlib -> {
                             final Bookshelf vlibMappedBookshelf =
-                                    Bookshelf.getBookshelf(context, mDb,
+                                    Bookshelf.getBookshelf(context,
                                                            vlib.getMappedBookshelfId(),
                                                            mLibrary.getMappedBookshelfId());
 
@@ -647,7 +654,7 @@ public class CalibreContentServerReader
 
     @Override
     public void close() {
-        mDb.purge();
         mDb.close();
+        MaintenanceDao.getInstance().purge();
     }
 }

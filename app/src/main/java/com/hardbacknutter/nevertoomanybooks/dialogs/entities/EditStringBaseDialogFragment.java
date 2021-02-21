@@ -33,7 +33,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditStringBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.ExtArrayAdapter;
@@ -56,9 +55,6 @@ public abstract class EditStringBaseDialogFragment
     private final int mLabelId;
     @BooksOnBookshelf.RowChangeListener.Change
     private final int mFieldFlag;
-    /** Database Access. */
-    @Nullable
-    DAO mDb;
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
     /** View Binding. */
@@ -89,8 +85,6 @@ public abstract class EditStringBaseDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //noinspection ConstantConditions
-        mDb = new DAO(getContext(), TAG);
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
@@ -199,13 +193,5 @@ public abstract class EditStringBaseDialogFragment
     public void onPause() {
         viewToModel();
         super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        if (mDb != null) {
-            mDb.close();
-        }
-        super.onDestroy();
     }
 }

@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.DBCleanerTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.OptimizeDbTask;
 import com.hardbacknutter.nevertoomanybooks.database.tasks.RebuildFtsTask;
@@ -122,8 +122,6 @@ public class StartupViewModel
         }
     };
 
-    /** Database Access. */
-    private DAO mDb;
     /** Flag to ensure tasks are only ever started once. */
     private boolean mIsFirstStart = true;
     /** stage the startup is at. */
@@ -186,14 +184,6 @@ public class StartupViewModel
             ed.remove(key);
         }
         ed.apply();
-    }
-
-    @Override
-    protected void onCleared() {
-        super.onCleared();
-        if (mDb != null) {
-            mDb.close();
-        }
     }
 
     public boolean isRunning() {
@@ -263,10 +253,9 @@ public class StartupViewModel
         // Clear the flag
         mIsFirstStart = false;
 
+        // Explicitly open the database to trigger any database upgrade or the initial creation.
         try {
-            // this can trigger a database upgrade (or the initial creation)
-            // which is why we catch ALL exceptions here.
-            mDb = new DAO(context, TAG);
+            DBHelper.getSyncDb(context);
 
         } catch (@NonNull final Exception e) {
             Logger.error(context, TAG, e, "startTasks");
@@ -284,12 +273,12 @@ public class StartupViewModel
         if (mDoMaintenance || global.getBoolean(PK_RUN_MAINTENANCE, false)) {
             // cleaner must be started after the language mapper task,
             // but before the rebuild tasks.
-            startTask(new DBCleanerTask(mDb, mTaskListener));
+            startTask(new DBCleanerTask(mTaskListener));
             optimizeDb = true;
         }
 
         if (global.getBoolean(PK_REBUILD_ORDERBY_COLUMNS, false)) {
-            startTask(new RebuildOrderByTitleColumnsTask(mDb, mTaskListener));
+            startTask(new RebuildOrderByTitleColumnsTask(mTaskListener));
             optimizeDb = true;
         }
 
@@ -299,7 +288,7 @@ public class StartupViewModel
         }
 
         if (global.getBoolean(PK_REBUILD_FTS, false)) {
-            startTask(new RebuildFtsTask(mDb, mTaskListener));
+            startTask(new RebuildFtsTask(mTaskListener));
             optimizeDb = true;
         }
 

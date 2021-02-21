@@ -19,13 +19,15 @@
  */
 package com.hardbacknutter.nevertoomanybooks.goodreads.qtasks;
 
+import android.content.Context;
 import android.database.Cursor;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 
+import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -62,11 +64,14 @@ public class SendOneBookGrTask
     protected boolean send(@NonNull final QueueManager queueManager,
                            @NonNull final GoodreadsManager grManager) {
 
-        try (DAO db = new DAO(grManager.getAppContext(), TAG);
-             Cursor cursor = db.fetchBookForGoodreadsExport(mBookId)) {
+        final Context appContext = grManager.getAppContext();
+        final GoodreadsDao grDao = grManager.getGoodreadsDao();
+        try (BookDao db = new BookDao(appContext, TAG);
+             Cursor cursor = grDao.fetchBookForExport(mBookId)) {
+
             final DataHolder bookData = new CursorRow(cursor);
             while (cursor.moveToNext()) {
-                if (!sendOneBook(queueManager, grManager, db, bookData)) {
+                if (!sendOneBook(queueManager, grManager, grDao, db, bookData)) {
                     // quit on error
                     return false;
                 }

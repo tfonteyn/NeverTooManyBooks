@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DAO;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 public class EditBookshelvesViewModel
@@ -47,9 +47,6 @@ public class EditBookshelvesViewModel
 
     private final MutableLiveData<Void> mSelectedPositionChanged = new MutableLiveData<>();
 
-    /** Database Access. */
-    private DAO mDb;
-
     /** Currently selected row. */
     private int mSelectedPosition = RecyclerView.NO_POSITION;
 
@@ -57,13 +54,6 @@ public class EditBookshelvesViewModel
     private ArrayList<Bookshelf> mList;
     /** the selected bookshelf id, can be {@code 0} for none. */
     private long mSelectedBookshelfId;
-
-    @Override
-    protected void onCleared() {
-        if (mDb != null) {
-            mDb.close();
-        }
-    }
 
     public long getSelectedBookshelfId() {
         return mSelectedBookshelfId;
@@ -76,11 +66,9 @@ public class EditBookshelvesViewModel
      *
      * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
-    public void init(@NonNull final Context context,
-                     @Nullable final Bundle args) {
-        if (mDb == null) {
-            mDb = new DAO(context, TAG);
-            mList = mDb.getBookshelves();
+    public void init(@Nullable final Bundle args) {
+        if (mList == null) {
+            mList = BookshelfDao.getInstance().getAll();
             if (args != null) {
                 // set as the initial result
                 mSelectedBookshelfId = args.getLong(BKEY_CURRENT_BOOKSHELF);
@@ -91,7 +79,7 @@ public class EditBookshelvesViewModel
 
     public void reloadListAndSetSelectedPosition(final long bookshelfId) {
         mList.clear();
-        mList.addAll(mDb.getBookshelves());
+        mList.addAll(BookshelfDao.getInstance().getAll());
         setSelectedPosition(findSelectedPosition(bookshelfId));
     }
 
@@ -134,16 +122,16 @@ public class EditBookshelvesViewModel
 
     @NonNull
     public Bookshelf createNewBookshelf(@NonNull final Context context) {
-        return new Bookshelf("", StyleUtils.getDefault(context, mDb));
+        return new Bookshelf("", StyleUtils.getDefault(context));
     }
 
     public void deleteBookshelf(final int position) {
         final Bookshelf bookshelf = mList.get(position);
-        mDb.delete(bookshelf);
+        BookshelfDao.getInstance().delete(bookshelf);
         mList.remove(bookshelf);
     }
 
     public void purgeBLNS() {
-        mDb.purgeNodeStatesByBookshelf(mList.get(mSelectedPosition).getId());
+        BookshelfDao.getInstance().purgeNodeStates(mList.get(mSelectedPosition).getId());
     }
 }
