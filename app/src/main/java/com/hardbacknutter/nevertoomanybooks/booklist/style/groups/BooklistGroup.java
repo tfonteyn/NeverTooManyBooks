@@ -41,7 +41,6 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.App;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistAdapter;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
@@ -52,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.utils.UniqueMap;
+import com.hardbacknutter.nevertoomanybooks.viewmodels.BooksOnBookshelfViewModel;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_IS_COMPLETE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_BOOKSHELF_SORT;
@@ -131,7 +131,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  * <ol>
  *      <li>add it to {@link GroupKey} and update {@link #GROUP_KEY_MAX}</li>
  *      <li>if necessary add new domain to {@link DBDefinitions}</li>
- *      <li>modify {@link Booklist#build} to add the necessary grouped/sorted domains</li>
+ *      <li>modify {@link BooksOnBookshelfViewModel} to add the necessary grouped/sorted domains</li>
  *      <li>modify {@link BooklistAdapter#onCreateViewHolder} ; If it is just a string field it can
  *          use a {@link BooklistAdapter}.GenericStringHolder otherwise add a new holder</li>
  * </ol>

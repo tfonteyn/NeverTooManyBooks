@@ -46,6 +46,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistCursor;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNode;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListScreenBookFields;
@@ -74,6 +75,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 public class BooksOnBookshelfViewModel
         extends VMTask<List<BooklistNode>> {
 
+    private static final String _FROM_ = " FROM ";
+    private static final String _WHERE_ = " WHERE ";
+
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelfViewModel";
     /** collapsed/expanded. */
@@ -88,7 +92,7 @@ public class BooksOnBookshelfViewModel
     /** Cache for all bookshelves. */
     private final List<Bookshelf> mBookshelfList = new ArrayList<>();
     /** Database Access. */
-    private BookDao mDb;
+    private BookDao mBookDao;
     /**
      * Flag (potentially) set when coming back from another Activity.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
@@ -102,8 +106,8 @@ public class BooksOnBookshelfViewModel
     /** The row id we want the new list to display more-or-less in the center. */
     private long mDesiredCentralBookId;
     /** Preferred booklist state in next rebuild. */
-    @Booklist.ListRebuildMode
-    private int mRebuildState;
+    @BooklistBuilder.ListRebuildMode
+    private int mRebuildMode;
     /** Current displayed list. */
     @Nullable
     private Booklist mBooklist;
@@ -165,8 +169,8 @@ public class BooksOnBookshelfViewModel
             mBooklist.close();
         }
 
-        if (mDb != null) {
-            mDb.close();
+        if (mBookDao != null) {
+            mBookDao.close();
         }
 
         super.onCleared();
@@ -181,13 +185,13 @@ public class BooksOnBookshelfViewModel
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {
 
-        if (mDb == null) {
+        if (mBookDao == null) {
             initFixedDomainList();
 
-            mDb = new BookDao(context, TAG);
+            mBookDao = new BookDao(context, TAG);
 
             // first start of the activity, read from user preference
-            mRebuildState = getPreferredListRebuildState(context);
+            mRebuildMode = getPreferredListRebuildMode(context);
 
             if (args != null) {
                 // extract search criteria if any are present
@@ -195,7 +199,7 @@ public class BooksOnBookshelfViewModel
 
                 // allow the caller to override the user preference
                 if (args.containsKey(BKEY_LIST_STATE)) {
-                    mRebuildState = args.getInt(BKEY_LIST_STATE);
+                    mRebuildMode = args.getInt(BKEY_LIST_STATE);
                 }
 
                 // check for an explicit bookshelf set
@@ -206,7 +210,7 @@ public class BooksOnBookshelfViewModel
             }
         } else {
             // always preserve the state when the hosting fragment was revived
-            mRebuildState = Booklist.PREF_REBUILD_SAVED_STATE;
+            mRebuildMode = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
         }
 
         // Set the last/preferred bookshelf if not explicitly set above
@@ -217,27 +221,26 @@ public class BooksOnBookshelfViewModel
         }
     }
 
-    public void resetPreferredListRebuildState(@NonNull final Context context) {
-        mRebuildState = getPreferredListRebuildState(context);
+    public void resetPreferredListRebuildMode(@NonNull final Context context) {
+        mRebuildMode = getPreferredListRebuildMode(context);
     }
 
     /**
-     * Get the current preferred rebuild state for the list.
+     * Get the current preferred rebuild mode for the list.
      *
      * @param context Current context
      *
      * @return ListRebuildMode
      */
-    @Booklist.ListRebuildMode
-    private int getPreferredListRebuildState(@NonNull final Context context) {
+    @BooklistBuilder.ListRebuildMode
+    private int getPreferredListRebuildMode(@NonNull final Context context) {
         final String value = PreferenceManager.getDefaultSharedPreferences(context)
                                               .getString(Prefs.pk_booklist_rebuild_state, null);
         if (value != null && !value.isEmpty()) {
             return Integer.parseInt(value);
         }
-        return Booklist.PREF_REBUILD_SAVED_STATE;
+        return BooklistBuilder.PREF_REBUILD_SAVED_STATE;
     }
-
 
     /**
      * Get the Bookshelf list to show in the Spinner.
@@ -494,7 +497,7 @@ public class BooksOnBookshelfViewModel
             return null;
         }
 
-        Objects.requireNonNull(mBooklist, Booklist.TAG);
+        Objects.requireNonNull(mBooklist, "mBooklist");
         final long bookId = mDesiredCentralBookId;
         mDesiredCentralBookId = 0;
 
@@ -515,26 +518,26 @@ public class BooksOnBookshelfViewModel
     public BooklistNode setNode(final long nodeRowId,
                                 @BooklistNode.NextState final int nextState,
                                 final int relativeChildLevel) {
-        Objects.requireNonNull(mBooklist, Booklist.TAG);
+        Objects.requireNonNull(mBooklist, "mBooklist");
         return mBooklist.setNode(nodeRowId, nextState, relativeChildLevel);
     }
 
     public void expandAllNodes(@IntRange(from = 1) final int topLevel,
                                final boolean expand) {
-        Objects.requireNonNull(mBooklist, Booklist.TAG);
+        Objects.requireNonNull(mBooklist, "mBooklist");
         mBooklist.setAllNodes(topLevel, expand);
     }
 
     @NonNull
     public ArrayList<Long> getCurrentBookIdList() {
-        Objects.requireNonNull(mBooklist, Booklist.TAG);
+        Objects.requireNonNull(mBooklist, "mBooklist");
         return mBooklist.getCurrentBookIdList();
     }
 
     @Nullable
     public BooklistNode getNextBookWithoutCover(@NonNull final Context context,
                                                 final long rowId) {
-        Objects.requireNonNull(mBooklist, Booklist.TAG);
+        Objects.requireNonNull(mBooklist, "mBooklist");
         return mBooklist.getNextBookWithoutCover(context, rowId);
     }
 
@@ -593,7 +596,7 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     public String getBookNavigationTableName() {
-        Objects.requireNonNull(mBooklist, Booklist.TAG);
+        Objects.requireNonNull(mBooklist, "mBooklist");
         return mBooklist.getNavigationTableName();
     }
 
@@ -613,7 +616,7 @@ public class BooksOnBookshelfViewModel
     @Override
     @WorkerThread
     protected List<BooklistNode> doWork(@NonNull final Context context) {
-        Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
+        Objects.requireNonNull(mBookshelf, "mBooklist");
 
         Thread.currentThread().setName(TAG);
 
@@ -623,30 +626,31 @@ public class BooksOnBookshelfViewModel
         Booklist booklist = null;
         try {
             // get a new builder and add the required domains
-            booklist = new Booklist(context, style, mBookshelf, mRebuildState);
+            final BooklistBuilder builder = new BooklistBuilder(style, mBookshelf,
+                                                                mRebuildMode);
 
             // Add the fixed list of domains we always need.
             for (final DomainExpression domainDetails : mFixedDomainList) {
-                booklist.addDomain(domainDetails);
+                builder.addDomain(domainDetails);
             }
 
             // Add Calibre bridging data ?
             if (CalibreContentServer.isEnabled(global)) {
-                booklist.addLeftOuterJoin(DBDefinitions.TBL_CALIBRE_BOOKS);
-                booklist.addDomain(new DomainExpression(
+                builder.addLeftOuterJoin(DBDefinitions.TBL_CALIBRE_BOOKS);
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_ID,
                         DBDefinitions.TBL_CALIBRE_BOOKS
                                 .dot(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_UUID,
                         DBDefinitions.TBL_CALIBRE_BOOKS
                                 .dot(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
                         DBDefinitions.TBL_CALIBRE_BOOKS
                                 .dot(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
 
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_FK_CALIBRE_LIBRARY,
                         DBDefinitions.TBL_CALIBRE_BOOKS
                                 .dot(DBDefinitions.KEY_FK_CALIBRE_LIBRARY)));
@@ -656,28 +660,28 @@ public class BooksOnBookshelfViewModel
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_EDITION_BITMASK)) {
                 // The edition bitmask
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)));
             }
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_SIGNED)) {
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_SIGNED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED)));
             }
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_BOOK_CONDITION)) {
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_CONDITION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_CONDITION)));
             }
 
             if (DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE)) {
                 // Used to display/hide the 'lend' icon for each book.
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
-                        Booklist.EXP_LOANEE_AS_BOOLEAN));
+                        BooklistBuilder.EXP_LOANEE_AS_BOOLEAN));
             }
 
             // Add the conditional domains; style level.
@@ -685,14 +689,14 @@ public class BooksOnBookshelfViewModel
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_BOOKSHELVES)) {
                 // This collects a CSV list of the bookshelves the book is on.
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOKSHELF_NAME_CSV,
-                        Booklist.EXP_BOOKSHELF_NAME_CSV));
+                        BooklistBuilder.EXP_BOOKSHELF_NAME_CSV));
             }
 
             // we fetch ONLY the primary author
             if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_AUTHOR_FORMATTED, AuthorDao
                         .getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
                                           style.isShowAuthorByGivenName())));
@@ -708,31 +712,31 @@ public class BooksOnBookshelfViewModel
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_PUBLISHER)) {
                 // Collect a CSV list of the publishers of the book
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_PUBLISHER_NAME_CSV,
-                        Booklist.EXP_PUBLISHER_NAME_CSV));
+                        BooklistBuilder.EXP_PUBLISHER_NAME_CSV));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_DATE_PUBLISHED)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_FORMAT,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_LOCATION,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
-                booklist.addDomain(new DomainExpression(
+                builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_RATING,
                         DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_RATING)));
             }
@@ -743,26 +747,26 @@ public class BooksOnBookshelfViewModel
 
             // if we have a list of ID's, ignore other criteria
             if (mSearchCriteria.hasIdList()) {
-                booklist.addFilterOnBookIdList(mSearchCriteria.getBookIdList());
+                builder.addFilterOnBookIdList(mSearchCriteria.getBookIdList());
 
             } else {
                 // Criteria supported by FTS
-                booklist.addFilterOnKeywords(mSearchCriteria.getFtsAuthor(),
-                                             mSearchCriteria.getFtsTitle(),
-                                             mSearchCriteria.getFtsSeries(),
-                                             mSearchCriteria.getFtsPublisher(),
-                                             mSearchCriteria.getFtsKeywords());
+                builder.addFilterOnKeywords(mSearchCriteria.getFtsAuthor(),
+                                            mSearchCriteria.getFtsTitle(),
+                                            mSearchCriteria.getFtsSeries(),
+                                            mSearchCriteria.getFtsPublisher(),
+                                            mSearchCriteria.getFtsKeywords());
 
-                booklist.addFilterOnLoanee(mSearchCriteria.getLoanee());
+                builder.addFilterOnLoanee(mSearchCriteria.getLoanee());
             }
 
             // if we have any criteria set at all, the build should expand the book list.
             if (!mSearchCriteria.isEmpty()) {
-                booklist.setRebuildState(Booklist.PREF_REBUILD_EXPANDED);
+                builder.setRebuildMode(BooklistBuilder.PREF_REBUILD_EXPANDED);
             }
 
             // Build the underlying data
-            booklist.build(context);
+            booklist = builder.build(context);
 
             // pre-count and cache (in the builder) these while we're in the background.
             // They are used for the header, and will not change even if the list cursor changes.
@@ -786,7 +790,7 @@ public class BooksOnBookshelfViewModel
             mListHasBeenLoaded = true;
 
             // preserve the new state by default
-            mRebuildState = Booklist.PREF_REBUILD_SAVED_STATE;
+            mRebuildMode = BooklistBuilder.PREF_REBUILD_SAVED_STATE;
 
             return targetRows;
 
@@ -803,15 +807,14 @@ public class BooksOnBookshelfViewModel
     }
 
     /**
-     * Wrapper to {@link Booklist#getNewListCursor()}.
-     * Get the list cursor.
+     * Wrapper to get the list cursor.
      * Note this is a {@link BooklistCursor}
      *
      * @return cursor
      */
     @NonNull
     public BooklistCursor getNewListCursor() {
-        Objects.requireNonNull(mBooklist, Booklist.TAG);
+        Objects.requireNonNull(mBooklist, "mBooklist");
         return mBooklist.getNewListCursor();
     }
 
@@ -827,7 +830,7 @@ public class BooksOnBookshelfViewModel
     public Book getBook(@NonNull final DataHolder rowData) {
         final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
         if (bookId > 0) {
-            return Book.from(bookId, mDb);
+            return Book.from(bookId, mBookDao);
         }
         return null;
     }
@@ -847,7 +850,7 @@ public class BooksOnBookshelfViewModel
                 return AuthorDao.getInstance().getById(id);
             }
         } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final List<Author> authors = mDb.getAuthorsByBookId(
+            final List<Author> authors = mBookDao.getAuthorsByBookId(
                     rowData.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
                 return authors.get(0);
@@ -872,7 +875,7 @@ public class BooksOnBookshelfViewModel
                                 .getById(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
             }
         } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
-            final ArrayList<Series> series = mDb.getSeriesByBookId(
+            final ArrayList<Series> series = mBookDao.getSeriesByBookId(
                     rowData.getLong(DBDefinitions.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0);
@@ -915,7 +918,7 @@ public class BooksOnBookshelfViewModel
 
     @NonNull
     public List<Author> getAuthorsByBookId(@IntRange(from = 1) final long bookId) {
-        return mDb.getAuthorsByBookId(bookId);
+        return mBookDao.getAuthorsByBookId(bookId);
     }
 
     @NonNull
@@ -964,7 +967,7 @@ public class BooksOnBookshelfViewModel
 
     public boolean setBookRead(@IntRange(from = 1) final long bookId,
                                final boolean isRead) {
-        return mDb.setBookRead(bookId, isRead);
+        return mBookDao.setBookRead(bookId, isRead);
     }
 
     /**
@@ -1014,7 +1017,7 @@ public class BooksOnBookshelfViewModel
      */
     public boolean deleteBook(@NonNull final Context context,
                               @IntRange(from = 1) final long bookId) {
-        return mDb.deleteBook(context, bookId);
+        return mBookDao.deleteBook(context, bookId);
     }
 
     @SuppressWarnings("UnusedReturnValue")

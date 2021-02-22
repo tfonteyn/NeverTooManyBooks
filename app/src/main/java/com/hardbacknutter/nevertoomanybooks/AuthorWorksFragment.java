@@ -50,7 +50,7 @@ import java.util.Collections;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
-import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
@@ -327,7 +327,7 @@ public class AuthorWorksFragment
                         // the author as a single line, and no books shown at all,
                         // which can be quite confusing to the user.
                         .putExtra(BooksOnBookshelfViewModel.BKEY_LIST_STATE,
-                                  Booklist.PREF_REBUILD_EXPANDED);
+                                  BooklistBuilder.PREF_REBUILD_EXPANDED);
 
                 if (mVm.isAllBookshelves()) {
                     intent.putExtra(BooksOnBookshelfViewModel.BKEY_BOOKSHELF, Bookshelf.ALL_BOOKS);

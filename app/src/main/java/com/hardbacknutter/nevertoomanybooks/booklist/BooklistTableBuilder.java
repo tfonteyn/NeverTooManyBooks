@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpressio
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_EXPANDED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_NODE_GROUP;
@@ -80,9 +81,9 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SE
  */
 class BooklistTableBuilder {
 
-    public static final String _COLLATION = " Collate LOCALIZED";
     /** Log tag. */
     private static final String TAG = "BooklistTableBuilder";
+
     private static final String INSERT_INTO_ = "INSERT INTO ";
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
@@ -90,14 +91,17 @@ class BooklistTableBuilder {
     private static final String _AND_ = " AND ";
     private static final String _ORDER_BY_ = " ORDER BY ";
     private static final String _AS_ = " AS ";
+    private static final String _COLLATION = " COLLATE LOCALIZED";
+
     private static final String DROP_TRIGGER_IF_EXISTS_ = "DROP TRIGGER IF EXISTS ";
+
     /** divider to convert nanoseconds to milliseconds. */
     private static final int NANO_TO_MILLIS = 1_000_000;
 
     @NonNull
     private final ListStyle mStyle;
 
-    /** Set to {@code true} if we're filtering on a specific bookshelf. */
+    /** Set to {@code true} if we're filtering on a specific {@link Bookshelf}. */
     private final boolean mFilteredOnBookshelf;
 
     /** the list of Filters. */
@@ -139,8 +143,8 @@ class BooklistTableBuilder {
     /** Guards from adding duplicates. */
     private final Collection<String> mOrderByDupCheck = new HashSet<>();
 
-    @Booklist.ListRebuildMode
-    private final int mRebuildState;
+    @BooklistBuilder.ListRebuildMode
+    private final int mRebuildMode;
 
     private String mSqlForInitialInsert;
 
@@ -148,22 +152,23 @@ class BooklistTableBuilder {
     private TableDefinition mTriggerHelperTable;
     private String mTriggerHelperLevelTriggerName;
     private String mTriggerHelperCurrentValueTriggerName;
+
     private Collection<TableDefinition> mLeftOuterJoins;
 
     /**
      * Constructor.
      *
-     * @param instanceId   of the {@link Booklist} to create a unique table name
-     * @param style        to apply to the list
-     * @param rebuildState the mode to use for restoring the saved state.
+     * @param instanceId  to create a unique table name
+     * @param style       to apply to the list
+     * @param rebuildMode the mode to use for restoring the saved state.
      */
     BooklistTableBuilder(final int instanceId,
                          @NonNull final ListStyle style,
                          final boolean isFilteredOnBookshelf,
-                         @Booklist.ListRebuildMode final int rebuildState) {
+                         @BooklistBuilder.ListRebuildMode final int rebuildMode) {
         mStyle = style;
         mFilteredOnBookshelf = isFilteredOnBookshelf;
-        mRebuildState = rebuildState;
+        mRebuildMode = rebuildMode;
 
         /*
          * Temporary table used to store a flattened booklist tree structure.
@@ -292,21 +297,21 @@ class BooklistTableBuilder {
 
         // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
         // All others must be set to 0/0. The actual state will be set afterwards.
-        switch (mRebuildState) {
-            case Booklist.PREF_REBUILD_COLLAPSED:
-            case Booklist.PREF_REBUILD_PREFERRED_STATE:
-            case Booklist.PREF_REBUILD_SAVED_STATE:
+        switch (mRebuildMode) {
+            case BooklistBuilder.PREF_REBUILD_COLLAPSED:
+            case BooklistBuilder.PREF_REBUILD_PREFERRED_STATE:
+            case BooklistBuilder.PREF_REBUILD_SAVED_STATE:
                 sourceColumns.append(",0 AS ").append(DOM_BL_NODE_EXPANDED);
                 sourceColumns.append(",0 AS ").append(DOM_BL_NODE_VISIBLE);
                 break;
 
-            case Booklist.PREF_REBUILD_EXPANDED:
+            case BooklistBuilder.PREF_REBUILD_EXPANDED:
                 sourceColumns.append(",1 AS ").append(DOM_BL_NODE_EXPANDED);
                 sourceColumns.append(",1 AS ").append(DOM_BL_NODE_VISIBLE);
                 break;
 
             default:
-                throw new IllegalArgumentException(String.valueOf(mRebuildState));
+                throw new IllegalArgumentException(String.valueOf(mRebuildMode));
         }
 
         mSqlForInitialInsert =
@@ -323,25 +328,25 @@ class BooklistTableBuilder {
     /**
      * Create the table and data.
      *
-     * @param syncedDb Underlying database
+     * @param db Underlying database
      *
      * @return the fully populated list table.
      */
     @NonNull
-    Pair<TableDefinition, TableDefinition> build(@NonNull final SynchronizedDb syncedDb) {
+    Pair<TableDefinition, TableDefinition> build(@NonNull final SynchronizedDb db) {
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(mSqlForInitialInsert, "preBuild() must be called first");
 
-            if (!syncedDb.inTransaction()) {
+            if (!db.inTransaction()) {
                 throw new TransactionException(TransactionException.REQUIRED);
             }
         }
 
         //IMPORTANT: withDomainConstraints MUST BE false
-        syncedDb.recreate(mListTable, false);
+        db.recreate(mListTable, false);
 
         // get the triggers in place, ready to act on our upcoming initial insert.
-        createTriggers(syncedDb);
+        createTriggers(db);
 
         // Build the lowest level (i.e. books) using our initial insert statement
         // The triggers will do the other levels.
@@ -349,7 +354,7 @@ class BooklistTableBuilder {
 
         final long t0 = System.nanoTime();
 
-        try (SynchronizedStatement stmt = syncedDb.compileStatement(mSqlForInitialInsert)) {
+        try (SynchronizedStatement stmt = db.compileStatement(mSqlForInitialInsert)) {
             initialInsertCount = stmt.executeUpdateDelete();
         }
         final long t1_insert = System.nanoTime();
@@ -361,33 +366,33 @@ class BooklistTableBuilder {
         if (!DBHelper.isCollationCaseSensitive()) {
             // can't do this, IndexDefinition class does not support DESC columns for now.
             // mListTable.addIndex("SDI", false, helper.getSortedDomains());
-            syncedDb.execSQL(
+            db.execSQL(
                     "CREATE INDEX " + mListTable.getName() + "_SDI ON " + mListTable.getName()
                     + "(" + getSortedDomainsIndexColumns() + ")");
         }
 
         // The list table is now fully populated.
-        syncedDb.analyze(mListTable);
+        db.analyze(mListTable);
 
         // remove the no longer needed triggers
-        cleanupTriggers(syncedDb);
+        cleanupTriggers(db);
 
         // Create the navigation table.
         // This is a mapping table between row-id + book-id and a plain sequential id.
         // The latter is needed for a RecyclerView adapter.
         // Don't apply constraints (no need)
-        syncedDb.recreate(mNavTable, false);
-        syncedDb.execSQL(INSERT_INTO_ + mNavTable.getName()
-                         + " (" + DBDefinitions.KEY_FK_BOOK
-                         + ',' + DBDefinitions.KEY_FK_BL_ROW_ID + ") "
+        db.recreate(mNavTable, false);
+        db.execSQL(INSERT_INTO_ + mNavTable.getName()
+                   + " (" + DBDefinitions.KEY_FK_BOOK
+                   + ',' + DBDefinitions.KEY_FK_BL_ROW_ID + ") "
 
-                         + SELECT_ + DBDefinitions.KEY_FK_BOOK
-                         + ',' + DBDefinitions.KEY_PK_ID
+                   + SELECT_ + DBDefinitions.KEY_FK_BOOK
+                   + ',' + DBDefinitions.KEY_PK_ID
 
-                         + _FROM_ + mListTable.getName()
-                         + _WHERE_ + DBDefinitions.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
-                         + _ORDER_BY_ + DBDefinitions.KEY_PK_ID
-                        );
+                   + _FROM_ + mListTable.getName()
+                   + _WHERE_ + DBDefinitions.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                   + _ORDER_BY_ + DBDefinitions.KEY_PK_ID
+                  );
 
         return new Pair<>(mListTable, mNavTable);
     }
@@ -396,9 +401,9 @@ class BooklistTableBuilder {
      * Build a collection of triggers on the list table designed to fill in the summary/header
      * records as the data records are added in sorted order.
      *
-     * @param syncedDb Database Access
+     * @param db Database Access
      */
-    private void createTriggers(@NonNull final SynchronizedDb syncedDb) {
+    private void createTriggers(@NonNull final SynchronizedDb db) {
 
         mTriggerHelperTable = new TableDefinition(mListTable + "_th")
                 .setAlias("tht")
@@ -430,7 +435,7 @@ class BooklistTableBuilder {
          * This is just a simple technique to provide persistent context to the trigger.
          */
         //IMPORTANT: withDomainConstraints MUST BE false
-        syncedDb.recreate(mTriggerHelperTable, false);
+        db.recreate(mTriggerHelperTable, false);
 
         final int groupCount = mStyle.getGroups().size();
 
@@ -455,7 +460,7 @@ class BooklistTableBuilder {
 
             // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
             // All others must be set to 0/0. The actual state will be set afterwards.
-            final int expVis = (mRebuildState == Booklist.PREF_REBUILD_EXPANDED) ? 1 : 0;
+            final int expVis = (mRebuildMode == BooklistBuilder.PREF_REBUILD_EXPANDED) ? 1 : 0;
 
             // Create the VALUES clause for the next level up
             final StringBuilder listValues = new StringBuilder()
@@ -491,7 +496,7 @@ class BooklistTableBuilder {
 
             // (re)Create the trigger
             mTriggerHelperLevelTriggerName = mListTable.getName() + "_TG_LEVEL_" + level;
-            syncedDb.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName);
+            db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperLevelTriggerName);
             final String levelTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
                     + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
@@ -504,12 +509,12 @@ class BooklistTableBuilder {
                     + /*             */ " VALUES(" + listValues + ");"
                     + "\n END";
 
-            syncedDb.execSQL(levelTgSql);
+            db.execSQL(levelTgSql);
         }
 
         // Create a trigger to maintain the 'current' value
         mTriggerHelperCurrentValueTriggerName = mListTable.getName() + "_TG_CURRENT";
-        syncedDb.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
+        db.execSQL(DROP_TRIGGER_IF_EXISTS_ + mTriggerHelperCurrentValueTriggerName);
         // This is a single row only, so delete the previous value, and insert the current one
         final String currentValueTgSql =
                 "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
@@ -521,7 +526,7 @@ class BooklistTableBuilder {
                 + /*              */ " VALUES (" + valuesColumns + ");"
                 + "\n END";
 
-        syncedDb.execSQL(currentValueTgSql);
+        db.execSQL(currentValueTgSql);
     }
 
     /**

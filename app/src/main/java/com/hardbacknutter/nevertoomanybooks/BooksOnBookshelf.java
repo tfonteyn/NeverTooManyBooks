@@ -348,7 +348,7 @@ public class BooksOnBookshelf
                 public void onResult(@NonNull final String uuid) {
                     saveListPosition();
                     mVm.onStyleChanged(BooksOnBookshelf.this, uuid);
-                    mVm.resetPreferredListRebuildState(BooksOnBookshelf.this);
+                    mVm.resetPreferredListRebuildMode(BooksOnBookshelf.this);
                     // and do a rebuild
                     buildBookList();
                 }

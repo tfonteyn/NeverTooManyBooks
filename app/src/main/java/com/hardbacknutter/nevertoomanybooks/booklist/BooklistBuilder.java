@@ -17,22 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.hardbacknutter.nevertoomanybooks.booklist;
 
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -51,41 +52,78 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpressio
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_BOOKSHELF;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 
-class BooklistBuilder {
+/**
+ * Build and populate temporary tables with details of "flattened" books.
+ * The generated list is used to display books in a list control and perform operation like
+ * 'expand/collapse' on nodes in the list.
+ * <p>
+ * The {@link Booklist} "owns" the temporary database tables.
+ * They get deleted when {@link Booklist#close()} is called.
+ * A {@link Booklist} has a 1:1 relation to {@link BooklistCursor} objects.
+ * The BooklistCursor holds a reference to the {@link Booklist}.
+ */
+public class BooklistBuilder {
+
+    /** id values for state preservation property. See {@link ListRebuildMode}. */
+    public static final int PREF_REBUILD_SAVED_STATE = 0;
+    public static final int PREF_REBUILD_EXPANDED = 1;
+    @SuppressWarnings("WeakerAccess")
+    public static final int PREF_REBUILD_PREFERRED_STATE = 3;
+    @SuppressWarnings("WeakerAccess")
+    public static final int PREF_REBUILD_COLLAPSED = 2;
+
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_BL_LOANEE_AS_BOOL}
+     * <p>
+     * SQL column: return 1 if the book is available, 0 if not.
+     */
+    public static final String EXP_LOANEE_AS_BOOLEAN =
+            "CASE WHEN " + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + " IS NULL THEN 1 ELSE 0 END";
 
     /** Log tag. */
     private static final String TAG = "BooklistBuilder";
 
-    private static final String SELECT_COUNT = "SELECT COUNT(*)";
+
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
     private static final String _WHERE_ = " WHERE ";
-    private static final String _AND_ = " AND ";
-    private static final String _ORDER_BY_ = " ORDER BY ";
 
     /**
-     * Counter for Booklist ID's. Only increment.
-     * Used to create unique table names etc... see {@link #mInstanceId}.
+     * Expression for the domain {@link DBDefinitions#DOM_BOOKSHELF_NAME_CSV}.
+     * <p>
+     * The order of the returned names will be arbitrary.
+     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
-    @NonNull
-    private static final AtomicInteger ID_COUNTER = new AtomicInteger();
-    /** DEBUG Instance counter. Increment and decrements to check leaks. */
-    @NonNull
-    private static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
+    public static final String EXP_BOOKSHELF_NAME_CSV =
+            "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + ",', ')"
+            + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
+            + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
+            + ")";
+    /**
+     * Expression for the domain {@link DBDefinitions#DOM_PUBLISHER_NAME_CSV}.
+     * <p>
+     * The order of the returned names will be arbitrary.
+     * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
+     */
+    public static final String EXP_PUBLISHER_NAME_CSV =
+            "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME) + ",', ')"
+            + _FROM_ + TBL_PUBLISHERS.ref() + TBL_PUBLISHERS.join(TBL_BOOK_PUBLISHER)
+            + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(KEY_FK_BOOK)
+            + ")";
 
-    /** Database Access. */
-    @SuppressWarnings("FieldNotUsedInToString")
-    @NonNull
-    private final SynchronizedDb mSyncedDb;
-
-    /** Internal ID. Used to create unique names for the temporary tables. */
-    private final int mInstanceId;
+    private static final String _AND_ = " AND ";
 
     /** Style to use while building the list. */
     @SuppressWarnings("FieldNotUsedInToString")
@@ -105,36 +143,32 @@ class BooklistBuilder {
     /** the list of Filters. */
     private final Collection<Filter> mFilters = new ArrayList<>();
     @SuppressWarnings("FieldNotUsedInToString")
-    @Booklist.ListRebuildMode
-    private int mRebuildState;
+    @ListRebuildMode
+    private int mRebuildMode;
 
     /**
      * Constructor.
      *
-     * @param context      Current context
-     * @param style        Style reference.
-     *                     This is the resolved style as used by the passed bookshelf
-     * @param bookshelf    the current bookshelf
-     * @param rebuildState booklist state to use in next rebuild.
+     * @param style       Style reference.
+     *                    This is the resolved style as used by the passed bookshelf
+     * @param bookshelf   the current bookshelf
+     * @param rebuildMode booklist mode to use in next rebuild.
      */
-    public BooklistBuilder(@NonNull final Context context,
-                           @NonNull final ListStyle style,
+    public BooklistBuilder(@NonNull final ListStyle style,
                            @NonNull final Bookshelf bookshelf,
-                           @Booklist.ListRebuildMode final int rebuildState) {
+                           @ListRebuildMode final int rebuildMode) {
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             Log.d(TAG, "ENTER|Booklist"
                        + "|style=" + style.getUuid()
-                       + "|instances: " + DEBUG_INSTANCE_COUNTER.incrementAndGet(),
+                       + "|instances: " + InstanceCounter.DEBUG_INSTANCE_COUNTER.incrementAndGet(),
                   new Throwable());
         }
 
-        mInstanceId = ID_COUNTER.incrementAndGet();
 
-        mSyncedDb = DBHelper.getSyncDb(context);
         mStyle = style;
         mBookshelves.add(bookshelf);
-        mRebuildState = rebuildState;
+        mRebuildMode = rebuildMode;
     }
 
     /**
@@ -233,10 +267,10 @@ class BooklistBuilder {
     /**
      * Allows to override the build state set in the constructor.
      *
-     * @param rebuildState booklist state to use in next rebuild.
+     * @param rebuildMode booklist state to use in next rebuild.
      */
-    public void setRebuildState(@Booklist.ListRebuildMode final int rebuildState) {
-        mRebuildState = rebuildState;
+    public void setRebuildMode(@ListRebuildMode final int rebuildMode) {
+        mRebuildMode = rebuildMode;
     }
 
     /**
@@ -245,7 +279,7 @@ class BooklistBuilder {
      *
      * @param context Current context
      */
-    public BL2 build(@NonNull final Context context) {
+    public Booklist build(@NonNull final Context context) {
 
         final boolean isFilteredOnBookshelves = !mBookshelves.get(0).isAllBooks();
 
@@ -266,48 +300,62 @@ class BooklistBuilder {
             }
         }
 
+        // Internal ID. Used to create unique names for the temporary tables.
+        final int instanceId = InstanceCounter.ID_COUNTER.incrementAndGet();
+
         // Construct the list table and all needed structures.
         final BooklistTableBuilder tableBuilder = new BooklistTableBuilder(
-                mInstanceId, mStyle, isFilteredOnBookshelves, mRebuildState);
+                instanceId, mStyle, isFilteredOnBookshelves, mRebuildMode);
 
         tableBuilder.preBuild(context, mLeftOuterJoins.values(), mBookDomains.values(), mFilters);
 
-        final Synchronizer.SyncLock txLock = mSyncedDb.beginTransaction(true);
+        final SynchronizedDb db = DBHelper.getDb(context);
+
+        final Synchronizer.SyncLock txLock = db.beginTransaction(true);
         try {
             // create the tables and populate them
-            final Pair<TableDefinition, TableDefinition> tables = tableBuilder.build(mSyncedDb);
-            TableDefinition mListTable = tables.first;
-            TableDefinition mNavTable = tables.second;
+            final Pair<TableDefinition, TableDefinition> tables = tableBuilder.build(db);
+            final TableDefinition listTable = tables.first;
+            final TableDefinition navTable = tables.second;
 
-            BooklistNodeDAO mRowStateDAO = new BooklistNodeDAO(mSyncedDb, mListTable,
-                                                               mStyle, mBookshelves.get(0));
+            final BooklistNodeDAO rowStateDAO = new BooklistNodeDAO(db, listTable,
+                                                                    mStyle, mBookshelves.get(0));
 
-            switch (mRebuildState) {
-                case Booklist.PREF_REBUILD_SAVED_STATE:
+            switch (mRebuildMode) {
+                case PREF_REBUILD_SAVED_STATE:
                     // all rows will be collapsed/hidden; restore the saved state
-                    mRowStateDAO.restoreSavedState();
+                    rowStateDAO.restoreSavedState();
                     break;
 
-                case Booklist.PREF_REBUILD_PREFERRED_STATE:
+                case PREF_REBUILD_PREFERRED_STATE:
                     // all rows will be collapsed/hidden; now adjust as required.
-                    mRowStateDAO.setAllNodes(mStyle.getTopLevel(), false);
+                    rowStateDAO.setAllNodes(mStyle.getTopLevel(), false);
                     break;
 
-                case Booklist.PREF_REBUILD_EXPANDED:
-                case Booklist.PREF_REBUILD_COLLAPSED:
+                case PREF_REBUILD_EXPANDED:
+                case PREF_REBUILD_COLLAPSED:
                     // handled during table creation
                     break;
 
                 default:
-                    throw new IllegalArgumentException(String.valueOf(mRebuildState));
+                    throw new IllegalArgumentException(String.valueOf(mRebuildMode));
             }
 
-            mSyncedDb.setTransactionSuccessful();
+            db.setTransactionSuccessful();
 
-            return new BL2(mListTable, mNavTable, mRowStateDAO);
+            return new Booklist(instanceId, db, listTable, navTable, rowStateDAO);
 
         } finally {
-            mSyncedDb.endTransaction(txLock);
+            db.endTransaction(txLock);
         }
+    }
+
+    @Retention(RetentionPolicy.SOURCE)
+    @IntDef({PREF_REBUILD_SAVED_STATE,
+             PREF_REBUILD_EXPANDED,
+             PREF_REBUILD_COLLAPSED,
+             PREF_REBUILD_PREFERRED_STATE})
+    public @interface ListRebuildMode {
+
     }
 }

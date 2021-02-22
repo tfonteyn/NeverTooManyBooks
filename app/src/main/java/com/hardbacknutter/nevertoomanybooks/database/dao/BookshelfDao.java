@@ -362,8 +362,10 @@ public final class BookshelfDao
     }
 
     /**
-     * Purge Booklist node state data for the given Bookshelf.<br>
-     * Called when a Bookshelf is deleted or manually from the Bookshelf management context menu.
+     * Purge book list node state data for the given {@link Bookshelf}.
+     * <p>
+     * Called when a {@link Bookshelf} is deleted or manually from the
+     * {@link Bookshelf} management context menu.
      *
      * @param bookshelfId to purge
      */
