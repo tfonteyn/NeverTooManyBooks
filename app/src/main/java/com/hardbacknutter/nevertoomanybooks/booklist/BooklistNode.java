@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -58,7 +58,7 @@ public class BooklistNode {
 
     /**
      * Will be calculated/set if the list changed.
-     * {@code row.listPosition = BooklistNodeDAO#getListPosition(row.rowId); }
+     * {@code row.listPosition = BooklistNodeDao#getListPosition(row.rowId); }
      * <p>
      * (it's an Integer, so we can detect when it's not set at all which would be a bug)
      */

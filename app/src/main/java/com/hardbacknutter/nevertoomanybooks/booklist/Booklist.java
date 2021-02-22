@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
@@ -59,17 +60,25 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK
 public class Booklist
         implements AutoCloseable {
 
+    /** Counter for {@link BooklistBuilder} ID's. Only increment. */
+    @NonNull
+    static final AtomicInteger ID_COUNTER = new AtomicInteger();
 
-    private static final String SELECT_COUNT = "SELECT COUNT(*)";
+    /** DEBUG Instance counter. Increment and decrements to check leaks. */
+    @NonNull
+    static final AtomicInteger DEBUG_INSTANCE_COUNTER = new AtomicInteger();
+
+    private static final String SELECT_COUNT_FROM_ = "SELECT COUNT(*) FROM ";
     private static final String SELECT_ = "SELECT ";
     private static final String _FROM_ = " FROM ";
+    private static final String _AS_ = " AS ";
     private static final String _WHERE_ = " WHERE ";
     private static final String _AND_ = " AND ";
     private static final String _ORDER_BY_ = " ORDER BY ";
 
-
-    /* Log tag. */
+    /** Log tag. */
     private static final String TAG = "Booklist";
+
     /** Database Access. */
     @SuppressWarnings("FieldNotUsedInToString")
     @NonNull
@@ -88,6 +97,7 @@ public class Booklist
      */
     @SuppressWarnings("FieldNotUsedInToString")
     private final TableDefinition mListTable;
+
     /**
      * The navigation table for next/prev moving between books.
      * <p>
@@ -95,44 +105,56 @@ public class Booklist
      */
     @SuppressWarnings("FieldNotUsedInToString")
     private final TableDefinition mNavTable;
+
     /**
      * The temp table holding the state (expand,visibility,...) for all rows in the list-table.
      * <p>
      * Reminder: this is a {@link TableDefinition.TableType#Temporary}.
      */
     @SuppressWarnings("FieldNotUsedInToString")
-    private final BooklistNodeDAO mRowStateDAO;
+    private final BooklistNodeDao mRowStateDAO;
+
     /** Total number of books in current list. e.g. a book can be listed under 2 authors. */
     private int mTotalBooks = -1;
+
     /** Total number of unique books in current list. */
     private int mDistinctBooks = -1;
+
     /** {@link #getBookNodes}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetBookNodes;
+
     /** {@link #ensureNodeIsVisible}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlEnsureNodeIsVisible;
+
     /**
      * DEBUG: double check on mCloseWasCalled to control
-     * {@link InstanceCounter#DEBUG_INSTANCE_COUNTER}.
+     * {@link Booklist#DEBUG_INSTANCE_COUNTER}.
      */
     @SuppressWarnings("FieldNotUsedInToString")
     private boolean mDebugReferenceDecremented;
+
     /** DEBUG: Indicates close() has been called. See {@link Closeable#close()}. */
     private boolean mCloseWasCalled;
+
     /** The current list cursor. */
     @SuppressWarnings("FieldNotUsedInToString")
     @Nullable
     private BooklistCursor mCursor;
+
     /** {@link #getNodeByRowId}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetNodeByRowId;
+
     /** {@link #getCurrentBookIdList}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetCurrentBookIdList;
+
     /** {@link #getNextBookWithoutCover}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetNextBookWithoutCover;
+
     /** {@link #getOffsetCursor}. */
     @SuppressWarnings("FieldNotUsedInToString")
     private String mSqlGetOffsetCursor;
@@ -141,7 +163,7 @@ public class Booklist
              @NonNull final SynchronizedDb db,
              @NonNull final TableDefinition listTable,
              @NonNull final TableDefinition navTable,
-             @NonNull final BooklistNodeDAO rowStateDAO) {
+             @NonNull final BooklistNodeDao rowStateDAO) {
 
         mInstanceId = instanceId;
         mDb = db;
@@ -163,7 +185,7 @@ public class Booklist
     public int countBooks() {
         if (mTotalBooks == -1) {
             try (SynchronizedStatement stmt = mDb.compileStatement(
-                    SELECT_COUNT + _FROM_ + mListTable.getName()
+                    SELECT_COUNT_FROM_ + mListTable.getName()
                     + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
                 stmt.bindLong(1, BooklistGroup.BOOK);
                 mTotalBooks = (int) stmt.simpleQueryForLongOrZero();
@@ -198,7 +220,7 @@ public class Booklist
      */
     int countVisibleRows() {
         try (SynchronizedStatement stmt = mDb.compileStatement(
-                SELECT_COUNT + _FROM_ + mListTable.getName()
+                SELECT_COUNT_FROM_ + mListTable.getName()
                 + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1")) {
             return (int) stmt.simpleQueryForLongOrZero();
         }
@@ -239,7 +261,7 @@ public class Booklist
                     SELECT_ + mListTable.getDomains().stream()
                                         .map(domain -> mListTable.dot(domain.getName()))
                                         .collect(Collectors.joining(","))
-                    + ',' + (mListTable.dot(KEY_PK_ID) + " AS " + KEY_BL_LIST_VIEW_NODE_ROW_ID)
+                    + ',' + (mListTable.dot(KEY_PK_ID) + _AS_ + KEY_BL_LIST_VIEW_NODE_ROW_ID)
                     + _FROM_ + mListTable.ref()
                     + _WHERE_ + mListTable.dot(KEY_BL_NODE_VISIBLE) + "=1"
                     + _ORDER_BY_ + mListTable.dot(KEY_PK_ID)
@@ -413,7 +435,7 @@ public class Booklist
         // Remember that a position == rowId -1
         final int count;
         try (SynchronizedStatement stmt = mDb.compileStatement(
-                "SELECT COUNT(*) FROM " + mListTable.getName()
+                SELECT_COUNT_FROM_ + mListTable.getName()
                 + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1" + _AND_ + KEY_PK_ID + "<?")) {
 
             stmt.bindLong(1, node.getRowId());
@@ -566,7 +588,7 @@ public class Booklist
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
             if (!mDebugReferenceDecremented) {
-                final int inst = InstanceCounter.DEBUG_INSTANCE_COUNTER.decrementAndGet();
+                final int inst = DEBUG_INSTANCE_COUNTER.decrementAndGet();
                 // Only de-reference once! Paranoia ... close() might be called twice?
                 Log.d(TAG, "close|instances left=" + inst);
             }

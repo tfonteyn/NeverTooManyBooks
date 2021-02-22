@@ -75,39 +75,47 @@ import com.hardbacknutter.nevertoomanybooks.tasks.VMTask;
 public class BooksOnBookshelfViewModel
         extends VMTask<List<BooklistNode>> {
 
-    private static final String _FROM_ = " FROM ";
-    private static final String _WHERE_ = " WHERE ";
-
     /** Log tag. */
     private static final String TAG = "BooksOnBookshelfViewModel";
+
     /** collapsed/expanded. */
     public static final String BKEY_LIST_STATE = TAG + ":list.state";
+
     /** Allows to set an explicit shelf. */
     public static final String BKEY_BOOKSHELF = TAG + ":bs";
 
     /** The fixed list of domains we always need for building the book list. */
     private final Collection<DomainExpression> mFixedDomainList = new ArrayList<>();
+
     /** Holder for all search criteria. See {@link SearchCriteria} for more info. */
     private final SearchCriteria mSearchCriteria = new SearchCriteria();
+
     /** Cache for all bookshelves. */
     private final List<Bookshelf> mBookshelfList = new ArrayList<>();
+
     /** Database Access. */
     private BookDao mBookDao;
+
     /**
      * Flag (potentially) set when coming back from another Activity.
      * Indicates if list rebuild is needed in {@link BooksOnBookshelf}#onResume.
      */
     private boolean mForceRebuildInOnResume;
+
     /** Flag to indicate that a list has been successfully loaded. */
     private boolean mListHasBeenLoaded;
+
     /** Currently selected bookshelf. */
     @Nullable
     private Bookshelf mBookshelf;
+
     /** The row id we want the new list to display more-or-less in the center. */
     private long mDesiredCentralBookId;
+
     /** Preferred booklist state in next rebuild. */
     @BooklistBuilder.ListRebuildMode
     private int mRebuildMode;
+
     /** Current displayed list. */
     @Nullable
     private Booklist mBooklist;
@@ -216,8 +224,7 @@ public class BooksOnBookshelfViewModel
         // Set the last/preferred bookshelf if not explicitly set above
         // or use the default == first start of the app
         if (mBookshelf == null) {
-            mBookshelf = Bookshelf
-                    .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
+            mBookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
         }
     }
 
@@ -325,8 +332,7 @@ public class BooksOnBookshelfViewModel
                                     final long id) {
         mBookshelf = BookshelfDao.getInstance().getById(id);
         if (mBookshelf == null) {
-            mBookshelf = Bookshelf
-                    .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
+            mBookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         }
         final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
         mBookshelf.setAsPreferred(global);
@@ -334,8 +340,8 @@ public class BooksOnBookshelfViewModel
 
     @SuppressWarnings("UnusedReturnValue")
     public boolean reloadSelectedBookshelf(@NonNull final Context context) {
-        final Bookshelf newBookshelf = Bookshelf
-                .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
+        final Bookshelf newBookshelf =
+                Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         if (!newBookshelf.equals(mBookshelf)) {
             // if it was.. switch to it.
             mBookshelf = newBookshelf;
@@ -626,8 +632,7 @@ public class BooksOnBookshelfViewModel
         Booklist booklist = null;
         try {
             // get a new builder and add the required domains
-            final BooklistBuilder builder = new BooklistBuilder(style, mBookshelf,
-                                                                mRebuildMode);
+            final BooklistBuilder builder = new BooklistBuilder(style, mBookshelf, mRebuildMode);
 
             // Add the fixed list of domains we always need.
             for (final DomainExpression domainDetails : mFixedDomainList) {

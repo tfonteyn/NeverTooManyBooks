@@ -46,8 +46,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundExcepti
 public abstract class SendBooksGrTaskBase
         extends BaseTQTask {
 
-    private static final String TAG = "SendBooksGrTaskBase";
-
     /** Timeout before declaring network failure. */
     private static final int FIVE_MINUTES = 300;
 

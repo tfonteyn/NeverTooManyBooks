@@ -41,7 +41,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDAO;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNodeDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
@@ -154,7 +154,7 @@ public class MaintenanceFragment
                 .setMessage(R.string.info_purge_blns_all)
                 .setNegativeButton(android.R.string.cancel, (d, w) -> d.dismiss())
                 .setPositiveButton(android.R.string.ok, (d, w) ->
-                        BooklistNodeDAO.clearNodeStateData(v.getContext()))
+                        BooklistNodeDao.clearNodeStateData(v.getContext()))
                 .create()
                 .show());
 

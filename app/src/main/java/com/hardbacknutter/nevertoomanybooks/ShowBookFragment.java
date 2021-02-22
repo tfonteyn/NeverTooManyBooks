@@ -61,7 +61,6 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookById
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
@@ -113,11 +112,13 @@ public class ShowBookFragment
 
     /** Log tag. */
     public static final String TAG = "ShowBookFragment";
+
     /** FragmentResultListener request key. */
     private static final String RK_EDIT_LENDER = TAG + ":rk:" + EditLenderDialogFragment.TAG;
 
     /** Delegate to handle cover replacement, rotation, etc. */
     private final CoverHandler[] mCoverHandler = new CoverHandler[2];
+
     /** Delegate for Goodreads. */
     private final GoodreadsHandler mGoodreadsHandler = new GoodreadsHandler();
 
@@ -128,8 +129,10 @@ public class ShowBookFragment
     /** Delegate for Calibre. */
     @Nullable
     private CalibreHandler mCalibreHandler;
+
     /** View model. */
     private ShowBookViewModel mVm;
+
     /** Set the hosting Activity result, and close it. */
     private final OnBackPressedCallback mOnBackPressedCallback =
             new OnBackPressedCallback(true) {
@@ -140,8 +143,10 @@ public class ShowBookFragment
                     getActivity().finish();
                 }
             };
+
     /** View Binding with the ViewPager2. */
     private FragmentShowBookBinding mVb;
+
     /** ViewPager2 adapter. */
     private ShowBookPagerAdapter mPagerAdapter;
     private Toolbar mToolbar;
@@ -536,7 +541,7 @@ public class ShowBookFragment
 
             final Book book = mVm.getBookAtPosition(position);
 
-            holder.onBindViewHolder(mFieldsMap, mVm.getBookDao(), book);
+            holder.onBindViewHolder(mFieldsMap, book);
 
             if (mCoverHandler[0] != null) {
                 mCoverHandler[0].onBindView(holder.mVb.coverImage0, book);
@@ -733,11 +738,9 @@ public class ShowBookFragment
              * At this point we're told to load our local (to the fragment) fields from the Book.
              *
              * @param fields  to populate
-             * @param bookDao Database Access
              * @param book    to load
              */
             void onBindViewHolder(@NonNull final Fields fields,
-                                  @NonNull final BookDao bookDao,
                                   @NonNull final Book book) {
                 fields.setParentView(mVb.getRoot());
                 fields.setAll(book);

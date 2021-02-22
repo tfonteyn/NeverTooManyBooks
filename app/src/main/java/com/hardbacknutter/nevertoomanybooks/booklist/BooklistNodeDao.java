@@ -64,10 +64,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
  *      <li>{@link #restoreSavedState()}: restore the tree view for all nodes from storage.</li>
  * </ul>
  */
-public class BooklistNodeDAO {
+public class BooklistNodeDao {
 
     /** Log tag. */
-    private static final String TAG = "BooklistNodeDAO";
+    private static final String TAG = "BooklistNodeDao";
 
     /** Reference to singleton. */
     @NonNull
@@ -86,10 +86,11 @@ public class BooklistNodeDAO {
      * Constructor.
      *
      * @param db        Database Access
+     * @param listTable the {@link Booklist} table
      * @param style     Style reference.
      * @param bookshelf to use
      */
-    BooklistNodeDAO(@NonNull final SynchronizedDb db,
+    BooklistNodeDao(@NonNull final SynchronizedDb db,
                     @NonNull final TableDefinition listTable,
                     @NonNull final ListStyle style,
                     @NonNull final Bookshelf bookshelf) {

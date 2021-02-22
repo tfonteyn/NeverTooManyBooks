@@ -23,10 +23,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDoneException;
 import android.os.Bundle;
 
-import androidx.annotation.CallSuper;
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,19 +32,16 @@ import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModel;
 
-import java.io.Closeable;
 import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
+import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -76,7 +71,7 @@ public class ShowBookViewModel
     private ListStyle mStyle;
     /** <strong>Optionally</strong> passed. */
     @Nullable
-    private ShowBookNavigator mNavHelper;
+    private BooklistNavigatorDao mNavHelper;
 
     /**
      * The <strong>current</strong> BOOK being displayed.
@@ -145,7 +140,7 @@ public class ShowBookViewModel
             if (navTableName != null && !navTableName.isEmpty()) {
                 final long rowId = args.getLong(BKEY_LIST_TABLE_ROW_ID, 0);
                 SanityCheck.requirePositiveValue(rowId, "BKEY_LIST_TABLE_ROW_ID");
-                mNavHelper = new ShowBookNavigator(context, navTableName);
+                mNavHelper = new BooklistNavigatorDao(context, navTableName);
                 mInitialPagerPosition = mNavHelper.getRowNumber(rowId) - 1;
             } else {
                 mInitialPagerPosition = 0;
@@ -307,114 +302,6 @@ public class ShowBookViewModel
         } else {
             // let the style decide
             return mStyle.getDetailScreenBookFields().isShowCover(global, cIdx);
-        }
-    }
-
-    /**
-     * Provide a simple interface to move around from book to book in the {@link Booklist} table
-     * using the navigation peer-table.
-     * Keeps track of current position and bookId.
-     */
-    private static final class ShowBookNavigator {
-
-        private static final String SELECT_ = "SELECT ";
-        private static final String _FROM_ = " FROM ";
-        private static final String _WHERE_ = " WHERE ";
-
-        @NonNull
-        private final SynchronizedStatement mGetBookStmt;
-        private final int mRowCount;
-        /** Database Access. */
-        @NonNull
-        private final SynchronizedDb mDb;
-        @NonNull
-        private final String mListTableName;
-        /** DEBUG: Indicates close() has been called. Also see {@link Closeable#close()}. */
-        private boolean mCloseWasCalled;
-
-        /**
-         * Constructor.
-         *
-         * @param context       Current context
-         * @param listTableName Name of underlying and <strong>existing</strong> table
-         */
-        private ShowBookNavigator(@NonNull final Context context,
-                                  @NonNull final String listTableName) {
-
-            mDb = DBHelper.getDb(context);
-            mListTableName = listTableName;
-
-            try (SynchronizedStatement stmt = mDb.compileStatement(
-                    "SELECT COUNT(*) FROM " + mListTableName)) {
-                mRowCount = (int) stmt.simpleQueryForLongOrZero();
-            }
-
-            mGetBookStmt = mDb.compileStatement(
-                    SELECT_ + DBDefinitions.KEY_FK_BOOK
-                    + _FROM_ + mListTableName + _WHERE_ + DBDefinitions.KEY_PK_ID + "=?");
-        }
-
-        /**
-         * Get the total number of rows (i.e. books) in the navigation table.
-         *
-         * @return row count
-         */
-        @IntRange(from = 1)
-        private int getRowCount() {
-            return mRowCount;
-        }
-
-        /**
-         * Get the row number in the navigation table for the given list table row id.
-         * This is {@code 1} based.
-         *
-         * @param listTableRowId the Booklist table rowId to find
-         *
-         * @return row number
-         */
-        @IntRange(from = 1)
-        private int getRowNumber(final long listTableRowId) {
-            // This method is only called once to get the initial row number
-            try (SynchronizedStatement stmt = mDb.compileStatement(
-                    SELECT_ + DBDefinitions.KEY_PK_ID + _FROM_ + mListTableName
-                    + _WHERE_ + DBDefinitions.KEY_FK_BL_ROW_ID + "=?")) {
-                stmt.bindLong(1, listTableRowId);
-                return (int) stmt.simpleQueryForLongOrZero();
-            }
-        }
-
-        /**
-         * Reposition and get the book id to load
-         *
-         * @param rowNumber the ROW number in the table
-         *
-         * @return book id
-         *
-         * @throws SQLiteDoneException which should NEVER happen... flw
-         */
-        private long getBookIdAtRow(@IntRange(from = 1) final int rowNumber)
-                throws SQLiteDoneException {
-            mGetBookStmt.bindLong(1, rowNumber);
-            return mGetBookStmt.simpleQueryForLong();
-        }
-
-        private void close() {
-            mCloseWasCalled = true;
-            mGetBookStmt.close();
-        }
-
-        /**
-         * DEBUG: if we see the warn in the logs, we know we have an issue to fix.
-         */
-        @SuppressWarnings("FinalizeDeclaration")
-        @Override
-        @CallSuper
-        protected void finalize()
-                throws Throwable {
-            if (!mCloseWasCalled) {
-                close();
-            }
-            super.finalize();
         }
     }
 }

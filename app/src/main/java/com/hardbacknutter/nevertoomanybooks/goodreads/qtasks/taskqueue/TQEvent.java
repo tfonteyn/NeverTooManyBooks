@@ -74,9 +74,9 @@ public class TQEvent
     public void addContextMenuItems(@NonNull final Context context,
                                     @NonNull final List<ContextDialogItem> menuItems,
                                     @NonNull final BookDao bookDao) {
-        menuItems.add(new ContextDialogItem(context.getString(R.string.gr_tq_menu_delete_event),
-                                            () -> QueueManager.getInstance()
-                                                              .deleteEvent(getId())));
+        menuItems.add(new ContextDialogItem(
+                context.getString(R.string.gr_tq_menu_delete_event),
+                () -> QueueManager.getInstance().deleteEvent(getId())));
     }
 
     @Override

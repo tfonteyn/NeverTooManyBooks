@@ -189,7 +189,7 @@ public class ImportGrTask
     private boolean importReviews(@NonNull final Context context,
                                   @NonNull final BookDao bookDao,
                                   @NonNull final QueueManager queueManager)
-    throws CredentialsException {
+            throws CredentialsException {
 
         final GoodreadsAuth grAuth = new GoodreadsAuth(context);
         final ReviewsListApiHandler api = new ReviewsListApiHandler(context, grAuth);
@@ -284,7 +284,7 @@ public class ImportGrTask
      * https://www.goodreads.com/book/show/8263282-the-end-of-eternity
      *
      * @param context Current context
-     * @param bookDao      Database Access
+     * @param bookDao Database Access
      */
     private void processReview(@NonNull final Context context,
                                @NonNull final BookDao bookDao,
@@ -332,8 +332,9 @@ public class ImportGrTask
                         final Book delta = buildBook(context, bookDao, localBook, review);
                         try {
                             // <strong>WARNING:</strong> a failed update is ignored (but logged).
-                            bookDao.update(context, delta, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
+                            bookDao.update(context, delta,
+                                           BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                           | BookDao.BOOK_FLAG_USE_UPDATE_DATE_IF_PRESENT);
                         } catch (@NonNull final DaoWriteException e) {
                             // ignore, but log it.
                             Logger.error(context, TAG, e);
@@ -385,7 +386,7 @@ public class ImportGrTask
      * i.e. for existing books, we copy the id and the language field to the result.
      *
      * @param context       Current context
-     * @param bookDao            Database Access
+     * @param bookDao       Database Access
      * @param localData     the local Book; this can be an existing Book with local data
      *                      when we're updating, or a new Book() when inserting.
      * @param goodreadsData the source data from Goodreads
