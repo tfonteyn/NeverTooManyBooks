@@ -67,12 +67,12 @@ public class SearchSuggestionProvider
                 return null;
             }
 
-            final String query = BookDao.FtsSql.prepareSearchText(selectionArgs[0], null);
+            final String query = BookDao.Sql.Fts.prepareSearchText(selectionArgs[0], null);
             // do we have anything to search for?
             if (!query.isEmpty()) {
                 //noinspection ConstantConditions,UnnecessaryLocalVariable
                 final Cursor cursor = DBHelper.getDb(getContext())
-                                              .rawQuery(BookDao.FtsSql.SEARCH_SUGGESTIONS,
+                                              .rawQuery(BookDao.Sql.Fts.SEARCH_SUGGESTIONS,
                                                         new String[]{query});
 
                 //  if (cursor != null) {

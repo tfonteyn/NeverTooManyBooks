@@ -256,8 +256,8 @@ public class BooklistBuilder {
                                     @Nullable final String publisherName,
                                     @Nullable final String keywords) {
 
-        final String query = BookDao.FtsSql.createMatchString(author, title, seriesTitle,
-                                                              publisherName, keywords);
+        final String query = BookDao.Sql.Fts.createMatchString(author, title, seriesTitle,
+                                                               publisherName, keywords);
         if (!query.isEmpty()) {
             mFilters.add(context ->
                                  '(' + TBL_BOOKS.dot(KEY_PK_ID) + " IN ("
