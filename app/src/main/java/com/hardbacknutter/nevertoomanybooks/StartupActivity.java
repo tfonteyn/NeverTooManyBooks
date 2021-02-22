@@ -92,6 +92,14 @@ public class StartupActivity
 
         super.onCreate(savedInstanceState);
 
+        // Are we going through a hot/warm start ?
+        if (((App) getApplication()).isHotStart()) {
+            // yes, skip the usual startup process
+            gotoMainScreen();
+            return;
+        }
+        ((App) getApplication()).setHotStart();
+
         // can't function without access to custom directories
         final String msg = AppDir.init(this);
         if (msg != null) {
@@ -130,15 +138,23 @@ public class StartupActivity
         switch (mVm.getNextStartupStage()) {
             case 1:
                 startTasks();
-                break;
+                return;
 
             case 2:
                 backupRequired();
-                break;
+                return;
 
             case 3:
+                // Create and start the Goodreads QueueManager. This (re)starts stored tasks.
+                // Note this is not a startup-task; it just needs to be started at startup.
+                // (it does not even need to be a background thread, as we only want
+                // to create the QM, but this way we should get the UI up faster)
+                final Thread qmt = new Thread(() -> QueueManager.create(this).start());
+                qmt.setName("QueueManager-create");
+                qmt.start();
+
                 gotoMainScreen();
-                break;
+                return;
 
             default:
                 throw new IllegalArgumentException(String.valueOf(mVm.getStartupStage()));
@@ -180,26 +196,13 @@ public class StartupActivity
 
 
     /**
-     * Last steps:
-     * Init the search engines
-     * Startup the task queue.
      * Finally, start the main user activity.
      */
     private void gotoMainScreen() {
         // Remove the weak self-reference
         sStartupActivity.clear();
-
-        // Create and start the Goodreads QueueManager. This (re)starts stored tasks.
-        // Note this is not a startup-task; it just needs to be started at startup.
-        // (it does not even need to be a background thread, as we only want
-        // to create the QM, but this way we should get the UI up faster)
-        // MUST
-        final Thread qmt = new Thread(() -> QueueManager.create(this).start());
-        qmt.setName("QueueManager-create");
-        qmt.start();
-
+        // and hand over to the real main activity
         startActivity(new Intent(this, BooksOnBookshelf.class));
-        // done here
         finish();
     }
 

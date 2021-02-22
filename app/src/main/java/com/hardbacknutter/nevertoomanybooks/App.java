@@ -48,6 +48,17 @@ public class App
     /** Singleton. */
     private static App sInstance;
 
+    /** Flag to indicate the startup can skip a full init. */
+    private boolean mHotStart;
+
+    public boolean isHotStart() {
+        return mHotStart;
+    }
+
+    public void setHotStart() {
+        mHotStart = true;
+    }
+
     /**
      * Get the Application Context <strong>using the device Locale</strong>.
      *
