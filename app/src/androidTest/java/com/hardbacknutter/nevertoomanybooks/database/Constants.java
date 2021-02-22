@@ -33,7 +33,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
 
-public class Constants {
+public final class Constants {
 
     public static final String PREFIX = "Test";
 
@@ -47,6 +47,9 @@ public class Constants {
     static final int BOOK_ISFDB_123 = 123;
     static final String BOOK_LCCN_0 = "unused0";
     private static final String BOOKSHELF = PREFIX + "BookshelfName";
+
+    private Constants() {
+    }
 
     static String AuthorFullName(final int index) {
         return AUTHOR_GIVEN_NAME + index

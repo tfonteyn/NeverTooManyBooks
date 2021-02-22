@@ -44,7 +44,10 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 
-public class ExMsg {
+public final class ExMsg {
+
+    private ExMsg() {
+    }
 
     /**
      * Map an Exception to a user readable error message.

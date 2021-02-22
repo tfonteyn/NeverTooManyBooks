@@ -1342,7 +1342,7 @@ public class IsfdbSearchEngine
     /**
      * ISFDB specific field names we add to the bundle based on parsed XML data.
      */
-    static class SiteField {
+    static final class SiteField {
         // private static final String AUTHOR_ID = "__ISFDB_AUTHORS_ID";
         // private static final String SERIES_ID = "__ISFDB_SERIES_ID";
         // private static final String PUBLISHER_ID = "__ISFDB_PUBLISHER_ID";
@@ -1352,5 +1352,8 @@ public class IsfdbSearchEngine
 
         static final String BOOK_TYPE = "__ISFDB_BOOK_TYPE";
         static final String ISBN_2 = "__ISFDB_ISBN2";
+
+        private SiteField() {
+        }
     }
 }

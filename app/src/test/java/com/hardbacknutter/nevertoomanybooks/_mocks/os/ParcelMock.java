@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,7 +37,10 @@ import static org.mockito.Mockito.when;
  * <a href="https://github.com/konmik/nucleus/blob/master/nucleus-test-kit/src/main/java/mocks/ParcelMock.java">ParcelMock</a>
  */
 @SuppressWarnings("ReturnOfNull")
-public class ParcelMock {
+public final class ParcelMock {
+
+    private ParcelMock() {
+    }
 
     public static Parcel create() {
 

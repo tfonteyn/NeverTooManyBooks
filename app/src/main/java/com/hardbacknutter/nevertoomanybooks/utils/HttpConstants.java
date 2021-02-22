@@ -34,4 +34,6 @@ public final class HttpConstants {
     public static final String CONTENT_TYPE = "Content-Type";
     public static final String CONTENT_TYPE_JSON = "application/json;charset=UTF-8";
 
+    private HttpConstants() {
+    }
 }

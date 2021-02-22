@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,6 +34,9 @@ import static org.mockito.Mockito.when;
 
 public final class ContextMock {
 
+    private ContextMock() {
+    }
+
     @NonNull
     public static Context create(@NonNull final String packageName) {
 
@@ -51,12 +54,13 @@ public final class ContextMock {
         return context;
     }
 
-    public static File getTmpDir() {
+    private static File getTmpDir() {
         //noinspection ConstantConditions
         return new File(System.getProperty("java.io.tmpdir"));
     }
 
-    public static File getTmpDir(@NonNull final String path) {
+    private static File getTmpDir(@SuppressWarnings("SameParameterValue")
+                                  @NonNull final String path) {
         final File tmp = new File(System.getProperty("java.io.tmpdir") + path);
         //noinspection ResultOfMethodCallIgnored
         tmp.mkdir();

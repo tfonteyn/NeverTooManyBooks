@@ -1582,6 +1582,9 @@ public class Book
             ALL.put(BOOK_CLUB, R.string.lbl_edition_book_club);
         }
 
+        private Edition() {
+        }
+
         @NonNull
         public static Map<Integer, String> getEditions(@NonNull final Context context) {
             final Map<Integer, String> map = new LinkedHashMap<>();

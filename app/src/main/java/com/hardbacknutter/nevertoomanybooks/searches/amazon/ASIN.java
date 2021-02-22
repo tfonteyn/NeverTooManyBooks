@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -32,9 +32,12 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
  * is created when the item is uploaded to their catalogue.
  *
  * <a href="https://www.amazon.com/gp/seller/asin-upc-isbn-info.html">
- *     https://www.amazon.com/gp/seller/asin-upc-isbn-info.html</a>
+ * https://www.amazon.com/gp/seller/asin-upc-isbn-info.html</a>
  */
-public class ASIN {
+public final class ASIN {
+
+    private ASIN() {
+    }
 
     /**
      * Validate an Amazon ASIN.

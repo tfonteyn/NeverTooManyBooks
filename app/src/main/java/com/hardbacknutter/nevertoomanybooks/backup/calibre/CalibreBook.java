@@ -19,7 +19,7 @@
  */
 package com.hardbacknutter.nevertoomanybooks.backup.calibre;
 
-class CalibreBook {
+final class CalibreBook {
 
     static final String ID = "application_id";
     static final String UUID = "uuid";
@@ -43,4 +43,7 @@ class CalibreBook {
 
     static final String DATE_PUBLISHED = "pubdate";
     static final String EBOOK_FORMAT = "main_format";
+
+    private CalibreBook() {
+    }
 }
