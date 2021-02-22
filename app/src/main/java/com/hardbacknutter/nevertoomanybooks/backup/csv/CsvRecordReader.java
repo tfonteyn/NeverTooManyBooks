@@ -233,7 +233,7 @@ public class CsvRecordReader
                                 R.string.error_import_csv_column_count_mismatch, row));
                     }
 
-                    final Book book = mBookCoder.decode(context, mBookDao,
+                    final Book book = mBookCoder.decode(context,
                                                         csvColumnNames, csvDataRow);
 
                     // Do we have a DBDefinitions.KEY_BOOK_UUID in the import ?
@@ -372,8 +372,9 @@ public class CsvRecordReader
             // - valid DBDefinitions.KEY_BOOK_UUID not existent in the database
             // - NO id, OR an id which does not exist in the database yet.
             // INSERT, explicitly allowing the id to be reused if present
-            final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                              | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            final long insId = mBookDao.insert(context, book,
+                                               BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                               | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "UUID=" + uuid
@@ -405,8 +406,9 @@ public class CsvRecordReader
         if (!mBookDao.bookExistsById(importNumericId)) {
             // The id is not in use, simply insert the book using the given importNumericId,
             // explicitly allowing the id to be reused
-            final long insId = mBookDao.insert(context, book, BookDao.BOOK_FLAG_IS_BATCH_OPERATION
-                                                              | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
+            final long insId = mBookDao.insert(context, book,
+                                               BookDao.BOOK_FLAG_IS_BATCH_OPERATION
+                                               | BookDao.BOOK_FLAG_USE_ID_IF_PRESENT);
             mResults.booksCreated++;
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.IMPORT_CSV_BOOKS) {
                 Log.d(TAG, "importNumericId=" + importNumericId

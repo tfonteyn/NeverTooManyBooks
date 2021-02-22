@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -313,7 +312,6 @@ public class BookCoder {
 
 
     public Book decode(@NonNull final Context context,
-                       @NonNull final BookDao bookDao,
                        @NonNull final String[] csvColumnNames,
                        @NonNull final String[] csvDataRow) {
         final Book book = new Book();
@@ -334,7 +332,7 @@ public class BookCoder {
 
         // Database access is strictly limited to fetching ID's for the list elements.
         decodeAuthors(context, book, bookLocale);
-        decodeSeries(context, bookDao, book, bookLocale);
+        decodeSeries(context, book, bookLocale);
         decodePublishers(context, book, bookLocale);
         decodeToc(context, book, bookLocale);
         decodeBookshelves(book);
@@ -466,12 +464,10 @@ public class BookCoder {
      * Database access is strictly limited to fetching ID's.
      *
      * @param context    Current context
-     * @param bookDao    Database Access
      * @param book       the book
      * @param bookLocale of the book, already resolved
      */
     private void decodeSeries(@NonNull final Context context,
-                              @NonNull final BookDao bookDao,
                               @NonNull final Book /* in/out */ book,
                               @NonNull final Locale bookLocale) {
 
