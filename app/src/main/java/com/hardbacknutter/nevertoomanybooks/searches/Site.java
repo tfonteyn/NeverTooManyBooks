@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -332,7 +332,7 @@ public final class Site
             @Override
             @NonNull
             public Type createFromParcel(@NonNull final Parcel in) {
-                return Type.values()[in.readInt()];
+                return values()[in.readInt()];
             }
 
             @Override

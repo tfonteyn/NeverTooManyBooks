@@ -412,8 +412,8 @@ public class BookCoder {
                                @NonNull final Book /* in/out */ book,
                                @NonNull final Locale bookLocale) {
 
-        final String encodedList = book.getString(BookCoder.CSV_COLUMN_AUTHORS);
-        book.remove(BookCoder.CSV_COLUMN_AUTHORS);
+        final String encodedList = book.getString(CSV_COLUMN_AUTHORS);
+        book.remove(CSV_COLUMN_AUTHORS);
 
         final ArrayList<Author> list;
         if (!encodedList.isEmpty()) {
@@ -471,8 +471,8 @@ public class BookCoder {
                               @NonNull final Book /* in/out */ book,
                               @NonNull final Locale bookLocale) {
 
-        final String encodedList = book.getString(BookCoder.CSV_COLUMN_SERIES);
-        book.remove(BookCoder.CSV_COLUMN_SERIES);
+        final String encodedList = book.getString(CSV_COLUMN_SERIES);
+        book.remove(CSV_COLUMN_SERIES);
 
         if (!encodedList.isEmpty()) {
             final ArrayList<Series> list = mSeriesCoder.decodeList(encodedList);
@@ -512,8 +512,8 @@ public class BookCoder {
                                   @NonNull final Book /* in/out */ book,
                                   @NonNull final Locale bookLocale) {
 
-        final String encodedList = book.getString(BookCoder.CSV_COLUMN_PUBLISHERS);
-        book.remove(BookCoder.CSV_COLUMN_PUBLISHERS);
+        final String encodedList = book.getString(CSV_COLUMN_PUBLISHERS);
+        book.remove(CSV_COLUMN_PUBLISHERS);
 
         if (!encodedList.isEmpty()) {
             final ArrayList<Publisher> list = mPublisherCoder.decodeList(encodedList);
@@ -541,8 +541,8 @@ public class BookCoder {
                            @NonNull final Book /* in/out */ book,
                            @NonNull final Locale bookLocale) {
 
-        final String encodedList = book.getString(BookCoder.CSV_COLUMN_TOC);
-        book.remove(BookCoder.CSV_COLUMN_TOC);
+        final String encodedList = book.getString(CSV_COLUMN_TOC);
+        book.remove(CSV_COLUMN_TOC);
 
         if (!encodedList.isEmpty()) {
             final ArrayList<TocEntry> list = mTocCoder.decodeList(encodedList);

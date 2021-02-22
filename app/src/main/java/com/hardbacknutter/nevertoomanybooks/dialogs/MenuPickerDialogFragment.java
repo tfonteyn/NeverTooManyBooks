@@ -183,7 +183,7 @@ public class MenuPickerDialogFragment
 
             final DialogFragment frag = new MenuPickerDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, MenuPickerDialogFragment.TAG);
+            frag.show(mFragmentManager, TAG);
         }
 
         /**
@@ -293,7 +293,7 @@ public class MenuPickerDialogFragment
             mIconId = in.readInt();
             //noinspection ConstantConditions
             mTitle = in.readString();
-            mSubMenu = in.createTypedArrayList(Pick.CREATOR);
+            mSubMenu = in.createTypedArrayList(CREATOR);
             mIsEnabled = in.readByte() != 0;
             mIsVisible = in.readByte() != 0;
         }

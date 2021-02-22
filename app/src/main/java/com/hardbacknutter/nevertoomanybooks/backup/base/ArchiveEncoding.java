@@ -87,7 +87,7 @@ public enum ArchiveEncoding
         @Override
         @NonNull
         public ArchiveEncoding createFromParcel(@NonNull final Parcel in) {
-            return ArchiveEncoding.values()[in.readInt()];
+            return values()[in.readInt()];
         }
 
         @Override

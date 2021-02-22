@@ -177,7 +177,7 @@ public class CheckListDialogFragment
 
             final DialogFragment frag = new CheckListDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, CheckListDialogFragment.TAG);
+            frag.show(mFragmentManager, TAG);
         }
 
         @Override

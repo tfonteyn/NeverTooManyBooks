@@ -454,7 +454,7 @@ public final class CoverCacheDao {
          * @return the database instance
          */
         public static SynchronizedDb getDb(@NonNull final Context context) {
-            return CoversDbHelper.getInstance(context).getDb();
+            return getInstance(context).getDb();
         }
 
         /**

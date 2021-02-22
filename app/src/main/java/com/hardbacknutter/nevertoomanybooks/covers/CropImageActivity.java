@@ -196,8 +196,8 @@ public class CropImageActivity
             FileUtils.delete(mDstFile);
 
             return new Intent(context, CropImageActivity.class)
-                    .putExtra(CropImageActivity.BKEY_SOURCE, input.srcFile.getAbsolutePath())
-                    .putExtra(CropImageActivity.BKEY_DESTINATION, mDstFile.getAbsolutePath());
+                    .putExtra(BKEY_SOURCE, input.srcFile.getAbsolutePath())
+                    .putExtra(BKEY_DESTINATION, mDstFile.getAbsolutePath());
         }
 
         @Nullable

@@ -202,7 +202,7 @@ public final class StyleUtils {
         }
 
         // keep it safe and easy, just clear the caches; almost certainly overkill
-        StyleUtils.clearCache();
+        clearCache();
     }
 
 

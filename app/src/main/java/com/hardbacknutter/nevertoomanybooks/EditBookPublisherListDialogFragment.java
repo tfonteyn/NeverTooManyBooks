@@ -370,7 +370,7 @@ public class EditBookPublisherListDialogFragment
 
             final DialogFragment frag = new EditPublisherForBookDialogFragment();
             frag.setArguments(args);
-            frag.show(fm, EditPublisherForBookDialogFragment.TAG);
+            frag.show(fm, TAG);
         }
 
         @Override

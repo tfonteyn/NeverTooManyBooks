@@ -161,7 +161,7 @@ public final class DBHelper
      * @return the database instance
      */
     public static SynchronizedDb getDb(@NonNull final Context context) {
-        return DBHelper.getInstance(context).getDb();
+        return getInstance(context).getDb();
     }
 
     @NonNull
@@ -200,7 +200,7 @@ public final class DBHelper
      * @param context Current context
      */
     public static void recreateIndices(@NonNull final Context context) {
-        final DBHelper dbHelper = DBHelper.getInstance(context);
+        final DBHelper dbHelper = getInstance(context);
         final SynchronizedDb db = dbHelper.getDb();
 
         final Synchronizer.SyncLock txLock = db.beginTransaction(true);

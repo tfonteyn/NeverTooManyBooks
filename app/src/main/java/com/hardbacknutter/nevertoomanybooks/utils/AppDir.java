@@ -166,22 +166,22 @@ public enum AppDir {
 
         File[] files;
 
-        files = AppDir.Upgrades.get(context).listFiles();
+        files = Upgrades.get(context).listFiles();
         if (files != null) {
             //noinspection ResultOfMethodCallIgnored
             Arrays.stream(files).forEach(File::delete);
         }
-        files = AppDir.Cache.get(context).listFiles();
+        files = Cache.get(context).listFiles();
         if (files != null) {
             //noinspection ResultOfMethodCallIgnored
             Arrays.stream(files).forEach(File::delete);
         }
-        files = AppDir.Covers.get(context).listFiles();
+        files = Covers.get(context).listFiles();
         if (files != null) {
             //noinspection ResultOfMethodCallIgnored
             Arrays.stream(files).forEach(File::delete);
         }
-        files = AppDir.Log.get(context).listFiles();
+        files = Log.get(context).listFiles();
         if (files != null) {
             //noinspection ResultOfMethodCallIgnored
             Arrays.stream(files).forEach(File::delete);

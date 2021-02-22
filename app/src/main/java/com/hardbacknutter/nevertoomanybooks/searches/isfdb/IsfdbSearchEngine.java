@@ -122,11 +122,9 @@ public class IsfdbSearchEngine
     /** Log tag. */
     private static final String TAG = "IsfdbSearchEngine";
     /** Param 1: external book ID. */
-    private static final String BY_EXTERNAL_ID = IsfdbSearchEngine.CGI_BIN
-                                                 + IsfdbSearchEngine.URL_PL_CGI + "?%1$s";
+    private static final String BY_EXTERNAL_ID = CGI_BIN + URL_PL_CGI + "?%1$s";
     /** Search URL template. */
-    private static final String EDITIONS_URL = IsfdbSearchEngine.CGI_BIN
-                                               + IsfdbSearchEngine.URL_SE_CGI + "?arg=%s&type=ISBN";
+    private static final String EDITIONS_URL = CGI_BIN + URL_SE_CGI + "?arg=%s&type=ISBN";
     /** Map ISFDB book types to {@link Book.TocBits}. */
     private static final Map<String, Integer> TYPE_MAP = new HashMap<>();
     /**
@@ -226,7 +224,7 @@ public class IsfdbSearchEngine
     @Keep
     public IsfdbSearchEngine(@NonNull final Context appContext,
                              @SearchSites.EngineId final int engineId) {
-        super(appContext, engineId, IsfdbSearchEngine.CHARSET_DECODE_PAGE);
+        super(appContext, engineId, CHARSET_DECODE_PAGE);
     }
 
     public static SearchEngineRegistry.Config createConfig() {
@@ -957,14 +955,14 @@ public class IsfdbSearchEngine
             for (final Element a : aas) {
                 final String href = a.attr("href");
 
-                if (title == null && href.contains(IsfdbSearchEngine.URL_TITLE_CGI)) {
+                if (title == null && href.contains(URL_TITLE_CGI)) {
                     title = cleanUpName(a.text());
                     //ENHANCE: tackle 'variant' titles later
 
-                } else if (author == null && href.contains(IsfdbSearchEngine.URL_EA_CGI)) {
+                } else if (author == null && href.contains(URL_EA_CGI)) {
                     author = Author.from(cleanUpName(a.text()));
 
-                } else if (addSeriesFromToc && href.contains(IsfdbSearchEngine.URL_PE_CGI)) {
+                } else if (addSeriesFromToc && href.contains(URL_PE_CGI)) {
                     final Series series = Series.from(a.text());
 
                     //  • 4] • (1987) • novel by
@@ -1130,13 +1128,13 @@ public class IsfdbSearchEngine
 
         final String pageUrl = document.location();
 
-        if (pageUrl.contains(IsfdbSearchEngine.URL_PL_CGI)) {
+        if (pageUrl.contains(URL_PL_CGI)) {
             // We got redirected to a book. Populate with the doc (web page) we got back.
             editions.add(new Edition(stripNumber(pageUrl, '?'), mIsbn, document));
 
-        } else if (pageUrl.contains(IsfdbSearchEngine.URL_TITLE_CGI)
-                   || pageUrl.contains(IsfdbSearchEngine.URL_SE_CGI)
-                   || pageUrl.contains(IsfdbSearchEngine.URL_ADV_SEARCH_RESULTS_CGI)) {
+        } else if (pageUrl.contains(URL_TITLE_CGI)
+                   || pageUrl.contains(URL_SE_CGI)
+                   || pageUrl.contains(URL_ADV_SEARCH_RESULTS_CGI)) {
             // example: http://www.isfdb.org/cgi-bin/title.cgi?11169
             // we have multiple editions. We get here from one of:
             // - direct link to the "title" of the publication; i.e. 'show the editions'

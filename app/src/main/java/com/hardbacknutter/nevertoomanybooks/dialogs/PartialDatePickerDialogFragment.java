@@ -438,7 +438,7 @@ public class PartialDatePickerDialogFragment
 
             final DialogFragment frag = new PartialDatePickerDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, PartialDatePickerDialogFragment.TAG);
+            frag.show(mFragmentManager, TAG);
         }
 
         @Override

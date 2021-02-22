@@ -1462,11 +1462,11 @@ public final class DBDefinitions {
 
     static {
         DOM_FTS_AUTHOR_NAME =
-                new Domain.Builder(DBDefinitions.KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT)
                         .build();
 
         DOM_FTS_TOC_ENTRY_TITLE =
-                new Domain.Builder(DBDefinitions.KEY_FTS_TOC_ENTRY_TITLE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(KEY_FTS_TOC_ENTRY_TITLE, ColumnInfo.TYPE_TEXT)
                         .build();
 
         TBL_FTS_BOOKS = createFtsTableDefinition("books_fts");
@@ -1477,7 +1477,7 @@ public final class DBDefinitions {
         return new TableDefinition(name)
                 .setType(TableDefinition.TableType.FTS4)
                 .addDomains(DOM_TITLE,
-                            DBDefinitions.DOM_FTS_AUTHOR_NAME,
+                            DOM_FTS_AUTHOR_NAME,
                             DOM_SERIES_TITLE,
                             DOM_PUBLISHER_NAME,
 
@@ -1487,7 +1487,7 @@ public final class DBDefinitions {
                             DOM_BOOK_LOCATION,
                             DOM_BOOK_ISBN,
 
-                            DBDefinitions.DOM_FTS_TOC_ENTRY_TITLE
+                            DOM_FTS_TOC_ENTRY_TITLE
                            );
     }
 

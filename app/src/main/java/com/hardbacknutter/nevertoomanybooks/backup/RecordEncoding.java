@@ -88,7 +88,7 @@ public enum RecordEncoding {
             return Optional.of(Cover);
         }
 
-        for (final RecordEncoding recordEncoding : RecordEncoding.values()) {
+        for (final RecordEncoding recordEncoding : values()) {
             if (recordEncoding.mPattern.matcher(name).find()) {
                 return Optional.of(recordEncoding);
             }

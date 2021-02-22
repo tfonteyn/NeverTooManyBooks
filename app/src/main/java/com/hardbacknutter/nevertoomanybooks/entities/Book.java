@@ -744,10 +744,10 @@ public class Book
     public void setCalibreLibrary(@Nullable final CalibreLibrary library) {
         if (library != null) {
             putLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY, library.getId());
-            putParcelable(Book.BKEY_CALIBRE_LIBRARY, library);
+            putParcelable(BKEY_CALIBRE_LIBRARY, library);
         } else {
             remove(DBDefinitions.KEY_FK_CALIBRE_LIBRARY);
-            remove(Book.BKEY_CALIBRE_LIBRARY);
+            remove(BKEY_CALIBRE_LIBRARY);
 
             remove(DBDefinitions.KEY_CALIBRE_BOOK_ID);
             remove(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
@@ -820,7 +820,7 @@ public class Book
      * @param context Current context
      */
     public void ensureBookshelf(@NonNull final Context context) {
-        final ArrayList<Bookshelf> list = getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
+        final ArrayList<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
             list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
         }
@@ -893,7 +893,7 @@ public class Book
             @TocBits
             long type = getLong(DBDefinitions.KEY_TOC_BITMASK);
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
-                type |= Book.TOC_MULTIPLE_AUTHORS;
+                type |= TOC_MULTIPLE_AUTHORS;
             }
             putLong(DBDefinitions.KEY_TOC_BITMASK, type);
         }
@@ -1473,7 +1473,7 @@ public class Book
 
     public void pruneAuthors(@NonNull final Context context,
                              final boolean lookupLocale) {
-        final ArrayList<Author> authors = getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+        final ArrayList<Author> authors = getParcelableArrayList(BKEY_AUTHOR_LIST);
         if (!authors.isEmpty()) {
             if (Author.pruneList(authors, context, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);
@@ -1495,7 +1495,7 @@ public class Book
 
     public void pruneSeries(@NonNull final Context context,
                             final boolean lookupLocale) {
-        final ArrayList<Series> series = getParcelableArrayList(Book.BKEY_SERIES_LIST);
+        final ArrayList<Series> series = getParcelableArrayList(BKEY_SERIES_LIST);
         if (!series.isEmpty()) {
             if (Series.pruneList(series, context, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);
@@ -1505,7 +1505,7 @@ public class Book
 
     public void prunePublishers(@NonNull final Context context,
                                 final boolean lookupLocale) {
-        final ArrayList<Publisher> publishers = getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+        final ArrayList<Publisher> publishers = getParcelableArrayList(BKEY_PUBLISHER_LIST);
         if (!publishers.isEmpty()) {
             if (Publisher.pruneList(publishers, context, lookupLocale, getLocale(context))) {
                 mStage.setStage(EntityStage.Stage.Dirty);

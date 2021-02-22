@@ -389,7 +389,7 @@ public class EditBookSeriesListDialogFragment
 
             final DialogFragment frag = new EditSeriesForBookDialogFragment();
             frag.setArguments(args);
-            frag.show(fm, EditSeriesForBookDialogFragment.TAG);
+            frag.show(fm, TAG);
         }
 
         @Override

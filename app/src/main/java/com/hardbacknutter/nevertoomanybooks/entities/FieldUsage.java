@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -192,7 +192,7 @@ public final class FieldUsage {
                                  @NonNull final Usage defValue) {
             final int ordinal = global.getInt(PREFS_PREFIX_FIELD_USAGE + key, -1);
             if (ordinal != -1) {
-                return Usage.values()[ordinal];
+                return values()[ordinal];
             } else {
                 return defValue;
             }

@@ -474,7 +474,7 @@ public class ReviewsListApiHandler
                 return null;
             }
             try {
-                return LocalDateTime.parse(dateStr, Review.DATE_PARSER);
+                return LocalDateTime.parse(dateStr, DATE_PARSER);
                 //FIXME: DateTimeParseException https://issuetracker.google.com/issues/158417777
 //            } catch (@NonNull final DateTimeParseException ignore) {
             } catch (@NonNull final RuntimeException ignore) {

@@ -147,15 +147,15 @@ public class BooklistNode {
      */
     void setNextState(@NextState final int nextState) {
         switch (nextState) {
-            case BooklistNode.NEXT_STATE_COLLAPSED:
+            case NEXT_STATE_COLLAPSED:
                 mIsExpanded = false;
                 break;
 
-            case BooklistNode.NEXT_STATE_EXPANDED:
+            case NEXT_STATE_EXPANDED:
                 mIsExpanded = true;
                 break;
 
-            case BooklistNode.NEXT_STATE_TOGGLE:
+            case NEXT_STATE_TOGGLE:
             default:
                 mIsExpanded = !mIsExpanded;
                 break;

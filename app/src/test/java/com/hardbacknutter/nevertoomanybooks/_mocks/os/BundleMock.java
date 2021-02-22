@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -221,10 +221,10 @@ public final class BundleMock {
 
     @Test
     void bu() {
-        final Bundle b1 = BundleMock.create();
+        final Bundle b1 = create();
         b1.putString("foo", "bar");
         b1.putInt("ii", 11);
-        final Bundle b2 = BundleMock.create();
+        final Bundle b2 = create();
         b2.putAll(b1);
 
         assertEquals("bar", b2.getString("foo"));

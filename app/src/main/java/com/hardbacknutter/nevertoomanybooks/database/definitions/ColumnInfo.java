@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -173,22 +173,22 @@ public class ColumnInfo {
                 case TYPE_INTEGER:
                 case "int":
                 case TYPE_BOOLEAN:
-                    return StorageClass.Integer;
+                    return Integer;
 
                 case TYPE_TEXT:
                 case "char":
                     // see definitions of TYPE_DATE/TYPE_DATETIME
                 case TYPE_DATE:
                 case TYPE_DATETIME:
-                    return StorageClass.Text;
+                    return Text;
 
                 case TYPE_REAL:
                 case "float":
                 case "double":
-                    return StorageClass.Real;
+                    return Real;
 
                 case TYPE_BLOB:
-                    return StorageClass.Blob;
+                    return Blob;
 
                 default:
                     // note that "" (empty) type is treated as TEXT.

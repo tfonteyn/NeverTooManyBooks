@@ -224,7 +224,7 @@ public class StylePickerDialogFragment
 
             final DialogFragment frag = new StylePickerDialogFragment();
             frag.setArguments(args);
-            frag.show(mFragmentManager, StylePickerDialogFragment.TAG);
+            frag.show(mFragmentManager, TAG);
         }
 
         @Override
