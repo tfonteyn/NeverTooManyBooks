@@ -258,7 +258,7 @@ public class BooklistBuilder {
             mFilters.add(context ->
                                  "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
                                  + _WHERE_ + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
-                                 + "=`" + BaseDao.encodeString(filter) + '`'
+                                 + "='" + BaseDao.encodeString(filter) + '\''
                                  + _AND_ + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
                                  + ')');
         }
