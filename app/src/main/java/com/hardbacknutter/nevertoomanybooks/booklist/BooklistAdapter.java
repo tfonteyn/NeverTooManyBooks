@@ -899,7 +899,7 @@ public class BooklistAdapter
 
         /** The parent adapter. */
         @NonNull
-        final BooklistAdapter mAdapter;
+        private final BooklistAdapter mAdapter;
         /** Format string. */
         @NonNull
         private final String mX_bracket_Y_bracket;
@@ -1269,7 +1269,7 @@ public class BooklistAdapter
          * It's ok to store this as it's intrinsically linked with the ViewType.
          */
         @NonNull
-        final String mKey;
+        private final String mKey;
         @NonNull
         private final RatingBar mRatingBar;
 
@@ -1304,7 +1304,7 @@ public class BooklistAdapter
 
         /*** Default resource id for the View to populate. */
         @IdRes
-        static final int mTextViewId = R.id.name;
+        private static final int mTextViewId = R.id.name;
 
         /**
          * The group this holder represents.
@@ -1318,7 +1318,7 @@ public class BooklistAdapter
          * It's ok to store this as it's intrinsically linked with the ViewType.
          */
         @NonNull
-        final String mKey;
+        private final String mKey;
         /*** View to populate. */
         @NonNull
         final TextView mTextView;

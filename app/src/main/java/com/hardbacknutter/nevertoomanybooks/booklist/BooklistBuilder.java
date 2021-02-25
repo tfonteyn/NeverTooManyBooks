@@ -70,11 +70,23 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BL_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BL_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -83,6 +95,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BO
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_LOANEE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_PUBLISHER;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FTS_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
@@ -262,9 +275,9 @@ public class BooklistBuilder {
             mFilters.add(context ->
                                  '(' + TBL_BOOKS.dot(KEY_PK_ID) + " IN ("
                                  // fetch the ID's only
-                                 + SELECT_ + DBDefinitions.KEY_FTS_BOOK_ID
-                                 + _FROM_ + DBDefinitions.TBL_FTS_BOOKS.getName()
-                                 + _WHERE_ + DBDefinitions.TBL_FTS_BOOKS.getName()
+                                 + SELECT_ + KEY_FTS_BOOK_ID
+                                 + _FROM_ + TBL_FTS_BOOKS.getName()
+                                 + _WHERE_ + TBL_FTS_BOOKS.getName()
                                  + " MATCH '" + query + "')"
                                  + ')');
         }
@@ -596,7 +609,7 @@ public class BooklistBuilder {
             }
 
             // add the node key column
-            destColumns.append(',').append(DBDefinitions.KEY_BL_NODE_KEY);
+            destColumns.append(',').append(KEY_BL_NODE_KEY);
             sourceColumns.append(',').append(buildNodeKey()).append(_AS_).append(DOM_BL_NODE_KEY);
 
             // and the node state columns
@@ -691,14 +704,10 @@ public class BooklistBuilder {
             // Don't apply constraints (no need)
             db.recreate(mNavTable, false);
             db.execSQL(INSERT_INTO_ + mNavTable.getName()
-                       + " (" + KEY_FK_BOOK
-                       + ',' + DBDefinitions.KEY_FK_BL_ROW_ID + ") "
-
-                       + SELECT_ + KEY_FK_BOOK
-                       + ',' + KEY_PK_ID
-
+                       + " (" + KEY_FK_BOOK + ',' + KEY_FK_BL_ROW_ID + ") "
+                       + SELECT_ + KEY_FK_BOOK + ',' + KEY_PK_ID
                        + _FROM_ + mListTable.getName()
-                       + _WHERE_ + DBDefinitions.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                       + _WHERE_ + KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
                        + _ORDER_BY_ + KEY_PK_ID
                       );
 
@@ -760,11 +769,11 @@ public class BooklistBuilder {
 
                 // Create the INSERT columns clause for the next level up
                 final StringBuilder listColumns = new StringBuilder()
-                        .append(DBDefinitions.KEY_BL_NODE_LEVEL)
-                        .append(',').append(DBDefinitions.KEY_BL_NODE_GROUP)
-                        .append(',').append(DBDefinitions.KEY_BL_NODE_KEY)
-                        .append(',').append(DBDefinitions.KEY_BL_NODE_EXPANDED)
-                        .append(',').append(DBDefinitions.KEY_BL_NODE_VISIBLE);
+                        .append(KEY_BL_NODE_LEVEL)
+                        .append(',').append(KEY_BL_NODE_GROUP)
+                        .append(',').append(KEY_BL_NODE_KEY)
+                        .append(',').append(KEY_BL_NODE_EXPANDED)
+                        .append(',').append(KEY_BL_NODE_VISIBLE);
 
                 // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
@@ -774,7 +783,7 @@ public class BooklistBuilder {
                 final StringBuilder listValues = new StringBuilder()
                         .append(level)
                         .append(',').append(group.getId())
-                        .append(",NEW.").append(DBDefinitions.KEY_BL_NODE_KEY)
+                        .append(",NEW.").append(KEY_BL_NODE_KEY)
                         .append(",").append(expVis)
                         // level 1 is always visible. THIS IS CRITICAL!
                         .append(",").append(level == 1 ? 1 : expVis);
@@ -808,7 +817,7 @@ public class BooklistBuilder {
                 final String levelTgSql =
                         "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
                         + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                        + "\n WHEN NEW." + DBDefinitions.KEY_BL_NODE_LEVEL + '=' + (level + 1)
+                        + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + (level + 1)
                         + " AND NOT EXISTS("
                         + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + _WHERE_ + whereClause
                         + /* */ ')'
@@ -827,7 +836,7 @@ public class BooklistBuilder {
             final String currentValueTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
                     + " AFTER INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                    + "\n WHEN NEW." + DBDefinitions.KEY_BL_NODE_LEVEL + '=' + groupCount
+                    + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + groupCount
                     + "\n BEGIN"
                     + "\n  DELETE FROM " + mTriggerHelperTable.getName() + ';'
                     + "\n  INSERT INTO " + mTriggerHelperTable.getName()
@@ -1013,19 +1022,19 @@ public class BooklistBuilder {
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the primary (i.e. pos==1)
                     sql.append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_POSITION))
+                       .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION))
                        .append("=1");
                 } else {
                     // grab the desired type, or if no such type, grab the 1st
                     //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
                     sql.append(" AND (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" & ").append(primaryAuthorType).append(")<>0)")
                        .append(" OR (((")
-                       .append(TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" &~ ").append(primaryAuthorType).append(")=0)")
                        .append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_BOOK_AUTHOR_POSITION))
+                       .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION))
                        .append("=1))");
                 }
             }
@@ -1033,14 +1042,14 @@ public class BooklistBuilder {
             sql.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
 
             if (styleGroups.contains(BooklistGroup.SERIES)
-                || DBDefinitions.isUsed(global, DBDefinitions.KEY_SERIES_TITLE)) {
+                || DBDefinitions.isUsed(global, KEY_SERIES_TITLE)) {
                 // Join with the link table between Book and Series.
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
                 // Extend the join filtering on the primary Series unless
                 // the user wants the book to show under all its Series
                 if (!mStyle.isShowBooksUnderEachSeries(context)) {
                     sql.append(_AND_)
-                       .append(TBL_BOOK_SERIES.dot(DBDefinitions.KEY_BOOK_SERIES_POSITION))
+                       .append(TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION))
                        .append("=1");
                 }
                 // Join with Series to make the titles available
@@ -1055,7 +1064,7 @@ public class BooklistBuilder {
                 // the user wants the book to show under all its Publishers
                 if (!mStyle.isShowBooksUnderEachPublisher(context)) {
                     sql.append(_AND_)
-                       .append(TBL_BOOK_PUBLISHER.dot(DBDefinitions.KEY_BOOK_PUBLISHER_POSITION))
+                       .append(TBL_BOOK_PUBLISHER.dot(KEY_BOOK_PUBLISHER_POSITION))
                        .append("=1");
                 }
                 // Join with Publishers to make the names available
