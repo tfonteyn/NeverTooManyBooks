@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -55,10 +55,10 @@
     <dimen name="cover_details_1_width">64dp</dimen>
 
     <!-- Book edit screen. Displayed side by side. -->
-    <dimen name="cover_edit_0_height">150dp</dimen>
-    <dimen name="cover_edit_0_width">96dp</dimen>
-    <dimen name="cover_edit_1_height">150dp</dimen>
-    <dimen name="cover_edit_1_width">96dp</dimen>
+    <dimen name="cover_edit_0_height">100dp</dimen>
+    <dimen name="cover_edit_0_width">64dp</dimen>
+    <dimen name="cover_edit_1_height">100dp</dimen>
+    <dimen name="cover_edit_1_width">64dp</dimen>
 
     <integer name="cover_browser_gallery_span_count">1</integer>
     <dimen name="cover_browser_gallery_height">100dp</dimen>
