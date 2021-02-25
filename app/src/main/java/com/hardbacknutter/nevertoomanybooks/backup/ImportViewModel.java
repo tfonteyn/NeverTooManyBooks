@@ -44,7 +44,9 @@ public class ImportViewModel
         extends ViewModel
         implements ResultIntentOwner {
 
+    /** Log tag. */
     private static final String TAG = "ImportViewModel";
+
     public static final String BKEY_URL = TAG + ":url";
 
     /** Accumulate all data that will be send in {@link Activity#setResult}. */
@@ -126,7 +128,7 @@ public class ImportViewModel
     }
 
     /**
-     * Do we have sufficient data to start an import ?
+     * Check if we have sufficient data to start an import.
      *
      * @return {@code true} if the "Go" button should be made available
      */

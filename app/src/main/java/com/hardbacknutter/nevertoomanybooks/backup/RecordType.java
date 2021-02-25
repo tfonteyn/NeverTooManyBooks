@@ -93,6 +93,7 @@ public enum RecordType {
      */
     AutoDetect("data");
 
+    /** Log tag. */
     private static final String TAG = "RecordType";
 
     /** Used as the fixed archive entry name when <strong>WRITING</strong>. */

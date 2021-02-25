@@ -103,7 +103,7 @@ public final class WrappedMaterialDatePicker<S>
      * Wrapper to {@link MaterialDatePicker#show(FragmentManager, String)}.
      *
      * @param fm         The FragmentManager this fragment will be added to.
-     * @param requestKey The key to use for the FragmentResultListener.
+     * @param requestKey for use with the FragmentResultListener
      *                   Will ALSO be used as the regular tag for this fragment, as per
      *                   {@link FragmentTransaction#add(Fragment, String) FragmentTransaction.add}.
      */
