@@ -62,6 +62,7 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingle
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeTocSectionBinding;
@@ -617,7 +618,7 @@ public class ShowBookFragment
 
             // Personal fields
             fields.add(R.id.bookshelves, new EntityListChipGroupAccessor(
-                               () -> new ArrayList<>(mVm.getAllBookshelves()),
+                               () -> new ArrayList<>(BookshelfDao.getInstance().getAll()),
                                false), Book.BKEY_BOOKSHELF_LIST,
                        DBDefinitions.KEY_FK_BOOKSHELF)
                   .setRelatedFields(R.id.lbl_bookshelves);
@@ -627,7 +628,7 @@ public class ShowBookFragment
                   .setRelatedFields(R.id.lbl_date_acquired);
 
             fields.add(R.id.edition,
-                       new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(context), false),
+                       new BitmaskChipGroupAccessor(Book.Edition::getEditions, false),
                        DBDefinitions.KEY_EDITION_BITMASK)
                   .setRelatedFields(R.id.lbl_edition);
 

@@ -30,7 +30,7 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -46,7 +46,7 @@ public class BitmaskChipGroupAccessor
         extends BaseDataAccessor<Integer, ChipGroup> {
 
     @NonNull
-    private final Supplier<Map<Integer, String>> mListSupplier;
+    private final Function<Context, Map<Integer, String>> mValuesSupplier;
 
     @Nullable
     private final View.OnClickListener mEditChipListener;
@@ -54,12 +54,13 @@ public class BitmaskChipGroupAccessor
     /**
      * Constructor.
      *
-     * @param listSupplier for a list with all <strong>possible</strong> values
-     * @param isEditable   flag
+     * @param supplier   for a Map with all <strong>possible</strong> values
+     * @param isEditable flag
      */
-    public BitmaskChipGroupAccessor(@NonNull final Supplier<Map<Integer, String>> listSupplier,
+    public BitmaskChipGroupAccessor(@NonNull final Function<Context, Map<Integer, String>>
+                                            supplier,
                                     final boolean isEditable) {
-        mListSupplier = listSupplier;
+        mValuesSupplier = supplier;
         mIsEditable = isEditable;
 
         if (mIsEditable) {
@@ -95,7 +96,9 @@ public class BitmaskChipGroupAccessor
             final Context context = chipGroup.getContext();
 
             // *all* values
-            for (final Map.Entry<Integer, String> entry : mListSupplier.get().entrySet()) {
+            for (final Map.Entry<Integer, String> entry :
+                    mValuesSupplier.apply(context).entrySet()) {
+
                 final boolean isSet = (entry.getKey() & mRawValue) != 0;
                 // if editable, all values; if not editable only the set values.
                 if (isSet || mIsEditable) {

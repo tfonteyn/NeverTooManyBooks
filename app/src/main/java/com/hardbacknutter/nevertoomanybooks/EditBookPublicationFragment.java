@@ -137,7 +137,7 @@ public class EditBookPublicationFragment
               .setRelatedFields(R.id.lbl_print_run);
 
         fields.add(R.id.edition,
-                   new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(getContext()), true),
+                   new BitmaskChipGroupAccessor(Book.Edition::getEditions, true),
                    DBDefinitions.KEY_EDITION_BITMASK)
               .setRelatedFields(R.id.lbl_edition);
     }
