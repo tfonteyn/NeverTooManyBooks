@@ -41,7 +41,6 @@ import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
-import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.CompoundButtonAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
@@ -114,11 +113,6 @@ public class EditBookNotesFragment
         fields.add(R.id.location, new AutoCompleteTextAccessor(() -> mVm.getAllLocations()),
                    DBDefinitions.KEY_LOCATION)
               .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
-
-        fields.add(R.id.edition,
-                   new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(context), true),
-                   DBDefinitions.KEY_EDITION_BITMASK)
-              .setRelatedFields(R.id.lbl_edition);
 
         fields.add(R.id.date_acquired, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_DATE_ACQUIRED)

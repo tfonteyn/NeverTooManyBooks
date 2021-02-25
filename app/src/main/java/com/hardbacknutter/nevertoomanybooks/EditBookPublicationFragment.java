@@ -40,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.fields.Field;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.AutoCompleteTextAccessor;
+import com.hardbacknutter.nevertoomanybooks.fields.accessors.BitmaskChipGroupAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.DecimalEditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.TextViewAccessor;
@@ -115,9 +116,6 @@ public class EditBookPublicationFragment
                    Book.BKEY_PUBLISHER_LIST, DBDefinitions.KEY_PUBLISHER_NAME)
               .setRelatedFields(R.id.lbl_publisher);
 
-        fields.add(R.id.print_run, new EditTextAccessor<>(), DBDefinitions.KEY_PRINT_RUN)
-              .setRelatedFields(R.id.lbl_print_run);
-
         fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
                    DBDefinitions.KEY_BOOK_DATE_PUBLISHED)
               .setTextInputLayout(R.id.lbl_date_published);
@@ -134,6 +132,14 @@ public class EditBookPublicationFragment
                    DBDefinitions.KEY_PRICE_LISTED_CURRENCY)
               .setRelatedFields(R.id.lbl_price_listed,
                                 R.id.lbl_price_listed_currency, R.id.price_listed_currency);
+
+        fields.add(R.id.print_run, new EditTextAccessor<>(), DBDefinitions.KEY_PRINT_RUN)
+              .setRelatedFields(R.id.lbl_print_run);
+
+        fields.add(R.id.edition,
+                   new BitmaskChipGroupAccessor(() -> Book.Edition.getEditions(getContext()), true),
+                   DBDefinitions.KEY_EDITION_BITMASK)
+              .setRelatedFields(R.id.lbl_edition);
     }
 
     @Override

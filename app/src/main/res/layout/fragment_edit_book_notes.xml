@@ -240,38 +240,6 @@
             app:constraint_referenced_ids="lbl_condition,lbl_condition_cover"
             />
 
-        <TextView
-            android:id="@+id/lbl_edition"
-            style="@style/Field.Label"
-            android:text="@string/lbl_edition"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_condition_bottom"
-            />
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/edition"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_edition"
-            >
-            <!-- chips will be added here dynamically -->
-            <!--             <com.google.android.material.chip.Chip-->
-            <!--                 style="?attr/appChipFilterStyle"-->
-            <!--                 android:checked="true"-->
-            <!--                 android:layout_width="wrap_content"-->
-            <!--                 android:layout_height="wrap_content"-->
-            <!--                 android:text="@string/lbl_edition_first_edition"-->
-            <!--                />-->
-            <!--             <com.google.android.material.chip.Chip-->
-            <!--                 style="?attr/appChipFilterStyle"-->
-            <!--                 android:layout_width="wrap_content"-->
-            <!--                 android:layout_height="wrap_content"-->
-            <!--                 android:text="@string/lbl_edition_first_impression"-->
-            <!--                /> -->
-        </com.google.android.material.chip.ChipGroup>
-
         <CheckBox
             android:id="@+id/cbx_signed"
             android:layout_width="wrap_content"
@@ -279,7 +247,7 @@
             android:layout_marginStart="@dimen/field_margin_start"
             android:text="@string/lbl_signed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edition"
+            app:layout_constraintTop_toBottomOf="@id/barrier_condition_bottom"
             tools:checked="true"
             />
 

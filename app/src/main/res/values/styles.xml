@@ -143,6 +143,7 @@
         <item name="android:layout_height">wrap_content</item>
         <!-- without some extra margin, the chips are glued to the label above the group. -->
         <item name="android:layout_marginTop">4dp</item>
+        <item name="chipSpacingVertical">4dp</item>
     </style>
 
     <!-- Read-Write style for Book-edit screen. -->

@@ -93,32 +93,12 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_print_run"
-            style="@style/TIL.EditText"
-            android:hint="@string/lbl_print_run"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/print_run"
-                style="@style/notesTextEntry"
-                android:layout_width="match_parent"
-                android:imeOptions="actionNext"
-                tools:ignore="Autofill"
-                tools:text="limited to 150 copies"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_first_publication"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_first_publication"
             app:layout_constraintEnd_toStartOf="@id/lbl_date_published"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -136,7 +116,7 @@
             android:hint="@string/lbl_date_published"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/lbl_first_publication"
-            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
+            app:layout_constraintTop_toBottomOf="@id/lbl_publisher"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -218,6 +198,58 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_print_run"
+            style="@style/TIL.EditText"
+            android:hint="@string/lbl_print_run"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_price_listed"
+            >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/print_run"
+                style="@style/notesTextEntry"
+                android:layout_width="match_parent"
+                android:imeOptions="actionNext"
+                tools:ignore="Autofill"
+                tools:text="limited to 150 copies"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/lbl_edition"
+            style="@style/Field.Label"
+            android:text="@string/lbl_edition"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_print_run"
+            />
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/edition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_edition"
+            >
+            <!-- chips will be added here dynamically -->
+            <com.google.android.material.chip.Chip
+                style="?attr/appChipFilterStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/lbl_edition_first_edition"
+                />
+
+            <com.google.android.material.chip.Chip
+                style="?attr/appChipFilterStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/lbl_edition_first_impression"
+                />
+        </com.google.android.material.chip.ChipGroup>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>
