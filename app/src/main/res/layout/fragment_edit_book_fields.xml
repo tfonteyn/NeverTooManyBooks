@@ -121,11 +121,31 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/lbl_language"
+            style="@style/TIL.AutoCompleteTextView"
+            android:hint="@string/lbl_language"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            >
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/language"
+                style="@style/autoCompleteTextEntry"
+                android:layout_width="match_parent"
+                android:imeOptions="actionNext"
+                tools:ignore="LabelFor"
+                tools:text="@sample/data.json/language/name"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_isbn"
             style="@style/TIL.EditText.Isbn"
             app:layout_constraintEnd_toStartOf="@id/btn_scan"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_title"
+            app:layout_constraintTop_toBottomOf="@id/lbl_language"
             >
 
             <com.google.android.material.textfield.TextInputEditText
@@ -150,33 +170,13 @@
             />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/lbl_language"
-            style="@style/TIL.AutoCompleteTextView"
-            android:hint="@string/lbl_language"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
-            >
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/language"
-                style="@style/autoCompleteTextEntry"
-                android:layout_width="match_parent"
-                android:imeOptions="actionNext"
-                tools:ignore="LabelFor"
-                tools:text="@sample/data.json/language/name"
-                />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lbl_series"
             style="@style/TIL.EditText"
             android:hint="@string/lbl_series"
             app:endIconMode="none"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/lbl_language"
+            app:layout_constraintTop_toBottomOf="@id/lbl_isbn"
             >
 
             <com.google.android.material.textfield.TextInputEditText
