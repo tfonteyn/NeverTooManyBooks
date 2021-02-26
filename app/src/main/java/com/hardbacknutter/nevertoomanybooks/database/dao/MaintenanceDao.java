@@ -118,25 +118,24 @@ public final class MaintenanceDao
      * <p>
      * Purging is no longer done at every occasion where it *might* be needed.
      * It was noticed (in the logs) that it was done far to often.
-     * It is now called only:
-     * <p>
-     * Before a backup (but not before a CSV export)
-     * After an import of data; includes after Archive, CSV, XML imports.
-     * <p>
+     * <ul>It is now called only:
+     * <li>Before a (Zip) backup.</li>
+     * <li>After an import of data (all sources).</li>
+     * </ul>
      * So orphaned data will stay around a little longer which in fact may be beneficial
      * while entering/correcting a book collection.
      */
     public void purge() {
-
-        SeriesDao.getInstance().purge();
-        AuthorDao.getInstance().purge();
-        PublisherDao.getInstance().purge();
 
         // Note: purging TocEntry's is automatic due to foreign key cascading.
         // i.e. a TocEntry is linked directly with authors;
         // and linked with books via a link table.
 
         try {
+            SeriesDao.getInstance().purge();
+            AuthorDao.getInstance().purge();
+            PublisherDao.getInstance().purge();
+
             mDb.analyze();
 
         } catch (@NonNull final RuntimeException e) {

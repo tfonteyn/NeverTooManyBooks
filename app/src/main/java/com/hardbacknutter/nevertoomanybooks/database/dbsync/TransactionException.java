@@ -26,12 +26,6 @@ public class TransactionException
 
     public static final String REQUIRED = "TX required";
 
-    static final String NULL_LOCK = "Lock passed in was NULL";
-    static final String ALREADY_STARTED = "TX already started";
-    static final String NOT_STARTED = "No TX started";
-    static final String INSIDE_SHARED_TX = "Inside shared TX";
-    static final String WRONG_LOCK = "Wrong lock";
-
     private static final long serialVersionUID = 8342179163992505514L;
 
     public TransactionException(@Nullable final String message) {

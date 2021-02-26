@@ -59,6 +59,12 @@ public class SynchronizedDb
     /** Log tag. */
     private static final String TAG = "SynchronizedDb";
 
+    private static final String ERROR_TX_LOCK_WAS_NULL = "Lock passed in was NULL";
+    private static final String ERROR_TX_ALREADY_STARTED = "TX already started";
+    private static final String ERROR_TX_NOT_STARTED = "No TX started";
+    private static final String ERROR_TX_INSIDE_SHARED = "Inside shared TX";
+    private static final String ERROR_TX_WRONG_LOCK = "Wrong lock";
+
     /** Underlying (and open for writing) database. */
     @NonNull
     private final SQLiteDatabase mSqlDb;
@@ -179,7 +185,7 @@ public class SynchronizedDb
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -215,7 +221,7 @@ public class SynchronizedDb
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -255,7 +261,7 @@ public class SynchronizedDb
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -290,7 +296,7 @@ public class SynchronizedDb
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -315,7 +321,7 @@ public class SynchronizedDb
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -341,7 +347,7 @@ public class SynchronizedDb
         Synchronizer.SyncLock txLock = null;
         if (mTxLock != null) {
             if (mTxLock.getType() != Synchronizer.LOCK_EXCLUSIVE) {
-                throw new TransactionException(TransactionException.INSIDE_SHARED_TX);
+                throw new TransactionException(ERROR_TX_INSIDE_SHARED);
             }
         } else {
             txLock = mSynchronizer.getExclusiveLock();
@@ -500,7 +506,7 @@ public class SynchronizedDb
             if (mTxLock == null) {
                 mSqlDb.beginTransaction();
             } else {
-                throw new TransactionException(TransactionException.ALREADY_STARTED);
+                throw new TransactionException(ERROR_TX_ALREADY_STARTED);
             }
         } catch (@NonNull final RuntimeException e) {
             txLock.unlock();
@@ -535,13 +541,13 @@ public class SynchronizedDb
      */
     public void endTransaction(@Nullable final Synchronizer.SyncLock txLock) {
         if (txLock == null) {
-            throw new TransactionException(TransactionException.NULL_LOCK);
+            throw new TransactionException(ERROR_TX_LOCK_WAS_NULL);
         }
         if (mTxLock == null) {
-            throw new TransactionException(TransactionException.NOT_STARTED);
+            throw new TransactionException(ERROR_TX_NOT_STARTED);
         }
         if (!mTxLock.equals(txLock)) {
-            throw new TransactionException(TransactionException.WRONG_LOCK);
+            throw new TransactionException(ERROR_TX_WRONG_LOCK);
         }
 
         try {

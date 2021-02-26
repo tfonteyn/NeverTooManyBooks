@@ -29,6 +29,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+
 public class SearchSuggestionProvider
         extends ContentProvider {
 

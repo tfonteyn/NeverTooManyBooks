@@ -36,7 +36,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 
@@ -56,9 +56,6 @@ public class CsvRecordWriter
     /** Log tag. */
     private static final String TAG = "CsvRecordWriter";
 
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -69,11 +66,8 @@ public class CsvRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public CsvRecordWriter(@NonNull final Context context,
-                           @Nullable final LocalDateTime utcSinceDateTime) {
-
+    public CsvRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
-        mBookDao = new BookDao(context, TAG);
     }
 
     @Override
@@ -94,14 +88,15 @@ public class CsvRecordWriter
             int delta = 0;
             long lastUpdate = 0;
 
-            try (Cursor cursor = mBookDao.fetchBooksForExport(mUtcSinceDateTime)) {
+            try (BookDao bookDao = new BookDao(context, TAG);
+                 Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
 
                 writer.write(bookCoder.encodeHeader());
                 writer.write("\n");
 
                 while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
-                    final Book book = Book.from(cursor, mBookDao);
+                    final Book book = Book.from(cursor, bookDao);
 
                     writer.write(bookCoder.encode(book));
                     writer.write("\n");
@@ -134,10 +129,5 @@ public class CsvRecordWriter
     @Override
     public int getVersion() {
         return VERSION;
-    }
-
-    @Override
-    public void close() {
-        mBookDao.close();
     }
 }

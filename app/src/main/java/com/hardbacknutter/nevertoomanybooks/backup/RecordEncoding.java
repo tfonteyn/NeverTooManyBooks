@@ -38,7 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.json.JsonRecordWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.xml.XmlRecordWriter;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -109,13 +109,12 @@ public enum RecordEncoding {
     }
 
     @NonNull
-    public RecordWriter createWriter(@NonNull final Context context,
-                                     @Nullable final LocalDateTime utcSinceDateTime) {
+    public RecordWriter createWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         switch (this) {
             case Json:
-                return new JsonRecordWriter(context, utcSinceDateTime);
+                return new JsonRecordWriter(utcSinceDateTime);
             case Csv:
-                return new CsvRecordWriter(context, utcSinceDateTime);
+                return new CsvRecordWriter(utcSinceDateTime);
             case Xml:
                 return new XmlRecordWriter(utcSinceDateTime);
             case Cover:

@@ -165,7 +165,7 @@ public final class DBHelper
     }
 
     @NonNull
-    static SQLiteDatabase.CursorFactory getTypedCursorFactory() {
+    public static SQLiteDatabase.CursorFactory getTypedCursorFactory() {
         return EXT_CURSOR_FACTORY;
     }
 

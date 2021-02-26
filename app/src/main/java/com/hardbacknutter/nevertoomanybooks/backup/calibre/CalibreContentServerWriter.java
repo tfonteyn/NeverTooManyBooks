@@ -45,8 +45,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -74,8 +74,6 @@ public class CalibreContentServerWriter
 
     @NonNull
     private final CalibreContentServer mServer;
-    @NonNull
-    private final BookDao mBookDao;
 
     /** Export configuration. */
     @NonNull
@@ -98,7 +96,7 @@ public class CalibreContentServerWriter
                                       @NonNull final ExportHelper helper)
             throws CertificateException, SSLException {
 
-        mBookDao = new BookDao(context, TAG);
+
 
         mHelper = helper;
         mServer = new CalibreContentServer(context, mHelper.getUri());
@@ -158,24 +156,25 @@ public class CalibreContentServerWriter
                              @Nullable final LocalDateTime dateSince,
                              @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (Cursor cursor = mBookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
+        try (BookDao bookDao = new BookDao(context, TAG);
+             Cursor cursor = bookDao.fetchBooksForExportToCalibre(library.getId(), dateSince)) {
 
             int delta = 0;
             long lastUpdate = 0;
             progressListener.setMaxPos(cursor.getCount());
 
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                final Book book = Book.from(cursor, mBookDao);
+                final Book book = Book.from(cursor, bookDao);
                 try {
                     syncBook(context, library, book);
 
                 } catch (@NonNull final HttpNotFoundException e404) {
                     // The book no longer exists on the server.
                     if (mDeleteLocalBook) {
-                        mBookDao.delete(context, book);
+                        bookDao.delete(context, book);
                     } else {
                         // keep the book but remove the calibre data for it
-                        mBookDao.deleteBookCalibreData(book);
+                        bookDao.deleteBookCalibreData(book);
                         book.setCalibreLibrary(null);
                     }
                 } catch (@NonNull final JSONException e) {
@@ -368,7 +367,6 @@ public class CalibreContentServerWriter
 
     @Override
     public void close() {
-        mBookDao.close();
         MaintenanceDao.getInstance().purge();
     }
 }

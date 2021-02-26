@@ -326,7 +326,6 @@ public class SynchronizedStatement
      *
      * @return the number of rows affected by this SQL statement execution.
      */
-    @SuppressWarnings("UnusedReturnValue")
     public int executeUpdateDelete() {
         final Synchronizer.SyncLock exclusiveLock = mSynchronizer.getExclusiveLock();
         try {

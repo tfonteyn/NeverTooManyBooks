@@ -643,9 +643,9 @@ public final class DBDefinitions {
     static final Domain DOM_FTS_AUTHOR_NAME;
     static final Domain DOM_FTS_TOC_ENTRY_TITLE;
     /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
-    static final String KEY_FTS_AUTHOR_NAME = "author_name";
+    public static final String KEY_FTS_AUTHOR_NAME = "author_name";
     /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
-    static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
+    public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
 
     static {
         /* ======================================================================================
@@ -1473,7 +1473,7 @@ public final class DBDefinitions {
     }
 
     @NonNull
-    static TableDefinition createFtsTableDefinition(@NonNull final String name) {
+    public static TableDefinition createFtsTableDefinition(@NonNull final String name) {
         return new TableDefinition(name)
                 .setType(TableDefinition.TableType.FTS4)
                 .addDomains(DOM_TITLE,

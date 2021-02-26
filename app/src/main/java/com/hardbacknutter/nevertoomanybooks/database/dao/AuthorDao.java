@@ -31,12 +31,10 @@ import java.util.Collection;
 import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
@@ -670,9 +668,6 @@ public final class AuthorDao
     public void purge() {
         try (SynchronizedStatement stmt = mDb.compileStatement(PURGE)) {
             stmt.executeUpdateDelete();
-        } catch (@NonNull final RuntimeException e) {
-            // log to file, this is bad.
-            Logger.error(TAG, e);
         }
     }
 }

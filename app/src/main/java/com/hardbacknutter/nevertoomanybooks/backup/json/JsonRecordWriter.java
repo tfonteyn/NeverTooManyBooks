@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
@@ -77,9 +77,6 @@ public class JsonRecordWriter
     /** Log tag. */
     private static final String TAG = "JsonRecordWriter";
 
-    /** Database Access. */
-    @NonNull
-    private final BookDao mBookDao;
     @Nullable
     private final LocalDateTime mUtcSinceDateTime;
 
@@ -90,10 +87,8 @@ public class JsonRecordWriter
      *                         modified or added since.
      */
     @AnyThread
-    public JsonRecordWriter(@NonNull final Context context,
-                            @Nullable final LocalDateTime utcSinceDateTime) {
+    public JsonRecordWriter(@Nullable final LocalDateTime utcSinceDateTime) {
         mUtcSinceDateTime = utcSinceDateTime;
-        mBookDao = new BookDao(context, TAG);
     }
 
     @Override
@@ -175,9 +170,10 @@ public class JsonRecordWriter
                 long lastUpdate = 0;
 
                 final JSONArray bookArray = new JSONArray();
-                try (Cursor cursor = mBookDao.fetchBooksForExport(mUtcSinceDateTime)) {
+                try (BookDao bookDao = new BookDao(context, TAG);
+                     Cursor cursor = bookDao.fetchBooksForExport(mUtcSinceDateTime)) {
                     while (cursor.moveToNext() && !progressListener.isCancelled()) {
-                        final Book book = Book.from(cursor, mBookDao);
+                        final Book book = Book.from(cursor, bookDao);
                         bookArray.put(coder.encode(book));
                         results.addBook(book.getId());
 
@@ -219,10 +215,5 @@ public class JsonRecordWriter
     @Override
     public int getVersion() {
         return VERSION;
-    }
-
-    @Override
-    public void close() {
-        mBookDao.close();
     }
 }

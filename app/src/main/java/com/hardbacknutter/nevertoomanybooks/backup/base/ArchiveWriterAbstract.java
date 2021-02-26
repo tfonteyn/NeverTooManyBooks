@@ -48,7 +48,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
@@ -264,7 +264,7 @@ public abstract class ArchiveWriterAbstract
         try (OutputStream os = new FileOutputStream(file);
              Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = encoding.createWriter(context, dateSince)) {
+             RecordWriter recordWriter = encoding.createWriter(dateSince)) {
             mResults.add(recordWriter.write(context, bw, recordTypes, progressListener));
         }
 
@@ -290,7 +290,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, 1024);
-             RecordWriter recordWriter = encoding.createWriter(context, null)) {
+             RecordWriter recordWriter = encoding.createWriter(null)) {
             recordWriter.writeMetaData(bw, metaData);
         }
 
@@ -321,7 +321,7 @@ public abstract class ArchiveWriterAbstract
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, RecordWriter.BUFFER_SIZE);
-             RecordWriter recordWriter = encoding.createWriter(context, null)) {
+             RecordWriter recordWriter = encoding.createWriter(null)) {
             mResults.add(recordWriter.write(context, bw, EnumSet.of(recordType), progressListener));
         }
         putByteArray(recordType.getName() + encoding.getFileExt(), os.toByteArray(), true);

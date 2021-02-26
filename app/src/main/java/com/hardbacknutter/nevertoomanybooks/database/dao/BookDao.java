@@ -17,7 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.hardbacknutter.nevertoomanybooks.database;
+package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.app.SearchManager;
 import android.content.ContentValues;
@@ -53,14 +53,11 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
+import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
+import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -277,6 +274,21 @@ public class BookDao
         mSqlStatementManager = new SqlStatementManager(mDb);
     }
 
+    /**
+     * Bind a string or {@code null} value to a parameter since binding a {@code null}
+     * in bindString produces an error.
+     * <p>
+     * <strong>Note:</strong> We specifically want to use the default Locale for this.
+     */
+    private static void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
+                                         final int position,
+                                         @Nullable final CharSequence text) {
+        if (text == null) {
+            stmt.bindNull(position);
+        } else {
+            stmt.bindString(position, ParseUtils.toAscii(text));
+        }
+    }
 
     /**
      * Create a new Book using the details provided.
@@ -846,11 +858,11 @@ public class BookDao
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
      */
-    public void insertBookAuthors(@NonNull final Context context,
-                                  @IntRange(from = 1) final long bookId,
-                                  @NonNull final Collection<Author> list,
-                                  final boolean lookupLocale,
-                                  @NonNull final Locale bookLocale)
+    void insertBookAuthors(@NonNull final Context context,
+                           @IntRange(from = 1) final long bookId,
+                           @NonNull final Collection<Author> list,
+                           final boolean lookupLocale,
+                           @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -934,11 +946,11 @@ public class BookDao
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
      */
-    public void insertBookSeries(@NonNull final Context context,
-                                 @IntRange(from = 1) final long bookId,
-                                 @NonNull final Collection<Series> list,
-                                 final boolean lookupLocale,
-                                 @NonNull final Locale bookLocale)
+    void insertBookSeries(@NonNull final Context context,
+                          @IntRange(from = 1) final long bookId,
+                          @NonNull final Collection<Series> list,
+                          final boolean lookupLocale,
+                          @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -1024,11 +1036,11 @@ public class BookDao
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
      */
-    public void insertBookPublishers(@NonNull final Context context,
-                                     @IntRange(from = 1) final long bookId,
-                                     @NonNull final Collection<Publisher> list,
-                                     final boolean lookupLocale,
-                                     @NonNull final Locale bookLocale)
+    void insertBookPublishers(@NonNull final Context context,
+                              @IntRange(from = 1) final long bookId,
+                              @NonNull final Collection<Publisher> list,
+                              final boolean lookupLocale,
+                              @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -1317,7 +1329,6 @@ public class BookDao
             }
         }
     }
-
 
     /**
      * Count all books.
@@ -2190,22 +2201,6 @@ public class BookDao
     }
 
     /**
-     * Bind a string or {@code null} value to a parameter since binding a {@code null}
-     * in bindString produces an error.
-     * <p>
-     * <strong>Note:</strong> We specifically want to use the default Locale for this.
-     */
-    private static void bindStringOrNull(@NonNull final SynchronizedStatement stmt,
-                                         final int position,
-                                         @Nullable final CharSequence text) {
-        if (text == null) {
-            stmt.bindNull(position);
-        } else {
-            stmt.bindString(position, ParseUtils.toAscii(text));
-        }
-    }
-
-    /**
      * Return a {@link Cursor}, suited for a local-search.
      * This is used by the advanced search activity.
      *
@@ -2935,7 +2930,7 @@ public class BookDao
             private static final String _MATCH = " MATCH ?";
 
             /** Standard Local-search. */
-            static final String SEARCH_SUGGESTIONS =
+            public static final String SEARCH_SUGGESTIONS =
                     // KEY_FTS_BOOKS_PK is the _id into the books table.
                     SELECT_ + KEY_FTS_BOOK_ID + _AS_ + KEY_PK_ID
                     + ',' + (TBL_FTS_BOOKS.dot(KEY_TITLE)
@@ -3056,8 +3051,8 @@ public class BookDao
              * @return Clean string
              */
             @NonNull
-            static String prepareSearchText(@Nullable final String searchText,
-                                            @Nullable final String domain) {
+            public static String prepareSearchText(@Nullable final String searchText,
+                                                   @Nullable final String domain) {
 
                 if (searchText == null || searchText.isEmpty()) {
                     return "";

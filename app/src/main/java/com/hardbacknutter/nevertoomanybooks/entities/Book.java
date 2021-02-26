@@ -49,11 +49,11 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
@@ -219,7 +219,7 @@ public class Book
      * Constructor. Load the book details from the cursor.
      *
      * @param bookCursor an already positioned Cursor to read from
-     * @param bookDao         to load linked array data from
+     * @param bookDao    to load linked array data from
      *
      * @return new instance
      */
@@ -293,8 +293,8 @@ public class Book
     /**
      * Load the book details from the database.
      *
-     * @param bookId of book must be != 0
-     * @param bookDao     Database Access
+     * @param bookId  of book must be != 0
+     * @param bookDao Database Access
      */
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final BookDao bookDao) {
@@ -313,7 +313,7 @@ public class Book
      *
      * @param bookId     of book must be != 0
      * @param bookCursor an already positioned Cursor to read from
-     * @param bookDao         to load linked array data from
+     * @param bookDao    to load linked array data from
      */
     public void load(@IntRange(from = 1) final long bookId,
                      @NonNull final Cursor bookCursor,
@@ -797,8 +797,8 @@ public class Book
      * Update the 'read' status of a book in the database + sets the 'read end' to today.
      * The book will have its 'read' status updated ONLY if the update went through.
      *
-     * @param bookDao     Database Access
-     * @param isRead Flag for the 'read' status
+     * @param bookDao Database Access
+     * @param isRead  Flag for the 'read' status
      *
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
@@ -823,6 +823,19 @@ public class Book
         final ArrayList<Bookshelf> list = getParcelableArrayList(BKEY_BOOKSHELF_LIST);
         if (list.isEmpty()) {
             list.add(Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT));
+        }
+    }
+
+    /**
+     * Ensure the book has a language.
+     * If the book does not, add the preferred/current language the user is using the app in.
+     *
+     * @param context Current context
+     */
+    public void ensureLanguage(@NonNull final Context context) {
+        if (getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
+            putString(DBDefinitions.KEY_LANGUAGE,
+                      AppLocale.getInstance().getUserLocale(context).getISO3Language());
         }
     }
 
@@ -1232,7 +1245,7 @@ public class Book
      * Update the book cover with the given file.
      *
      * @param context Current context
-     * @param bookDao      Database Access
+     * @param bookDao Database Access
      * @param cIdx    0..n image index
      * @param file    cover file or {@code null} to delete the cover
      *

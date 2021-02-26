@@ -47,7 +47,7 @@ import com.hardbacknutter.nevertoomanybooks.database.definitions.TableInfo;
  * accessing anything.<br>
  * <strong>IMPORTANT:</strong> only gets the types from the table passed to {@link #setDb}
  */
-class TypedCursor
+public class TypedCursor
         extends SynchronizedCursor {
 
     /** database reference so we can get table/column info. */
@@ -81,9 +81,9 @@ class TypedCursor
      * @param db              Database Access
      * @param tableDefinition to read types from
      */
-    void setDb(@NonNull final SynchronizedDb db,
-               @SuppressWarnings("SameParameterValue")
-               @NonNull final TableDefinition tableDefinition) {
+    public void setDb(@NonNull final SynchronizedDb db,
+                      @SuppressWarnings("SameParameterValue")
+                      @NonNull final TableDefinition tableDefinition) {
         mDb = db;
         mTableDefinition = tableDefinition;
     }
