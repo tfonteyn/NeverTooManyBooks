@@ -41,7 +41,6 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
-import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -271,16 +270,12 @@ public class EditBookPublisherListDialogFragment
 
     private void changeForAllBooks(@NonNull final Publisher original,
                                    @NonNull final Publisher modified) {
-        // copy all new data
-        original.copyFrom(modified);
+
         // This change is done in the database right NOW!
         //noinspection ConstantConditions
-        if (mVm.changeForAllBooks(getContext(), original)) {
+        if (mVm.changeForAllBooks(getContext(), original, modified)) {
             mListAdapter.notifyDataSetChanged();
-
         } else {
-            Logger.error(getContext(), TAG, new Throwable(), "Could not update",
-                         "original=" + original, "modified=" + modified);
             StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
         }
     }
@@ -292,8 +287,11 @@ public class EditBookPublisherListDialogFragment
         // we will orphan this new Publisher. That's ok, it will get
         // garbage collected from the database sooner or later.
         //noinspection ConstantConditions
-        mVm.changeForThisBook(getContext(), original, modified);
-        mListAdapter.notifyDataSetChanged();
+        if (mVm.changeForThisBook(getContext(), original, modified)) {
+            mListAdapter.notifyDataSetChanged();
+        } else {
+            StandardDialogs.showError(getContext(), R.string.error_storage_not_writable);
+        }
     }
 
     /**

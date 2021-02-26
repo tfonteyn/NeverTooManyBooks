@@ -262,8 +262,7 @@ public abstract class EditBookBaseFragment
         // BUT: that new data would not be in the fragment arguments?
         //TODO: double check having book-data bundle in onResume.
         if (mVm.getBook().isNew()) {
-            //noinspection ConstantConditions
-            mVm.addFieldsFromBundle(getContext(), getArguments());
+            mVm.addFieldsFromBundle(getArguments());
         }
 
         super.onResume();

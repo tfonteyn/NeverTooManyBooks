@@ -43,9 +43,9 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
@@ -56,6 +56,7 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
@@ -185,8 +186,6 @@ public class EditBookFragmentViewModel
                     mBook = Book.from(bookData);
                     // has unsaved data, hence 'Dirty'
                     mBook.setStage(EntityStage.Stage.Dirty);
-                    mBook.addValidators();
-                    mBook.ensureBookshelf(context);
 
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
@@ -198,16 +197,17 @@ public class EditBookFragmentViewModel
                     }
                     // has unchanged data, hence 'WriteAble'
                     mBook.setStage(EntityStage.Stage.WriteAble);
-                    mBook.addValidators();
                 }
             } else {
                 // 3. No args, we want an empty new book (e.g. user wants to add one manually).
                 mBook = new Book();
                 // has no data, hence 'WriteAble'
                 mBook.setStage(EntityStage.Stage.WriteAble);
-                mBook.addValidators();
-                mBook.ensureBookshelf(context);
             }
+
+            mBook.addValidators();
+            mBook.ensureBookshelf(context);
+            mBook.ensureLanguage(context);
         }
     }
 
@@ -336,11 +336,9 @@ public class EditBookFragmentViewModel
     /**
      * Add any fields the book does not have yet (does not overwrite existing ones).
      *
-     * @param context Current context
-     * @param args    to check
+     * @param args to check
      */
-    public void addFieldsFromBundle(@NonNull final Context context,
-                                    @Nullable final Bundle args) {
+    public void addFieldsFromBundle(@Nullable final Bundle args) {
         if (args != null) {
             final Bundle bookData = args.getBundle(Book.BKEY_DATA_BUNDLE);
             if (bookData != null) {
@@ -350,8 +348,6 @@ public class EditBookFragmentViewModel
                         .forEach(key -> mBook.put(key, bookData.get(key)));
             }
         }
-
-        mBook.ensureBookshelf(context);
     }
 
     /**
@@ -654,78 +650,111 @@ public class EditBookFragmentViewModel
     }
 
 
-    public void changeForThisBook(@NonNull final Context context,
-                                  @NonNull final Author original,
-                                  @NonNull final Author modified) {
-        AuthorDao.getInstance().insert(context, modified);
+    public boolean changeForThisBook(@NonNull final Context context,
+                                     @NonNull final Author original,
+                                     @NonNull final Author modified) {
 
-        final ArrayList<Author> list = mBook.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
-        // unlink the original, and link with the new one
-        // Note that the original *might* be orphaned at this time.
-        // That's ok, it will get garbage collected from the database sooner or later.
-        list.remove(original);
-        list.add(modified);
-        pruneAuthors(context);
+        if (AuthorDao.getInstance().insert(context, modified) > 0) {
+            final ArrayList<Author> list = mBook.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
+            // unlink the original, and link with the new one
+            // Note that the original *might* be orphaned at this time.
+            // That's ok, it will get garbage collected from the database sooner or later.
+            list.remove(original);
+            list.add(modified);
+            pruneAuthors(context);
+            return true;
+        }
+        Logger.error(context, TAG, new Throwable(), "Could not update",
+                     "original=" + original, "modified=" + modified);
+        return false;
     }
 
     public boolean changeForAllBooks(@NonNull final Context context,
-                                     @NonNull final Author author) {
-        if (AuthorDao.getInstance().update(context, author)) {
+                                     @NonNull final Author original,
+                                     @NonNull final Author modified) {
+        // copy all new data
+        original.copyFrom(modified, true);
+
+        if (AuthorDao.getInstance().update(context, original)) {
             pruneAuthors(context);
             mBook.refreshAuthorList(context);
             return true;
         }
 
+        Logger.error(context, TAG, new Throwable(), "Could not update",
+                     "original=" + original, "modified=" + modified);
         return false;
     }
 
-    public void changeForThisBook(@NonNull final Context context,
-                                  @NonNull final Series original,
-                                  @NonNull final Series modified) {
-        SeriesDao.getInstance().insert(context, modified, mBook.getLocale(context));
+    public boolean changeForThisBook(@NonNull final Context context,
+                                     @NonNull final Series original,
+                                     @NonNull final Series modified) {
 
-        final ArrayList<Series> list = mBook.getParcelableArrayList(Book.BKEY_SERIES_LIST);
-        // unlink the original, and link with the new one
-        // Note that the original *might* be orphaned at this time.
-        // That's ok, it will get garbage collected from the database sooner or later.
-        list.remove(original);
-        list.add(modified);
-        pruneSeries(context);
+        if (SeriesDao.getInstance().insert(context, modified, mBook.getLocale(context)) > 0) {
+            final ArrayList<Series> list = mBook.getParcelableArrayList(Book.BKEY_SERIES_LIST);
+            // unlink the original, and link with the new one
+            // Note that the original *might* be orphaned at this time.
+            // That's ok, it will get garbage collected from the database sooner or later.
+            list.remove(original);
+            list.add(modified);
+            pruneSeries(context);
+            return true;
+        }
+
+        Logger.error(context, TAG, new Throwable(), "Could not update",
+                     "original=" + original, "modified=" + modified);
+        return false;
     }
 
     public boolean changeForAllBooks(@NonNull final Context context,
-                                     @NonNull final Series series) {
-        if (SeriesDao.getInstance().update(context, series, mBook.getLocale(context))) {
+                                     @NonNull final Series original,
+                                     @NonNull final Series modified) {
+        // copy all new data
+        original.copyFrom(modified, true);
+
+        if (SeriesDao.getInstance().update(context, original, mBook.getLocale(context))) {
             pruneSeries(context);
             mBook.refreshSeriesList(context);
             return true;
         }
-
+        Logger.error(context, TAG, new Throwable(), "Could not update",
+                     "original=" + original, "modified=" + modified);
         return false;
     }
 
-    public void changeForThisBook(@NonNull final Context context,
-                                  @NonNull final Publisher original,
-                                  @NonNull final Publisher modified) {
-        PublisherDao.getInstance().insert(context, modified, mBook.getLocale(context));
+    public boolean changeForThisBook(@NonNull final Context context,
+                                     @NonNull final Publisher original,
+                                     @NonNull final Publisher modified) {
 
-        final ArrayList<Publisher> list = mBook.getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
-        // unlink the original, and link with the new one
-        // Note that the original *might* be orphaned at this time.
-        // That's ok, it will get garbage collected from the database sooner or later.
-        list.remove(original);
-        list.add(modified);
-        prunePublishers(context);
+        if (PublisherDao.getInstance().insert(context, modified, mBook.getLocale(context)) > 0) {
+            final ArrayList<Publisher> list = mBook
+                    .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
+            // unlink the original, and link with the new one
+            // Note that the original *might* be orphaned at this time.
+            // That's ok, it will get garbage collected from the database sooner or later.
+            list.remove(original);
+            list.add(modified);
+            prunePublishers(context);
+            return true;
+        }
+        Logger.error(context, TAG, new Throwable(), "Could not update",
+                     "original=" + original, "modified=" + modified);
+        return false;
     }
 
     public boolean changeForAllBooks(@NonNull final Context context,
-                                     @NonNull final Publisher publisher) {
-        if (PublisherDao.getInstance().update(context, publisher, mBook.getLocale(context))) {
+                                     @NonNull final Publisher original,
+                                     @NonNull final Publisher modified) {
+        // copy all new data
+        original.copyFrom(modified);
+
+        if (PublisherDao.getInstance().update(context, original, mBook.getLocale(context))) {
             prunePublishers(context);
             mBook.refreshPublishersList(context);
             return true;
         }
-
+        Logger.error(context, TAG, new Throwable(), "Could not update",
+                     "original=" + original, "modified=" + modified);
         return false;
     }
 
