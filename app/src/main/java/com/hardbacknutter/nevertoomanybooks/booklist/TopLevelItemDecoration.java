@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -65,8 +65,15 @@ public class TopLevelItemDecoration
         if (parent.getLayoutManager() == null) {
             return;
         }
-        final BooklistAdapter adapter = (BooklistAdapter) parent.getAdapter();
-        if (adapter == null || !adapter.hasCursor()) {
+
+        //noinspection rawtypes
+        final RecyclerView.Adapter adapter = parent.getAdapter();
+        if (!(adapter instanceof BooklistAdapter)) {
+            return;
+        }
+
+        final BooklistAdapter booklistAdapter = (BooklistAdapter) adapter;
+        if (!booklistAdapter.hasCursor()) {
             return;
         }
 
@@ -87,7 +94,7 @@ public class TopLevelItemDecoration
         for (int i = 0; i < childCount; i++) {
             final View child = parent.getChildAt(i);
             // level 1 only
-            if (adapter.getLevel(parent.getChildAdapterPosition(child)) == 1) {
+            if (booklistAdapter.getLevel(parent.getChildAdapterPosition(child)) == 1) {
                 parent.getDecoratedBoundsWithMargins(child, mBounds);
                 final int bottom = mBounds.bottom + Math.round(child.getTranslationY());
                 final int top = bottom - mDivider.getIntrinsicHeight();

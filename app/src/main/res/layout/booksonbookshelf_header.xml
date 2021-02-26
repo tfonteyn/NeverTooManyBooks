@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ @Copyright 2020 HardBackNutter
+  ~ @Copyright 2018-2021 HardBackNutter
   ~ @License GNU General Public License
   ~
   ~ This file is part of NeverTooManyBooks.
@@ -23,14 +23,10 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="0dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?android:attr/statusBarColor"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    tools:showIn="@layout/booksonbookshelf"
     >
 
     <TextView
@@ -45,11 +41,10 @@
     <TextView
         android:id="@+id/filter_text"
         style="@style/BoB.Header.Small"
-        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/style_name"
+        tools:ignore="SelectableText"
         tools:text="the optional search text"
-        tools:visibility="visible"
         />
 
     <TextView
@@ -57,8 +52,8 @@
         style="@style/BoB.Header.Small"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_text"
-        tools:text="@string/txt_displaying_n_books_in_m_entries"
         tools:ignore="SelectableText"
+        tools:text="@string/txt_displaying_n_books_in_m_entries"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

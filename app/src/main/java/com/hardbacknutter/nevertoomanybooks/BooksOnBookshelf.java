@@ -22,16 +22,19 @@ package com.hardbacknutter.nevertoomanybooks;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -46,6 +49,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.ConcatAdapter;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -92,6 +96,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
+import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -372,6 +377,15 @@ public class BooksOnBookshelf
                     onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
                 }
             };
+    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
+    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
+            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
+                @Override
+                public boolean onResult(@IdRes final int itemId,
+                                        final int position) {
+                    return onContextItemSelected(itemId, position);
+                }
+            };
     /** Listener for clicks on the list. */
     private final BooklistAdapter.OnRowClickedListener mOnRowClickedListener =
             new BooklistAdapter.OnRowClickedListener() {
@@ -438,15 +452,6 @@ public class BooksOnBookshelf
                         }
                     }
                     return true;
-                }
-            };
-    /** React to the user selecting a context menu option. (MENU_PICKER_USES_FRAGMENT). */
-    private final MenuPickerDialogFragment.Launcher mMenuLauncher =
-            new MenuPickerDialogFragment.Launcher(RK_MENU_PICKER) {
-                @Override
-                public boolean onResult(@IdRes final int itemId,
-                                        final int position) {
-                    return onContextItemSelected(itemId, position);
                 }
             };
     /** The adapter used to fill the Bookshelf selector. */
@@ -563,15 +568,18 @@ public class BooksOnBookshelf
      * @param cursor to use, or {@code null} for initial creation.
      */
     public void createAdapter(@Nullable final Cursor cursor) {
+
+        final HeaderAdapter headerAdapter = new HeaderAdapter();
+
         mAdapter = new BooklistAdapter(this);
         if (cursor != null) {
             mAdapter.setOnRowClickedListener(mOnRowClickedListener);
             mAdapter.setCursor(this, cursor, mVm.getCurrentStyle(this));
         }
-
         // No, we do NOT have a fixed size for each row
         //mVb.list.setHasFixedSize(false);
-        mVb.list.setAdapter(mAdapter);
+
+        mVb.list.setAdapter(new ConcatAdapter(headerAdapter, mAdapter));
     }
 
     /**
@@ -1399,7 +1407,6 @@ public class BooksOnBookshelf
         if (!mVm.isRunning()) {
             mVb.progressBar.show();
             // Invisible... theoretically this means the page should not re-layout
-            mVb.listHeader.getRoot().setVisibility(View.INVISIBLE);
             mVb.list.setVisibility(View.INVISIBLE);
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER_TIMERS) {
@@ -1519,28 +1526,9 @@ public class BooksOnBookshelf
             Log.d(TAG, "displayList|called from:", new Throwable());
         }
 
-        String header;
-        header = mVm.getHeaderStyleName(this);
-        mVb.listHeader.styleName.setText(header);
-        mVb.listHeader.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-        header = mVm.getHeaderFilterText(this);
-        mVb.listHeader.filterText.setText(header);
-        mVb.listHeader.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-        header = mVm.getHeaderBookCount(this);
-        mVb.listHeader.bookCount.setText(header);
-        mVb.listHeader.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
-
-        // just show the root container... if no fields in it are shown that's still fine.
-        mVb.listHeader.getRoot().setVisibility(View.VISIBLE);
-
         mVb.list.setVisibility(View.VISIBLE);
-
         createAdapter(mVm.getNewListCursor());
         scrollToSavedPosition(targetNodes);
-
-        //Log.d(TAG, "style=" + mVm.getCurrentStyle(this));
     }
 
     /**
@@ -1747,6 +1735,54 @@ public class BooksOnBookshelf
         @Retention(RetentionPolicy.SOURCE)
         @interface BookChange {
 
+        }
+    }
+
+    private static class HeaderViewHolder
+            extends RecyclerView.ViewHolder {
+
+        @NonNull
+        BooksonbookshelfHeaderBinding mVb;
+
+        HeaderViewHolder(@NonNull final BooksonbookshelfHeaderBinding vb) {
+            super(vb.getRoot());
+            mVb = vb;
+        }
+    }
+
+    private class HeaderAdapter
+            extends RecyclerView.Adapter<HeaderViewHolder> {
+
+        @NonNull
+        @Override
+        public HeaderViewHolder onCreateViewHolder(@NonNull final ViewGroup parent,
+                                                   final int viewType) {
+            final BooksonbookshelfHeaderBinding vb = BooksonbookshelfHeaderBinding.inflate(
+                    LayoutInflater.from(parent.getContext()), parent, false);
+            return new HeaderViewHolder(vb);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull final HeaderViewHolder holder,
+                                     final int position) {
+            final Context context = holder.itemView.getContext();
+            String header;
+            header = mVm.getHeaderStyleName(context);
+            holder.mVb.styleName.setText(header);
+            holder.mVb.styleName.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = mVm.getHeaderFilterText(context);
+            holder.mVb.filterText.setText(header);
+            holder.mVb.filterText.setVisibility(header != null ? View.VISIBLE : View.GONE);
+
+            header = mVm.getHeaderBookCount(context);
+            holder.mVb.bookCount.setText(header);
+            holder.mVb.bookCount.setVisibility(header != null ? View.VISIBLE : View.GONE);
+        }
+
+        @Override
+        public int getItemCount() {
+            return 1;
         }
     }
 }
