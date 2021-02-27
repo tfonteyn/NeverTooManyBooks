@@ -297,23 +297,20 @@ public class TableDefinition {
     @SuppressWarnings({"WeakerAccess", "unused"})
     @NonNull
     public String toDebugString() {
-        return "TableDefinition{" +
-               "mName='" + mName + '\'' +
-               ", mAlias='" + mAlias + '\'' +
-               ", mType=" + mType +
-               ", mDomains=" + mDomains +
-               ", mPrimaryKey=" + mPrimaryKey +
-
-               "\nmParents=" + mParents +
-               "\nmChildren=" + mChildren +
-
-               "\nmIndexes=" + mIndexes +
-               "\nmIndexNameCheck=" + mIndexNameCheck +
-               "\nmDomainCheck=" + mDomainCheck +
-               "\nmDomainNameCheck=" + mDomainNameCheck +
-
-               "\nmTableInfo=" + mTableInfo +
-               '}';
+        return "TableDefinition{"
+               + "mName='" + mName + '\''
+               + ", mAlias='" + mAlias + '\''
+               + ", mType=" + mType
+               + ", mDomains=" + mDomains
+               + ", mPrimaryKey=" + mPrimaryKey
+               + "\nmParents=" + mParents
+               + "\nmChildren=" + mChildren
+               + "\nmIndexes=" + mIndexes
+               + "\nmIndexNameCheck=" + mIndexNameCheck
+               + "\nmDomainCheck=" + mDomainCheck
+               + "\nmDomainNameCheck=" + mDomainNameCheck
+               + "\nmTableInfo=" + mTableInfo
+               + '}';
     }
 
     /**

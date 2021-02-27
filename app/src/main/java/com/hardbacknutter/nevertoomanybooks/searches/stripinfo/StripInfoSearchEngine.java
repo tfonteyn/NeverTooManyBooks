@@ -605,7 +605,7 @@ public class StripInfoSearchEngine
                                     if (!mAuthors.isEmpty()) {
                                         author = mAuthors.get(0);
                                     } else {
-                                        author = Author.createUnknownAuthor(mAppContext);
+                                        author = Author.createUnknownAuthor(getAppContext());
                                     }
                                     final TocEntry tocEntry = new TocEntry(author, title, null);
                                     toc.add(tocEntry);
@@ -735,7 +735,7 @@ public class StripInfoSearchEngine
         String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = Languages
-                    .getInstance().getISO3FromDisplayName(mAppContext, getLocale(), lang);
+                    .getInstance().getISO3FromDisplayName(getAppContext(), getLocale(), lang);
             bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
         }
         return found;

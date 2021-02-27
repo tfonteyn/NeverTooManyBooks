@@ -525,7 +525,6 @@ public class BooksOnBookshelf
         // Not creating the adapter here creates issues with Android internals.
         createAdapter(null);
 
-
         // Setup the Bookshelf spinner;
         // The list is initially empty here; loading the list and
         // setting/selecting the current shelf are both done in onResume
@@ -535,12 +534,10 @@ public class BooksOnBookshelf
         mVb.bookshelfSpinner.setOnTouchListener(mOnBookshelfSelectionChanged);
         mVb.bookshelfSpinner.setOnItemSelectedListener(mOnBookshelfSelectionChanged);
 
-
         mFabMenu.attach(mVb.list);
         mFabMenu.setOnClickListener(view -> onFabMenuItemSelected(view.getId()));
         // mVb.fab4SearchExternalId
-        mFabMenu.getItem(4)
-                .setEnabled(EditBookExternalIdFragment.showEditBookTabExternalId(global));
+        mFabMenu.getItem(4).setEnabled(EditBookExternalIdFragment.isShowTab(global));
 
         // Popup the search widget when the user starts to type.
         setDefaultKeyMode(Activity.DEFAULT_KEYS_SEARCH_LOCAL);

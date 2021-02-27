@@ -66,16 +66,15 @@ public class SearchBookByIsbnViewModel
 
     /** The batch mode queue. */
     private final List<ISBN> mScanQueue = new ArrayList<>();
+    /** Accumulate all data that will be send in {@link Activity#setResult}. */
+    @NonNull
+    private final Intent mResultIntent = new Intent();
     /** Database Access. */
     private BookDao mBookDao;
     @Mode
     private int mScannerMode;
     /** Only start the scanner automatically upon the very first start of the fragment. */
     private boolean mFirstStart = true;
-
-    /** Accumulate all data that will be send in {@link Activity#setResult}. */
-    @NonNull
-    private final Intent mResultIntent = new Intent();
 
     @NonNull
     public Intent getResultIntent() {
@@ -94,7 +93,8 @@ public class SearchBookByIsbnViewModel
     /**
      * Pseudo constructor.
      *
-     * @param args {@link Intent#getExtras()} or {@link Fragment#getArguments()}
+     * @param context Current context
+     * @param args    {@link Intent#getExtras()} or {@link Fragment#getArguments()}
      */
     public void init(@NonNull final Context context,
                      @Nullable final Bundle args) {

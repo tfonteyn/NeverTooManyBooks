@@ -68,6 +68,7 @@ class FastScrollerOverlay
      * Constructor.
      *
      * @param view          to hook up
+     * @param padding       (optional) fixed padding overruling the view's padding
      * @param thumbDrawable the thumb/drag-handle
      * @param popupStyle    for the TextView
      */

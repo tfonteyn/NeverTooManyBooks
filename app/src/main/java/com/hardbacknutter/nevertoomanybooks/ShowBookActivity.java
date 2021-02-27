@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 public class ShowBookActivity
         extends BaseActivity {
 
+    /** Log tag. */
     public static final String TAG = "ShowBookActivity";
 
     @Override

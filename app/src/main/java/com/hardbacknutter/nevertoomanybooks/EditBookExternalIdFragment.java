@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -42,7 +42,7 @@ public class EditBookExternalIdFragment
     /** Log tag. */
     private static final String TAG = "EditBookExternalIdFrag";
 
-    static boolean showEditBookTabExternalId(@NonNull final SharedPreferences global) {
+    static boolean isShowTab(@NonNull final SharedPreferences global) {
         return global.getBoolean(Prefs.pk_edit_book_tabs_external_id, false);
     }
 

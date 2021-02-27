@@ -279,7 +279,7 @@ public class AmazonSearchEngine
             try {
                 fields += "&field-isbn=" + URLEncoder.encode(isbn, UTF_8);
             } catch (@NonNull final UnsupportedEncodingException e) {
-                Logger.error(mAppContext, TAG, e, "Unable to add isbn to URL");
+                Logger.error(getAppContext(), TAG, e, "Unable to add isbn to URL");
             }
         }
 
@@ -289,7 +289,7 @@ public class AmazonSearchEngine
     @NonNull
     @Override
     public String getSiteUrl() {
-        return getSiteUrl(mAppContext);
+        return getSiteUrl(getAppContext());
     }
 
     @NonNull
@@ -320,7 +320,7 @@ public class AmazonSearchEngine
 
             default:
                 // other amazon sites are (should be ?) just the country code.
-                final Locale locale = AppLocale.getInstance().getLocale(mAppContext, root);
+                final Locale locale = AppLocale.getInstance().getLocale(getAppContext(), root);
                 if (BuildConfig.DEBUG /* always */) {
                     Logger.d(TAG, "getLocale", "locale=" + locale);
                 }
@@ -496,8 +496,8 @@ public class AmazonSearchEngine
                 case "langue":
                 case "sprache":
                 case "taal":
-                    data = Languages
-                            .getInstance().getISO3FromDisplayName(mAppContext, siteLocale, data);
+                    data = Languages.getInstance()
+                                    .getISO3FromDisplayName(getAppContext(), siteLocale, data);
                     bookData.putString(DBDefinitions.KEY_LANGUAGE, data);
                     break;
 

@@ -315,7 +315,7 @@ public class IsfdbSearchEngine
         }
 
         // as per user settings.
-        if (PreferenceManager.getDefaultSharedPreferences(mAppContext)
+        if (PreferenceManager.getDefaultSharedPreferences(getAppContext())
                              .getBoolean(PK_USE_PUBLISHER, false)) {
             if (publisher != null && !publisher.isEmpty()) {
                 index++;
@@ -566,7 +566,7 @@ public class IsfdbSearchEngine
             return;
         }
 
-        final DateParser dateParser = DateParser.getInstance(mAppContext);
+        final DateParser dateParser = DateParser.getInstance(getAppContext());
 
         final Element contentBox = allContentBoxes.first();
         final Element ul = contentBox.selectFirst("ul");
@@ -733,7 +733,7 @@ public class IsfdbSearchEngine
             } catch (@NonNull final IndexOutOfBoundsException e) {
                 // does not happen now, but could happen if we come about non-standard entries,
                 // or if ISFDB website changes
-                Logger.error(mAppContext, TAG, e,
+                Logger.error(getAppContext(), TAG, e,
                              "path: " + document.location() + "\n\nLI: " + li.toString());
             }
         }
@@ -866,7 +866,7 @@ public class IsfdbSearchEngine
     private ArrayList<TocEntry> parseToc(@NonNull final Document document) {
 
         final boolean addSeriesFromToc = PreferenceManager
-                .getDefaultSharedPreferences(mAppContext)
+                .getDefaultSharedPreferences(getAppContext())
                 .getBoolean(PK_SERIES_FROM_TOC, false);
         final ArrayList<TocEntry> toc = new ArrayList<>();
 
@@ -987,13 +987,13 @@ public class IsfdbSearchEngine
             //      Appendixes (Dune)</a> • essay by uncredited
             // </li>
             if (author == null) {
-                author = Author.createUnknownAuthor(mAppContext);
+                author = Author.createUnknownAuthor(getAppContext());
             }
             // very unlikely
             if (title == null) {
                 title = "";
-                Logger.warn(mAppContext, TAG, "getTocList"
-                                              + "|no title for li=" + li);
+                Logger.warn(getAppContext(), TAG, "getTocList"
+                                                  + "|no title for li=" + li);
             }
 
             // scan for first occurrence of "• (1234)"
@@ -1186,7 +1186,7 @@ public class IsfdbSearchEngine
 
         } else {
             // dunno, let's log it
-            Logger.warn(mAppContext, TAG, "parseDoc|pageUrl=" + pageUrl);
+            Logger.warn(getAppContext(), TAG, "parseDoc|pageUrl=" + pageUrl);
         }
 
         return editions;

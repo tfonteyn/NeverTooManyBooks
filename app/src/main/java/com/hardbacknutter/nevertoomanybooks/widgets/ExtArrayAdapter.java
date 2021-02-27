@@ -580,7 +580,7 @@ public class ExtArrayAdapter<T>
      * @see #getDropDownView(int, android.view.View, android.view.ViewGroup)
      */
     public void setDropDownViewResource(@LayoutRes final int resource) {
-        this.mDropDownResource = resource;
+        mDropDownResource = resource;
     }
 
     @Override

@@ -39,6 +39,8 @@ public class BookshelfCoder
 
     /**
      * Constructor.
+     *
+     * @param context Current context
      */
     BookshelfCoder(@NonNull final Context context) {
         mDefaultStyle = StyleUtils.getDefault(context);

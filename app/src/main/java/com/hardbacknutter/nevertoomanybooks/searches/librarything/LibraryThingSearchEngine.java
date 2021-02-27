@@ -178,7 +178,7 @@ public class LibraryThingSearchEngine
 
     @Override
     public boolean isAvailable() {
-        return hasKey(mAppContext);
+        return hasKey(getAppContext());
     }
 
     @NonNull
@@ -220,7 +220,7 @@ public class LibraryThingSearchEngine
 
         final Bundle bookData = new Bundle();
 
-        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(mAppContext),
+        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(getAppContext()),
                                                         "id", externalId);
         fetchBook(url, bookData);
 
@@ -255,7 +255,7 @@ public class LibraryThingSearchEngine
 
         final Bundle bookData = new Bundle();
 
-        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(mAppContext),
+        final String url = getSiteUrl() + String.format(BOOK_URL, getDevKey(getAppContext()),
                                                         "isbn", validIsbn);
         fetchBook(url, bookData);
 
@@ -304,7 +304,7 @@ public class LibraryThingSearchEngine
             }
         }
 
-        final String url = String.format(COVER_BY_ISBN_URL, getDevKey(mAppContext),
+        final String url = String.format(COVER_BY_ISBN_URL, getDevKey(getAppContext()),
                                          sizeParam, validIsbn);
         return saveImage(url, validIsbn, cIdx, size);
     }
@@ -368,7 +368,7 @@ public class LibraryThingSearchEngine
             if (msg != null && msg.contains("At line 1, column 0: syntax error")) {
                 // 2020-03-27. Started getting "APIs Temporarily disabled"
                 throw new GeneralParsingException(
-                        mAppContext.getString(R.string.error_network_site_has_problems));
+                        getAppContext().getString(R.string.error_network_site_has_problems));
             }
 
             if (BuildConfig.DEBUG /* always */) {

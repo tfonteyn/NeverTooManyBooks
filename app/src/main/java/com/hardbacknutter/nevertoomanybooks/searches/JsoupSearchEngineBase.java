@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -103,7 +103,7 @@ public abstract class JsoupSearchEngineBase
     public Document loadDocument(@NonNull final String url)
             throws IOException {
         try {
-            return mJsoupLoader.loadDocument(mAppContext, url, this);
+            return mJsoupLoader.loadDocument(getAppContext(), url, this);
 
         } catch (@NonNull final FileNotFoundException e) {
             // we couldn't load the page

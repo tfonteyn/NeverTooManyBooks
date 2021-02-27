@@ -278,7 +278,7 @@ public class EditBookActivity
                                       R.string.tab_lbl_content,
                                       R.string.lbl_table_of_content));
             }
-            if (EditBookExternalIdFragment.showEditBookTabExternalId(global)) {
+            if (EditBookExternalIdFragment.isShowTab(global)) {
                 mTabs.add(new TabInfo(EditBookExternalIdFragment.class,
                                       R.string.tab_lbl_ext_id,
                                       R.string.tab_lbl_ext_id));

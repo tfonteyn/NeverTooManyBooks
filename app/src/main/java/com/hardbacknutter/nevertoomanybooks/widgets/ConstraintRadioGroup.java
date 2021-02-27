@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -55,6 +55,7 @@ public final class ConstraintRadioGroup
     @NonNull
     private final SparseArray<RadioButton> mRadioButtons = new SparseArray<>();
 
+    /** Group enable/disable. */
     private boolean mEnabled = true;
 
     /** User listener. */

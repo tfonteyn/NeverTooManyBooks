@@ -111,8 +111,10 @@ public class AuthorWorksViewModel
     public void reloadWorkList() {
         mWorkList.clear();
         final long bookshelfId = mAllBookshelves ? Bookshelf.ALL_BOOKS : mBookshelf.getId();
-        mWorkList
-                .addAll(mBookDao.getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks));
+
+        final ArrayList<AuthorWork> authorWorks = mBookDao
+                .getAuthorWorks(mAuthor, bookshelfId, mWithTocEntries, mWithBooks);
+        mWorkList.addAll(authorWorks);
     }
 
     public long getBookshelfId() {

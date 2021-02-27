@@ -25,10 +25,10 @@
  * <a href="https://sqlite.org/lang_datefunc.html">https://sqlite.org/lang_datefunc.html</a>
  * <p>
  * <pre>
- *      Function		Equivalent strftime()
- *      date(...)		strftime('%Y-%m-%d', ...)
- *      time(...)		strftime('%H:%M:%S', ...)
- *      datetime(...)	strftime('%Y-%m-%d %H:%M:%S', ...)
+ *      Function        Equivalent strftime()
+ *      date(...)       strftime('%Y-%m-%d', ...)
+ *      time(...)       strftime('%H:%M:%S', ...)
+ *      datetime(...)   strftime('%Y-%m-%d %H:%M:%S', ...)
  * </pre>
  * <p>
  * ==> the default 'datetime' function <strong>does NOT include the 'T' character</strong>

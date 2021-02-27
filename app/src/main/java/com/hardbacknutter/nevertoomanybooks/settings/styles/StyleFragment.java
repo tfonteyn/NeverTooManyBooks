@@ -152,8 +152,8 @@ public class StyleFragment
 
         final PreferenceScreen screen = getPreferenceScreen();
         //noinspection ConstantConditions
-        for (final BooklistGroup group :
-                BooklistGroup.getAllGroups(UserStyle.createGlobal(getContext()))) {
+        for (final BooklistGroup group
+                : BooklistGroup.getAllGroups(UserStyle.createGlobal(getContext()))) {
             group.setPreferencesVisible(screen, styleGroups.contains(group.getId()));
         }
 

@@ -48,7 +48,7 @@ public interface StyleFilter<T>
      * @return a human readable label/name for this filter.
      */
     @NonNull
-    String getLabel(@NonNull final Context context);
+    String getLabel(@NonNull Context context);
 
     @NonNull
     DomainExpression getDomainExpression();

@@ -451,8 +451,8 @@ public class LastDodoSearchEngine
         processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
         String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
-            lang = Languages
-                    .getInstance().getISO3FromDisplayName(mAppContext, getLocale(), lang);
+            lang = Languages.getInstance()
+                            .getISO3FromDisplayName(getAppContext(), getLocale(), lang);
             bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
         }
     }

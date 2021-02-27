@@ -189,7 +189,7 @@ public abstract class VMTask<Result>
      */
     @Nullable
     @WorkerThread
-    protected abstract Result doWork(@NonNull final Context context)
+    protected abstract Result doWork(@NonNull Context context)
             throws Exception;
 
     public boolean isRunning() {

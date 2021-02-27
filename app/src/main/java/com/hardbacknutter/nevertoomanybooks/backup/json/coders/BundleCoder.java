@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -37,6 +37,8 @@ import org.json.JSONObject;
 public class BundleCoder
         implements JsonCoder<Bundle> {
 
+    private static final String ERROR_TYPE_NOT_SUPPORTED = "type not supported: ";
+
     @NonNull
     @Override
     public JSONObject encode(@NonNull final Bundle element)
@@ -50,7 +52,7 @@ public class BundleCoder
                 out.put(key, o);
 
             } else if (o != null) {
-                throw new IllegalArgumentException("type not supported: " + o);
+                throw new IllegalArgumentException(ERROR_TYPE_NOT_SUPPORTED + o);
             }
         }
         return out;
@@ -82,7 +84,7 @@ public class BundleCoder
                 bundle.putBoolean(key, (boolean) o);
 
             } else {
-                throw new IllegalArgumentException("type not supported: " + o);
+                throw new IllegalArgumentException(ERROR_TYPE_NOT_SUPPORTED + o);
             }
         }
         return bundle;
