@@ -58,6 +58,12 @@
     {"name": "First"},
     {"name": "Bookclub"}
   ],
+  "genre": [
+    {"name": "Science Fiction"},
+    {"name": "Romance"},
+    {"name": "Detective"},
+    {"name": "Fantasy"}
+  ],
   "isbn": [
     {"d13": "9780316310420", "d10": "0316310425"},
     {"d13": "9781250762849", "d10": "1250762847"},
@@ -109,5 +115,8 @@
     {"name": "Backup (.zip)"},
     {"name": "Books (.csv)"},
     {"name": "XML export (.xml)"}
+  ],
+  "notes": [
+    {"short": "First Edition. ©2013, PV1 copy ordered and received in July. First printing by number line 10—1"}
   ]
 }
