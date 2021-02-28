@@ -188,7 +188,7 @@
             app:layout_constraintStart_toStartOf="@id/lbl_genre"
             app:layout_constraintTop_toBottomOf="@id/lbl_genre"
             tools:ignore="SelectableText"
-            tools:text="Science Fiction"
+            tools:text="@sample/data.json/genre/name"
             />
 
         <TextView
