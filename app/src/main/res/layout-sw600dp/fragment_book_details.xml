@@ -245,7 +245,7 @@
             app:layout_constraintStart_toStartOf="@id/lbl_notes"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
             tools:ignore="SelectableText"
-            tools:text="The best book of all times."
+            tools:text="@sample/data.json/notes/short"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
