@@ -27,10 +27,7 @@
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/screen_border"
+        style="@style/TopCentered"
         >
 
         <com.google.android.material.textfield.TextInputLayout

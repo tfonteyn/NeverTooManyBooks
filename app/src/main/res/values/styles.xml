@@ -503,7 +503,7 @@
     <style name="BoB.Header">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
+        <item name="android:textAppearance">?attr/textAppearanceHeadline6</item>
         <item name="android:textIsSelectable">true</item>
         <item name="android:layout_marginStart">8dp</item>
         <item name="android:layout_marginEnd">8dp</item>
@@ -512,7 +512,7 @@
     </style>
 
     <style name="BoB.Header.Small">
-        <item name="android:textAppearance">?attr/textAppearanceSubtitle2</item>
+        <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
     </style>
 
     <!-- The Group rows in the booklist. -->
@@ -607,13 +607,59 @@
     </style>
 
     <!-- *************************************************************************************** -->
+    <!-- Screen / top level -->
+    <!-- *************************************************************************************** -->
+
+    <!-- An Activity primary/top toolbar -->
+    <style name="Toolbar.Activity" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="layout_scrollFlags">scroll|enterAlways</item>
+    </style>
+
+    <!-- A Dialog primary/top toolbar with a 'close' icon. -->
+    <style name="Toolbar.Dialog" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?attr/actionBarSize</item>
+        <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
+    </style>
+
+    <style name="TabBar" parent="Widget.MaterialComponents.TabLayout.Colored">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="tabMode">scrollable</item>
+    </style>
+
+    <style name="NavigationView" parent="Widget.MaterialComponents.NavigationView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="headerLayout">@layout/nav_header_main</item>
+    </style>
+
+    <style name="TopNestedScroller">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:fillViewport">true</item>
+        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
+    </style>
+
+    <style name="TopCentered">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_margin">@dimen/screen_border</item>
+        <item name="android:minWidth">@dimen/screen_min_width</item>
+    </style>
+
+    <!-- *************************************************************************************** -->
     <!-- Dialogs -->
     <!-- *************************************************************************************** -->
 
     <!-- FrameLayout for a DialogFragment based on a CoordinatorLayout/Toolbar/FrameLayout.
-     FLOATING and FULLSCREEN dialog
-     Important: in FLOATING mode, some adjustments are done from code.
-     See com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java#onViewCreated
+         FLOATING and FULLSCREEN dialog
+         Important: in FLOATING mode, some adjustments are done from code.
+         See com/hardbacknutter/nevertoomanybooks/dialogs/BaseDialogFragment.java#onViewCreated
      -->
     <style name="Dialog.Frame" parent="">
         <item name="android:layout_width">match_parent</item>
@@ -642,7 +688,7 @@
     </style>
 
     <!-- *************************************************************************************** -->
-    <!-- FAB buttons -->
+    <!-- FAB buttons / Menu -->
     <!-- *************************************************************************************** -->
 
     <!-- generic FAB button. -->
@@ -661,6 +707,26 @@
         <item name="android:layout_margin">@dimen/fab_margin</item>
         <item name="android:visibility">invisible</item>
         <item name="iconGravity">end</item>
+    </style>
+
+    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
+    <style name="ExposedDropdownMenu"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
+        <!-- make the drop down arrow better visible. -->
+        <item name="endIconTint">?attr/colorOnSurface</item>
+    </style>
+
+    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
+    <style name="ExposedDropdownMenu.Dense"
+        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/til_field_margin</item>
+        <!-- make the drop down arrow better visible. -->
+        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- *************************************************************************************** -->
@@ -765,60 +831,6 @@
     <style name="App.MaterialCalendar.HeaderConfirmButton"
         parent="Widget.MaterialComponents.MaterialCalendar.HeaderConfirmButton">
         <item name="android:backgroundTint">?attr/colorButtonNormal</item>
-    </style>
-
-    <style name="NavigationView" parent="Widget.MaterialComponents.NavigationView">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_gravity">start</item>
-        <item name="headerLayout">@layout/nav_header_main</item>
-    </style>
-
-    <!-- An Activity primary/top toolbar -->
-    <style name="Toolbar.Activity" parent="Widget.MaterialComponents.Toolbar.Primary">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="layout_scrollFlags">scroll|enterAlways</item>
-    </style>
-
-    <!-- A Dialog primary/top toolbar with a 'close' icon. -->
-    <style name="Toolbar.Dialog" parent="Widget.MaterialComponents.Toolbar.Primary">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">?attr/actionBarSize</item>
-        <item name="navigationIcon">@drawable/ic_baseline_close_24</item>
-    </style>
-
-    <style name="TabBar" parent="Widget.MaterialComponents.TabLayout.Colored">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="tabMode">scrollable</item>
-    </style>
-
-    <style name="TopNestedScroller">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:fillViewport">true</item>
-        <item name="layout_behavior">@string/appbar_scrolling_view_behavior</item>
-    </style>
-
-    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
-    <style name="ExposedDropdownMenu"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/til_field_margin</item>
-        <!-- make the drop down arrow better visible. -->
-        <item name="endIconTint">?attr/colorOnSurface</item>
-    </style>
-
-    <!-- The TextInputLayout view for a NON-editable AutoCompleteTextView; equivalent of a Spinner. -->
-    <style name="ExposedDropdownMenu.Dense"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/til_field_margin</item>
-        <!-- make the drop down arrow better visible. -->
-        <item name="endIconTint">?attr/colorOnSurface</item>
     </style>
 
     <!-- The switch on the book details screen to show/hide the TOC. -->

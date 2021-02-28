@@ -151,6 +151,11 @@
 
     <!-- layout_margin for top level layouts. -->
     <dimen name="screen_border">4dp</dimen>
+    <!-- The minimum width for layouts which are centered.
+            android:layout_width="wrap_content"
+            android:layout_gravity="center_horizontal"
+         This is based on 4WVGA 4.0" -->
+    <dimen name="screen_min_width">300dp</dimen>
 
     <!-- The margin on top of a generic section/group of data on a screen. -->
     <dimen name="section_margin_top">4dp</dimen>

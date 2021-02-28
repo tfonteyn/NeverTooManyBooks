@@ -23,9 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/screen_border"
+    style="@style/TopCentered"
     android:visibility="invisible"
     tools:visibility="visible"
     >
@@ -107,7 +105,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/virtualLibraries"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_margin="@dimen/screen_border"
         android:visibility="gone"
@@ -115,6 +113,8 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header_vlibs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:listitem="@layout/row_edit_calibre_library"
         tools:visibility="visible"
         />

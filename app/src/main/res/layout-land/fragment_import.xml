@@ -23,9 +23,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_margin="@dimen/screen_border"
+    style="@style/TopCentered"
     android:visibility="invisible"
     tools:context=".FragmentHostActivity"
     tools:visibility="visible"
@@ -55,8 +53,8 @@
         android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/header"
-        tools:text="archive name"
         tools:ignore="SelectableText"
+        tools:text="archive name"
         />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -92,12 +90,12 @@
     <TextView
         android:id="@+id/archive_content"
         style="@style/Text.Body.Small"
-        android:layout_marginTop="@dimen/section_margin_top"
         android:layout_marginStart="@dimen/field_margin_start"
+        android:layout_marginTop="@dimen/section_margin_top"
         app:layout_constraintStart_toStartOf="@id/archive_name"
         app:layout_constraintTop_toBottomOf="@id/barrier_top"
-        tools:text="Books: 123\nCovers: 456"
         tools:ignore="SelectableText"
+        tools:text="Books: 123\nCovers: 456"
         />
 
     <androidx.constraintlayout.widget.Guideline
