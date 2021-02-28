@@ -194,7 +194,7 @@
             app:layout_constraintStart_toStartOf="@id/lbl_notes"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
             tools:ignore="SelectableText"
-            tools:text="The best book of all times."
+            tools:text="@sample/data.json/notes/short"
             />
 
         <TextView
@@ -274,7 +274,7 @@
             android:id="@+id/description"
             style="@style/Field.Description"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toStartOf="@id/barrier_covers_end"
             app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
             tools:ignore="SelectableText"
             tools:text="@tools:sample/lorem/random"
