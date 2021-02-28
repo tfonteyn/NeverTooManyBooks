@@ -178,7 +178,7 @@
             android:id="@+id/lbl_genre"
             style="@style/Field.Label"
             android:text="@string/lbl_genre"
-            app:layout_constraintStart_toEndOf="@id/barrier_covers_end"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/publication_section"
             />
 
@@ -196,7 +196,7 @@
             style="@style/Field.Label"
             android:text="@string/lbl_series"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrier_covers_bottom"
+            app:layout_constraintTop_toBottomOf="@id/genre"
             />
 
         <TextView
@@ -266,7 +266,7 @@
             app:layout_constraintStart_toStartOf="@id/lbl_notes"
             app:layout_constraintTop_toBottomOf="@id/lbl_notes"
             tools:ignore="SelectableText"
-            tools:text="The best book of all times."
+            tools:text="@sample/data.json/notes/short"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
