@@ -228,7 +228,7 @@ public class ExportFragment
         final boolean incremental = helper.isIncremental();
         mVb.rbExportBooksOptionAll.setChecked(!incremental);
         mVb.rbExportBooksOptionNewAndUpdated.setChecked(incremental);
-        mVb.rbExportBooksOptionNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
+        mVb.infExportBooksOptionNewAndUpdated.setOnClickListener(StandardDialogs::infoPopup);
         mVb.rbBooksGroup.setOnCheckedChangeListener((group, checkedId) -> helper
                 .setIncremental(checkedId == mVb.rbExportBooksOptionNewAndUpdated.getId()));
 
