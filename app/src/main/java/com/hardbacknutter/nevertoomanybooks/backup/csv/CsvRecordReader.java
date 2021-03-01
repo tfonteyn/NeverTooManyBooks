@@ -29,7 +29,13 @@ import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +43,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
@@ -158,10 +165,23 @@ public class CsvRecordReader
 
         if (record.getType().isPresent()) {
             if (record.getType().get() == RecordType.Books) {
+
                 // Read the whole file content into a list of lines.
-                final List<String> books = record.asList();
-                if (!books.isEmpty()) {
-                    readBooks(context, options, books, progressListener);
+                final List<String> allLines;
+                // Don't close this stream
+                final InputStream is = record.getInputStream();
+                final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                final BufferedReader reader = new BufferedReader(isr, BUFFER_SIZE);
+
+                try {
+                    allLines = reader.lines().collect(Collectors.toList());
+                } catch (@NonNull final UncheckedIOException e) {
+                    //noinspection ConstantConditions
+                    throw e.getCause();
+                }
+
+                if (!allLines.isEmpty()) {
+                    readBooks(context, options, allLines, progressListener);
                 }
             }
         }
