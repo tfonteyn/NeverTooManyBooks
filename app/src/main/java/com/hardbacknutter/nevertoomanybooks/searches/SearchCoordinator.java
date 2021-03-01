@@ -876,6 +876,10 @@ public class SearchCoordinator
                 accumulateList(key, siteData);
 
             } else {
+                //URGENT: doing this will for example put the goodreads LONG id in the bundle
+                // as a String. This is as-designed, but you do get an Exception in the log
+                // when the data gets to the EditBook formatters. Harmless, but not clean.
+
                 // handle all normal String based entries
                 accumulateStringData(key, siteData);
             }
