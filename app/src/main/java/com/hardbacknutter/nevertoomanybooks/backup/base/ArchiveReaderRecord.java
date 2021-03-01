@@ -21,19 +21,11 @@ package com.hardbacknutter.nevertoomanybooks.backup.base;
 
 import androidx.annotation.NonNull;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.backup.RecordEncoding;
-import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 
 /**
@@ -91,53 +83,4 @@ public interface ArchiveReaderRecord {
      * @return EpochMilli
      */
     long getLastModifiedEpochMilli();
-
-
-    /**
-     * Get the <strong>complete</strong> content
-     * from the {@link #getInputStream()} as a single String
-     *
-     * @return single String
-     *
-     * @throws IOException on failure
-     */
-    @NonNull
-    default String asString()
-            throws IOException {
-        // Don't close this stream
-        final InputStream is = getInputStream();
-        final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
-
-        try {
-            return reader.lines().collect(Collectors.joining());
-        } catch (@NonNull final UncheckedIOException e) {
-            //noinspection ConstantConditions
-            throw e.getCause();
-        }
-    }
-
-    /**
-     * Get the <strong>complete</strong> content
-     * from the {@link #getInputStream()} as a list of Strings
-     *
-     * @return list of strings, one for each line read.
-     *
-     * @throws IOException on failure
-     */
-    @NonNull
-    default List<String> asList()
-            throws IOException {
-        // Don't close this stream
-        final InputStream is = getInputStream();
-        final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
-
-        try {
-            return reader.lines().collect(Collectors.toList());
-        } catch (@NonNull final UncheckedIOException e) {
-            //noinspection ConstantConditions
-            throw e.getCause();
-        }
-    }
 }
