@@ -43,9 +43,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
  * It's fine for our zip/tar archives were we control the name
  * but NOT suitable for checking standalone files.
  * However, it's not a real issue for now:
- * Csv: can only reads books anyhow
- * Xml: can detect its own format; but importing standalone files is not supported
- * Json: can detect its own format; but importing standalone files is not supported
+ * Csv: only supports books anyhow.
+ * Json: can detect its own format.
+ * Xml: can detect its own format; importing standalone files is not supported anyhow.
  */
 public enum RecordType {
 
@@ -57,7 +57,7 @@ public enum RecordType {
     MetaData("info"),
 
     /**
-     * A <strong>list</strong> of {@link ListStyle} elements.
+     * {@link ListStyle} element(s).
      * ONLY ONE PER ARCHIVE.
      */
     Styles("styles"),
@@ -76,8 +76,8 @@ public enum RecordType {
     Certificates("certificates"),
 
     /**
-     * A <strong>list</strong> of {@link Book} elements.
-     * All auxiliary data (author, bookshelf, ...) is included in each element.
+     * All information needed to encode/decode {@link Book} elements.
+     * All auxiliary data (author, bookshelf, ...) is included as needed.
      * ONLY ONE PER ARCHIVE.
      */
     Books("books"),

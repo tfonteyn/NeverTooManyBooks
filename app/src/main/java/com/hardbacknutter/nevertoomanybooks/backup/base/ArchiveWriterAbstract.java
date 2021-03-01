@@ -283,15 +283,13 @@ public abstract class ArchiveWriterAbstract
                                @NonNull final ExportResults data)
             throws GeneralParsingException, IOException {
 
-        final ArchiveMetaData metaData = ArchiveMetaData.create(context, getVersion(), data);
-
         final RecordEncoding encoding = getEncoding(RecordType.MetaData);
 
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
         try (Writer osw = new OutputStreamWriter(os, StandardCharsets.UTF_8);
              Writer bw = new BufferedWriter(osw, 1024);
              RecordWriter recordWriter = encoding.createWriter(null)) {
-            recordWriter.writeMetaData(bw, metaData);
+            recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, getVersion(), data));
         }
 
         putByteArray(RecordType.MetaData.getName() + encoding.getFileExt(),

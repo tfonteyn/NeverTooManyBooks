@@ -50,8 +50,15 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 public class CsvRecordWriter
         implements RecordWriter {
 
-    /** The format version of this RecordWriter. */
-    public static final int VERSION = 1;
+    /**
+     * The format version of this RecordWriter.
+     * <p>
+     * Not used; technically we could add some sort of header to the CSV file,
+     * but that defeats the CSV format. The {@link CsvRecordReader} is (should be)
+     * capable of detecting the format based on the data.
+     * (which is why we're moving to the JSON format)
+     */
+    private static final int VERSION = 1;
 
     /** Log tag. */
     private static final String TAG = "CsvRecordWriter";
@@ -124,10 +131,5 @@ public class CsvRecordWriter
         }
 
         return results;
-    }
-
-    @Override
-    public int getVersion() {
-        return VERSION;
     }
 }

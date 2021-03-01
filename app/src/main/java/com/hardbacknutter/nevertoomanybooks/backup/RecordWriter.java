@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.backup;
 
 import android.content.Context;
 
-import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
@@ -39,14 +38,6 @@ public interface RecordWriter
 
     /** Buffer for the Writer. */
     int BUFFER_SIZE = 65535;
-
-    /**
-     * Get the format version that this RecordWriter is writing out.
-     *
-     * @return the version
-     */
-    @AnyThread
-    int getVersion();
 
     /**
      * Write a {@link RecordType#MetaData} record.

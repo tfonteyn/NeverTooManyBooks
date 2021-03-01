@@ -77,7 +77,11 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 public class XmlRecordWriter
         implements RecordWriter {
 
-    /** The format version of this RecordWriter. */
+    /**
+     * The format version of this RecordWriter.
+     * <p>
+     * Not used; each xml record has it's own version: i.e. {@link #VERSION_BOOKS}.
+     */
     private static final int VERSION = 2;
 
     /** Log tag. */
@@ -640,10 +644,5 @@ public class XmlRecordWriter
         }
 
         return results;
-    }
-
-    @Override
-    public int getVersion() {
-        return VERSION;
     }
 }

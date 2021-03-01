@@ -128,7 +128,8 @@ public class JsonArchiveWriter
                         .write(context, bw, EnumSet.of(RecordType.Books), progressListener);
                 // 4. the metadata
                 bw.write(",\"" + RecordType.MetaData.getName() + "\":");
-                recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
+                recordWriter.writeMetaData(bw, ArchiveMetaData
+                        .create(context, getVersion(), results));
                 // 5. close the envelope
                 bw.write("}}");
             }

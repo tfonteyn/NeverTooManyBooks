@@ -108,6 +108,7 @@ public class CalibreContentServerWriter
 
     @Override
     public int getVersion() {
+        // irrelevant; when reading from the server we check the server version itself.
         return 1;
     }
 

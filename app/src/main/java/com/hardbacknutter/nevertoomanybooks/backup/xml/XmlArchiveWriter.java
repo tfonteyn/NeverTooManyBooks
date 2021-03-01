@@ -51,14 +51,17 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 public class XmlArchiveWriter
         implements ArchiveWriter {
 
+    /** Log tag. */
+    private static final String TAG = "XmlArchiveWriter";
+
     /**
      * v4 writes out an XML envelope with two elements inside:<br>
      * Books, <strong>followed</strong> by MetaData.
      * <p>
      * v3 used to write metadata,styles,preferences,books (in that order).
      */
-    protected static final int VERSION = 4;
-    private static final String TAG = "XmlArchiveWriter";
+    private static final int VERSION = 4;
+
     /** The xml root tag. */
     private static final String TAG_APPLICATION_ROOT = "NeverTooManyBooks";
 
@@ -104,13 +107,14 @@ public class XmlArchiveWriter
                 // manually concat
                 // 1. archive envelope
                 bw.write(XmlUtils.XML_VERSION_1_0_ENCODING_UTF_8
-                         + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(VERSION) + ">\n");
+                         + '<' + TAG_APPLICATION_ROOT + XmlUtils.versionAttr(getVersion()) + ">\n");
                 // 2. the actual data inside the container
                 results = recordWriter
                         .write(context, bw, EnumSet.of(RecordType.Books), progressListener);
 
                 // 3. the metadata
-                recordWriter.writeMetaData(bw, ArchiveMetaData.create(context, VERSION, results));
+                recordWriter.writeMetaData(bw, ArchiveMetaData
+                        .create(context, getVersion(), results));
                 // 4. close the envelope
                 bw.write("</" + TAG_APPLICATION_ROOT + ">\n");
             }
