@@ -72,7 +72,7 @@ public class JsonRecordWriter
         implements RecordWriter {
 
     /** The format version of this RecordWriter. */
-    public static final int VERSION = 1;
+    private static final int VERSION = 1;
 
     /** Log tag. */
     private static final String TAG = "JsonRecordWriter";
@@ -210,10 +210,5 @@ public class JsonRecordWriter
             writer.write(jsonData.toString());
         }
         return results;
-    }
-
-    @Override
-    public int getVersion() {
-        return VERSION;
     }
 }
