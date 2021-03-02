@@ -575,7 +575,8 @@ public class ImportFragment
         if (result.styles > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),
-                                String.valueOf(result.styles)));
+                                // deduct built-in styles (remember: MAX_ID is negative)
+                                String.valueOf(result.styles + StyleUtils.BuiltinStyles.MAX_ID)));
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));

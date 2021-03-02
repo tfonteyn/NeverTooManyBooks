@@ -126,8 +126,7 @@ public class JsonRecordWriter
                     final JsonCoder<ListStyle> coder = new ListStyleCoder(context);
                     jsonData.put(RecordType.Styles.getName(), coder.encode(styles));
                 }
-                // deduct the number of built-in styles (remember: MAX_ID is negative)
-                results.styles = styles.size() + StyleUtils.BuiltinStyles.MAX_ID;
+                results.styles = styles.size();
             }
 
             if (entries.contains(RecordType.Preferences)

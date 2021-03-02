@@ -58,6 +58,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriterTask;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServer;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreContentServerWriter;
+import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentExportBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -601,7 +602,8 @@ public class ExportFragment
         if (result.styles > 0) {
             items.add(getString(R.string.name_colon_value,
                                 getString(R.string.lbl_styles),
-                                String.valueOf(result.styles)));
+                                // deduct built-in styles (remember: MAX_ID is negative)
+                                String.valueOf(result.styles + StyleUtils.BuiltinStyles.MAX_ID)));
         }
         if (result.preferences > 0) {
             items.add(getString(R.string.lbl_settings));
