@@ -65,6 +65,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  *      <li>{@link RecordType#MetaData}</li>
  *      <li>{@link RecordType#Styles}</li>
  *      <li>{@link RecordType#Preferences}</li>
+ *      <li>{@link RecordType#Certificates}</li>
  *      <li>{@link RecordType#Books}</li>
  * </ul>
  */
