@@ -25,13 +25,12 @@ import androidx.annotation.NonNull;
 
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * StringList factory for a Bookshelf.
@@ -81,7 +80,7 @@ public class BookshelfCoder
             throw new IllegalStateException(e);
         }
 
-        if (details.length() != 0) {
+        if (!details.isEmpty()) {
             result += ' ' + String.valueOf(getObjectSeparator()) + ' ' + details.toString();
         }
         return result;

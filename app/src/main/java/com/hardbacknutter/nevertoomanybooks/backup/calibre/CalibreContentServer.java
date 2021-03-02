@@ -77,10 +77,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
@@ -99,6 +95,9 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.CredentialsExceptio
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExternalStorageException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpStatusException;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * <ul>
@@ -392,6 +391,7 @@ public class CalibreContentServer {
      * populates {@link #mDefaultLibrary} + {@link #mLibraries}
      *
      * @param context Current context
+     *
      * @throws IOException on failures
      */
     @WorkerThread
@@ -481,7 +481,7 @@ public class CalibreContentServer {
             library.setTotalBooks(result.optInt(RESPONSE_TAG_TOTAL_NUM));
 
             final JSONArray calibreIds = result.optJSONArray(RESPONSE_TAG_BOOK_IDS);
-            if (calibreIds != null && calibreIds.length() > 0) {
+            if (calibreIds != null && !calibreIds.isEmpty()) {
                 loadCustomFieldDefinitions(library, calibreIds.getInt(0));
             }
         }

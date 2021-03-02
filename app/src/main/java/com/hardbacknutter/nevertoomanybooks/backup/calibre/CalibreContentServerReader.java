@@ -40,10 +40,6 @@ import java.util.Iterator;
 
 import javax.net.ssl.SSLException;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -66,6 +62,9 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * Dev Note: while most plumbing to use multiple libraries is in place,
@@ -254,7 +253,7 @@ public class CalibreContentServerReader
                     final JSONArray bookIds = root.optJSONArray(
                             CalibreContentServer.RESPONSE_TAG_BOOK_IDS);
 
-                    valid = bookIds != null && bookIds.length() > 0;
+                    valid = bookIds != null && !bookIds.isEmpty();
                     if (valid) {
                         final JSONObject bookList = mServer.getBooks(mLibrary.getLibraryStringId(),
                                                                      bookIds);
@@ -417,7 +416,7 @@ public class CalibreContentServerReader
         // ],
         if (!calibreBook.isNull(CalibreBook.LANGUAGES_ARRAY)) {
             final JSONArray languages = calibreBook.optJSONArray(CalibreBook.LANGUAGES_ARRAY);
-            if (languages != null && languages.length() > 0) {
+            if (languages != null && !languages.isEmpty()) {
                 // We only support one language, so grab the first one
                 final String lang = languages.optString(0);
                 // don't overwrite the local value with a remote 'not-set' value
@@ -433,7 +432,7 @@ public class CalibreContentServerReader
         final ArrayList<Author> bookAuthors = new ArrayList<>();
         if (!calibreBook.isNull(CalibreBook.AUTHOR_ARRAY)) {
             final JSONArray authors = calibreBook.optJSONArray(CalibreBook.AUTHOR_ARRAY);
-            if (authors != null && authors.length() > 0) {
+            if (authors != null && !authors.isEmpty()) {
 
                 for (int i = 0; i < authors.length(); i++) {
                     final String author = authors.optString(i);
@@ -606,7 +605,7 @@ public class CalibreContentServerReader
         }
 
         final JSONArray virtualLibs = calibreBook.optJSONArray(BKEY_VIRTUAL_LIBRARY_LIST);
-        if (virtualLibs != null && virtualLibs.length() > 0) {
+        if (virtualLibs != null && !virtualLibs.isEmpty()) {
             for (int i = 0; i < virtualLibs.length(); i++) {
                 final String name = virtualLibs.getString(i);
 

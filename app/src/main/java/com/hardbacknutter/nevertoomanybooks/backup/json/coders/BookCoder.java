@@ -25,11 +25,10 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -41,6 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.nevertoomanybooks.utils.Money;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * Supports all types from {@link DataManager#put} with the exception of {@link Serializable}.
@@ -221,8 +222,18 @@ public class BookCoder
                         book.putFloat(key, (Float) o);
                     } else if (o instanceof Boolean) {
                         book.putBoolean(key, (Boolean) o);
+
+                    } else if (o instanceof BigInteger) {
+                        // added since org.json:json:20201115
+                        book.putLong(key, ((BigInteger) o).longValue());
+                    } else if (o instanceof BigDecimal) {
+                        // added since org.json:json:20201115
+                        book.putDouble(key, ((BigDecimal) o).doubleValue());
+
                     } else {
-                        throw new IllegalArgumentException("key=" + key + "|o=" + o);
+                        throw new IllegalArgumentException("key=" + key
+                                                           + "|type=" + o.getClass().getName()
+                                                           + "|o=" + o);
                     }
                 }
             }

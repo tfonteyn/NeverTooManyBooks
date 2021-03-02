@@ -27,8 +27,8 @@ import androidx.annotation.Nullable;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 public class SharedPreferencesCoder
         implements JsonCoder<SharedPreferences> {

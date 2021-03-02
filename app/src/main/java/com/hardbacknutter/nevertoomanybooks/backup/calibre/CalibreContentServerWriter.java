@@ -36,10 +36,6 @@ import java.util.Iterator;
 
 import javax.net.ssl.SSLException;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
@@ -58,6 +54,9 @@ import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.HttpNotFoundException;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * This class will only UPDATE books which exist on the server.
@@ -290,7 +289,7 @@ public class CalibreContentServerWriter
         // https://github.com/kovidgoyal/calibre/blob/master/src/calibre/db/write.py#L480
         // So, we send a combination of changes + the identifiers we don't know back to the server.
         final JSONObject localIdentifiers = collectIdentifiers(localBook);
-        if (localIdentifiers.length() > 0) {
+        if (!localIdentifiers.isEmpty()) {
             final JSONObject identifiers = calibreBook.optJSONObject(CalibreBook.IDENTIFIERS);
             if (identifiers != null) {
                 // overwrite remotes with locals

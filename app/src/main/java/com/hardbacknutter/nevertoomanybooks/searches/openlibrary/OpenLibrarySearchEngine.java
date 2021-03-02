@@ -41,10 +41,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
@@ -60,6 +56,9 @@ import com.hardbacknutter.nevertoomanybooks.searches.SearchSites;
 import com.hardbacknutter.nevertoomanybooks.tasks.TerminatorConnection;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * <a href="https://openlibrary.org/developers/api">API</a>
@@ -478,7 +477,7 @@ public class OpenLibrarySearchEngine
 
         final ArrayList<Author> authors = new ArrayList<>();
         a = document.optJSONArray("authors");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             for (int ai = 0; ai < a.length(); ai++) {
                 element = a.optJSONObject(ai);
                 final String name = element.optString("name");
@@ -545,13 +544,13 @@ public class OpenLibrarySearchEngine
         }
 
         a = document.optJSONArray("publishers");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             processPublishers(a, bookData);
         }
 
         // always use the first author only for TOC entries.
         a = document.optJSONArray("table_of_contents");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             final ArrayList<TocEntry> toc = new ArrayList<>();
             for (int ai = 0; ai < a.length(); ai++) {
                 element = a.optJSONObject(ai);
@@ -594,40 +593,40 @@ public class OpenLibrarySearchEngine
 
         // see if we have a better isbn.
         a = element.optJSONArray("isbn_13");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
-            if (a != null && a.length() > 0) {
+            if (a != null && !a.isEmpty()) {
                 bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
             }
         }
         a = element.optJSONArray("amazon");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_ESID_ASIN, a.getString(0));
         }
         a = element.optJSONArray("openlibrary");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_ESID_OPEN_LIBRARY, a.getString(0));
         }
         a = element.optJSONArray("librarything");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             bookData.putLong(DBDefinitions.KEY_ESID_LIBRARY_THING, a.getLong(0));
         }
         a = element.optJSONArray("goodreads");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             bookData.putLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK, a.getLong(0));
         }
         a = element.optJSONArray("google");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_ESID_GOOGLE, a.getString(0));
         }
         a = element.optJSONArray("lccn");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_ESID_LCCN, a.getString(0));
         }
         a = element.optJSONArray("oclc");
-        if (a != null && a.length() > 0) {
+        if (a != null && !a.isEmpty()) {
             bookData.putString(DBDefinitions.KEY_ESID_OCLC, a.getString(0));
         }
     }

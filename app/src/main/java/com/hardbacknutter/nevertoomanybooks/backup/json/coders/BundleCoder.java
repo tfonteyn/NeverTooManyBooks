@@ -25,8 +25,8 @@ import androidx.annotation.NonNull;
 
 import java.util.Iterator;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * Minimalistic implementation which only supports

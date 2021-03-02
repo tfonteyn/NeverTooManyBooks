@@ -37,10 +37,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
@@ -59,6 +55,9 @@ import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 /**
  * <ul>Supports:
@@ -155,7 +154,7 @@ public class JsonRecordWriter
                 } catch (@NonNull final IOException | CertificateException ignore) {
                     // no certificate (IOException) or invalid cert
                 }
-                if (certificates.length() > 0) {
+                if (!certificates.isEmpty()) {
                     jsonData.put(RecordType.Certificates.getName(), certificates);
                 }
             }
@@ -196,7 +195,7 @@ public class JsonRecordWriter
                     }
                 }
 
-                if (bookArray.length() > 0) {
+                if (!bookArray.isEmpty()) {
                     jsonData.put(RecordType.Books.getName(), bookArray);
                 }
             }
@@ -206,7 +205,7 @@ public class JsonRecordWriter
         }
 
         // Write the complete json output in one go
-        if (jsonData.length() > 0) {
+        if (!jsonData.isEmpty()) {
             writer.write(jsonData.toString());
         }
         return results;

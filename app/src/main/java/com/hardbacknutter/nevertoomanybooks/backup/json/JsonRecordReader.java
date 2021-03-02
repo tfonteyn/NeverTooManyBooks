@@ -42,10 +42,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
@@ -72,6 +68,10 @@ import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingException;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
+import com.hardbacknutter.org.json.JSONTokener;
 
 /**
  * Supports two levels of Archive records.
@@ -188,41 +188,45 @@ public class JsonRecordReader
 
                 // read the entire record into a single String
                 // OutOfMemoryError when the data starts to exceed 8mb (9000+ books)
-                final String content = reader.lines().collect(Collectors.joining());
-                if (!content.isEmpty()) {
+//                final String content = reader.lines().collect(Collectors.joining());
+//                if (!content.isEmpty()) {
 
-                    JSONObject root = new JSONObject(content);
-                    // Is this a JsonArchiveWriter format ?
-                    // Then descend to the container (data) object.
-                    if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
-                        root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT)
-                                   .getJSONObject(RecordType.AutoDetect.getName());
+//                    JSONObject root = new JSONObject(content);
+
+                // 2021-03-01: now using an updated/repacked org.json, version 20201115
+                JSONObject root = new JSONObject(new JSONTokener(reader));
+
+                // Is this a JsonArchiveWriter format ?
+                // Then descend to the container (data) object.
+                if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
+                    root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT)
+                               .getJSONObject(RecordType.AutoDetect.getName());
+                }
+
+                if (mImportEntriesAllowed.contains(recordType)
+                    || recordType == RecordType.AutoDetect) {
+
+                    if (recordType == RecordType.Styles
+                        || recordType == RecordType.AutoDetect) {
+                        readStyles(context, root);
                     }
 
-                    if (mImportEntriesAllowed.contains(recordType)
+                    if (recordType == RecordType.Preferences
                         || recordType == RecordType.AutoDetect) {
+                        readPreferences(context, root);
+                    }
 
-                        if (recordType == RecordType.Styles
-                            || recordType == RecordType.AutoDetect) {
-                            readStyles(context, root);
-                        }
+                    if (recordType == RecordType.Certificates
+                        || recordType == RecordType.AutoDetect) {
+                        readCertificates(context, root);
+                    }
 
-                        if (recordType == RecordType.Preferences
-                            || recordType == RecordType.AutoDetect) {
-                            readPreferences(context, root);
-                        }
-
-                        if (recordType == RecordType.Certificates
-                            || recordType == RecordType.AutoDetect) {
-                            readCertificates(context, root);
-                        }
-
-                        if (recordType == RecordType.Books
-                            || recordType == RecordType.AutoDetect) {
-                            readBooks(context, root, options, progressListener);
-                        }
+                    if (recordType == RecordType.Books
+                        || recordType == RecordType.AutoDetect) {
+                        readBooks(context, root, options, progressListener);
                     }
                 }
+//                }
             } catch (@NonNull final JSONException e) {
                 throw new ImportException(context.getString(R.string.error_import_failed), e);
 
@@ -232,6 +236,8 @@ public class JsonRecordReader
 
             } catch (@NonNull final OutOfMemoryError e) {
                 // wrap it. Note this is not foolproof... the app might still crash!
+                // 2021-03-01: now using an updated/repacked org.json, version 20201115
+                // which uses the Reader directly. Theoretically this should now be fixed.
                 throw new IOException(e);
             }
         }
@@ -290,7 +296,7 @@ public class JsonRecordReader
             throws JSONException {
 
         final JSONArray books = root.optJSONArray(RecordType.Books.getName());
-        if (books == null || books.length() == 0) {
+        if (books == null || books.isEmpty()) {
             return;
         }
 

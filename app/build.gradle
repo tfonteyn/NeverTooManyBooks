@@ -247,6 +247,8 @@ android {
 
 // AndroidX release notes:  https://developer.android.com/jetpack/androidx/versions
 dependencies {
+    implementation project(path: ':repacked-org-json')
+
     // https://github.com/google/desugar_jdk_libs
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
     //

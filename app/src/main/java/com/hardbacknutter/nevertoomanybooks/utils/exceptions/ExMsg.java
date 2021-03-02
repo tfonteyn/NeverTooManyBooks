@@ -37,12 +37,11 @@ import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLException;
 
-import org.json.JSONException;
-
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
+import com.hardbacknutter.org.json.JSONException;
 
 public final class ExMsg {
 

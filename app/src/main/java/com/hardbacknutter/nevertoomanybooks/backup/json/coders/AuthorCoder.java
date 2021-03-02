@@ -21,11 +21,10 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 public class AuthorCoder
         implements JsonCoder<Author> {

@@ -26,10 +26,6 @@ import androidx.annotation.NonNull;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
@@ -40,6 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PIntList;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PString;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.org.json.JSONArray;
+import com.hardbacknutter.org.json.JSONException;
+import com.hardbacknutter.org.json.JSONObject;
 
 public class ListStyleCoder
         implements JsonCoder<ListStyle> {
