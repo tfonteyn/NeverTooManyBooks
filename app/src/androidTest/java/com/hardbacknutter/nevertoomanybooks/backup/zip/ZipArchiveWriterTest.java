@@ -51,6 +51,7 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ZipArchiveWriterTest {
 
@@ -108,10 +109,12 @@ public class ZipArchiveWriterTest {
         final long exportCount = exportResults.getBookCount();
 
         final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
-        final ImportResults importResults;
-
-        // only NEW books, hence 0/0 created/updated as outcome of the test
         importHelper.setImportEntry(RecordType.Books, true);
+
+        // The default, fail if the default was changed without changing this test!
+        assertTrue(importHelper.isNewAndUpdatedBooks());
+
+        final ImportResults importResults;
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
@@ -124,10 +127,9 @@ public class ZipArchiveWriterTest {
         }
         assertEquals(exportCount, importResults.booksProcessed);
 
-
         assertEquals(0, importResults.booksCreated);
-        assertEquals(0, importResults.booksUpdated);
-        assertEquals(exportCount, importResults.booksSkipped);
+        assertEquals(exportCount, importResults.booksUpdated);
+        assertEquals(0, importResults.booksSkipped);
 
     }
 }

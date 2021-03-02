@@ -76,7 +76,8 @@ public class JsonArchiveWriterTest {
         }
     }
 
-    @Test
+    // Disabled. The JsonArchiveWriter is currently hardcoded NOT to write styles.
+    // @Test
     public void styles()
             throws ImportException, InvalidArchiveException, GeneralParsingException,
                    IOException, CertificateException {
@@ -173,9 +174,10 @@ public class JsonArchiveWriterTest {
         }
 
         final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
-        ImportResults importResults;
-
         importHelper.setImportEntry(RecordType.Books, true);
+        importHelper.setNewBooksOnly();
+
+        ImportResults importResults;
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
@@ -192,9 +194,9 @@ public class JsonArchiveWriterTest {
         assertEquals(exportResults.getBookCount() - 1, importResults.booksSkipped);
 
 
-
         importHelper.setImportEntry(RecordType.Books, true);
         importHelper.setAllBooks();
+
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);

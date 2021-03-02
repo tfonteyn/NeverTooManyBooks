@@ -137,10 +137,11 @@ public class CsvArchiveWriterTest {
         }
 
         final ImportHelper importHelper = ImportHelper.withFile(context, Uri.fromFile(file));
-        ImportResults importResults;
-
-
         importHelper.setImportEntry(RecordType.Books, true);
+
+        importHelper.setNewBooksOnly();
+
+        ImportResults importResults;
         try (ArchiveReader reader = importHelper.createArchiveReader(context)) {
 
             final ArchiveMetaData archiveMetaData = reader.readMetaData(context);
