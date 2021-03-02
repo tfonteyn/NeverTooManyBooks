@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
@@ -98,7 +99,7 @@ public class JsonArchiveWriter
 
         final LocalDateTime dateSince;
         if (mHelper.isIncremental()) {
-            dateSince = Backup.getLastFullBackupDate(context);
+            dateSince = Backup.getLastFullExportDate(context, ArchiveEncoding.Json);
         } else {
             dateSince = null;
         }
@@ -136,7 +137,8 @@ public class JsonArchiveWriter
 
             // If the backup was a full backup remember that.
             if (!mHelper.isIncremental()) {
-                Backup.setLastFullBackupDate(context, LocalDateTime.now(ZoneOffset.UTC));
+                Backup.setLastFullExportDate(context, ArchiveEncoding.Json,
+                                             LocalDateTime.now(ZoneOffset.UTC));
             }
             return results;
         } else {

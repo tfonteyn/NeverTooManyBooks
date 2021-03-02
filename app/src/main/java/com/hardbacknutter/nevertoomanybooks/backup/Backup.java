@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.hardbacknutter.nevertoomanybooks.R;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 import com.hardbacknutter.nevertoomanybooks.utils.exceptions.ExMsg;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.StartupViewModel;
@@ -38,7 +39,7 @@ public final class Backup {
 
     private static final String TAG = "Backup";
 
-    /** Last full backup date. */
+    /** Last full BACKUP date. */
     private static final String PREF_LAST_FULL_BACKUP_DATE = "backup.last.date";
 
     private Backup() {
@@ -56,7 +57,8 @@ public final class Backup {
             global.edit()
                   .remove(PREF_LAST_FULL_BACKUP_DATE)
                   .putInt(StartupViewModel.PK_STARTUP_BACKUP_COUNTDOWN,
-                          StartupViewModel.STARTUP_BACKUP_COUNTDOWN).apply();
+                          StartupViewModel.STARTUP_BACKUP_COUNTDOWN)
+                  .apply();
         } else {
             global.edit()
                   .putString(PREF_LAST_FULL_BACKUP_DATE, dateTime
@@ -85,6 +87,51 @@ public final class Backup {
 
         return null;
     }
+
+    /**
+     * Store the date of the last full export in the given format.
+     *
+     * @param context Current context
+     */
+    public static void setLastFullExportDate(@NonNull final Context context,
+                                             @NonNull final ArchiveEncoding encoding,
+                                             @Nullable final LocalDateTime dateTime) {
+
+        final String key = PREF_LAST_FULL_BACKUP_DATE + encoding.getFileExt();
+
+        final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
+        if (dateTime == null) {
+            global.edit().remove(key).apply();
+        } else {
+            global.edit()
+                  .putString(key, dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                  .apply();
+        }
+    }
+
+    /**
+     * Get the last time we made a full export in the given format.
+     *
+     * @param context Current context
+     *
+     * @return Date in the UTC timezone.
+     */
+    @Nullable
+    public static LocalDateTime getLastFullExportDate(@NonNull final Context context,
+                                                      @NonNull final ArchiveEncoding encoding) {
+
+        final String key = PREF_LAST_FULL_BACKUP_DATE + encoding.getFileExt();
+
+        final String lastBackup = PreferenceManager.getDefaultSharedPreferences(context)
+                                                   .getString(key, null);
+
+        if (lastBackup != null && !lastBackup.isEmpty()) {
+            return DateParser.getInstance(context).parseISO(lastBackup);
+        }
+
+        return null;
+    }
+
 
     /**
      * Transform a failure into a user friendly report.

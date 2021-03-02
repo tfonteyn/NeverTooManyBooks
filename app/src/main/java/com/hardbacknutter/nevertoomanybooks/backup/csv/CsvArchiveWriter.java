@@ -38,6 +38,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordWriter;
+import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveEncoding;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
@@ -82,7 +83,7 @@ public class CsvArchiveWriter
 
         final LocalDateTime dateSince;
         if (mHelper.isIncremental()) {
-            dateSince = Backup.getLastFullBackupDate(context);
+            dateSince = Backup.getLastFullExportDate(context, ArchiveEncoding.Csv);
         } else {
             dateSince = null;
         }
@@ -108,7 +109,8 @@ public class CsvArchiveWriter
 
             // If the backup was a full backup remember that.
             if (!mHelper.isIncremental()) {
-                Backup.setLastFullBackupDate(context, LocalDateTime.now(ZoneOffset.UTC));
+                Backup.setLastFullExportDate(context, ArchiveEncoding.Csv,
+                                             LocalDateTime.now(ZoneOffset.UTC));
             }
             return results;
         } else {
