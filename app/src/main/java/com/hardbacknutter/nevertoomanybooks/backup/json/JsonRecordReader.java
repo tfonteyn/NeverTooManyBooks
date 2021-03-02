@@ -29,11 +29,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.preference.PreferenceManager;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -74,16 +81,19 @@ import com.hardbacknutter.nevertoomanybooks.utils.exceptions.GeneralParsingExcep
  *         <li>{@link RecordType#MetaData}</li>
  *         <li>{@link RecordType#Styles}</li>
  *         <li>{@link RecordType#Preferences}</li>
+ *         <li>{@link RecordType#Certificates}</li>
  *         <li>{@link RecordType#Books}</li>
  *     </ul>
  *     </li>
- *     <li>All-in-one: top level: {@link JsonCoder#TAG_APPLICATION_ROOT}, which contains:
+ *     <li>EXPERIMENTAL: All-in-one: top level: {@link JsonCoder#TAG_APPLICATION_ROOT},
+ *     which contains:
  *     <ul>
  *         <li>{@link RecordType#MetaData}</li>
  *         <li>{@link RecordType#AutoDetect}, which in turn contains:
  *         <ul>
  *              <li>{@link RecordType#Styles}</li>
  *              <li>{@link RecordType#Preferences}</li>
+ *              <li>{@link RecordType#Certificates}</li>
  *              <li>{@link RecordType#Books}</li>
  *         </ul>
  *         </li>
@@ -140,9 +150,20 @@ public class JsonRecordReader
     public ArchiveMetaData readMetaData(@NonNull final ArchiveReaderRecord record)
             throws GeneralParsingException, IOException {
         try {
-            return new ArchiveMetaData(new BundleCoder().decode(new JSONObject(record.asString())));
+            // Don't close this stream
+            final InputStream is = record.getInputStream();
+            final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+            final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
+            // read the entire record into a single String
+            final String content = reader.lines().collect(Collectors.joining());
+            return new ArchiveMetaData(new BundleCoder().decode(new JSONObject(content)));
+
         } catch (@NonNull final JSONException e) {
             throw new GeneralParsingException(e);
+
+        } catch (@NonNull final UncheckedIOException e) {
+            //noinspection ConstantConditions
+            throw e.getCause();
         }
     }
 
@@ -159,15 +180,23 @@ public class JsonRecordReader
         if (record.getType().isPresent()) {
             final RecordType recordType = record.getType().get();
 
-            final String rootStr = record.asString();
-            if (!rootStr.isEmpty()) {
-                try {
-                    JSONObject root = new JSONObject(rootStr);
+            try {
+                // Don't close this stream
+                final InputStream is = record.getInputStream();
+                final Reader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+                final BufferedReader reader = new BufferedReader(isr, RecordReader.BUFFER_SIZE);
 
-                    // All-in-one archive ? descend to the actual data object
+                // read the entire record into a single String
+                // OutOfMemoryError when the data starts to exceed 8mb (9000+ books)
+                final String content = reader.lines().collect(Collectors.joining());
+                if (!content.isEmpty()) {
+
+                    JSONObject root = new JSONObject(content);
+                    // Is this a JsonArchiveWriter format ?
+                    // Then descend to the container (data) object.
                     if (root.has(JsonCoder.TAG_APPLICATION_ROOT)) {
-                        root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT);
-                        root = root.getJSONObject(RecordType.AutoDetect.getName());
+                        root = root.getJSONObject(JsonCoder.TAG_APPLICATION_ROOT)
+                                   .getJSONObject(RecordType.AutoDetect.getName());
                     }
 
                     if (mImportEntriesAllowed.contains(recordType)
@@ -175,77 +204,96 @@ public class JsonRecordReader
 
                         if (recordType == RecordType.Styles
                             || recordType == RecordType.AutoDetect) {
-
-                            final JSONArray jsonRoot = root
-                                    .optJSONArray(RecordType.Styles.getName());
-                            if (jsonRoot != null) {
-                                //noinspection SimplifyStreamApiCallChains
-                                new ListStyleCoder(context)
-                                        .decode(jsonRoot)
-                                        .stream()
-                                        .forEach(StyleUtils::updateOrInsert);
-                                mResults.styles = jsonRoot.length();
-                            }
+                            readStyles(context, root);
                         }
 
                         if (recordType == RecordType.Preferences
                             || recordType == RecordType.AutoDetect) {
-
-                            final JSONObject jsonRoot =
-                                    root.optJSONObject(RecordType.Preferences.getName());
-                            if (jsonRoot != null) {
-                                new SharedPreferencesCoder(
-                                        PreferenceManager.getDefaultSharedPreferences(context))
-                                        .decode(jsonRoot);
-                                mResults.preferences = 1;
-                            }
+                            readPreferences(context, root);
                         }
 
                         if (recordType == RecordType.Certificates
                             || recordType == RecordType.AutoDetect) {
-                            final JSONObject jsonRoot =
-                                    root.optJSONObject(RecordType.Certificates.getName());
-                            if (jsonRoot != null) {
-                                final CertificateCoder coder = new CertificateCoder();
-
-                                final JSONObject jsonCert =
-                                        jsonRoot.optJSONObject(CalibreContentServer.SERVER_CA);
-                                if (jsonCert != null) {
-                                    try {
-                                        CalibreContentServer.setCertificate(context,
-                                                                            coder.decode(jsonCert));
-                                        mResults.certificates++;
-                                    } catch (@NonNull final CertificateEncodingException e) {
-                                        // log but don't quit
-                                        Logger.error(context, TAG, e);
-                                    }
-                                }
-                            }
+                            readCertificates(context, root);
                         }
 
                         if (recordType == RecordType.Books
                             || recordType == RecordType.AutoDetect) {
-
-                            final JSONArray jsonRoot = root
-                                    .optJSONArray(RecordType.Books.getName());
-                            if (jsonRoot != null) {
-                                readBooks(context, options, jsonRoot, progressListener);
-                            }
+                            readBooks(context, root, options, progressListener);
                         }
                     }
-                } catch (@NonNull final JSONException e) {
-                    throw new ImportException(context.getString(R.string.error_import_failed), e);
                 }
+            } catch (@NonNull final JSONException e) {
+                throw new ImportException(context.getString(R.string.error_import_failed), e);
+
+            } catch (@NonNull final UncheckedIOException e) {
+                //noinspection ConstantConditions
+                throw e.getCause();
+
+            } catch (@NonNull final OutOfMemoryError e) {
+                // wrap it. Note this is not foolproof... the app might still crash!
+                throw new IOException(e);
             }
         }
         return mResults;
     }
 
+    private void readStyles(@NonNull final Context context,
+                            @NonNull final JSONObject root)
+            throws JSONException {
+        final JSONArray jsonRoot = root.optJSONArray(RecordType.Styles.getName());
+        if (jsonRoot != null) {
+            //noinspection SimplifyStreamApiCallChains
+            new ListStyleCoder(context)
+                    .decode(jsonRoot)
+                    .stream()
+                    .forEach(StyleUtils::updateOrInsert);
+            mResults.styles = jsonRoot.length();
+        }
+    }
+
+    private void readPreferences(@NonNull final Context context,
+                                 @NonNull final JSONObject root)
+            throws JSONException {
+        final JSONObject jsonRoot = root.optJSONObject(RecordType.Preferences.getName());
+        if (jsonRoot != null) {
+            new SharedPreferencesCoder(PreferenceManager.getDefaultSharedPreferences(context))
+                    .decode(jsonRoot);
+            mResults.preferences = 1;
+        }
+    }
+
+    private void readCertificates(@NonNull final Context context,
+                                  @NonNull final JSONObject root)
+            throws IOException, JSONException {
+        final JSONObject jsonRoot = root.optJSONObject(RecordType.Certificates.getName());
+        if (jsonRoot != null) {
+            final CertificateCoder coder = new CertificateCoder();
+
+            final JSONObject calibreCA = jsonRoot.optJSONObject(CalibreContentServer.SERVER_CA);
+            if (calibreCA != null) {
+                try {
+                    CalibreContentServer.setCertificate(context, coder.decode(calibreCA));
+                    mResults.certificates++;
+                } catch (@NonNull final CertificateEncodingException e) {
+                    // log but don't quit
+                    Logger.error(context, TAG, e);
+                }
+            }
+        }
+    }
+
     private void readBooks(@NonNull final Context context,
+                           @NonNull final JSONObject root,
                            @ImportHelper.Options final int options,
-                           @NonNull final JSONArray books,
                            @NonNull final ProgressListener progressListener)
             throws JSONException {
+
+        final JSONArray books = root.optJSONArray(RecordType.Books.getName());
+        if (books == null || books.length() == 0) {
+            return;
+        }
+
         final boolean updatesMustSync =
                 (options & ImportHelper.OPTION_UPDATES_MUST_SYNC) != 0;
         final boolean updatesMayOverwrite =
@@ -266,7 +314,7 @@ public class JsonRecordReader
 
         Synchronizer.SyncLock txLock = null;
         try {
-            // Iterate through each imported row
+            // Iterate through each imported element
             for (int i = 0; i < books.length() && !progressListener.isCancelled(); i++) {
                 // every 10 inserted, we commit the transaction
                 if (mBookDao.inTransaction() && txRowCount > 10) {
