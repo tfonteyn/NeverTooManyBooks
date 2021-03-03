@@ -297,8 +297,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:3.8.0'
     testImplementation 'org.mockito:mockito-junit-jupiter:3.8.0'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.1'
-    // Used in local test cases with JUnit5
-    testImplementation 'org.json:json:20201115'
 
     // device tests use JUnit4
     androidTestImplementation 'androidx.test:core:1.3.0'
