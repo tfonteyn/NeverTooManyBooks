@@ -19,20 +19,35 @@
  */
 package com.hardbacknutter.nevertoomanybooks.entities;
 
+import android.content.Context;
 import android.os.Parcel;
 
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SmallTest
 public class PublisherTest {
 
+    private static final String SOME_PUBLISHER = "Some publisher";
+    private static final String THE_PUBLISHER = "The publisher";
+    private static final String PUBLISHER_THE = "publisher, The";
+    private static final String JOSE_PUBLISHER = "José publisher";
+    private static final String JOSE_PUBLISHER_VARIANT = "Jose publisher";
+
     @Test
     public void parcelling() {
-        final Publisher publisher = Publisher.from("Random House");
+        final Publisher publisher = Publisher.from(SOME_PUBLISHER);
 
         final Parcel parcel = Parcel.obtain();
         publisher.writeToParcel(parcel, publisher.describeContents());
@@ -43,5 +58,183 @@ public class PublisherTest {
 
         assertEquals(pPublisher.getId(), publisher.getId());
         assertEquals(pPublisher.getTitle(), publisher.getTitle());
+    }
+
+    @Test
+    public void prunePublisherNames01() {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final PublisherDao publisherDao = PublisherDao.getInstance();
+
+        final List<Publisher> list = new ArrayList<>();
+        Publisher publisher;
+
+        // keep, position 0
+        publisher = new Publisher(SOME_PUBLISHER);
+        long id0 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id0 == 0) {
+            id0 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(1001);
+        list.add(publisher);
+
+        // keep, position 1
+        publisher = new Publisher(THE_PUBLISHER);
+        long id1 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id1 == 0) {
+            id1 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(1002);
+        list.add(publisher);
+
+        // DISCARD ! The base data is different, but the id already exists.
+        publisher = new Publisher(PUBLISHER_THE);
+        publisher.setId(1002);
+        list.add(publisher);
+
+        final boolean modified = Publisher.pruneList(list, context, false, Locale.getDefault());
+
+        assertTrue(list.toString(), modified);
+        assertEquals(list.toString(), 2, list.size());
+
+        assertTrue(id0 > 0);
+        assertTrue(id1 > 0);
+
+        publisher = list.get(0);
+        assertEquals(id0, publisher.getId());
+        assertEquals(SOME_PUBLISHER, publisher.getName());
+
+        publisher = list.get(1);
+        assertEquals(id1, publisher.getId());
+        assertEquals(THE_PUBLISHER, publisher.getName());
+    }
+
+    @Test
+    public void prunePublisherNames02() {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final PublisherDao publisherDao = PublisherDao.getInstance();
+
+        final List<Publisher> list = new ArrayList<>();
+        Publisher publisher;
+
+        // Keep; list will not be modified
+        publisher = new Publisher(SOME_PUBLISHER);
+        long id0 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id0 == 0) {
+            id0 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(1001);
+        list.add(publisher);
+
+        // Keep; list will not be modified
+        publisher = new Publisher(THE_PUBLISHER);
+        long id1 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id1 == 0) {
+            id1 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(0);
+        list.add(publisher);
+
+        // Discard; reordered but same as position 1
+        publisher = new Publisher(PUBLISHER_THE);
+        long id2 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id2 == 0) {
+            id2 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(1002);
+        list.add(publisher);
+
+        final boolean modified =
+                Publisher.pruneList(list, context, false, Locale.getDefault());
+
+        assertTrue(list.toString(), modified);
+        assertEquals(list.toString(), 2, list.size());
+
+        assertTrue(id0 > 0);
+        assertTrue(id1 > 0);
+
+        publisher = list.get(0);
+        assertEquals(id0, publisher.getId());
+        assertEquals(SOME_PUBLISHER, publisher.getName());
+
+        publisher = list.get(1);
+        assertEquals(id1, publisher.getId());
+        assertEquals(THE_PUBLISHER, publisher.getName());
+    }
+
+    @Test
+    public void prunePublisherNames03() {
+        final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        final PublisherDao publisherDao = PublisherDao.getInstance();
+
+        final List<Publisher> list = new ArrayList<>();
+        Publisher publisher;
+
+        // keep, position 0
+        publisher = new Publisher(SOME_PUBLISHER);
+        long id0 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id0 == 0) {
+            id0 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(1001);
+        list.add(publisher);
+
+        // keep, position 1
+        publisher = new Publisher(THE_PUBLISHER);
+        long id1 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id1 == 0) {
+            id1 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(1002);
+        list.add(publisher);
+
+        // Discard; reordered but same as position 1
+        publisher = new Publisher(PUBLISHER_THE);
+        long id2 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id2 == 0) {
+            id2 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(0);
+        list.add(publisher);
+
+        // Discard in favour of position 0
+        publisher = new Publisher(SOME_PUBLISHER);
+        publisher.setId(0);
+        list.add(publisher);
+
+        // Keep, but merge with the next entry and copy the id=1003
+        publisher = new Publisher(JOSE_PUBLISHER);
+        long id3 = publisherDao.fixId(context, publisher, false, Locale.getDefault());
+        if (id3 == 0) {
+            id3 = publisherDao.insert(context, publisher, Locale.getDefault());
+        }
+        publisher.setId(0);
+        list.add(publisher);
+
+        // Discard; diacritic wins
+        publisher = new Publisher(JOSE_PUBLISHER_VARIANT);
+        publisher.setId(1003);
+        list.add(publisher);
+
+        final boolean modified = Publisher.pruneList(list, context, false, Locale.getDefault());
+
+        assertTrue(list.toString(), modified);
+        assertEquals(list.toString(), 3, list.size());
+
+        assertTrue(id0 > 0);
+        assertTrue(id1 > 0);
+        assertTrue(id2 > 0);
+        assertTrue(id3 > 0);
+
+        publisher = list.get(0);
+        assertEquals(id0, publisher.getId());
+        assertEquals(SOME_PUBLISHER, publisher.getName());
+
+        publisher = list.get(1);
+        assertEquals(id1, publisher.getId());
+        assertEquals(THE_PUBLISHER, publisher.getName());
+
+        publisher = list.get(2);
+        assertEquals(id3, publisher.getId());
+        assertEquals(JOSE_PUBLISHER, publisher.getName());
     }
 }
