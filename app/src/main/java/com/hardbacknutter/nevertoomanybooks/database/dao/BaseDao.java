@@ -21,7 +21,6 @@ package com.hardbacknutter.nevertoomanybooks.database.dao;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -41,6 +40,7 @@ import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 
@@ -121,7 +121,7 @@ public abstract class BaseDao {
         mInstanceName = logTag;
 
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, mInstanceName + "|Constructor");
+            Logger.d(TAG, "BaseDao", mInstanceName + "|Constructor");
         }
 
         mDb = DBHelper.getDb(context);
