@@ -10,6 +10,9 @@ The reason seems related to https://developer.android.com/studio/build/multidex.
 Not fixing.
 
 ----------------------------------------------------------------------------------------------------
+ENHANCE: a note for the records... there is far to much hardcoded dependencies between
+    classes. True injection of dependencies is nearly absent making testing needlessly complicated.
+    A service locator for the dao's will be introduced to ease the pain
 
 ENHANCE: (Calibre) tags... implement a full tag system in our own database.
  * bookshelves 'are' tags? redefine the meaning of bookshelf as a 'tag'?
