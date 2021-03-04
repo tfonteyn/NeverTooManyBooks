@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookPublisherListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -363,8 +363,8 @@ public class EditBookPublisherListDialogFragment
                            @NonNull final Publisher publisher) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putString(DBDefinitions.KEY_TITLE, bookTitle);
-            args.putParcelable(DBDefinitions.KEY_FK_PUBLISHER, publisher);
+            args.putString(DBKeys.KEY_TITLE, bookTitle);
+            args.putParcelable(DBKeys.KEY_FK_PUBLISHER, publisher);
 
             final DialogFragment frag = new EditPublisherForBookDialogFragment();
             frag.setArguments(args);
@@ -378,16 +378,16 @@ public class EditBookPublisherListDialogFragment
             final Bundle args = requireArguments();
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                                  "BKEY_REQUEST_KEY");
-            mPublisher = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_PUBLISHER),
+            mPublisher = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_PUBLISHER),
                                                 "KEY_FK_PUBLISHER");
 
-            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
+            mBookTitle = args.getString(DBKeys.KEY_TITLE);
 
             if (savedInstanceState == null) {
                 mName = mPublisher.getName();
             } else {
                 //noinspection ConstantConditions
-                mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER_NAME);
+                mName = savedInstanceState.getString(DBKeys.KEY_PUBLISHER_NAME);
             }
         }
 
@@ -445,7 +445,7 @@ public class EditBookPublisherListDialogFragment
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBDefinitions.KEY_PUBLISHER_NAME, mName);
+            outState.putString(DBKeys.KEY_PUBLISHER_NAME, mName);
         }
 
         @Override

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
@@ -539,7 +539,7 @@ class LibraryThingHandler
             if ("work".equalsIgnoreCase(type)) {
                 try {
                     final long id = Long.parseLong(attributes.getValue("", XML_ATTR_ID));
-                    mBookData.putLong(DBDefinitions.KEY_ESID_LIBRARY_THING, id);
+                    mBookData.putLong(DBKeys.KEY_ESID_LIBRARY_THING, id);
                 } catch (@NonNull final NumberFormatException ignore) {
                     // ignore
                 }
@@ -568,12 +568,12 @@ class LibraryThingHandler
             mAuthors.add(Author.from(mBuilder.toString()));
 
         } else if (localName.equalsIgnoreCase(XML_TITLE)) {
-            addIfNotPresent(DBDefinitions.KEY_TITLE, mBuilder.toString());
+            addIfNotPresent(DBKeys.KEY_TITLE, mBuilder.toString());
 
         } else if (localName.equalsIgnoreCase(XML_FACT)) {
             switch (mFieldType) {
                 case FT_TITLE:
-                    addIfNotPresent(DBDefinitions.KEY_TITLE, mBuilder.toString());
+                    addIfNotPresent(DBKeys.KEY_TITLE, mBuilder.toString());
                     break;
 
                 case FT_SERIES:
@@ -587,14 +587,14 @@ class LibraryThingHandler
                     break;
 
                 case FT_DESCRIPTION:
-                    addIfNotPresent(DBDefinitions.KEY_DESCRIPTION, mBuilder.toString());
+                    addIfNotPresent(DBKeys.KEY_DESCRIPTION, mBuilder.toString());
                     break;
 
                 case FT_ORIGINAL_PUB_DATE:
-                    if (!mBookData.containsKey(DBDefinitions.KEY_DATE_FIRST_PUBLICATION)) {
+                    if (!mBookData.containsKey(DBKeys.KEY_DATE_FIRST_PUBLICATION)) {
                         final Matcher matcher = YEAR_PATTERN.matcher(mBuilder.toString());
                         if (matcher.find()) {
-                            mBookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                            mBookData.putString(DBKeys.KEY_DATE_FIRST_PUBLICATION,
                                                 matcher.group(1));
                         }
                     }

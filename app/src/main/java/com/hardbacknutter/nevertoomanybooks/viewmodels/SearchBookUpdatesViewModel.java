@@ -44,7 +44,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
@@ -161,37 +161,37 @@ public class SearchBookUpdatesViewModel
         addCoverField(global, R.string.lbl_cover_front, 0);
         addCoverField(global, R.string.lbl_cover_back, 1);
 
-        addField(global, DBDefinitions.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
-        addField(global, DBDefinitions.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
+        addField(global, DBKeys.KEY_TITLE, R.string.lbl_title, CopyIfBlank);
+        addField(global, DBKeys.KEY_ISBN, R.string.lbl_isbn, CopyIfBlank);
         addListField(global, Book.BKEY_AUTHOR_LIST, R.string.lbl_authors,
-                     DBDefinitions.KEY_FK_AUTHOR);
+                     DBKeys.KEY_FK_AUTHOR);
         addListField(global, Book.BKEY_SERIES_LIST, R.string.lbl_series_multiple,
-                     DBDefinitions.KEY_SERIES_TITLE);
-        addField(global, DBDefinitions.KEY_DESCRIPTION, R.string.lbl_description,
+                     DBKeys.KEY_SERIES_TITLE);
+        addField(global, DBKeys.KEY_DESCRIPTION, R.string.lbl_description,
                  CopyIfBlank);
 
         addListField(global, Book.BKEY_TOC_LIST, R.string.lbl_table_of_content,
-                     DBDefinitions.KEY_TOC_BITMASK);
+                     DBKeys.KEY_TOC_BITMASK);
 
         addListField(global, Book.BKEY_PUBLISHER_LIST, R.string.lbl_publishers,
-                     DBDefinitions.KEY_PUBLISHER_NAME);
-        addField(global, DBDefinitions.KEY_PRINT_RUN, R.string.lbl_print_run,
+                     DBKeys.KEY_PUBLISHER_NAME);
+        addField(global, DBKeys.KEY_PRINT_RUN, R.string.lbl_print_run,
                  CopyIfBlank);
-        addField(global, DBDefinitions.KEY_BOOK_DATE_PUBLISHED, R.string.lbl_date_published,
+        addField(global, DBKeys.KEY_BOOK_DATE_PUBLISHED, R.string.lbl_date_published,
                  CopyIfBlank);
-        addField(global, DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+        addField(global, DBKeys.KEY_DATE_FIRST_PUBLICATION,
                  R.string.lbl_first_publication,
                  CopyIfBlank);
 
         // list price has related DBDefinitions.KEY_PRICE_LISTED
-        addField(global, DBDefinitions.KEY_PRICE_LISTED, R.string.lbl_price_listed,
+        addField(global, DBKeys.KEY_PRICE_LISTED, R.string.lbl_price_listed,
                  CopyIfBlank);
 
-        addField(global, DBDefinitions.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
-        addField(global, DBDefinitions.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
-        addField(global, DBDefinitions.KEY_COLOR, R.string.lbl_color, CopyIfBlank);
-        addField(global, DBDefinitions.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
-        addField(global, DBDefinitions.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
+        addField(global, DBKeys.KEY_PAGES, R.string.lbl_pages, CopyIfBlank);
+        addField(global, DBKeys.KEY_FORMAT, R.string.lbl_format, CopyIfBlank);
+        addField(global, DBKeys.KEY_COLOR, R.string.lbl_color, CopyIfBlank);
+        addField(global, DBKeys.KEY_LANGUAGE, R.string.lbl_language, CopyIfBlank);
+        addField(global, DBKeys.KEY_GENRE, R.string.lbl_genre, CopyIfBlank);
 
         for (final SearchEngineRegistry.Config config : SearchEngineRegistry
                 .getInstance().getAll()) {
@@ -220,7 +220,7 @@ public class SearchBookUpdatesViewModel
         }
 
         // More than 10 books, check if the user actually wants covers
-        final FieldUsage covers = mFields.get(DBDefinitions.PREFS_IS_USED_COVER + ".0");
+        final FieldUsage covers = mFields.get(DBKeys.PREFS_IS_USED_COVER + ".0");
         return covers != null && covers.getUsage() == FieldUsage.Usage.Overwrite;
     }
 
@@ -264,7 +264,7 @@ public class SearchBookUpdatesViewModel
                               @StringRes final int nameResId,
                               @NonNull final String key) {
 
-        if (DBDefinitions.isUsed(global, key)) {
+        if (DBKeys.isUsed(global, key)) {
             mFields.put(fieldId, FieldUsage.createListField(fieldId, nameResId, global));
         }
     }
@@ -280,8 +280,8 @@ public class SearchBookUpdatesViewModel
                                @StringRes final int nameResId,
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
-        if (DBDefinitions.isCoverUsed(global, cIdx)) {
-            final String fieldId = DBDefinitions.PREFS_IS_USED_COVER + "." + cIdx;
+        if (DBKeys.isCoverUsed(global, cIdx)) {
+            final String fieldId = DBKeys.PREFS_IS_USED_COVER + "." + cIdx;
             mFields.put(fieldId, FieldUsage.create(fieldId, nameResId, global, CopyIfBlank));
         }
     }
@@ -299,7 +299,7 @@ public class SearchBookUpdatesViewModel
                           @StringRes final int nameResId,
                           @NonNull final FieldUsage.Usage defValue) {
 
-        if (DBDefinitions.isUsed(global, fieldId)) {
+        if (DBKeys.isUsed(global, fieldId)) {
             mFields.put(fieldId, FieldUsage.create(fieldId, nameResId, global, defValue));
         }
     }
@@ -361,14 +361,14 @@ public class SearchBookUpdatesViewModel
     public boolean startSearch(@NonNull final Context context) {
         // add related fields.
         // i.e. if we do the 'list-price' field, we'll also want its currency.
-        addRelatedField(DBDefinitions.KEY_PRICE_LISTED,
-                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+        addRelatedField(DBKeys.KEY_PRICE_LISTED,
+                        DBKeys.KEY_PRICE_LISTED_CURRENCY,
                         R.string.lbl_currency);
 
-        addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".0",
+        addRelatedField(DBKeys.PREFS_IS_USED_COVER + ".0",
                         Book.BKEY_TMP_FILE_SPEC[0],
                         R.string.lbl_cover_front);
-        addRelatedField(DBDefinitions.PREFS_IS_USED_COVER + ".1",
+        addRelatedField(DBKeys.PREFS_IS_USED_COVER + ".1",
                         Book.BKEY_TMP_FILE_SPEC[1],
                         R.string.lbl_cover_back);
 
@@ -401,7 +401,7 @@ public class SearchBookUpdatesViewModel
     private boolean nextBook(@NonNull final Context context) {
 
         try {
-            final int idCol = mCurrentCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
+            final int idCol = mCurrentCursor.getColumnIndex(DBKeys.KEY_PK_ID);
 
             // loop/skip until we start a search for a book.
             while (mCurrentCursor.moveToNext() && !mIsCancelled) {
@@ -417,14 +417,14 @@ public class SearchBookUpdatesViewModel
                 // Check which fields this book needs.
                 mCurrentFieldsWanted = filter(context, mFields);
 
-                final String title = mCurrentBook.getString(DBDefinitions.KEY_TITLE);
+                final String title = mCurrentBook.getString(DBKeys.KEY_TITLE);
 
                 if (!mCurrentFieldsWanted.isEmpty()) {
                     // remove all other criteria (this is CRUCIAL)
                     clearSearchCriteria();
                     boolean canSearch = false;
 
-                    final String isbnStr = mCurrentBook.getString(DBDefinitions.KEY_ISBN);
+                    final String isbnStr = mCurrentBook.getString(DBKeys.KEY_ISBN);
                     if (!isbnStr.isEmpty()) {
                         setIsbnSearchText(isbnStr, true);
                         canSearch = true;
@@ -564,19 +564,19 @@ public class SearchBookUpdatesViewModel
             // Commit the new data
             if (!bookData.isEmpty()) {
                 // Get the language, if there was one requested for updating.
-                String bookLang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
+                String bookLang = bookData.getString(DBKeys.KEY_LANGUAGE);
                 if (bookLang == null || bookLang.isEmpty()) {
                     // Otherwise add the original one.
-                    bookLang = mCurrentBook.getString(DBDefinitions.KEY_LANGUAGE);
+                    bookLang = mCurrentBook.getString(DBKeys.KEY_LANGUAGE);
                     if (!bookLang.isEmpty()) {
-                        bookData.putString(DBDefinitions.KEY_LANGUAGE, bookLang);
+                        bookData.putString(DBKeys.KEY_LANGUAGE, bookLang);
                     }
                 }
 
                 //IMPORTANT: note how we construct a NEW BOOK, with the DELTA-data which
                 // we want to commit to the existing book.
                 final Book delta = Book.from(bookData);
-                delta.putLong(DBDefinitions.KEY_PK_ID, mCurrentBookId);
+                delta.putLong(DBKeys.KEY_PK_ID, mCurrentBookId);
                 try {
                     mBookDao.update(context, delta, 0);
                 } catch (@NonNull final DaoWriteException e) {
@@ -626,7 +626,7 @@ public class SearchBookUpdatesViewModel
                     FileUtils.rename(downloadedFile, destination);
 
                 } catch (@NonNull final IOException e) {
-                    final String uuid = mCurrentBook.getString(DBDefinitions.KEY_BOOK_UUID);
+                    final String uuid = mCurrentBook.getString(DBKeys.KEY_BOOK_UUID);
                     Logger.error(context, TAG, e,
                                  "processSearchResultsCoverImage|uuid=" + uuid + "|cIdx=" + cIdx);
                 }
@@ -670,7 +670,7 @@ public class SearchBookUpdatesViewModel
 
             // if applicable, pass the first book for repositioning the list on screen
             if (mBookIdList != null && !mBookIdList.isEmpty()) {
-                results.putLong(DBDefinitions.KEY_PK_ID, mBookIdList.get(0));
+                results.putLong(DBKeys.KEY_PK_ID, mBookIdList.get(0));
             }
         }
 

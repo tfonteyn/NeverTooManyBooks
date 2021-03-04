@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 
 import static org.junit.Assert.assertEquals;
@@ -63,7 +64,7 @@ public class PublisherTest {
     @Test
     public void prunePublisherNames01() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final PublisherDao publisherDao = PublisherDao.getInstance();
+        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -111,7 +112,7 @@ public class PublisherTest {
     @Test
     public void prunePublisherNames02() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final PublisherDao publisherDao = PublisherDao.getInstance();
+        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;
@@ -164,7 +165,7 @@ public class PublisherTest {
     @Test
     public void prunePublisherNames03() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final PublisherDao publisherDao = PublisherDao.getInstance();
+        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
 
         final List<Publisher> list = new ArrayList<>();
         Publisher publisher;

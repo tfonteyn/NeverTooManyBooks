@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -31,6 +31,7 @@ import java.util.Locale;
 
 import org.junit.Test;
 
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 
 import static org.junit.Assert.assertEquals;
@@ -60,7 +61,7 @@ public class SeriesTest {
     @Test
     public void pruneSeries01List() {
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        final SeriesDao seriesDao = SeriesDao.getInstance();
+        final SeriesDao seriesDao = DaoLocator.getInstance().getSeriesDao();
 
         final List<Series> list = new ArrayList<>();
         Series series;

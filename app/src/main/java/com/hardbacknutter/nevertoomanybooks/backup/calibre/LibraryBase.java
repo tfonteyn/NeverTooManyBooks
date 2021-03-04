@@ -24,8 +24,8 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -51,8 +51,8 @@ abstract class LibraryBase
     LibraryBase(final long id,
                 @NonNull final DataHolder rowData) {
         mId = id;
-        mName = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME);
-        mMappedBookshelfId = rowData.getLong(DBDefinitions.KEY_FK_BOOKSHELF);
+        mName = rowData.getString(DBKeys.KEY_CALIBRE_LIBRARY_NAME);
+        mMappedBookshelfId = rowData.getLong(DBKeys.KEY_FK_BOOKSHELF);
     }
 
     LibraryBase(@NonNull final Parcel in) {
@@ -112,7 +112,7 @@ abstract class LibraryBase
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
 
         final Bookshelf bookshelf = new Bookshelf(mName, current.getStyle(context));
-        if (BookshelfDao.getInstance().insert(context, bookshelf) == -1) {
+        if (DaoLocator.getInstance().getBookshelfDao().insert(context, bookshelf) == -1) {
             throw new DaoWriteException("insert Bookshelf");
         }
 

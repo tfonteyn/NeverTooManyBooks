@@ -69,7 +69,7 @@ import java.util.function.Supplier;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
@@ -424,7 +424,7 @@ public class CoverHandler {
         if (mCoverBrowserIsbnSupplier != null) {
             isbnStr = mCoverBrowserIsbnSupplier.get();
         } else {
-            isbnStr = book.getString(DBDefinitions.KEY_ISBN);
+            isbnStr = book.getString(DBKeys.KEY_ISBN);
         }
 
         if (!isbnStr.isEmpty()) {

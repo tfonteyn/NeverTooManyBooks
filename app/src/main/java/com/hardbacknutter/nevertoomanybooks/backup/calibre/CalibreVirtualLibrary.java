@@ -23,7 +23,7 @@ import android.os.Parcel;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 
 public class CalibreVirtualLibrary
@@ -73,8 +73,8 @@ public class CalibreVirtualLibrary
                                  @NonNull final DataHolder rowData) {
         super(id, rowData);
 
-        mLibraryId = rowData.getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY);
-        mExpr = rowData.getString(DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR);
+        mLibraryId = rowData.getLong(DBKeys.KEY_FK_CALIBRE_LIBRARY);
+        mExpr = rowData.getString(DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR);
     }
 
     private CalibreVirtualLibrary(@NonNull final Parcel in) {

@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -38,14 +38,14 @@ public class SeriesCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBDefinitions.KEY_PK_ID, series.getId());
-        out.put(DBDefinitions.KEY_SERIES_TITLE, series.getTitle());
+        out.put(DBKeys.KEY_PK_ID, series.getId());
+        out.put(DBKeys.KEY_SERIES_TITLE, series.getTitle());
 
         if (!series.getNumber().isEmpty()) {
-            out.put(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, series.getNumber());
+            out.put(DBKeys.KEY_BOOK_NUM_IN_SERIES, series.getNumber());
         }
         if (series.isComplete()) {
-            out.put(DBDefinitions.KEY_SERIES_IS_COMPLETE, true);
+            out.put(DBKeys.KEY_SERIES_IS_COMPLETE, true);
         }
         return out;
     }
@@ -55,14 +55,14 @@ public class SeriesCoder
     public Series decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final Series series = new Series(data.getString(DBDefinitions.KEY_SERIES_TITLE));
-        series.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+        final Series series = new Series(data.getString(DBKeys.KEY_SERIES_TITLE));
+        series.setId(data.getLong(DBKeys.KEY_PK_ID));
 
-        if (data.has(DBDefinitions.KEY_BOOK_NUM_IN_SERIES)) {
-            series.setNumber(data.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES));
+        if (data.has(DBKeys.KEY_BOOK_NUM_IN_SERIES)) {
+            series.setNumber(data.getString(DBKeys.KEY_BOOK_NUM_IN_SERIES));
         }
-        if (data.has(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
-            series.setComplete(data.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE));
+        if (data.has(DBKeys.KEY_SERIES_IS_COMPLETE)) {
+            series.setComplete(data.getBoolean(DBKeys.KEY_SERIES_IS_COMPLETE));
         } else if (data.has("complete")) {
             series.setComplete(data.getBoolean("complete"));
         }

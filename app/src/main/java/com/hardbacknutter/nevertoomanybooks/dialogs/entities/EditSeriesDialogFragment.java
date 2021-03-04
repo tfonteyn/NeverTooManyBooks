@@ -36,7 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditSeriesBinding;
@@ -87,7 +88,7 @@ public class EditSeriesDialogFragment
                               @NonNull final Series series) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
-        args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
+        args.putParcelable(DBKeys.KEY_FK_SERIES, series);
 
         final DialogFragment frag = new EditSeriesDialogFragment();
         frag.setArguments(args);
@@ -101,7 +102,7 @@ public class EditSeriesDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mSeries = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_SERIES),
+        mSeries = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_SERIES),
                                          "KEY_FK_SERIES");
 
         if (savedInstanceState == null) {
@@ -109,8 +110,8 @@ public class EditSeriesDialogFragment
             mIsComplete = mSeries.isComplete();
         } else {
             //noinspection ConstantConditions
-            mTitle = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
-            mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE,
+            mTitle = savedInstanceState.getString(DBKeys.KEY_FK_SERIES);
+            mIsComplete = savedInstanceState.getBoolean(DBKeys.KEY_SERIES_IS_COMPLETE,
                                                         false);
         }
     }
@@ -125,7 +126,7 @@ public class EditSeriesDialogFragment
         final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                SeriesDao.getInstance().getNames());
+                DaoLocator.getInstance().getSeriesDao().getNames());
 
         mVb.seriesTitle.setText(mTitle);
         mVb.seriesTitle.setAdapter(adapter);
@@ -161,8 +162,7 @@ public class EditSeriesDialogFragment
         mSeries.setComplete(mIsComplete);
 
         final Context context = getContext();
-
-        final SeriesDao seriesDao = SeriesDao.getInstance();
+        final SeriesDao seriesDao = DaoLocator.getInstance().getSeriesDao();
 
         // There is no book involved here, so use the users Locale instead
         //noinspection ConstantConditions
@@ -219,8 +219,8 @@ public class EditSeriesDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_SERIES_TITLE, mTitle);
-        outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
+        outState.putString(DBKeys.KEY_SERIES_TITLE, mTitle);
+        outState.putBoolean(DBKeys.KEY_SERIES_IS_COMPLETE, mIsComplete);
     }
 
     @Override

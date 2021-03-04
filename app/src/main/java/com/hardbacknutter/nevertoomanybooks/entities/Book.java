@@ -49,15 +49,14 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
@@ -102,7 +101,7 @@ public class Book
         implements ItemWithTitle, AuthorWork {
 
     /**
-     * {@link DBDefinitions#KEY_TOC_BITMASK}
+     * {@link DBKeys#KEY_TOC_BITMASK}
      * <p>
      * 0b001 = indicates if a book has one (bit unset) or multiple (bit set) works
      * 0b010 = indicates if a book has one (bit unset) or multiple (bit set) authors.
@@ -226,7 +225,7 @@ public class Book
     public static Book from(@NonNull final Cursor bookCursor,
                             @NonNull final BookDao bookDao) {
         final Book book = new Book();
-        final int idCol = bookCursor.getColumnIndex(DBDefinitions.KEY_PK_ID);
+        final int idCol = bookCursor.getColumnIndex(DBKeys.KEY_PK_ID);
         final long bookId = bookCursor.getLong(idCol);
         book.load(bookId, bookCursor, bookDao);
         return book;
@@ -372,10 +371,10 @@ public class Book
         // KEY_DATE_LAST_UPDATED
         // KEY_BOOK_GOODREADS_LAST_SYNC_DATE
 
-        bookData.putString(DBDefinitions.KEY_TITLE,
-                           getString(DBDefinitions.KEY_TITLE));
-        bookData.putString(DBDefinitions.KEY_ISBN,
-                           getString(DBDefinitions.KEY_ISBN));
+        bookData.putString(DBKeys.KEY_TITLE,
+                           getString(DBKeys.KEY_TITLE));
+        bookData.putString(DBKeys.KEY_ISBN,
+                           getString(DBKeys.KEY_ISBN));
 
         bookData.putParcelableArrayList(BKEY_AUTHOR_LIST,
                                         getParcelableArrayList(BKEY_AUTHOR_LIST));
@@ -387,67 +386,67 @@ public class Book
                                         getParcelableArrayList(BKEY_TOC_LIST));
 
         // publication data
-        bookData.putString(DBDefinitions.KEY_PRINT_RUN,
-                           getString(DBDefinitions.KEY_PRINT_RUN));
-        bookData.putLong(DBDefinitions.KEY_TOC_BITMASK,
-                         getLong(DBDefinitions.KEY_TOC_BITMASK));
-        bookData.putString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
-                           getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED,
-                           getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
-                           getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        bookData.putString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
-                           getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
-        bookData.putString(DBDefinitions.KEY_FORMAT,
-                           getString(DBDefinitions.KEY_FORMAT));
-        bookData.putString(DBDefinitions.KEY_COLOR,
-                           getString(DBDefinitions.KEY_COLOR));
-        bookData.putString(DBDefinitions.KEY_GENRE,
-                           getString(DBDefinitions.KEY_GENRE));
-        bookData.putString(DBDefinitions.KEY_LANGUAGE,
-                           getString(DBDefinitions.KEY_LANGUAGE));
-        bookData.putString(DBDefinitions.KEY_PAGES,
-                           getString(DBDefinitions.KEY_PAGES));
+        bookData.putString(DBKeys.KEY_PRINT_RUN,
+                           getString(DBKeys.KEY_PRINT_RUN));
+        bookData.putLong(DBKeys.KEY_TOC_BITMASK,
+                         getLong(DBKeys.KEY_TOC_BITMASK));
+        bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
+                           getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        bookData.putDouble(DBKeys.KEY_PRICE_LISTED,
+                           getDouble(DBKeys.KEY_PRICE_LISTED));
+        bookData.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY,
+                           getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        bookData.putString(DBKeys.KEY_DATE_FIRST_PUBLICATION,
+                           getString(DBKeys.KEY_DATE_FIRST_PUBLICATION));
+        bookData.putString(DBKeys.KEY_FORMAT,
+                           getString(DBKeys.KEY_FORMAT));
+        bookData.putString(DBKeys.KEY_COLOR,
+                           getString(DBKeys.KEY_COLOR));
+        bookData.putString(DBKeys.KEY_GENRE,
+                           getString(DBKeys.KEY_GENRE));
+        bookData.putString(DBKeys.KEY_LANGUAGE,
+                           getString(DBKeys.KEY_LANGUAGE));
+        bookData.putString(DBKeys.KEY_PAGES,
+                           getString(DBKeys.KEY_PAGES));
         // common blurb
-        bookData.putString(DBDefinitions.KEY_DESCRIPTION,
-                           getString(DBDefinitions.KEY_DESCRIPTION));
+        bookData.putString(DBKeys.KEY_DESCRIPTION,
+                           getString(DBKeys.KEY_DESCRIPTION));
 
         // partially edition info, partially use-owned info.
-        bookData.putLong(DBDefinitions.KEY_EDITION_BITMASK,
-                         getLong(DBDefinitions.KEY_EDITION_BITMASK));
+        bookData.putLong(DBKeys.KEY_EDITION_BITMASK,
+                         getLong(DBKeys.KEY_EDITION_BITMASK));
 
         // user data
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DBDefinitions.KEY_SIGNED,
-                         getLong(DBDefinitions.KEY_SIGNED));
+        bookData.putLong(DBKeys.KEY_SIGNED,
+                         getLong(DBKeys.KEY_SIGNED));
 
         // put/getBoolean is 'right', but as a copy, might as well just use long
-        bookData.putLong(DBDefinitions.KEY_READ,
-                         getLong(DBDefinitions.KEY_READ));
+        bookData.putLong(DBKeys.KEY_READ,
+                         getLong(DBKeys.KEY_READ));
 
-        bookData.putDouble(DBDefinitions.KEY_RATING,
-                           getDouble(DBDefinitions.KEY_RATING));
+        bookData.putDouble(DBKeys.KEY_RATING,
+                           getDouble(DBKeys.KEY_RATING));
 
-        bookData.putString(DBDefinitions.KEY_PRIVATE_NOTES,
-                           getString(DBDefinitions.KEY_PRIVATE_NOTES));
+        bookData.putString(DBKeys.KEY_PRIVATE_NOTES,
+                           getString(DBKeys.KEY_PRIVATE_NOTES));
 
-        bookData.putInt(DBDefinitions.KEY_BOOK_CONDITION,
-                        getInt(DBDefinitions.KEY_BOOK_CONDITION));
-        bookData.putInt(DBDefinitions.KEY_BOOK_CONDITION_COVER,
-                        getInt(DBDefinitions.KEY_BOOK_CONDITION_COVER));
+        bookData.putInt(DBKeys.KEY_BOOK_CONDITION,
+                        getInt(DBKeys.KEY_BOOK_CONDITION));
+        bookData.putInt(DBKeys.KEY_BOOK_CONDITION_COVER,
+                        getInt(DBKeys.KEY_BOOK_CONDITION_COVER));
 
-        bookData.putString(DBDefinitions.KEY_READ_START,
-                           getString(DBDefinitions.KEY_READ_START));
-        bookData.putString(DBDefinitions.KEY_READ_END,
-                           getString(DBDefinitions.KEY_READ_END));
-        bookData.putString(DBDefinitions.KEY_DATE_ACQUIRED,
-                           getString(DBDefinitions.KEY_DATE_ACQUIRED));
-        bookData.putDouble(DBDefinitions.KEY_PRICE_PAID,
-                           getDouble(DBDefinitions.KEY_PRICE_PAID));
-        bookData.putString(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                           getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY));
+        bookData.putString(DBKeys.KEY_READ_START,
+                           getString(DBKeys.KEY_READ_START));
+        bookData.putString(DBKeys.KEY_READ_END,
+                           getString(DBKeys.KEY_READ_END));
+        bookData.putString(DBKeys.KEY_DATE_ACQUIRED,
+                           getString(DBKeys.KEY_DATE_ACQUIRED));
+        bookData.putDouble(DBKeys.KEY_PRICE_PAID,
+                           getDouble(DBKeys.KEY_PRICE_PAID));
+        bookData.putString(DBKeys.KEY_PRICE_PAID_CURRENCY,
+                           getString(DBKeys.KEY_PRICE_PAID_CURRENCY));
 
         return bookData;
     }
@@ -484,7 +483,7 @@ public class Book
             throws ExternalStorageException {
         final File coverDir = AppDir.Covers.get(context);
 
-        final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = getString(DBKeys.KEY_BOOK_UUID);
 
         final String name;
         if (cIdx > 0) {
@@ -511,7 +510,7 @@ public class Book
     public File getUuidCoverFile(@NonNull final Context context,
                                  @IntRange(from = 0, to = 1) final int cIdx) {
 
-        final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = getString(DBKeys.KEY_BOOK_UUID);
         return getUuidCoverFile(context, uuid, cIdx);
     }
 
@@ -523,7 +522,7 @@ public class Book
     @NonNull
     @Override
     public PartialDate getFirstPublicationDate() {
-        return new PartialDate(getString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
+        return new PartialDate(getString(DBKeys.KEY_DATE_FIRST_PUBLICATION));
     }
 
     /**
@@ -539,7 +538,7 @@ public class Book
     @Nullable
     public LocalDateTime getLastUpdateUtcDate(@NonNull final Context context) {
         return DateParser.getInstance(context)
-                         .parseISO(getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
+                         .parseISO(getString(DBKeys.KEY_UTC_LAST_UPDATED));
     }
 
     /**
@@ -558,7 +557,7 @@ public class Book
      */
     @Override
     public long getId() {
-        return getLong(DBDefinitions.KEY_PK_ID);
+        return getLong(DBKeys.KEY_PK_ID);
     }
 
     /**
@@ -568,7 +567,7 @@ public class Book
      */
     @Override
     public void setId(final long id) {
-        putLong(DBDefinitions.KEY_PK_ID, id);
+        putLong(DBKeys.KEY_PK_ID, id);
     }
 
     /**
@@ -579,7 +578,7 @@ public class Book
     @Override
     @NonNull
     public String getTitle() {
-        return getString(DBDefinitions.KEY_TITLE);
+        return getString(DBKeys.KEY_TITLE);
     }
 
     /**
@@ -624,15 +623,15 @@ public class Book
                                       @NonNull final Locale fallbackLocale,
                                       final boolean updateLanguage) {
         Locale bookLocale = null;
-        if (contains(DBDefinitions.KEY_LANGUAGE)) {
-            final String lang = getString(DBDefinitions.KEY_LANGUAGE);
+        if (contains(DBKeys.KEY_LANGUAGE)) {
+            final String lang = getString(DBKeys.KEY_LANGUAGE);
 
             bookLocale = AppLocale.getInstance().getLocale(context, lang);
             if (bookLocale == null) {
                 return fallbackLocale;
 
             } else if (updateLanguage) {
-                putString(DBDefinitions.KEY_LANGUAGE, lang);
+                putString(DBKeys.KEY_LANGUAGE, lang);
             }
         }
 
@@ -662,7 +661,7 @@ public class Book
      */
     public void refreshAuthorList(@NonNull final Context context) {
 
-        final AuthorDao authorDao = AuthorDao.getInstance();
+        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
         final Locale bookLocale = getLocale(context);
         final ArrayList<Author> list = getParcelableArrayList(BKEY_AUTHOR_LIST);
         for (final Author author : list) {
@@ -688,8 +687,7 @@ public class Book
      */
     public void refreshSeriesList(@NonNull final Context context) {
 
-        final SeriesDao seriesDao = SeriesDao.getInstance();
-
+        final SeriesDao seriesDao = DaoLocator.getInstance().getSeriesDao();
         final Locale bookLocale = getLocale(context);
         final ArrayList<Series> list = getParcelableArrayList(BKEY_SERIES_LIST);
         for (final Series series : list) {
@@ -715,7 +713,7 @@ public class Book
      */
     public void refreshPublishersList(@NonNull final Context context) {
 
-        final PublisherDao publisherDao = PublisherDao.getInstance();
+        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
         final Locale bookLocale = getLocale(context);
         final ArrayList<Publisher> list = getParcelableArrayList(BKEY_PUBLISHER_LIST);
         for (final Publisher publisher : list) {
@@ -731,8 +729,10 @@ public class Book
 
         } else {
             // but if not, go explicitly fetch it.
-            final CalibreLibrary library = CalibreLibraryDao.getInstance().getLibrary(
-                    getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY));
+            final CalibreLibrary library = DaoLocator
+                    .getInstance().getCalibreLibraryDao()
+                    .getLibrary(getLong(DBKeys.KEY_FK_CALIBRE_LIBRARY));
+
             if (library != null) {
                 // store for reuse
                 putParcelable(BKEY_CALIBRE_LIBRARY, library);
@@ -743,15 +743,15 @@ public class Book
 
     public void setCalibreLibrary(@Nullable final CalibreLibrary library) {
         if (library != null) {
-            putLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY, library.getId());
+            putLong(DBKeys.KEY_FK_CALIBRE_LIBRARY, library.getId());
             putParcelable(BKEY_CALIBRE_LIBRARY, library);
         } else {
-            remove(DBDefinitions.KEY_FK_CALIBRE_LIBRARY);
+            remove(DBKeys.KEY_FK_CALIBRE_LIBRARY);
             remove(BKEY_CALIBRE_LIBRARY);
 
-            remove(DBDefinitions.KEY_CALIBRE_BOOK_ID);
-            remove(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
-            remove(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+            remove(DBKeys.KEY_CALIBRE_BOOK_ID);
+            remove(DBKeys.KEY_CALIBRE_BOOK_UUID);
+            remove(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT);
         }
     }
 
@@ -763,17 +763,17 @@ public class Book
     @NonNull
     public String getLoanee() {
         // We SHOULD have it...
-        if (contains(DBDefinitions.KEY_LOANEE)) {
-            return getString(DBDefinitions.KEY_LOANEE);
+        if (contains(DBKeys.KEY_LOANEE)) {
+            return getString(DBKeys.KEY_LOANEE);
 
         } else {
             // but if not, go explicitly fetch it.
-            String loanee = LoaneeDao.getInstance().getLoaneeByBookId(getId());
+            String loanee = DaoLocator.getInstance().getLoaneeDao().getLoaneeByBookId(getId());
             if (loanee == null) {
                 loanee = "";
             }
             // store for reuse
-            putString(DBDefinitions.KEY_LOANEE, loanee);
+            putString(DBKeys.KEY_LOANEE, loanee);
             return loanee;
         }
     }
@@ -790,7 +790,7 @@ public class Book
      * @return the new 'read' status. If the update failed, this will be the unchanged status.
      */
     public boolean toggleRead(@NonNull final BookDao bookDao) {
-        return setRead(bookDao, !getBoolean(DBDefinitions.KEY_READ));
+        return setRead(bookDao, !getBoolean(DBKeys.KEY_READ));
     }
 
     /**
@@ -804,7 +804,7 @@ public class Book
      */
     private boolean setRead(@NonNull final BookDao bookDao,
                             final boolean isRead) {
-        final boolean old = getBoolean(DBDefinitions.KEY_READ);
+        final boolean old = getBoolean(DBKeys.KEY_READ);
 
         if (bookDao.setBookRead(this, isRead)) {
             return isRead;
@@ -833,8 +833,8 @@ public class Book
      * @param context Current context
      */
     public void ensureLanguage(@NonNull final Context context) {
-        if (getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
-            putString(DBDefinitions.KEY_LANGUAGE,
+        if (getString(DBKeys.KEY_LANGUAGE).isEmpty()) {
+            putString(DBKeys.KEY_LANGUAGE,
                       AppLocale.getInstance().getUserLocale(context).getISO3Language());
         }
     }
@@ -844,30 +844,30 @@ public class Book
      */
     public void addValidators() {
 
-        addValidator(DBDefinitions.KEY_TITLE,
+        addValidator(DBKeys.KEY_TITLE,
                      NON_BLANK_VALIDATOR, R.string.lbl_title);
         addValidator(BKEY_AUTHOR_LIST,
                      NON_BLANK_VALIDATOR, R.string.lbl_author);
 
-        addValidator(DBDefinitions.KEY_LANGUAGE,
+        addValidator(DBKeys.KEY_LANGUAGE,
                      NON_BLANK_VALIDATOR, R.string.lbl_language);
 
-        addValidator(DBDefinitions.KEY_EDITION_BITMASK,
+        addValidator(DBKeys.KEY_EDITION_BITMASK,
                      LONG_VALIDATOR, R.string.lbl_edition);
-        addValidator(DBDefinitions.KEY_TOC_BITMASK,
+        addValidator(DBKeys.KEY_TOC_BITMASK,
                      LONG_VALIDATOR, R.string.lbl_table_of_content);
 
-        addValidator(DBDefinitions.KEY_PRICE_LISTED,
+        addValidator(DBKeys.KEY_PRICE_LISTED,
                      BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_listed);
-        addValidator(DBDefinitions.KEY_PRICE_PAID,
+        addValidator(DBKeys.KEY_PRICE_PAID,
                      BLANK_OR_DOUBLE_VALIDATOR, R.string.lbl_price_paid);
 
         addCrossValidator((context, book) -> {
-            final String start = book.getString(DBDefinitions.KEY_READ_START);
+            final String start = book.getString(DBKeys.KEY_READ_START);
             if (start.isEmpty()) {
                 return;
             }
-            final String end = book.getString(DBDefinitions.KEY_READ_END);
+            final String end = book.getString(DBKeys.KEY_READ_END);
             if (end.isEmpty()) {
                 return;
             }
@@ -894,9 +894,10 @@ public class Book
                 context, AppLocale.getInstance().getUserLocale(context), true);
 
         // Handle TITLE
-        if (contains(DBDefinitions.KEY_TITLE)) {
+        if (contains(DBKeys.KEY_TITLE)) {
             final String obTitle = reorderTitleForSorting(context, bookLocale);
-            putString(DBDefinitions.KEY_TITLE_OB, BaseDao.encodeOrderByColumn(obTitle, bookLocale));
+            putString(DBKeys.KEY_TITLE_OB, BaseDaoImpl
+                    .encodeOrderByColumn(obTitle, bookLocale));
         }
 
         // Handle TOC_BITMASK only, no handling of actual titles here,
@@ -904,24 +905,24 @@ public class Book
         final ArrayList<TocEntry> tocEntries = getParcelableArrayList(BKEY_TOC_LIST);
         if (!tocEntries.isEmpty()) {
             @TocBits
-            long type = getLong(DBDefinitions.KEY_TOC_BITMASK);
+            long type = getLong(DBKeys.KEY_TOC_BITMASK);
             if (TocEntry.hasMultipleAuthors(tocEntries)) {
                 type |= TOC_MULTIPLE_AUTHORS;
             }
-            putLong(DBDefinitions.KEY_TOC_BITMASK, type);
+            putLong(DBKeys.KEY_TOC_BITMASK, type);
         }
 
         // make sure we only store valid bits
-        if (contains(DBDefinitions.KEY_EDITION_BITMASK)) {
-            final int editions = getInt(DBDefinitions.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
-            putInt(DBDefinitions.KEY_EDITION_BITMASK, editions);
+        if (contains(DBKeys.KEY_EDITION_BITMASK)) {
+            final int editions = getInt(DBKeys.KEY_EDITION_BITMASK) & Edition.BITMASK_ALL;
+            putInt(DBKeys.KEY_EDITION_BITMASK, editions);
         }
 
         // cleanup/build all price related fields
-        preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_LISTED,
-                        DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
-        preprocessPrice(bookLocale, DBDefinitions.KEY_PRICE_PAID,
-                        DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+        preprocessPrice(bookLocale, DBKeys.KEY_PRICE_LISTED,
+                        DBKeys.KEY_PRICE_LISTED_CURRENCY);
+        preprocessPrice(bookLocale, DBKeys.KEY_PRICE_PAID,
+                        DBKeys.KEY_PRICE_PAID_CURRENCY);
 
         // replace 'T' by ' ' and truncate pure date fields if needed
         preprocessDates();
@@ -1165,7 +1166,7 @@ public class Book
             }
         } else {
             // Get the permanent, UUID based, cover file for this book.
-            final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+            final String uuid = getString(DBKeys.KEY_BOOK_UUID);
             if (!uuid.isEmpty()) {
                 final String name;
                 if (cIdx > 0) {
@@ -1293,7 +1294,7 @@ public class Book
 
         } else {
             // we're in read-only mode, use the UUID storage based file name
-            final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+            final String uuid = getString(DBKeys.KEY_BOOK_UUID);
             SanityCheck.requireValue(uuid, "uuid");
 
             // the file to return from this method, after the incoming file has been processed
@@ -1345,7 +1346,7 @@ public class Book
                 FileUtils.delete(getUuidCoverFile(context, cIdx));
                 if (ImageUtils.isImageCachingEnabled(context)) {
                     // We delete *all* files related to this book from the cache.
-                    CoverCacheDao.getInstance(context).delete(context, uuid);
+                    DaoLocator.getInstance().getCoverCacheDao().delete(uuid);
                 }
             }
 
@@ -1366,7 +1367,7 @@ public class Book
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public boolean storeCovers(@NonNull final Context context) {
 
-        final String uuid = getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = getString(DBKeys.KEY_BOOK_UUID);
 
         if (BuildConfig.DEBUG /* always */) {
             // the UUID should always be valid here
@@ -1388,7 +1389,7 @@ public class Book
                     // Delete from the cache. And yes, we also delete the ones
                     // where != index, but we don't care; it's a cache.
                     if (ImageUtils.isImageCachingEnabled(context)) {
-                        CoverCacheDao.getInstance(context).delete(context, uuid);
+                        DaoLocator.getInstance().getCoverCacheDao().delete(uuid);
                     }
                 } else {
                     // Rename the temp file to the uuid permanent file name
@@ -1427,8 +1428,8 @@ public class Book
      */
     @NonNull
     public Intent getShareIntent(@NonNull final Context context) {
-        final String title = getString(DBDefinitions.KEY_TITLE);
-        final String author = getString(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+        final String title = getString(DBKeys.KEY_TITLE);
+        final String author = getString(DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Series series = getPrimarySeries();
         final String seriesStr;
@@ -1440,7 +1441,7 @@ public class Book
         }
 
         //remove trailing 0's
-        final double rating = getDouble(DBDefinitions.KEY_RATING);
+        final double rating = getDouble(DBKeys.KEY_RATING);
         final String ratingStr;
         if (rating > 0) {
             // force rounding

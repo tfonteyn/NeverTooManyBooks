@@ -30,83 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.App;
-import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
-import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_TOC_ENTRY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOK_TOC_ENTRIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
-
-/**
- * Note the insert + update method reside in {@link BookDao} as they are only
- * ever needed there + as they are always called in a loop, benefit from the caching of statements.
- */
-public final class TocEntryDao
+public interface TocEntryDao
         extends BaseDao {
-
-    /** Log tag. */
-    private static final String TAG = "TocEntryDao";
-
-    /** All Books (id only) for a given TocEntry. */
-    private static final String SELECT_BOOK_IDS_BY_TOC_ENTRY_ID =
-            SELECT_ + KEY_FK_BOOK + _FROM_ + TBL_BOOK_TOC_ENTRIES.getName()
-            + _WHERE_ + KEY_FK_TOC_ENTRY + "=?";
-
-    /** All Books (id+title (as a pair) only) for a given TocEntry. */
-    private static final String SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID =
-            SELECT_ + TBL_BOOKS.dot(KEY_PK_ID) + ',' + TBL_BOOKS.dot(KEY_TITLE)
-            + _FROM_ + TBL_BOOK_TOC_ENTRIES.ref() + TBL_BOOK_TOC_ENTRIES.join(TBL_BOOKS)
-            + _WHERE_ + TBL_BOOK_TOC_ENTRIES.dot(KEY_FK_TOC_ENTRY) + "=?"
-            + _ORDER_BY_ + TBL_BOOKS.dot(KEY_TITLE_OB);
-
-    /** {@link TocEntry}, all columns. */
-    private static final String SELECT_ALL = "SELECT * FROM " + TBL_TOC_ENTRIES.getName();
-
-    /**
-     * Get the id of a {@link TocEntry} by Title.
-     * The lookup is by EQUALITY and CASE-SENSITIVE.
-     * Search KEY_TITLE_OB on both "The Title" and "Title, The"
-     */
-    private static final String FIND_ID =
-            SELECT_ + KEY_PK_ID + _FROM_ + TBL_TOC_ENTRIES.getName()
-            + _WHERE_ + KEY_FK_AUTHOR + "=?"
-            + " AND (" + KEY_TITLE_OB + "=? " + _COLLATION
-            + _OR_ + KEY_TITLE_OB + "=?" + _COLLATION + ')';
-
-    /** Delete a {@link TocEntry}. */
-    private static final String DELETE_BY_ID =
-            DELETE_FROM_ + TBL_TOC_ENTRIES.getName() + _WHERE_ + KEY_PK_ID + "=?";
-
-    /** Singleton. */
-    private static TocEntryDao sInstance;
-
-    /**
-     * Constructor.
-     *
-     * @param context Current context
-     * @param logTag  of this DAO for logging.
-     */
-    private TocEntryDao(@NonNull final Context context,
-                        @NonNull final String logTag) {
-        super(context, logTag);
-    }
-
-    public static TocEntryDao getInstance() {
-        if (sInstance == null) {
-            sInstance = new TocEntryDao(App.getDatabaseContext(), TAG);
-        }
-
-        return sInstance;
-    }
 
     /**
      * Tries to find the item in the database using all or some of its fields (except the id).
@@ -124,18 +51,10 @@ public final class TocEntryDao
      *
      * @return the item id (also set on the item).
      */
-    public long fixId(@NonNull final Context context,
-                      @NonNull final TocEntry tocEntry,
-                      final boolean lookupLocale,
-                      @NonNull final Locale bookLocale) {
-
-        AuthorDao.getInstance().fixId(context, tocEntry.getPrimaryAuthor(),
-                                      lookupLocale, bookLocale);
-
-        final long id = find(context, tocEntry, lookupLocale, bookLocale);
-        tocEntry.setId(id);
-        return id;
-    }
+    long fixId(@NonNull Context context,
+               @NonNull TocEntry tocEntry,
+               boolean lookupLocale,
+               @NonNull Locale bookLocale);
 
     /**
      * Return the TocEntry id. The incoming object is not modified.
@@ -151,27 +70,10 @@ public final class TocEntryDao
      *
      * @return the id, or 0 (i.e. 'new') when not found
      */
-    public long find(@NonNull final Context context,
-                     @NonNull final TocEntry tocEntry,
-                     final boolean lookupLocale,
-                     @NonNull final Locale bookLocale) {
-
-        final Locale tocLocale;
-        if (lookupLocale) {
-            tocLocale = tocEntry.getLocale(context, bookLocale);
-        } else {
-            tocLocale = bookLocale;
-        }
-
-        final String obTitle = tocEntry.reorderTitleForSorting(context, tocLocale);
-
-        try (SynchronizedStatement stmt = mDb.compileStatement(FIND_ID)) {
-            stmt.bindLong(1, tocEntry.getPrimaryAuthor().getId());
-            stmt.bindString(2, encodeOrderByColumn(tocEntry.getTitle(), tocLocale));
-            stmt.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
-            return stmt.simpleQueryForLongOrZero();
-        }
-    }
+    long find(@NonNull Context context,
+              @NonNull TocEntry tocEntry,
+              boolean lookupLocale,
+              @NonNull Locale bookLocale);
 
     /**
      * Get all TOC entries; mainly for the purpose of backups.
@@ -179,9 +81,7 @@ public final class TocEntryDao
      * @return Cursor over all TOC entries
      */
     @NonNull
-    public Cursor fetchAll() {
-        return mDb.rawQuery(SELECT_ALL, null);
-    }
+    Cursor fetchAll();
 
     /**
      * Return a list of paired book-id and book-title 's for the given TOC id.
@@ -191,18 +91,7 @@ public final class TocEntryDao
      * @return list of id/titles of books.
      */
     @NonNull
-    public List<Pair<Long, String>> getBookTitles(@IntRange(from = 1) final long id) {
-        final List<Pair<Long, String>> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_TITLES_BY_TOC_ENTRY_ID,
-                                          new String[]{String.valueOf(id)})) {
-            final DataHolder rowData = new CursorRow(cursor);
-            while (cursor.moveToNext()) {
-                list.add(new Pair<>(rowData.getLong(KEY_PK_ID),
-                                    rowData.getString(KEY_TITLE)));
-            }
-        }
-        return list;
-    }
+    List<Pair<Long, String>> getBookTitles(@IntRange(from = 1) long id);
 
     /**
      * Get a list of book ID's (most often just the one) in which this TocEntry (story) is present.
@@ -212,16 +101,7 @@ public final class TocEntryDao
      * @return list with book ID's
      */
     @NonNull
-    public ArrayList<Long> getBookIds(final long tocId) {
-        final ArrayList<Long> list = new ArrayList<>();
-        try (Cursor cursor = mDb.rawQuery(SELECT_BOOK_IDS_BY_TOC_ENTRY_ID,
-                                          new String[]{String.valueOf(tocId)})) {
-            while (cursor.moveToNext()) {
-                list.add(cursor.getLong(0));
-            }
-        }
-        return list;
-    }
+    ArrayList<Long> getBookIds(long tocId);
 
     /**
      * Delete the passed {@link TocEntry}.
@@ -231,21 +111,7 @@ public final class TocEntryDao
      *
      * @return {@code true} if a row was deleted
      */
-    public boolean delete(@NonNull final Context context,
-                          @NonNull final TocEntry tocEntry) {
+    boolean delete(@NonNull Context context,
+                   @NonNull TocEntry tocEntry);
 
-        final int rowsAffected;
-        try (SynchronizedStatement stmt = mDb.compileStatement(DELETE_BY_ID)) {
-            stmt.bindLong(1, tocEntry.getId());
-            rowsAffected = stmt.executeUpdateDelete();
-        }
-
-        if (rowsAffected > 0) {
-            tocEntry.setId(0);
-            try (BookDao bookDao = new BookDao(context, TAG)) {
-                bookDao.repositionTocEntries(context);
-            }
-        }
-        return rowsAffected == 1;
-    }
 }

@@ -45,7 +45,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
 import com.hardbacknutter.nevertoomanybooks.backup.base.InvalidArchiveException;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -168,8 +168,8 @@ public class JsonArchiveWriterTest {
             bookDao.deleteBook(context, deletedBookId);
 
             final Book book = Book.from(modifiedBookId, bookDao);
-            book.putString(DBDefinitions.KEY_PRIVATE_NOTES,
-                           "MODIFIED" + book.getString(DBDefinitions.KEY_PRIVATE_NOTES));
+            book.putString(DBKeys.KEY_PRIVATE_NOTES,
+                           "MODIFIED" + book.getString(DBKeys.KEY_PRIVATE_NOTES));
             bookDao.update(context, book, 0);
         }
 

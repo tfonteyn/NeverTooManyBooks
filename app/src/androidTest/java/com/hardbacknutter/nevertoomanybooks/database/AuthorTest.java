@@ -58,8 +58,7 @@ public class AuthorTest
         boolean updateOk;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
-        final AuthorDao authorDao = AuthorDao.getInstance();
+        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
         author[0] = Author.from(AuthorFullName(0));
         authorId[0] = authorDao.insert(context, author[0]);
@@ -103,8 +102,7 @@ public class AuthorTest
         final Author tmpAuthor;
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
-
-        final AuthorDao authorDao = AuthorDao.getInstance();
+        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
         // rename an author
         // UPDATE in the database
@@ -168,8 +166,7 @@ public class AuthorTest
 
         final Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         try (BookDao bookDao = new BookDao(context, "renameAuthorWithTocs")) {
-
-            final AuthorDao authorDao = AuthorDao.getInstance();
+            final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
             // rename an author
             // UPDATE in the database

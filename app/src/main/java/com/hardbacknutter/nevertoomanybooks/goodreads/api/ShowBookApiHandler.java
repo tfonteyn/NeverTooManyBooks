@@ -37,7 +37,7 @@ import java.util.function.Consumer;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -173,11 +173,11 @@ public abstract class ShowBookApiHandler
      */
     private final Consumer<ElementContext> mHandlePopularShelf = ec -> {
         // only accept one
-        if (!mBookData.containsKey(DBDefinitions.KEY_GENRE)) {
+        if (!mBookData.containsKey(DBKeys.KEY_GENRE)) {
             // Leave "name" as string... it's an attribute for THIS tag.
             final String name = ec.getAttributes().getValue("name");
             if (name != null && sGenreExclusions.contains(name.toLowerCase(Locale.ENGLISH))) {
-                mBookData.putString(DBDefinitions.KEY_GENRE, name);
+                mBookData.putString(DBKeys.KEY_GENRE, name);
             }
         }
     };
@@ -324,7 +324,7 @@ public abstract class ShowBookApiHandler
         if (mBookData.containsKey(SiteField.ISBN13)) {
             final String isbnStr = mBookData.getString(SiteField.ISBN13);
             if (isbnStr != null && isbnStr.length() == 13) {
-                mBookData.putString(DBDefinitions.KEY_ISBN, isbnStr);
+                mBookData.putString(DBKeys.KEY_ISBN, isbnStr);
                 mBookData.remove(SiteField.ISBN13);
             }
         }
@@ -348,24 +348,24 @@ public abstract class ShowBookApiHandler
                            SiteField.ORIG_PUBLICATION_YEAR,
                            SiteField.ORIG_PUBLICATION_MONTH,
                            SiteField.ORIG_PUBLICATION_DAY,
-                           DBDefinitions.KEY_DATE_FIRST_PUBLICATION);
+                           DBKeys.KEY_DATE_FIRST_PUBLICATION);
 
         // Build the publication date based on the components
         ApiUtils.buildDate(mBookData,
                            SiteField.PUBLICATION_YEAR,
                            SiteField.PUBLICATION_MONTH,
                            SiteField.PUBLICATION_DAY,
-                           DBDefinitions.KEY_BOOK_DATE_PUBLISHED);
+                           DBKeys.KEY_BOOK_DATE_PUBLISHED);
 
         // is it an eBook ? Overwrite the format key
         if (mBookData.containsKey(SiteField.IS_EBOOK)
             && mBookData.getBoolean(SiteField.IS_EBOOK)) {
             mBookData.remove(SiteField.IS_EBOOK);
-            mBookData.putString(DBDefinitions.KEY_FORMAT, mEBookString);
+            mBookData.putString(DBKeys.KEY_FORMAT, mEBookString);
         }
 
-        if (mBookData.containsKey(DBDefinitions.KEY_LANGUAGE)) {
-            String source = mBookData.getString(DBDefinitions.KEY_LANGUAGE);
+        if (mBookData.containsKey(DBKeys.KEY_LANGUAGE)) {
+            String source = mBookData.getString(DBKeys.KEY_LANGUAGE);
             if (source != null && !source.isEmpty()) {
                 final Locale userLocale = AppLocale.getInstance().getUserLocale(mAppContext);
                 // Goodreads sometimes uses the 2-char code with region code (e.g. "en_GB")
@@ -373,12 +373,12 @@ public abstract class ShowBookApiHandler
                 // and sometimes the alternative 3-char code for specific languages.
                 source = Languages.getInstance().toBibliographic(userLocale, source);
                 // store the iso3
-                mBookData.putString(DBDefinitions.KEY_LANGUAGE, source);
+                mBookData.putString(DBKeys.KEY_LANGUAGE, source);
             }
         }
 
-        if (mBookData.containsKey(DBDefinitions.KEY_RATING)) {
-            double rating = mBookData.getDouble(DBDefinitions.KEY_RATING);
+        if (mBookData.containsKey(DBKeys.KEY_RATING)) {
+            double rating = mBookData.getDouble(DBKeys.KEY_RATING);
             if (rating == 0) {
                 // we did not have a personal rating, see if we have the average
                 if (mBookData.containsKey(SiteField.AVERAGE_RATING)) {
@@ -386,10 +386,10 @@ public abstract class ShowBookApiHandler
                     mBookData.remove(SiteField.AVERAGE_RATING);
                     if (rating > 0) {
                         // use the average rating
-                        mBookData.putDouble(DBDefinitions.KEY_RATING, rating);
+                        mBookData.putDouble(DBKeys.KEY_RATING, rating);
                     } else {
                         // unlikely: no personal and no average, clear it.
-                        mBookData.remove(DBDefinitions.KEY_RATING);
+                        mBookData.remove(DBKeys.KEY_RATING);
                     }
                 }
             }
@@ -415,7 +415,7 @@ public abstract class ShowBookApiHandler
 
         // It's tempting to always replace KEY_TITLE with SiteField.ORIG_TITLE,
         // but that does bad things to translations (it uses the original language)
-        if (mBookData.containsKey(DBDefinitions.KEY_TITLE)) {
+        if (mBookData.containsKey(DBKeys.KEY_TITLE)) {
             // Cleanup the title by removing Series name, if present
             // Example: "<title>The Anome (Durdane, #1)</title>"
             SearchEngineBase.checkForSeriesNameInTitle(mBookData);
@@ -599,7 +599,7 @@ public abstract class ShowBookApiHandler
         // Goodreads specific ID fields
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ID)
-                 .setEndAction(mHandleLong, DBDefinitions.KEY_ESID_GOODREADS_BOOK);
+                 .setEndAction(mHandleLong, DBKeys.KEY_ESID_GOODREADS_BOOK);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK,
                               XmlTags.XML_ID)
@@ -612,12 +612,12 @@ public abstract class ShowBookApiHandler
         // Amazon ID: <asin></asin>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ASIN)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_ESID_ASIN);
+                 .setEndAction(mHandleText, DBKeys.KEY_ESID_ASIN);
 
         // <isbn>0689840926</isbn>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ISBN)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_ISBN);
+                 .setEndAction(mHandleText, DBKeys.KEY_ISBN);
         // <isbn13>9780689840920</isbn13>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_ISBN_13)
@@ -627,7 +627,7 @@ public abstract class ShowBookApiHandler
         // <title>Hatchet (Hatchet, #1)</title>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_TITLE)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_TITLE);
+                 .setEndAction(mHandleText, DBKeys.KEY_TITLE);
         // <original_title>Hatchet</original_title>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_WORK, XmlTags.XML_ORIGINAL_TITLE)
@@ -756,13 +756,13 @@ public abstract class ShowBookApiHandler
 
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_LANGUAGE)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_LANGUAGE);
+                 .setEndAction(mHandleText, DBKeys.KEY_LANGUAGE);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_DESCRIPTION)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_DESCRIPTION);
+                 .setEndAction(mHandleText, DBKeys.KEY_DESCRIPTION);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_NUM_PAGES)
-                 .setEndAction(mHandleLong, DBDefinitions.KEY_PAGES);
+                 .setEndAction(mHandleLong, DBKeys.KEY_PAGES);
 
 
         // <average_rating>3.57</average_rating>
@@ -773,13 +773,13 @@ public abstract class ShowBookApiHandler
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_MY_REVIEW,
                               XmlTags.XML_RATING)
-                 .setEndAction(mHandleDouble, DBDefinitions.KEY_RATING);
+                 .setEndAction(mHandleDouble, DBKeys.KEY_RATING);
 
 
         // <format>Hardcover</format>
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_FORMAT)
-                 .setEndAction(mHandleText, DBDefinitions.KEY_FORMAT);
+                 .setEndAction(mHandleText, DBKeys.KEY_FORMAT);
         XmlFilter.buildFilter(mRootFilter, XmlTags.XML_GOODREADS_RESPONSE, XmlTags.XML_BOOK,
                               XmlTags.XML_IS_EBOOK)
                  .setEndAction(mHandleBoolean, SiteField.IS_EBOOK);

@@ -48,11 +48,11 @@ import com.hardbacknutter.nevertoomanybooks.backup.ImportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -201,7 +201,7 @@ public class CalibreContentServerReader
                               @NonNull final ProgressListener progressListener)
             throws GeneralParsingException, IOException {
 
-        final CalibreLibraryDao libraryDao = CalibreLibraryDao.getInstance();
+        final CalibreLibraryDao libraryDao = DaoLocator.getInstance().getCalibreLibraryDao();
 
         mResults = new ImportResults();
 
@@ -345,7 +345,7 @@ public class CalibreContentServerReader
                 final Book book = new Book();
                 book.setStage(EntityStage.Stage.Dirty);
                 // it's an eBook - duh!
-                book.putString(DBDefinitions.KEY_FORMAT, mEBookString);
+                book.putString(DBKeys.KEY_FORMAT, mEBookString);
                 copyCalibreData(context, calibreBook, book);
 
                 final long insId = mBookDao
@@ -380,26 +380,26 @@ public class CalibreContentServerReader
             throws JSONException {
 
         final int calibreBookId = calibreBook.getInt(CalibreBook.ID);
-        localBook.putInt(DBDefinitions.KEY_CALIBRE_BOOK_ID, calibreBookId);
-        localBook.putString(DBDefinitions.KEY_CALIBRE_BOOK_UUID,
+        localBook.putInt(DBKeys.KEY_CALIBRE_BOOK_ID, calibreBookId);
+        localBook.putString(DBKeys.KEY_CALIBRE_BOOK_UUID,
                             calibreBook.getString(CalibreBook.UUID));
 
         // "last_modified": "2020-11-20T11:17:51+00:00",
         // Note we copy the string as-is, and leave the normalisation to the book DAO routines.
         // Reminder: we already checked this date being newer then the local one before we got here
-        localBook.putString(DBDefinitions.KEY_UTC_LAST_UPDATED,
+        localBook.putString(DBKeys.KEY_UTC_LAST_UPDATED,
                             calibreBook.getString(CalibreBook.LAST_MODIFIED));
 
         // paranoia ...
         if (!calibreBook.isNull(CalibreBook.TITLE)) {
             // always overwrite
-            localBook.putString(DBDefinitions.KEY_TITLE,
+            localBook.putString(DBKeys.KEY_TITLE,
                                 calibreBook.getString(CalibreBook.TITLE));
         }
 
         if (!calibreBook.isNull(CalibreBook.DESCRIPTION)) {
             // always overwrite
-            localBook.putString(DBDefinitions.KEY_DESCRIPTION,
+            localBook.putString(DBKeys.KEY_DESCRIPTION,
                                 calibreBook.getString(CalibreBook.DESCRIPTION));
         }
 
@@ -407,7 +407,7 @@ public class CalibreContentServerReader
             final int rating = calibreBook.getInt(CalibreBook.RATING);
             // don't overwrite the local value with a remote 'not-set' value
             if (rating > 0) {
-                localBook.putDouble(DBDefinitions.KEY_RATING, rating);
+                localBook.putDouble(DBKeys.KEY_RATING, rating);
             }
         }
 
@@ -421,7 +421,7 @@ public class CalibreContentServerReader
                 final String lang = languages.optString(0);
                 // don't overwrite the local value with a remote 'not-set' value
                 if (lang != null && !lang.isEmpty()) {
-                    localBook.putString(DBDefinitions.KEY_LANGUAGE, lang);
+                    localBook.putString(DBKeys.KEY_LANGUAGE, lang);
                 }
             }
         }
@@ -509,7 +509,7 @@ public class CalibreContentServerReader
                             // Other than strict "amazon", there are variants
                             // for local sites; e.g. "amazon_nl", "amazon_fr",...
                             // Note if there is more then one, we end up with the 'last' one.
-                            localBook.putString(DBDefinitions.KEY_ESID_ASIN,
+                            localBook.putString(DBKeys.KEY_ESID_ASIN,
                                                 remotes.optString(key));
                         }
                     }
@@ -572,7 +572,7 @@ public class CalibreContentServerReader
                 if (it.hasNext()) {
                     final String format = it.next();
                     if (format != null && !format.isEmpty()) {
-                        localBook.putString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
+                        localBook.putString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT, format);
                     }
                 }
             }
@@ -655,6 +655,6 @@ public class CalibreContentServerReader
     @Override
     public void close() {
         mBookDao.close();
-        MaintenanceDao.getInstance().purge();
+        DaoLocator.getInstance().getMaintenanceDao().purge();
     }
 }

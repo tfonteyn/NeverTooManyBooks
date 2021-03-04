@@ -36,13 +36,12 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBitmask;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_AUTHOR_FORMATTED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL_AUTHOR_SORT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 
 /**
  * Specialized BooklistGroup representing an {@link Author} group.
@@ -54,11 +53,10 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AU
 public class AuthorBooklistGroup
         extends BooklistGroup {
 
-    /** Style - PreferenceScreen/PreferenceCategory Key. */
-    private static final String PSK_STYLE_AUTHOR = "psk_style_author";
-
     public static final String PK_PRIMARY_TYPE =
             "style.booklist.group.authors.primary.type";
+    /** Style - PreferenceScreen/PreferenceCategory Key. */
+    private static final String PSK_STYLE_AUTHOR = "psk_style_author";
     private static final String PK_SHOW_BOOKS_UNDER_EACH =
             "style.booklist.group.authors.show.all";
 
@@ -139,14 +137,14 @@ public class AuthorBooklistGroup
     @NonNull
     private DomainExpression createDisplayDomain() {
         // Not sorted; sort as defined in #createSortDomain
-        return new DomainExpression(DOM_AUTHOR_FORMATTED, AuthorDao
-                .getDisplayAuthor(TBL_AUTHORS.getAlias(), mStyle.isShowAuthorByGivenName()));
+        return new DomainExpression(DOM_AUTHOR_FORMATTED, AuthorDaoImpl
+                .getDisplayAuthor(mStyle.isShowAuthorByGivenName()));
     }
 
     @NonNull
     private DomainExpression createSortDomain() {
         // Sorting depends on user preference
-        return new DomainExpression(DOM_BL_AUTHOR_SORT, AuthorDao
+        return new DomainExpression(DOM_BL_AUTHOR_SORT, AuthorDaoImpl
                 .getSortAuthor(mStyle.isSortAuthorByGivenName()), DomainExpression.SORT_ASC);
     }
 

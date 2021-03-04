@@ -28,7 +28,7 @@ import androidx.annotation.Nullable;
 
 import java.io.File;
 
-import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 
 // collapse all lines, restart app
 // scroll to Pratchett (175 books) on 1st line, expand, scroll to end.
@@ -96,10 +96,8 @@ public class ImageViewLoaderWithCacheWrite
     protected void onPostExecute(@Nullable final Bitmap bitmap) {
         super.onPostExecute(bitmap);
         if (bitmap != null) {
-            // Start another task to send it to the cache; use the default serial
-            // executor, we only want a single write thread at a time.
-            new CoverCacheDao.ImageCacheWriterTask(mUuid, mCIdx, mMaxWidth, mMaxHeight, bitmap)
-                    .execute();
+            DaoLocator.getInstance().getCoverCacheDao()
+                      .saveCover(mUuid, mCIdx, bitmap, mMaxWidth, mMaxHeight);
         }
     }
 }

@@ -45,13 +45,9 @@ import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreVirtualLibrary;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -183,7 +179,7 @@ public class XmlRecordWriter
                                        @NonNull final ProgressListener progressListener)
             throws IOException {
         final ArrayList<CalibreLibrary> calibreLibraries =
-                CalibreLibraryDao.getInstance().getLibraries();
+                DaoLocator.getInstance().getCalibreLibraryDao().getLibraries();
         if (!calibreLibraries.isEmpty()) {
             writer.write("<CalibreLibraryList");
             writer.write(XmlUtils.versionAttr(1));
@@ -192,15 +188,15 @@ public class XmlRecordWriter
             for (final CalibreLibrary library : calibreLibraries) {
                 writer.write("<CalibreLibrary");
                 writer.write(XmlUtils.idAttr(library.getId()));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID,
+                writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID,
                                            library.getLibraryStringId()));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_UUID,
+                writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_LIBRARY_UUID,
                                            library.getUuid()));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME,
+                writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_LIBRARY_NAME,
                                            library.getName()));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE,
+                writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE,
                                            library.getLastSyncDateAsString()));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_BOOKSHELF,
+                writer.write(XmlUtils.attr(DBKeys.KEY_FK_BOOKSHELF,
                                            library.getMappedBookshelfId()));
                 writer.write(">");
 
@@ -210,13 +206,13 @@ public class XmlRecordWriter
                     for (final CalibreVirtualLibrary vlib : virtualLibraries) {
                         writer.write("<CalibreVirtualLibrary");
                         writer.write(XmlUtils.idAttr(vlib.getId()));
-                        writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_CALIBRE_LIBRARY,
+                        writer.write(XmlUtils.attr(DBKeys.KEY_FK_CALIBRE_LIBRARY,
                                                    vlib.getLibraryId()));
-                        writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME,
+                        writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_LIBRARY_NAME,
                                                    vlib.getName()));
-                        writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR,
+                        writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR,
                                                    vlib.getExpr()));
-                        writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_BOOKSHELF,
+                        writer.write(XmlUtils.attr(DBKeys.KEY_FK_BOOKSHELF,
                                                    vlib.getMappedBookshelfId()));
                         writer.write("/>");
                     }
@@ -239,7 +235,7 @@ public class XmlRecordWriter
                                   @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = BookshelfDao.getInstance().fetchAllUserShelves()) {
+        try (Cursor cursor = DaoLocator.getInstance().getBookshelfDao().fetchAllUserShelves()) {
             writer.write('<' + Book.BKEY_BOOKSHELF_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_BOOKSHELVES));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -248,11 +244,11 @@ public class XmlRecordWriter
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 writer.write('<' + TAG_BOOKSHELF);
-                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOKSHELF_NAME,
-                                           rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_STYLE,
-                                           rowData.getString(DBDefinitions.KEY_STYLE_UUID)));
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBKeys.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_BOOKSHELF_NAME,
+                                           rowData.getString(DBKeys.KEY_BOOKSHELF_NAME)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_FK_STYLE,
+                                           rowData.getString(DBKeys.KEY_STYLE_UUID)));
                 writer.write("/>\n");
             }
             writer.write("</" + Book.BKEY_BOOKSHELF_LIST + ">\n");
@@ -271,7 +267,7 @@ public class XmlRecordWriter
                               @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = AuthorDao.getInstance().fetchAll()) {
+        try (Cursor cursor = DaoLocator.getInstance().getAuthorDao().fetchAll()) {
             writer.write('<' + Book.BKEY_AUTHOR_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_AUTHORS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -280,17 +276,17 @@ public class XmlRecordWriter
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 writer.write('<' + TAG_AUTHOR);
-                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBKeys.KEY_PK_ID)));
 
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_AUTHOR_FAMILY_NAME,
+                writer.write(XmlUtils.attr(DBKeys.KEY_AUTHOR_FAMILY_NAME,
                                            rowData.getString(
-                                                   DBDefinitions.KEY_AUTHOR_FAMILY_NAME)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES,
+                                                   DBKeys.KEY_AUTHOR_FAMILY_NAME)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_AUTHOR_GIVEN_NAMES,
                                            rowData.getString(
-                                                   DBDefinitions.KEY_AUTHOR_GIVEN_NAMES)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+                                                   DBKeys.KEY_AUTHOR_GIVEN_NAMES)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_AUTHOR_IS_COMPLETE,
                                            rowData.getBoolean(
-                                                   DBDefinitions.KEY_AUTHOR_IS_COMPLETE)));
+                                                   DBKeys.KEY_AUTHOR_IS_COMPLETE)));
                 writer.write("/>\n");
             }
             writer.write("</" + Book.BKEY_AUTHOR_LIST + ">\n");
@@ -309,7 +305,8 @@ public class XmlRecordWriter
                              @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = SeriesDao.getInstance().fetchAll()) {
+
+        try (Cursor cursor = DaoLocator.getInstance().getSeriesDao().fetchAll()) {
             writer.write('<' + Book.BKEY_SERIES_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_SERIES));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -318,12 +315,12 @@ public class XmlRecordWriter
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 writer.write('<' + TAG_SERIES);
-                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_SERIES_TITLE,
-                                           rowData.getString(DBDefinitions.KEY_SERIES_TITLE)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_SERIES_IS_COMPLETE,
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBKeys.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_SERIES_TITLE,
+                                           rowData.getString(DBKeys.KEY_SERIES_TITLE)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_SERIES_IS_COMPLETE,
                                            rowData.getBoolean(
-                                                   DBDefinitions.KEY_SERIES_IS_COMPLETE)));
+                                                   DBKeys.KEY_SERIES_IS_COMPLETE)));
                 writer.write("/>\n");
             }
             writer.write("</" + Book.BKEY_SERIES_LIST + ">\n");
@@ -342,7 +339,8 @@ public class XmlRecordWriter
                                  @NonNull final ProgressListener progressListener)
             throws IOException {
 
-        try (Cursor cursor = PublisherDao.getInstance().fetchAll()) {
+
+        try (Cursor cursor = DaoLocator.getInstance().getPublisherDao().fetchAll()) {
             writer.write('<' + Book.BKEY_PUBLISHER_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_PUBLISHERS));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -351,9 +349,9 @@ public class XmlRecordWriter
             final DataHolder rowData = new CursorRow(cursor);
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
                 writer.write('<' + TAG_PUBLISHER);
-                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_PUBLISHER_NAME,
-                                           rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME)));
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBKeys.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_PUBLISHER_NAME,
+                                           rowData.getString(DBKeys.KEY_PUBLISHER_NAME)));
                 writer.write("/>\n");
             }
             writer.write("</" + Book.BKEY_PUBLISHER_LIST + ">\n");
@@ -371,7 +369,8 @@ public class XmlRecordWriter
     private void writeToc(@NonNull final Writer writer,
                           @NonNull final ProgressListener progressListener)
             throws IOException {
-        try (Cursor cursor = TocEntryDao.getInstance().fetchAll()) {
+
+        try (Cursor cursor = DaoLocator.getInstance().getTocEntryDao().fetchAll()) {
             writer.write('<' + Book.BKEY_TOC_LIST);
             writer.write(XmlUtils.versionAttr(VERSION_TOC_LIST));
             writer.write(XmlUtils.sizeAttr(cursor.getCount()));
@@ -382,20 +381,20 @@ public class XmlRecordWriter
 
                 // the tag is written as a single line (no line-feeds)
                 writer.write('<' + TAG_TOC_ENTRY);
-                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE,
-                                           rowData.getString(DBDefinitions.KEY_TITLE)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBKeys.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_TITLE,
+                                           rowData.getString(DBKeys.KEY_TITLE)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_DATE_FIRST_PUBLICATION,
                                            rowData.getString(
-                                                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
+                                                   DBKeys.KEY_DATE_FIRST_PUBLICATION)));
                 writer.write(">");
 
                 // Write Authors as a list, allowing for future expansion to multiple authors/toc
                 writer.write('<' + Book.BKEY_AUTHOR_LIST);
                 writer.write(XmlUtils.sizeAttr(1));
                 writer.write(">");
-                writer.write('<' + DBDefinitions.KEY_FK_AUTHOR);
-                writer.write(XmlUtils.idAttr(rowData.getLong(DBDefinitions.KEY_FK_AUTHOR)));
+                writer.write('<' + DBKeys.KEY_FK_AUTHOR);
+                writer.write(XmlUtils.idAttr(rowData.getLong(DBKeys.KEY_FK_AUTHOR)));
                 writer.write("/>");
                 writer.write("</" + Book.BKEY_AUTHOR_LIST + ">");
 
@@ -440,85 +439,85 @@ public class XmlRecordWriter
             while (cursor.moveToNext() && !progressListener.isCancelled()) {
 
                 final Book book = Book.from(cursor, bookDao);
-                final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+                final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
 
-                String title = book.getString(DBDefinitions.KEY_TITLE);
+                String title = book.getString(DBKeys.KEY_TITLE);
                 // Sanity check: ensure title is non-blank.
                 if (title.trim().isEmpty()) {
                     title = context.getString(R.string.unknown_title);
                 }
 
                 writer.write('<' + TAG_BOOK);
-                writer.write(XmlUtils.idAttr(book.getLong(DBDefinitions.KEY_PK_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_TITLE, title));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_ISBN,
-                                           book.getString(DBDefinitions.KEY_ISBN)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_UUID, uuid));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_UTC_ADDED,
-                                           book.getString(DBDefinitions.KEY_UTC_ADDED)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_UTC_LAST_UPDATED,
-                                           book.getString(DBDefinitions.KEY_UTC_LAST_UPDATED)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_READ,
-                                           book.getBoolean(DBDefinitions.KEY_READ)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_START,
-                                           book.getString(DBDefinitions.KEY_READ_START)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_READ_END,
-                                           book.getString(DBDefinitions.KEY_READ_END)));
+                writer.write(XmlUtils.idAttr(book.getLong(DBKeys.KEY_PK_ID)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_TITLE, title));
+                writer.write(XmlUtils.attr(DBKeys.KEY_ISBN,
+                                           book.getString(DBKeys.KEY_ISBN)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_BOOK_UUID, uuid));
+                writer.write(XmlUtils.attr(DBKeys.KEY_UTC_ADDED,
+                                           book.getString(DBKeys.KEY_UTC_ADDED)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_UTC_LAST_UPDATED,
+                                           book.getString(DBKeys.KEY_UTC_LAST_UPDATED)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_READ,
+                                           book.getBoolean(DBKeys.KEY_READ)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_READ_START,
+                                           book.getString(DBKeys.KEY_READ_START)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_READ_END,
+                                           book.getString(DBKeys.KEY_READ_END)));
 
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRINT_RUN,
-                                           book.getString(DBDefinitions.KEY_PRINT_RUN)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
-                                           book.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED,
-                                           book.getDouble(DBDefinitions.KEY_PRICE_LISTED)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_LISTED_CURRENCY,
+                writer.write(XmlUtils.attr(DBKeys.KEY_PRINT_RUN,
+                                           book.getString(DBKeys.KEY_PRINT_RUN)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_BOOK_DATE_PUBLISHED,
+                                           book.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_PRICE_LISTED,
+                                           book.getDouble(DBKeys.KEY_PRICE_LISTED)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_PRICE_LISTED_CURRENCY,
                                            book.getString(
-                                                   DBDefinitions.KEY_PRICE_LISTED_CURRENCY)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+                                                   DBKeys.KEY_PRICE_LISTED_CURRENCY)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_DATE_FIRST_PUBLICATION,
                                            book.getString(
-                                                   DBDefinitions.KEY_DATE_FIRST_PUBLICATION)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_FORMAT,
-                                           book.getString(DBDefinitions.KEY_FORMAT)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_COLOR,
-                                           book.getString(DBDefinitions.KEY_COLOR)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_PAGES,
-                                           book.getString(DBDefinitions.KEY_PAGES)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_GENRE,
-                                           book.getString(DBDefinitions.KEY_GENRE)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_LANGUAGE,
-                                           book.getString(DBDefinitions.KEY_LANGUAGE)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_TOC_BITMASK,
-                                           book.getLong(DBDefinitions.KEY_TOC_BITMASK)));
+                                                   DBKeys.KEY_DATE_FIRST_PUBLICATION)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_FORMAT,
+                                           book.getString(DBKeys.KEY_FORMAT)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_COLOR,
+                                           book.getString(DBKeys.KEY_COLOR)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_PAGES,
+                                           book.getString(DBKeys.KEY_PAGES)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_GENRE,
+                                           book.getString(DBKeys.KEY_GENRE)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_LANGUAGE,
+                                           book.getString(DBKeys.KEY_LANGUAGE)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_TOC_BITMASK,
+                                           book.getLong(DBKeys.KEY_TOC_BITMASK)));
 
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_CONDITION,
-                                           book.getInt(DBDefinitions.KEY_BOOK_CONDITION)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_CONDITION_COVER,
-                                           book.getInt(DBDefinitions.KEY_BOOK_CONDITION_COVER)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_BOOK_CONDITION,
+                                           book.getInt(DBKeys.KEY_BOOK_CONDITION)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_BOOK_CONDITION_COVER,
+                                           book.getInt(DBKeys.KEY_BOOK_CONDITION_COVER)));
 
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID,
-                                           book.getDouble(DBDefinitions.KEY_PRICE_PAID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_PRICE_PAID_CURRENCY,
-                                           book.getString(DBDefinitions.KEY_PRICE_PAID_CURRENCY)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_DATE_ACQUIRED,
-                                           book.getString(DBDefinitions.KEY_DATE_ACQUIRED)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_LOCATION,
-                                           book.getString(DBDefinitions.KEY_LOCATION)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_RATING,
-                                           book.getDouble(DBDefinitions.KEY_RATING)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_SIGNED,
-                                           book.getBoolean(DBDefinitions.KEY_SIGNED)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_EDITION_BITMASK,
-                                           book.getLong(DBDefinitions.KEY_EDITION_BITMASK)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_PRICE_PAID,
+                                           book.getDouble(DBKeys.KEY_PRICE_PAID)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_PRICE_PAID_CURRENCY,
+                                           book.getString(DBKeys.KEY_PRICE_PAID_CURRENCY)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_DATE_ACQUIRED,
+                                           book.getString(DBKeys.KEY_DATE_ACQUIRED)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_LOCATION,
+                                           book.getString(DBKeys.KEY_LOCATION)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_RATING,
+                                           book.getDouble(DBKeys.KEY_RATING)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_SIGNED,
+                                           book.getBoolean(DBKeys.KEY_SIGNED)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_EDITION_BITMASK,
+                                           book.getLong(DBKeys.KEY_EDITION_BITMASK)));
 
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_BOOK_ID,
-                                           book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_BOOK_UUID,
-                                           book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT,
+                writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_BOOK_ID,
+                                           book.getInt(DBKeys.KEY_CALIBRE_BOOK_ID)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_BOOK_UUID,
+                                           book.getString(DBKeys.KEY_CALIBRE_BOOK_UUID)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT,
                                            book.getString(
-                                                   DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_FK_CALIBRE_LIBRARY,
-                                           book.getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY)));
+                                                   DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_FK_CALIBRE_LIBRARY,
+                                           book.getLong(DBKeys.KEY_FK_CALIBRE_LIBRARY)));
 
                 // external ID's
                 for (final Domain domain : externalIdDomains) {
@@ -527,24 +526,24 @@ public class XmlRecordWriter
                 }
                 //NEWTHINGS: adding a new search engine: optional: add engine specific keys
                 writer.write(XmlUtils.attr(
-                        DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE,
-                        book.getString(DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE)));
+                        DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE,
+                        book.getString(DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE)));
 
 
                 // cross-linked with the loanee table
-                writer.write(XmlUtils.attr(DBDefinitions.KEY_LOANEE,
-                                           book.getString(DBDefinitions.KEY_LOANEE)));
+                writer.write(XmlUtils.attr(DBKeys.KEY_LOANEE,
+                                           book.getString(DBKeys.KEY_LOANEE)));
 
                 // close the start tag
                 writer.write(">\n");
 
                 // the text field tags
                 writer.write(XmlUtils.tagWithCData(
-                        DBDefinitions.KEY_DESCRIPTION, null,
-                        book.getString(DBDefinitions.KEY_DESCRIPTION)));
+                        DBKeys.KEY_DESCRIPTION, null,
+                        book.getString(DBKeys.KEY_DESCRIPTION)));
                 writer.write(XmlUtils.tagWithCData(
-                        DBDefinitions.KEY_PRIVATE_NOTES, null,
-                        book.getString(DBDefinitions.KEY_PRIVATE_NOTES)));
+                        DBKeys.KEY_PRIVATE_NOTES, null,
+                        book.getString(DBKeys.KEY_PRIVATE_NOTES)));
 
 
                 final ArrayList<Author> authors =
@@ -554,7 +553,7 @@ public class XmlRecordWriter
                     writer.write(XmlUtils.sizeAttr(authors.size()));
                     writer.write(">");
                     for (final Author author : authors) {
-                        writer.write('<' + DBDefinitions.KEY_FK_AUTHOR);
+                        writer.write('<' + DBKeys.KEY_FK_AUTHOR);
                         writer.write(XmlUtils.idAttr(author.getId()));
                         writer.write("/>");
                     }
@@ -568,9 +567,9 @@ public class XmlRecordWriter
                     writer.write(XmlUtils.sizeAttr(seriesList.size()));
                     writer.write(">");
                     for (final Series series : seriesList) {
-                        writer.write('<' + DBDefinitions.KEY_FK_SERIES);
+                        writer.write('<' + DBKeys.KEY_FK_SERIES);
                         writer.write(XmlUtils.idAttr(series.getId()));
-                        writer.write(XmlUtils.attr(DBDefinitions.KEY_BOOK_NUM_IN_SERIES,
+                        writer.write(XmlUtils.attr(DBKeys.KEY_BOOK_NUM_IN_SERIES,
                                                    series.getNumber()));
                         writer.write("/>");
                     }
@@ -584,7 +583,7 @@ public class XmlRecordWriter
                     writer.write(XmlUtils.sizeAttr(publishers.size()));
                     writer.write(">");
                     for (final Publisher publisher : publishers) {
-                        writer.write('<' + DBDefinitions.KEY_FK_PUBLISHER);
+                        writer.write('<' + DBKeys.KEY_FK_PUBLISHER);
                         writer.write(XmlUtils.idAttr(publisher.getId()));
                         writer.write("/>");
                     }
@@ -598,7 +597,7 @@ public class XmlRecordWriter
                     writer.write(XmlUtils.sizeAttr(bookshelves.size()));
                     writer.write(">");
                     for (final Bookshelf bookshelf : bookshelves) {
-                        writer.write('<' + DBDefinitions.KEY_FK_BOOKSHELF);
+                        writer.write('<' + DBKeys.KEY_FK_BOOKSHELF);
                         writer.write(XmlUtils.idAttr(bookshelf.getId()));
                         writer.write("/>");
                     }
@@ -612,7 +611,7 @@ public class XmlRecordWriter
                     writer.write(XmlUtils.sizeAttr(tocEntries.size()));
                     writer.write(">");
                     for (final TocEntry tocEntry : tocEntries) {
-                        writer.write('<' + DBDefinitions.KEY_FK_TOC_ENTRY);
+                        writer.write('<' + DBKeys.KEY_FK_TOC_ENTRY);
                         writer.write(XmlUtils.idAttr(tocEntry.getId()));
                         writer.write("/>");
                     }

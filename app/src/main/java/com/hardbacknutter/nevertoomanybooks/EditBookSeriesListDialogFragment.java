@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookSeriesListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -381,8 +381,8 @@ public class EditBookSeriesListDialogFragment
                            @NonNull final Series series) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putString(DBDefinitions.KEY_TITLE, bookTitle);
-            args.putParcelable(DBDefinitions.KEY_FK_SERIES, series);
+            args.putString(DBKeys.KEY_TITLE, bookTitle);
+            args.putParcelable(DBKeys.KEY_FK_SERIES, series);
 
             final DialogFragment frag = new EditSeriesForBookDialogFragment();
             frag.setArguments(args);
@@ -396,10 +396,10 @@ public class EditBookSeriesListDialogFragment
             final Bundle args = requireArguments();
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                                  "BKEY_REQUEST_KEY");
-            mSeries = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_SERIES),
+            mSeries = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_SERIES),
                                              "KEY_FK_SERIES");
 
-            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
+            mBookTitle = args.getString(DBKeys.KEY_TITLE);
 
             if (savedInstanceState == null) {
                 mTitle = mSeries.getTitle();
@@ -407,11 +407,11 @@ public class EditBookSeriesListDialogFragment
                 mNumber = mSeries.getNumber();
             } else {
                 //noinspection ConstantConditions
-                mTitle = savedInstanceState.getString(DBDefinitions.KEY_FK_SERIES);
+                mTitle = savedInstanceState.getString(DBKeys.KEY_FK_SERIES);
                 mIsComplete = savedInstanceState
-                        .getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, false);
+                        .getBoolean(DBKeys.KEY_SERIES_IS_COMPLETE, false);
                 //noinspection ConstantConditions
-                mNumber = savedInstanceState.getString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES);
+                mNumber = savedInstanceState.getString(DBKeys.KEY_BOOK_NUM_IN_SERIES);
             }
         }
 
@@ -478,9 +478,9 @@ public class EditBookSeriesListDialogFragment
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBDefinitions.KEY_FK_SERIES, mTitle);
-            outState.putBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE, mIsComplete);
-            outState.putString(DBDefinitions.KEY_BOOK_NUM_IN_SERIES, mNumber);
+            outState.putString(DBKeys.KEY_FK_SERIES, mTitle);
+            outState.putBoolean(DBKeys.KEY_SERIES_IS_COMPLETE, mIsComplete);
+            outState.putString(DBKeys.KEY_BOOK_NUM_IN_SERIES, mNumber);
         }
 
         @Override

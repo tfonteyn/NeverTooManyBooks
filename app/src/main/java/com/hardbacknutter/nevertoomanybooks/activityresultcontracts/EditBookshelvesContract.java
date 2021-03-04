@@ -31,7 +31,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.EditBookshelvesFragment;
 import com.hardbacknutter.nevertoomanybooks.FragmentHostActivity;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.EditBookshelvesViewModel;
@@ -42,7 +42,7 @@ public class EditBookshelvesContract
     public static void setResultAndFinish(@NonNull final Activity activity,
                                           final long bookshelfId) {
         final Intent resultIntent = new Intent()
-                .putExtra(DBDefinitions.KEY_PK_ID, bookshelfId);
+                .putExtra(DBKeys.KEY_PK_ID, bookshelfId);
         activity.setResult(Activity.RESULT_OK, resultIntent);
         activity.finish();
     }
@@ -73,6 +73,6 @@ public class EditBookshelvesContract
         }
 
         // the last edited/inserted shelf
-        return intent.getLongExtra(DBDefinitions.KEY_PK_ID, Bookshelf.DEFAULT);
+        return intent.getLongExtra(DBKeys.KEY_PK_ID, Bookshelf.DEFAULT);
     }
 }

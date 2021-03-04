@@ -29,7 +29,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 
 /**
  * Dialog to edit an <strong>in-line in Books table</strong> Format.
@@ -67,12 +67,12 @@ public class EditFormatDialogFragment
     @NonNull
     @Override
     protected List<String> getList() {
-        return FormatDao.getInstance().getList();
+        return DaoLocator.getInstance().getFormatDao().getList();
     }
 
     @Override
     void onSave(@NonNull final String originalText,
                 @NonNull final String currentText) {
-        FormatDao.getInstance().update(originalText, currentText);
+        DaoLocator.getInstance().getFormatDao().rename(originalText, currentText);
     }
 }

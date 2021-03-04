@@ -36,7 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -79,14 +80,14 @@ public class EditBookshelfDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mBookshelf = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_BOOKSHELF),
+        mBookshelf = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_BOOKSHELF),
                                             "KEY_FK_BOOKSHELF");
 
         if (savedInstanceState == null) {
             mName = mBookshelf.getName();
         } else {
             //noinspection ConstantConditions
-            mName = savedInstanceState.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
+            mName = savedInstanceState.getString(DBKeys.KEY_BOOKSHELF_NAME);
         }
     }
 
@@ -126,10 +127,9 @@ public class EditBookshelfDialogFragment
         // store changes
         mBookshelf.setName(mName);
 
-        final BookshelfDao bookshelfDao = BookshelfDao.getInstance();
+        final BookshelfDao bookshelfDao = DaoLocator.getInstance().getBookshelfDao();
 
         // check if it already exists (will be 0 if not)
-
         final long existingId = bookshelfDao.find(mBookshelf);
 
         // are we adding a new one but trying to use an existing name?
@@ -186,7 +186,7 @@ public class EditBookshelfDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_BOOKSHELF_NAME, mName);
+        outState.putString(DBKeys.KEY_BOOKSHELF_NAME, mName);
     }
 
     @Override
@@ -206,7 +206,7 @@ public class EditBookshelfDialogFragment
                               @NonNull final String requestKey,
                               @IntRange(from = 1) final long bookshelfId) {
             final Bundle result = new Bundle(1);
-            result.putLong(DBDefinitions.KEY_FK_BOOKSHELF, bookshelfId);
+            result.putLong(DBKeys.KEY_FK_BOOKSHELF, bookshelfId);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
@@ -219,7 +219,7 @@ public class EditBookshelfDialogFragment
 
             final Bundle args = new Bundle(2);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putParcelable(DBDefinitions.KEY_FK_BOOKSHELF, bookshelf);
+            args.putParcelable(DBKeys.KEY_FK_BOOKSHELF, bookshelf);
 
             final DialogFragment frag = new EditBookshelfDialogFragment();
             frag.setArguments(args);
@@ -230,7 +230,7 @@ public class EditBookshelfDialogFragment
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
             onResult(SanityCheck.requirePositiveValue(
-                    result.getLong(DBDefinitions.KEY_FK_BOOKSHELF)));
+                    result.getLong(DBKeys.KEY_FK_BOOKSHELF)));
         }
 
         /**

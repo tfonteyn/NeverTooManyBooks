@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -168,7 +168,7 @@ public class OpenLibrarySearchEngine
                 .setSupportsMultipleCoverSizes(true)
                 .setFilenameSuffix("OL")
 
-                .setDomainKey(DBDefinitions.KEY_ESID_OPEN_LIBRARY)
+                .setDomainKey(DBKeys.KEY_ESID_OPEN_LIBRARY)
                 .setDomainViewId(R.id.site_open_library)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_OPEN_LIBRARY)
                 .build();
@@ -472,7 +472,7 @@ public class OpenLibrarySearchEngine
 
         s = document.optString("title");
         if (!s.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_TITLE, s);
+            bookData.putString(DBKeys.KEY_TITLE, s);
         }
 
         final ArrayList<Author> authors = new ArrayList<>();
@@ -492,14 +492,14 @@ public class OpenLibrarySearchEngine
 
         // store the isbn; we might override it later on though (e.g. isbn 13v10)
         // not sure if this is needed though. Need more data.
-        bookData.putString(DBDefinitions.KEY_ISBN, validIsbn);
+        bookData.putString(DBKeys.KEY_ISBN, validIsbn);
 
         // everything below is optional.
 
         // "notes" is a specific (set of) remarks on this particular edition of the book.
         s = document.optString("notes");
         if (!s.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_DESCRIPTION, s);
+            bookData.putString(DBKeys.KEY_DESCRIPTION, s);
         }
 
         s = document.optString("publish_date");
@@ -507,7 +507,7 @@ public class OpenLibrarySearchEngine
             final LocalDateTime date =
                     DateParser.getInstance(getAppContext()).parse(s, getLocale());
             if (date != null) {
-                bookData.putString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
+                bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
                                    date.format(DateTimeFormatter.ISO_LOCAL_DATE));
             }
         }
@@ -518,7 +518,7 @@ public class OpenLibrarySearchEngine
 //        } else {
         i = document.optInt("number_of_pages");
         if (i > 0) {
-            bookData.putString(DBDefinitions.KEY_PAGES, String.valueOf(i));
+            bookData.putString(DBKeys.KEY_PAGES, String.valueOf(i));
         }
 //        }
 
@@ -563,7 +563,7 @@ public class OpenLibrarySearchEngine
             if (!toc.isEmpty()) {
                 bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
                 if (toc.size() > 1) {
-                    bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+                    bookData.putLong(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
                 }
             }
         }
@@ -594,40 +594,40 @@ public class OpenLibrarySearchEngine
         // see if we have a better isbn.
         a = element.optJSONArray("isbn_13");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
+            bookData.putString(DBKeys.KEY_ISBN, a.getString(0));
         } else {
             a = element.optJSONArray("isbn_10");
             if (a != null && !a.isEmpty()) {
-                bookData.putString(DBDefinitions.KEY_ISBN, a.getString(0));
+                bookData.putString(DBKeys.KEY_ISBN, a.getString(0));
             }
         }
         a = element.optJSONArray("amazon");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_ESID_ASIN, a.getString(0));
+            bookData.putString(DBKeys.KEY_ESID_ASIN, a.getString(0));
         }
         a = element.optJSONArray("openlibrary");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_ESID_OPEN_LIBRARY, a.getString(0));
+            bookData.putString(DBKeys.KEY_ESID_OPEN_LIBRARY, a.getString(0));
         }
         a = element.optJSONArray("librarything");
         if (a != null && !a.isEmpty()) {
-            bookData.putLong(DBDefinitions.KEY_ESID_LIBRARY_THING, a.getLong(0));
+            bookData.putLong(DBKeys.KEY_ESID_LIBRARY_THING, a.getLong(0));
         }
         a = element.optJSONArray("goodreads");
         if (a != null && !a.isEmpty()) {
-            bookData.putLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK, a.getLong(0));
+            bookData.putLong(DBKeys.KEY_ESID_GOODREADS_BOOK, a.getLong(0));
         }
         a = element.optJSONArray("google");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_ESID_GOOGLE, a.getString(0));
+            bookData.putString(DBKeys.KEY_ESID_GOOGLE, a.getString(0));
         }
         a = element.optJSONArray("lccn");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_ESID_LCCN, a.getString(0));
+            bookData.putString(DBKeys.KEY_ESID_LCCN, a.getString(0));
         }
         a = element.optJSONArray("oclc");
         if (a != null && !a.isEmpty()) {
-            bookData.putString(DBDefinitions.KEY_ESID_OCLC, a.getString(0));
+            bookData.putString(DBKeys.KEY_ESID_OCLC, a.getString(0));
         }
     }
 

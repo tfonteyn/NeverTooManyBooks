@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -38,8 +38,8 @@ public class PublisherCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBDefinitions.KEY_PK_ID, publisher.getId());
-        out.put(DBDefinitions.KEY_PUBLISHER_NAME, publisher.getName());
+        out.put(DBKeys.KEY_PK_ID, publisher.getId());
+        out.put(DBKeys.KEY_PUBLISHER_NAME, publisher.getName());
         return out;
     }
 
@@ -48,8 +48,8 @@ public class PublisherCoder
     public Publisher decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final Publisher publisher = new Publisher(data.getString(DBDefinitions.KEY_PUBLISHER_NAME));
-        publisher.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+        final Publisher publisher = new Publisher(data.getString(DBKeys.KEY_PUBLISHER_NAME));
+        publisher.setId(data.getLong(DBKeys.KEY_PK_ID));
         return publisher;
     }
 }

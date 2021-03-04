@@ -33,7 +33,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.ShowBookActivity;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
@@ -46,7 +46,7 @@ public class ShowBookContract
                                @NonNull final Input input) {
         return new Intent(context, ShowBookActivity.class)
                 // the book to display
-                .putExtra(DBDefinitions.KEY_PK_ID, input.bookId)
+                .putExtra(DBKeys.KEY_PK_ID, input.bookId)
                 // the current list table, so the user can swipe
                 // to the next/previous book
                 .putExtra(ShowBookViewModel.BKEY_NAV_TABLE_NAME, input.navTableName)

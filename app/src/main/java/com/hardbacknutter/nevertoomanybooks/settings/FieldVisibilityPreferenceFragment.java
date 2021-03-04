@@ -30,7 +30,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.SwitchPreference;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 
 /**
  * Used/defined in xml/preferences.xml
@@ -38,13 +38,6 @@ import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 @Keep
 public class FieldVisibilityPreferenceFragment
         extends BasePreferenceFragment {
-
-    private static final String[] PREFS_COVER_VISIBILITY_KEY = new String[]{
-            // fields.visibility.thumbnail.0
-            DBDefinitions.PREFS_PREFIX_FIELD_VISIBILITY + DBDefinitions.PREFS_IS_USED_COVER + ".0",
-            // fields.visibility.thumbnail.1
-            DBDefinitions.PREFS_PREFIX_FIELD_VISIBILITY + DBDefinitions.PREFS_IS_USED_COVER + ".1",
-            };
 
     /** The Activity results. */
     private SettingsViewModel mVm;
@@ -71,10 +64,10 @@ public class FieldVisibilityPreferenceFragment
     public void onSharedPreferenceChanged(@NonNull final SharedPreferences preferences,
                                           @NonNull final String key) {
 
-        if (PREFS_COVER_VISIBILITY_KEY[0].equals(key)
+        if (DBKeys.PREFS_COVER_VISIBILITY_KEY[0].equals(key)
             && !preferences.getBoolean(key, false)) {
             // Setting cover 0 to false -> set cover 1 to false as well
-            final SwitchPreference cover = findPreference(PREFS_COVER_VISIBILITY_KEY[1]);
+            final SwitchPreference cover = findPreference(DBKeys.PREFS_COVER_VISIBILITY_KEY[1]);
             //noinspection ConstantConditions
             cover.setChecked(false);
         }

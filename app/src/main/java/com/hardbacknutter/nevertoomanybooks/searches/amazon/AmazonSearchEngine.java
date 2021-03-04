@@ -48,7 +48,7 @@ import org.jsoup.select.Elements;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -410,16 +410,16 @@ public class AmazonSearchEngine
         }
 
         final String title = titleElement.text().trim();
-        bookData.putString(DBDefinitions.KEY_TITLE, title);
+        bookData.putString(DBKeys.KEY_TITLE, title);
 
         final Element price = document.selectFirst("span.offer-price");
         if (price != null) {
             final Money money = new Money(siteLocale, price.text());
             if (money.getCurrency() != null) {
-                bookData.putDouble(DBDefinitions.KEY_PRICE_LISTED, money.doubleValue());
-                bookData.putString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY, money.getCurrency());
+                bookData.putDouble(DBKeys.KEY_PRICE_LISTED, money.doubleValue());
+                bookData.putString(DBKeys.KEY_PRICE_LISTED_CURRENCY, money.getCurrency());
             } else {
-                bookData.putString(DBDefinitions.KEY_PRICE_LISTED, price.text());
+                bookData.putString(DBKeys.KEY_PRICE_LISTED, price.text());
             }
         }
 
@@ -472,12 +472,12 @@ public class AmazonSearchEngine
             String data = li.text().trim();
             switch (label.toLowerCase(siteLocale)) {
                 case "isbn-13":
-                    bookData.putString(DBDefinitions.KEY_ISBN, data);
+                    bookData.putString(DBKeys.KEY_ISBN, data);
                     break;
 
                 case "isbn-10":
-                    if (!bookData.containsKey(DBDefinitions.KEY_ISBN)) {
-                        bookData.putString(DBDefinitions.KEY_ISBN, data);
+                    if (!bookData.containsKey(DBKeys.KEY_ISBN)) {
+                        bookData.putString(DBKeys.KEY_ISBN, data);
                     }
                     break;
 
@@ -487,8 +487,8 @@ public class AmazonSearchEngine
                 case "broché":
                 case "taschenbuch":
                 case "gebundene ausgabe":
-                    bookData.putString(DBDefinitions.KEY_FORMAT, label);
-                    bookData.putString(DBDefinitions.KEY_PAGES,
+                    bookData.putString(DBKeys.KEY_FORMAT, label);
+                    bookData.putString(DBKeys.KEY_PAGES,
                                        mPagesPattern.matcher(data).replaceAll("").trim());
                     break;
 
@@ -498,7 +498,7 @@ public class AmazonSearchEngine
                 case "taal":
                     data = Languages.getInstance()
                                     .getISO3FromDisplayName(getAppContext(), siteLocale, data);
-                    bookData.putString(DBDefinitions.KEY_LANGUAGE, data);
+                    bookData.putString(DBKeys.KEY_LANGUAGE, data);
                     break;
 
                 case "publisher":
@@ -517,7 +517,7 @@ public class AmazonSearchEngine
 
                         final String pubDate = matcher.group(2);
                         if (pubDate != null) {
-                            bookData.putString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED,
+                            bookData.putString(DBKeys.KEY_BOOK_DATE_PUBLISHED,
                                                pubDate.trim());
                         }
                     }
@@ -576,7 +576,7 @@ public class AmazonSearchEngine
             if (asinElement != null) {
                 final String asin = asinElement.attr("value");
                 if (asin != null) {
-                    bookData.putString(DBDefinitions.KEY_ESID_ASIN, asin);
+                    bookData.putString(DBKeys.KEY_ESID_ASIN, asin);
                 }
             }
         }
@@ -598,7 +598,7 @@ public class AmazonSearchEngine
         }
 
         if (fetchThumbnail[0]) {
-            final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            final String isbn = bookData.getString(DBKeys.KEY_ISBN);
             final ArrayList<String> imageList = parseCovers(document, isbn, 0);
             if (!imageList.isEmpty()) {
                 bookData.putStringArrayList(SearchCoordinator.BKEY_TMP_FILE_SPEC_ARRAY[0],

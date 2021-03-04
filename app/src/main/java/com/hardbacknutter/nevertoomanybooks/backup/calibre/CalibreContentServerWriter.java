@@ -41,10 +41,10 @@ import com.hardbacknutter.nevertoomanybooks.backup.ExportHelper;
 import com.hardbacknutter.nevertoomanybooks.backup.ExportResults;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveWriter;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -127,7 +127,7 @@ public class CalibreContentServerWriter
 
         try {
             mServer.readMetaData(context);
-            final CalibreLibraryDao libraryDao = CalibreLibraryDao.getInstance();
+            final CalibreLibraryDao libraryDao = DaoLocator.getInstance().getCalibreLibraryDao();
             for (final CalibreLibrary library : mServer.getLibraries()) {
 
                 final LocalDateTime dateSince;
@@ -198,8 +198,8 @@ public class CalibreContentServerWriter
                           @NonNull final Book book)
             throws IOException, JSONException {
 
-        final int calibreId = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
-        final String calibreUuid = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_UUID);
+        final int calibreId = book.getInt(DBKeys.KEY_CALIBRE_BOOK_ID);
+        final String calibreUuid = book.getString(DBKeys.KEY_CALIBRE_BOOK_UUID);
 
         // ENHANCE: full sync in one go.
         //  The logic below is TO SLOW as we fetch each book individually
@@ -238,12 +238,12 @@ public class CalibreContentServerWriter
         final JSONObject changes = new JSONObject();
         changes.put(CalibreBook.TITLE, localBook.getTitle());
         changes.put(CalibreBook.DESCRIPTION,
-                    localBook.getString(DBDefinitions.KEY_DESCRIPTION));
+                    localBook.getString(DBKeys.KEY_DESCRIPTION));
         // we don't read this field, but we DO write it.
         changes.put(CalibreBook.DATE_PUBLISHED,
-                    localBook.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
+                    localBook.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
         changes.put(CalibreBook.LAST_MODIFIED,
-                    localBook.getString(DBDefinitions.KEY_UTC_LAST_UPDATED));
+                    localBook.getString(DBKeys.KEY_UTC_LAST_UPDATED));
 
         final JSONArray authors = new JSONArray();
         for (final Author author
@@ -276,10 +276,10 @@ public class CalibreContentServerWriter
             changes.put(CalibreBook.PUBLISHER, "");
         }
 
-        changes.put(CalibreBook.RATING, (int) localBook.getDouble(DBDefinitions.KEY_RATING));
+        changes.put(CalibreBook.RATING, (int) localBook.getDouble(DBKeys.KEY_RATING));
 
         final JSONArray languages = new JSONArray();
-        final String language = localBook.getString(DBDefinitions.KEY_LANGUAGE);
+        final String language = localBook.getString(DBKeys.KEY_LANGUAGE);
         if (!language.isEmpty()) {
             languages.put(language);
         }
@@ -367,6 +367,6 @@ public class CalibreContentServerWriter
 
     @Override
     public void close() {
-        MaintenanceDao.getInstance().purge();
+        DaoLocator.getInstance().getMaintenanceDao().purge();
     }
 }

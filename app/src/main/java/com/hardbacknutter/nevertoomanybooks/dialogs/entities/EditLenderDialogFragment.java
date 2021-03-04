@@ -48,7 +48,8 @@ import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditLoanBinding;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
@@ -69,7 +70,7 @@ public class EditLenderDialogFragment
     public static final String TAG = "LendBookDialogFrag";
     public static final String BKEY_REQUEST_KEY = TAG + ":rk";
     /** savedInstanceState key for the newly entered loanee name. */
-    private static final String SIS_NEW_LOANEE = TAG + ':' + DBDefinitions.KEY_LOANEE;
+    private static final String SIS_NEW_LOANEE = TAG + ':' + DBKeys.KEY_LOANEE;
     /** FragmentResultListener request key to use for our response. */
     private String mRequestKey;
     /** View Binding. */
@@ -82,7 +83,7 @@ public class EditLenderDialogFragment
      * The person who currently has the book.
      * Will be {@code null} if the book is available.
      * <p>
-     * {@link DBDefinitions#KEY_LOANEE} in savedInstanceState.
+     * {@link DBKeys#KEY_LOANEE} in savedInstanceState.
      */
     @Nullable
     private String mOriginalLoanee;
@@ -120,21 +121,21 @@ public class EditLenderDialogFragment
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final LoaneeDao loaneeDao = LoaneeDao.getInstance();
+        final LoaneeDao loaneeDao = DaoLocator.getInstance().getLoaneeDao();
         // get previously used lender names
         mPeople = loaneeDao.getList();
 
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mBookId = args.getLong(DBDefinitions.KEY_PK_ID);
-        mBookTitle = Objects.requireNonNull(args.getString(DBDefinitions.KEY_TITLE), "KEY_TITLE");
+        mBookId = args.getLong(DBKeys.KEY_PK_ID);
+        mBookTitle = Objects.requireNonNull(args.getString(DBKeys.KEY_TITLE), "KEY_TITLE");
 
         if (savedInstanceState == null) {
             mOriginalLoanee = loaneeDao.getLoaneeByBookId(mBookId);
             mLoanee = mOriginalLoanee;
         } else {
-            mOriginalLoanee = savedInstanceState.getString(DBDefinitions.KEY_LOANEE);
+            mOriginalLoanee = savedInstanceState.getString(DBKeys.KEY_LOANEE);
             mLoanee = savedInstanceState.getString(SIS_NEW_LOANEE);
         }
     }
@@ -214,10 +215,10 @@ public class EditLenderDialogFragment
         final boolean success;
         if (!mLoanee.isEmpty()) {
             // lend book, reluctantly...
-            success = LoaneeDao.getInstance().setLoanee(mBookId, mLoanee);
+            success = DaoLocator.getInstance().getLoaneeDao().setLoanee(mBookId, mLoanee);
         } else {
             // return the book
-            success = LoaneeDao.getInstance().setLoanee(mBookId, null);
+            success = DaoLocator.getInstance().getLoaneeDao().setLoanee(mBookId, null);
         }
 
         if (success) {
@@ -235,7 +236,7 @@ public class EditLenderDialogFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
         // store the original loanee to avoid a trip to the database
-        outState.putString(DBDefinitions.KEY_LOANEE, mOriginalLoanee);
+        outState.putString(DBKeys.KEY_LOANEE, mOriginalLoanee);
         outState.putString(SIS_NEW_LOANEE, mLoanee);
     }
 
@@ -257,8 +258,8 @@ public class EditLenderDialogFragment
                               @IntRange(from = 1) final long bookId,
                               @NonNull final String loanee) {
             final Bundle result = new Bundle(2);
-            result.putLong(DBDefinitions.KEY_FK_BOOK, bookId);
-            result.putString(DBDefinitions.KEY_LOANEE, loanee);
+            result.putLong(DBKeys.KEY_FK_BOOK, bookId);
+            result.putString(DBKeys.KEY_LOANEE, loanee);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
@@ -271,8 +272,8 @@ public class EditLenderDialogFragment
 
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putLong(DBDefinitions.KEY_PK_ID, book.getId());
-            args.putString(DBDefinitions.KEY_TITLE, book.getString(DBDefinitions.KEY_TITLE));
+            args.putLong(DBKeys.KEY_PK_ID, book.getId());
+            args.putString(DBKeys.KEY_TITLE, book.getString(DBKeys.KEY_TITLE));
 
             final DialogFragment frag = new EditLenderDialogFragment();
             frag.setArguments(args);
@@ -290,8 +291,8 @@ public class EditLenderDialogFragment
 
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, mRequestKey);
-            args.putLong(DBDefinitions.KEY_PK_ID, bookId);
-            args.putString(DBDefinitions.KEY_TITLE, bookTitle);
+            args.putLong(DBKeys.KEY_PK_ID, bookId);
+            args.putString(DBKeys.KEY_TITLE, bookTitle);
 
             final DialogFragment frag = new EditLenderDialogFragment();
             frag.setArguments(args);
@@ -301,8 +302,8 @@ public class EditLenderDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(SanityCheck.requirePositiveValue(result.getLong(DBDefinitions.KEY_FK_BOOK)),
-                     Objects.requireNonNull(result.getString(DBDefinitions.KEY_LOANEE)));
+            onResult(SanityCheck.requirePositiveValue(result.getLong(DBKeys.KEY_FK_BOOK)),
+                     Objects.requireNonNull(result.getString(DBKeys.KEY_LOANEE)));
         }
 
         /**

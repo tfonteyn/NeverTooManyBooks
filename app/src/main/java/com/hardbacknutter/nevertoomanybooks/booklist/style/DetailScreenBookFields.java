@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 
 /**
  * Encapsulate the Book fields which can be shown on the Book-details screen.
@@ -56,7 +56,7 @@ public class DetailScreenBookFields
 
         for (int cIdx = 0; cIdx < 2; cIdx++) {
             addField(new PBoolean(isPersistent, persistenceLayer,
-                                  PK_COVER[cIdx], DBDefinitions.isCoverUsed(global, cIdx)));
+                                  PK_COVER[cIdx], DBKeys.isCoverUsed(global, cIdx)));
         }
     }
 

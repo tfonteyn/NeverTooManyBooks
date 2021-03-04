@@ -61,8 +61,8 @@ import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.EditBookById
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.UpdateSingleBookContract;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreHandler;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergePublicationSectionBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentBookDetailsMergeTocSectionBinding;
@@ -298,12 +298,12 @@ public class ShowBookFragment
                 .getDefaultSharedPreferences(getContext());
 
         final boolean isSaved = !book.isNew();
-        final boolean isRead = book.getBoolean(DBDefinitions.KEY_READ);
+        final boolean isRead = book.getBoolean(DBKeys.KEY_READ);
         menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(isSaved && !isRead);
         menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isSaved && isRead);
 
         // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-        final boolean useLending = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
+        final boolean useLending = DBKeys.isUsed(global, DBKeys.KEY_LOANEE);
         final boolean isAvailable = mVm.isAvailable(mVb.pager.getCurrentItem());
         menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isSaved && isAvailable);
         menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && isSaved && !isAvailable);
@@ -333,7 +333,7 @@ public class ShowBookFragment
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
-            final String title = book.getString(DBDefinitions.KEY_TITLE);
+            final String title = book.getString(DBKeys.KEY_TITLE);
             final List<Author> authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             //noinspection ConstantConditions
             StandardDialogs.deleteBook(context, title, authors, () -> {
@@ -465,7 +465,7 @@ public class ShowBookFragment
     private void setActivityTitle(@NonNull final Book book) {
 
         // Set the activity title
-        String title = book.getString(DBDefinitions.KEY_TITLE);
+        String title = book.getString(DBKeys.KEY_TITLE);
         if (BuildConfig.DEBUG /* always */) {
             title = "[" + book.getId() + "] " + title;
         }
@@ -569,102 +569,103 @@ public class ShowBookFragment
             final FieldFormatter<String> languageFormatter = new LanguageFormatter(userLocale);
 
             // book fields
-            fields.add(R.id.title, new TextViewAccessor<>(), DBDefinitions.KEY_TITLE);
+            fields.add(R.id.title, new TextViewAccessor<>(), DBKeys.KEY_TITLE);
 
             fields.add(R.id.author, new TextViewAccessor<>(
                                new AuthorListFormatter(Author.Details.Full, false, true)),
-                       Book.BKEY_AUTHOR_LIST, DBDefinitions.KEY_FK_AUTHOR)
+                       Book.BKEY_AUTHOR_LIST, DBKeys.KEY_FK_AUTHOR)
                   .setRelatedFields(R.id.lbl_author);
 
             fields.add(R.id.series_title, new TextViewAccessor<>(
                                new SeriesListFormatter(Series.Details.Full, false, true)),
-                       Book.BKEY_SERIES_LIST, DBDefinitions.KEY_SERIES_TITLE)
+                       Book.BKEY_SERIES_LIST, DBKeys.KEY_SERIES_TITLE)
                   .setRelatedFields(R.id.lbl_series);
 
-            fields.add(R.id.isbn, new TextViewAccessor<>(), DBDefinitions.KEY_ISBN)
+            fields.add(R.id.isbn, new TextViewAccessor<>(), DBKeys.KEY_ISBN)
                   .setRelatedFields(R.id.lbl_isbn);
 
             fields.add(R.id.description, new TextViewAccessor<>(htmlFormatter),
-                       DBDefinitions.KEY_DESCRIPTION);
+                       DBKeys.KEY_DESCRIPTION);
 
-            fields.add(R.id.genre, new TextViewAccessor<>(), DBDefinitions.KEY_GENRE)
+            fields.add(R.id.genre, new TextViewAccessor<>(), DBKeys.KEY_GENRE)
                   .setRelatedFields(R.id.lbl_genre);
 
             fields.add(R.id.language, new TextViewAccessor<>(languageFormatter),
-                       DBDefinitions.KEY_LANGUAGE)
+                       DBKeys.KEY_LANGUAGE)
                   .setRelatedFields(R.id.lbl_language);
 
             fields.add(R.id.pages, new TextViewAccessor<>(new PagesFormatter()),
-                       DBDefinitions.KEY_PAGES);
-            fields.add(R.id.format, new TextViewAccessor<>(), DBDefinitions.KEY_FORMAT);
-            fields.add(R.id.color, new TextViewAccessor<>(), DBDefinitions.KEY_COLOR);
+                       DBKeys.KEY_PAGES);
+            fields.add(R.id.format, new TextViewAccessor<>(), DBKeys.KEY_FORMAT);
+            fields.add(R.id.color, new TextViewAccessor<>(), DBKeys.KEY_COLOR);
             fields.add(R.id.publisher, new TextViewAccessor<>(new CsvFormatter()),
-                       Book.BKEY_PUBLISHER_LIST, DBDefinitions.KEY_PUBLISHER_NAME);
+                       Book.BKEY_PUBLISHER_LIST, DBKeys.KEY_PUBLISHER_NAME);
 
             fields.add(R.id.date_published, new TextViewAccessor<>(dateFormatter),
-                       DBDefinitions.KEY_BOOK_DATE_PUBLISHED)
+                       DBKeys.KEY_BOOK_DATE_PUBLISHED)
                   .setRelatedFields(R.id.lbl_date_published);
 
             fields.add(R.id.first_publication, new TextViewAccessor<>(dateFormatter),
-                       DBDefinitions.KEY_DATE_FIRST_PUBLICATION)
+                       DBKeys.KEY_DATE_FIRST_PUBLICATION)
                   .setRelatedFields(R.id.lbl_first_publication);
 
-            fields.add(R.id.print_run, new TextViewAccessor<>(), DBDefinitions.KEY_PRINT_RUN)
+            fields.add(R.id.print_run, new TextViewAccessor<>(), DBKeys.KEY_PRINT_RUN)
                   .setRelatedFields(R.id.lbl_print_run);
 
             fields.add(R.id.price_listed, new TextViewAccessor<>(moneyFormatter),
-                       DBDefinitions.KEY_PRICE_LISTED)
+                       DBKeys.KEY_PRICE_LISTED)
                   .setRelatedFields(R.id.price_listed_currency, R.id.lbl_price_listed);
 
             // Personal fields
             fields.add(R.id.bookshelves, new EntityListChipGroupAccessor(
-                               () -> new ArrayList<>(BookshelfDao.getInstance().getAll()),
+                               () -> new ArrayList<>(
+                                       DaoLocator.getInstance().getBookshelfDao().getAll()),
                                false), Book.BKEY_BOOKSHELF_LIST,
-                       DBDefinitions.KEY_FK_BOOKSHELF)
+                       DBKeys.KEY_FK_BOOKSHELF)
                   .setRelatedFields(R.id.lbl_bookshelves);
 
             fields.add(R.id.date_acquired, new TextViewAccessor<>(dateFormatter),
-                       DBDefinitions.KEY_DATE_ACQUIRED)
+                       DBKeys.KEY_DATE_ACQUIRED)
                   .setRelatedFields(R.id.lbl_date_acquired);
 
             fields.add(R.id.edition,
                        new BitmaskChipGroupAccessor(Book.Edition::getEditions, false),
-                       DBDefinitions.KEY_EDITION_BITMASK)
+                       DBKeys.KEY_EDITION_BITMASK)
                   .setRelatedFields(R.id.lbl_edition);
 
-            fields.add(R.id.location, new TextViewAccessor<>(), DBDefinitions.KEY_LOCATION)
+            fields.add(R.id.location, new TextViewAccessor<>(), DBKeys.KEY_LOCATION)
                   .setRelatedFields(R.id.lbl_location, R.id.lbl_location_long);
 
-            fields.add(R.id.rating, new RatingBarAccessor(false), DBDefinitions.KEY_RATING)
+            fields.add(R.id.rating, new RatingBarAccessor(false), DBKeys.KEY_RATING)
                   .setRelatedFields(R.id.lbl_rating);
 
             fields.add(R.id.condition, new TextViewAccessor<>(
                                new StringArrayResFormatter(context, R.array.conditions_book)),
-                       DBDefinitions.KEY_BOOK_CONDITION)
+                       DBKeys.KEY_BOOK_CONDITION)
                   .setRelatedFields(R.id.lbl_condition);
             fields.add(R.id.condition_cover, new TextViewAccessor<>(
                                new StringArrayResFormatter(context, R.array.conditions_dust_cover)),
-                       DBDefinitions.KEY_BOOK_CONDITION_COVER)
+                       DBKeys.KEY_BOOK_CONDITION_COVER)
                   .setRelatedFields(R.id.lbl_condition_cover);
 
             fields.add(R.id.notes, new TextViewAccessor<>(htmlFormatter),
-                       DBDefinitions.KEY_PRIVATE_NOTES)
+                       DBKeys.KEY_PRIVATE_NOTES)
                   .setRelatedFields(R.id.lbl_notes);
 
             fields.add(R.id.read_start, new TextViewAccessor<>(dateFormatter),
-                       DBDefinitions.KEY_READ_START)
+                       DBKeys.KEY_READ_START)
                   .setRelatedFields(R.id.lbl_read_start);
             fields.add(R.id.read_end, new TextViewAccessor<>(dateFormatter),
-                       DBDefinitions.KEY_READ_END)
+                       DBKeys.KEY_READ_END)
                   .setRelatedFields(R.id.lbl_read_end);
 
-            fields.add(R.id.icon_read, new BooleanIndicatorAccessor(), DBDefinitions.KEY_READ);
+            fields.add(R.id.icon_read, new BooleanIndicatorAccessor(), DBKeys.KEY_READ);
 
-            fields.add(R.id.icon_signed, new BooleanIndicatorAccessor(), DBDefinitions.KEY_SIGNED)
+            fields.add(R.id.icon_signed, new BooleanIndicatorAccessor(), DBKeys.KEY_SIGNED)
                   .setRelatedFields(R.id.lbl_signed);
 
             fields.add(R.id.price_paid, new TextViewAccessor<>(moneyFormatter),
-                       DBDefinitions.KEY_PRICE_PAID)
+                       DBKeys.KEY_PRICE_PAID)
                   .setRelatedFields(R.id.price_paid_currency, R.id.lbl_price_paid);
 
             return fields;
@@ -701,8 +702,8 @@ public class ShowBookFragment
 
                 final SharedPreferences global = PreferenceManager
                         .getDefaultSharedPreferences(itemView.getContext());
-                mUseLoanee = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
-                mUseToc = DBDefinitions.isUsed(global, DBDefinitions.KEY_TOC_BITMASK);
+                mUseLoanee = DBKeys.isUsed(global, DBKeys.KEY_LOANEE);
+                mUseToc = DBKeys.isUsed(global, DBKeys.KEY_TOC_BITMASK);
 
                 if (!mUseLoanee) {
                     mVb.lendTo.setVisibility(View.GONE);
@@ -802,7 +803,7 @@ public class ShowBookFragment
              * @param book to load from
              */
             private void onBindToc(@NonNull final Book book) {
-                final boolean isAnthology = book.isBitSet(DBDefinitions.KEY_TOC_BITMASK,
+                final boolean isAnthology = book.isBitSet(DBKeys.KEY_TOC_BITMASK,
                                                           Book.TOC_MULTIPLE_WORKS);
                 mVbToc.lblAnthology.setVisibility(isAnthology ? View.VISIBLE : View.GONE);
 

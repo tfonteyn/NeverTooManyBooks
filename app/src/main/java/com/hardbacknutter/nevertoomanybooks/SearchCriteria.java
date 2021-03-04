@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -29,7 +29,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
 /**
@@ -215,17 +215,17 @@ public class SearchCriteria {
             mFtsPublisher = bundle.getString(BKEY_SEARCH_TEXT_PUBLISHER);
             isSet = true;
         }
-        if (bundle.containsKey(DBDefinitions.KEY_TITLE)) {
-            mFtsTitle = bundle.getString(DBDefinitions.KEY_TITLE);
+        if (bundle.containsKey(DBKeys.KEY_TITLE)) {
+            mFtsTitle = bundle.getString(DBKeys.KEY_TITLE);
             isSet = true;
         }
-        if (bundle.containsKey(DBDefinitions.KEY_SERIES_TITLE)) {
-            mFtsSeries = bundle.getString(DBDefinitions.KEY_SERIES_TITLE);
+        if (bundle.containsKey(DBKeys.KEY_SERIES_TITLE)) {
+            mFtsSeries = bundle.getString(DBKeys.KEY_SERIES_TITLE);
             isSet = true;
         }
 
-        if (bundle.containsKey(DBDefinitions.KEY_LOANEE)) {
-            mLoanee = bundle.getString(DBDefinitions.KEY_LOANEE);
+        if (bundle.containsKey(DBKeys.KEY_LOANEE)) {
+            mLoanee = bundle.getString(DBKeys.KEY_LOANEE);
             isSet = true;
         }
         if (bundle.containsKey(Book.BKEY_BOOK_ID_LIST)) {
@@ -246,10 +246,10 @@ public class SearchCriteria {
         intent.putExtra(BKEY_SEARCH_TEXT_KEYWORDS, mFtsKeywords)
               .putExtra(BKEY_SEARCH_TEXT_AUTHOR, mFtsAuthor)
               .putExtra(BKEY_SEARCH_TEXT_PUBLISHER, mFtsPublisher)
-              .putExtra(DBDefinitions.KEY_TITLE, mFtsTitle)
-              .putExtra(DBDefinitions.KEY_SERIES_TITLE, mFtsSeries)
+              .putExtra(DBKeys.KEY_TITLE, mFtsTitle)
+              .putExtra(DBKeys.KEY_SERIES_TITLE, mFtsSeries)
 
-              .putExtra(DBDefinitions.KEY_LOANEE, mLoanee)
+              .putExtra(DBKeys.KEY_LOANEE, mLoanee)
               .putExtra(Book.BKEY_BOOK_ID_LIST, mBookIdList);
     }
 

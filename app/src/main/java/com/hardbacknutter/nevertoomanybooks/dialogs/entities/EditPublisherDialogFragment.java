@@ -36,7 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditPublisherBinding;
@@ -85,7 +86,7 @@ public class EditPublisherDialogFragment
                               @NonNull final Publisher publisher) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
-        args.putParcelable(DBDefinitions.KEY_FK_PUBLISHER, publisher);
+        args.putParcelable(DBKeys.KEY_FK_PUBLISHER, publisher);
 
         final DialogFragment frag = new EditPublisherDialogFragment();
         frag.setArguments(args);
@@ -99,14 +100,14 @@ public class EditPublisherDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mPublisher = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_PUBLISHER),
+        mPublisher = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_PUBLISHER),
                                             "KEY_FK_PUBLISHER");
 
         if (savedInstanceState == null) {
             mName = mPublisher.getName();
         } else {
             //noinspection ConstantConditions
-            mName = savedInstanceState.getString(DBDefinitions.KEY_PUBLISHER_NAME);
+            mName = savedInstanceState.getString(DBKeys.KEY_PUBLISHER_NAME);
         }
     }
 
@@ -121,7 +122,7 @@ public class EditPublisherDialogFragment
         final ExtArrayAdapter<String> adapter = new ExtArrayAdapter<>(
                 getContext(), R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                PublisherDao.getInstance().getNames());
+                DaoLocator.getInstance().getPublisherDao().getNames());
         mVb.publisher.setText(mName);
         mVb.publisher.setAdapter(adapter);
     }
@@ -158,8 +159,8 @@ public class EditPublisherDialogFragment
         //noinspection ConstantConditions
         final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
+        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
         // check if it already exists (will be 0 if not)
-        final PublisherDao publisherDao = PublisherDao.getInstance();
         final long existingId = publisherDao.find(context, mPublisher, true, bookLocale);
 
         if (existingId == 0) {
@@ -212,7 +213,7 @@ public class EditPublisherDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_PUBLISHER_NAME, mName);
+        outState.putString(DBKeys.KEY_PUBLISHER_NAME, mName);
     }
 
     @Override

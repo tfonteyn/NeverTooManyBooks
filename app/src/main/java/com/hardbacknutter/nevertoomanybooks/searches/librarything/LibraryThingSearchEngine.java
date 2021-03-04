@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchCoordinator;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngine;
 import com.hardbacknutter.nevertoomanybooks.searches.SearchEngineBase;
@@ -132,7 +132,7 @@ public class LibraryThingSearchEngine
                 .setSupportsMultipleCoverSizes(true)
                 .setFilenameSuffix("LT")
 
-                .setDomainKey(DBDefinitions.KEY_ESID_LIBRARY_THING)
+                .setDomainKey(DBKeys.KEY_ESID_LIBRARY_THING)
                 .setDomainViewId(R.id.site_library_thing)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LIBRARY_THING)
                 .build();
@@ -229,7 +229,7 @@ public class LibraryThingSearchEngine
         }
 
         if (fetchThumbnail[0]) {
-            final String isbnStr = bookData.getString(DBDefinitions.KEY_ISBN);
+            final String isbnStr = bookData.getString(DBKeys.KEY_ISBN);
             if (isbnStr != null && !isbnStr.isEmpty()) {
                 final ArrayList<String> imageList = searchBestCoverImageByIsbn(isbnStr, 0);
                 if (!imageList.isEmpty()) {

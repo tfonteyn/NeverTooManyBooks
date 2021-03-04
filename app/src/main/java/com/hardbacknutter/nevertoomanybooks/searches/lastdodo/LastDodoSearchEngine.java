@@ -36,7 +36,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -89,7 +89,7 @@ public class LastDodoSearchEngine
                 .setCountry("NL", "nl")
                 .setFilenameSuffix("LDD")
 
-                .setDomainKey(DBDefinitions.KEY_ESID_LAST_DODO_NL)
+                .setDomainKey(DBKeys.KEY_ESID_LAST_DODO_NL)
                 .setDomainViewId(R.id.site_last_dodo_nl)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_LAST_DODO_NL)
                 .build();
@@ -184,11 +184,11 @@ public class LastDodoSearchEngine
             final Element td = tr.child(1);
             switch (th.text()) {
                 case "LastDodo nummer:":
-                    processText(td, DBDefinitions.KEY_ESID_LAST_DODO_NL, bookData);
+                    processText(td, DBKeys.KEY_ESID_LAST_DODO_NL, bookData);
                     break;
 
                 case "Titel:":
-                    processText(td, DBDefinitions.KEY_TITLE, bookData);
+                    processText(td, DBKeys.KEY_TITLE, bookData);
                     break;
 
                 case "Serie / held:":
@@ -224,11 +224,11 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Jaar:":
-                    processText(td, DBDefinitions.KEY_BOOK_DATE_PUBLISHED, bookData);
+                    processText(td, DBKeys.KEY_BOOK_DATE_PUBLISHED, bookData);
                     break;
 
                 case "Cover:":
-                    processText(td, DBDefinitions.KEY_FORMAT, bookData);
+                    processText(td, DBKeys.KEY_FORMAT, bookData);
                     break;
 
                 case "Druk:":
@@ -236,7 +236,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Inkleuring:":
-                    processText(td, DBDefinitions.KEY_COLOR, bookData);
+                    processText(td, DBKeys.KEY_COLOR, bookData);
                     break;
 
                 case "ISBN:":
@@ -244,17 +244,17 @@ public class LastDodoSearchEngine
                     if (!"Geen".equals(tmpString)) {
                         tmpString = digits(tmpString, true);
                         if (!tmpString.isEmpty()) {
-                            bookData.putString(DBDefinitions.KEY_ISBN, tmpString);
+                            bookData.putString(DBKeys.KEY_ISBN, tmpString);
                         }
                     }
                     break;
 
                 case "Oplage:":
-                    processText(td, DBDefinitions.KEY_PRINT_RUN, bookData);
+                    processText(td, DBKeys.KEY_PRINT_RUN, bookData);
                     break;
 
                 case "Aantal bladzijden:":
-                    processText(td, DBDefinitions.KEY_PAGES, bookData);
+                    processText(td, DBKeys.KEY_PAGES, bookData);
                     break;
 
                 case "Afmetingen:":
@@ -272,7 +272,7 @@ public class LastDodoSearchEngine
                     break;
 
                 case "Bijzonderheden:":
-                    processText(td, DBDefinitions.KEY_DESCRIPTION, bookData);
+                    processText(td, DBKeys.KEY_DESCRIPTION, bookData);
                     break;
 
                 default:
@@ -299,7 +299,7 @@ public class LastDodoSearchEngine
         // We DON'T store a toc with a single entry (i.e. the book title itself).
         if (toc != null && toc.size() > 1) {
             bookData.putParcelableArrayList(Book.BKEY_TOC_LIST, toc);
-            bookData.putLong(DBDefinitions.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
+            bookData.putLong(DBKeys.KEY_TOC_BITMASK, Book.TOC_MULTIPLE_WORKS);
         }
 
         if (!mAuthors.isEmpty()) {
@@ -317,7 +317,7 @@ public class LastDodoSearchEngine
         }
 
         if (fetchThumbnail[0] || fetchThumbnail[1]) {
-            final String isbn = bookData.getString(DBDefinitions.KEY_ISBN);
+            final String isbn = bookData.getString(DBKeys.KEY_ISBN);
             final Element images = document.getElementById("images_container");
             if (images != null) {
                 final Elements aas = images.select("a");
@@ -448,12 +448,12 @@ public class LastDodoSearchEngine
 
     private void processLanguage(@NonNull final Element td,
                                  @NonNull final Bundle bookData) {
-        processText(td, DBDefinitions.KEY_LANGUAGE, bookData);
-        String lang = bookData.getString(DBDefinitions.KEY_LANGUAGE);
+        processText(td, DBKeys.KEY_LANGUAGE, bookData);
+        String lang = bookData.getString(DBKeys.KEY_LANGUAGE);
         if (lang != null && !lang.isEmpty()) {
             lang = Languages.getInstance()
                             .getISO3FromDisplayName(getAppContext(), getLocale(), lang);
-            bookData.putString(DBDefinitions.KEY_LANGUAGE, lang);
+            bookData.putString(DBKeys.KEY_LANGUAGE, lang);
         }
     }
 

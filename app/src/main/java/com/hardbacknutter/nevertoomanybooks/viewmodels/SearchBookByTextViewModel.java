@@ -32,9 +32,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Locale;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.searches.isfdb.IsfdbSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -97,8 +96,8 @@ public class SearchBookByTextViewModel
         // Uses {@link DBDefinitions#KEY_AUTHOR_FORMATTED_GIVEN_FIRST} as not all
         // search sites can copy with the formatted version.
         final ArrayList<String> authors =
-                AuthorDao.getInstance()
-                         .getNames(DBDefinitions.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
+                DaoLocator.getInstance().getAuthorDao()
+                          .getNames(DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST);
 
         final Collection<String> uniqueNames = new HashSet<>(authors.size());
         for (final String s : authors) {
@@ -156,10 +155,8 @@ public class SearchBookByTextViewModel
      */
     @NonNull
     public ArrayList<String> getPublisherNames(@NonNull final Context context) {
-
         final Locale userLocale = AppLocale.getInstance().getUserLocale(context);
-
-        final ArrayList<String> publishers = PublisherDao.getInstance().getNames();
+        final ArrayList<String> publishers = DaoLocator.getInstance().getPublisherDao().getNames();
 
         final Collection<String> uniqueNames = new HashSet<>(publishers.size());
         for (final String s : publishers) {

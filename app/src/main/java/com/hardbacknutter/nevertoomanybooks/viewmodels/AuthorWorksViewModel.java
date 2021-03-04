@@ -33,10 +33,9 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.AuthorWorksFragment;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
@@ -85,12 +84,13 @@ public class AuthorWorksViewModel
         if (mBookDao == null) {
             mBookDao = new BookDao(context, TAG);
 
-            final long authorId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+            final long authorId = args.getLong(DBKeys.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(authorId, "authorId");
-            mAuthor = Objects.requireNonNull(AuthorDao.getInstance().getById(authorId),
-                                             String.valueOf(authorId));
+            mAuthor = Objects.requireNonNull(
+                    DaoLocator.getInstance().getAuthorDao().getById(authorId),
+                    String.valueOf(authorId));
 
-            final long bookshelfId = args.getLong(DBDefinitions.KEY_FK_BOOKSHELF,
+            final long bookshelfId = args.getLong(DBKeys.KEY_FK_BOOKSHELF,
                                                   Bookshelf.ALL_BOOKS);
             mBookshelf = Bookshelf.getBookshelf(context, bookshelfId, Bookshelf.ALL_BOOKS);
             mAllBookshelves = mBookshelf.getId() == Bookshelf.ALL_BOOKS;
@@ -136,7 +136,7 @@ public class AuthorWorksViewModel
 
     @NonNull
     public ArrayList<Long> getBookIds(@NonNull final TocEntry tocEntry) {
-        return TocEntryDao.getInstance().getBookIds(tocEntry.getId());
+        return DaoLocator.getInstance().getTocEntryDao().getBookIds(tocEntry.getId());
     }
 
     /**
@@ -151,14 +151,13 @@ public class AuthorWorksViewModel
                           @NonNull final AuthorWork work) {
         final boolean success;
         if (work instanceof TocEntry) {
-            success = TocEntryDao.getInstance().delete(context, (TocEntry) work);
+            success = DaoLocator.getInstance().getTocEntryDao().delete(context, (TocEntry) work);
 
         } else if (work instanceof BookAsWork) {
             success = mBookDao.deleteBook(context, work.getId());
             if (success) {
                 mDataModified = true;
             }
-
         } else {
             throw new IllegalArgumentException(String.valueOf(work));
         }

@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter;
 
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
@@ -341,14 +341,14 @@ public class ReviewsListApiHandler
                 //          <book>
                 .s(XmlTags.XML_BOOK)
                 //              <id type="integer">951750</id>
-                .longBody(XmlTags.XML_ID, DBDefinitions.KEY_ESID_GOODREADS_BOOK)
+                .longBody(XmlTags.XML_ID, DBKeys.KEY_ESID_GOODREADS_BOOK)
                 //              <isbn>0583120911</isbn>
-                .stringBody(XmlTags.XML_ISBN, DBDefinitions.KEY_ISBN)
+                .stringBody(XmlTags.XML_ISBN, DBKeys.KEY_ISBN)
                 //              <isbn13>9780583120913</isbn13>
                 .stringBody(XmlTags.XML_ISBN_13, Review.ISBN13)
                 //              ...
                 //              <title><![CDATA[The Dying Earth]]></title>
-                .stringBody(XmlTags.XML_TITLE, DBDefinitions.KEY_TITLE)
+                .stringBody(XmlTags.XML_TITLE, DBKeys.KEY_TITLE)
                 //              <image_url>
                 //      http://photo.goodreads.com/books/1294108593m/951750.jpg</image_url>
                 .stringBody(XmlTags.XML_IMAGE_URL, Review.LARGE_IMAGE_URL)
@@ -361,7 +361,7 @@ public class ReviewsListApiHandler
                 // while our app uses a String. So use a Review and convert later.
                 .longBody(XmlTags.XML_NUM_PAGES, Review.PAGES)
                 //              <format></format>
-                .stringBody(XmlTags.XML_FORMAT, DBDefinitions.KEY_FORMAT)
+                .stringBody(XmlTags.XML_FORMAT, DBKeys.KEY_FORMAT)
                 //              <publisher></publisher>
                 .stringBody(XmlTags.XML_PUBLISHER, Review.PUBLISHER)
                 //              <publication_day>20</publication_day>
@@ -371,14 +371,14 @@ public class ReviewsListApiHandler
                 //              <publication_month>4</publication_month>
                 .longBody(XmlTags.XML_PUBLICATION_MONTH, Review.PUBLICATION_MONTH)
                 //              <description><![CDATA[]]></description>
-                .stringBody(XmlTags.XML_DESCRIPTION, DBDefinitions.KEY_DESCRIPTION)
+                .stringBody(XmlTags.XML_DESCRIPTION, DBKeys.KEY_DESCRIPTION)
                 //              ...
                 //              <authors>
                 .s(XmlTags.XML_AUTHORS).asArray(Review.AUTHORS)
                 //                  <author>
                 .s(XmlTags.XML_AUTHOR).asArrayItem()
                 //                      <id>5376</id>
-                .longBody(XmlTags.XML_ID, DBDefinitions.KEY_FK_AUTHOR)
+                .longBody(XmlTags.XML_ID, DBKeys.KEY_FK_AUTHOR)
                 //                      <name><![CDATA[Jack Vance]]></name>
                 .stringBody(XmlTags.XML_NAME, Review.AUTHOR_NAME_GF)
                 //                      <role>Illustrator</role>
@@ -390,7 +390,7 @@ public class ReviewsListApiHandler
                 //          </book>
                 .popTo(XmlTags.XML_REVIEW)
                 //          <rating>0</rating>
-                .doubleBody(XmlTags.XML_RATING, DBDefinitions.KEY_RATING)
+                .doubleBody(XmlTags.XML_RATING, DBKeys.KEY_RATING)
                 //          ...
                 //          <shelves>
                 .s(XmlTags.XML_SHELVES).asArray(Review.SHELVES)
@@ -403,9 +403,9 @@ public class ReviewsListApiHandler
                 //          </shelves>
                 //          ...
                 //          <started_at></started_at>
-                .stringBody(XmlTags.XML_STARTED_AT, DBDefinitions.KEY_READ_START)
+                .stringBody(XmlTags.XML_STARTED_AT, DBKeys.KEY_READ_START)
                 //          <read_at></read_at>
-                .stringBody(XmlTags.XML_READ_AT, DBDefinitions.KEY_READ_END)
+                .stringBody(XmlTags.XML_READ_AT, DBKeys.KEY_READ_END)
                 //          <date_added>Mon Feb 13 05:32:30 -0800 2012</date_added>
                 .s(XmlTags.XML_DATE_ADDED)
                 .stringBody(Review.ADDED).setListener(mAddedListener).pop()

@@ -36,9 +36,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.Booklist;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistNavigatorDao;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Entity;
@@ -96,7 +96,7 @@ public class ShowBookViewModel
 
     /**
      * <ul>
-     * <li>{@link DBDefinitions#KEY_PK_ID}  book id</li>
+     * <li>{@link DBKeys#KEY_PK_ID}  book id</li>
      * <li>{@link Entity#BKEY_DATA_MODIFIED}      boolean</li>
      * </ul>
      */
@@ -105,7 +105,7 @@ public class ShowBookViewModel
     public Intent getResultIntent() {
         // always set the *current* book id, so the BoB list can reposition correctly.
         if (mCurrentBook != null) {
-            mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, mCurrentBook.getId());
+            mResultIntent.putExtra(DBKeys.KEY_PK_ID, mCurrentBook.getId());
         }
         return mResultIntent;
     }
@@ -121,7 +121,7 @@ public class ShowBookViewModel
         if (mBookDao == null) {
             mBookDao = new BookDao(context, TAG);
 
-            final long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+            final long bookId = args.getLong(DBKeys.KEY_PK_ID, 0);
             SanityCheck.requirePositiveValue(bookId, "KEY_PK_ID");
             mCurrentBook = Book.from(bookId, mBookDao);
 
@@ -214,8 +214,8 @@ public class ShowBookViewModel
      */
     public void deleteLoan(@IntRange(from = 0) final int position) {
         final Book book = getBookAtPosition(position);
-        book.remove(DBDefinitions.KEY_LOANEE);
-        LoaneeDao.getInstance().setLoanee(book, null);
+        book.remove(DBKeys.KEY_LOANEE);
+        DaoLocator.getInstance().getLoaneeDao().setLoanee(book, null);
     }
 
     /**
@@ -283,7 +283,7 @@ public class ShowBookViewModel
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         // Globally disabled overrules style setting
-        if (!DBDefinitions.isCoverUsed(global, cIdx)) {
+        if (!DBKeys.isCoverUsed(global, cIdx)) {
             return false;
         }
 

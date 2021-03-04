@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,7 @@ import android.content.SharedPreferences;
 import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.settings.Prefs;
 
 /**
@@ -48,7 +48,7 @@ public final class ColorMapper
     @NonNull
     @Override
     public String getKey() {
-        return DBDefinitions.KEY_COLOR;
+        return DBKeys.KEY_COLOR;
     }
 
     static boolean isMappingAllowed(@NonNull final SharedPreferences global) {

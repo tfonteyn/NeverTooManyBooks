@@ -31,10 +31,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAboutBinding;
 import com.hardbacknutter.nevertoomanybooks.utils.PackageInfoWrapper;
 
@@ -83,8 +81,9 @@ public class AboutFragment
             mVb.bookCount.setText(String.valueOf(bookDao.countBooks()));
         }
 
-        mVb.seriesCount.setText(String.valueOf(SeriesDao.getInstance().count()));
-        mVb.authorCount.setText(String.valueOf(AuthorDao.getInstance().count()));
-        mVb.publisherCount.setText(String.valueOf(PublisherDao.getInstance().count()));
+        final DaoLocator daoLocator = DaoLocator.getInstance();
+        mVb.seriesCount.setText(String.valueOf(daoLocator.getSeriesDao().count()));
+        mVb.authorCount.setText(String.valueOf(daoLocator.getAuthorDao().count()));
+        mVb.publisherCount.setText(String.valueOf(daoLocator.getPublisherDao().count()));
     }
 }

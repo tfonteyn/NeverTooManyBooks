@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -87,7 +87,7 @@ public class BookCoder
         // The presence of KEY_FK_CALIBRE_LIBRARY indicates there IS a calibre library for
         // this book. We need to explicitly load and encode it using Book.BKEY_CALIBRE_LIBRARY
         // so we can easily find/decode it in the #decode
-        if (DBDefinitions.KEY_FK_CALIBRE_LIBRARY.equals(key)) {
+        if (DBKeys.KEY_FK_CALIBRE_LIBRARY.equals(key)) {
             final CalibreLibrary library = book.getCalibreLibrary();
             if (library != null) {
                 out.put(Book.BKEY_CALIBRE_LIBRARY, mCalibreLibraryCoder.encode(library));

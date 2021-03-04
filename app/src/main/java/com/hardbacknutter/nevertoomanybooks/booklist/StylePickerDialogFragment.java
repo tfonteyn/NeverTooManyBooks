@@ -39,7 +39,7 @@ import com.hardbacknutter.nevertoomanybooks.FragmentLauncherBase;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogStylesMenuBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.widgets.RadioGroupRecyclerAdapter;
@@ -204,7 +204,7 @@ public class StylePickerDialogFragment
                               @NonNull final String requestKey,
                               @NonNull final String uuid) {
             final Bundle result = new Bundle(1);
-            result.putString(DBDefinitions.KEY_FK_STYLE, uuid);
+            result.putString(DBKeys.KEY_FK_STYLE, uuid);
             fragment.getParentFragmentManager().setFragmentResult(requestKey, result);
         }
 
@@ -230,7 +230,7 @@ public class StylePickerDialogFragment
         @Override
         public void onFragmentResult(@NonNull final String requestKey,
                                      @NonNull final Bundle result) {
-            onResult(Objects.requireNonNull(result.getString(DBDefinitions.KEY_FK_STYLE)));
+            onResult(Objects.requireNonNull(result.getString(DBKeys.KEY_FK_STYLE)));
         }
 
         /**

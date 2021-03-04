@@ -59,7 +59,7 @@ import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.SearchCriteria;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
@@ -305,12 +305,12 @@ public class SearchCoordinator
 
             if (args != null) {
                 mFetchThumbnail = new boolean[2];
-                mFetchThumbnail[0] = DBDefinitions.isCoverUsed(global, 0);
-                mFetchThumbnail[1] = DBDefinitions.isCoverUsed(global, 1);
+                mFetchThumbnail[0] = DBKeys.isCoverUsed(global, 0);
+                mFetchThumbnail[1] = DBKeys.isCoverUsed(global, 1);
 
-                mIsbnSearchText = args.getString(DBDefinitions.KEY_ISBN, "");
+                mIsbnSearchText = args.getString(DBKeys.KEY_ISBN, "");
 
-                mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE, "");
+                mTitleSearchText = args.getString(DBKeys.KEY_TITLE, "");
 
                 mAuthorSearchText = args.getString(
                         SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, "");
@@ -520,7 +520,7 @@ public class SearchCoordinator
      * @return Present/absent
      */
     private boolean hasIsbn(@NonNull final Bundle bundle) {
-        final String isbnStr = bundle.getString(DBDefinitions.KEY_ISBN);
+        final String isbnStr = bundle.getString(DBKeys.KEY_ISBN);
         return isbnStr != null && !isbnStr.trim().isEmpty();
     }
 
@@ -721,8 +721,8 @@ public class SearchCoordinator
             for (final Site site : allSites) {
                 if (mSearchResults.containsKey(site.engineId)) {
                     final Bundle bookData = mSearchResults.get(site.engineId);
-                    if (bookData != null && bookData.containsKey(DBDefinitions.KEY_ISBN)) {
-                        final String isbnFound = bookData.getString(DBDefinitions.KEY_ISBN);
+                    if (bookData != null && bookData.containsKey(DBKeys.KEY_ISBN)) {
+                        final String isbnFound = bookData.getString(DBKeys.KEY_ISBN);
                         // do they match?
                         if (isbnFound != null && !isbnFound.isEmpty()
                             && mIsbn.equals(ISBN.createISBN(isbnFound))) {
@@ -742,7 +742,7 @@ public class SearchCoordinator
             sites.addAll(sitesWithoutIsbn);
             // Add the passed ISBN first;
             // avoids overwriting with potentially different isbn from the sites
-            mBookData.putString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
+            mBookData.putString(DBKeys.KEY_ISBN, mIsbnSearchText);
 
         } else {
             // If an ISBN was not passed, then just use the default order
@@ -783,15 +783,15 @@ public class SearchCoordinator
         }
 
         // If we did not get an ISBN, use the one we originally searched for.
-        final String isbnStr = mBookData.getString(DBDefinitions.KEY_ISBN);
+        final String isbnStr = mBookData.getString(DBKeys.KEY_ISBN);
         if (isbnStr == null || isbnStr.isEmpty()) {
-            mBookData.putString(DBDefinitions.KEY_ISBN, mIsbnSearchText);
+            mBookData.putString(DBKeys.KEY_ISBN, mIsbnSearchText);
         }
 
         // If we did not get an title, use the one we originally searched for.
-        final String title = mBookData.getString(DBDefinitions.KEY_TITLE);
+        final String title = mBookData.getString(DBKeys.KEY_TITLE);
         if (title == null || title.isEmpty()) {
-            mBookData.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
+            mBookData.putString(DBKeys.KEY_TITLE, mTitleSearchText);
         }
     }
 
@@ -863,8 +863,8 @@ public class SearchCoordinator
                                     @NonNull final Locale locale) {
 
         for (final String key : siteData.keySet()) {
-            if (DBDefinitions.KEY_BOOK_DATE_PUBLISHED.equals(key)
-                || DBDefinitions.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
+            if (DBKeys.KEY_BOOK_DATE_PUBLISHED.equals(key)
+                || DBKeys.KEY_DATE_FIRST_PUBLICATION.equals(key)) {
                 accumulateDates(context, locale, key, siteData);
 
             } else if (Book.BKEY_AUTHOR_LIST.equals(key)
@@ -1023,7 +1023,7 @@ public class SearchCoordinator
             if (result != null && hasIsbn(result)) {
                 mWaitingForExactCode = false;
                 // replace the search text with the (we hope) exact isbn
-                mIsbnSearchText = result.getString(DBDefinitions.KEY_ISBN, "");
+                mIsbnSearchText = result.getString(DBKeys.KEY_ISBN, "");
 
                 if (BuildConfig.DEBUG && DEBUG_SWITCHES.SEARCH_COORDINATOR) {
                     Log.d(TAG, "onSearchTaskFinished|mWaitingForExactCode|isbn=" + mIsbnSearchText);

@@ -94,7 +94,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.BooksonbookshelfHeaderBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
@@ -409,11 +409,11 @@ public class BooksOnBookshelf
                     final DataHolder rowData = new CursorRow(cursor);
 
                     // If it's a book, open the details screen.
-                    if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+                    if (rowData.getInt(DBKeys.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
                         mDisplayBookLauncher.launch(new ShowBookContract.Input(
-                                rowData.getLong(DBDefinitions.KEY_FK_BOOK),
+                                rowData.getLong(DBKeys.KEY_FK_BOOK),
                                 mVm.getBookNavigationTableName(),
-                                rowData.getLong(DBDefinitions.KEY_PK_ID),
+                                rowData.getLong(DBKeys.KEY_PK_ID),
                                 mVm.getCurrentStyle(BooksOnBookshelf.this).getUuid()
                         ));
 
@@ -440,7 +440,7 @@ public class BooksOnBookshelf
                     final Menu menu = MenuPicker.createMenu(BooksOnBookshelf.this);
                     if (onCreateContextMenu(menu, rowData)) {
                         // we have a menu to show, set the title according to the level.
-                        final int level = rowData.getInt(DBDefinitions.KEY_BL_NODE_LEVEL);
+                        final int level = rowData.getInt(DBKeys.KEY_BL_NODE_LEVEL);
                         final String title = mAdapter.getLevelText(position, level);
 
                         if (BuildConfig.MENU_PICKER_USES_FRAGMENT) {
@@ -683,7 +683,7 @@ public class BooksOnBookshelf
                                 @NonNull final DataHolder rowData) {
         menu.clear();
 
-        final int rowGroupId = rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
+        final int rowGroupId = rowData.getInt(DBKeys.KEY_BL_NODE_GROUP);
         switch (rowGroupId) {
             case BooklistGroup.BOOK: {
                 getMenuInflater().inflate(R.menu.book, menu);
@@ -693,12 +693,12 @@ public class BooksOnBookshelf
                 final SharedPreferences global = PreferenceManager
                         .getDefaultSharedPreferences(this);
 
-                final boolean isRead = rowData.getBoolean(DBDefinitions.KEY_READ);
+                final boolean isRead = rowData.getBoolean(DBKeys.KEY_READ);
                 menu.findItem(R.id.MENU_BOOK_SET_READ).setVisible(!isRead);
                 menu.findItem(R.id.MENU_BOOK_SET_UNREAD).setVisible(isRead);
 
                 // specifically check App.isUsed for KEY_LOANEE independent from the style in use.
-                final boolean useLending = DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE);
+                final boolean useLending = DBKeys.isUsed(global, DBKeys.KEY_LOANEE);
                 final boolean isAvailable = mVm.isAvailable(rowData);
                 menu.findItem(R.id.MENU_BOOK_LOAN_ADD).setVisible(useLending && isAvailable);
                 menu.findItem(R.id.MENU_BOOK_LOAN_DELETE).setVisible(useLending && !isAvailable);
@@ -719,7 +719,7 @@ public class BooksOnBookshelf
                 getMenuInflater().inflate(R.menu.author, menu);
                 getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
-                final boolean complete = rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+                final boolean complete = rowData.getBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE);
                 menu.findItem(R.id.MENU_AUTHOR_SET_COMPLETE).setVisible(!complete);
                 menu.findItem(R.id.MENU_AUTHOR_SET_INCOMPLETE).setVisible(complete);
 
@@ -727,12 +727,12 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.SERIES: {
-                if (rowData.getLong(DBDefinitions.KEY_FK_SERIES) != 0) {
+                if (rowData.getLong(DBKeys.KEY_FK_SERIES) != 0) {
                     getMenuInflater().inflate(R.menu.series, menu);
                     getMenuInflater().inflate(R.menu.sm_search_on_amazon, menu);
 
                     final boolean complete =
-                            rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+                            rowData.getBoolean(DBKeys.KEY_SERIES_IS_COMPLETE);
                     menu.findItem(R.id.MENU_SERIES_SET_COMPLETE).setVisible(!complete);
                     menu.findItem(R.id.MENU_SERIES_SET_INCOMPLETE).setVisible(complete);
 
@@ -741,19 +741,19 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                if (rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER) != 0) {
+                if (rowData.getLong(DBKeys.KEY_FK_PUBLISHER) != 0) {
                     getMenuInflater().inflate(R.menu.publisher, menu);
                 }
                 break;
             }
             case BooklistGroup.BOOKSHELF: {
-                if (!rowData.getString(DBDefinitions.KEY_FK_BOOKSHELF).isEmpty()) {
+                if (!rowData.getString(DBKeys.KEY_FK_BOOKSHELF).isEmpty()) {
                     getMenuInflater().inflate(R.menu.bookshelf, menu);
                 }
                 break;
             }
             case BooklistGroup.LANGUAGE: {
-                if (!rowData.getString(DBDefinitions.KEY_LANGUAGE).isEmpty()) {
+                if (!rowData.getString(DBKeys.KEY_LANGUAGE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LANGUAGE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
@@ -762,7 +762,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.LOCATION: {
-                if (!rowData.getString(DBDefinitions.KEY_LOCATION).isEmpty()) {
+                if (!rowData.getString(DBKeys.KEY_LOCATION).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_LOCATION_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
@@ -771,7 +771,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.GENRE: {
-                if (!rowData.getString(DBDefinitions.KEY_GENRE).isEmpty()) {
+                if (!rowData.getString(DBKeys.KEY_GENRE).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_GENRE_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
@@ -780,7 +780,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.FORMAT: {
-                if (!rowData.getString(DBDefinitions.KEY_FORMAT).isEmpty()) {
+                if (!rowData.getString(DBKeys.KEY_FORMAT).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_FORMAT_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
@@ -789,7 +789,7 @@ public class BooksOnBookshelf
                 break;
             }
             case BooklistGroup.COLOR: {
-                if (!rowData.getString(DBDefinitions.KEY_COLOR).isEmpty()) {
+                if (!rowData.getString(DBKeys.KEY_COLOR).isEmpty()) {
                     menu.add(Menu.NONE, R.id.MENU_COLOR_EDIT,
                              getResources().getInteger(R.integer.MENU_ORDER_EDIT),
                              R.string.action_edit_ellipsis)
@@ -812,7 +812,7 @@ public class BooksOnBookshelf
             .setIcon(R.drawable.ic_baseline_broken_image_24);
 
         // if it's a level, add the expand option
-        if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
+        if (rowData.getInt(DBKeys.KEY_BL_NODE_GROUP) != BooklistGroup.BOOK) {
             menu.add(Menu.NONE, R.id.MENU_DIVIDER, menuOrder++, "")
                 .setEnabled(false);
             //noinspection UnusedAssignment
@@ -847,12 +847,12 @@ public class BooksOnBookshelf
         final DataHolder rowData = new CursorRow(cursor);
 
         if (itemId == R.id.MENU_BOOK_EDIT) {
-            mEditByIdLauncher.launch(rowData.getLong(DBDefinitions.KEY_FK_BOOK));
+            mEditByIdLauncher.launch(rowData.getLong(DBKeys.KEY_FK_BOOK));
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_DELETE) {
-            final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-            final String title = rowData.getString(DBDefinitions.KEY_TITLE);
+            final long bookId = rowData.getLong(DBKeys.KEY_FK_BOOK);
+            final String title = rowData.getString(DBKeys.KEY_TITLE);
             final List<Author> authors = mVm.getAuthorsByBookId(bookId);
             StandardDialogs.deleteBook(this, title, authors, () -> {
                 if (mVm.deleteBook(this, bookId)) {
@@ -871,8 +871,8 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_BOOK_SET_READ
                    || itemId == R.id.MENU_BOOK_SET_UNREAD) {
             // toggle the read status
-            final boolean status = !rowData.getBoolean(DBDefinitions.KEY_READ);
-            final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+            final boolean status = !rowData.getBoolean(DBKeys.KEY_READ);
+            final long bookId = rowData.getLong(DBKeys.KEY_FK_BOOK);
             if (mVm.setBookRead(bookId, status)) {
                 onBookChange(RowChangeListener.BOOK_READ, bookId);
             }
@@ -907,12 +907,12 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_ADD) {
-            final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
-            mEditLenderLauncher.launch(bookId, rowData.getString(DBDefinitions.KEY_TITLE));
+            final long bookId = rowData.getLong(DBKeys.KEY_FK_BOOK);
+            mEditLenderLauncher.launch(bookId, rowData.getString(DBKeys.KEY_TITLE));
             return true;
 
         } else if (itemId == R.id.MENU_BOOK_LOAN_DELETE) {
-            final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+            final long bookId = rowData.getLong(DBKeys.KEY_FK_BOOK);
             mVm.lendBook(bookId, null);
             onBookChange(RowChangeListener.BOOK_LOANEE, bookId);
             return true;
@@ -929,12 +929,12 @@ public class BooksOnBookshelf
         } else if (itemId == R.id.MENU_BOOK_SEND_TO_GOODREADS) {
             Snackbar.make(mVb.list, R.string.progress_msg_connecting,
                           Snackbar.LENGTH_LONG).show();
-            final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+            final long bookId = rowData.getLong(DBKeys.KEY_FK_BOOK);
             mGoodreadsHandler.sendBook(bookId);
             return true;
 
         } else if (itemId == R.id.MENU_UPDATE_FROM_INTERNET) {
-            if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+            if (rowData.getInt(DBKeys.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
                 mUpdateBookLauncher.launch(mVm.getBook(rowData));
                 return true;
             }
@@ -963,9 +963,9 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.MENU_SERIES_SET_COMPLETE
                    || itemId == R.id.MENU_SERIES_SET_INCOMPLETE) {
-            final long seriesId = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
+            final long seriesId = rowData.getLong(DBKeys.KEY_FK_SERIES);
             // toggle the complete status
-            final boolean status = !rowData.getBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE);
+            final boolean status = !rowData.getBoolean(DBKeys.KEY_SERIES_IS_COMPLETE);
             if (mVm.setSeriesComplete(seriesId, status)) {
                 onRowChange(RowChangeListener.SERIES, seriesId);
             }
@@ -984,7 +984,7 @@ public class BooksOnBookshelf
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_AUTHOR_WORKS) {
             mAuthorWorksLauncher.launch(new AuthorWorksContract.Input(
-                    rowData.getLong(DBDefinitions.KEY_FK_AUTHOR),
+                    rowData.getLong(DBKeys.KEY_FK_AUTHOR),
                     mVm.getCurrentBookshelf().getId()));
             return true;
 
@@ -997,9 +997,9 @@ public class BooksOnBookshelf
 
         } else if (itemId == R.id.MENU_AUTHOR_SET_COMPLETE
                    || itemId == R.id.MENU_AUTHOR_SET_INCOMPLETE) {
-            final long authorId = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
+            final long authorId = rowData.getLong(DBKeys.KEY_FK_AUTHOR);
             // toggle the complete status
-            final boolean status = !rowData.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE);
+            final boolean status = !rowData.getBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE);
             if (mVm.setAuthorComplete(authorId, status)) {
                 onRowChange(RowChangeListener.AUTHOR, authorId);
             }
@@ -1043,23 +1043,23 @@ public class BooksOnBookshelf
 
             /* ********************************************************************************** */
         } else if (itemId == R.id.MENU_FORMAT_EDIT) {
-            EditFormatDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_FORMAT));
+            EditFormatDialogFragment.launch(this, rowData.getString(DBKeys.KEY_FORMAT));
             return true;
 
         } else if (itemId == R.id.MENU_COLOR_EDIT) {
-            EditColorDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_COLOR));
+            EditColorDialogFragment.launch(this, rowData.getString(DBKeys.KEY_COLOR));
             return true;
 
         } else if (itemId == R.id.MENU_GENRE_EDIT) {
-            EditGenreDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_GENRE));
+            EditGenreDialogFragment.launch(this, rowData.getString(DBKeys.KEY_GENRE));
             return true;
 
         } else if (itemId == R.id.MENU_LANGUAGE_EDIT) {
-            EditLanguageDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_LANGUAGE));
+            EditLanguageDialogFragment.launch(this, rowData.getString(DBKeys.KEY_LANGUAGE));
             return true;
 
         } else if (itemId == R.id.MENU_LOCATION_EDIT) {
-            EditLocationDialogFragment.launch(this, rowData.getString(DBDefinitions.KEY_LOCATION));
+            EditLocationDialogFragment.launch(this, rowData.getString(DBKeys.KEY_LOCATION));
             return true;
 
             /* ********************************************************************************** */
@@ -1092,7 +1092,7 @@ public class BooksOnBookshelf
             return true;
 
         } else if (itemId == R.id.MENU_NEXT_MISSING_COVER) {
-            final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+            final long nodeRowId = rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
             final BooklistNode node = mVm.getNextBookWithoutCover(this, nodeRowId);
             if (node != null) {
                 final List<BooklistNode> target = new ArrayList<>();
@@ -1173,20 +1173,20 @@ public class BooksOnBookshelf
      */
     private void updateBooksFromInternetData(final int position,
                                              @NonNull final DataHolder rowData) {
-        final int groupId = rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
+        final int groupId = rowData.getInt(DBKeys.KEY_BL_NODE_GROUP);
 
         final String message;
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
-                message = rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                message = rowData.getString(DBKeys.KEY_AUTHOR_FORMATTED);
                 break;
             }
             case BooklistGroup.SERIES: {
-                message = rowData.getString(DBDefinitions.KEY_SERIES_TITLE);
+                message = rowData.getString(DBKeys.KEY_SERIES_TITLE);
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                message = rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME);
+                message = rowData.getString(DBKeys.KEY_PUBLISHER_NAME);
                 break;
             }
             default: {
@@ -1212,28 +1212,28 @@ public class BooksOnBookshelf
 
     private void updateBooksFromInternetData(@NonNull final DataHolder rowData,
                                              final boolean justThisBookshelf) {
-        final int groupId = rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP);
+        final int groupId = rowData.getInt(DBKeys.KEY_BL_NODE_GROUP);
 
         switch (groupId) {
             case BooklistGroup.AUTHOR: {
-                final long id = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
-                final String name = rowData.getString(DBDefinitions.KEY_AUTHOR_FORMATTED);
+                final long id = rowData.getLong(DBKeys.KEY_FK_AUTHOR);
+                final String name = rowData.getString(DBKeys.KEY_AUTHOR_FORMATTED);
                 mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
                         mVm.getBookIdsByAuthor(id, justThisBookshelf),
                         getString(R.string.lbl_author), name));
                 break;
             }
             case BooklistGroup.SERIES: {
-                final long id = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
-                final String name = rowData.getString(DBDefinitions.KEY_SERIES_TITLE);
+                final long id = rowData.getLong(DBKeys.KEY_FK_SERIES);
+                final String name = rowData.getString(DBKeys.KEY_SERIES_TITLE);
                 mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
                         mVm.getBookIdsBySeries(id, justThisBookshelf),
                         getString(R.string.lbl_series), name));
                 break;
             }
             case BooklistGroup.PUBLISHER: {
-                final long id = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
-                final String name = rowData.getString(DBDefinitions.KEY_PUBLISHER_NAME);
+                final long id = rowData.getLong(DBKeys.KEY_FK_PUBLISHER);
+                final String name = rowData.getString(DBKeys.KEY_PUBLISHER_NAME);
                 mUpdateBookListLauncher.launch(new UpdateBooklistContract.Input(
                         mVm.getBookIdsByPublisher(id, justThisBookshelf),
                         getString(R.string.lbl_publisher), name));
@@ -1298,7 +1298,7 @@ public class BooksOnBookshelf
             }
 
             // If we got an id back, make any (potential) rebuild re-position to it.
-            final long bookId = data.getLong(DBDefinitions.KEY_PK_ID, 0);
+            final long bookId = data.getLong(DBKeys.KEY_PK_ID, 0);
             if (bookId > 0) {
                 mVm.setDesiredCentralBookId(bookId);
             }
@@ -1463,7 +1463,7 @@ public class BooksOnBookshelf
                          @BooklistNode.NextState final int nextState,
                          final int relativeChildLevel) {
         saveListPosition();
-        final long nodeRowId = rowData.getLong(DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID);
+        final long nodeRowId = rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
         mVm.setNode(nodeRowId, nextState, relativeChildLevel);
         displayList(null);
     }

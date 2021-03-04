@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -74,23 +74,23 @@ class IsfdbBookHandlerTest
         loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("Like Nothing on Earth", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals(112781L, mRawData.getLong(DBDefinitions.KEY_ESID_ISFDB));
+        assertEquals("Like Nothing on Earth", mRawData.getString(DBKeys.KEY_TITLE));
+        assertEquals(112781L, mRawData.getLong(DBKeys.KEY_ESID_ISFDB));
         // On the site: "Date: 1986-10-00". Our code substitutes "00" with "01"
-        assertEquals("1986-10-01", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        assertEquals("0413600106", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("1986-10-01", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        assertEquals("0413600106", mRawData.getString(DBKeys.KEY_ISBN));
         assertEquals("9780413600103", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
-        assertEquals(1.95d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        assertEquals("159", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("pb", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals(1.95d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
+        assertEquals("GBP", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals("159", mRawData.getString(DBKeys.KEY_PAGES));
+        assertEquals("pb", mRawData.getString(DBKeys.KEY_FORMAT));
         assertEquals("COLLECTION", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
         assertEquals(Book.TOC_MULTIPLE_WORKS | Book.TOC_MULTIPLE_AUTHORS,
-                     mRawData.getLong(DBDefinitions.KEY_TOC_BITMASK));
+                     mRawData.getLong(DBKeys.KEY_TOC_BITMASK));
 
-        assertEquals("13665857", mRawData.getString(DBDefinitions.KEY_ESID_OCLC));
+        assertEquals("13665857", mRawData.getString(DBKeys.KEY_ESID_OCLC));
 
-        assertEquals("Month from Locus1", mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
+        assertEquals("Month from Locus1", mRawData.getString(DBKeys.KEY_DESCRIPTION));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -143,15 +143,15 @@ class IsfdbBookHandlerTest
         loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("Mort", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals(431964L, mRawData.getLong(DBDefinitions.KEY_ESID_ISFDB));
-        assertEquals("2013-11-07", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        assertEquals("9781473200104", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("Mort", mRawData.getString(DBKeys.KEY_TITLE));
+        assertEquals(431964L, mRawData.getLong(DBKeys.KEY_ESID_ISFDB));
+        assertEquals("2013-11-07", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        assertEquals("9781473200104", mRawData.getString(DBKeys.KEY_ISBN));
         assertEquals("1473200105", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
-        assertEquals(9.99d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        assertEquals("257", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("hc", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals(9.99d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
+        assertEquals("GBP", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals("257", mRawData.getString(DBKeys.KEY_PAGES));
+        assertEquals("hc", mRawData.getString(DBKeys.KEY_FORMAT));
         assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
 
         final ArrayList<Publisher> allPublishers = mRawData
@@ -198,18 +198,18 @@ class IsfdbBookHandlerTest
         loadData(mSearchEngine, IsfdbSearchEngine.CHARSET_DECODE_PAGE, locationHeader, filename,
                  new boolean[]{false, false});
 
-        assertEquals("The Shepherd's Crown", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals(542125L, mRawData.getLong(DBDefinitions.KEY_ESID_ISFDB));
-        assertEquals("2015-09-01", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        assertEquals("9780062429995", mRawData.getString(DBDefinitions.KEY_ISBN));
+        assertEquals("The Shepherd's Crown", mRawData.getString(DBKeys.KEY_TITLE));
+        assertEquals(542125L, mRawData.getLong(DBKeys.KEY_ESID_ISFDB));
+        assertEquals("2015-09-01", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        assertEquals("9780062429995", mRawData.getString(DBKeys.KEY_ISBN));
         assertEquals("006242999X", mRawData.getString(IsfdbSearchEngine.SiteField.ISBN_2));
-        assertEquals(11.99d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        assertEquals("USD", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
-        assertEquals("ebook", mRawData.getString(DBDefinitions.KEY_FORMAT));
+        assertEquals(11.99d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
+        assertEquals("USD", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals("ebook", mRawData.getString(DBKeys.KEY_FORMAT));
         assertEquals("NOVEL", mRawData.getString(IsfdbSearchEngine.SiteField.BOOK_TYPE));
 
-        assertEquals("2015943558", mRawData.getString(DBDefinitions.KEY_ESID_LCCN));
-        assertEquals("B00W2EBY8O", mRawData.getString(DBDefinitions.KEY_ESID_ASIN));
+        assertEquals("2015943558", mRawData.getString(DBKeys.KEY_ESID_LCCN));
+        assertEquals("B00W2EBY8O", mRawData.getString(DBKeys.KEY_ESID_ASIN));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

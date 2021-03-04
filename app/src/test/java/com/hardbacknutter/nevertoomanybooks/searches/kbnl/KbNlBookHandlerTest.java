@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.xml.sax.SAXException;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -77,13 +77,13 @@ class KbNlBookHandlerTest
             fail(e);
         }
 
-        assertEquals("De buitengewone reis", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("De buitengewone reis", mRawData.getString(DBKeys.KEY_TITLE));
 
-        assertEquals("2019", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        assertEquals("9789463731454", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("paperback", mRawData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("2019", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        assertEquals("9789463731454", mRawData.getString(DBKeys.KEY_ISBN));
+        assertEquals("paperback", mRawData.getString(DBKeys.KEY_FORMAT));
+        assertEquals("48", mRawData.getString(DBKeys.KEY_PAGES));
+        assertEquals("nld", mRawData.getString(DBKeys.KEY_LANGUAGE));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -125,13 +125,13 @@ class KbNlBookHandlerTest
             fail(e);
         }
 
-        assertEquals("De Foundation", mRawData.getString(DBDefinitions.KEY_TITLE));
+        assertEquals("De Foundation", mRawData.getString(DBKeys.KEY_TITLE));
 
-        assertEquals("1983", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        assertEquals("9022953351", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("geb.", mRawData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("156", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
+        assertEquals("1983", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        assertEquals("9022953351", mRawData.getString(DBKeys.KEY_ISBN));
+        assertEquals("geb.", mRawData.getString(DBKeys.KEY_FORMAT));
+        assertEquals("156", mRawData.getString(DBKeys.KEY_PAGES));
+        assertEquals("nld", mRawData.getString(DBKeys.KEY_LANGUAGE));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

@@ -35,7 +35,7 @@ import java.util.function.Consumer;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsAuth;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsRegistrationActivity;
@@ -96,7 +96,7 @@ public class GoodreadsSearchEngine
                                                        GoodreadsManager.BASE_URL)
                 .setFilenameSuffix(GoodreadsManager.FILENAME_SUFFIX)
 
-                .setDomainKey(DBDefinitions.KEY_ESID_GOODREADS_BOOK)
+                .setDomainKey(DBKeys.KEY_ESID_GOODREADS_BOOK)
                 .setDomainViewId(R.id.site_goodreads)
                 .setDomainMenuId(R.id.MENU_VIEW_BOOK_AT_GOODREADS)
 

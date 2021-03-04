@@ -49,8 +49,9 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.Groups;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -70,23 +71,6 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_BL
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BL_ROW_ID;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_FK_BOOK;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BL_ROW_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -122,14 +106,6 @@ public class BooklistBuilder {
     @SuppressWarnings("WeakerAccess")
     public static final int PREF_REBUILD_COLLAPSED = 2;
 
-    /**
-     * Expression for the domain {@link DBDefinitions#DOM_BL_LOANEE_AS_BOOL}
-     * <p>
-     * SQL column: return 1 if the book is available, 0 if not.
-     */
-    public static final String EXP_LOANEE_AS_BOOLEAN =
-            "CASE WHEN " + TBL_BOOK_LOANEE.dot(KEY_LOANEE) + " IS NULL THEN 1 ELSE 0 END";
-
     /** Log tag. */
     private static final String TAG = "BooklistBuilder";
 
@@ -144,9 +120,10 @@ public class BooklistBuilder {
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
     public static final String EXP_BOOKSHELF_NAME_CSV =
-            "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(KEY_BOOKSHELF_NAME) + ",', ')"
+            "(SELECT GROUP_CONCAT(" + TBL_BOOKSHELF.dot(DBKeys.KEY_BOOKSHELF_NAME) + ",', ')"
             + _FROM_ + TBL_BOOKSHELF.ref() + TBL_BOOKSHELF.join(TBL_BOOK_BOOKSHELF)
-            + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(KEY_FK_BOOK)
+            + _WHERE_
+            + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + "=" + TBL_BOOK_BOOKSHELF.dot(DBKeys.KEY_FK_BOOK)
             + ")";
 
     /**
@@ -156,9 +133,10 @@ public class BooklistBuilder {
      * We could add an ORDER BY GROUP_CONCAT(... if we GROUP BY
      */
     public static final String EXP_PUBLISHER_NAME_CSV =
-            "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(KEY_PUBLISHER_NAME) + ",', ')"
+            "(SELECT GROUP_CONCAT(" + TBL_PUBLISHERS.dot(DBKeys.KEY_PUBLISHER_NAME) + ",', ')"
             + _FROM_ + TBL_PUBLISHERS.ref() + TBL_PUBLISHERS.join(TBL_BOOK_PUBLISHER)
-            + _WHERE_ + TBL_BOOKS.dot(KEY_PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(KEY_FK_BOOK)
+            + _WHERE_
+            + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + "=" + TBL_BOOK_PUBLISHER.dot(DBKeys.KEY_FK_BOOK)
             + ")";
 
     private static final String _AND_ = " AND ";
@@ -248,7 +226,7 @@ public class BooklistBuilder {
      */
     public void addFilterOnBookIdList(@Nullable final List<Long> filter) {
         if (filter != null && !filter.isEmpty()) {
-            mFilters.add(new NumberListFilter(TBL_BOOKS, KEY_PK_ID, filter));
+            mFilters.add(new NumberListFilter(TBL_BOOKS, DBKeys.KEY_PK_ID, filter));
         }
     }
 
@@ -273,9 +251,9 @@ public class BooklistBuilder {
                                                                publisherName, keywords);
         if (!query.isEmpty()) {
             mFilters.add(context ->
-                                 '(' + TBL_BOOKS.dot(KEY_PK_ID) + " IN ("
+                                 '(' + TBL_BOOKS.dot(DBKeys.KEY_PK_ID) + " IN ("
                                  // fetch the ID's only
-                                 + SELECT_ + KEY_FTS_BOOK_ID
+                                 + SELECT_ + DBKeys.KEY_FTS_BOOK_ID
                                  + _FROM_ + TBL_FTS_BOOKS.getName()
                                  + _WHERE_ + TBL_FTS_BOOKS.getName()
                                  + " MATCH '" + query + "')"
@@ -294,8 +272,8 @@ public class BooklistBuilder {
         if (filter != null && !filter.trim().isEmpty()) {
             mFilters.add(context ->
                                  "EXISTS(SELECT NULL FROM " + TBL_BOOK_LOANEE.ref()
-                                 + _WHERE_ + TBL_BOOK_LOANEE.dot(KEY_LOANEE)
-                                 + "='" + BaseDao.encodeString(filter) + '\''
+                                 + _WHERE_ + TBL_BOOK_LOANEE.dot(DBKeys.KEY_LOANEE)
+                                 + "='" + BaseDaoImpl.encodeString(filter) + '\''
                                  + _AND_ + TBL_BOOK_LOANEE.fkMatch(TBL_BOOKS)
                                  + ')');
         }
@@ -326,11 +304,11 @@ public class BooklistBuilder {
         // The filter will only be added if the current style does not contain the Bookshelf group.
         if (isFilteredOnBookshelves && !mStyle.getGroups().contains(BooklistGroup.BOOKSHELF)) {
             if (mBookshelves.size() == 1) {
-                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID)
+                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(DBKeys.KEY_PK_ID)
                                   + '=' + mBookshelves.get(0).getId()
                                   + ')');
             } else {
-                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(KEY_PK_ID)
+                mFilters.add(c -> '(' + TBL_BOOKSHELF.dot(DBKeys.KEY_PK_ID)
                                   + " IN (" + mBookshelves.stream()
                                                           .map(Bookshelf::getId)
                                                           .map(String::valueOf)
@@ -560,7 +538,7 @@ public class BooklistBuilder {
                     DOM_BL_NODE_GROUP, String.valueOf(BooklistGroup.BOOK)), false);
 
             // The book id itself
-            addDomain(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(KEY_PK_ID)), false);
+            addDomain(new DomainExpression(DOM_FK_BOOK, TBL_BOOKS.dot(DBKeys.KEY_PK_ID)), false);
 
             // Add style-specified groups
             for (final BooklistGroup group : mStyle.getGroups().getGroupList()) {
@@ -609,7 +587,7 @@ public class BooklistBuilder {
             }
 
             // add the node key column
-            destColumns.append(',').append(KEY_BL_NODE_KEY);
+            destColumns.append(',').append(DBKeys.KEY_BL_NODE_KEY);
             sourceColumns.append(',').append(buildNodeKey()).append(_AS_).append(DOM_BL_NODE_KEY);
 
             // and the node state columns
@@ -704,11 +682,11 @@ public class BooklistBuilder {
             // Don't apply constraints (no need)
             db.recreate(mNavTable, false);
             db.execSQL(INSERT_INTO_ + mNavTable.getName()
-                       + " (" + KEY_FK_BOOK + ',' + KEY_FK_BL_ROW_ID + ") "
-                       + SELECT_ + KEY_FK_BOOK + ',' + KEY_PK_ID
+                       + " (" + DBKeys.KEY_FK_BOOK + ',' + DBKeys.KEY_FK_BL_ROW_ID + ") "
+                       + SELECT_ + DBKeys.KEY_FK_BOOK + ',' + DBKeys.KEY_PK_ID
                        + _FROM_ + mListTable.getName()
-                       + _WHERE_ + KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
-                       + _ORDER_BY_ + KEY_PK_ID
+                       + _WHERE_ + DBKeys.KEY_BL_NODE_GROUP + "=" + BooklistGroup.BOOK
+                       + _ORDER_BY_ + DBKeys.KEY_PK_ID
                       );
 
             return new Pair<>(mListTable, mNavTable);
@@ -769,11 +747,11 @@ public class BooklistBuilder {
 
                 // Create the INSERT columns clause for the next level up
                 final StringBuilder listColumns = new StringBuilder()
-                        .append(KEY_BL_NODE_LEVEL)
-                        .append(',').append(KEY_BL_NODE_GROUP)
-                        .append(',').append(KEY_BL_NODE_KEY)
-                        .append(',').append(KEY_BL_NODE_EXPANDED)
-                        .append(',').append(KEY_BL_NODE_VISIBLE);
+                        .append(DBKeys.KEY_BL_NODE_LEVEL)
+                        .append(',').append(DBKeys.KEY_BL_NODE_GROUP)
+                        .append(',').append(DBKeys.KEY_BL_NODE_KEY)
+                        .append(',').append(DBKeys.KEY_BL_NODE_EXPANDED)
+                        .append(',').append(DBKeys.KEY_BL_NODE_VISIBLE);
 
                 // PREF_REBUILD_EXPANDED must explicitly be set to 1/1
                 // All others must be set to 0/0. The actual state will be set afterwards.
@@ -783,7 +761,7 @@ public class BooklistBuilder {
                 final StringBuilder listValues = new StringBuilder()
                         .append(level)
                         .append(',').append(group.getId())
-                        .append(",NEW.").append(KEY_BL_NODE_KEY)
+                        .append(",NEW.").append(DBKeys.KEY_BL_NODE_KEY)
                         .append(",").append(expVis)
                         // level 1 is always visible. THIS IS CRITICAL!
                         .append(",").append(level == 1 ? 1 : expVis);
@@ -817,7 +795,7 @@ public class BooklistBuilder {
                 final String levelTgSql =
                         "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperLevelTriggerName
                         + " BEFORE INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                        + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + (level + 1)
+                        + "\n WHEN NEW." + DBKeys.KEY_BL_NODE_LEVEL + '=' + (level + 1)
                         + " AND NOT EXISTS("
                         + /* */ "SELECT 1 FROM " + mTriggerHelperTable.ref() + _WHERE_ + whereClause
                         + /* */ ')'
@@ -836,7 +814,7 @@ public class BooklistBuilder {
             final String currentValueTgSql =
                     "\nCREATE TEMPORARY TRIGGER " + mTriggerHelperCurrentValueTriggerName
                     + " AFTER INSERT ON " + mListTable.getName() + " FOR EACH ROW"
-                    + "\n WHEN NEW." + KEY_BL_NODE_LEVEL + '=' + groupCount
+                    + "\n WHEN NEW." + DBKeys.KEY_BL_NODE_LEVEL + '=' + groupCount
                     + "\n BEGIN"
                     + "\n  DELETE FROM " + mTriggerHelperTable.getName() + ';'
                     + "\n  INSERT INTO " + mTriggerHelperTable.getName()
@@ -1006,7 +984,7 @@ public class BooklistBuilder {
                 sql.append(TBL_BOOKS.ref());
             }
 
-            if (DBDefinitions.isUsed(global, KEY_LOANEE)) {
+            if (DBKeys.isUsed(global, DBKeys.KEY_LOANEE)) {
                 // get the loanee name, or a {@code null} for available books.
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_LOANEE));
             }
@@ -1022,19 +1000,19 @@ public class BooklistBuilder {
                 if (primaryAuthorType == Author.TYPE_UNKNOWN) {
                     // don't care about Author type, so just grab the primary (i.e. pos==1)
                     sql.append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKeys.KEY_BOOK_AUTHOR_POSITION))
                        .append("=1");
                 } else {
                     // grab the desired type, or if no such type, grab the 1st
                     //   AND (((type & TYPE)<>0) OR (((type &~ TYPE)=0) AND pos=1))
                     sql.append(" AND (((")
-                       .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" & ").append(primaryAuthorType).append(")<>0)")
                        .append(" OR (((")
-                       .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_TYPE_BITMASK))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK))
                        .append(" &~ ").append(primaryAuthorType).append(")=0)")
                        .append(_AND_)
-                       .append(TBL_BOOK_AUTHOR.dot(KEY_BOOK_AUTHOR_POSITION))
+                       .append(TBL_BOOK_AUTHOR.dot(DBKeys.KEY_BOOK_AUTHOR_POSITION))
                        .append("=1))");
                 }
             }
@@ -1042,14 +1020,14 @@ public class BooklistBuilder {
             sql.append(TBL_BOOK_AUTHOR.join(TBL_AUTHORS));
 
             if (styleGroups.contains(BooklistGroup.SERIES)
-                || DBDefinitions.isUsed(global, KEY_SERIES_TITLE)) {
+                || DBKeys.isUsed(global, DBKeys.KEY_SERIES_TITLE)) {
                 // Join with the link table between Book and Series.
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_SERIES));
                 // Extend the join filtering on the primary Series unless
                 // the user wants the book to show under all its Series
                 if (!mStyle.isShowBooksUnderEachSeries(context)) {
                     sql.append(_AND_)
-                       .append(TBL_BOOK_SERIES.dot(KEY_BOOK_SERIES_POSITION))
+                       .append(TBL_BOOK_SERIES.dot(DBKeys.KEY_BOOK_SERIES_POSITION))
                        .append("=1");
                 }
                 // Join with Series to make the titles available
@@ -1057,14 +1035,14 @@ public class BooklistBuilder {
             }
 
             if (styleGroups.contains(BooklistGroup.PUBLISHER)
-                || DBDefinitions.isUsed(global, KEY_PUBLISHER_NAME)) {
+                || DBKeys.isUsed(global, DBKeys.KEY_PUBLISHER_NAME)) {
                 // Join with the link table between Book and Publishers.
                 sql.append(TBL_BOOKS.leftOuterJoin(TBL_BOOK_PUBLISHER));
                 // Extend the join filtering on the primary Publisher unless
                 // the user wants the book to show under all its Publishers
                 if (!mStyle.isShowBooksUnderEachPublisher(context)) {
                     sql.append(_AND_)
-                       .append(TBL_BOOK_PUBLISHER.dot(KEY_BOOK_PUBLISHER_POSITION))
+                       .append(TBL_BOOK_PUBLISHER.dot(DBKeys.KEY_BOOK_PUBLISHER_POSITION))
                        .append("=1");
                 }
                 // Join with Publishers to make the names available

@@ -42,7 +42,8 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.filters.Filters;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -76,15 +77,13 @@ public final class StyleUtils {
      */
     @SuppressWarnings("UnusedReturnValue")
     public static boolean updateOrInsert(@NonNull final ListStyle style) {
-
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
         }
 
         // resolve the id based on the UUID
         // e.g. we're might be importing a style with a known UUID
-        style.setId(StyleDao.getInstance().getStyleIdByUuid(style.getUuid()));
-
+        style.setId(DaoLocator.getInstance().getStyleDao().getStyleIdByUuid(style.getUuid()));
         if (style.getId() == 0) {
             return insert(style);
 
@@ -101,8 +100,7 @@ public final class StyleUtils {
      * @return {@code true} on success
      */
     private static boolean insert(@NonNull final ListStyle style) {
-
-        if (StyleDao.getInstance().insert(style) > 0) {
+        if (DaoLocator.getInstance().getStyleDao().insert(style) > 0) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
             }
@@ -119,13 +117,12 @@ public final class StyleUtils {
      * @return {@code true} on success
      */
     public static boolean update(@NonNull final ListStyle style) {
-
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
             SanityCheck.requireNonZero(style.getId(), "A new Style cannot be updated");
         }
 
-        if (StyleDao.getInstance().update(style)) {
+        if (DaoLocator.getInstance().getStyleDao().update(style)) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.put(style.getUuid(), (UserStyle) style);
             } else if (style instanceof BuiltinStyle) {
@@ -149,13 +146,12 @@ public final class StyleUtils {
      */
     public static boolean delete(@NonNull final Context context,
                                  @NonNull final ListStyle style) {
-
         if (BuildConfig.DEBUG /* always */) {
             SanityCheck.requireValue(style.getUuid(), ERROR_MISSING_UUID);
             SanityCheck.requirePositiveValue(style.getId(), "A new Style cannot be deleted");
         }
 
-        if (StyleDao.getInstance().delete(style)) {
+        if (DaoLocator.getInstance().getStyleDao().delete(style)) {
             if (style instanceof UserStyle) {
                 UserStyles.S_USER_STYLES.remove(style.getUuid());
                 context.deleteSharedPreferences(style.getUuid());
@@ -182,7 +178,7 @@ public final class StyleUtils {
     public static void updateMenuOrder(@NonNull final Collection<ListStyle> styles) {
         int order = 0;
 
-        final StyleDao styleDao = StyleDao.getInstance();
+        final StyleDao styleDao = DaoLocator.getInstance().getStyleDao();
 
         // sort the preferred styles at the top
         for (final ListStyle style : styles) {
@@ -365,14 +361,13 @@ public final class StyleUtils {
             if (S_USER_STYLES.isEmpty()) {
                 final Map<String, UserStyle> map = new LinkedHashMap<>();
 
-                try (Cursor cursor = StyleDao.getInstance().fetchStyles(true)) {
+                try (Cursor cursor = DaoLocator.getInstance().getStyleDao().fetchStyles(true)) {
                     final DataHolder rowData = new CursorRow(cursor);
                     while (cursor.moveToNext()) {
-                        final String uuid = rowData.getString(DBDefinitions.KEY_STYLE_UUID);
+                        final String uuid = rowData.getString(DBKeys.KEY_STYLE_UUID);
                         map.put(uuid, UserStyle.createFromDatabase(context, rowData));
                     }
                 }
-
 
                 S_USER_STYLES.putAll(map);
             }
@@ -581,13 +576,13 @@ public final class StyleUtils {
             final Map<Integer, Boolean> preferred = new HashMap<>();
             final Map<Integer, Integer> menuPos = new HashMap<>();
 
-            try (Cursor cursor = StyleDao.getInstance().fetchStyles(false)) {
+            try (Cursor cursor = DaoLocator.getInstance().getStyleDao().fetchStyles(false)) {
                 final DataHolder rowData = new CursorRow(cursor);
                 while (cursor.moveToNext()) {
-                    preferred.put(rowData.getInt(DBDefinitions.KEY_PK_ID),
-                                  rowData.getBoolean(DBDefinitions.KEY_STYLE_IS_PREFERRED));
-                    menuPos.put(rowData.getInt(DBDefinitions.KEY_PK_ID),
-                                rowData.getInt(DBDefinitions.KEY_STYLE_MENU_POSITION));
+                    preferred.put(rowData.getInt(DBKeys.KEY_PK_ID),
+                                  rowData.getBoolean(DBKeys.KEY_STYLE_IS_PREFERRED));
+                    menuPos.put(rowData.getInt(DBKeys.KEY_PK_ID),
+                                rowData.getInt(DBKeys.KEY_STYLE_MENU_POSITION));
                 }
             }
 

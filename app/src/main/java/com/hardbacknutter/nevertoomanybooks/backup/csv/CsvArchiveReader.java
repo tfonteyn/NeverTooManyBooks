@@ -40,8 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReader;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
 import com.hardbacknutter.nevertoomanybooks.tasks.ProgressListener;
 import com.hardbacknutter.nevertoomanybooks.utils.AppDir;
 import com.hardbacknutter.nevertoomanybooks.utils.FileUtils;
@@ -111,7 +111,7 @@ public class CsvArchiveReader
     @Override
     public void close() {
         mBookDao.close();
-        MaintenanceDao.getInstance().purge();
+        DaoLocator.getInstance().getMaintenanceDao().purge();
     }
 
     @VisibleForTesting

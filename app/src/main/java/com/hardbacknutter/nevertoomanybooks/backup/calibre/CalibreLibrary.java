@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
 import com.hardbacknutter.nevertoomanybooks.utils.ParcelUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
@@ -98,9 +98,9 @@ public class CalibreLibrary
                           @NonNull final DataHolder rowData) {
         super(id, rowData);
 
-        mLibraryStringId = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID);
-        mUuid = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_UUID);
-        mLastSyncDate = rowData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE);
+        mLibraryStringId = rowData.getString(DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID);
+        mUuid = rowData.getString(DBKeys.KEY_CALIBRE_LIBRARY_UUID);
+        mLastSyncDate = rowData.getString(DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE);
     }
 
     private CalibreLibrary(@NonNull final Parcel in) {

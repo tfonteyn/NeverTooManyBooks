@@ -28,8 +28,8 @@ import androidx.annotation.NonNull;
 
 import java.io.Closeable;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 
@@ -73,8 +73,8 @@ public final class BooklistNavigatorDao {
         }
 
         mGetBookStmt = mDb.compileStatement(
-                SELECT_ + DBDefinitions.KEY_FK_BOOK
-                + _FROM_ + mListTableName + _WHERE_ + DBDefinitions.KEY_PK_ID + "=?");
+                SELECT_ + DBKeys.KEY_FK_BOOK
+                + _FROM_ + mListTableName + _WHERE_ + DBKeys.KEY_PK_ID + "=?");
     }
 
     /**
@@ -99,8 +99,8 @@ public final class BooklistNavigatorDao {
     public int getRowNumber(final long listTableRowId) {
         // This method is only called once to get the initial row number
         try (SynchronizedStatement stmt = mDb.compileStatement(
-                SELECT_ + DBDefinitions.KEY_PK_ID + _FROM_ + mListTableName
-                + _WHERE_ + DBDefinitions.KEY_FK_BL_ROW_ID + "=?")) {
+                SELECT_ + DBKeys.KEY_PK_ID + _FROM_ + mListTableName
+                + _WHERE_ + DBKeys.KEY_FK_BL_ROW_ID + "=?")) {
             stmt.bindLong(1, listTableRowId);
             return (int) stmt.simpleQueryForLongOrZero();
         }

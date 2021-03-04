@@ -43,8 +43,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
 
@@ -898,11 +898,11 @@ public class TableDefinition {
 
         final String updateSql =
                 "UPDATE " + getName() + " SET " + destination.getName() + "=?"
-                + " WHERE " + DBDefinitions.KEY_PK_ID + "=?";
+                + " WHERE " + DBKeys.KEY_PK_ID + "=?";
 
         try (SQLiteStatement update = db.compileStatement(updateSql);
              Cursor cursor = db.rawQuery(
-                     "SELECT " + DBDefinitions.KEY_PK_ID
+                     "SELECT " + DBKeys.KEY_PK_ID
                      + ',' + source.getName() + " FROM " + getName(),
                      null)) {
 
@@ -910,7 +910,7 @@ public class TableDefinition {
             while (cursor.moveToNext()) {
                 final long id = cursor.getLong(0);
                 final String in = cursor.getString(1);
-                update.bindString(1, BaseDao.encodeOrderByColumn(in, userLocale));
+                update.bindString(1, BaseDaoImpl.encodeOrderByColumn(in, userLocale));
                 update.bindLong(2, id);
                 update.executeUpdateDelete();
             }

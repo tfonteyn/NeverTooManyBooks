@@ -39,7 +39,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchFtsContract;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAdvancedSearchBinding;
 
@@ -133,8 +133,8 @@ public class SearchFtsFragment
 
         final Bundle args = savedInstanceState != null ? savedInstanceState : getArguments();
         if (args != null) {
-            mTitleSearchText = args.getString(DBDefinitions.KEY_TITLE);
-            mSeriesTitleSearchText = args.getString(DBDefinitions.KEY_SERIES_TITLE);
+            mTitleSearchText = args.getString(DBKeys.KEY_TITLE);
+            mSeriesTitleSearchText = args.getString(DBKeys.KEY_SERIES_TITLE);
             mAuthorSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR);
             mPublisherNameSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER);
             mKeywordsSearchText = args.getString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS);
@@ -266,8 +266,8 @@ public class SearchFtsFragment
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putString(DBDefinitions.KEY_TITLE, mTitleSearchText);
-        outState.putString(DBDefinitions.KEY_SERIES_TITLE, mSeriesTitleSearchText);
+        outState.putString(DBKeys.KEY_TITLE, mTitleSearchText);
+        outState.putString(DBKeys.KEY_SERIES_TITLE, mSeriesTitleSearchText);
         outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_AUTHOR, mAuthorSearchText);
         outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_PUBLISHER, mPublisherNameSearchText);
         outState.putString(SearchCriteria.BKEY_SEARCH_TEXT_KEYWORDS, mKeywordsSearchText);

@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.ActivityEditBookBinding;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
@@ -273,7 +273,7 @@ public class EditBookActivity
                                   R.string.tab_lbl_notes,
                                   R.string.lbl_personal_notes));
 
-            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_TOC_BITMASK)) {
+            if (DBKeys.isUsed(global, DBKeys.KEY_TOC_BITMASK)) {
                 mTabs.add(new TabInfo(EditBookTocFragment.class,
                                       R.string.tab_lbl_content,
                                       R.string.lbl_table_of_content));

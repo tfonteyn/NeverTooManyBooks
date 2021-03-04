@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.Base;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -80,19 +80,19 @@ class OpenLibrarySearchEngineTest
         assertNotNull(mRawData);
         assertFalse(mRawData.isEmpty());
 
-        assertEquals("Slow reading", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("9780980200447", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("OL22853304M", mRawData.getString(DBDefinitions.KEY_ESID_OPEN_LIBRARY));
-        assertEquals("2008054742", mRawData.getString(DBDefinitions.KEY_ESID_LCCN));
-        assertEquals(8071257L, mRawData.getLong(DBDefinitions.KEY_ESID_LIBRARY_THING));
-        assertEquals(6383507L, mRawData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK));
-        assertEquals("098020044X", mRawData.getString(DBDefinitions.KEY_ESID_ASIN));
-        assertEquals("297222669", mRawData.getString(DBDefinitions.KEY_ESID_OCLC));
+        assertEquals("Slow reading", mRawData.getString(DBKeys.KEY_TITLE));
+        assertEquals("9780980200447", mRawData.getString(DBKeys.KEY_ISBN));
+        assertEquals("OL22853304M", mRawData.getString(DBKeys.KEY_ESID_OPEN_LIBRARY));
+        assertEquals("2008054742", mRawData.getString(DBKeys.KEY_ESID_LCCN));
+        assertEquals(8071257L, mRawData.getLong(DBKeys.KEY_ESID_LIBRARY_THING));
+        assertEquals(6383507L, mRawData.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK));
+        assertEquals("098020044X", mRawData.getString(DBKeys.KEY_ESID_ASIN));
+        assertEquals("297222669", mRawData.getString(DBKeys.KEY_ESID_OCLC));
 
         assertEquals("Includes bibliographical references and index.",
-                     mRawData.getString(DBDefinitions.KEY_DESCRIPTION));
-        assertEquals("92", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("2009-03-01", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
+                     mRawData.getString(DBKeys.KEY_DESCRIPTION));
+        assertEquals("92", mRawData.getString(DBKeys.KEY_PAGES));
+        assertEquals("2009-03-01", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
 
 
         final ArrayList<Publisher> allPublishers = mRawData

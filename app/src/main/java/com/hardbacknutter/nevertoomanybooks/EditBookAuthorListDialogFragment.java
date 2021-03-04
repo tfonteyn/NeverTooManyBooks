@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditBookAuthorListBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.BaseDialogFragment;
@@ -413,8 +413,8 @@ public class EditBookAuthorListDialogFragment
                            @NonNull final Author author) {
             final Bundle args = new Bundle(3);
             args.putString(BKEY_REQUEST_KEY, requestKey);
-            args.putString(DBDefinitions.KEY_TITLE, bookTitle);
-            args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
+            args.putString(DBKeys.KEY_TITLE, bookTitle);
+            args.putParcelable(DBKeys.KEY_FK_AUTHOR, author);
 
             final DialogFragment frag = new EditAuthorForBookDialogFragment();
             frag.setArguments(args);
@@ -428,10 +428,10 @@ public class EditBookAuthorListDialogFragment
             final Bundle args = requireArguments();
             mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                                  "BKEY_REQUEST_KEY");
-            mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR),
+            mAuthor = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_AUTHOR),
                                              "KEY_FK_AUTHOR");
 
-            mBookTitle = args.getString(DBDefinitions.KEY_TITLE);
+            mBookTitle = args.getString(DBKeys.KEY_TITLE);
 
             if (savedInstanceState == null) {
                 mFamilyName = mAuthor.getFamilyName();
@@ -440,12 +440,12 @@ public class EditBookAuthorListDialogFragment
                 mType = mAuthor.getType();
             } else {
                 //noinspection ConstantConditions
-                mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+                mFamilyName = savedInstanceState.getString(DBKeys.KEY_AUTHOR_FAMILY_NAME);
                 //noinspection ConstantConditions
-                mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-                mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+                mGivenNames = savedInstanceState.getString(DBKeys.KEY_AUTHOR_GIVEN_NAMES);
+                mIsComplete = savedInstanceState.getBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE,
                                                             false);
-                mType = savedInstanceState.getInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+                mType = savedInstanceState.getInt(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             }
         }
 
@@ -478,7 +478,7 @@ public class EditBookAuthorListDialogFragment
             mVb.cbxIsComplete.setChecked(mIsComplete);
 
             final boolean useAuthorType =
-                    DBDefinitions.isUsed(global, DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK);
+                    DBKeys.isUsed(global, DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK);
             mVb.authorTypeGroup.setVisibility(useAuthorType ? View.VISIBLE : View.GONE);
             if (useAuthorType) {
                 mVb.btnUseAuthorType.setOnCheckedChangeListener(
@@ -574,10 +574,10 @@ public class EditBookAuthorListDialogFragment
         @Override
         public void onSaveInstanceState(@NonNull final Bundle outState) {
             super.onSaveInstanceState(outState);
-            outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-            outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-            outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
-            outState.putInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, mType);
+            outState.putString(DBKeys.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
+            outState.putString(DBKeys.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
+            outState.putBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
+            outState.putInt(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK, mType);
         }
 
         @Override

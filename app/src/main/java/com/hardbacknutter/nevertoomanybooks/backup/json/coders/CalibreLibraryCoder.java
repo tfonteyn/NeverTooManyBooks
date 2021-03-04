@@ -26,7 +26,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreVirtualLibrary;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.org.json.JSONArray;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -42,23 +42,23 @@ class CalibreLibraryCoder
             throws JSONException {
         final JSONObject data = new JSONObject();
 
-        data.put(DBDefinitions.KEY_PK_ID, library.getId());
-        data.put(DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID, library.getLibraryStringId());
-        data.put(DBDefinitions.KEY_CALIBRE_LIBRARY_UUID, library.getUuid());
-        data.put(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME, library.getName());
-        data.put(DBDefinitions.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE,
+        data.put(DBKeys.KEY_PK_ID, library.getId());
+        data.put(DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID, library.getLibraryStringId());
+        data.put(DBKeys.KEY_CALIBRE_LIBRARY_UUID, library.getUuid());
+        data.put(DBKeys.KEY_CALIBRE_LIBRARY_NAME, library.getName());
+        data.put(DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE,
                  library.getLastSyncDateAsString());
-        data.put(DBDefinitions.KEY_FK_BOOKSHELF, library.getMappedBookshelfId());
+        data.put(DBKeys.KEY_FK_BOOKSHELF, library.getMappedBookshelfId());
 
         final ArrayList<CalibreVirtualLibrary> vlibs = library.getVirtualLibraries();
         if (!vlibs.isEmpty()) {
             final JSONArray vlArray = new JSONArray();
             for (final CalibreVirtualLibrary vlib : vlibs) {
                 final JSONObject vlData = new JSONObject();
-                vlData.put(DBDefinitions.KEY_PK_ID, vlib.getId());
-                vlData.put(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME, vlib.getName());
-                vlData.put(DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR, vlib.getExpr());
-                vlData.put(DBDefinitions.KEY_FK_BOOKSHELF, vlib.getMappedBookshelfId());
+                vlData.put(DBKeys.KEY_PK_ID, vlib.getId());
+                vlData.put(DBKeys.KEY_CALIBRE_LIBRARY_NAME, vlib.getName());
+                vlData.put(DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR, vlib.getExpr());
+                vlData.put(DBKeys.KEY_FK_BOOKSHELF, vlib.getMappedBookshelfId());
 
                 vlArray.put(vlData);
             }
@@ -73,14 +73,14 @@ class CalibreLibraryCoder
             throws JSONException {
 
         final CalibreLibrary library = new CalibreLibrary(
-                data.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_UUID),
-                data.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_STRING_ID),
-                data.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME),
-                data.getLong(DBDefinitions.KEY_FK_BOOKSHELF));
-        library.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+                data.getString(DBKeys.KEY_CALIBRE_LIBRARY_UUID),
+                data.getString(DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID),
+                data.getString(DBKeys.KEY_CALIBRE_LIBRARY_NAME),
+                data.getLong(DBKeys.KEY_FK_BOOKSHELF));
+        library.setId(data.getLong(DBKeys.KEY_PK_ID));
 
         library.setLastSyncDate(data.getString(
-                DBDefinitions.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE));
+                DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE));
 
         final JSONArray vlArray = data.optJSONArray(TAG_VL);
         if (vlArray != null) {
@@ -89,10 +89,10 @@ class CalibreLibraryCoder
                 final JSONObject vlData = vlArray.getJSONObject(i);
                 final CalibreVirtualLibrary vlib = new CalibreVirtualLibrary(
                         library.getId(),
-                        vlData.getString(DBDefinitions.KEY_CALIBRE_LIBRARY_NAME),
-                        vlData.getString(DBDefinitions.KEY_CALIBRE_VIRT_LIB_EXPR),
-                        vlData.getLong(DBDefinitions.KEY_FK_BOOKSHELF));
-                vlib.setId(vlData.getLong(DBDefinitions.KEY_PK_ID));
+                        vlData.getString(DBKeys.KEY_CALIBRE_LIBRARY_NAME),
+                        vlData.getString(DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR),
+                        vlData.getLong(DBKeys.KEY_FK_BOOKSHELF));
+                vlib.setId(vlData.getLong(DBKeys.KEY_PK_ID));
 
                 vlibs.add(vlib);
             }

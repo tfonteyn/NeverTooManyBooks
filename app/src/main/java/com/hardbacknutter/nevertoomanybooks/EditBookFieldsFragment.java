@@ -48,7 +48,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.ScannerContract;
 import com.hardbacknutter.nevertoomanybooks.covers.CoverHandler;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentEditBookFieldsBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.CheckListDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -92,7 +92,7 @@ public class EditBookFieldsFragment
     private final ActivityResultLauncher<Fragment> mScannerLauncher = registerForActivityResult(
             new ScannerContract(), barCode -> {
                 if (barCode != null) {
-                    mVm.getBook().putString(DBDefinitions.KEY_ISBN, barCode);
+                    mVm.getBook().putString(DBKeys.KEY_ISBN, barCode);
                 }
             });
     /** Delegate to handle cover replacement, rotation, etc. */
@@ -226,35 +226,35 @@ public class EditBookFieldsFragment
 
         fields.add(R.id.author, new TextViewAccessor<>(
                            new AuthorListFormatter(Author.Details.Short, true, false)),
-                   Book.BKEY_AUTHOR_LIST, DBDefinitions.KEY_FK_AUTHOR)
+                   Book.BKEY_AUTHOR_LIST, DBKeys.KEY_FK_AUTHOR)
               .setErrorViewId(R.id.lbl_author)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.series_title, new TextViewAccessor<>(
                            new SeriesListFormatter(Series.Details.Short, true, false)),
-                   Book.BKEY_SERIES_LIST, DBDefinitions.KEY_SERIES_TITLE)
+                   Book.BKEY_SERIES_LIST, DBKeys.KEY_SERIES_TITLE)
               .setRelatedFields(R.id.lbl_series);
 
-        fields.add(R.id.title, new EditTextAccessor<>(), DBDefinitions.KEY_TITLE)
+        fields.add(R.id.title, new EditTextAccessor<>(), DBKeys.KEY_TITLE)
               .setErrorViewId(R.id.lbl_title)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
-        fields.add(R.id.description, new EditTextAccessor<>(), DBDefinitions.KEY_DESCRIPTION)
+        fields.add(R.id.description, new EditTextAccessor<>(), DBKeys.KEY_DESCRIPTION)
               .setRelatedFields(R.id.lbl_description);
 
         // Not using a EditIsbn custom View, as we want to be able to enter invalid codes here.
-        fields.add(R.id.isbn, new EditTextAccessor<>(), DBDefinitions.KEY_ISBN)
+        fields.add(R.id.isbn, new EditTextAccessor<>(), DBKeys.KEY_ISBN)
               .setRelatedFields(R.id.lbl_isbn);
 
         fields.add(R.id.language, new AutoCompleteTextAccessor(
                            () -> mVm.getAllLanguagesCodes(),
                            new LanguageFormatter(userLocale), true),
-                   DBDefinitions.KEY_LANGUAGE)
+                   DBKeys.KEY_LANGUAGE)
               .setErrorViewId(R.id.lbl_language)
               .setFieldValidator(field -> field.getAccessor().setErrorIfEmpty(nonBlankRequired));
 
         fields.add(R.id.genre, new AutoCompleteTextAccessor(() -> mVm.getAllGenres()),
-                   DBDefinitions.KEY_GENRE)
+                   DBKeys.KEY_GENRE)
               .setRelatedFields(R.id.lbl_genre);
 
         // Personal fields
@@ -262,7 +262,7 @@ public class EditBookFieldsFragment
         // The Bookshelves are a read-only text field. A click will bring up an editor.
         // Note how we combine an EditTextAccessor with a (non Edit) FieldFormatter
         fields.add(R.id.bookshelves, new EditTextAccessor<>(new CsvFormatter(), true),
-                   Book.BKEY_BOOKSHELF_LIST, DBDefinitions.KEY_FK_BOOKSHELF)
+                   Book.BKEY_BOOKSHELF_LIST, DBKeys.KEY_FK_BOOKSHELF)
               .setRelatedFields(R.id.lbl_bookshelves);
     }
 

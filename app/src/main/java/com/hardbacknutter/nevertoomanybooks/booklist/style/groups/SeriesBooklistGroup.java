@@ -34,11 +34,11 @@ import java.util.Objects;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PBoolean;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.prefs.PPref;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.DOM_SERIES_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 
 /**
@@ -113,7 +113,7 @@ public class SeriesBooklistGroup
     @NonNull
     private DomainExpression createDisplayDomain() {
         // Not sorted; we sort on the OB domain as defined in the GroupKey.
-        return new DomainExpression(DOM_SERIES_TITLE, TBL_SERIES.dot(KEY_SERIES_TITLE));
+        return new DomainExpression(DOM_SERIES_TITLE, TBL_SERIES.dot(DBKeys.KEY_SERIES_TITLE));
     }
 
     @NonNull

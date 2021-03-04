@@ -43,19 +43,11 @@ import java.util.Map;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.ColorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.FormatDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.GenreDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LanguageDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LocationDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.TocEntryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -148,7 +140,7 @@ public class EditBookFragmentViewModel
 
     /**
      * <ul>
-     * <li>{@link DBDefinitions#KEY_PK_ID}  book id</li>
+     * <li>{@link DBKeys#KEY_PK_ID}  book id</li>
      * <li>{@link Entity#BKEY_DATA_MODIFIED}      boolean</li>
      * </ul>
      */
@@ -157,7 +149,7 @@ public class EditBookFragmentViewModel
     public Intent getResultIntent() {
         // always set the *current* book, so the BoB list can reposition correctly.
         if (mBook != null) {
-            mResultIntent.putExtra(DBDefinitions.KEY_PK_ID, mBook.getId());
+            mResultIntent.putExtra(DBKeys.KEY_PK_ID, mBook.getId());
         }
         return mResultIntent;
     }
@@ -189,7 +181,7 @@ public class EditBookFragmentViewModel
 
                 } else {
                     // 2. Do we have an id?, e.g. user clicked on a book in a list.
-                    final long bookId = args.getLong(DBDefinitions.KEY_PK_ID, 0);
+                    final long bookId = args.getLong(DBKeys.KEY_PK_ID, 0);
                     if (bookId > 0) {
                         mBook = Book.from(bookId, mBookDao);
                     } else {
@@ -297,7 +289,7 @@ public class EditBookFragmentViewModel
      */
     public boolean deleteTocEntry(@NonNull final Context context,
                                   @NonNull final TocEntry tocEntry) {
-        return TocEntryDao.getInstance().delete(context, tocEntry);
+        return DaoLocator.getInstance().getTocEntryDao().delete(context, tocEntry);
     }
 
     /**
@@ -324,7 +316,7 @@ public class EditBookFragmentViewModel
      */
     public boolean bookExists() {
         if (mBook.isNew()) {
-            final String isbnStr = mBook.getString(DBDefinitions.KEY_ISBN);
+            final String isbnStr = mBook.getString(DBKeys.KEY_ISBN);
             if (!isbnStr.isEmpty()) {
                 return mBookDao.bookExistsByIsbn(isbnStr);
             }
@@ -370,7 +362,7 @@ public class EditBookFragmentViewModel
                                @IntRange(from = 0, to = 1) final int cIdx) {
 
         // Globally disabled overrules style setting
-        if (!DBDefinitions.isCoverUsed(global, cIdx)) {
+        if (!DBKeys.isCoverUsed(global, cIdx)) {
             return false;
         }
 
@@ -388,7 +380,7 @@ public class EditBookFragmentViewModel
     public List<Bookshelf> getAllBookshelves() {
         // not cached.
         // This allows the user to edit the global list of shelves while editing a book.
-        return BookshelfDao.getInstance().getAll();
+        return DaoLocator.getInstance().getBookshelfDao().getAll();
     }
 
     /**
@@ -399,8 +391,8 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllAuthorNames() {
         if (mAuthorNamesFormatted == null) {
-            mAuthorNamesFormatted = AuthorDao.getInstance()
-                                             .getNames(DBDefinitions.KEY_AUTHOR_FORMATTED);
+            mAuthorNamesFormatted = DaoLocator.getInstance().getAuthorDao()
+                                              .getNames(DBKeys.KEY_AUTHOR_FORMATTED);
         }
         return mAuthorNamesFormatted;
     }
@@ -413,8 +405,8 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllAuthorFamilyNames() {
         if (mAuthorFamilyNames == null) {
-            mAuthorFamilyNames = AuthorDao.getInstance()
-                                          .getNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+            mAuthorFamilyNames = DaoLocator.getInstance().getAuthorDao()
+                                           .getNames(DBKeys.KEY_AUTHOR_FAMILY_NAME);
         }
         return mAuthorFamilyNames;
     }
@@ -427,8 +419,8 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllAuthorGivenNames() {
         if (mAuthorGivenNames == null) {
-            mAuthorGivenNames = AuthorDao.getInstance()
-                                         .getNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
+            mAuthorGivenNames = DaoLocator.getInstance().getAuthorDao()
+                                          .getNames(DBKeys.KEY_AUTHOR_GIVEN_NAMES);
         }
         return mAuthorGivenNames;
     }
@@ -441,7 +433,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllPublisherNames() {
         if (mPublisherNames == null) {
-            mPublisherNames = PublisherDao.getInstance().getNames();
+            mPublisherNames = DaoLocator.getInstance().getPublisherDao().getNames();
         }
         return mPublisherNames;
     }
@@ -454,7 +446,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllSeriesTitles() {
         if (mSeriesTitles == null) {
-            mSeriesTitles = SeriesDao.getInstance().getNames();
+            mSeriesTitles = DaoLocator.getInstance().getSeriesDao().getNames();
         }
         return mSeriesTitles;
     }
@@ -463,14 +455,14 @@ public class EditBookFragmentViewModel
      * Load a language list.
      * <p>
      * Returns a unique list of all languages in the database.
-     * The list is ordered by {@link DBDefinitions#KEY_UTC_LAST_UPDATED}.
+     * The list is ordered by {@link DBKeys#KEY_UTC_LAST_UPDATED}.
      *
      * @return The list of ISO 639-2 codes
      */
     @NonNull
     public List<String> getAllLanguagesCodes() {
         if (mLanguagesCodes == null) {
-            mLanguagesCodes = LanguageDao.getInstance().getCodeList();
+            mLanguagesCodes = DaoLocator.getInstance().getLanguageDao().getList();
         }
         return mLanguagesCodes;
     }
@@ -483,7 +475,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllFormats() {
         if (mFormats == null) {
-            mFormats = FormatDao.getInstance().getList();
+            mFormats = DaoLocator.getInstance().getFormatDao().getList();
         }
         return mFormats;
     }
@@ -496,7 +488,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllColors() {
         if (mColors == null) {
-            mColors = ColorDao.getInstance().getList();
+            mColors = DaoLocator.getInstance().getColorDao().getList();
         }
         return mColors;
     }
@@ -509,7 +501,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllGenres() {
         if (mGenres == null) {
-            mGenres = GenreDao.getInstance().getList();
+            mGenres = DaoLocator.getInstance().getGenreDao().getList();
         }
         return mGenres;
     }
@@ -522,7 +514,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllLocations() {
         if (mLocations == null) {
-            mLocations = LocationDao.getInstance().getList();
+            mLocations = DaoLocator.getInstance().getLocationDaoDao().getList();
         }
         return mLocations;
     }
@@ -536,7 +528,7 @@ public class EditBookFragmentViewModel
     public List<String> getAllListPriceCurrencyCodes() {
         if (mListPriceCurrencies == null) {
             mListPriceCurrencies = mBookDao
-                    .getCurrencyCodes(DBDefinitions.KEY_PRICE_LISTED_CURRENCY);
+                    .getCurrencyCodes(DBKeys.KEY_PRICE_LISTED_CURRENCY);
         }
         return mListPriceCurrencies;
     }
@@ -549,7 +541,7 @@ public class EditBookFragmentViewModel
     @NonNull
     public List<String> getAllPricePaidCurrencyCodes() {
         if (mPricePaidCurrencies == null) {
-            mPricePaidCurrencies = mBookDao.getCurrencyCodes(DBDefinitions.KEY_PRICE_PAID_CURRENCY);
+            mPricePaidCurrencies = mBookDao.getCurrencyCodes(DBKeys.KEY_PRICE_PAID_CURRENCY);
         }
         return mPricePaidCurrencies;
     }
@@ -567,7 +559,7 @@ public class EditBookFragmentViewModel
                                  @NonNull final Author author) {
         final Locale bookLocale = mBook.getLocale(context);
 
-        final AuthorDao authorDao = AuthorDao.getInstance();
+        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
         final long nrOfReferences = authorDao.countBooks(context, author, bookLocale)
                                     + authorDao.countTocEntries(context, author, bookLocale);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
@@ -584,7 +576,8 @@ public class EditBookFragmentViewModel
     public boolean isSingleUsage(@NonNull final Context context,
                                  @NonNull final Series series) {
         final Locale bookLocale = mBook.getLocale(context);
-        final long nrOfReferences = SeriesDao.getInstance().countBooks(context, series, bookLocale);
+        final long nrOfReferences = DaoLocator.getInstance().getSeriesDao()
+                                              .countBooks(context, series, bookLocale);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
@@ -599,8 +592,8 @@ public class EditBookFragmentViewModel
     public boolean isSingleUsage(@NonNull final Context context,
                                  @NonNull final Publisher publisher) {
         final Locale bookLocale = mBook.getLocale(context);
-        final long nrOfReferences =
-                PublisherDao.getInstance().countBooks(context, publisher, bookLocale);
+        final long nrOfReferences = DaoLocator.getInstance().getPublisherDao()
+                                              .countBooks(context, publisher, bookLocale);
         return nrOfReferences <= (mBook.isNew() ? 0 : 1);
     }
 
@@ -654,7 +647,7 @@ public class EditBookFragmentViewModel
                                      @NonNull final Author original,
                                      @NonNull final Author modified) {
 
-        if (AuthorDao.getInstance().insert(context, modified) > 0) {
+        if (DaoLocator.getInstance().getAuthorDao().insert(context, modified) > 0) {
             final ArrayList<Author> list = mBook.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -675,7 +668,7 @@ public class EditBookFragmentViewModel
         // copy all new data
         original.copyFrom(modified, true);
 
-        if (AuthorDao.getInstance().update(context, original)) {
+        if (DaoLocator.getInstance().getAuthorDao().update(context, original)) {
             pruneAuthors(context);
             mBook.refreshAuthorList(context);
             return true;
@@ -689,8 +682,8 @@ public class EditBookFragmentViewModel
     public boolean changeForThisBook(@NonNull final Context context,
                                      @NonNull final Series original,
                                      @NonNull final Series modified) {
-
-        if (SeriesDao.getInstance().insert(context, modified, mBook.getLocale(context)) > 0) {
+        if (DaoLocator.getInstance().getSeriesDao()
+                      .insert(context, modified, mBook.getLocale(context)) > 0) {
             final ArrayList<Series> list = mBook.getParcelableArrayList(Book.BKEY_SERIES_LIST);
             // unlink the original, and link with the new one
             // Note that the original *might* be orphaned at this time.
@@ -712,7 +705,8 @@ public class EditBookFragmentViewModel
         // copy all new data
         original.copyFrom(modified, true);
 
-        if (SeriesDao.getInstance().update(context, original, mBook.getLocale(context))) {
+        if (DaoLocator.getInstance().getSeriesDao()
+                      .update(context, original, mBook.getLocale(context))) {
             pruneSeries(context);
             mBook.refreshSeriesList(context);
             return true;
@@ -726,7 +720,8 @@ public class EditBookFragmentViewModel
                                      @NonNull final Publisher original,
                                      @NonNull final Publisher modified) {
 
-        if (PublisherDao.getInstance().insert(context, modified, mBook.getLocale(context)) > 0) {
+        if (DaoLocator.getInstance().getPublisherDao()
+                      .insert(context, modified, mBook.getLocale(context)) > 0) {
             final ArrayList<Publisher> list = mBook
                     .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
             // unlink the original, and link with the new one
@@ -748,7 +743,8 @@ public class EditBookFragmentViewModel
         // copy all new data
         original.copyFrom(modified);
 
-        if (PublisherDao.getInstance().update(context, original, mBook.getLocale(context))) {
+        if (DaoLocator.getInstance().getPublisherDao()
+                      .update(context, original, mBook.getLocale(context))) {
             prunePublishers(context);
             mBook.refreshPublishersList(context);
             return true;
@@ -761,21 +757,25 @@ public class EditBookFragmentViewModel
 
     public void fixId(@NonNull final Context context,
                       @NonNull final Author author) {
-        AuthorDao.getInstance().fixId(context, author, true, mBook.getLocale(context));
+        DaoLocator.getInstance().getAuthorDao()
+                  .fixId(context, author, true, mBook.getLocale(context));
     }
 
     public void fixId(@NonNull final Context context,
                       @NonNull final Series series) {
-        SeriesDao.getInstance().fixId(context, series, true, mBook.getLocale(context));
+        DaoLocator.getInstance().getSeriesDao()
+                  .fixId(context, series, true, mBook.getLocale(context));
     }
 
     public void fixId(@NonNull final Context context,
                       @NonNull final Publisher publisher) {
-        PublisherDao.getInstance().fixId(context, publisher, true, mBook.getLocale(context));
+        DaoLocator.getInstance().getPublisherDao()
+                  .fixId(context, publisher, true, mBook.getLocale(context));
     }
 
     public void fixId(@NonNull final Context context,
                       @NonNull final TocEntry tocEntry) {
-        TocEntryDao.getInstance().fixId(context, tocEntry, true, mBook.getLocale(context));
+        DaoLocator.getInstance().getTocEntryDao()
+                  .fixId(context, tocEntry, true, mBook.getLocale(context));
     }
 }

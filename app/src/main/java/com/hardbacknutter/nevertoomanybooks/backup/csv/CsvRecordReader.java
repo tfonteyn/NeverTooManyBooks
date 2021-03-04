@@ -55,7 +55,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.RecordReader;
 import com.hardbacknutter.nevertoomanybooks.backup.RecordType;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveReaderRecord;
 import com.hardbacknutter.nevertoomanybooks.backup.csv.coders.BookCoder;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -213,7 +213,7 @@ public class CsvRecordReader
         final List<String> csvColumnNamesList = Arrays.asList(csvColumnNames);
         // If a sync was requested, we'll need this column or cannot proceed.
         if (updatesMustSync) {
-            requireColumnOrThrow(context, csvColumnNamesList, DBDefinitions.KEY_UTC_LAST_UPDATED);
+            requireColumnOrThrow(context, csvColumnNamesList, DBKeys.KEY_UTC_LAST_UPDATED);
         }
 
         // One book == One row. We start after the headings row.
@@ -346,7 +346,7 @@ public class CsvRecordReader
                                     final long importNumericId)
             throws DaoWriteException {
         // Verified to be valid earlier.
-        final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
         final long bookId = mBookDao.getBookIdFromUuid(uuid);
@@ -355,7 +355,7 @@ public class CsvRecordReader
 
             // Explicitly set the EXISTING id on the book
             // (the importBookId was removed earlier, and is IGNORED)
-            book.putLong(DBDefinitions.KEY_PK_ID, bookId);
+            book.putLong(DBKeys.KEY_PK_ID, bookId);
 
             // UPDATE the existing book (if allowed). Check the sync option FIRST!
             if ((updatesMustSync
@@ -385,7 +385,7 @@ public class CsvRecordReader
 
             // If we have an importBookId, and it does not already exist, we reuse it.
             if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
-                book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
+                book.putLong(DBKeys.KEY_PK_ID, importNumericId);
             }
 
             // the Book object will contain:
@@ -420,7 +420,7 @@ public class CsvRecordReader
                                   final long importNumericId)
             throws DaoWriteException {
         // Add the importNumericId back to the book.
-        book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
+        book.putLong(DBKeys.KEY_PK_ID, importNumericId);
 
         // Is that id already in use ?
         if (!mBookDao.bookExistsById(importNumericId)) {
@@ -511,10 +511,10 @@ public class CsvRecordReader
         final String uuid;
 
         // Get the "book_uuid", and remove from book if null/blank
-        if (book.contains(DBDefinitions.KEY_BOOK_UUID)) {
-            uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+        if (book.contains(DBKeys.KEY_BOOK_UUID)) {
+            uuid = book.getString(DBKeys.KEY_BOOK_UUID);
             if (uuid.isEmpty()) {
-                book.remove(DBDefinitions.KEY_BOOK_UUID);
+                book.remove(DBKeys.KEY_BOOK_UUID);
             }
 
         } else if (book.contains("uuid")) {
@@ -524,7 +524,7 @@ public class CsvRecordReader
             book.remove("uuid");
             // but if we got a UUID from it, store it again, using the correct key
             if (!uuid.isEmpty()) {
-                book.putString(DBDefinitions.KEY_BOOK_UUID, uuid);
+                book.putString(DBKeys.KEY_BOOK_UUID, uuid);
             }
         } else {
             uuid = null;
@@ -543,9 +543,9 @@ public class CsvRecordReader
     private long extractNumericId(@NonNull final Book book) {
         // Do we have a numeric id in the import ?
         // String: see book init, we copied all fields we find in the import file as text.
-        final String idStr = book.getString(DBDefinitions.KEY_PK_ID);
+        final String idStr = book.getString(DBKeys.KEY_PK_ID);
         // ALWAYS remove here to avoid type-issues further down. We'll re-add if needed.
-        book.remove(DBDefinitions.KEY_PK_ID);
+        book.remove(DBKeys.KEY_PK_ID);
 
         if (!idStr.isEmpty()) {
             try {

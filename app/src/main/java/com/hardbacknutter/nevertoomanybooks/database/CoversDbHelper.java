@@ -1,0 +1,174 @@
+/*
+ * @Copyright 2018-2021 HardBackNutter
+ * @License GNU General Public License
+ *
+ * This file is part of NeverTooManyBooks.
+ *
+ * NeverTooManyBooks is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * NeverTooManyBooks is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with NeverTooManyBooks. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.hardbacknutter.nevertoomanybooks.database;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedCursor;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
+import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
+import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
+
+/**
+ * Singleton SQLiteOpenHelper for the covers database.
+ */
+public final class CoversDbHelper
+        extends SQLiteOpenHelper {
+
+    /** DB name. */
+    public static final String DATABASE_NAME = "covers.db";
+    /* Domain definitions. */
+    public static final String CKEY_PK_ID = "_id";
+    public static final String CKEY_CACHE_ID = "key";
+    public static final String CKEY_IMAGE = "image";
+    public static final String CKEY_UTC_DATETIME = "last_update_date";
+    /**
+     * DB Version.
+     * v2: current
+     * v1: had a redundant width/height column.
+     */
+    private static final int DATABASE_VERSION = 2;
+    /** TBL_IMAGE. */
+    private static final Domain DOM_PK_ID =
+            new Domain.Builder(CKEY_PK_ID, ColumnInfo.TYPE_INTEGER).primaryKey().build();
+
+    private static final Domain DOM_CACHE_ID =
+            new Domain.Builder(CKEY_CACHE_ID, ColumnInfo.TYPE_TEXT).notNull().build();
+
+    private static final Domain DOM_IMAGE =
+            new Domain.Builder(CKEY_IMAGE, ColumnInfo.TYPE_BLOB).notNull().build();
+
+    private static final Domain DOM_UTC_DATETIME =
+            new Domain.Builder(CKEY_UTC_DATETIME, ColumnInfo.TYPE_DATETIME)
+                    .notNull().withDefaultCurrentTimeStamp().build();
+
+    /** table definitions. */
+    public static final TableDefinition TBL_IMAGE = new TableDefinition("image")
+            .addDomains(DOM_PK_ID, DOM_IMAGE, DOM_UTC_DATETIME, DOM_CACHE_ID)
+            .setPrimaryKey(DOM_PK_ID);
+    /** Readers/Writer lock for <strong>this</strong> database. */
+    private static final Synchronizer sSynchronizer = new Synchronizer();
+    /** Static Factory object to create the custom cursor. */
+    private static final SQLiteDatabase.CursorFactory CURSOR_FACTORY =
+            (db, d, et, q) -> new SynchronizedCursor(d, et, q, sSynchronizer);
+    /** Singleton. */
+    private static CoversDbHelper sInstance;
+
+    /* table indexes. */
+    static {
+        TBL_IMAGE.addIndex("id", true, DOM_PK_ID)
+                 .addIndex(CKEY_CACHE_ID, true, DOM_CACHE_ID)
+                 .addIndex(CKEY_CACHE_ID + "_" + CKEY_UTC_DATETIME,
+                           true, DOM_CACHE_ID, DOM_UTC_DATETIME);
+    }
+
+    /** DO NOT USE INSIDE THIS CLASS! ONLY FOR USE BY CLIENTS VIA {@link #getDb()}. */
+    @Nullable
+    private SynchronizedDb mSynchronizedDb;
+
+    /**
+     * Constructor.
+     *
+     * @param context Current context
+     */
+    private CoversDbHelper(@NonNull final Context context) {
+        super(context.getApplicationContext(), DATABASE_NAME, CURSOR_FACTORY, DATABASE_VERSION);
+    }
+
+    /**
+     * Main entry point for clients to get the database.
+     *
+     * @param context Current context
+     *
+     * @return the database instance
+     */
+    public static SynchronizedDb getDb(@NonNull final Context context) {
+        return getInstance(context).getDb();
+    }
+
+    /**
+     * Get/create the singleton instance. This should be kept private and wrapped as needed,
+     * as it allows access to underlying 'things' which clients of DBHelper should not have.
+     *
+     * @param context Current context
+     *
+     * @return the instance
+     */
+    @NonNull
+    private static CoversDbHelper getInstance(@NonNull final Context context) {
+        synchronized (CoversDbHelper.class) {
+            if (sInstance == null) {
+                sInstance = new CoversDbHelper(context);
+            }
+            return sInstance;
+        }
+    }
+
+    /**
+     * Get/create the Synchronized database.
+     *
+     * @return database connection
+     */
+    @NonNull
+    private SynchronizedDb getDb() {
+        synchronized (this) {
+            if (mSynchronizedDb == null) {
+                mSynchronizedDb = new SynchronizedDb(sSynchronizer, this);
+            }
+            return mSynchronizedDb;
+        }
+    }
+
+    @Override
+    public void close() {
+        if (mSynchronizedDb != null) {
+            mSynchronizedDb.close();
+        }
+        super.close();
+    }
+
+    @Override
+    public void onCreate(@NonNull final SQLiteDatabase db) {
+        TableDefinition.onCreate(db, TBL_IMAGE);
+    }
+
+    @Override
+    public void onUpgrade(@NonNull final SQLiteDatabase db,
+                          final int oldVersion,
+                          final int newVersion) {
+        // This is a cache, so no data needs preserving. Drop & recreate.
+        db.execSQL("DROP TABLE IF EXISTS " + TBL_IMAGE.getName());
+        onCreate(db);
+    }
+
+    @Override
+    public void onOpen(@NonNull final SQLiteDatabase db) {
+        // Turn ON foreign key support so that CASCADE etc. works.
+        // This is the same as db.execSQL("PRAGMA foreign_keys = ON");
+        db.setForeignKeyConstraintsEnabled(true);
+    }
+}

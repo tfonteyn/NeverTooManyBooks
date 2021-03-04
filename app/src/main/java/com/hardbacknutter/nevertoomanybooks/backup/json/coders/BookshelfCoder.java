@@ -25,7 +25,7 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Bookshelf;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -51,10 +51,10 @@ public class BookshelfCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBDefinitions.KEY_PK_ID, bookshelf.getId());
-        out.put(DBDefinitions.KEY_BOOKSHELF_NAME, bookshelf.getName());
+        out.put(DBKeys.KEY_PK_ID, bookshelf.getId());
+        out.put(DBKeys.KEY_BOOKSHELF_NAME, bookshelf.getName());
         if (!bookshelf.getStyleUuid().isEmpty()) {
-            out.put(DBDefinitions.KEY_FK_STYLE, bookshelf.getStyleUuid());
+            out.put(DBKeys.KEY_FK_STYLE, bookshelf.getStyleUuid());
         }
         return out;
     }
@@ -65,13 +65,13 @@ public class BookshelfCoder
             throws JSONException {
 
         final Bookshelf bookshelf = new Bookshelf(
-                data.getString(DBDefinitions.KEY_BOOKSHELF_NAME), mDefaultStyle);
-        bookshelf.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+                data.getString(DBKeys.KEY_BOOKSHELF_NAME), mDefaultStyle);
+        bookshelf.setId(data.getLong(DBKeys.KEY_PK_ID));
 
         // It's quite possible that the UUID is not a style we (currently) know.
         // But that does not matter as we'll check it upon first access.
-        if (data.has(DBDefinitions.KEY_FK_STYLE)) {
-            bookshelf.setStyleUuid(data.getString(DBDefinitions.KEY_FK_STYLE));
+        if (data.has(DBKeys.KEY_FK_STYLE)) {
+            bookshelf.setStyleUuid(data.getString(DBKeys.KEY_FK_STYLE));
         } else if (data.has("style")) {
             bookshelf.setStyleUuid(data.getString("style"));
         }

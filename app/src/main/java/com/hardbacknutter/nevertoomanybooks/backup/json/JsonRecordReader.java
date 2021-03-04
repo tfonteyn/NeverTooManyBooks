@@ -60,7 +60,7 @@ import com.hardbacknutter.nevertoomanybooks.backup.json.coders.JsonCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.ListStyleCoder;
 import com.hardbacknutter.nevertoomanybooks.backup.json.coders.SharedPreferencesCoder;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -335,11 +335,11 @@ public class JsonRecordReader
 
                 try {
                     final Book book = mBookCoder.decode(books.getJSONObject(i));
-                    Objects.requireNonNull(book.getString(DBDefinitions.KEY_BOOK_UUID),
+                    Objects.requireNonNull(book.getString(DBKeys.KEY_BOOK_UUID),
                                            "KEY_BOOK_UUID");
 
-                    final long importNumericId = book.getLong(DBDefinitions.KEY_PK_ID);
-                    book.remove(DBDefinitions.KEY_PK_ID);
+                    final long importNumericId = book.getLong(DBKeys.KEY_PK_ID);
+                    book.remove(DBKeys.KEY_PK_ID);
                     importBookWithUuid(context, updatesMustSync, updatesMayOverwrite,
                                        book, importNumericId);
 
@@ -400,7 +400,7 @@ public class JsonRecordReader
                                     final long importNumericId)
             throws DaoWriteException {
         // Verified to be valid earlier.
-        final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
 
         // check if the book exists in our database, and fetch it's id.
         final long databaseBookId = mBookDao.getBookIdFromUuid(uuid);
@@ -409,7 +409,7 @@ public class JsonRecordReader
 
             // Explicitly set the EXISTING id on the book
             // (the importBookId was removed earlier, and is IGNORED)
-            book.putLong(DBDefinitions.KEY_PK_ID, databaseBookId);
+            book.putLong(DBKeys.KEY_PK_ID, databaseBookId);
 
             // UPDATE the existing book (if allowed). Check the sync option FIRST!
             if ((updatesMustSync
@@ -439,7 +439,7 @@ public class JsonRecordReader
 
             // If we have an importBookId, and it does not already exist, we reuse it.
             if (importNumericId > 0 && !mBookDao.bookExistsById(importNumericId)) {
-                book.putLong(DBDefinitions.KEY_PK_ID, importNumericId);
+                book.putLong(DBKeys.KEY_PK_ID, importNumericId);
             }
 
             // the Book object will contain:

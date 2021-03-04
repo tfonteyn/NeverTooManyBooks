@@ -47,7 +47,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.SearchSitesSingleListContract;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.databinding.RowUpdateFromInternetBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.StandardDialogs;
@@ -288,20 +288,18 @@ public class SearchBookUpdatesFragment
                     .setMessage(R.string.confirm_overwrite_cover)
                     .setNeutralButton(android.R.string.cancel, (d, w) -> d.dismiss())
                     .setNegativeButton(R.string.lbl_field_usage_copy_if_blank, (d, w) -> {
-                        mVm
-                                .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".0",
-                                                  FieldUsage.Usage.CopyIfBlank);
-                        mVm
-                                .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".1",
-                                                  FieldUsage.Usage.CopyIfBlank);
+                        mVm.updateFieldUsage(DBKeys.PREFS_IS_USED_COVER + ".0",
+                                             FieldUsage.Usage.CopyIfBlank);
+                        mVm.updateFieldUsage(DBKeys.PREFS_IS_USED_COVER + ".1",
+                                             FieldUsage.Usage.CopyIfBlank);
                         startUpdate();
                     })
                     .setPositiveButton(R.string.lbl_field_usage_overwrite, (d, w) -> {
                         mVm
-                                .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".0",
+                                .updateFieldUsage(DBKeys.PREFS_IS_USED_COVER + ".0",
                                                   FieldUsage.Usage.Overwrite);
                         mVm
-                                .updateFieldUsage(DBDefinitions.PREFS_IS_USED_COVER + ".1",
+                                .updateFieldUsage(DBKeys.PREFS_IS_USED_COVER + ".1",
                                                   FieldUsage.Usage.Overwrite);
                         startUpdate();
                     })

@@ -24,8 +24,8 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BaseDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 
 /**
@@ -84,14 +84,15 @@ public class WildcardFilter
     @Override
     @NonNull
     public String getExpression(@NonNull final Context context) {
-        return '(' + mTable.dot(mDomainKey) + " LIKE '%" + BaseDao.encodeString(mCriteria) + "%'"
+        return '(' + mTable.dot(mDomainKey)
+               + " LIKE '%" + BaseDaoImpl.encodeString(mCriteria) + "%'"
                + ')';
     }
 
     @Override
     public boolean isActive(@NonNull final Context context) {
-        return DBDefinitions.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
-                                    mDomainKey);
+        return DBKeys.isUsed(PreferenceManager.getDefaultSharedPreferences(context),
+                             mDomainKey);
     }
 
     @Override

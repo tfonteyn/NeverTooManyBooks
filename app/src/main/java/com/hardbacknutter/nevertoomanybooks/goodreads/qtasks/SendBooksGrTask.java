@@ -29,7 +29,7 @@ import androidx.annotation.NonNull;
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.entities.DataHolder;
@@ -112,7 +112,7 @@ public class SendBooksGrTask
 
                 // Update internal status
                 mCount++;
-                lastBookSend = bookData.getLong(DBDefinitions.KEY_PK_ID);
+                lastBookSend = bookData.getLong(DBKeys.KEY_PK_ID);
                 // If we have done one successfully, reset the counter so a
                 // subsequent network error does not result in a long delay
                 if (needsRetryReset) {

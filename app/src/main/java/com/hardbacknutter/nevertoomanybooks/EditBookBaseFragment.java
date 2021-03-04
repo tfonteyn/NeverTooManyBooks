@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataEditor;
 import com.hardbacknutter.nevertoomanybooks.dialogs.PartialDatePickerDialogFragment;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -298,7 +298,7 @@ public abstract class EditBookBaseFragment
             mToolbar.setSubtitle(null);
         } else {
             // Existing book
-            String title = book.getString(DBDefinitions.KEY_TITLE);
+            String title = book.getString(DBKeys.KEY_TITLE);
             if (BuildConfig.DEBUG /* always */) {
                 title = "[" + book.getId() + "] " + title;
             }

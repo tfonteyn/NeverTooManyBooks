@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.TocEntry;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -40,12 +40,12 @@ public class TocEntryCoder
             throws JSONException {
         final JSONObject data = new JSONObject();
 
-        data.put(DBDefinitions.KEY_PK_ID, tocEntry.getId());
-        data.put(DBDefinitions.KEY_TITLE, tocEntry.getTitle());
-        data.put(DBDefinitions.KEY_FK_AUTHOR, mAuthorCoder.encode(tocEntry.getPrimaryAuthor()));
+        data.put(DBKeys.KEY_PK_ID, tocEntry.getId());
+        data.put(DBKeys.KEY_TITLE, tocEntry.getTitle());
+        data.put(DBKeys.KEY_FK_AUTHOR, mAuthorCoder.encode(tocEntry.getPrimaryAuthor()));
 
         if (!tocEntry.getFirstPublicationDate().isEmpty()) {
-            data.put(DBDefinitions.KEY_DATE_FIRST_PUBLICATION,
+            data.put(DBKeys.KEY_DATE_FIRST_PUBLICATION,
                      tocEntry.getFirstPublicationDate().getIsoString());
         }
 
@@ -58,12 +58,12 @@ public class TocEntryCoder
             throws JSONException {
 
         final TocEntry tocEntry = new TocEntry(
-                mAuthorCoder.decode(data.getJSONObject(DBDefinitions.KEY_FK_AUTHOR)),
-                data.getString(DBDefinitions.KEY_TITLE),
+                mAuthorCoder.decode(data.getJSONObject(DBKeys.KEY_FK_AUTHOR)),
+                data.getString(DBKeys.KEY_TITLE),
                 // optional
-                data.optString(DBDefinitions.KEY_DATE_FIRST_PUBLICATION));
+                data.optString(DBKeys.KEY_DATE_FIRST_PUBLICATION));
 
-        tocEntry.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+        tocEntry.setId(data.getLong(DBKeys.KEY_PK_ID));
 
         return tocEntry;
     }

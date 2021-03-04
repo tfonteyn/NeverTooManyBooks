@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -61,13 +61,13 @@ class LastDodoTest
 
         loadData(mSearchEngine, "UTF-8", locationHeader, filename, new boolean[]{false, false});
 
-        assertEquals("De 37ste parallel", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("9789463064385", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("2018", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        assertEquals("48", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("nld", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals("Gekleurd", mRawData.getString(DBDefinitions.KEY_COLOR));
+        assertEquals("De 37ste parallel", mRawData.getString(DBKeys.KEY_TITLE));
+        assertEquals("9789463064385", mRawData.getString(DBKeys.KEY_ISBN));
+        assertEquals("2018", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        assertEquals("48", mRawData.getString(DBKeys.KEY_PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBKeys.KEY_FORMAT));
+        assertEquals("nld", mRawData.getString(DBKeys.KEY_LANGUAGE));
+        assertEquals("Gekleurd", mRawData.getString(DBKeys.KEY_COLOR));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

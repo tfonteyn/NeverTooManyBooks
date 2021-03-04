@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 
 import static org.junit.Assert.assertEquals;
@@ -52,7 +53,7 @@ public class BooleanFilterTest {
                 false, mLayerMock, R.string.lbl_read,
                 Filters.PK_FILTER_READ,
                 new DomainExpression(DBDefinitions.DOM_BOOK_READ,
-                                     DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)));
+                                     DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_READ)));
         p1.set(true);
 
         final BooleanFilter p2 = p1.clone(false, mLayerMock);

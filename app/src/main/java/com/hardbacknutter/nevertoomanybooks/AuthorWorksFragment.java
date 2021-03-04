@@ -51,7 +51,7 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.activityresultcontracts.AuthorWorksContract;
 import com.hardbacknutter.nevertoomanybooks.booklist.BooklistBuilder;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.databinding.FragmentAuthorWorksBinding;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPicker;
 import com.hardbacknutter.nevertoomanybooks.dialogs.MenuPickerDialogFragment;
@@ -316,7 +316,7 @@ public class AuthorWorksFragment
             if (bookIdList.size() == 1) {
                 // open new activity to show the book, 'back' will return to this one.
                 final Intent intent = new Intent(getContext(), ShowBookActivity.class)
-                        .putExtra(DBDefinitions.KEY_PK_ID, bookIdList.get(0));
+                        .putExtra(DBKeys.KEY_PK_ID, bookIdList.get(0));
                 startActivity(intent);
 
             } else {
@@ -339,7 +339,7 @@ public class AuthorWorksFragment
         } else if (work instanceof BookAsWork) {
             // open new activity to show the book, 'back' will return to this one.
             final Intent intent = new Intent(getContext(), ShowBookActivity.class)
-                    .putExtra(DBDefinitions.KEY_PK_ID, work.getId());
+                    .putExtra(DBKeys.KEY_PK_ID, work.getId());
             startActivity(intent);
 
         } else {

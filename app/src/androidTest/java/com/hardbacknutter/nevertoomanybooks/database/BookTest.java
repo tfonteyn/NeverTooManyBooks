@@ -37,10 +37,8 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
@@ -56,7 +54,6 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.AuthorFullName;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.BOOK_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.Constants.COVER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -128,8 +125,10 @@ public class BookTest {
             mAuthor[0] = Author.from(AuthorFullName(0));
             mAuthor[1] = Author.from(AuthorFullName(1));
 
+            final DaoLocator daoLocator = DaoLocator.getInstance();
+
             // insert author[0] but do NOT insert author[1]
-            mAuthorId[0] = AuthorDao.getInstance().insert(context, mAuthor[0]);
+            mAuthorId[0] = daoLocator.getAuthorDao().insert(context, mAuthor[0]);
             mAuthorList.clear();
             mAuthorList.add(mAuthor[0]);
 
@@ -137,8 +136,9 @@ public class BookTest {
             mPublisher[1] = Publisher.from(Constants.PUBLISHER + "1");
 
             // insert publisher[0] but do NOT publisher author[1]
-            mPublisherId[0] = PublisherDao.getInstance()
-                                          .insert(context, mPublisher[0], Locale.getDefault());
+
+            mPublisherId[0] = daoLocator.getPublisherDao().insert(context, mPublisher[0],
+                                                                  Locale.getDefault());
             mPublisherList.clear();
             mPublisherList.add(mPublisher[0]);
         }
@@ -243,7 +243,7 @@ public class BookTest {
              * update the stored book
              */
             book.setStage(EntityStage.Stage.WriteAble);
-            book.putString(KEY_TITLE, BOOK_TITLE + "0_upd");
+            book.putString(DBKeys.KEY_TITLE, BOOK_TITLE + "0_upd");
             book.setStage(EntityStage.Stage.Dirty);
 
             authors = book.getParcelableArrayList(Book.BKEY_AUTHOR_LIST);
@@ -265,9 +265,9 @@ public class BookTest {
             book = Book.from(mBookId[0], bookDao);
             assertEquals(mBookId[0], book.getId());
 
-            uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+            uuid = book.getString(DBKeys.KEY_BOOK_UUID);
 
-            assertEquals(BOOK_TITLE + "0_upd", book.getString(KEY_TITLE));
+            assertEquals(BOOK_TITLE + "0_upd", book.getString(DBKeys.KEY_TITLE));
             bookshelves = book.getParcelableArrayList(Book.BKEY_BOOKSHELF_LIST);
             assertEquals(1, bookshelves.size());
             assertEquals(mBookshelf[0], bookshelves.get(0));
@@ -304,7 +304,7 @@ public class BookTest {
             book = Book.from(mBookId[0], bookDao);
             assertEquals(mBookId[0], book.getId());
 
-            uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+            uuid = book.getString(DBKeys.KEY_BOOK_UUID);
 
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[0]));
             assertFalse(book.contains(Book.BKEY_TMP_FILE_SPEC[1]));
@@ -358,7 +358,7 @@ public class BookTest {
 
         final ShowBookViewModel vm = new ShowBookViewModel();
         final Bundle args = new Bundle();
-        args.putLong(DBDefinitions.KEY_PK_ID, mBookId[0]);
+        args.putLong(DBKeys.KEY_PK_ID, mBookId[0]);
         try {
             vm.init(context, args);
             final Book retrieved = vm.getBookAtPosition(1);
@@ -379,11 +379,11 @@ public class BookTest {
 
         final Book book = new Book();
         book.setStage(EntityStage.Stage.WriteAble);
-        book.putString(KEY_TITLE, Constants.BOOK_TITLE + "0");
+        book.putString(DBKeys.KEY_TITLE, Constants.BOOK_TITLE + "0");
         book.setStage(EntityStage.Stage.Dirty);
 
-        book.putLong(DBDefinitions.KEY_ESID_ISFDB, Constants.BOOK_ISFDB_123);
-        book.putString(DBDefinitions.KEY_ESID_LCCN, Constants.BOOK_LCCN_0);
+        book.putLong(DBKeys.KEY_ESID_ISFDB, Constants.BOOK_ISFDB_123);
+        book.putString(DBKeys.KEY_ESID_LCCN, Constants.BOOK_LCCN_0);
 
         book.putParcelableArrayList(Book.BKEY_BOOKSHELF_LIST, mBookshelfList);
         book.putParcelableArrayList(Book.BKEY_AUTHOR_LIST, mAuthorList);
@@ -409,14 +409,14 @@ public class BookTest {
                                              final Book book) {
         assertEquals(EntityStage.Stage.Clean, book.getStage());
 
-        final String uuid = book.getString(DBDefinitions.KEY_BOOK_UUID);
+        final String uuid = book.getString(DBKeys.KEY_BOOK_UUID);
         assertFalse(uuid.isEmpty());
-        assertEquals(BOOK_TITLE + "0", book.getString(KEY_TITLE));
+        assertEquals(BOOK_TITLE + "0", book.getString(DBKeys.KEY_TITLE));
 
-        assertEquals(Constants.BOOK_ISFDB_123, book.getLong(DBDefinitions.KEY_ESID_ISFDB));
+        assertEquals(Constants.BOOK_ISFDB_123, book.getLong(DBKeys.KEY_ESID_ISFDB));
 
         // not saved, hence empty
-        assertEquals("", book.getString(DBDefinitions.KEY_ESID_LCCN));
+        assertEquals("", book.getString(DBKeys.KEY_ESID_LCCN));
 
 
         final ArrayList<Bookshelf> bookshelves = book

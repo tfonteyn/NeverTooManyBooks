@@ -36,7 +36,8 @@ import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.DaoWriteException;
 import com.hardbacknutter.nevertoomanybooks.databinding.DialogEditAuthorBinding;
@@ -89,7 +90,7 @@ public class EditAuthorDialogFragment
                               @NonNull final Author author) {
         final Bundle args = new Bundle(2);
         args.putString(BKEY_REQUEST_KEY, BooksOnBookshelf.RowChangeListener.REQUEST_KEY);
-        args.putParcelable(DBDefinitions.KEY_FK_AUTHOR, author);
+        args.putParcelable(DBKeys.KEY_FK_AUTHOR, author);
 
         final DialogFragment frag = new EditAuthorDialogFragment();
         frag.setArguments(args);
@@ -103,7 +104,7 @@ public class EditAuthorDialogFragment
         final Bundle args = requireArguments();
         mRequestKey = Objects.requireNonNull(args.getString(BKEY_REQUEST_KEY),
                                              "BKEY_REQUEST_KEY");
-        mAuthor = Objects.requireNonNull(args.getParcelable(DBDefinitions.KEY_FK_AUTHOR),
+        mAuthor = Objects.requireNonNull(args.getParcelable(DBKeys.KEY_FK_AUTHOR),
                                          "KEY_FK_AUTHOR");
 
         if (savedInstanceState == null) {
@@ -112,10 +113,10 @@ public class EditAuthorDialogFragment
             mIsComplete = mAuthor.isComplete();
         } else {
             //noinspection ConstantConditions
-            mFamilyName = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME);
+            mFamilyName = savedInstanceState.getString(DBKeys.KEY_AUTHOR_FAMILY_NAME);
             //noinspection ConstantConditions
-            mGivenNames = savedInstanceState.getString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES);
-            mIsComplete = savedInstanceState.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE,
+            mGivenNames = savedInstanceState.getString(DBKeys.KEY_AUTHOR_GIVEN_NAMES);
+            mIsComplete = savedInstanceState.getBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE,
                                                         false);
         }
     }
@@ -128,18 +129,18 @@ public class EditAuthorDialogFragment
 
         final Context context = getContext();
 
-        final AuthorDao authorDao = AuthorDao.getInstance();
+        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
 
         //noinspection ConstantConditions
         final ExtArrayAdapter<String> familyNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBDefinitions.KEY_AUTHOR_FAMILY_NAME));
+                authorDao.getNames(DBKeys.KEY_AUTHOR_FAMILY_NAME));
 
         final ExtArrayAdapter<String> givenNameAdapter = new ExtArrayAdapter<>(
                 context, R.layout.dropdown_menu_popup_item,
                 ExtArrayAdapter.FilterType.Diacritic,
-                authorDao.getNames(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
+                authorDao.getNames(DBKeys.KEY_AUTHOR_GIVEN_NAMES));
 
         mVb.familyName.setText(mFamilyName);
         mVb.familyName.setAdapter(familyNameAdapter);
@@ -183,7 +184,8 @@ public class EditAuthorDialogFragment
         //noinspection ConstantConditions
         final Locale bookLocale = AppLocale.getInstance().getUserLocale(context);
 
-        final AuthorDao authorDao = AuthorDao.getInstance();
+        final AuthorDao authorDao = DaoLocator.getInstance().getAuthorDao();
+
         // check if it already exists (will be 0 if not)
         final long existingId = authorDao.find(context, mAuthor, true, bookLocale);
 
@@ -236,9 +238,9 @@ public class EditAuthorDialogFragment
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
-        outState.putString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
-        outState.putBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
+        outState.putString(DBKeys.KEY_AUTHOR_FAMILY_NAME, mFamilyName);
+        outState.putString(DBKeys.KEY_AUTHOR_GIVEN_NAMES, mGivenNames);
+        outState.putBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE, mIsComplete);
     }
 
     @Override

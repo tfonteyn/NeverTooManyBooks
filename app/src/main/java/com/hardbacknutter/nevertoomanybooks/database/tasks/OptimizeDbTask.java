@@ -27,7 +27,7 @@ import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
+import com.hardbacknutter.nevertoomanybooks.database.CoversDbHelper;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -70,7 +70,7 @@ public class OptimizeDbTask
             DBHelper.getDb(context).optimize();
 
             if (ImageUtils.isImageCachingEnabled(context)) {
-                CoverCacheDao.CoversDbHelper.getDb(context).optimize();
+                CoversDbHelper.getDb(context).optimize();
             }
             return true;
 

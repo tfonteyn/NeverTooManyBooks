@@ -42,20 +42,12 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_LIST_VIEW_NODE_ROW_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_GROUP;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 
 public class Booklist
         implements AutoCloseable {
@@ -186,7 +178,7 @@ public class Booklist
         if (mTotalBooks == -1) {
             try (SynchronizedStatement stmt = mDb.compileStatement(
                     SELECT_COUNT_FROM_ + mListTable.getName()
-                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
+                    + _WHERE_ + DBKeys.KEY_BL_NODE_GROUP + "=?")) {
                 stmt.bindLong(1, BooklistGroup.BOOK);
                 mTotalBooks = (int) stmt.simpleQueryForLongOrZero();
             }
@@ -202,9 +194,9 @@ public class Booklist
     public int countDistinctBooks() {
         if (mDistinctBooks == -1) {
             try (SynchronizedStatement stmt = mDb.compileStatement(
-                    "SELECT COUNT(DISTINCT " + KEY_FK_BOOK + ")"
+                    "SELECT COUNT(DISTINCT " + DBKeys.KEY_FK_BOOK + ")"
                     + _FROM_ + mListTable.getName()
-                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?")) {
+                    + _WHERE_ + DBKeys.KEY_BL_NODE_GROUP + "=?")) {
 
                 stmt.bindLong(1, BooklistGroup.BOOK);
                 mDistinctBooks = (int) stmt.simpleQueryForLongOrZero();
@@ -221,7 +213,7 @@ public class Booklist
     int countVisibleRows() {
         try (SynchronizedStatement stmt = mDb.compileStatement(
                 SELECT_COUNT_FROM_ + mListTable.getName()
-                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1")) {
+                + _WHERE_ + DBKeys.KEY_BL_NODE_VISIBLE + "=1")) {
             return (int) stmt.simpleQueryForLongOrZero();
         }
     }
@@ -261,10 +253,11 @@ public class Booklist
                     SELECT_ + mListTable.getDomains().stream()
                                         .map(domain -> mListTable.dot(domain.getName()))
                                         .collect(Collectors.joining(","))
-                    + ',' + (mListTable.dot(KEY_PK_ID) + _AS_ + KEY_BL_LIST_VIEW_NODE_ROW_ID)
+                    + ',' + (mListTable.dot(DBKeys.KEY_PK_ID)
+                             + _AS_ + DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID)
                     + _FROM_ + mListTable.ref()
-                    + _WHERE_ + mListTable.dot(KEY_BL_NODE_VISIBLE) + "=1"
-                    + _ORDER_BY_ + mListTable.dot(KEY_PK_ID)
+                    + _WHERE_ + mListTable.dot(DBKeys.KEY_BL_NODE_VISIBLE) + "=1"
+                    + _ORDER_BY_ + mListTable.dot(DBKeys.KEY_PK_ID)
                     + " LIMIT ? OFFSET ?";
         }
 
@@ -288,7 +281,7 @@ public class Booklist
             names[i] = domains.get(i).getName();
         }
 
-        names[domains.size()] = KEY_BL_LIST_VIEW_NODE_ROW_ID;
+        names[domains.size()] = DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID;
         return names;
     }
 
@@ -344,7 +337,7 @@ public class Booklist
         if (mSqlGetNodeByRowId == null) {
             mSqlGetNodeByRowId = SELECT_ + BooklistNode.getColumns(mListTable)
                                  + _FROM_ + mListTable.ref()
-                                 + _WHERE_ + mListTable.dot(KEY_PK_ID) + "=?";
+                                 + _WHERE_ + mListTable.dot(DBKeys.KEY_PK_ID) + "=?";
         }
 
         try (Cursor cursor = mDb.rawQuery(mSqlGetNodeByRowId, new String[]{
@@ -380,7 +373,7 @@ public class Booklist
             mSqlGetBookNodes =
                     SELECT_ + BooklistNode.getColumns(mListTable)
                     + _FROM_ + mListTable.ref()
-                    + _WHERE_ + mListTable.dot(KEY_FK_BOOK) + "=?";
+                    + _WHERE_ + mListTable.dot(DBKeys.KEY_FK_BOOK) + "=?";
         }
 
         // get all positions the book is on
@@ -436,7 +429,7 @@ public class Booklist
         final int count;
         try (SynchronizedStatement stmt = mDb.compileStatement(
                 SELECT_COUNT_FROM_ + mListTable.getName()
-                + _WHERE_ + KEY_BL_NODE_VISIBLE + "=1" + _AND_ + KEY_PK_ID + "<?")) {
+                + _WHERE_ + DBKeys.KEY_BL_NODE_VISIBLE + "=1" + _AND_ + DBKeys.KEY_PK_ID + "<?")) {
 
             stmt.bindLong(1, node.getRowId());
             count = (int) stmt.simpleQueryForLongOrZero();
@@ -463,11 +456,11 @@ public class Booklist
 
         if (mSqlEnsureNodeIsVisible == null) {
             mSqlEnsureNodeIsVisible =
-                    SELECT_ + KEY_PK_ID + _FROM_ + mListTable.getName()
+                    SELECT_ + DBKeys.KEY_PK_ID + _FROM_ + mListTable.getName()
                     // follow the node hierarchy
-                    + _WHERE_ + KEY_BL_NODE_KEY + " LIKE ?"
+                    + _WHERE_ + DBKeys.KEY_BL_NODE_KEY + " LIKE ?"
                     // we'll loop for all levels
-                    + _AND_ + KEY_BL_NODE_LEVEL + "=?";
+                    + _AND_ + DBKeys.KEY_BL_NODE_LEVEL + "=?";
         }
 
         node.setExpanded(true);
@@ -510,10 +503,10 @@ public class Booklist
     public ArrayList<Long> getCurrentBookIdList() {
         if (mSqlGetCurrentBookIdList == null) {
             mSqlGetCurrentBookIdList =
-                    SELECT_ + KEY_FK_BOOK
+                    SELECT_ + DBKeys.KEY_FK_BOOK
                     + _FROM_ + mListTable.getName()
-                    + _WHERE_ + KEY_BL_NODE_GROUP + "=?"
-                    + _ORDER_BY_ + KEY_FK_BOOK;
+                    + _WHERE_ + DBKeys.KEY_BL_NODE_GROUP + "=?"
+                    + _ORDER_BY_ + DBKeys.KEY_FK_BOOK;
         }
 
         try (Cursor cursor = mDb.rawQuery(mSqlGetCurrentBookIdList, new String[]{
@@ -539,10 +532,10 @@ public class Booklist
         if (mSqlGetNextBookWithoutCover == null) {
             mSqlGetNextBookWithoutCover =
                     SELECT_ + BooklistNode.getColumns(mListTable)
-                    + ',' + mListTable.dot(DBDefinitions.KEY_BOOK_UUID)
+                    + ',' + mListTable.dot(DBKeys.KEY_BOOK_UUID)
                     + _FROM_ + mListTable.ref()
-                    + _WHERE_ + mListTable.dot(KEY_BL_NODE_GROUP) + "=?"
-                    + _AND_ + mListTable.dot(KEY_PK_ID) + ">?";
+                    + _WHERE_ + mListTable.dot(DBKeys.KEY_BL_NODE_GROUP) + "=?"
+                    + _AND_ + mListTable.dot(DBKeys.KEY_PK_ID) + ">?";
         }
 
         try (Cursor cursor = mDb.rawQuery(mSqlGetNextBookWithoutCover, new String[]{

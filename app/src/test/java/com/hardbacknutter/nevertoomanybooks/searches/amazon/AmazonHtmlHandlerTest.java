@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 
 import com.hardbacknutter.nevertoomanybooks.JSoupBase;
 import com.hardbacknutter.nevertoomanybooks._mocks.MockCaller;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Publisher;
@@ -58,14 +58,14 @@ class AmazonHtmlHandlerTest
 
         loadData(mSearchEngine, "UTF-8", locationHeader, filename, new boolean[]{false, false});
 
-        assertEquals("Bone Silence", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("978-0575090675", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("30 Jan. 2020", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        assertEquals("608", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Hardcover", mRawData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("eng", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals(14.49d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals("Bone Silence", mRawData.getString(DBKeys.KEY_TITLE));
+        assertEquals("978-0575090675", mRawData.getString(DBKeys.KEY_ISBN));
+        assertEquals("30 Jan. 2020", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        assertEquals("608", mRawData.getString(DBKeys.KEY_PAGES));
+        assertEquals("Hardcover", mRawData.getString(DBKeys.KEY_FORMAT));
+        assertEquals("eng", mRawData.getString(DBKeys.KEY_LANGUAGE));
+        assertEquals(14.49d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
+        assertEquals("GBP", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -90,14 +90,14 @@ class AmazonHtmlHandlerTest
 
         loadData(mSearchEngine, "UTF-8", locationHeader, filename, new boolean[]{false, false});
 
-        assertEquals("The Medusa Chronicles", mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("978-1473210202", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals("12 Jan. 2017", mRawData.getString(DBDefinitions.KEY_BOOK_DATE_PUBLISHED));
-        assertEquals("336", mRawData.getString(DBDefinitions.KEY_PAGES));
-        assertEquals("Paperback", mRawData.getString(DBDefinitions.KEY_FORMAT));
-        assertEquals("eng", mRawData.getString(DBDefinitions.KEY_LANGUAGE));
-        assertEquals(5.84d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        assertEquals("GBP", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+        assertEquals("The Medusa Chronicles", mRawData.getString(DBKeys.KEY_TITLE));
+        assertEquals("978-1473210202", mRawData.getString(DBKeys.KEY_ISBN));
+        assertEquals("12 Jan. 2017", mRawData.getString(DBKeys.KEY_BOOK_DATE_PUBLISHED));
+        assertEquals("336", mRawData.getString(DBKeys.KEY_PAGES));
+        assertEquals("Paperback", mRawData.getString(DBKeys.KEY_FORMAT));
+        assertEquals("eng", mRawData.getString(DBKeys.KEY_LANGUAGE));
+        assertEquals(5.84d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
+        assertEquals("GBP", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);
@@ -125,10 +125,10 @@ class AmazonHtmlHandlerTest
         loadData(mSearchEngine, "UTF-8", locationHeader, filename, new boolean[]{false, false});
 
         assertEquals("Le retour à la terre, 1 : La vraie vie",
-                     mRawData.getString(DBDefinitions.KEY_TITLE));
-        assertEquals("978-2205057331", mRawData.getString(DBDefinitions.KEY_ISBN));
-        assertEquals(12d, mRawData.getDouble(DBDefinitions.KEY_PRICE_LISTED));
-        assertEquals("EUR", mRawData.getString(DBDefinitions.KEY_PRICE_LISTED_CURRENCY));
+                     mRawData.getString(DBKeys.KEY_TITLE));
+        assertEquals("978-2205057331", mRawData.getString(DBKeys.KEY_ISBN));
+        assertEquals(12d, mRawData.getDouble(DBKeys.KEY_PRICE_LISTED));
+        assertEquals("EUR", mRawData.getString(DBKeys.KEY_PRICE_LISTED_CURRENCY));
 
         final ArrayList<Publisher> allPublishers = mRawData
                 .getParcelableArrayList(Book.BKEY_PUBLISHER_LIST);

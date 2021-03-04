@@ -23,10 +23,6 @@ import androidx.annotation.NonNull;
 
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKSHELF;
@@ -59,31 +55,31 @@ public final class Constants {
 
     public static void deleteBookshelves(@NonNull final SynchronizedDb db) {
         db.delete(TBL_BOOKSHELF.getName(),
-                  KEY_BOOKSHELF_NAME
+                  DBKeys.KEY_BOOKSHELF_NAME
                   + " LIKE '" + BOOKSHELF + "%'", null);
     }
 
     static void deleteAuthors(@NonNull final SynchronizedDb db) {
         db.delete(TBL_AUTHORS.getName(),
-                  KEY_AUTHOR_FAMILY_NAME
+                  DBKeys.KEY_AUTHOR_FAMILY_NAME
                   + " LIKE '" + AUTHOR_FAMILY_NAME + "%'", null);
     }
 
     static void deletePublishers(@NonNull final SynchronizedDb db) {
         db.delete(TBL_PUBLISHERS.getName(),
-                  KEY_PUBLISHER_NAME
+                  DBKeys.KEY_PUBLISHER_NAME
                   + " LIKE '" + PUBLISHER + "%'", null);
     }
 
     static void deleteTocs(@NonNull final SynchronizedDb db) {
         db.delete(TBL_TOC_ENTRIES.getName(),
-                  KEY_TITLE
+                  DBKeys.KEY_TITLE
                   + " LIKE '" + TOC_TITLE + "%'", null);
     }
 
     static void deleteBooks(@NonNull final SynchronizedDb db) {
         db.delete(TBL_BOOKS.getName(),
-                  KEY_TITLE
+                  DBKeys.KEY_TITLE
                   + " LIKE '" + BOOK_TITLE + "%'", null);
     }
 }

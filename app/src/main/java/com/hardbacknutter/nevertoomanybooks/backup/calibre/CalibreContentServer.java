@@ -80,7 +80,8 @@ import javax.net.ssl.TrustManagerFactory;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.backup.base.ArchiveMetaData;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.CalibreLibraryDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -401,7 +402,7 @@ public class CalibreContentServer {
         mLibraries.clear();
         mDefaultLibrary = null;
 
-        final CalibreLibraryDao libraryDao = CalibreLibraryDao.getInstance();
+        final CalibreLibraryDao libraryDao = DaoLocator.getInstance().getCalibreLibraryDao();
 
         final Bookshelf currentBookshelf = Bookshelf
                 .getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.DEFAULT);
@@ -1065,9 +1066,9 @@ public class CalibreContentServer {
             throws IOException {
 
         // Build the URL from where to download the file
-        final int id = book.getInt(DBDefinitions.KEY_CALIBRE_BOOK_ID);
-        final String format = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
-        final long libraryId = book.getLong(DBDefinitions.KEY_FK_CALIBRE_LIBRARY);
+        final int id = book.getInt(DBKeys.KEY_CALIBRE_BOOK_ID);
+        final String format = book.getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        final long libraryId = book.getLong(DBKeys.KEY_FK_CALIBRE_LIBRARY);
 
         final Optional<CalibreLibrary> calibreLibrary =
                 mLibraries.stream()
@@ -1217,7 +1218,7 @@ public class CalibreContentServer {
         }
         final String fileName = seriesPrefix + book.getTitle();
 
-        final String format = book.getString(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT);
+        final String format = book.getString(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT);
 
         // FIRST check if it exists using the format extension
         DocumentFile bookFile = authorFolder.findFile(fileName + "." + format);

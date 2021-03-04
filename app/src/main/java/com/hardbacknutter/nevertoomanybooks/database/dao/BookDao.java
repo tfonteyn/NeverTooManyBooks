@@ -53,11 +53,13 @@ import java.util.stream.Collectors;
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.backup.calibre.CalibreLibrary;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageUtils;
-import com.hardbacknutter.nevertoomanybooks.database.CoverCacheDao;
 import com.hardbacknutter.nevertoomanybooks.database.CursorRow;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
 import com.hardbacknutter.nevertoomanybooks.database.DBHelper;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.TypedCursor;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.BaseDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedDb;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.SynchronizedStatement;
 import com.hardbacknutter.nevertoomanybooks.database.dbsync.Synchronizer;
@@ -85,77 +87,6 @@ import com.hardbacknutter.nevertoomanybooks.utils.ISBN;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
 import com.hardbacknutter.nevertoomanybooks.utils.dates.DateParser;
 
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FAMILY_NAME_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_FORMATTED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_GIVEN_NAMES_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_AUTHOR_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_BL_TOP_OFFSET;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_BL_TOP_POS;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOKSHELF_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_CONDITION_COVER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_COUNT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_DATE_PUBLISHED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_NUM_IN_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_PUBLISHER_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_SERIES_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_TOC_ENTRY_POSITION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_CALIBRE_BOOK_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_COLOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_ACQUIRED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DATE_FIRST_PUBLICATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_DESCRIPTION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_EDITION_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_AUTHOR;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_BOOKSHELF;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_CALIBRE_LIBRARY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_PUBLISHER;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_SERIES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_STYLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FK_TOC_ENTRY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FORMAT;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_AUTHOR_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_BOOK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_FTS_TOC_ENTRY_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_GENRE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_ISBN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LANGUAGE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOANEE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_LOCATION;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PAGES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_LISTED_CURRENCY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_PAID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRICE_PAID_CURRENCY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRINT_RUN;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PRIVATE_NOTES;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PUBLISHER_NAME_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_RATING;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ_END;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_READ_START;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_IS_COMPLETE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SERIES_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_SIGNED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_STYLE_UUID;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TITLE_OB;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_BITMASK;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_TOC_TYPE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_ADDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_UTC_LAST_UPDATED;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_AUTHORS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKLIST_STYLES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_BOOKS;
@@ -171,6 +102,77 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_FT
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_PUBLISHERS;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_SERIES;
 import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TOC_ENTRIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_AUTHOR_FAMILY_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_AUTHOR_FAMILY_NAME_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_AUTHOR_FORMATTED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_AUTHOR_GIVEN_NAMES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_AUTHOR_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOKSHELF_BL_TOP_OFFSET;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOKSHELF_BL_TOP_POS;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOKSHELF_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_AUTHOR_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_CONDITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_CONDITION_COVER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_COUNT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_DATE_PUBLISHED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_NUM_IN_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_PUBLISHER_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_SERIES_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_TOC_ENTRY_POSITION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_CALIBRE_BOOK_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_COLOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_DATE_ACQUIRED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_DATE_FIRST_PUBLICATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_DESCRIPTION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_EDITION_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_AUTHOR;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_BOOK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_BOOKSHELF;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_CALIBRE_LIBRARY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_PUBLISHER;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_SERIES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_STYLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FK_TOC_ENTRY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FORMAT;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FTS_AUTHOR_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FTS_BOOK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_FTS_TOC_ENTRY_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_GENRE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_ISBN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_LANGUAGE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_LOANEE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_LOCATION;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PAGES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PK_ID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PRICE_LISTED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PRICE_LISTED_CURRENCY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PRICE_PAID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PRICE_PAID_CURRENCY;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PRINT_RUN;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PRIVATE_NOTES;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PUBLISHER_NAME;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_PUBLISHER_NAME_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_RATING;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_READ;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_READ_END;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_READ_START;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_SERIES_IS_COMPLETE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_SERIES_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_SERIES_TITLE_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_SIGNED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_STYLE_UUID;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_TITLE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_TITLE_OB;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_TOC_BITMASK;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_TOC_TYPE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_ADDED;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE;
+import static com.hardbacknutter.nevertoomanybooks.database.DBKeys.KEY_UTC_LAST_UPDATED;
 
 /**
  * Database access helper class.
@@ -195,7 +197,7 @@ import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.TBL_TO
  * There is an explicit warning that {@link SQLiteStatement} is not thread safe!
  */
 public class BookDao
-        extends BaseDao
+        extends BaseDaoImpl
         implements AutoCloseable {
 
     /**
@@ -663,7 +665,7 @@ public class BookDao
                     }
                     // and from the cache.
                     if (ImageUtils.isImageCachingEnabled(context)) {
-                        CoverCacheDao.getInstance(context).delete(context, uuid);
+                        DaoLocator.getInstance().getCoverCacheDao().delete(uuid);
                     }
                 }
             }
@@ -750,7 +752,7 @@ public class BookDao
         }
 
         if (book.contains(KEY_LOANEE)) {
-            LoaneeDao.getInstance().setLoanee(book, book.getString(KEY_LOANEE));
+            DaoLocator.getInstance().getLoaneeDao().setLoanee(book, book.getString(KEY_LOANEE));
         }
 
         if (book.contains(KEY_CALIBRE_BOOK_UUID)) {
@@ -800,7 +802,7 @@ public class BookDao
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_INSERT_BOOK_BOOKSHELF, () -> Sql.Insert.BOOK_BOOKSHELF);
 
-        final BookshelfDao bookshelfDao = BookshelfDao.getInstance();
+        final BookshelfDao bookshelfDao = DaoLocator.getInstance().getBookshelfDao();
         for (final Bookshelf bookshelf : list) {
             // create if needed - do NOT do updates here
             if (bookshelf.getId() == 0) {
@@ -858,11 +860,11 @@ public class BookDao
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
      */
-    void insertBookAuthors(@NonNull final Context context,
-                           @IntRange(from = 1) final long bookId,
-                           @NonNull final Collection<Author> list,
-                           final boolean lookupLocale,
-                           @NonNull final Locale bookLocale)
+    public void insertBookAuthors(@NonNull final Context context,
+                                  @IntRange(from = 1) final long bookId,
+                                  @NonNull final Collection<Author> list,
+                                  final boolean lookupLocale,
+                                  @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -889,7 +891,7 @@ public class BookDao
         for (final Author author : list) {
             // create if needed - do NOT do updates here
             if (author.getId() == 0) {
-                if (AuthorDao.getInstance().insert(context, author) == -1) {
+                if (DaoLocator.getInstance().getAuthorDao().insert(context, author) == -1) {
                     throw new DaoWriteException("insert Author");
                 }
             }
@@ -946,11 +948,11 @@ public class BookDao
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
      */
-    void insertBookSeries(@NonNull final Context context,
-                          @IntRange(from = 1) final long bookId,
-                          @NonNull final Collection<Series> list,
-                          final boolean lookupLocale,
-                          @NonNull final Locale bookLocale)
+    public void insertBookSeries(@NonNull final Context context,
+                                 @IntRange(from = 1) final long bookId,
+                                 @NonNull final Collection<Series> list,
+                                 final boolean lookupLocale,
+                                 @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -973,7 +975,7 @@ public class BookDao
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_INSERT_BOOK_SERIES, () -> Sql.Insert.BOOK_SERIES);
 
-        final SeriesDao seriesDao = SeriesDao.getInstance();
+        final SeriesDao seriesDao = DaoLocator.getInstance().getSeriesDao();
 
         int position = 0;
         for (final Series series : list) {
@@ -1036,11 +1038,11 @@ public class BookDao
      * @throws DaoWriteException    on failure
      * @throws TransactionException a transaction must be started before calling this method
      */
-    void insertBookPublishers(@NonNull final Context context,
-                              @IntRange(from = 1) final long bookId,
-                              @NonNull final Collection<Publisher> list,
-                              final boolean lookupLocale,
-                              @NonNull final Locale bookLocale)
+    public void insertBookPublishers(@NonNull final Context context,
+                                     @IntRange(from = 1) final long bookId,
+                                     @NonNull final Collection<Publisher> list,
+                                     final boolean lookupLocale,
+                                     @NonNull final Locale bookLocale)
             throws DaoWriteException {
 
         if (BuildConfig.DEBUG /* always */) {
@@ -1060,7 +1062,7 @@ public class BookDao
             return;
         }
 
-        final PublisherDao publisherDao = PublisherDao.getInstance();
+        final PublisherDao publisherDao = DaoLocator.getInstance().getPublisherDao();
 
         final SynchronizedStatement stmt = mSqlStatementManager.get(
                 STMT_INSERT_BOOK_PUBLISHER, () -> Sql.Insert.BOOK_PUBLISHER);
@@ -1125,7 +1127,7 @@ public class BookDao
 
         // Just delete all current links; we'll insert them from scratch.
         deleteBookCalibreData(book);
-        final CalibreLibraryDao libraryDao = CalibreLibraryDao.getInstance();
+        final CalibreLibraryDao libraryDao = DaoLocator.getInstance().getCalibreLibraryDao();
         final CalibreLibrary library;
         if (book.contains(Book.BKEY_CALIBRE_LIBRARY)) {
             library = book.getParcelable(Book.BKEY_CALIBRE_LIBRARY);
@@ -1256,7 +1258,7 @@ public class BookDao
                 // Create if needed - do NOT do updates here
                 final Author author = tocEntry.getPrimaryAuthor();
                 if (author.getId() == 0) {
-                    if (AuthorDao.getInstance().insert(context, author) == -1) {
+                    if (DaoLocator.getInstance().getAuthorDao().insert(context, author) == -1) {
                         throw new DaoWriteException("insert Author");
                     }
                 }
@@ -1267,7 +1269,7 @@ public class BookDao
                 if (tocEntry.getId() == 0) {
                     stmtInsToc.bindLong(1, tocEntry.getPrimaryAuthor().getId());
                     stmtInsToc.bindString(2, tocEntry.getTitle());
-                    stmtInsToc.bindString(3, encodeOrderByColumn(obTitle, tocLocale));
+                    stmtInsToc.bindString(3, BaseDaoImpl.encodeOrderByColumn(obTitle, tocLocale));
                     stmtInsToc.bindString(4, tocEntry.getFirstPublicationDate()
                                                      .getIsoString());
                     final long iId = stmtInsToc.executeInsert();
@@ -1283,7 +1285,8 @@ public class BookDao
                     //noinspection SynchronizationOnLocalVariableOrMethodParameter
                     synchronized (stmtUpdToc) {
                         stmtUpdToc.bindString(1, tocEntry.getTitle());
-                        stmtUpdToc.bindString(2, encodeOrderByColumn(obTitle, tocLocale));
+                        stmtUpdToc.bindString(2, BaseDaoImpl
+                                .encodeOrderByColumn(obTitle, tocLocale));
                         stmtUpdToc.bindString(3, tocEntry.getFirstPublicationDate()
                                                          .getIsoString());
                         stmtUpdToc.bindLong(4, tocEntry.getId());
@@ -1507,13 +1510,13 @@ public class BookDao
         if (isbnList.size() == 1) {
             // optimize for single book
             return getBookCursor(TBL_BOOKS.dot(KEY_ISBN) + "=?",
-                                 new String[]{encodeString(isbnList.get(0))},
+                                 new String[]{BaseDaoImpl.encodeString(isbnList.get(0))},
                                  null);
         } else {
             return getBookCursor(TBL_BOOKS.dot(KEY_ISBN)
                                  + " IN ("
                                  + isbnList.stream()
-                                           .map(s -> '\'' + encodeString(s) + '\'')
+                                           .map(s -> '\'' + BaseDaoImpl.encodeString(s) + '\'')
                                            .collect(Collectors.joining(","))
                                  + ')',
                                  null,
@@ -2504,7 +2507,7 @@ public class BookDao
     @Override
     public void close() {
         if (BuildConfig.DEBUG /* always */) {
-            Log.d(TAG, mInstanceName + "|close");
+            Log.d(TAG, getInstanceName() + "|close");
         }
 
         if (mSqlStatementManager != null) {
@@ -2525,7 +2528,7 @@ public class BookDao
             throws Throwable {
         if (!mCloseWasCalled) {
             if (BuildConfig.DEBUG /* always */) {
-                Logger.w(TAG, "finalize|" + mInstanceName);
+                Logger.w(TAG, "finalize|" + getInstanceName());
             }
             close();
         }
@@ -2629,8 +2632,7 @@ public class BookDao
                     + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_GIVEN_NAMES)
                     + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_GIVEN_NAMES_OB)
                     + ',' + TBL_AUTHORS.dotAs(KEY_AUTHOR_IS_COMPLETE)
-                    + ',' + AuthorDao.getDisplayAuthor(TBL_AUTHORS.getAlias(), false)
-                    + _AS_ + KEY_AUTHOR_FORMATTED
+                    + ',' + AuthorDaoImpl.getDisplayAuthor(false) + _AS_ + KEY_AUTHOR_FORMATTED
                     + ',' + TBL_BOOK_AUTHOR.dotAs(KEY_BOOK_AUTHOR_POSITION)
                     + ',' + TBL_BOOK_AUTHOR.dotAs(KEY_BOOK_AUTHOR_TYPE_BITMASK)
 

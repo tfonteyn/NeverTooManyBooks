@@ -38,7 +38,7 @@ import java.util.HashSet;
 import java.util.Objects;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.datamanager.DataManager;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.FieldViewAccessor;
 import com.hardbacknutter.nevertoomanybooks.fields.validators.FieldValidator;
@@ -318,7 +318,7 @@ public class Field<T, V extends View> {
      * @return {@code true} if the field *can* be visible
      */
     public boolean isUsed(@NonNull final SharedPreferences global) {
-        return DBDefinitions.isUsed(global, mIsUsedKey);
+        return DBKeys.isUsed(global, mIsUsedKey);
     }
 
     /**

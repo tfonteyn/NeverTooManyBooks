@@ -29,7 +29,7 @@ import java.util.List;
 
 import com.hardbacknutter.nevertoomanybooks.EditBookActivity;
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.SendOneBookGrTask;
 import com.hardbacknutter.nevertoomanybooks.goodreads.qtasks.taskqueue.QueueManager;
@@ -98,7 +98,7 @@ public class SendBookEvent
         menuItems.add(
                 new ContextDialogItem(context.getString(R.string.action_edit_ellipsis), () -> {
                     final Intent intent = new Intent(context, EditBookActivity.class)
-                            .putExtra(DBDefinitions.KEY_PK_ID, getBookId());
+                            .putExtra(DBKeys.KEY_PK_ID, getBookId());
                     context.startActivity(intent);
                 }));
 

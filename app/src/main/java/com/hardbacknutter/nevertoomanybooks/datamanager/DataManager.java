@@ -40,7 +40,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.BlankValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataCrossValidator;
 import com.hardbacknutter.nevertoomanybooks.datamanager.validators.DataValidator;
@@ -257,7 +257,7 @@ public class DataManager
      */
     @Nullable
     public Object get(@NonNull final String key) {
-        if (DBDefinitions.MONEY_KEYS.contains(key)) {
+        if (DBKeys.isMoneyKey(key)) {
             try {
                 return getMoney(key);
             } catch (@NonNull final NumberFormatException ignore) {
@@ -482,7 +482,7 @@ public class DataManager
             throws NumberFormatException {
         if (mRawData.containsKey(key)) {
             return new Money(getDouble(key),
-                             getString(key + DBDefinitions.SUFFIX_KEY_CURRENCY));
+                             getString(key + DBKeys.SUFFIX_KEY_CURRENCY));
         } else {
             return null;
         }
@@ -499,7 +499,7 @@ public class DataManager
                          @NonNull final Money money) {
         mRawData.putDouble(key, money.doubleValue());
         if (money.getCurrency() != null) {
-            mRawData.putString(key + DBDefinitions.SUFFIX_KEY_CURRENCY, money.getCurrency());
+            mRawData.putString(key + DBKeys.SUFFIX_KEY_CURRENCY, money.getCurrency());
         }
     }
 

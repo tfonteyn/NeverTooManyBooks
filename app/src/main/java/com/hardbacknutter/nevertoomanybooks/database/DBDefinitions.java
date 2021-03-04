@@ -19,14 +19,8 @@
  */
 package com.hardbacknutter.nevertoomanybooks.database;
 
-import android.content.SharedPreferences;
-
-import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
-import androidx.annotation.StringDef;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -35,7 +29,6 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.ColumnInfo;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-import com.hardbacknutter.nevertoomanybooks.entities.AuthorWork;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
 
@@ -59,7 +52,7 @@ import com.hardbacknutter.nevertoomanybooks.viewmodels.ShowBookViewModel;
  *   <li>#KEY_UTC_EVENT_DATETIME</li>
  * </ul>
  * <ul>Covers cache database:
- *   <li>{@link CoverCacheDao}#DOM_UTC_DATETIME}</li>
+ *   <li>{@link CoversDbHelper}#DOM_UTC_DATETIME}</li>
  * </ul>
  * <p>
  * All others, are considered USER local time zone.
@@ -329,12 +322,6 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOK_LOANEE}. */
     public static final Domain DOM_LOANEE;
-    /**
-     * {@link #TBL_BOOK_LOANEE}.
-     * Virtual: returns 0 for 'available' or 1 for 'lend out'
-     */
-    public static final Domain DOM_BL_LOANEE_AS_BOOL;
-
 
     /** {@link #TBL_BOOK_AUTHOR}. */
     public static final Domain DOM_BOOK_AUTHOR_TYPE_BITMASK;
@@ -370,12 +357,13 @@ public final class DBDefinitions {
 
     /** {@link #TBL_BOOKLIST_STYLES} java.util.UUID value stored as a string. */
     public static final Domain DOM_STYLE_UUID;
-    /** For sorting in the {@link Booklist}. */
-    public static final Domain DOM_BL_AUTHOR_SORT;
+
 
     /* ======================================================================================
      *  {@link Booklist} domains.
      * ====================================================================================== */
+    /** For sorting in the {@link Booklist}. */
+    public static final Domain DOM_BL_AUTHOR_SORT;
     /** For sorting in the {@link Booklist}. */
     public static final Domain DOM_BL_SERIES_SORT;
     /** For sorting in the {@link Booklist}. */
@@ -413,239 +401,20 @@ public final class DBDefinitions {
     /** {@link Booklist}. */
     public static final Domain DOM_BL_NODE_VISIBLE;
 
-    /* ======================================================================================
-     *  Keys used as domain names / Bundle keys.
-     * ====================================================================================== */
-    /** Suffix added to a column name to create a specific 'order by' copy of that column. */
-    public static final String SUFFIX_KEY_ORDER_BY = "_ob";
-
-    /** Suffix added to a price column name to create a joined currency column. */
-    public static final String SUFFIX_KEY_CURRENCY = "_currency";
-
-
-    /** Primary key. */
-    public static final String KEY_PK_ID = "_id";
-    /** Foreign key. */
-    public static final String KEY_FK_BOOK = "book";
-    /** Foreign key. */
-    public static final String KEY_FK_AUTHOR = "author";
-    /** Foreign key. */
-    public static final String KEY_FK_SERIES = "series_id";
-    /** Foreign key. */
-    public static final String KEY_FK_PUBLISHER = "publisher_id";
-    /** Foreign key. */
-    public static final String KEY_FK_BOOKSHELF = "bookshelf_id";
-    /** Foreign key. */
-    public static final String KEY_FK_TOC_ENTRY = "anthology";
-    /** Foreign key. */
-    public static final String KEY_FK_STYLE = "style";
-    /** Foreign key. */
-    public static final String KEY_FK_BL_ROW_ID = "bl_row_id";
-    /** Foreign key. */
-    public static final String KEY_FK_CALIBRE_LIBRARY = "clb_lib_id";
-
-    /** External Site id. - Long. */
-    public static final String KEY_ESID_GOODREADS_BOOK = "goodreads_book_id";
-    public static final String KEY_UTC_GOODREADS_LAST_SYNC_DATE = "last_goodreads_sync_date";
-    /** External Site id. - Long. */
-    public static final String KEY_ESID_ISFDB = "isfdb_book_id";
-    /** External Site id. - Long. */
-    public static final String KEY_ESID_LIBRARY_THING = "lt_book_id";
-    /** External Site id. - String. */
-    public static final String KEY_ESID_OPEN_LIBRARY = "ol_book_id";
-    /** External Site id. - Long. */
-    public static final String KEY_ESID_STRIP_INFO_BE = "si_book_id";
-    /** External Site id. - Long. */
-    public static final String KEY_ESID_LAST_DODO_NL = "ld_book_id";
-    //NEWTHINGS: adding a new search engine: optional: add external id KEY
-
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String KEY_ESID_ASIN = "asin";
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String KEY_ESID_GOOGLE = "google_book_id";
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String KEY_ESID_OCLC = "oclc_book_id";
-    /** External Site id. - String. ENHANCE: set by search engines when found; not stored yet. */
-    public static final String KEY_ESID_LCCN = "lccn_book_id";
-
-
-    /** {@link #TBL_CALIBRE_LIBRARIES}. */
-    public static final String KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE = "clb_lib_last_sync";
-    public static final String KEY_CALIBRE_LIBRARY_STRING_ID = "clb_lib_id";
-    public static final String KEY_CALIBRE_LIBRARY_UUID = "clb_lib_uuid";
-
-    /** {@link #TBL_CALIBRE_LIBRARIES} {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. */
-    public static final String KEY_CALIBRE_LIBRARY_NAME = "clb_lib_name";
-    /** {@link #TBL_CALIBRE_VIRTUAL_LIBRARIES}. */
-    public static final String KEY_CALIBRE_VIRT_LIB_EXPR = "clb_vlib_expr";
-
-    /**
-     * External to this app, but NOT an "external Site id"
-     * as it comes from a user importing their Calibre libraries.
-     * {@link #TBL_CALIBRE_BOOKS}.
-     */
-    public static final String KEY_CALIBRE_BOOK_ID = "clb_book_id";
-    public static final String KEY_CALIBRE_BOOK_UUID = "clb_book_uuid";
-    public static final String KEY_CALIBRE_BOOK_MAIN_FORMAT = "clb_book_main_format";
-
-
-    /** {@link #TBL_BOOKSHELF}. */
-    public static final String KEY_BOOKSHELF_NAME = "bookshelf_name";
-    public static final String KEY_BOOKSHELF_BL_TOP_POS = "bl_top_pos";
-    public static final String KEY_BOOKSHELF_BL_TOP_OFFSET = "bl_top_offset";
-    /** Alias. */
-    public static final String KEY_BOOKSHELF_NAME_CSV = "bs_name_csv";
-
-    /** {@link #TBL_AUTHORS} {@link #TBL_BOOK_AUTHOR} */
-    public static final String KEY_AUTHOR_FAMILY_NAME = "family_name";
-    public static final String KEY_AUTHOR_FAMILY_NAME_OB =
-            KEY_AUTHOR_FAMILY_NAME + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_AUTHOR_GIVEN_NAMES = "given_names";
-    public static final String KEY_AUTHOR_GIVEN_NAMES_OB =
-            KEY_AUTHOR_GIVEN_NAMES + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_AUTHOR_IS_COMPLETE = "author_complete";
-    public static final String KEY_AUTHOR_FORMATTED = "author_formatted";
-    public static final String KEY_AUTHOR_FORMATTED_GIVEN_FIRST = "author_formatted_given_first";
-    public static final String KEY_BOOK_AUTHOR_TYPE_BITMASK = "author_type";
-    public static final String KEY_BOOK_AUTHOR_POSITION = "author_position";
-
-
-    /** {@link #TBL_SERIES} {@link #TBL_BOOK_SERIES} */
-    public static final String KEY_SERIES_TITLE = "series_name";
-    public static final String KEY_SERIES_TITLE_OB = KEY_SERIES_TITLE + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_SERIES_IS_COMPLETE = "series_complete";
-    public static final String KEY_BOOK_NUM_IN_SERIES = "series_num";
-    public static final String KEY_BOOK_SERIES_POSITION = "series_position";
-
-    /** {@link #TBL_PUBLISHERS} {@link #TBL_BOOK_PUBLISHER} */
-    public static final String KEY_PUBLISHER_NAME = "publisher_name";
-    public static final String KEY_PUBLISHER_NAME_OB = KEY_PUBLISHER_NAME + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_BOOK_PUBLISHER_POSITION = "publisher_position";
-    /** Alias. */
-    public static final String KEY_PUBLISHER_NAME_CSV = "pub_name_csv";
-
-
-    /** {@link #TBL_TOC_ENTRIES}. */
-    public static final String KEY_BOOK_TOC_ENTRY_POSITION = "toc_entry_position";
-
-
-    /** {@link #TBL_BOOKS}. */
-    public static final String KEY_UTC_ADDED = "date_added";
-    public static final String KEY_UTC_LAST_UPDATED = "last_update_date";
-
-    public static final String KEY_STYLE_UUID = "uuid";
-    public static final String KEY_TITLE = "title";
-    public static final String KEY_TITLE_OB = KEY_TITLE + SUFFIX_KEY_ORDER_BY;
-    public static final String KEY_ISBN = "isbn";
-    public static final String KEY_DATE_FIRST_PUBLICATION = "first_publication";
-    public static final String KEY_BOOK_DATE_PUBLISHED = "date_published";
-    public static final String KEY_PRINT_RUN = "print_run";
-    public static final String KEY_PRICE_LISTED = "list_price";
-    public static final String KEY_PRICE_LISTED_CURRENCY = KEY_PRICE_LISTED + SUFFIX_KEY_CURRENCY;
-    public static final String KEY_PAGES = "pages";
-    public static final String KEY_FORMAT = "format";
-    public static final String KEY_COLOR = "color";
-    public static final String KEY_LANGUAGE = "language";
-    public static final String KEY_GENRE = "genre";
-    public static final String KEY_DESCRIPTION = "description";
-    public static final String KEY_BOOK_UUID = "book_uuid";
-    public static final String KEY_EDITION_BITMASK = "edition_bm";
-    public static final String KEY_TOC_BITMASK = "anthology";
-    /** {@link #TBL_BOOKS} Personal data. */
-    public static final String KEY_PRICE_PAID = "price_paid";
-    public static final String KEY_PRICE_PAID_CURRENCY = KEY_PRICE_PAID + SUFFIX_KEY_CURRENCY;
-    public static final String KEY_DATE_ACQUIRED = "date_acquired";
-    public static final String KEY_LOCATION = "location";
-    public static final String KEY_READ = "read";
-    public static final String KEY_READ_START = "read_start";
-    public static final String KEY_READ_END = "read_end";
-    public static final String KEY_SIGNED = "signed";
-    public static final String KEY_RATING = "rating";
-    public static final String KEY_PRIVATE_NOTES = "notes";
-    public static final String KEY_BOOK_CONDITION = "cond_bk";
-    public static final String KEY_BOOK_CONDITION_COVER = "cond_cvr";
-
-    /** {@link #TBL_BOOK_LOANEE}. */
-    public static final String KEY_LOANEE = "loaned_to";
-    public static final String KEY_LOANEE_AS_BOOLEAN = "loaned_flag";
-    /** {@link #TBL_BOOKLIST_STYLES}. */
-    public static final String KEY_STYLE_IS_BUILTIN = "builtin";
-    public static final String KEY_STYLE_IS_PREFERRED = "preferred";
-    public static final String KEY_STYLE_MENU_POSITION = "menu_order";
-    public static final String KEY_BOOK_COUNT = "book_count";
-
-    /** Booklist. Virtual domains. */
-    public static final String KEY_BL_AUTHOR_SORT = "bl_aut_sort";
-    public static final String KEY_BL_SERIES_SORT = "bl_ser_sort";
-    public static final String KEY_BL_PUBLISHER_SORT = "bl_pub_sort";
-    public static final String KEY_BL_BOOKSHELF_SORT = "bl_shelf_sort";
-
-    public static final String KEY_BL_SERIES_NUM_FLOAT = "bl_ser_num_float";
-    public static final String KEY_BL_PRIMARY_SERIES_COUNT = "bl_prim_ser_cnt";
-
-    /** {@link #TBL_BOOK_LIST_NODE_STATE}. */
-    public static final String KEY_BL_NODE_KEY = "node_key";
-    /** {@link #TBL_BOOK_LIST_NODE_STATE}. */
-    public static final String KEY_BL_NODE_LEVEL = "node_level";
-    public static final String KEY_BL_NODE_GROUP = "node_group";
-    public static final String KEY_BL_NODE_VISIBLE = "node_visible";
-    public static final String KEY_BL_NODE_EXPANDED = "node_expanded";
-
-    /**
-     * All money keys.
-     * Used with {@code MONEY_KEYS.contains(key)} to check if a key is about money.
-     */
-    public static final String MONEY_KEYS = KEY_PRICE_LISTED + ',' + KEY_PRICE_PAID;
-
-    /**
-     * Column alias.
-     * <p>
-     * Booklist: an alias for the rowId
-     * listViewRowPosition = KEY_BL_LIST_VIEW_ROW_ID - 1.
-     * <p>
-     * DOM_BL_LIST_VIEW_ROW_ID =
-     * new Domain.Builder(KEY_BL_LIST_VIEW_ROW_ID, ColumnInfo.TYPE_INTEGER)
-     * .notNull().build();
-     */
-    public static final String KEY_BL_LIST_VIEW_NODE_ROW_ID = "lv_node_row_id";
-
-    /* ======================================================================================
-     *  Keys used as column alias names / Bundle keys.
-     * ====================================================================================== */
-    /**
-     * Column alias.
-     * <ul>The type of an {@link AuthorWork} entry.
-     *     <li>{@link AuthorWork#TYPE_TOC}</li>
-     *     <li>{@link AuthorWork#TYPE_BOOK}</li>
-     * </ul>
-     */
-    public static final String KEY_TOC_TYPE = "type";
-
-    /** The "field is used" key for thumbnails. */
-    public static final String PREFS_IS_USED_COVER = "thumbnail";
-
-    /**
-     * Users can select which fields they use / don't want to use.
-     * Each field has an entry in the Preferences.
-     * The key is suffixed with the name of the field.
-     */
-    public static final String PREFS_PREFIX_FIELD_VISIBILITY = "fields.visibility.";
     /**
      * reminder: no need for a type nor constraints: https://sqlite.org/fts3.html
      */
     public static final TableDefinition TBL_FTS_BOOKS;
-    /** FTS Primary key. */
-    public static final String KEY_FTS_BOOK_ID = "docid";
+
+    public static final String ON_DELETE_CASCADE_ON_UPDATE_CASCADE =
+            "ON DELETE CASCADE ON UPDATE CASCADE";
+
     /**
      * {@link #TBL_FTS_BOOKS}
      * specific formatted list; example: "stephen baxter;arthur c. clarke;"
      */
     static final Domain DOM_FTS_AUTHOR_NAME;
     static final Domain DOM_FTS_TOC_ENTRY_TITLE;
-    /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated authors. */
-    public static final String KEY_FTS_AUTHOR_NAME = "author_name";
-    /** {@link #TBL_FTS_BOOKS}. Semi-colon concatenated titles. */
-    public static final String KEY_FTS_TOC_ENTRY_TITLE = "toc_title";
 
     static {
         /* ======================================================================================
@@ -685,46 +454,47 @@ public final class DBDefinitions {
          *  Primary and Foreign Key definitions
          * ====================================================================================== */
 
-        DOM_PK_ID = new Domain.Builder(KEY_PK_ID, ColumnInfo.TYPE_INTEGER).primaryKey().build();
+        DOM_PK_ID = new Domain.Builder(DBKeys.KEY_PK_ID, ColumnInfo.TYPE_INTEGER)
+                .primaryKey()
+                .build();
 
         DOM_FK_AUTHOR =
-                new Domain.Builder(KEY_FK_AUTHOR, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_FK_AUTHOR, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .references(TBL_AUTHORS, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .references(TBL_AUTHORS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_BOOKSHELF =
-                new Domain.Builder(KEY_FK_BOOKSHELF, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_FK_BOOKSHELF, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .references(TBL_BOOKSHELF, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .references(TBL_BOOKSHELF, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_BOOK =
-                new Domain.Builder(KEY_FK_BOOK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_FK_BOOK, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .references(TBL_BOOKS, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .references(TBL_BOOKS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_SERIES =
-                new Domain.Builder(KEY_FK_SERIES, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_FK_SERIES, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .references(TBL_SERIES, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .references(TBL_SERIES, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_PUBLISHER =
-                new Domain.Builder(KEY_FK_PUBLISHER, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_FK_PUBLISHER, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .references(TBL_PUBLISHERS, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .references(TBL_PUBLISHERS, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_TOC_ENTRY =
-                new Domain.Builder(KEY_FK_TOC_ENTRY, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_FK_TOC_ENTRY, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .references(TBL_TOC_ENTRIES, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .references(TBL_TOC_ENTRIES, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
-
         DOM_FK_CALIBRE_LIBRARY =
-                new Domain.Builder(KEY_FK_CALIBRE_LIBRARY, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_FK_CALIBRE_LIBRARY, ColumnInfo.TYPE_INTEGER)
                         .notNull()
-                        .references(TBL_CALIBRE_LIBRARIES, "ON DELETE CASCADE ON UPDATE CASCADE")
+                        .references(TBL_CALIBRE_LIBRARIES, ON_DELETE_CASCADE_ON_UPDATE_CASCADE)
                         .build();
         DOM_FK_STYLE =
-                new Domain.Builder(KEY_FK_STYLE, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_FK_STYLE, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .withDefault(ListStyle.DEFAULT_STYLE_ID)
                         .references(TBL_BOOKLIST_STYLES, "ON DELETE SET DEFAULT ON UPDATE CASCADE")
@@ -735,25 +505,26 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_TITLE =
-                new Domain.Builder(KEY_TITLE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_TITLE, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .localized()
                         .build();
+
         DOM_TITLE_OB =
-                new Domain.Builder(KEY_TITLE_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_TITLE_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_DATE_FIRST_PUBLICATION =
-                new Domain.Builder(KEY_DATE_FIRST_PUBLICATION, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKeys.KEY_DATE_FIRST_PUBLICATION, ColumnInfo.TYPE_DATE)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_UTC_LAST_UPDATED =
-                new Domain.Builder(KEY_UTC_LAST_UPDATED, ColumnInfo.TYPE_DATETIME)
+                new Domain.Builder(DBKeys.KEY_UTC_LAST_UPDATED, ColumnInfo.TYPE_DATETIME)
                         .notNull()
                         .withDefaultCurrentTimeStamp()
                         .build();
@@ -763,23 +534,24 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOKSHELF_NAME =
-                new Domain.Builder(KEY_BOOKSHELF_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_BOOKSHELF_NAME, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
+
         DOM_BOOKSHELF_NAME_CSV =
-                new Domain.Builder(KEY_BOOKSHELF_NAME_CSV, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_BOOKSHELF_NAME_CSV, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
 
         DOM_BOOKSHELF_BL_TOP_POS =
-                new Domain.Builder(KEY_BOOKSHELF_BL_TOP_POS, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_BOOKSHELF_BL_TOP_POS, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         // RecyclerView.NO_POSITION == -1
                         .withDefault(-1)
                         .build();
 
         DOM_BOOKSHELF_BL_TOP_OFFSET =
-                new Domain.Builder(KEY_BOOKSHELF_BL_TOP_OFFSET, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_BOOKSHELF_BL_TOP_OFFSET, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .withDefault(0)
                         .build();
@@ -789,45 +561,45 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_AUTHOR_FAMILY_NAME =
-                new Domain.Builder(KEY_AUTHOR_FAMILY_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_AUTHOR_FAMILY_NAME, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .localized()
                         .build();
 
         DOM_AUTHOR_FAMILY_NAME_OB =
-                new Domain.Builder(KEY_AUTHOR_FAMILY_NAME_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_AUTHOR_FAMILY_NAME_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES =
-                new Domain.Builder(KEY_AUTHOR_GIVEN_NAMES, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_AUTHOR_GIVEN_NAMES, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_AUTHOR_GIVEN_NAMES_OB =
-                new Domain.Builder(KEY_AUTHOR_GIVEN_NAMES_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_AUTHOR_IS_COMPLETE =
-                new Domain.Builder(KEY_AUTHOR_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKeys.KEY_AUTHOR_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
                         .notNull()
                         .withDefault(0)
                         .build();
 
         DOM_AUTHOR_FORMATTED =
-                new Domain.Builder(KEY_AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_AUTHOR_FORMATTED, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
 
         DOM_AUTHOR_FORMATTED_GIVEN_FIRST =
-                new Domain.Builder(KEY_AUTHOR_FORMATTED_GIVEN_FIRST, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_AUTHOR_FORMATTED_GIVEN_FIRST, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
 
@@ -836,18 +608,20 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_SERIES_TITLE =
-                new Domain.Builder(KEY_SERIES_TITLE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_SERIES_TITLE, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .localized()
                         .build();
+
         DOM_SERIES_TITLE_OB =
-                new Domain.Builder(KEY_SERIES_TITLE_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_SERIES_TITLE_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
+
         DOM_SERIES_IS_COMPLETE =
-                new Domain.Builder(KEY_SERIES_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
+                new Domain.Builder(DBKeys.KEY_SERIES_IS_COMPLETE, ColumnInfo.TYPE_BOOLEAN)
                         .notNull()
                         .withDefault(0)
                         .build();
@@ -856,19 +630,20 @@ public final class DBDefinitions {
          *  Publisher domains
          * ====================================================================================== */
         DOM_PUBLISHER_NAME =
-                new Domain.Builder(KEY_PUBLISHER_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_PUBLISHER_NAME, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .localized()
                         .build();
+
         DOM_PUBLISHER_NAME_OB =
-                new Domain.Builder(KEY_PUBLISHER_NAME_OB, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_PUBLISHER_NAME_OB, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .prePreparedOrderBy()
                         .build();
 
         DOM_PUBLISHER_NAME_CSV =
-                new Domain.Builder(KEY_PUBLISHER_NAME_CSV, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_PUBLISHER_NAME_CSV, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .build();
         /* ======================================================================================
@@ -876,77 +651,77 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_ISBN =
-                new Domain.Builder(KEY_ISBN, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_ISBN, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_DATE_PUBLISHED =
-                new Domain.Builder(KEY_BOOK_DATE_PUBLISHED, ColumnInfo.TYPE_DATE)
+                new Domain.Builder(DBKeys.KEY_BOOK_DATE_PUBLISHED, ColumnInfo.TYPE_DATE)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_PRINT_RUN =
-                new Domain.Builder(KEY_PRINT_RUN, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_PRINT_RUN, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_PRICE_LISTED =
-                new Domain.Builder(KEY_PRICE_LISTED, ColumnInfo.TYPE_REAL)
+                new Domain.Builder(DBKeys.KEY_PRICE_LISTED, ColumnInfo.TYPE_REAL)
                         .notNull()
                         .withDefault(0d)
                         .build();
 
         DOM_BOOK_PRICE_LISTED_CURRENCY =
-                new Domain.Builder(KEY_PRICE_LISTED_CURRENCY, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_PRICE_LISTED_CURRENCY, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_PAGES =
-                new Domain.Builder(KEY_PAGES, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_PAGES, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_FORMAT =
-                new Domain.Builder(KEY_FORMAT, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_FORMAT, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_COLOR =
-                new Domain.Builder(KEY_COLOR, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_COLOR, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_LANGUAGE =
-                new Domain.Builder(KEY_LANGUAGE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_LANGUAGE, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_GENRE =
-                new Domain.Builder(KEY_GENRE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_GENRE, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_DESCRIPTION =
-                new Domain.Builder(KEY_DESCRIPTION, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_DESCRIPTION, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .build();
 
         DOM_BOOK_TOC_BITMASK =
-                new Domain.Builder(KEY_TOC_BITMASK, ColumnInfo.TYPE_INTEGER)
+                new Domain.Builder(DBKeys.KEY_TOC_BITMASK, ColumnInfo.TYPE_INTEGER)
                         .notNull()
                         .withDefault(Book.TOC_SINGLE_AUTHOR_SINGLE_WORK)
                         .build();
@@ -956,361 +731,471 @@ public final class DBDefinitions {
          * ====================================================================================== */
 
         DOM_BOOK_UUID =
-                new Domain.Builder(KEY_BOOK_UUID, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefault("(lower(hex(randomblob(16))))").build();
+                new Domain.Builder(DBKeys.KEY_BOOK_UUID, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefault("(lower(hex(randomblob(16))))")
+                        .build();
 
         DOM_BOOK_EDITION_BITMASK =
-                new Domain.Builder(KEY_EDITION_BITMASK, ColumnInfo.TYPE_INTEGER)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_EDITION_BITMASK, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
 
         DOM_BOOK_DATE_ACQUIRED =
-                new Domain.Builder(KEY_DATE_ACQUIRED, ColumnInfo.TYPE_DATE)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_DATE_ACQUIRED, ColumnInfo.TYPE_DATE)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_BOOK_PRICE_PAID =
-                new Domain.Builder(KEY_PRICE_PAID, ColumnInfo.TYPE_REAL)
-                        .notNull().withDefault(0d).build();
+                new Domain.Builder(DBKeys.KEY_PRICE_PAID, ColumnInfo.TYPE_REAL)
+                        .notNull()
+                        .withDefault(0d)
+                        .build();
 
         DOM_BOOK_PRICE_PAID_CURRENCY =
-                new Domain.Builder(KEY_PRICE_PAID_CURRENCY, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_PRICE_PAID_CURRENCY, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_UTC_ADDED =
-                new Domain.Builder(KEY_UTC_ADDED, ColumnInfo.TYPE_DATETIME)
-                        .notNull().withDefaultCurrentTimeStamp().build();
+                new Domain.Builder(DBKeys.KEY_UTC_ADDED, ColumnInfo.TYPE_DATETIME)
+                        .notNull()
+                        .withDefaultCurrentTimeStamp()
+                        .build();
 
         DOM_BOOK_LOCATION =
-                new Domain.Builder(KEY_LOCATION, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_LOCATION, ColumnInfo.TYPE_TEXT)
                         .notNull()
                         .withDefaultEmptyString()
                         .localized()
                         .build();
 
         DOM_BOOK_READ =
-                new Domain.Builder(KEY_READ, ColumnInfo.TYPE_BOOLEAN)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_READ, ColumnInfo.TYPE_BOOLEAN)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
         DOM_BOOK_DATE_READ_START =
-                new Domain.Builder(KEY_READ_START, ColumnInfo.TYPE_DATE)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_READ_START, ColumnInfo.TYPE_DATE)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
         DOM_BOOK_DATE_READ_END =
-                new Domain.Builder(KEY_READ_END, ColumnInfo.TYPE_DATE)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_READ_END, ColumnInfo.TYPE_DATE)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
         DOM_BOOK_SIGNED =
-                new Domain.Builder(KEY_SIGNED, ColumnInfo.TYPE_BOOLEAN)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_SIGNED, ColumnInfo.TYPE_BOOLEAN)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
         DOM_BOOK_RATING =
-                new Domain.Builder(KEY_RATING, ColumnInfo.TYPE_REAL)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_RATING, ColumnInfo.TYPE_REAL)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
         DOM_BOOK_PRIVATE_NOTES =
-                new Domain.Builder(KEY_PRIVATE_NOTES, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_PRIVATE_NOTES, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_BOOK_CONDITION =
-                new Domain.Builder(KEY_BOOK_CONDITION, ColumnInfo.TYPE_INTEGER)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_BOOK_CONDITION, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
         DOM_BOOK_CONDITION_DUST_COVER =
-                new Domain.Builder(KEY_BOOK_CONDITION_COVER, ColumnInfo.TYPE_INTEGER)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_BOOK_CONDITION_COVER, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
 
         /* ======================================================================================
          *  Book external website id domains
          * ====================================================================================== */
         //NEWTHINGS: adding a new search engine: optional: add external id / specific DOM
         DOM_ESID_GOODREADS_BOOK =
-                new Domain.Builder(KEY_ESID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER).build();
+                new Domain.Builder(DBKeys.KEY_ESID_GOODREADS_BOOK, ColumnInfo.TYPE_INTEGER)
+                        .build();
 
         DOM_UTC_LAST_SYNC_DATE_GOODREADS =
-                // The default of 0000-00-00 is not needed.
-                new Domain.Builder(KEY_UTC_GOODREADS_LAST_SYNC_DATE, ColumnInfo.TYPE_DATETIME)
-                        .notNull().withDefault("'0000-00-00'").build();
+                new Domain.Builder(DBKeys.KEY_UTC_GOODREADS_LAST_SYNC_DATE,
+                                   ColumnInfo.TYPE_DATETIME)
+                        .notNull()
+                        // The default of 0000-00-00 is not needed.
+                        .withDefault("'0000-00-00'")
+                        .build();
+
         // It SHOULD be:
-        //      new Domain.Builder(KEY_UTC_LAST_SYNC_DATE_GOODREADS, ColumnInfo.TYPE_DATETIME)
-        //              .notNull().withDefaultEmptyString().build();
+        //      new Domain.Builder(DBKeys.KEY_UTC_LAST_SYNC_DATE_GOODREADS,
+        //                         ColumnInfo.TYPE_DATETIME)
+        //              .notNull()
+        //              .withDefaultEmptyString()
+        //              .build();
         // As modifying the schema requires copying the entire books table,
         // we just leave it as is for now until we have a more urgent need to recreate that table.
 
         DOM_ESID_ISFDB =
-                new Domain.Builder(KEY_ESID_ISFDB, ColumnInfo.TYPE_INTEGER).build();
+                new Domain.Builder(DBKeys.KEY_ESID_ISFDB, ColumnInfo.TYPE_INTEGER)
+                        .build();
 
         DOM_ESID_LIBRARY_THING =
-                new Domain.Builder(KEY_ESID_LIBRARY_THING, ColumnInfo.TYPE_INTEGER).build();
+                new Domain.Builder(DBKeys.KEY_ESID_LIBRARY_THING, ColumnInfo.TYPE_INTEGER)
+                        .build();
 
         DOM_ESID_OPEN_LIBRARY =
-                new Domain.Builder(KEY_ESID_OPEN_LIBRARY, ColumnInfo.TYPE_TEXT).build();
+                new Domain.Builder(DBKeys.KEY_ESID_OPEN_LIBRARY, ColumnInfo.TYPE_TEXT)
+                        .build();
 
         DOM_ESID_STRIP_INFO_BE =
-                new Domain.Builder(KEY_ESID_STRIP_INFO_BE, ColumnInfo.TYPE_INTEGER).build();
+                new Domain.Builder(DBKeys.KEY_ESID_STRIP_INFO_BE, ColumnInfo.TYPE_INTEGER)
+                        .build();
 
         DOM_ESID_LAST_DODO_NL =
-                new Domain.Builder(KEY_ESID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER).build();
+                new Domain.Builder(DBKeys.KEY_ESID_LAST_DODO_NL, ColumnInfo.TYPE_INTEGER)
+                        .build();
 
         /* ======================================================================================
          *  Calibre bridge table domains
          * ====================================================================================== */
         DOM_CALIBRE_BOOK_UUID =
-                new Domain.Builder(KEY_CALIBRE_BOOK_UUID, ColumnInfo.TYPE_TEXT)
-                        .notNull().build();
+                new Domain.Builder(DBKeys.KEY_CALIBRE_BOOK_UUID, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .build();
+
         DOM_CALIBRE_BOOK_ID =
-                new Domain.Builder(KEY_CALIBRE_BOOK_ID, ColumnInfo.TYPE_INTEGER).build();
+                new Domain.Builder(DBKeys.KEY_CALIBRE_BOOK_ID, ColumnInfo.TYPE_INTEGER)
+                        .build();
+
         DOM_CALIBRE_BOOK_MAIN_FORMAT =
-                new Domain.Builder(KEY_CALIBRE_BOOK_MAIN_FORMAT, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_CALIBRE_LIBRARY_LAST_SYNC_DATE =
-                new Domain.Builder(KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE, ColumnInfo.TYPE_DATETIME)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_CALIBRE_LIBRARY_LAST_SYNC_DATE,
+                                   ColumnInfo.TYPE_DATETIME)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         DOM_CALIBRE_LIBRARY_STRING_ID =
-                new Domain.Builder(KEY_CALIBRE_LIBRARY_STRING_ID, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().localized().build();
+                new Domain.Builder(DBKeys.KEY_CALIBRE_LIBRARY_STRING_ID, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
         // can be empty when our Calibre extension is not installed
         DOM_CALIBRE_LIBRARY_UUID =
-                new Domain.Builder(KEY_CALIBRE_LIBRARY_UUID, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().localized().build();
+                new Domain.Builder(DBKeys.KEY_CALIBRE_LIBRARY_UUID, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
 
         DOM_CALIBRE_LIBRARY_NAME =
-                new Domain.Builder(KEY_CALIBRE_LIBRARY_NAME, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().localized().build();
+                new Domain.Builder(DBKeys.KEY_CALIBRE_LIBRARY_NAME, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .localized()
+                        .build();
+
         // not sure if we should allow empty?
         DOM_CALIBRE_VIRT_LIB_EXPR =
-                new Domain.Builder(KEY_CALIBRE_VIRT_LIB_EXPR, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_CALIBRE_VIRT_LIB_EXPR, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
 
         /* ======================================================================================
          *  Loanee domains
          * ====================================================================================== */
 
-        DOM_LOANEE = new Domain.Builder(KEY_LOANEE, ColumnInfo.TYPE_TEXT)
-                .notNull()
-                .localized()
-                .build();
-
-        DOM_BL_LOANEE_AS_BOOL = new Domain.Builder(KEY_LOANEE_AS_BOOLEAN, ColumnInfo.TYPE_INTEGER)
-                .notNull()
-                .build();
+        DOM_LOANEE =
+                new Domain.Builder(DBKeys.KEY_LOANEE, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .localized()
+                        .build();
 
         /* ======================================================================================
          *  Link table domains
          * ====================================================================================== */
 
         DOM_BOOK_AUTHOR_TYPE_BITMASK =
-                new Domain.Builder(KEY_BOOK_AUTHOR_TYPE_BITMASK, ColumnInfo.TYPE_INTEGER)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
+
         DOM_BOOK_AUTHOR_POSITION =
-                new Domain.Builder(KEY_BOOK_AUTHOR_POSITION, ColumnInfo.TYPE_INTEGER)
-                        .notNull().build();
+                new Domain.Builder(DBKeys.KEY_BOOK_AUTHOR_POSITION, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .build();
 
         DOM_BOOK_SERIES_POSITION =
-                new Domain.Builder(KEY_BOOK_SERIES_POSITION, ColumnInfo.TYPE_INTEGER)
-                        .notNull().build();
+                new Domain.Builder(DBKeys.KEY_BOOK_SERIES_POSITION, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .build();
+
         DOM_BOOK_NUM_IN_SERIES =
-                new Domain.Builder(KEY_BOOK_NUM_IN_SERIES, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_BOOK_NUM_IN_SERIES, ColumnInfo.TYPE_TEXT)
                         .localized()
                         .build();
 
         DOM_BOOK_PUBLISHER_POSITION =
-                new Domain.Builder(KEY_BOOK_PUBLISHER_POSITION, ColumnInfo.TYPE_INTEGER)
-                        .notNull().build();
+                new Domain.Builder(DBKeys.KEY_BOOK_PUBLISHER_POSITION, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .build();
 
         DOM_BOOK_TOC_ENTRY_POSITION =
-                new Domain.Builder(KEY_BOOK_TOC_ENTRY_POSITION, ColumnInfo.TYPE_INTEGER)
-                        .notNull().build();
+                new Domain.Builder(DBKeys.KEY_BOOK_TOC_ENTRY_POSITION, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .build();
 
         /* ======================================================================================
          *  Style domains
          * ====================================================================================== */
 
         DOM_STYLE_UUID =
-                new Domain.Builder(KEY_STYLE_UUID, ColumnInfo.TYPE_TEXT)
-                        .notNull().withDefaultEmptyString().build();
+                new Domain.Builder(DBKeys.KEY_STYLE_UUID, ColumnInfo.TYPE_TEXT)
+                        .notNull()
+                        .withDefaultEmptyString()
+                        .build();
+
         DOM_STYLE_IS_BUILTIN =
-                new Domain.Builder(KEY_STYLE_IS_BUILTIN, ColumnInfo.TYPE_BOOLEAN)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_STYLE_IS_BUILTIN, ColumnInfo.TYPE_BOOLEAN)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
+
         DOM_STYLE_IS_PREFERRED =
-                new Domain.Builder(KEY_STYLE_IS_PREFERRED, ColumnInfo.TYPE_BOOLEAN)
-                        .notNull().withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_STYLE_IS_PREFERRED, ColumnInfo.TYPE_BOOLEAN)
+                        .notNull()
+                        .withDefault(0)
+                        .build();
+
         DOM_STYLE_MENU_POSITION =
-                new Domain.Builder(KEY_STYLE_MENU_POSITION, ColumnInfo.TYPE_INTEGER)
-                        .notNull().withDefault(ListStyle.MENU_POSITION_NOT_PREFERRED).build();
+                new Domain.Builder(DBKeys.KEY_STYLE_MENU_POSITION, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .withDefault(ListStyle.MENU_POSITION_NOT_PREFERRED)
+                        .build();
+
         /* ======================================================================================
          *  Booklist domains
          * ====================================================================================== */
 
         DOM_BL_AUTHOR_SORT =
-                new Domain.Builder(KEY_BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT).build();
+                new Domain.Builder(DBKeys.KEY_BL_AUTHOR_SORT, ColumnInfo.TYPE_TEXT)
+                        .build();
+
         DOM_BL_SERIES_SORT =
-                new Domain.Builder(KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT).build();
+                new Domain.Builder(DBKeys.KEY_BL_SERIES_SORT, ColumnInfo.TYPE_TEXT)
+                        .build();
+
         DOM_BL_PUBLISHER_SORT =
-                new Domain.Builder(KEY_BL_PUBLISHER_SORT, ColumnInfo.TYPE_TEXT).build();
+                new Domain.Builder(DBKeys.KEY_BL_PUBLISHER_SORT, ColumnInfo.TYPE_TEXT)
+                        .build();
+
         DOM_BL_BOOKSHELF_SORT =
-                new Domain.Builder(KEY_BL_BOOKSHELF_SORT, ColumnInfo.TYPE_TEXT).build();
+                new Domain.Builder(DBKeys.KEY_BL_BOOKSHELF_SORT, ColumnInfo.TYPE_TEXT)
+                        .build();
 
         DOM_BL_BOOK_NUM_IN_SERIES_AS_FLOAT =
-                new Domain.Builder(KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL).build();
+                new Domain.Builder(DBKeys.KEY_BL_SERIES_NUM_FLOAT, ColumnInfo.TYPE_REAL)
+                        .build();
 
         DOM_BL_PRIMARY_SERIES_COUNT =
-                new Domain.Builder(KEY_BL_PRIMARY_SERIES_COUNT, ColumnInfo.TYPE_INTEGER).build();
-
+                new Domain.Builder(DBKeys.KEY_BL_PRIMARY_SERIES_COUNT, ColumnInfo.TYPE_INTEGER)
+                        .build();
 
         DOM_BL_NODE_KEY =
-                new Domain.Builder(KEY_BL_NODE_KEY, ColumnInfo.TYPE_TEXT).build();
+                new Domain.Builder(DBKeys.KEY_BL_NODE_KEY, ColumnInfo.TYPE_TEXT)
+                        .build();
+
         DOM_BL_NODE_GROUP =
-                new Domain.Builder(KEY_BL_NODE_GROUP, ColumnInfo.TYPE_INTEGER).notNull().build();
+                new Domain.Builder(DBKeys.KEY_BL_NODE_GROUP, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .build();
+
         DOM_BL_NODE_LEVEL =
-                new Domain.Builder(KEY_BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER).notNull().build();
+                new Domain.Builder(DBKeys.KEY_BL_NODE_LEVEL, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .build();
+
         DOM_BL_NODE_VISIBLE =
-                new Domain.Builder(KEY_BL_NODE_VISIBLE, ColumnInfo.TYPE_INTEGER)
-                        .withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_BL_NODE_VISIBLE, ColumnInfo.TYPE_INTEGER)
+                        .withDefault(0)
+                        .build();
+
         DOM_BL_NODE_EXPANDED =
-                new Domain.Builder(KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
-                        .withDefault(0).build();
+                new Domain.Builder(DBKeys.KEY_BL_NODE_EXPANDED, ColumnInfo.TYPE_INTEGER)
+                        .withDefault(0)
+                        .build();
 
         DOM_FK_BL_ROW_ID =
-                new Domain.Builder(KEY_FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER).notNull().build();
+                new Domain.Builder(DBKeys.KEY_FK_BL_ROW_ID, ColumnInfo.TYPE_INTEGER)
+                        .notNull()
+                        .build();
 
         /* ======================================================================================
          *  app tables
          * ====================================================================================== */
 
-        TBL_BOOKLIST_STYLES.addDomains(DOM_PK_ID,
-                                       DOM_STYLE_IS_BUILTIN,
-                                       DOM_STYLE_IS_PREFERRED,
-                                       DOM_STYLE_MENU_POSITION,
-                                       DOM_STYLE_UUID)
-                           .setPrimaryKey(DOM_PK_ID)
-                           .addIndex(KEY_STYLE_UUID, true, DOM_STYLE_UUID)
-                           .addIndex(KEY_STYLE_MENU_POSITION, false, DOM_STYLE_MENU_POSITION);
+        TBL_BOOKLIST_STYLES
+                .addDomains(DOM_PK_ID,
+                            DOM_STYLE_IS_BUILTIN,
+                            DOM_STYLE_IS_PREFERRED,
+                            DOM_STYLE_MENU_POSITION,
+                            DOM_STYLE_UUID)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DBKeys.KEY_STYLE_UUID, true, DOM_STYLE_UUID)
+                .addIndex(DBKeys.KEY_STYLE_MENU_POSITION, false, DOM_STYLE_MENU_POSITION);
         ALL_TABLES.put(TBL_BOOKLIST_STYLES.getName(), TBL_BOOKLIST_STYLES);
 
         /* ======================================================================================
          *  basic user data tables
          * ====================================================================================== */
 
-        TBL_BOOKSHELF.addDomains(DOM_PK_ID,
-                                 DOM_FK_STYLE,
-                                 DOM_BOOKSHELF_NAME,
-                                 DOM_BOOKSHELF_BL_TOP_POS,
-                                 DOM_BOOKSHELF_BL_TOP_OFFSET)
-                     .setPrimaryKey(DOM_PK_ID)
-                     .addReference(TBL_BOOKLIST_STYLES, DOM_FK_STYLE)
-                     .addIndex(KEY_BOOKSHELF_NAME, true, DOM_BOOKSHELF_NAME);
+        TBL_BOOKSHELF
+                .addDomains(DOM_PK_ID,
+                            DOM_FK_STYLE,
+                            DOM_BOOKSHELF_NAME,
+                            DOM_BOOKSHELF_BL_TOP_POS,
+                            DOM_BOOKSHELF_BL_TOP_OFFSET)
+                .setPrimaryKey(DOM_PK_ID)
+                .addReference(TBL_BOOKLIST_STYLES, DOM_FK_STYLE)
+                .addIndex(DBKeys.KEY_BOOKSHELF_NAME, true, DOM_BOOKSHELF_NAME);
         ALL_TABLES.put(TBL_BOOKSHELF.getName(), TBL_BOOKSHELF);
 
-        TBL_AUTHORS.addDomains(DOM_PK_ID,
-                               DOM_AUTHOR_FAMILY_NAME,
-                               DOM_AUTHOR_FAMILY_NAME_OB,
-                               DOM_AUTHOR_GIVEN_NAMES,
-                               DOM_AUTHOR_GIVEN_NAMES_OB,
-                               DOM_AUTHOR_IS_COMPLETE)
-                   .setPrimaryKey(DOM_PK_ID)
-                   .addIndex(KEY_AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
-                   .addIndex(KEY_AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
-                   .addIndex(KEY_AUTHOR_GIVEN_NAMES_OB, false, DOM_AUTHOR_GIVEN_NAMES_OB)
-                   .addIndex(KEY_AUTHOR_GIVEN_NAMES, false, DOM_AUTHOR_GIVEN_NAMES);
+        TBL_AUTHORS
+                .addDomains(DOM_PK_ID,
+                            DOM_AUTHOR_FAMILY_NAME,
+                            DOM_AUTHOR_FAMILY_NAME_OB,
+                            DOM_AUTHOR_GIVEN_NAMES,
+                            DOM_AUTHOR_GIVEN_NAMES_OB,
+                            DOM_AUTHOR_IS_COMPLETE)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DBKeys.KEY_AUTHOR_FAMILY_NAME_OB, false, DOM_AUTHOR_FAMILY_NAME_OB)
+                .addIndex(DBKeys.KEY_AUTHOR_FAMILY_NAME, false, DOM_AUTHOR_FAMILY_NAME)
+                .addIndex(DBKeys.KEY_AUTHOR_GIVEN_NAMES_OB, false, DOM_AUTHOR_GIVEN_NAMES_OB)
+                .addIndex(DBKeys.KEY_AUTHOR_GIVEN_NAMES, false, DOM_AUTHOR_GIVEN_NAMES);
         ALL_TABLES.put(TBL_AUTHORS.getName(), TBL_AUTHORS);
 
-        TBL_SERIES.addDomains(DOM_PK_ID,
-                              DOM_SERIES_TITLE,
-                              DOM_SERIES_TITLE_OB,
-                              DOM_SERIES_IS_COMPLETE)
-                  .setPrimaryKey(DOM_PK_ID)
-                  .addIndex("id", true, DOM_PK_ID)
-                  .addIndex(KEY_SERIES_TITLE_OB, false, DOM_SERIES_TITLE_OB)
-                  .addIndex(KEY_SERIES_TITLE, false, DOM_SERIES_TITLE);
+        TBL_SERIES
+                .addDomains(DOM_PK_ID,
+                            DOM_SERIES_TITLE,
+                            DOM_SERIES_TITLE_OB,
+                            DOM_SERIES_IS_COMPLETE)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex("id", true, DOM_PK_ID)
+                .addIndex(DBKeys.KEY_SERIES_TITLE_OB, false, DOM_SERIES_TITLE_OB)
+                .addIndex(DBKeys.KEY_SERIES_TITLE, false, DOM_SERIES_TITLE);
         ALL_TABLES.put(TBL_SERIES.getName(), TBL_SERIES);
 
-        TBL_PUBLISHERS.addDomains(DOM_PK_ID,
-                                  DOM_PUBLISHER_NAME,
-                                  DOM_PUBLISHER_NAME_OB)
-                      .setPrimaryKey(DOM_PK_ID)
-                      .addIndex("id", true, DOM_PK_ID)
-                      .addIndex(KEY_PUBLISHER_NAME_OB, false, DOM_PUBLISHER_NAME_OB)
-                      .addIndex(KEY_PUBLISHER_NAME, false, DOM_PUBLISHER_NAME);
+        TBL_PUBLISHERS
+                .addDomains(DOM_PK_ID,
+                            DOM_PUBLISHER_NAME,
+                            DOM_PUBLISHER_NAME_OB)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex("id", true, DOM_PK_ID)
+                .addIndex(DBKeys.KEY_PUBLISHER_NAME_OB, false, DOM_PUBLISHER_NAME_OB)
+                .addIndex(DBKeys.KEY_PUBLISHER_NAME, false, DOM_PUBLISHER_NAME);
         ALL_TABLES.put(TBL_PUBLISHERS.getName(), TBL_PUBLISHERS);
 
-        TBL_BOOKS.addDomains(DOM_PK_ID,
-                             // book data
-                             DOM_TITLE,
-                             DOM_TITLE_OB,
-                             DOM_BOOK_ISBN,
-                             DOM_BOOK_DATE_PUBLISHED,
-                             DOM_DATE_FIRST_PUBLICATION,
-                             DOM_BOOK_PRINT_RUN,
+        TBL_BOOKS
+                .addDomains(DOM_PK_ID,
+                            // book data
+                            DOM_TITLE,
+                            DOM_TITLE_OB,
+                            DOM_BOOK_ISBN,
+                            DOM_BOOK_DATE_PUBLISHED,
+                            DOM_DATE_FIRST_PUBLICATION,
+                            DOM_BOOK_PRINT_RUN,
 
-                             DOM_BOOK_PRICE_LISTED,
-                             DOM_BOOK_PRICE_LISTED_CURRENCY,
+                            DOM_BOOK_PRICE_LISTED,
+                            DOM_BOOK_PRICE_LISTED_CURRENCY,
 
-                             DOM_BOOK_TOC_BITMASK,
-                             DOM_BOOK_FORMAT,
-                             DOM_BOOK_COLOR,
-                             DOM_BOOK_GENRE,
-                             DOM_BOOK_LANGUAGE,
-                             DOM_BOOK_PAGES,
+                            DOM_BOOK_TOC_BITMASK,
+                            DOM_BOOK_FORMAT,
+                            DOM_BOOK_COLOR,
+                            DOM_BOOK_GENRE,
+                            DOM_BOOK_LANGUAGE,
+                            DOM_BOOK_PAGES,
 
-                             DOM_BOOK_DESCRIPTION,
+                            DOM_BOOK_DESCRIPTION,
 
-                             // personal data
-                             //DOM_BOOK_IS_OWNED,
-                             DOM_BOOK_PRICE_PAID,
-                             DOM_BOOK_PRICE_PAID_CURRENCY,
-                             DOM_BOOK_DATE_ACQUIRED,
+                            // personal data
+                            //DOM_BOOK_IS_OWNED,
+                            DOM_BOOK_PRICE_PAID,
+                            DOM_BOOK_PRICE_PAID_CURRENCY,
+                            DOM_BOOK_DATE_ACQUIRED,
 
-                             DOM_BOOK_READ,
-                             DOM_BOOK_DATE_READ_START,
-                             DOM_BOOK_DATE_READ_END,
+                            DOM_BOOK_READ,
+                            DOM_BOOK_DATE_READ_START,
+                            DOM_BOOK_DATE_READ_END,
 
-                             DOM_BOOK_EDITION_BITMASK,
-                             DOM_BOOK_SIGNED,
-                             DOM_BOOK_RATING,
-                             DOM_BOOK_LOCATION,
-                             DOM_BOOK_PRIVATE_NOTES,
-                             DOM_BOOK_CONDITION,
-                             DOM_BOOK_CONDITION_DUST_COVER,
+                            DOM_BOOK_EDITION_BITMASK,
+                            DOM_BOOK_SIGNED,
+                            DOM_BOOK_RATING,
+                            DOM_BOOK_LOCATION,
+                            DOM_BOOK_PRIVATE_NOTES,
+                            DOM_BOOK_CONDITION,
+                            DOM_BOOK_CONDITION_DUST_COVER,
 
-                             // external id/data
-                             //NEWTHINGS: adding a new search engine: optional: add external id DOM
-                             DOM_ESID_GOODREADS_BOOK,
-                             DOM_ESID_ISFDB,
-                             DOM_ESID_LIBRARY_THING,
-                             DOM_ESID_OPEN_LIBRARY,
-                             DOM_ESID_STRIP_INFO_BE,
-                             DOM_ESID_LAST_DODO_NL,
-                             //NEWTHINGS: adding a new search engine:
-                             // optional: add engine specific DOM
-                             DOM_UTC_LAST_SYNC_DATE_GOODREADS,
+                            // external id/data
+                            //NEWTHINGS: adding a new search engine: optional: add external id DOM
+                            DOM_ESID_GOODREADS_BOOK,
+                            DOM_ESID_ISFDB,
+                            DOM_ESID_LIBRARY_THING,
+                            DOM_ESID_OPEN_LIBRARY,
+                            DOM_ESID_STRIP_INFO_BE,
+                            DOM_ESID_LAST_DODO_NL,
+                            //NEWTHINGS: adding a new search engine:
+                            // optional: add engine specific DOM
+                            DOM_UTC_LAST_SYNC_DATE_GOODREADS,
 
-                             // internal data
-                             DOM_BOOK_UUID,
-                             DOM_UTC_ADDED,
-                             DOM_UTC_LAST_UPDATED)
+                            // internal data
+                            DOM_BOOK_UUID,
+                            DOM_UTC_ADDED,
+                            DOM_UTC_LAST_UPDATED)
 
-                 .setPrimaryKey(DOM_PK_ID)
-                 .addIndex(KEY_TITLE_OB, false, DOM_TITLE_OB)
-                 .addIndex(KEY_TITLE, false, DOM_TITLE)
-                 .addIndex(KEY_ISBN, false, DOM_BOOK_ISBN)
-                 .addIndex(KEY_BOOK_UUID, true, DOM_BOOK_UUID)
-                 //NEWTHINGS: adding a new search engine: optional: add indexes as needed.
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex(DBKeys.KEY_TITLE_OB, false, DOM_TITLE_OB)
+                .addIndex(DBKeys.KEY_TITLE, false, DOM_TITLE)
+                .addIndex(DBKeys.KEY_ISBN, false, DOM_BOOK_ISBN)
+                .addIndex(DBKeys.KEY_BOOK_UUID, true, DOM_BOOK_UUID)
+                //NEWTHINGS: adding a new search engine: optional: add indexes as needed.
 
-                 .addIndex(KEY_ESID_GOODREADS_BOOK, false, DOM_ESID_GOODREADS_BOOK)
-                 .addIndex(KEY_ESID_ISFDB, false, DOM_ESID_ISFDB)
-                 .addIndex(KEY_ESID_OPEN_LIBRARY, false, DOM_ESID_OPEN_LIBRARY)
-                 .addIndex(KEY_ESID_STRIP_INFO_BE, false, DOM_ESID_STRIP_INFO_BE)
+                .addIndex(DBKeys.KEY_ESID_GOODREADS_BOOK, false, DOM_ESID_GOODREADS_BOOK)
+                .addIndex(DBKeys.KEY_ESID_ISFDB, false, DOM_ESID_ISFDB)
+                .addIndex(DBKeys.KEY_ESID_OPEN_LIBRARY, false, DOM_ESID_OPEN_LIBRARY)
+                .addIndex(DBKeys.KEY_ESID_STRIP_INFO_BE, false, DOM_ESID_STRIP_INFO_BE)
         // we probably do not need this one (and have not created it)
         //.addIndex(KEY_ESID_LIBRARY_THING, false, DOM_ESID_LIBRARY_THING)
         ;
         ALL_TABLES.put(TBL_BOOKS.getName(), TBL_BOOKS);
 
 
-        TBL_TOC_ENTRIES.addDomains(DOM_PK_ID,
-                                   DOM_FK_AUTHOR,
-                                   DOM_TITLE,
-                                   DOM_TITLE_OB,
-                                   DOM_DATE_FIRST_PUBLICATION)
-                       .setPrimaryKey(DOM_PK_ID)
-                       .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
-                       .addIndex(KEY_FK_AUTHOR, false, DOM_FK_AUTHOR)
-                       .addIndex(KEY_TITLE_OB, false, DOM_TITLE_OB)
-                       .addIndex("pk", true, DOM_FK_AUTHOR, DOM_TITLE_OB);
+        TBL_TOC_ENTRIES
+                .addDomains(DOM_PK_ID,
+                            DOM_FK_AUTHOR,
+                            DOM_TITLE,
+                            DOM_TITLE_OB,
+                            DOM_DATE_FIRST_PUBLICATION)
+                .setPrimaryKey(DOM_PK_ID)
+                .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+                .addIndex(DBKeys.KEY_FK_AUTHOR, false, DOM_FK_AUTHOR)
+                .addIndex(DBKeys.KEY_TITLE_OB, false, DOM_TITLE_OB)
+                .addIndex("pk", true,
+                          DOM_FK_AUTHOR,
+                          DOM_TITLE_OB);
         ALL_TABLES.put(TBL_TOC_ENTRIES.getName(), TBL_TOC_ENTRIES);
 
 
@@ -1318,158 +1203,174 @@ public final class DBDefinitions {
          *  link tables
          * ====================================================================================== */
 
-        TBL_BOOK_BOOKSHELF.addDomains(DOM_FK_BOOK,
-                                      DOM_FK_BOOKSHELF)
-                          .setPrimaryKey(DOM_FK_BOOK, DOM_FK_BOOKSHELF)
-                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                          .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
-                          .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK)
-                          .addIndex(KEY_FK_BOOKSHELF, false, DOM_FK_BOOKSHELF);
+        TBL_BOOK_BOOKSHELF
+                .addDomains(DOM_FK_BOOK,
+                            DOM_FK_BOOKSHELF)
+                .setPrimaryKey(DOM_FK_BOOK, DOM_FK_BOOKSHELF)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
+                .addIndex(DBKeys.KEY_FK_BOOK, false, DOM_FK_BOOK)
+                .addIndex(DBKeys.KEY_FK_BOOKSHELF, false, DOM_FK_BOOKSHELF);
         ALL_TABLES.put(TBL_BOOK_BOOKSHELF.getName(), TBL_BOOK_BOOKSHELF);
 
 
-        TBL_BOOK_AUTHOR.addDomains(DOM_FK_BOOK,
-                                   DOM_FK_AUTHOR,
-                                   DOM_BOOK_AUTHOR_POSITION,
-                                   DOM_BOOK_AUTHOR_TYPE_BITMASK)
-                       // enforce: only one author on a particular position for a book.
-                       // allow: multiple copies of that author and multiple types.
-                       // The latter has some restrictions handled in code.
-                       //FIXME: should add DOM_FK_AUTHOR to the primary key
-                       .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_AUTHOR_POSITION)
-                       .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                       .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
-                       .addIndex(KEY_FK_AUTHOR, true,
-                                 DOM_FK_AUTHOR,
-                                 DOM_FK_BOOK)
-                       .addIndex(KEY_FK_BOOK, true,
-                                 DOM_FK_BOOK,
-                                 DOM_FK_AUTHOR);
+        TBL_BOOK_AUTHOR
+                .addDomains(DOM_FK_BOOK,
+                            DOM_FK_AUTHOR,
+                            DOM_BOOK_AUTHOR_POSITION,
+                            DOM_BOOK_AUTHOR_TYPE_BITMASK)
+                // enforce: only one author on a particular position for a book.
+                // allow: multiple copies of that author and multiple types.
+                // The latter has some restrictions handled in code.
+                //FIXME: should add DOM_FK_AUTHOR to the primary key
+                .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_AUTHOR_POSITION)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addReference(TBL_AUTHORS, DOM_FK_AUTHOR)
+                .addIndex(DBKeys.KEY_FK_AUTHOR, true,
+                          DOM_FK_AUTHOR,
+                          DOM_FK_BOOK)
+                .addIndex(DBKeys.KEY_FK_BOOK, true,
+                          DOM_FK_BOOK,
+                          DOM_FK_AUTHOR);
         ALL_TABLES.put(TBL_BOOK_AUTHOR.getName(), TBL_BOOK_AUTHOR);
 
 
-        TBL_BOOK_SERIES.addDomains(DOM_FK_BOOK,
-                                   DOM_FK_SERIES,
-                                   DOM_BOOK_NUM_IN_SERIES,
-                                   DOM_BOOK_SERIES_POSITION)
-                       // enforce: only one series on a particular position for a book.
-                       // allow: multiple copies of that series and multiple numbers.
-                       // The latter has some restrictions handled in code.
-                       // in contract to TBL_BOOK_AUTHOR we don't want to add the DOM_FK_SERIES
-                       // to the primary key, as want want to allow a single book to be
-                       // present in a series multiple times (each time with a different number).
-                       .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_SERIES_POSITION)
-                       .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                       .addReference(TBL_SERIES, DOM_FK_SERIES)
-                       .addIndex(KEY_FK_SERIES, true,
-                                 DOM_FK_SERIES,
-                                 DOM_FK_BOOK,
-                                 DOM_BOOK_NUM_IN_SERIES)
-                       .addIndex(KEY_FK_BOOK, true,
-                                 DOM_FK_BOOK,
-                                 DOM_FK_SERIES,
-                                 DOM_BOOK_NUM_IN_SERIES);
+        TBL_BOOK_SERIES
+                .addDomains(DOM_FK_BOOK,
+                            DOM_FK_SERIES,
+                            DOM_BOOK_NUM_IN_SERIES,
+                            DOM_BOOK_SERIES_POSITION)
+                // enforce: only one series on a particular position for a book.
+                // allow: multiple copies of that series and multiple numbers.
+                // The latter has some restrictions handled in code.
+                // in contract to TBL_BOOK_AUTHOR we don't want to add the DOM_FK_SERIES
+                // to the primary key, as want want to allow a single book to be
+                // present in a series multiple times (each time with a different number).
+                .setPrimaryKey(DOM_FK_BOOK, DOM_BOOK_SERIES_POSITION)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addReference(TBL_SERIES, DOM_FK_SERIES)
+                .addIndex(DBKeys.KEY_FK_SERIES, true,
+                          DOM_FK_SERIES,
+                          DOM_FK_BOOK,
+                          DOM_BOOK_NUM_IN_SERIES)
+                .addIndex(DBKeys.KEY_FK_BOOK, true,
+                          DOM_FK_BOOK,
+                          DOM_FK_SERIES,
+                          DOM_BOOK_NUM_IN_SERIES);
         ALL_TABLES.put(TBL_BOOK_SERIES.getName(), TBL_BOOK_SERIES);
 
 
-        TBL_BOOK_PUBLISHER.addDomains(DOM_FK_BOOK,
-                                      DOM_FK_PUBLISHER,
-                                      DOM_BOOK_PUBLISHER_POSITION)
-                          .setPrimaryKey(DOM_FK_BOOK, DOM_FK_PUBLISHER, DOM_BOOK_PUBLISHER_POSITION)
-                          .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                          .addReference(TBL_PUBLISHERS, DOM_FK_PUBLISHER)
-                          .addIndex(KEY_FK_PUBLISHER, true,
-                                    DOM_FK_PUBLISHER,
-                                    DOM_FK_BOOK)
-                          .addIndex(KEY_FK_BOOK, true,
-                                    DOM_FK_BOOK,
-                                    DOM_FK_PUBLISHER);
+        TBL_BOOK_PUBLISHER
+                .addDomains(DOM_FK_BOOK,
+                            DOM_FK_PUBLISHER,
+                            DOM_BOOK_PUBLISHER_POSITION)
+                .setPrimaryKey(DOM_FK_BOOK, DOM_FK_PUBLISHER, DOM_BOOK_PUBLISHER_POSITION)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addReference(TBL_PUBLISHERS, DOM_FK_PUBLISHER)
+                .addIndex(DBKeys.KEY_FK_PUBLISHER, true,
+                          DOM_FK_PUBLISHER,
+                          DOM_FK_BOOK)
+                .addIndex(DBKeys.KEY_FK_BOOK, true,
+                          DOM_FK_BOOK,
+                          DOM_FK_PUBLISHER);
         ALL_TABLES.put(TBL_BOOK_PUBLISHER.getName(), TBL_BOOK_PUBLISHER);
 
 
-        TBL_BOOK_TOC_ENTRIES.addDomains(DOM_FK_BOOK,
-                                        DOM_FK_TOC_ENTRY,
-                                        DOM_BOOK_TOC_ENTRY_POSITION)
-                            .setPrimaryKey(DOM_FK_BOOK, DOM_FK_TOC_ENTRY)
-                            .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                            .addReference(TBL_TOC_ENTRIES, DOM_FK_TOC_ENTRY)
-                            .addIndex(KEY_FK_TOC_ENTRY, false, DOM_FK_TOC_ENTRY)
-                            .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);
+        TBL_BOOK_TOC_ENTRIES
+                .addDomains(DOM_FK_BOOK,
+                            DOM_FK_TOC_ENTRY,
+                            DOM_BOOK_TOC_ENTRY_POSITION)
+                .setPrimaryKey(DOM_FK_BOOK, DOM_FK_TOC_ENTRY)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addReference(TBL_TOC_ENTRIES, DOM_FK_TOC_ENTRY)
+                .addIndex(DBKeys.KEY_FK_TOC_ENTRY, false, DOM_FK_TOC_ENTRY)
+                .addIndex(DBKeys.KEY_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_TOC_ENTRIES.getName(), TBL_BOOK_TOC_ENTRIES);
 
 
-        TBL_BOOK_LOANEE.addDomains(DOM_PK_ID,
-                                   DOM_FK_BOOK,
-                                   DOM_LOANEE)
-                       .setPrimaryKey(DOM_PK_ID)
-                       .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                       .addIndex(KEY_FK_BOOK, true, DOM_FK_BOOK);
+        TBL_BOOK_LOANEE
+                .addDomains(DOM_PK_ID,
+                            DOM_FK_BOOK,
+                            DOM_LOANEE)
+                .setPrimaryKey(DOM_PK_ID)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addIndex(DBKeys.KEY_FK_BOOK, true, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_BOOK_LOANEE.getName(), TBL_BOOK_LOANEE);
 
 
 
-        TBL_CALIBRE_BOOKS.addDomains(DOM_FK_BOOK,
-                                     DOM_CALIBRE_BOOK_ID,
-                                     DOM_CALIBRE_BOOK_UUID,
-                                     DOM_CALIBRE_BOOK_MAIN_FORMAT,
-                                     DOM_FK_CALIBRE_LIBRARY)
-                         .setPrimaryKey(DOM_FK_BOOK)
-                         .addReference(TBL_BOOKS, DOM_FK_BOOK)
-                         .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
-                         .addIndex(KEY_FK_BOOK, false, DOM_FK_BOOK);
+        TBL_CALIBRE_BOOKS
+                .addDomains(DOM_FK_BOOK,
+                            DOM_CALIBRE_BOOK_ID,
+                            DOM_CALIBRE_BOOK_UUID,
+                            DOM_CALIBRE_BOOK_MAIN_FORMAT,
+                            DOM_FK_CALIBRE_LIBRARY)
+                .setPrimaryKey(DOM_FK_BOOK)
+                .addReference(TBL_BOOKS, DOM_FK_BOOK)
+                .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
+                .addIndex(DBKeys.KEY_FK_BOOK, false, DOM_FK_BOOK);
         ALL_TABLES.put(TBL_CALIBRE_BOOKS.getName(), TBL_CALIBRE_BOOKS);
 
 
-        TBL_CALIBRE_LIBRARIES.addDomains(DOM_PK_ID,
-                                         DOM_FK_BOOKSHELF,
-                                         DOM_CALIBRE_LIBRARY_UUID,
-                                         DOM_CALIBRE_LIBRARY_STRING_ID,
-                                         DOM_CALIBRE_LIBRARY_NAME,
-                                         DOM_CALIBRE_LIBRARY_LAST_SYNC_DATE)
-                             .setPrimaryKey(DOM_PK_ID)
-                             .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
-                             .addIndex(KEY_CALIBRE_LIBRARY_NAME, true,
-                                       DOM_CALIBRE_LIBRARY_STRING_ID, DOM_CALIBRE_LIBRARY_NAME);
+        TBL_CALIBRE_LIBRARIES
+                .addDomains(DOM_PK_ID,
+                            DOM_FK_BOOKSHELF,
+                            DOM_CALIBRE_LIBRARY_UUID,
+                            DOM_CALIBRE_LIBRARY_STRING_ID,
+                            DOM_CALIBRE_LIBRARY_NAME,
+                            DOM_CALIBRE_LIBRARY_LAST_SYNC_DATE)
+                .setPrimaryKey(DOM_PK_ID)
+                .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
+                .addIndex(DBKeys.KEY_CALIBRE_LIBRARY_NAME, true,
+                          DOM_CALIBRE_LIBRARY_STRING_ID,
+                          DOM_CALIBRE_LIBRARY_NAME);
         ALL_TABLES.put(TBL_CALIBRE_LIBRARIES.getName(), TBL_CALIBRE_LIBRARIES);
 
-        TBL_CALIBRE_VIRTUAL_LIBRARIES.addDomains(DOM_PK_ID,
-                                                 DOM_FK_BOOKSHELF,
-                                                 DOM_FK_CALIBRE_LIBRARY,
-                                                 DOM_CALIBRE_LIBRARY_NAME,
-                                                 DOM_CALIBRE_VIRT_LIB_EXPR)
-                                     .setPrimaryKey(DOM_PK_ID)
-                                     .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
-                                     .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
-                                     .addIndex(KEY_CALIBRE_LIBRARY_NAME, true,
-                                               DOM_FK_CALIBRE_LIBRARY, DOM_CALIBRE_LIBRARY_NAME);
+        TBL_CALIBRE_VIRTUAL_LIBRARIES
+                .addDomains(DOM_PK_ID,
+                            DOM_FK_BOOKSHELF,
+                            DOM_FK_CALIBRE_LIBRARY,
+                            DOM_CALIBRE_LIBRARY_NAME,
+                            DOM_CALIBRE_VIRT_LIB_EXPR)
+                .setPrimaryKey(DOM_PK_ID)
+                .addReference(TBL_BOOKSHELF, DOM_FK_BOOKSHELF)
+                .addReference(TBL_CALIBRE_LIBRARIES, DOM_FK_CALIBRE_LIBRARY)
+                .addIndex(DBKeys.KEY_CALIBRE_LIBRARY_NAME, true,
+                          DOM_FK_CALIBRE_LIBRARY,
+                          DOM_CALIBRE_LIBRARY_NAME);
         ALL_TABLES.put(TBL_CALIBRE_VIRTUAL_LIBRARIES.getName(), TBL_CALIBRE_VIRTUAL_LIBRARIES);
 
 
-        TBL_BOOK_LIST_NODE_STATE.addDomains(DOM_PK_ID,
-                                            DOM_FK_BOOKSHELF,
-                                            DOM_FK_STYLE,
+        TBL_BOOK_LIST_NODE_STATE
+                .addDomains(DOM_PK_ID,
+                            DOM_FK_BOOKSHELF,
+                            DOM_FK_STYLE,
 
-                                            DOM_BL_NODE_KEY,
-                                            DOM_BL_NODE_LEVEL,
-                                            DOM_BL_NODE_GROUP,
-                                            DOM_BL_NODE_EXPANDED,
-                                            DOM_BL_NODE_VISIBLE)
-                                .setPrimaryKey(DOM_PK_ID)
-                                .addIndex("BOOKSHELF_STYLE", false,
-                                          DOM_FK_BOOKSHELF, DOM_FK_STYLE);
+                            DOM_BL_NODE_KEY,
+                            DOM_BL_NODE_LEVEL,
+                            DOM_BL_NODE_GROUP,
+                            DOM_BL_NODE_EXPANDED,
+                            DOM_BL_NODE_VISIBLE)
+                .setPrimaryKey(DOM_PK_ID)
+                .addIndex("BOOKSHELF_STYLE", false,
+                          DOM_FK_BOOKSHELF,
+                          DOM_FK_STYLE);
         ALL_TABLES.put(TBL_BOOK_LIST_NODE_STATE.getName(), TBL_BOOK_LIST_NODE_STATE);
     }
 
     static {
         DOM_FTS_AUTHOR_NAME =
-                new Domain.Builder(KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_FTS_AUTHOR_NAME, ColumnInfo.TYPE_TEXT)
                         .build();
 
         DOM_FTS_TOC_ENTRY_TITLE =
-                new Domain.Builder(KEY_FTS_TOC_ENTRY_TITLE, ColumnInfo.TYPE_TEXT)
+                new Domain.Builder(DBKeys.KEY_FTS_TOC_ENTRY_TITLE, ColumnInfo.TYPE_TEXT)
                         .build();
 
         TBL_FTS_BOOKS = createFtsTableDefinition("books_fts");
+    }
+
+    private DBDefinitions() {
     }
 
     @NonNull
@@ -1487,73 +1388,6 @@ public final class DBDefinitions {
                             DOM_BOOK_LOCATION,
                             DOM_BOOK_ISBN,
 
-                            DOM_FTS_TOC_ENTRY_TITLE
-                           );
-    }
-
-    private DBDefinitions() {
-    }
-
-    /**
-     * Is the field in use; i.e. is it enabled in the user-preferences.
-     *
-     * @param global Global preferences
-     * @param dbdKey DBDefinitions.KEY_x to lookup
-     *
-     * @return {@code true} if the user wants to use this field.
-     */
-    public static boolean isUsed(@NonNull final SharedPreferences global,
-                                 @UserSelectedDomain @NonNull final String dbdKey) {
-        return global.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY + dbdKey, true);
-    }
-
-    /**
-     * Is the cover field in use; i.e. is it enabled in the user-preferences.
-     *
-     * @param global Global preferences
-     * @param cIdx   0..n image index
-     *
-     * @return {@code true} if the user wants to use this field.
-     */
-    public static boolean isCoverUsed(@NonNull final SharedPreferences global,
-                                      @IntRange(from = 0, to = 1) final int cIdx) {
-        return global.getBoolean(PREFS_PREFIX_FIELD_VISIBILITY
-                                 + PREFS_IS_USED_COVER + "." + cIdx, true);
-    }
-
-    /**
-     * NEWTHINGS: new fields visibility.
-     * Same set as on xml/preferences_field_visibility.xml
-     */
-    @StringDef({KEY_PUBLISHER_NAME,
-                KEY_SERIES_TITLE,
-
-                KEY_ISBN,
-                KEY_BOOK_AUTHOR_TYPE_BITMASK,
-                KEY_TOC_BITMASK,
-                KEY_DESCRIPTION,
-                KEY_BOOK_DATE_PUBLISHED,
-                KEY_DATE_FIRST_PUBLICATION,
-                KEY_FORMAT,
-                KEY_COLOR,
-                KEY_GENRE,
-                KEY_LANGUAGE,
-                KEY_PAGES,
-                KEY_PRICE_LISTED,
-                KEY_LOANEE,
-                KEY_PRIVATE_NOTES,
-                KEY_BOOK_CONDITION,
-                KEY_BOOK_CONDITION_COVER,
-                KEY_LOCATION,
-                KEY_PRICE_PAID,
-                KEY_READ,
-                KEY_READ_START,
-                KEY_READ_END,
-                KEY_EDITION_BITMASK,
-                KEY_SIGNED,
-                KEY_RATING})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface UserSelectedDomain {
-
+                            DOM_FTS_TOC_ENTRY_TITLE);
     }
 }

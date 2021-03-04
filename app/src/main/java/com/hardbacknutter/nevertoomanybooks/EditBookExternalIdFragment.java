@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.fields.Fields;
 import com.hardbacknutter.nevertoomanybooks.fields.accessors.EditTextAccessor;
@@ -67,23 +67,23 @@ public class EditBookExternalIdFragment
         final FieldFormatter<Number> longNumberFormatter = new LongNumberFormatter();
 
         fields.add(R.id.site_goodreads, new EditTextAccessor<>(longNumberFormatter, true),
-                   DBDefinitions.KEY_ESID_GOODREADS_BOOK)
+                   DBKeys.KEY_ESID_GOODREADS_BOOK)
               .setRelatedFields(R.id.lbl_site_goodreads);
 
         fields.add(R.id.site_isfdb, new EditTextAccessor<>(longNumberFormatter, true),
-                   DBDefinitions.KEY_ESID_ISFDB)
+                   DBKeys.KEY_ESID_ISFDB)
               .setRelatedFields(R.id.lbl_site_isfdb);
 
         fields.add(R.id.site_library_thing, new EditTextAccessor<>(longNumberFormatter, true),
-                   DBDefinitions.KEY_ESID_LIBRARY_THING)
+                   DBKeys.KEY_ESID_LIBRARY_THING)
               .setRelatedFields(R.id.lbl_site_library_thing);
 
         fields.add(R.id.site_strip_info_be, new EditTextAccessor<>(longNumberFormatter, true),
-                   DBDefinitions.KEY_ESID_STRIP_INFO_BE)
+                   DBKeys.KEY_ESID_STRIP_INFO_BE)
               .setRelatedFields(R.id.lbl_site_strip_info_be);
 
         fields.add(R.id.site_open_library, new EditTextAccessor<>(),
-                   DBDefinitions.KEY_ESID_OPEN_LIBRARY)
+                   DBKeys.KEY_ESID_OPEN_LIBRARY)
               .setRelatedFields(R.id.lbl_site_open_library);
     }
 

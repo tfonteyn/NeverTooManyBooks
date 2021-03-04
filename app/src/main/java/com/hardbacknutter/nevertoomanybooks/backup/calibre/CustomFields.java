@@ -30,7 +30,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 
 /**
  * Definition of the <strong>supported</strong> user custom fields.
@@ -56,14 +56,14 @@ public final class CustomFields {
     private final Set<Field> mFields = new HashSet<>();
 
     private CustomFields() {
-        mFields.add(new Field("#read", DBDefinitions.KEY_READ, TYPE_BOOL));
+        mFields.add(new Field("#read", DBKeys.KEY_READ, TYPE_BOOL));
 
-        mFields.add(new Field("#read_start", DBDefinitions.KEY_READ_START, TYPE_DATETIME));
-        mFields.add(new Field("#read_end", DBDefinitions.KEY_READ_END, TYPE_DATETIME));
-        mFields.add(new Field("#date_read", DBDefinitions.KEY_READ_END, TYPE_DATETIME));
+        mFields.add(new Field("#read_start", DBKeys.KEY_READ_START, TYPE_DATETIME));
+        mFields.add(new Field("#read_end", DBKeys.KEY_READ_END, TYPE_DATETIME));
+        mFields.add(new Field("#date_read", DBKeys.KEY_READ_END, TYPE_DATETIME));
 
-        mFields.add(new Field("#notes", DBDefinitions.KEY_PRIVATE_NOTES, TYPE_TEXT));
-        mFields.add(new Field("#notes", DBDefinitions.KEY_PRIVATE_NOTES, TYPE_COMMENTS));
+        mFields.add(new Field("#notes", DBKeys.KEY_PRIVATE_NOTES, TYPE_TEXT));
+        mFields.add(new Field("#notes", DBKeys.KEY_PRIVATE_NOTES, TYPE_COMMENTS));
     }
 
     public static Set<Field> getFields() {

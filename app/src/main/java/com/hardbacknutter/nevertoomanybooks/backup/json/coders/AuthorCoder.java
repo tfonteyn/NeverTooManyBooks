@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -21,7 +21,7 @@ package com.hardbacknutter.nevertoomanybooks.backup.json.coders;
 
 import androidx.annotation.NonNull;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -38,17 +38,17 @@ public class AuthorCoder
             throws JSONException {
         final JSONObject out = new JSONObject();
 
-        out.put(DBDefinitions.KEY_PK_ID, author.getId());
-        out.put(DBDefinitions.KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
+        out.put(DBKeys.KEY_PK_ID, author.getId());
+        out.put(DBKeys.KEY_AUTHOR_FAMILY_NAME, author.getFamilyName());
 
         if (!author.getGivenNames().isEmpty()) {
-            out.put(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES, author.getGivenNames());
+            out.put(DBKeys.KEY_AUTHOR_GIVEN_NAMES, author.getGivenNames());
         }
         if (author.isComplete()) {
-            out.put(DBDefinitions.KEY_AUTHOR_IS_COMPLETE, true);
+            out.put(DBKeys.KEY_AUTHOR_IS_COMPLETE, true);
         }
         if (author.getType() != Author.TYPE_UNKNOWN) {
-            out.put(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
+            out.put(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK, author.getType());
         }
 
         return out;
@@ -59,20 +59,20 @@ public class AuthorCoder
     public Author decode(@NonNull final JSONObject data)
             throws JSONException {
 
-        final Author author = new Author(data.getString(DBDefinitions.KEY_AUTHOR_FAMILY_NAME),
+        final Author author = new Author(data.getString(DBKeys.KEY_AUTHOR_FAMILY_NAME),
                                          // optional
-                                         data.optString(DBDefinitions.KEY_AUTHOR_GIVEN_NAMES));
+                                         data.optString(DBKeys.KEY_AUTHOR_GIVEN_NAMES));
 
-        author.setId(data.getLong(DBDefinitions.KEY_PK_ID));
+        author.setId(data.getLong(DBKeys.KEY_PK_ID));
 
-        if (data.has(DBDefinitions.KEY_AUTHOR_IS_COMPLETE)) {
-            author.setComplete(data.getBoolean(DBDefinitions.KEY_AUTHOR_IS_COMPLETE));
+        if (data.has(DBKeys.KEY_AUTHOR_IS_COMPLETE)) {
+            author.setComplete(data.getBoolean(DBKeys.KEY_AUTHOR_IS_COMPLETE));
         } else if (data.has("complete")) {
             author.setComplete(data.getBoolean("complete"));
         }
 
-        if (data.has(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
-            author.setType(data.getInt(DBDefinitions.KEY_BOOK_AUTHOR_TYPE_BITMASK));
+        if (data.has(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK)) {
+            author.setType(data.getInt(DBKeys.KEY_BOOK_AUTHOR_TYPE_BITMASK));
         } else if (data.has("type")) {
             author.setType(data.getInt("type"));
         }

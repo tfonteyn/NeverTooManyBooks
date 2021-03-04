@@ -35,7 +35,7 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.BuiltinStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.UserStyle;
-import com.hardbacknutter.nevertoomanybooks.database.dao.StyleDao;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 
 public class PreferredStylesViewModel
         extends ViewModel {
@@ -229,6 +229,6 @@ public class PreferredStylesViewModel
      * @param styleId to purge
      */
     void purgeBLNS(final long styleId) {
-        StyleDao.getInstance().purgeNodeStatesByStyle(styleId);
+        DaoLocator.getInstance().getStyleDao().purgeNodeStatesByStyle(styleId);
     }
 }

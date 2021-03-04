@@ -39,7 +39,8 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.BuildConfig;
 import com.hardbacknutter.nevertoomanybooks.DEBUG_SWITCHES;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
@@ -90,7 +91,7 @@ public class GoodreadsManager {
     /** last time we synced with Goodreads. */
     private static final String PK_LAST_SYNC_DATE = PREF_KEY + ".last.sync.date";
     @NonNull
-    protected final Context mAppContext;
+    private final Context mAppContext;
 
     private final GoodreadsDao mGoodreadsDao;
 
@@ -130,8 +131,7 @@ public class GoodreadsManager {
                             @NonNull final GoodreadsAuth grAuth) {
         mAppContext = appContext;
         mGoodreadsAuth = grAuth;
-
-        mGoodreadsDao = new GoodreadsDao(appContext, TAG);
+        mGoodreadsDao = DaoLocator.getInstance().getGoodreadsDao();
     }
 
     /**
@@ -194,18 +194,18 @@ public class GoodreadsManager {
     /**
      * Wrapper to send an entire book, including shelves, to Goodreads.
      * <ul>The bookData bundle has to have:
-     *      <li>{@link DBDefinitions#KEY_PK_ID}</li>
-     *      <li>{@link DBDefinitions#KEY_ESID_GOODREADS_BOOK}</li>
-     *      <li>{@link DBDefinitions#KEY_ISBN}</li>
-     *      <li>{@link DBDefinitions#KEY_READ}</li>
-     *      <li>{@link DBDefinitions#KEY_READ_START}</li>
-     *      <li>{@link DBDefinitions#KEY_READ_END}</li>
-     *      <li>{@link DBDefinitions#KEY_RATING}</li>
+     *      <li>{@link DBKeys#KEY_PK_ID}</li>
+     *      <li>{@link DBKeys#KEY_ESID_GOODREADS_BOOK}</li>
+     *      <li>{@link DBKeys#KEY_ISBN}</li>
+     *      <li>{@link DBKeys#KEY_READ}</li>
+     *      <li>{@link DBKeys#KEY_READ_START}</li>
+     *      <li>{@link DBKeys#KEY_READ_END}</li>
+     *      <li>{@link DBKeys#KEY_RATING}</li>
      * </ul>
      * <p>
      * See {@link GoodreadsDao#fetchBookForExport}
      *
-     * @param bookDao       Database Access
+     * @param bookDao  Database Access
      * @param bookData with book data to send
      *
      * @return Disposition of book
@@ -219,7 +219,7 @@ public class GoodreadsManager {
                            @NonNull final DataHolder bookData)
             throws GeneralParsingException, IOException {
 
-        final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
+        final long bookId = bookData.getLong(DBKeys.KEY_PK_ID);
 
         if (BuildConfig.DEBUG && DEBUG_SWITCHES.GOODREADS_SEND) {
             Logger.d(TAG, "sendOneBook", "bookId=" + bookId);
@@ -234,7 +234,7 @@ public class GoodreadsManager {
 
         // See if the book already has a Goodreads id and if it is valid.
         try {
-            grBookId = bookData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
+            grBookId = bookData.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK);
             if (grBookId > 0) {
                 // Get the book details to make sure we have a valid book ID
                 final boolean[] fetchThumbnails = {false, false};
@@ -246,7 +246,7 @@ public class GoodreadsManager {
 
         // wasn't there, see if we can find it using the ISBN instead.
         if (grBookId == 0) {
-            final String isbnStr = bookData.getString(DBDefinitions.KEY_ISBN);
+            final String isbnStr = bookData.getString(DBKeys.KEY_ISBN);
             if (isbnStr.isEmpty()) {
                 return GrStatus.FAILED_BOOK_HAS_NO_ISBN;
             }
@@ -258,7 +258,7 @@ public class GoodreadsManager {
             // Get the book details using ISBN
             final boolean[] fetchThumbnails = {false, false};
             grBookData = getBookByIsbn(isbn.asText(), fetchThumbnails, new Bundle());
-            grBookId = grBookData.getLong(DBDefinitions.KEY_ESID_GOODREADS_BOOK);
+            grBookId = grBookData.getLong(DBKeys.KEY_ESID_GOODREADS_BOOK);
 
             // If we got an ID, save it against the book
             if (grBookId > 0) {
@@ -300,7 +300,7 @@ public class GoodreadsManager {
         // because review.update does not seem to update them properly
         if (exclusiveCount == 0) {
             final String pseudoShelf;
-            if (bookData.getInt(DBDefinitions.KEY_READ) != 0) {
+            if (bookData.getInt(DBKeys.KEY_READ) != 0) {
                 pseudoShelf = "Read";
             } else {
                 pseudoShelf = "To Read";
@@ -369,10 +369,10 @@ public class GoodreadsManager {
             mReviewEditApiHandler = new ReviewEditApiHandler(mAppContext, mGoodreadsAuth);
         }
         mReviewEditApiHandler.update(reviewId,
-                                     bookData.getBoolean(DBDefinitions.KEY_READ),
-                                     bookData.getString(DBDefinitions.KEY_READ_START),
-                                     bookData.getString(DBDefinitions.KEY_READ_END),
-                                     (int) bookData.getDouble(DBDefinitions.KEY_RATING),
+                                     bookData.getBoolean(DBKeys.KEY_READ),
+                                     bookData.getString(DBKeys.KEY_READ_START),
+                                     bookData.getString(DBKeys.KEY_READ_END),
+                                     (int) bookData.getDouble(DBKeys.KEY_RATING),
                                      null);
 
         return GrStatus.SUCCESS;

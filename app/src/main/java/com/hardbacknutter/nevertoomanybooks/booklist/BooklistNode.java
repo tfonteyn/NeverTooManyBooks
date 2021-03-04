@@ -28,13 +28,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.TableDefinition;
-
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_EXPANDED;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_KEY;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_LEVEL;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_BL_NODE_VISIBLE;
-import static com.hardbacknutter.nevertoomanybooks.database.DBDefinitions.KEY_PK_ID;
 
 /**
  * A value class containing details of a single row as used in the list-view.
@@ -89,11 +84,11 @@ public class BooklistNode {
      */
     @NonNull
     static String getColumns(@NonNull final TableDefinition table) {
-        return table.dot(KEY_PK_ID)
-               + ',' + table.dot(KEY_BL_NODE_KEY)
-               + ',' + table.dot(KEY_BL_NODE_LEVEL)
-               + ',' + table.dot(KEY_BL_NODE_EXPANDED)
-               + ',' + table.dot(KEY_BL_NODE_VISIBLE);
+        return table.dot(DBKeys.KEY_PK_ID)
+               + ',' + table.dot(DBKeys.KEY_BL_NODE_KEY)
+               + ',' + table.dot(DBKeys.KEY_BL_NODE_LEVEL)
+               + ',' + table.dot(DBKeys.KEY_BL_NODE_EXPANDED)
+               + ',' + table.dot(DBKeys.KEY_BL_NODE_VISIBLE);
     }
 
     /**

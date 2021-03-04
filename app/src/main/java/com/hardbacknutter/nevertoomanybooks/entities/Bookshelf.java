@@ -40,7 +40,8 @@ import com.hardbacknutter.nevertoomanybooks.BooksOnBookshelf;
 import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.utils.ParseUtils;
@@ -131,11 +132,11 @@ public class Bookshelf
     public Bookshelf(final long id,
                      @NonNull final DataHolder rowData) {
         mId = id;
-        mName = rowData.getString(DBDefinitions.KEY_BOOKSHELF_NAME);
-        mStyleUuid = rowData.getString(DBDefinitions.KEY_STYLE_UUID);
+        mName = rowData.getString(DBKeys.KEY_BOOKSHELF_NAME);
+        mStyleUuid = rowData.getString(DBKeys.KEY_STYLE_UUID);
 
-        mTopItemPosition = rowData.getInt(DBDefinitions.KEY_BOOKSHELF_BL_TOP_POS);
-        mTopViewOffset = rowData.getInt(DBDefinitions.KEY_BOOKSHELF_BL_TOP_OFFSET);
+        mTopItemPosition = rowData.getInt(DBKeys.KEY_BOOKSHELF_BL_TOP_POS);
+        mTopViewOffset = rowData.getInt(DBKeys.KEY_BOOKSHELF_BL_TOP_OFFSET);
     }
 
     /**
@@ -204,12 +205,12 @@ public class Bookshelf
             final SharedPreferences global = PreferenceManager.getDefaultSharedPreferences(context);
             final String name = global.getString(PREF_BOOKSHELF_CURRENT, null);
             if (name != null && !name.isEmpty()) {
-                return BookshelfDao.getInstance().findByName(name);
+                return DaoLocator.getInstance().getBookshelfDao().findByName(name);
             }
             return null;
 
         } else {
-            return BookshelfDao.getInstance().getById(id);
+            return DaoLocator.getInstance().getBookshelfDao().getById(id);
         }
     }
 
@@ -225,7 +226,7 @@ public class Bookshelf
             return false;
         }
 
-        final BookshelfDao bookshelfDao = BookshelfDao.getInstance();
+        final BookshelfDao bookshelfDao = DaoLocator.getInstance().getBookshelfDao();
         final EntityMerger<Bookshelf> entityMerger = new EntityMerger<>(list);
         while (entityMerger.hasNext()) {
             final Bookshelf current = entityMerger.next();
@@ -282,7 +283,7 @@ public class Bookshelf
         SanityCheck.requireNonZero(style.getId(), "style.getId()");
 
         mStyleUuid = style.getUuid();
-        BookshelfDao.getInstance().update(context, this);
+        DaoLocator.getInstance().getBookshelfDao().update(context, this);
 
     }
 
@@ -335,7 +336,7 @@ public class Bookshelf
         mTopItemPosition = position;
         mTopViewOffset = topViewOffset;
 
-        BookshelfDao.getInstance().update(context, this);
+        DaoLocator.getInstance().getBookshelfDao().update(context, this);
     }
 
     /**
@@ -347,7 +348,7 @@ public class Bookshelf
         final String uuid = mStyleUuid;
         final ListStyle style = getStyle(context);
         if (!uuid.equals(style.getUuid())) {
-            BookshelfDao.getInstance().update(context, this);
+            DaoLocator.getInstance().getBookshelfDao().update(context, this);
         }
     }
 

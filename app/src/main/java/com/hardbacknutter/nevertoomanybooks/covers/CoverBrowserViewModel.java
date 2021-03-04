@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -38,7 +38,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.debug.SanityCheck;
 import com.hardbacknutter.nevertoomanybooks.searches.Site;
 import com.hardbacknutter.nevertoomanybooks.tasks.ASyncExecutor;
@@ -145,7 +145,7 @@ public class CoverBrowserViewModel
      */
     public void init(@NonNull final Bundle args) {
         if (mBaseIsbn == null) {
-            mBaseIsbn = SanityCheck.requireValue(args.getString(DBDefinitions.KEY_ISBN),
+            mBaseIsbn = SanityCheck.requireValue(args.getString(DBKeys.KEY_ISBN),
                                                  "KEY_ISBN");
             mCIdx = args.getInt(BKEY_FILE_INDEX);
 

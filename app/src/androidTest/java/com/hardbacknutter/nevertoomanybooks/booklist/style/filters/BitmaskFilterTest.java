@@ -30,6 +30,7 @@ import com.hardbacknutter.nevertoomanybooks.R;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayer;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StylePersistenceLayerBundle;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 
@@ -53,7 +54,7 @@ public class BitmaskFilterTest {
                 Filters.PK_FILTER_EDITION_BITMASK,
                 new DomainExpression(DBDefinitions.DOM_BOOK_EDITION_BITMASK,
                                      DBDefinitions.TBL_BOOKS
-                                             .dot(DBDefinitions.KEY_EDITION_BITMASK)),
+                                             .dot(DBKeys.KEY_EDITION_BITMASK)),
                 Book.Edition.BITMASK_ALL);
 
         p1.set(Book.Edition.SIGNED | Book.Edition.LIMITED);

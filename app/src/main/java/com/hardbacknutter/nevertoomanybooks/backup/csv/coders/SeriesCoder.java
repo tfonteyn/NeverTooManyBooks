@@ -1,5 +1,5 @@
 /*
- * @Copyright 2020 HardBackNutter
+ * @Copyright 2018-2021 HardBackNutter
  * @License GNU General Public License
  *
  * This file is part of NeverTooManyBooks.
@@ -24,7 +24,7 @@ import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.org.json.JSONException;
 import com.hardbacknutter.org.json.JSONObject;
@@ -64,7 +64,7 @@ public class SeriesCoder
         final JSONObject details = new JSONObject();
         try {
             if (series.isComplete()) {
-                details.put(DBDefinitions.KEY_SERIES_IS_COMPLETE, true);
+                details.put(DBKeys.KEY_SERIES_IS_COMPLETE, true);
             }
         } catch (@NonNull final JSONException e) {
             throw new IllegalStateException(e);
@@ -84,8 +84,8 @@ public class SeriesCoder
         if (parts.size() > 1) {
             try {
                 final JSONObject details = new JSONObject(parts.get(1));
-                if (details.has(DBDefinitions.KEY_SERIES_IS_COMPLETE)) {
-                    series.setComplete(details.optBoolean(DBDefinitions.KEY_SERIES_IS_COMPLETE));
+                if (details.has(DBKeys.KEY_SERIES_IS_COMPLETE)) {
+                    series.setComplete(details.optBoolean(DBKeys.KEY_SERIES_IS_COMPLETE));
                 } else if (details.has("complete")) {
                     series.setComplete(details.optBoolean("complete"));
                 }

@@ -71,8 +71,9 @@ public class BaseSetupTest
             assertTrue(tocEntry[2].getId() > 0);
             assertTrue(tocEntry[3].getId() > 0);
 
-            final AuthorDao authorDao = AuthorDao.getInstance();
-            final PublisherDao publisherDao = PublisherDao.getInstance();
+            final DaoLocator daoLocator = DaoLocator.getInstance();
+            final AuthorDao authorDao = daoLocator.getAuthorDao();
+            final PublisherDao publisherDao = daoLocator.getPublisherDao();
 
             // a0 is present in b0, b3
             bookIdList = authorDao.getBookIds(author[0].getId());

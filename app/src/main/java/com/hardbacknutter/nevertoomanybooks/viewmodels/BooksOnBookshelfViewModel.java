@@ -54,12 +54,10 @@ import com.hardbacknutter.nevertoomanybooks.booklist.style.ListStyle;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.StyleUtils;
 import com.hardbacknutter.nevertoomanybooks.booklist.style.groups.BooklistGroup;
 import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
-import com.hardbacknutter.nevertoomanybooks.database.dao.AuthorDao;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.BookshelfDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.LoaneeDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.PublisherDao;
-import com.hardbacknutter.nevertoomanybooks.database.dao.SeriesDao;
+import com.hardbacknutter.nevertoomanybooks.database.dao.impl.AuthorDaoImpl;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.Domain;
 import com.hardbacknutter.nevertoomanybooks.database.definitions.DomainExpression;
 import com.hardbacknutter.nevertoomanybooks.entities.Author;
@@ -125,44 +123,44 @@ public class BooksOnBookshelfViewModel
                 // Title for displaying; do NOT sort on it
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_TITLE)));
         mFixedDomainList.add(
                 // Title for sorting
                 new DomainExpression(
                         DBDefinitions.DOM_TITLE_OB,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_TITLE_OB),
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_TITLE_OB),
                         DomainExpression.SORT_ASC));
 
         mFixedDomainList.add(
                 // the book language is needed for reordering titles
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_LANGUAGE,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LANGUAGE)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_LANGUAGE)));
 
         mFixedDomainList.add(
                 // Always get the read flag
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_READ,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_READ)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_READ)));
 
         mFixedDomainList.add(
                 // Always get the Author ID
                 // (the need for the name will depend on the style).
                 new DomainExpression(
                         DBDefinitions.DOM_FK_AUTHOR,
-                        DBDefinitions.TBL_BOOK_AUTHOR.dot(DBDefinitions.KEY_FK_AUTHOR)));
+                        DBDefinitions.TBL_BOOK_AUTHOR.dot(DBKeys.KEY_FK_AUTHOR)));
 
         mFixedDomainList.add(
                 // We want the UUID for the book so we can get thumbnails
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_UUID,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_UUID)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_UUID)));
 
         mFixedDomainList.add(
                 // Always get the ISBN
                 new DomainExpression(
                         DBDefinitions.DOM_BOOK_ISBN,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_ISBN)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_ISBN)));
 
         // external site ID's
         for (final Domain domain : SearchEngineRegistry.getInstance().getExternalIdDomains()) {
@@ -268,7 +266,7 @@ public class BooksOnBookshelfViewModel
     public void reloadBookshelfList(@NonNull final Context context) {
         mBookshelfList.clear();
         mBookshelfList.add(Bookshelf.getBookshelf(context, Bookshelf.ALL_BOOKS));
-        mBookshelfList.addAll(BookshelfDao.getInstance().getAll());
+        mBookshelfList.addAll(DaoLocator.getInstance().getBookshelfDao().getAll());
     }
 
     /**
@@ -330,7 +328,7 @@ public class BooksOnBookshelfViewModel
      */
     public void setCurrentBookshelf(@NonNull final Context context,
                                     final long id) {
-        mBookshelf = BookshelfDao.getInstance().getById(id);
+        mBookshelf = DaoLocator.getInstance().getBookshelfDao().getById(id);
         if (mBookshelf == null) {
             mBookshelf = Bookshelf.getBookshelf(context, Bookshelf.PREFERRED, Bookshelf.ALL_BOOKS);
         }
@@ -466,11 +464,11 @@ public class BooksOnBookshelfViewModel
      */
     public boolean isAvailable(@NonNull final DataHolder rowData) {
         final String loanee;
-        if (rowData.contains(DBDefinitions.KEY_LOANEE)) {
-            loanee = rowData.getString(DBDefinitions.KEY_LOANEE);
+        if (rowData.contains(DBKeys.KEY_LOANEE)) {
+            loanee = rowData.getString(DBKeys.KEY_LOANEE);
         } else {
-            loanee = LoaneeDao.getInstance().getLoaneeByBookId(
-                    rowData.getLong(DBDefinitions.KEY_FK_BOOK));
+            loanee = DaoLocator.getInstance().getLoaneeDao().getLoaneeByBookId(
+                    rowData.getLong(DBKeys.KEY_FK_BOOK));
         }
         return (loanee == null) || loanee.isEmpty();
     }
@@ -645,48 +643,48 @@ public class BooksOnBookshelfViewModel
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_ID,
                         DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBDefinitions.KEY_CALIBRE_BOOK_ID)));
+                                .dot(DBKeys.KEY_CALIBRE_BOOK_ID)));
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_UUID,
                         DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBDefinitions.KEY_CALIBRE_BOOK_UUID)));
+                                .dot(DBKeys.KEY_CALIBRE_BOOK_UUID)));
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_CALIBRE_BOOK_MAIN_FORMAT,
                         DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBDefinitions.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
+                                .dot(DBKeys.KEY_CALIBRE_BOOK_MAIN_FORMAT)));
 
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_FK_CALIBRE_LIBRARY,
                         DBDefinitions.TBL_CALIBRE_BOOKS
-                                .dot(DBDefinitions.KEY_FK_CALIBRE_LIBRARY)));
+                                .dot(DBKeys.KEY_FK_CALIBRE_LIBRARY)));
             }
 
             // Add the conditional domains; global level.
 
-            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_EDITION_BITMASK)) {
+            if (DBKeys.isUsed(global, DBKeys.KEY_EDITION_BITMASK)) {
                 // The edition bitmask
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_EDITION_BITMASK,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_EDITION_BITMASK)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_EDITION_BITMASK)));
             }
 
-            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_SIGNED)) {
+            if (DBKeys.isUsed(global, DBKeys.KEY_SIGNED)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_SIGNED,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_SIGNED)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_SIGNED)));
             }
 
-            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_BOOK_CONDITION)) {
+            if (DBKeys.isUsed(global, DBKeys.KEY_BOOK_CONDITION)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_CONDITION,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_CONDITION)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_CONDITION)));
             }
 
-            if (DBDefinitions.isUsed(global, DBDefinitions.KEY_LOANEE)) {
+            if (DBKeys.isUsed(global, DBKeys.KEY_LOANEE)) {
                 // Used to display/hide the 'lend' icon for each book.
                 builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_BL_LOANEE_AS_BOOL,
-                        BooklistBuilder.EXP_LOANEE_AS_BOOLEAN));
+                        DBDefinitions.DOM_LOANEE,
+                        DBDefinitions.TBL_BOOK_LOANEE.dot(DBKeys.KEY_LOANEE)));
             }
 
             // Add the conditional domains; style level.
@@ -702,9 +700,8 @@ public class BooksOnBookshelfViewModel
             // we fetch ONLY the primary author
             if (bookFields.isShowField(global, ListScreenBookFields.PK_AUTHOR)) {
                 builder.addDomain(new DomainExpression(
-                        DBDefinitions.DOM_AUTHOR_FORMATTED, AuthorDao
-                        .getDisplayAuthor(DBDefinitions.TBL_AUTHORS.getAlias(),
-                                          style.isShowAuthorByGivenName())));
+                        DBDefinitions.DOM_AUTHOR_FORMATTED,
+                        AuthorDaoImpl.getDisplayAuthor(style.isShowAuthorByGivenName())));
             }
 
             // for now, don't get the author type.
@@ -725,25 +722,25 @@ public class BooksOnBookshelfViewModel
             if (bookFields.isShowField(global, ListScreenBookFields.PK_PUB_DATE)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_DATE_PUBLISHED,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_BOOK_DATE_PUBLISHED)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_BOOK_DATE_PUBLISHED)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_FORMAT)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_FORMAT,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_FORMAT)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_FORMAT)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_LOCATION)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_LOCATION,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_LOCATION)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_LOCATION)));
             }
 
             if (bookFields.isShowField(global, ListScreenBookFields.PK_RATING)) {
                 builder.addDomain(new DomainExpression(
                         DBDefinitions.DOM_BOOK_RATING,
-                        DBDefinitions.TBL_BOOKS.dot(DBDefinitions.KEY_RATING)));
+                        DBDefinitions.TBL_BOOKS.dot(DBKeys.KEY_RATING)));
             }
 
             if (BuildConfig.DEBUG && DEBUG_SWITCHES.BOB_THE_BUILDER) {
@@ -833,7 +830,7 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Book getBook(@NonNull final DataHolder rowData) {
-        final long bookId = rowData.getLong(DBDefinitions.KEY_FK_BOOK);
+        final long bookId = rowData.getLong(DBKeys.KEY_FK_BOOK);
         if (bookId > 0) {
             return Book.from(bookId, mBookDao);
         }
@@ -849,14 +846,14 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Author getAuthor(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBDefinitions.KEY_FK_AUTHOR)) {
-            final long id = rowData.getLong(DBDefinitions.KEY_FK_AUTHOR);
+        if (rowData.contains(DBKeys.KEY_FK_AUTHOR)) {
+            final long id = rowData.getLong(DBKeys.KEY_FK_AUTHOR);
             if (id > 0) {
-                return AuthorDao.getInstance().getById(id);
+                return DaoLocator.getInstance().getAuthorDao().getById(id);
             }
-        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (rowData.getInt(DBKeys.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
             final List<Author> authors = mBookDao.getAuthorsByBookId(
-                    rowData.getLong(DBDefinitions.KEY_FK_BOOK));
+                    rowData.getLong(DBKeys.KEY_FK_BOOK));
             if (!authors.isEmpty()) {
                 return authors.get(0);
             }
@@ -873,15 +870,15 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Series getSeries(@NonNull final DataHolder rowData) {
-        if (rowData.contains(DBDefinitions.KEY_FK_SERIES)) {
-            final long id = rowData.getLong(DBDefinitions.KEY_FK_SERIES);
+        if (rowData.contains(DBKeys.KEY_FK_SERIES)) {
+            final long id = rowData.getLong(DBKeys.KEY_FK_SERIES);
             if (id > 0) {
-                return SeriesDao.getInstance()
-                                .getById(rowData.getLong(DBDefinitions.KEY_FK_SERIES));
+                return DaoLocator.getInstance().getSeriesDao()
+                                 .getById(rowData.getLong(DBKeys.KEY_FK_SERIES));
             }
-        } else if (rowData.getInt(DBDefinitions.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
+        } else if (rowData.getInt(DBKeys.KEY_BL_NODE_GROUP) == BooklistGroup.BOOK) {
             final ArrayList<Series> series = mBookDao.getSeriesByBookId(
-                    rowData.getLong(DBDefinitions.KEY_FK_BOOK));
+                    rowData.getLong(DBKeys.KEY_FK_BOOK));
             if (!series.isEmpty()) {
                 return series.get(0);
             }
@@ -898,9 +895,9 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Publisher getPublisher(@NonNull final DataHolder rowData) {
-        final long id = rowData.getLong(DBDefinitions.KEY_FK_PUBLISHER);
+        final long id = rowData.getLong(DBKeys.KEY_FK_PUBLISHER);
         if (id > 0) {
-            return PublisherDao.getInstance().getById(id);
+            return DaoLocator.getInstance().getPublisherDao().getById(id);
         }
         return null;
     }
@@ -914,9 +911,9 @@ public class BooksOnBookshelfViewModel
      */
     @Nullable
     public Bookshelf getBookshelf(@NonNull final DataHolder rowData) {
-        final long id = rowData.getLong(DBDefinitions.KEY_FK_BOOKSHELF);
+        final long id = rowData.getLong(DBKeys.KEY_FK_BOOKSHELF);
         if (id > 0) {
-            return BookshelfDao.getInstance().getById(id);
+            return DaoLocator.getInstance().getBookshelfDao().getById(id);
         }
         return null;
     }
@@ -931,9 +928,9 @@ public class BooksOnBookshelfViewModel
                                               final boolean justThisShelf) {
         if (justThisShelf) {
             Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            return AuthorDao.getInstance().getBookIds(authorId, mBookshelf.getId());
+            return DaoLocator.getInstance().getAuthorDao().getBookIds(authorId, mBookshelf.getId());
         } else {
-            return AuthorDao.getInstance().getBookIds(authorId);
+            return DaoLocator.getInstance().getAuthorDao().getBookIds(authorId);
         }
     }
 
@@ -942,9 +939,9 @@ public class BooksOnBookshelfViewModel
                                               final boolean justThisShelf) {
         if (justThisShelf) {
             Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            return SeriesDao.getInstance().getBookIds(seriesId, mBookshelf.getId());
+            return DaoLocator.getInstance().getSeriesDao().getBookIds(seriesId, mBookshelf.getId());
         } else {
-            return SeriesDao.getInstance().getBookIds(seriesId);
+            return DaoLocator.getInstance().getSeriesDao().getBookIds(seriesId);
         }
     }
 
@@ -953,21 +950,21 @@ public class BooksOnBookshelfViewModel
                                                  final boolean justThisShelf) {
         if (justThisShelf) {
             Objects.requireNonNull(mBookshelf, Bookshelf.TAG);
-            return PublisherDao.getInstance().getBookIds(publisherId, mBookshelf.getId());
+            return DaoLocator.getInstance().getPublisherDao()
+                             .getBookIds(publisherId, mBookshelf.getId());
         } else {
-            return PublisherDao.getInstance().getBookIds(publisherId);
+            return DaoLocator.getInstance().getPublisherDao().getBookIds(publisherId);
         }
     }
 
-
     public boolean setAuthorComplete(@IntRange(from = 1) final long authorId,
                                      final boolean isComplete) {
-        return AuthorDao.getInstance().setComplete(authorId, isComplete);
+        return DaoLocator.getInstance().getAuthorDao().setComplete(authorId, isComplete);
     }
 
     public boolean setSeriesComplete(@IntRange(from = 1) final long seriesId,
                                      final boolean isComplete) {
-        return SeriesDao.getInstance().setComplete(seriesId, isComplete);
+        return DaoLocator.getInstance().getSeriesDao().setComplete(seriesId, isComplete);
     }
 
     public boolean setBookRead(@IntRange(from = 1) final long bookId,
@@ -985,7 +982,7 @@ public class BooksOnBookshelfViewModel
      */
     public boolean delete(@NonNull final Context context,
                           @NonNull final Series series) {
-        return SeriesDao.getInstance().delete(context, series);
+        return DaoLocator.getInstance().getSeriesDao().delete(context, series);
     }
 
     /**
@@ -998,7 +995,7 @@ public class BooksOnBookshelfViewModel
      */
     public boolean delete(@NonNull final Context context,
                           @NonNull final Publisher publisher) {
-        return PublisherDao.getInstance().delete(context, publisher);
+        return DaoLocator.getInstance().getPublisherDao().delete(context, publisher);
     }
 
     /**
@@ -1009,7 +1006,7 @@ public class BooksOnBookshelfViewModel
      * @return {@code true} on a successful delete
      */
     public boolean delete(@NonNull final Bookshelf bookshelf) {
-        return BookshelfDao.getInstance().delete(bookshelf);
+        return DaoLocator.getInstance().getBookshelfDao().delete(bookshelf);
     }
 
     /**
@@ -1028,6 +1025,6 @@ public class BooksOnBookshelfViewModel
     @SuppressWarnings("UnusedReturnValue")
     public boolean lendBook(@IntRange(from = 1) final long bookId,
                             @Nullable final String loanee) {
-        return LoaneeDao.getInstance().setLoanee(bookId, loanee);
+        return DaoLocator.getInstance().getLoaneeDao().setLoanee(bookId, loanee);
     }
 }

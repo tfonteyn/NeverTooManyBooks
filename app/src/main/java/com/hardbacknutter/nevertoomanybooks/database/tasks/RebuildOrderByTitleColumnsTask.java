@@ -26,7 +26,7 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.dao.MaintenanceDao;
+import com.hardbacknutter.nevertoomanybooks.database.DaoLocator;
 import com.hardbacknutter.nevertoomanybooks.debug.Logger;
 import com.hardbacknutter.nevertoomanybooks.entities.ItemWithTitle;
 import com.hardbacknutter.nevertoomanybooks.tasks.LTask;
@@ -64,7 +64,9 @@ public class RebuildOrderByTitleColumnsTask
                 R.string.progress_msg_rebuilding_search_index)));
         try {
             final boolean reorder = ItemWithTitle.isReorderTitleForSorting(context);
-            MaintenanceDao.getInstance().rebuildOrderByTitleColumns(context, reorder);
+
+            DaoLocator.getInstance().getMaintenanceDao()
+                      .rebuildOrderByTitleColumns(context, reorder);
             return true;
 
         } catch (@NonNull final RuntimeException e) {

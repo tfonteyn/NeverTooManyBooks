@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.entities.Book;
 import com.hardbacknutter.nevertoomanybooks.entities.Series;
 import com.hardbacknutter.nevertoomanybooks.tasks.Canceller;
@@ -77,7 +77,7 @@ public abstract class SearchEngineBase
      * @param bookData Bundle to update
      */
     public static void checkForSeriesNameInTitle(@NonNull final Bundle bookData) {
-        final String fullTitle = bookData.getString(DBDefinitions.KEY_TITLE);
+        final String fullTitle = bookData.getString(DBKeys.KEY_TITLE);
         if (fullTitle != null) {
             final Matcher matcher = Series.TEXT1_BR_TEXT2_BR_PATTERN.matcher(fullTitle);
             if (matcher.find()) {
@@ -102,7 +102,7 @@ public abstract class SearchEngineBase
                     // store Series back
                     bookData.putParcelableArrayList(Book.BKEY_SERIES_LIST, seriesList);
                     // and store cleansed book title back
-                    bookData.putString(DBDefinitions.KEY_TITLE, bookTitle);
+                    bookData.putString(DBKeys.KEY_TITLE, bookTitle);
                 }
             }
         }

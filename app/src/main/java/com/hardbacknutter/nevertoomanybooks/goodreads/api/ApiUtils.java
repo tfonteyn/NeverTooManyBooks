@@ -30,7 +30,7 @@ import java.util.Locale;
 
 import com.hardbacknutter.nevertoomanybooks.covers.ImageDownloader;
 import com.hardbacknutter.nevertoomanybooks.covers.ImageFileInfo;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.goodreads.GoodreadsManager;
 import com.hardbacknutter.nevertoomanybooks.searches.goodreads.GoodreadsSearchEngine;
 import com.hardbacknutter.nevertoomanybooks.utils.AppLocale;
@@ -119,7 +119,7 @@ public final class ApiUtils {
             final File tmpFile = imageDownloader.createTmpFile(
                     context, GoodreadsManager.FILENAME_SUFFIX,
                     String.valueOf(goodreadsData.getLong(
-                            DBDefinitions.KEY_ESID_GOODREADS_BOOK)),
+                            DBKeys.KEY_ESID_GOODREADS_BOOK)),
                     0, size);
 
             final File file = imageDownloader.fetch(context, url, tmpFile);

@@ -28,7 +28,7 @@ import androidx.annotation.StringRes;
 import java.io.IOException;
 
 import com.hardbacknutter.nevertoomanybooks.R;
-import com.hardbacknutter.nevertoomanybooks.database.DBDefinitions;
+import com.hardbacknutter.nevertoomanybooks.database.DBKeys;
 import com.hardbacknutter.nevertoomanybooks.database.dao.BookDao;
 import com.hardbacknutter.nevertoomanybooks.database.dao.GoodreadsDao;
 import com.hardbacknutter.nevertoomanybooks.dialogs.TipManager;
@@ -128,7 +128,7 @@ public abstract class SendBooksGrTaskBase
                         @NonNull final BookDao bookDao,
                         @NonNull final DataHolder bookData) {
 
-        final long bookId = bookData.getLong(DBDefinitions.KEY_PK_ID);
+        final long bookId = bookData.getLong(DBKeys.KEY_PK_ID);
 
         try {
             @GrStatus.Status
