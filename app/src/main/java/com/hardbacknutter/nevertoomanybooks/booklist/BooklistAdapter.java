@@ -35,6 +35,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
@@ -44,8 +45,6 @@ import androidx.annotation.IntRange;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.core.math.MathUtils;
 import androidx.fragment.app.FragmentActivity;
 import androidx.preference.PreferenceManager;
@@ -196,14 +195,11 @@ public class BooklistAdapter
         coverSizes.recycle();
 
         // The thumbnail scale defines the Book layout file to use.
-        // The layout names ending in 3/4/5 are ONLY the references, they are not
+        // The layout names ending in 3/4 are ONLY the references, they are not
         // hard coded in the layout files themselves (other than in 'tools' settings).
         switch (frontCoverScale) {
             case ListStyle.IMAGE_SCALE_6_MAX:
             case ListStyle.IMAGE_SCALE_5_VERY_LARGE:
-                mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_5;
-                break;
-
             case ListStyle.IMAGE_SCALE_4_LARGE:
                 mBookLayoutId = R.layout.booksonbookshelf_row_book_scale_4;
                 break;
@@ -1001,20 +997,26 @@ public class BooklistAdapter
                 mDbgRowIdView.setId(View.generateViewId());
                 mDbgRowIdView.setTextColor(Color.BLUE);
 
-                final ConstraintLayout parentLayout = itemView.findViewById(R.id.row);
-                parentLayout.addView(mDbgRowIdView, 0);
+                final LinearLayout parentLayout = itemView.findViewById(R.id.icon_sidebar);
+                mDbgRowIdView.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT));
+                parentLayout.addView(mDbgRowIdView);
 
-                final ConstraintSet set = new ConstraintSet();
-                set.clone(parentLayout);
-                set.connect(mDbgRowIdView.getId(), ConstraintSet.TOP,
-                            R.id.icon_sidebar, ConstraintSet.BOTTOM);
-                set.connect(mDbgRowIdView.getId(), ConstraintSet.BOTTOM,
-                            ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
-                set.connect(mDbgRowIdView.getId(), ConstraintSet.END,
-                            ConstraintSet.PARENT_ID, ConstraintSet.END);
-                set.setVerticalBias(mDbgRowIdView.getId(), 1.0f);
-
-                set.applyTo(parentLayout);
+//                final ConstraintLayout parentLayout = itemView.findViewById(R.id.row);
+//                parentLayout.addView(mDbgRowIdView, 0);
+//
+//                final ConstraintSet set = new ConstraintSet();
+//                set.clone(parentLayout);
+//                set.connect(mDbgRowIdView.getId(), ConstraintSet.TOP,
+//                            R.id.icon_sidebar, ConstraintSet.BOTTOM);
+//                set.connect(mDbgRowIdView.getId(), ConstraintSet.BOTTOM,
+//                            ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM);
+//                set.connect(mDbgRowIdView.getId(), ConstraintSet.END,
+//                            ConstraintSet.PARENT_ID, ConstraintSet.END);
+//                set.setVerticalBias(mDbgRowIdView.getId(), 1.0f);
+//
+//                set.applyTo(parentLayout);
             }
         }
 
@@ -1140,7 +1142,7 @@ public class BooklistAdapter
                 // will only exist if DEBUG_SWITCHES.BOB_NODE_ID was set
                 if (mDbgRowIdView != null) {
                     final String txt =
-                            "" + position + '/'
+                            "" + position + '\n'
                             + rowData.getLong(DBKeys.KEY_BL_LIST_VIEW_NODE_ROW_ID);
                     mDbgRowIdView.setText(txt);
                 }
