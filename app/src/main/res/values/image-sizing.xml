@@ -89,8 +89,4 @@
 
     <dimen name="tools_cover_scale_4_height">250dp</dimen>
     <dimen name="tools_cover_scale_4_width">160dp</dimen>
-
-    <dimen name="tools_cover_scale_5_height">400dp</dimen>
-    <dimen name="tools_cover_scale_5_width">256dp</dimen>
-
 </resources>
