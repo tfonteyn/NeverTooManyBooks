@@ -104,17 +104,6 @@ public class StyleFragment
                 .setSummaryProvider(MultiSelectListPreferenceSummaryProvider.getInstance());
 
         //noinspection ConstantConditions
-        findPreference(ListScreenBookFields.PK_COVER_SCALE)
-                .setSummaryProvider(p -> mVm
-                        .getStyle().getListScreenBookFields()
-                        .getCoverScaleSummaryText(getContext()));
-
-        //noinspection ConstantConditions
-        findPreference(TextScale.PK_TEXT_SCALE)
-                .setSummaryProvider(p -> mVm
-                        .getStyle().getTextScale().getFontScaleSummaryText(getContext()));
-
-        //noinspection ConstantConditions
         findPreference(AuthorBooklistGroup.PK_PRIMARY_TYPE)
                 // URGENT: AuthorBooklistGroup.PK_PRIMARY_TYPE
                 //  Why is this MultiSelectListPreference?
@@ -204,6 +193,15 @@ public class StyleFragment
         //noinspection ConstantConditions
         findPreference(Groups.PK_STYLE_GROUPS)
                 .setSummary(style.getGroups().getSummaryText(getContext()));
+
+        //noinspection ConstantConditions
+        findPreference(ListScreenBookFields.PK_COVER_SCALE)
+                .setSummary(mVm.getStyle().getListScreenBookFields()
+                               .getCoverScaleSummaryText(getContext()));
+
+        //noinspection ConstantConditions
+        findPreference(TextScale.PK_TEXT_SCALE)
+                .setSummary(mVm.getStyle().getTextScale().getSummaryText(getContext()));
 
         // the 'level expansion' depends on the number of groups in use
         final SeekBarPreference levelExpPref = findPreference(UserStyle.PK_LEVELS_EXPANSION);
